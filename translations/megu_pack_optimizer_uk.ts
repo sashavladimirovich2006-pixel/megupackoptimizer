@@ -394,14 +394,9 @@
         <translation>Мегу Пак Оптимізатор</translation>
     </message>
     <message>
-        <location filename="../src/qml/main.qml" line="60"/>
-        <source>MEGU PACK</source>
-        <translation>МЕГУ ПАК</translation>
-    </message>
-    <message>
-        <location filename="../src/qml/main.qml" line="69"/>
-        <source>OPTIMIZER</source>
-        <translation>ОПТИМІЗАТОР</translation>
+        <location filename="../src/qml/main.qml" line="106"/>
+        <source>SYSTEM OPTIMIZATION SUITE</source>
+        <translation>ПАКЕТ СИСТЕМНОЇ ОПТИМІЗАЦІЇ</translation>
     </message>
     <message>
         <location filename="../src/qml/main.qml" line="85"/>

@@ -27,17 +27,25 @@ Item {
                 return control.accented ? Theme.accentDark : "transparent";
             }
             if (control.accented) {
-                return mouseArea.pressed ? Theme.accentDark : (mouseArea.containsMouse ? Theme.accentLight : Theme.accent);
+                return "transparent"; // Managed by gradient
             } else {
-                return mouseArea.pressed ? "#253452" : (mouseArea.containsMouse ? "#1A2436" : "transparent");
+                return mouseArea.pressed ? "#2A3958" : (mouseArea.containsMouse ? "#1E2A3E" : "#0EFFFFFF");
             }
         }
                
         border.color: {
             if (control.accented) return "transparent";
-            return mouseArea.containsMouse ? Theme.borderHover : Theme.border;
+            return mouseArea.containsMouse ? Theme.accent : Theme.border;
         }
         border.width: 1
+        
+        gradient: (control.accented && control.enabled) ? accentGradient : null
+        
+        Gradient {
+            id: accentGradient
+            GradientStop { position: 0.0; color: Theme.accentLight }
+            GradientStop { position: 1.0; color: Theme.accent }
+        }
         
         Behavior on color { ColorAnimation { duration: Theme.animFast } }
         Behavior on border.color { ColorAnimation { duration: Theme.animFast } }
@@ -49,7 +57,7 @@ Item {
             color: "transparent"
             border.color: Theme.accent
             border.width: 1.5
-            opacity: (control.accented && mouseArea.containsMouse && control.enabled) ? 0.4 : 0.0
+            opacity: (control.accented && mouseArea.containsMouse && control.enabled) ? 0.6 : 0.0
             Behavior on opacity { NumberAnimation { duration: Theme.animFast } }
         }
     }
@@ -82,9 +90,14 @@ Item {
         }
     }
     
-    // Micro-animation scale effect on press
-    scale: mouseArea.pressed && control.enabled ? 0.97 : 1.0
-    Behavior on scale { NumberAnimation { duration: 60 } }
+    // Micro-animation scale effect on press / hover
+    scale: mouseArea.pressed && control.enabled ? 0.96 : (mouseArea.containsMouse && control.enabled ? 1.02 : 1.0)
+    Behavior on scale {
+        NumberAnimation {
+            duration: 80
+            easing.type: Easing.OutCubic
+        }
+    }
     
     MouseArea {
         id: mouseArea

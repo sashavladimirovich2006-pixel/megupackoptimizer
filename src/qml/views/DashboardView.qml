@@ -8,6 +8,35 @@ Item {
     anchors.fill: parent
     anchors.margins: 24
 
+    // Premium entry transition properties
+    property real yTranslation: 15
+    opacity: 0.0
+
+    transform: Translate {
+        y: root.yTranslation
+    }
+
+    ParallelAnimation {
+        id: entryAnim
+        running: true
+        
+        NumberAnimation {
+            target: root
+            property: "opacity"
+            to: 1.0
+            duration: Theme.animSlow
+            easing.type: Easing.OutCubic
+        }
+        
+        NumberAnimation {
+            target: root
+            property: "yTranslation"
+            to: 0
+            duration: Theme.animSlow
+            easing.type: Easing.OutCubic
+        }
+    }
+
     ColumnLayout {
         anchors.fill: parent
         spacing: 20

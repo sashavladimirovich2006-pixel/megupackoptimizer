@@ -24,12 +24,16 @@ Item {
         // Track and Thumb (The Switch)
         Rectangle {
             id: track
-            width: 38
-            height: 20
-            radius: 10
+            width: 40
+            height: 22
+            radius: 11
             anchors.verticalCenter: parent.verticalCenter
             
-            color: control.checked ? Theme.accent : (control.indeterminate ? Theme.accentDim : "#232F44")
+            color: {
+                if (control.checked) return Theme.accent;
+                if (control.indeterminate) return Theme.accentDim;
+                return (Theme.currentTheme === "Белоснежная") ? "#CBD5E1" : "#121A26";
+            }
             border.color: (control.checked || control.indeterminate) ? Theme.accent : (mouseArea.containsMouse ? Theme.borderHover : Theme.border)
             border.width: 1
             
@@ -43,26 +47,30 @@ Item {
                 color: "transparent"
                 border.color: Theme.accent
                 border.width: 1.5
-                opacity: ((control.checked || control.indeterminate) && mouseArea.containsMouse && control.enabled) ? 0.3 : 0.0
+                opacity: ((control.checked || control.indeterminate) && mouseArea.containsMouse && control.enabled) ? 0.4 : 0.0
                 Behavior on opacity { NumberAnimation { duration: Theme.animFast } }
             }
             
-            // Thumb
+            // Thumb capsule
             Rectangle {
                 id: thumb
-                width: 14
-                height: 14
-                radius: 7
-                color: (control.checked || control.indeterminate) ? Theme.textPrimary : Theme.textSecondary
+                width: 16
+                height: 16
+                radius: 8
+                color: (control.checked || control.indeterminate) ? Theme.textInverse : Theme.textPrimary
                 anchors.verticalCenter: parent.verticalCenter
+                
+                // Satisfying scale change when hovered or pressed
+                scale: mouseArea.pressed ? 1.2 : (mouseArea.containsMouse ? 1.1 : 1.0)
+                Behavior on scale { NumberAnimation { duration: 100 } }
                 
                 // Position animation (middle if indeterminate, right if checked, left if unchecked)
                 x: control.indeterminate ? ((track.width - width) / 2) : (control.checked ? (track.width - width - 3) : 3)
                 
                 Behavior on x {
                     NumberAnimation {
-                        duration: Theme.animFast
-                        easing.type: Easing.InOutQuad
+                        duration: 200
+                        easing.type: Easing.OutBack // удовлетворяющий пружинный отскок
                     }
                 }
                 Behavior on color { ColorAnimation { duration: Theme.animFast } }
