@@ -20,6 +20,11 @@ class Optimizer : public QObject {
     // System Optimization properties
     Q_PROPERTY(bool winSearchActive READ winSearchActive WRITE setWinSearchActive NOTIFY winSearchActiveChanged)
     Q_PROPERTY(bool originalWinSearchActive READ originalWinSearchActive NOTIFY originalWinSearchActiveChanged)
+    Q_PROPERTY(bool hibernationActive READ hibernationActive WRITE setHibernationActive NOTIFY hibernationActiveChanged)
+    Q_PROPERTY(bool originalHibernationActive READ originalHibernationActive NOTIFY originalHibernationActiveChanged)
+    Q_PROPERTY(bool xboxInstalled READ xboxInstalled NOTIFY xboxInstalledChanged)
+    Q_PROPERTY(bool gamingOverlayActive READ gamingOverlayActive WRITE setGamingOverlayActive NOTIFY gamingOverlayActiveChanged)
+    Q_PROPERTY(bool originalGamingOverlayActive READ originalGamingOverlayActive NOTIFY originalGamingOverlayActiveChanged)
     Q_PROPERTY(QStringList fixedDrives READ fixedDrives NOTIFY fixedDrivesChanged)
     Q_PROPERTY(QVariantMap driveStates READ driveStates WRITE setDriveStates NOTIFY driveStatesChanged)
     Q_PROPERTY(QVariantMap originalDriveStates READ originalDriveStates NOTIFY originalDriveStatesChanged)
@@ -43,6 +48,11 @@ public:
     // System Optimization getters
     bool winSearchActive() const { return m_winSearchActive; }
     bool originalWinSearchActive() const { return m_originalWinSearchActive; }
+    bool hibernationActive() const { return m_hibernationActive; }
+    bool originalHibernationActive() const { return m_originalHibernationActive; }
+    bool xboxInstalled() const { return m_xboxInstalled; }
+    bool gamingOverlayActive() const { return m_gamingOverlayActive; }
+    bool originalGamingOverlayActive() const { return m_originalGamingOverlayActive; }
     QStringList fixedDrives() const { return m_fixedDrives; }
     QVariantMap driveStates() const { return m_driveStates; }
     QVariantMap originalDriveStates() const { return m_originalDriveStates; }
@@ -51,13 +61,18 @@ public:
 
     // Setters
     void setWinSearchActive(bool val);
+    void setHibernationActive(bool val);
+    void setGamingOverlayActive(bool val);
     void setDriveStates(const QVariantMap &states);
+
 
     // Invokable methods for QML frontend
     Q_INVOKABLE void refreshSystemInfo();
     Q_INVOKABLE void loadSystemStates();
     Q_INVOKABLE void startSystemOptimization();
     Q_INVOKABLE void showPath(const QString &funcName);
+    Q_INVOKABLE void removeXboxEntirely();
+    Q_INVOKABLE void restoreXboxEntirely();
 
 signals:
     // System info signals
@@ -73,6 +88,11 @@ signals:
     // System Optimization signals
     void winSearchActiveChanged(bool val);
     void originalWinSearchActiveChanged(bool val);
+    void hibernationActiveChanged(bool val);
+    void originalHibernationActiveChanged(bool val);
+    void xboxInstalledChanged(bool val);
+    void gamingOverlayActiveChanged(bool val);
+    void originalGamingOverlayActiveChanged(bool val);
     void fixedDrivesChanged(const QStringList &val);
     void driveStatesChanged(const QVariantMap &val);
     void originalDriveStatesChanged(const QVariantMap &val);
@@ -99,6 +119,11 @@ private:
     // System Optimization state
     bool m_winSearchActive = true;
     bool m_originalWinSearchActive = true;
+    bool m_hibernationActive = false;
+    bool m_originalHibernationActive = false;
+    bool m_xboxInstalled = false;
+    bool m_gamingOverlayActive = true;
+    bool m_originalGamingOverlayActive = true;
     QStringList m_fixedDrives;
     QVariantMap m_driveStates;
     QVariantMap m_originalDriveStates;

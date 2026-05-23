@@ -10,18 +10,32 @@ Item {
     
     signal clicked()
     
-    implicitWidth: Math.max(80, buttonLayout.implicitWidth + 28)
-    implicitHeight: 36
+    implicitWidth: Math.max(90, buttonLayout.implicitWidth + 32)
+    implicitHeight: 38
     
     opacity: enabled ? 1.0 : 0.4
     Behavior on opacity { NumberAnimation { duration: Theme.animFast } }
     
-    // Background Fill
+    // 1. High-End Ambient Backlight Glow (Expands and shines on hover!)
+    Rectangle {
+        id: glowEffect
+        anchors.fill: parent
+        radius: 10
+        color: control.accented ? Theme.accent : "transparent"
+        opacity: (control.accented && mouseArea.containsMouse && control.enabled) ? 0.35 : 0.0
+        scale: mouseArea.containsMouse ? 1.08 : 1.0
+        
+        Behavior on opacity { NumberAnimation { duration: 150 } }
+        Behavior on scale { NumberAnimation { duration: 150; easing.type: Easing.OutCubic } }
+    }
+    
+    // 2. Main Button Body
     Rectangle {
         id: bg
         anchors.fill: parent
-        radius: Theme.radiusSmall
+        radius: 10
         
+        // Premium slate-metallic background for normal buttons, gorgeous gradient for accented
         color: {
             if (!control.enabled) {
                 return control.accented ? Theme.accentDark : "transparent";
@@ -29,16 +43,17 @@ Item {
             if (control.accented) {
                 return "transparent"; // Managed by gradient
             } else {
-                return mouseArea.pressed ? "#2A3958" : (mouseArea.containsMouse ? "#1E2A3E" : "#0EFFFFFF");
+                return mouseArea.pressed ? "#1E2A3E" : (mouseArea.containsMouse ? "#141D2B" : "#0D111A");
             }
         }
                
         border.color: {
             if (control.accented) return "transparent";
-            return mouseArea.containsMouse ? Theme.accent : Theme.border;
+            return mouseArea.containsMouse ? Theme.accent : "#202E44";
         }
         border.width: 1
         
+        // Elite neon gradient for active buttons
         gradient: (control.accented && control.enabled) ? accentGradient : null
         
         Gradient {
@@ -47,37 +62,37 @@ Item {
             GradientStop { position: 1.0; color: Theme.accent }
         }
         
-        Behavior on color { ColorAnimation { duration: Theme.animFast } }
-        Behavior on border.color { ColorAnimation { duration: Theme.animFast } }
+        Behavior on color { ColorAnimation { duration: 120 } }
+        Behavior on border.color { ColorAnimation { duration: 120 } }
         
-        // Soft amber outer glow for accented buttons
+        // 3. Inner Gloss Highlight (Fluent 3D Light Effect!)
         Rectangle {
             anchors.fill: parent
             radius: parent.radius
             color: "transparent"
-            border.color: Theme.accent
-            border.width: 1.5
-            opacity: (control.accented && mouseArea.containsMouse && control.enabled) ? 0.6 : 0.0
-            Behavior on opacity { NumberAnimation { duration: Theme.animFast } }
+            border.color: "#1FFFFFFF" // subtle top-white light glow
+            border.width: 1
+            anchors.margins: 1
+            opacity: control.accented ? 0.4 : 0.15
         }
     }
     
-    // Row holding Icon and Text
+    // 4. Content Layout (Icon & Label)
     Row {
         id: buttonLayout
         anchors.centerIn: parent
-        spacing: 6
+        spacing: 8
         
         Image {
             id: btnIcon
             source: control.iconSource
-            width: 14
-            height: 14
+            width: 16
+            height: 16
             visible: control.iconSource !== ""
             anchors.verticalCenter: parent.verticalCenter
-            sourceSize.width: 14
-            sourceSize.height: 14
-            opacity: control.accented ? 0.95 : 0.8
+            sourceSize.width: 16
+            sourceSize.height: 16
+            opacity: control.accented ? 1.0 : 0.8
         }
         
         Text {
@@ -87,15 +102,16 @@ Item {
             font.pixelSize: 12
             font.bold: true
             anchors.verticalCenter: parent.verticalCenter
+            font.letterSpacing: 0.5
         }
     }
     
-    // Micro-animation scale effect on press / hover
-    scale: mouseArea.pressed && control.enabled ? 0.96 : (mouseArea.containsMouse && control.enabled ? 1.02 : 1.0)
+    // 5. Snappy Physics Scale Feedback (feels "alive" and expensive!)
+    scale: mouseArea.pressed && control.enabled ? 0.94 : (mouseArea.containsMouse && control.enabled ? 1.03 : 1.0)
     Behavior on scale {
         NumberAnimation {
-            duration: 80
-            easing.type: Easing.OutCubic
+            duration: 100
+            easing.type: Easing.OutBack // springy modern click bounce!
         }
     }
     

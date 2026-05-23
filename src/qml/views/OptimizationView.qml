@@ -50,6 +50,8 @@ Item {
     // Reactive computation of changes between current live states and original states
     property bool hasChanges: {
         if (optimizerBackend.winSearchActive !== optimizerBackend.originalWinSearchActive) return true;
+        if (optimizerBackend.hibernationActive !== optimizerBackend.originalHibernationActive) return true;
+        if (optimizerBackend.gamingOverlayActive !== optimizerBackend.originalGamingOverlayActive) return true;
         if (!optimizerBackend.driveStates || !optimizerBackend.originalDriveStates) return false;
         var keys = Object.keys(optimizerBackend.driveStates);
         for (var i = 0; i < keys.length; i++) {
@@ -84,129 +86,614 @@ Item {
         optimizerBackend.driveStates = newStates;
     }
 
-    Column {
-        id: mainColumn
+    ScrollView {
+        id: mainScroll
         anchors.top: parent.top
         anchors.bottom: bottomActionBar.top
         anchors.left: parent.left
         anchors.right: parent.right
         anchors.margins: 24
-        spacing: 20
+        clip: true
 
-        Text {
-            text: qsTr("SYSTEM OPTIMIZATION")
-            color: Theme.yellowAccent
-            font.family: Theme.fontFamily
-            font.pixelSize: 11
-            font.bold: true
-            font.letterSpacing: 1.5
-        }
-
-        // DRIVES CATEGORY
         Column {
-            width: parent.width
-            spacing: 8
+            width: mainScroll.width - 12
+            spacing: 24
 
             Text {
-                text: qsTr("DRIVES")
-                color: Theme.textSecondary
+                text: qsTr("SYSTEM OPTIMIZATION")
+                color: Theme.yellowAccent
                 font.family: Theme.fontFamily
-                font.pixelSize: 10
+                font.pixelSize: 11
                 font.bold: true
-                font.letterSpacing: 1
+                font.letterSpacing: 1.5
             }
 
-            AcrylicPanel {
+            // 1. DRIVES INDEXING CATEGORY (Expandable Downwards Accordion)
+            Column {
                 width: parent.width
-                height: 72
+                spacing: 8
 
-                Item {
-                    anchors.fill: parent
-                    anchors.leftMargin: 16
-                    anchors.rightMargin: 16
+                Text {
+                    text: qsTr("DRIVES & INDEXING")
+                    color: Theme.textSecondary
+                    font.family: Theme.fontFamily
+                    font.pixelSize: 10
+                    font.bold: true
+                    font.letterSpacing: 1
+                }
 
-                    // Drive Icon & Title
-                    Row {
-                        anchors.left: parent.left
-                        anchors.verticalCenter: parent.verticalCenter
-                        spacing: 12
-
-                        Image {
-                            source: "qrc:/MeguPackOptimizer/src/resources/storage.svg"
-                            width: 28
-                            height: 28
-                            sourceSize.width: 28
-                            sourceSize.height: 28
-                            anchors.verticalCenter: parent.verticalCenter
-                        }
-
-                        Column {
-                            anchors.verticalCenter: parent.verticalCenter
-                            spacing: 2
-
-                            Text {
-                                text: qsTr("File Indexing")
-                                color: Theme.textPrimary
-                                font.family: Theme.fontFamily
-                                font.pixelSize: 13
-                                font.bold: true
-                            }
-
-                            Text {
-                                text: qsTr("Controls file search indexing services and drive index properties.")
-                                color: Theme.textMuted
-                                font.family: Theme.fontFamily
-                                font.pixelSize: 10
-                            }
+                AcrylicPanel {
+                    id: indexingPanel
+                    width: parent.width
+                    height: expanded ? 72 + subContent.implicitHeight + 10 : 72
+                    clip: true
+                    
+                    property bool expanded: false
+                    
+                    Behavior on height {
+                        NumberAnimation {
+                            duration: Theme.animNormal
+                            easing.type: Easing.OutCubic
                         }
                     }
 
-                    // Toggles & Drawer Arrow on the right
-                    Row {
+                    Column {
+                        anchors.left: parent.left
                         anchors.right: parent.right
-                        anchors.verticalCenter: parent.verticalCenter
+                        anchors.top: parent.top
+                        anchors.margins: 16
                         spacing: 16
 
-                        MeguSwitch {
-                            id: mainIndexingSwitch
-                            checked: root.mainChecked
-                            indeterminate: root.mainIndeterminate
-                            anchors.verticalCenter: parent.verticalCenter
-                            onToggled: {
-                                root.toggleMain();
+                        // Collapsed Header area (Height: 40)
+                        Item {
+                            width: parent.width
+                            height: 40
+
+                            Row {
+                                anchors.left: parent.left
+                                anchors.verticalCenter: parent.verticalCenter
+                                spacing: 12
+
+                                Image {
+                                    source: "qrc:/MeguPackOptimizer/src/resources/storage.svg"
+                                    width: 28
+                                    height: 28
+                                    sourceSize.width: 28
+                                    sourceSize.height: 28
+                                    anchors.verticalCenter: parent.verticalCenter
+                                }
+
+                                Column {
+                                    anchors.verticalCenter: parent.verticalCenter
+                                    spacing: 2
+
+                                    Text {
+                                        text: qsTr("File Indexing")
+                                        color: Theme.textPrimary
+                                        font.family: Theme.fontFamily
+                                        font.pixelSize: 13
+                                        font.bold: true
+                                    }
+
+                                    Text {
+                                        text: qsTr("Controls file search indexing services and drive index properties.")
+                                        color: Theme.textMuted
+                                        font.family: Theme.fontFamily
+                                        font.pixelSize: 10
+                                    }
+                                }
+                            }
+
+                            Row {
+                                anchors.right: parent.right
+                                anchors.verticalCenter: parent.verticalCenter
+                                spacing: 16
+
+                                MeguSwitch {
+                                    id: mainIndexingSwitch
+                                    checked: root.mainChecked
+                                    indeterminate: root.mainIndeterminate
+                                    anchors.verticalCenter: parent.verticalCenter
+                                    onToggled: {
+                                        root.toggleMain();
+                                    }
+                                }
+
+                                // Arrow button that rotates downward when expanded
+                                Rectangle {
+                                    width: 32
+                                    height: 32
+                                    radius: 16
+                                    color: arrowMouseArea.containsMouse ? Theme.accentDim : "transparent"
+                                    border.color: arrowMouseArea.containsMouse ? Theme.accent : Theme.border
+                                    border.width: 1
+                                    anchors.verticalCenter: parent.verticalCenter
+
+                                    Behavior on color { ColorAnimation { duration: Theme.animFast } }
+                                    Behavior on border.color { ColorAnimation { duration: Theme.animFast } }
+
+                                    Text {
+                                        text: "→"
+                                        color: Theme.accent
+                                        font.family: Theme.fontFamily
+                                        font.pixelSize: 16
+                                        font.bold: true
+                                        anchors.centerIn: parent
+                                        
+                                        // satisfying Fluent rotation micro-animation
+                                        rotation: indexingPanel.expanded ? 90 : 0
+                                        Behavior on rotation { NumberAnimation { duration: Theme.animNormal; easing.type: Easing.OutCubic } }
+                                    }
+
+                                    MouseArea {
+                                        id: arrowMouseArea
+                                        anchors.fill: parent
+                                        hoverEnabled: true
+                                        cursorShape: Qt.PointingHandCursor
+                                        onClicked: {
+                                            indexingPanel.expanded = !indexingPanel.expanded;
+                                        }
+                                    }
+                                }
                             }
                         }
 
-                        // Arrow button to open slidebar
-                        Rectangle {
-                            width: 32
-                            height: 32
-                            radius: 16
-                            color: arrowMouseArea.containsMouse ? Theme.accentDim : "transparent"
-                            border.color: arrowMouseArea.containsMouse ? Theme.accent : Theme.border
-                            border.width: 1
-                            anchors.verticalCenter: parent.verticalCenter
+                        // Expanding downward sub-toggles
+                        Column {
+                            id: subContent
+                            width: parent.width
+                            spacing: 16
+                            opacity: indexingPanel.expanded ? 1.0 : 0.0
+                            visible: opacity > 0.0
+                            
+                            Behavior on opacity { NumberAnimation { duration: Theme.animFast } }
 
-                            Behavior on color { ColorAnimation { duration: Theme.animFast } }
-                            Behavior on border.color { ColorAnimation { duration: Theme.animFast } }
-
-                            Text {
-                                text: "→"
-                                color: Theme.accent
-                                font.family: Theme.fontFamily
-                                font.pixelSize: 16
-                                font.bold: true
-                                anchors.centerIn: parent
+                            Rectangle {
+                                width: parent.width
+                                height: 1
+                                color: Theme.border
                             }
 
-                            MouseArea {
-                                id: arrowMouseArea
-                                anchors.fill: parent
-                                hoverEnabled: true
-                                cursorShape: Qt.PointingHandCursor
-                                onClicked: {
-                                    indexingSidebar.isOpen = true;
+                            // 1. Windows Search service
+                            Row {
+                                width: parent.width
+                                spacing: 12
+                                
+                                MeguSwitch {
+                                    text: qsTr("Windows Search service")
+                                    checked: optimizerBackend.winSearchActive
+                                    onToggled: { optimizerBackend.winSearchActive = isChecked; }
+                                    anchors.verticalCenter: parent.verticalCenter
                                 }
+                                
+                                Text {
+                                    text: qsTr("Show Path")
+                                    color: showPathSearchMouse.containsMouse ? Theme.accentLight : Theme.accent
+                                    font.family: Theme.fontFamily
+                                    font.pixelSize: 11
+                                    font.bold: true
+                                    font.underline: true
+                                    anchors.verticalCenter: parent.verticalCenter
+
+                                    MouseArea {
+                                        id: showPathSearchMouse
+                                        anchors.fill: parent
+                                        hoverEnabled: true
+                                        cursorShape: Qt.PointingHandCursor
+                                        onClicked: {
+                                            optimizerBackend.showPath("Windows Search service");
+                                        }
+                                    }
+                                }
+                            }
+
+                            // 2. Drive C: indexing
+                            Row {
+                                width: parent.width
+                                spacing: 12
+                                
+                                MeguSwitch {
+                                    text: qsTr("Drive C: indexing")
+                                    checked: !!optimizerBackend.driveStates["C:"]
+                                    onToggled: {
+                                        var states = optimizerBackend.driveStates;
+                                        states["C:"] = isChecked;
+                                        optimizerBackend.driveStates = states;
+                                    }
+                                    anchors.verticalCenter: parent.verticalCenter
+                                }
+                                
+                                Text {
+                                    text: qsTr("Show Path")
+                                    color: showPathCMouse.containsMouse ? Theme.accentLight : Theme.accent
+                                    font.family: Theme.fontFamily
+                                    font.pixelSize: 11
+                                    font.bold: true
+                                    font.underline: true
+                                    anchors.verticalCenter: parent.verticalCenter
+
+                                    MouseArea {
+                                        id: showPathCMouse
+                                        anchors.fill: parent
+                                        hoverEnabled: true
+                                        cursorShape: Qt.PointingHandCursor
+                                        onClicked: {
+                                            optimizerBackend.showPath("C:");
+                                        }
+                                    }
+                                }
+                            }
+
+                            // 3. Dynamic detected drives
+                            Repeater {
+                                model: optimizerBackend.fixedDrives
+                                delegate: Row {
+                                    width: parent.width
+                                    spacing: 12
+                                    
+                                    MeguSwitch {
+                                        text: qsTr("Drive %1 indexing").arg(modelData)
+                                        checked: !!optimizerBackend.driveStates[modelData]
+                                        onToggled: {
+                                            var states = optimizerBackend.driveStates;
+                                            states[modelData] = isChecked;
+                                            optimizerBackend.driveStates = states;
+                                        }
+                                        anchors.verticalCenter: parent.verticalCenter
+                                    }
+                                    
+                                    Text {
+                                        text: qsTr("Show Path")
+                                        color: showPathMouse.containsMouse ? Theme.accentLight : Theme.accent
+                                        font.family: Theme.fontFamily
+                                        font.pixelSize: 11
+                                        font.bold: true
+                                        font.underline: true
+                                        anchors.verticalCenter: parent.verticalCenter
+
+                                        MouseArea {
+                                            id: showPathMouse
+                                            anchors.fill: parent
+                                            hoverEnabled: true
+                                            cursorShape: Qt.PointingHandCursor
+                                            onClicked: {
+                                                optimizerBackend.showPath(modelData);
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+
+            // 2. MOUSE CATEGORY (Xbox completely removal!)
+            Column {
+                width: parent.width
+                spacing: 8
+
+                Text {
+                    text: qsTr("MOUSE & SYSTEM TWEAKS")
+                    color: Theme.textSecondary
+                    font.family: Theme.fontFamily
+                    font.pixelSize: 10
+                    font.bold: true
+                    font.letterSpacing: 1
+                }
+
+                AcrylicPanel {
+                    id: xboxPanel
+                    width: parent.width
+                    height: expanded ? 72 + xboxSubContent.implicitHeight + 10 : 72
+                    clip: true
+                    
+                    property bool expanded: false
+                    
+                    Behavior on height {
+                        NumberAnimation {
+                            duration: Theme.animNormal
+                            easing.type: Easing.OutCubic
+                        }
+                    }
+
+                    Column {
+                        anchors.left: parent.left
+                        anchors.right: parent.right
+                        anchors.top: parent.top
+                        anchors.margins: 16
+                        spacing: 16
+
+                        // Collapsed Header area (Height: 40)
+                        Item {
+                            width: parent.width
+                            height: 40
+
+                            Row {
+                                anchors.left: parent.left
+                                anchors.verticalCenter: parent.verticalCenter
+                                spacing: 12
+
+                                Image {
+                                    source: "qrc:/MeguPackOptimizer/src/resources/settings.svg"
+                                    width: 28
+                                    height: 28
+                                    sourceSize.width: 28
+                                    sourceSize.height: 28
+                                    anchors.verticalCenter: parent.verticalCenter
+                                }
+
+                                Column {
+                                    anchors.verticalCenter: parent.verticalCenter
+                                    spacing: 2
+
+                                    Text {
+                                        text: qsTr("Xbox App & Game Bar")
+                                        color: Theme.textPrimary
+                                        font.family: Theme.fontFamily
+                                        font.pixelSize: 13
+                                        font.bold: true
+                                    }
+
+                                    Text {
+                                        text: qsTr("Completely remove all Xbox overlays, TCUI, and game bar apps to optimize mouse input latency.")
+                                        color: Theme.textMuted
+                                        font.family: Theme.fontFamily
+                                        font.pixelSize: 10
+                                    }
+                                }
+                            }
+
+                            Row {
+                                anchors.right: parent.right
+                                anchors.verticalCenter: parent.verticalCenter
+                                spacing: 16
+
+                                // Status text pill: Installed / Removed
+                                Rectangle {
+                                    height: 24
+                                    width: 80
+                                    radius: 12
+                                    color: optimizerBackend.xboxInstalled ? "#1A2536" : Theme.accentDim
+                                    border.color: optimizerBackend.xboxInstalled ? "#2B3F5C" : Theme.accent
+                                    border.width: 1
+                                    anchors.verticalCenter: parent.verticalCenter
+
+                                    Text {
+                                        text: optimizerBackend.xboxInstalled ? qsTr("Installed") : qsTr("Removed")
+                                        color: optimizerBackend.xboxInstalled ? Theme.textSecondary : Theme.accent
+                                        font.family: Theme.fontFamily
+                                        font.pixelSize: 10
+                                        font.bold: true
+                                        anchors.centerIn: parent
+                                    }
+                                }
+
+                                // Arrow button that rotates downward when expanded
+                                Rectangle {
+                                    width: 32
+                                    height: 32
+                                    radius: 16
+                                    color: xboxArrowMouseArea.containsMouse ? Theme.accentDim : "transparent"
+                                    border.color: xboxArrowMouseArea.containsMouse ? Theme.accent : Theme.border
+                                    border.width: 1
+                                    anchors.verticalCenter: parent.verticalCenter
+
+                                    Behavior on color { ColorAnimation { duration: Theme.animFast } }
+                                    Behavior on border.color { ColorAnimation { duration: Theme.animFast } }
+
+                                    Text {
+                                        text: "→"
+                                        color: Theme.accent
+                                        font.family: Theme.fontFamily
+                                        font.pixelSize: 16
+                                        font.bold: true
+                                        anchors.centerIn: parent
+                                        
+                                        // satisfying Fluent rotation micro-animation
+                                        rotation: xboxPanel.expanded ? 90 : 0
+                                        Behavior on rotation { NumberAnimation { duration: Theme.animNormal; easing.type: Easing.OutCubic } }
+                                    }
+
+                                    MouseArea {
+                                        id: xboxArrowMouseArea
+                                        anchors.fill: parent
+                                        hoverEnabled: true
+                                        cursorShape: Qt.PointingHandCursor
+                                        onClicked: {
+                                            xboxPanel.expanded = !xboxPanel.expanded;
+                                        }
+                                    }
+                                }
+                            }
+                        }
+
+                        // Expanding downward sub-toggles (The Slidebar buttons!)
+                        Column {
+                            id: xboxSubContent
+                            width: parent.width
+                            spacing: 16
+                            opacity: xboxPanel.expanded ? 1.0 : 0.0
+                            visible: opacity > 0.0
+                            
+                            Behavior on opacity { NumberAnimation { duration: Theme.animFast } }
+
+                            Rectangle {
+                                width: parent.width
+                                height: 1
+                                color: Theme.border
+                            }
+
+                            Row {
+                                width: parent.width
+                                spacing: 20
+
+                                Column {
+                                    width: parent.width - 270
+                                    spacing: 4
+                                    anchors.verticalCenter: parent.verticalCenter
+
+                                    Text {
+                                        text: qsTr("Xbox App Integration")
+                                        color: Theme.textPrimary
+                                        font.family: Theme.fontFamily
+                                        font.pixelSize: 12
+                                        font.bold: true
+                                    }
+
+                                    Text {
+                                        text: qsTr("Purge the entire Xbox package suite for maximum performance, or restore it back via Microsoft Store/PowerShell.")
+                                        color: Theme.textMuted
+                                        font.family: Theme.fontFamily
+                                        font.pixelSize: 9
+                                        wrapMode: Text.Wrap
+                                        width: parent.width
+                                    }
+                                }
+
+                                Row {
+                                    spacing: 10
+                                    anchors.verticalCenter: parent.verticalCenter
+
+                                    MeguButton {
+                                        id: xboxRemoveBtn
+                                        text: optimizerBackend.xboxInstalled ? qsTr("Remove") : qsTr("Removed")
+                                        iconSource: optimizerBackend.xboxInstalled ? "qrc:/MeguPackOptimizer/src/resources/close.svg" : "qrc:/MeguPackOptimizer/src/resources/check.svg"
+                                        accented: optimizerBackend.xboxInstalled
+                                        enabled: optimizerBackend.xboxInstalled && !optimizerBackend.isOptimizingSystem
+                                        width: 120
+                                        height: 36
+                                        onClicked: {
+                                            optimizerBackend.removeXboxEntirely();
+                                        }
+                                    }
+
+                                    MeguButton {
+                                        id: xboxRestoreBtn
+                                        text: !optimizerBackend.xboxInstalled ? qsTr("Restore") : qsTr("Restored")
+                                        iconSource: !optimizerBackend.xboxInstalled ? "qrc:/MeguPackOptimizer/src/resources/play.svg" : "qrc:/MeguPackOptimizer/src/resources/check.svg"
+                                        accented: !optimizerBackend.xboxInstalled
+                                        enabled: !optimizerBackend.xboxInstalled && !optimizerBackend.isOptimizingSystem
+                                        width: 120
+                                        height: 36
+                                        onClicked: {
+                                            optimizerBackend.restoreXboxEntirely();
+                                        }
+                                    }
+                                }
+                            }
+
+                            // Divider line between Xbox package settings and the ms-gamingoverlay protocol block
+                            Rectangle {
+                                width: parent.width
+                                height: 1
+                                color: Theme.border
+                            }
+
+                            Row {
+                                width: parent.width
+                                spacing: 20
+
+                                Column {
+                                    width: parent.width - 70
+                                    spacing: 4
+                                    anchors.verticalCenter: parent.verticalCenter
+
+                                    Text {
+                                        text: qsTr("Disable Game Bar Popup")
+                                        color: Theme.textPrimary
+                                        font.family: Theme.fontFamily
+                                        font.pixelSize: 12
+                                        font.bold: true
+                                    }
+
+                                    Text {
+                                        text: qsTr("Neutralize ms-gamingoverlay triggers to stop 'You'll need a new app to open this link' errors when launching games.")
+                                        color: Theme.textMuted
+                                        font.family: Theme.fontFamily
+                                        font.pixelSize: 9
+                                        wrapMode: Text.Wrap
+                                        width: parent.width
+                                    }
+                                }
+
+                                MeguSwitch {
+                                    checked: !optimizerBackend.gamingOverlayActive
+                                    anchors.verticalCenter: parent.verticalCenter
+                                    onToggled: {
+                                        optimizerBackend.gamingOverlayActive = !isChecked;
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+
+            // 3. HIBERNATION CATEGORY
+            Column {
+                width: parent.width
+                spacing: 8
+
+                Text {
+                    text: qsTr("POWER & STORAGE")
+                    color: Theme.textSecondary
+                    font.family: Theme.fontFamily
+                    font.pixelSize: 10
+                    font.bold: true
+                    font.letterSpacing: 1
+                }
+
+                AcrylicPanel {
+                    width: parent.width
+                    height: 72
+
+                    Item {
+                        anchors.fill: parent
+                        anchors.leftMargin: 16
+                        anchors.rightMargin: 16
+
+                        Row {
+                            anchors.left: parent.left
+                            anchors.verticalCenter: parent.verticalCenter
+                            spacing: 12
+
+                            Image {
+                                source: "qrc:/MeguPackOptimizer/src/resources/cpu.svg"
+                                width: 28
+                                height: 28
+                                sourceSize.width: 28
+                                sourceSize.height: 28
+                                anchors.verticalCenter: parent.verticalCenter
+                            }
+
+                            Column {
+                                anchors.verticalCenter: parent.verticalCenter
+                                spacing: 2
+
+                                Text {
+                                    text: qsTr("System Hibernation")
+                                    color: Theme.textPrimary
+                                    font.family: Theme.fontFamily
+                                    font.pixelSize: 13
+                                    font.bold: true
+                                }
+
+                                Text {
+                                    text: qsTr("Enable or disable Windows hibernation mode to free up disk space.")
+                                    color: Theme.textMuted
+                                    font.family: Theme.fontFamily
+                                    font.pixelSize: 10
+                                }
+                            }
+                        }
+
+                        MeguSwitch {
+                            anchors.right: parent.right
+                            anchors.verticalCenter: parent.verticalCenter
+                            checked: optimizerBackend.hibernationActive
+                            onToggled: {
+                                optimizerBackend.hibernationActive = isChecked;
                             }
                         }
                     }
@@ -235,218 +722,6 @@ Item {
             onClicked: {
                 stepLogModel.clear();
                 optimizerBackend.startSystemOptimization();
-            }
-        }
-    }
-
-    // Backdrop for sidebar
-    Rectangle {
-        id: backdrop
-        anchors.fill: parent
-        color: "#000000"
-        opacity: indexingSidebar.isOpen ? 0.6 : 0.0
-        visible: opacity > 0.0
-        z: 99
-
-        Behavior on opacity {
-            NumberAnimation { duration: Theme.animNormal }
-        }
-
-        MouseArea {
-            anchors.fill: parent
-            onClicked: indexingSidebar.isOpen = false
-        }
-    }
-
-    // Sliding Sidebar Drawer for Indexing Sub-toggles
-    Rectangle {
-        id: indexingSidebar
-        width: 360
-        height: parent.height
-        anchors.right: parent.right
-        anchors.rightMargin: isOpen ? 0 : -width
-        color: Theme.sidebarBg
-        border.color: Theme.border
-        border.width: 1
-        z: 100
-
-        property bool isOpen: false
-
-        Behavior on color { ColorAnimation { duration: Theme.animNormal } }
-        Behavior on border.color { ColorAnimation { duration: Theme.animNormal } }
-        Behavior on anchors.rightMargin {
-            NumberAnimation { duration: Theme.animNormal; easing.type: Easing.OutCubic }
-        }
-
-        // Left highlight separator border
-        Rectangle {
-            width: 1
-            height: parent.height
-            anchors.left: parent.left
-            color: Theme.border
-            Behavior on color { ColorAnimation { duration: Theme.animNormal } }
-        }
-
-        Item {
-            anchors.fill: parent
-            anchors.margins: 20
-
-            Column {
-                anchors.fill: parent
-                spacing: 20
-
-                // Header
-                Row {
-                    width: parent.width
-                    spacing: 12
-
-                    MeguButton {
-                        text: qsTr("Back")
-                        iconSource: "qrc:/MeguPackOptimizer/src/resources/close.svg"
-                        width: 70
-                        onClicked: indexingSidebar.isOpen = false
-                    }
-
-                    Text {
-                        text: qsTr("INDEXING PATHS")
-                        color: Theme.textPrimary
-                        font.family: Theme.fontFamily
-                        font.pixelSize: 13
-                        font.bold: true
-                        font.letterSpacing: 1.5
-                        anchors.verticalCenter: parent.verticalCenter
-                    }
-                }
-
-                Rectangle {
-                    width: parent.width
-                    height: 1
-                    color: Theme.border
-                    Behavior on color { ColorAnimation { duration: Theme.animNormal } }
-                }
-
-                ScrollView {
-                    id: subScroll
-                    width: parent.width
-                    height: parent.height - 80
-                    clip: true
-
-                    Column {
-                        width: subScroll.width - 12
-                        spacing: 24
-
-                        // 1. Windows Search service
-                        Column {
-                            width: parent.width
-                            spacing: 6
-
-                            MeguSwitch {
-                                text: qsTr("Windows Search service")
-                                checked: optimizerBackend.winSearchActive
-                                onToggled: { optimizerBackend.winSearchActive = isChecked; }
-                                width: parent.width
-                            }
-
-                            // Show Path link
-                            Text {
-                                text: qsTr("Show Path")
-                                color: showPathSearchMouse.containsMouse ? Theme.accentLight : Theme.accent
-                                font.family: Theme.fontFamily
-                                font.pixelSize: 11
-                                font.bold: true
-                                font.underline: true
-                                font.letterSpacing: 0.5
-
-                                MouseArea {
-                                    id: showPathSearchMouse
-                                    anchors.fill: parent
-                                    hoverEnabled: true
-                                    cursorShape: Qt.PointingHandCursor
-                                    onClicked: {
-                                        optimizerBackend.showPath("Windows Search service");
-                                    }
-                                }
-                            }
-                        }
-
-                        // 2. Drive C: indexing
-                        Column {
-                            width: parent.width
-                            spacing: 6
-
-                            MeguSwitch {
-                                text: qsTr("Drive C: indexing")
-                                checked: !!optimizerBackend.driveStates["C:"]
-                                onToggled: {
-                                    var states = optimizerBackend.driveStates;
-                                    states["C:"] = isChecked;
-                                    optimizerBackend.driveStates = states;
-                                }
-                                width: parent.width
-                            }
-
-                            Text {
-                                text: qsTr("Show Path")
-                                color: showPathCMouse.containsMouse ? Theme.accentLight : Theme.accent
-                                font.family: Theme.fontFamily
-                                font.pixelSize: 11
-                                font.bold: true
-                                font.underline: true
-                                font.letterSpacing: 0.5
-
-                                MouseArea {
-                                    id: showPathCMouse
-                                    anchors.fill: parent
-                                    hoverEnabled: true
-                                    cursorShape: Qt.PointingHandCursor
-                                    onClicked: {
-                                        optimizerBackend.showPath("C:");
-                                    }
-                                }
-                            }
-                        }
-
-                        // 3. Repeater for dynamically detected other drives
-                        Repeater {
-                            model: optimizerBackend.fixedDrives
-                            delegate: Column {
-                                width: parent.width
-                                spacing: 6
-
-                                MeguSwitch {
-                                    text: qsTr("Drive %1 indexing").arg(modelData)
-                                    checked: !!optimizerBackend.driveStates[modelData]
-                                    onToggled: {
-                                        var states = optimizerBackend.driveStates;
-                                        states[modelData] = isChecked;
-                                        optimizerBackend.driveStates = states;
-                                    }
-                                    width: parent.width
-                                }
-
-                                Text {
-                                    text: qsTr("Show Path")
-                                    color: showPathMouse.containsMouse ? Theme.accentLight : Theme.accent
-                                    font.family: Theme.fontFamily
-                                    font.pixelSize: 11
-                                    font.bold: true
-                                    font.underline: true
-                                    font.letterSpacing: 0.5
-
-                                    MouseArea {
-                                        id: showPathMouse
-                                        anchors.fill: parent
-                                        hoverEnabled: true
-                                        cursorShape: Qt.PointingHandCursor
-                                        onClicked: {
-                                            optimizerBackend.showPath(modelData);
-                                        }
-                                    }
-                                }
-                            }
-                        }
-                    }
-                }
             }
         }
     }

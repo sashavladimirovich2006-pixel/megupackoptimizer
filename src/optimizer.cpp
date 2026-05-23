@@ -31,6 +31,20 @@ void Optimizer::setWinSearchActive(bool val) {
     }
 }
 
+void Optimizer::setHibernationActive(bool val) {
+    if (m_hibernationActive != val) {
+        m_hibernationActive = val;
+        emit hibernationActiveChanged(m_hibernationActive);
+    }
+}
+
+void Optimizer::setGamingOverlayActive(bool val) {
+    if (m_gamingOverlayActive != val) {
+        m_gamingOverlayActive = val;
+        emit gamingOverlayActiveChanged(m_gamingOverlayActive);
+    }
+}
+
 void Optimizer::setDriveStates(const QVariantMap &states) {
     if (m_driveStates != states) {
         m_driveStates = states;
@@ -111,6 +125,77 @@ void Optimizer::loadSystemStates() {
     emit winSearchActiveChanged(m_winSearchActive);
     emit originalWinSearchActiveChanged(m_originalWinSearchActive);
 
+    // Read HibernateEnabled Registry Key on Windows
+    bool isHibernationActive = false;
+#ifdef Q_OS_WIN
+    HKEY hKeyPower;
+    if (RegOpenKeyExW(HKEY_LOCAL_MACHINE, L"SYSTEM\\CurrentControlSet\\Control\\Power", 0, KEY_READ, &hKeyPower) == ERROR_SUCCESS) {
+        DWORD value = 0;
+        DWORD size = sizeof(value);
+        if (RegQueryValueExW(hKeyPower, L"HibernateEnabled", NULL, NULL, (LPBYTE)&value, &size) == ERROR_SUCCESS) {
+            isHibernationActive = (value == 1);
+        }
+        RegCloseKey(hKeyPower);
+    }
+#else
+    isHibernationActive = true; // Simulation default
+#endif
+    m_hibernationActive = isHibernationActive;
+    m_originalHibernationActive = m_hibernationActive;
+    emit hibernationActiveChanged(m_hibernationActive);
+    emit originalHibernationActiveChanged(m_originalHibernationActive);
+
+    // Check if Xbox is installed on startup
+    bool isXboxInstalled = false;
+#ifdef Q_OS_WIN
+    QProcess checkXboxProc;
+    checkXboxProc.start("powershell.exe", QStringList() << "-NoProfile" << "-NonInteractive" << "-Command" << "Get-AppxPackage XboxApp");
+    checkXboxProc.waitForFinished(10000);
+    QString checkOut = checkXboxProc.readAllStandardOutput().trimmed();
+    isXboxInstalled = !checkOut.isEmpty();
+#else
+    isXboxInstalled = true; // Simulation default
+#endif
+    m_xboxInstalled = isXboxInstalled;
+    emit xboxInstalledChanged(m_xboxInstalled);
+
+    // Check if gaming overlay popups are disabled/neutralized on startup
+    bool isOverlayActive = true;
+#ifdef Q_OS_WIN
+    HKEY hKeyDVR;
+    if (RegOpenKeyExW(HKEY_CURRENT_USER, L"SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\GameDVR", 0, KEY_READ, &hKeyDVR) == ERROR_SUCCESS) {
+        DWORD value = 1;
+        DWORD size = sizeof(value);
+        if (RegQueryValueExW(hKeyDVR, L"AppCaptureEnabled", NULL, NULL, (LPBYTE)&value, &size) == ERROR_SUCCESS) {
+            if (value == 0) {
+                isOverlayActive = false;
+            }
+        }
+        RegCloseKey(hKeyDVR);
+    }
+    // Check HKCR protocol association to confirm if it is neutralized
+    if (isOverlayActive) {
+        HKEY hKeyProto;
+        if (RegOpenKeyExW(HKEY_CLASSES_ROOT, L"ms-gamingoverlay\\shell\\open\\command", 0, KEY_READ, &hKeyProto) == ERROR_SUCCESS) {
+            wchar_t path[256] = {0};
+            DWORD size = sizeof(path);
+            if (RegQueryValueExW(hKeyProto, NULL, NULL, NULL, (LPBYTE)path, &size) == ERROR_SUCCESS) {
+                QString p = QString::fromWCharArray(path);
+                if (p.contains("systray.exe", Qt::CaseInsensitive)) {
+                    isOverlayActive = false;
+                }
+            }
+            RegCloseKey(hKeyProto);
+        }
+    }
+#else
+    isOverlayActive = true; // Simulation default
+#endif
+    m_gamingOverlayActive = isOverlayActive;
+    m_originalGamingOverlayActive = m_gamingOverlayActive;
+    emit gamingOverlayActiveChanged(m_gamingOverlayActive);
+    emit originalGamingOverlayActiveChanged(m_originalGamingOverlayActive);
+
     scanDrives();
     m_originalDriveStates = m_driveStates;
     emit originalDriveStatesChanged(m_originalDriveStates);
@@ -129,9 +214,11 @@ void Optimizer::startSystemOptimization() {
 
     // Copy targets to worker thread scope
     bool searchVal = m_winSearchActive;
+    bool hibernationVal = m_hibernationActive;
+    bool overlayVal = m_gamingOverlayActive;
     QVariantMap targets = m_driveStates;
 
-    QThread* worker = QThread::create([this, searchVal, targets]() {
+    QThread* worker = QThread::create([this, searchVal, hibernationVal, overlayVal, targets]() {
         // Step 1: Windows Search service
         emit systemStepReported(tr("Processing Windows Search service..."), "INFO");
         QThread::msleep(800);
@@ -204,7 +291,135 @@ void Optimizer::startSystemOptimization() {
         m_winSearchActive = searchVal;
         emit winSearchActiveChanged(m_winSearchActive);
         
-        m_systemProgress = 0.25;
+        m_systemProgress = 0.20;
+        emit systemProgressChanged(m_systemProgress);
+        QThread::msleep(500);
+
+        // Step 1.5: Hibernation Configuration
+        bool hibernationSuccess = true;
+        if (hibernationVal != m_originalHibernationActive) {
+            emit systemStepReported(tr("Configuring system hibernation..."), "INFO");
+            QThread::msleep(800);
+#ifdef Q_OS_WIN
+            QProcess proc;
+            proc.start("cmd.exe", QStringList() << "/c" << (hibernationVal ? "powercfg.exe /hibernate on" : "powercfg.exe /hibernate off"));
+            proc.waitForFinished();
+            
+            // Double check registry to verify success
+            bool success = false;
+            HKEY hKeyPower;
+            if (RegOpenKeyExW(HKEY_LOCAL_MACHINE, L"SYSTEM\\CurrentControlSet\\Control\\Power", 0, KEY_READ, &hKeyPower) == ERROR_SUCCESS) {
+                DWORD val = 0;
+                DWORD size = sizeof(val);
+                if (RegQueryValueExW(hKeyPower, L"HibernateEnabled", NULL, NULL, (LPBYTE)&val, &size) == ERROR_SUCCESS) {
+                    success = (val == (hibernationVal ? 1 : 0));
+                }
+                RegCloseKey(hKeyPower);
+            }
+            
+            if (success) {
+                QString logMsg = hibernationVal ? tr("Hibernation is now ENABLED.") : tr("Hibernation is now DISABLED.");
+                emit systemStepReported(logMsg, "SUCCESS");
+            } else {
+                hibernationSuccess = false;
+                emit systemStepReported(tr("Failed to update hibernation state."), "ERROR");
+            }
+#else
+            emit systemStepReported(tr("[Simulation] Hibernation set to: %1").arg(hibernationVal ? "Enabled" : "Disabled"), "SUCCESS");
+#endif
+            m_hibernationActive = hibernationVal;
+            emit hibernationActiveChanged(m_hibernationActive);
+        }
+        
+        // Step 1.7: Gaming Overlay Configuration (Game Bar / ms-gamingoverlay popups)
+        bool overlaySuccess = true;
+        if (overlayVal != m_originalGamingOverlayActive) {
+            emit systemStepReported(tr("Configuring Xbox gaming overlay popups..."), "INFO");
+            QThread::msleep(800);
+#ifdef Q_OS_WIN
+            bool success = true;
+            
+            // 1. Set GameDVR keys in registry
+            HKEY hKeyDVR;
+            if (RegCreateKeyExW(HKEY_CURRENT_USER, L"SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\GameDVR", 0, NULL, REG_OPTION_NON_VOLATILE, KEY_WRITE, NULL, &hKeyDVR, NULL) == ERROR_SUCCESS) {
+                DWORD val = overlayVal ? 1 : 0;
+                RegSetValueExW(hKeyDVR, L"AppCaptureEnabled", 0, REG_DWORD, (const BYTE*)&val, sizeof(val));
+                RegCloseKey(hKeyDVR);
+            } else {
+                success = false;
+            }
+
+            HKEY hKeyConfig;
+            if (RegCreateKeyExW(HKEY_CURRENT_USER, L"System\\GameConfigStore", 0, NULL, REG_OPTION_NON_VOLATILE, KEY_WRITE, NULL, &hKeyConfig, NULL) == ERROR_SUCCESS) {
+                DWORD val = overlayVal ? 1 : 0;
+                RegSetValueExW(hKeyConfig, L"GameDVR_Enabled", 0, REG_DWORD, (const BYTE*)&val, sizeof(val));
+                RegCloseKey(hKeyConfig);
+            } else {
+                success = false;
+            }
+
+            // 2. Neutralize or restore ms-gamingoverlay protocol keys in registry
+            if (!overlayVal) {
+                // Neutralize ms-gamingoverlay
+                HKEY hKeyOverlay;
+                if (RegCreateKeyExW(HKEY_CLASSES_ROOT, L"ms-gamingoverlay", 0, NULL, REG_OPTION_NON_VOLATILE, KEY_WRITE, NULL, &hKeyOverlay, NULL) == ERROR_SUCCESS) {
+                    wchar_t desc[] = L"URL:ms-gamingoverlay";
+                    RegSetValueExW(hKeyOverlay, NULL, 0, REG_SZ, (const BYTE*)desc, (wcslen(desc) + 1) * sizeof(wchar_t));
+                    wchar_t proto[] = L"";
+                    RegSetValueExW(hKeyOverlay, L"URL Protocol", 0, REG_SZ, (const BYTE*)proto, (wcslen(proto) + 1) * sizeof(wchar_t));
+                    RegCloseKey(hKeyOverlay);
+                } else {
+                    success = false;
+                }
+
+                HKEY hKeyOverlayCmd;
+                if (RegCreateKeyExW(HKEY_CLASSES_ROOT, L"ms-gamingoverlay\\shell\\open\\command", 0, NULL, REG_OPTION_NON_VOLATILE, KEY_WRITE, NULL, &hKeyOverlayCmd, NULL) == ERROR_SUCCESS) {
+                    wchar_t cmd[] = L"C:\\Windows\\System32\\systray.exe";
+                    RegSetValueExW(hKeyOverlayCmd, NULL, 0, REG_SZ, (const BYTE*)cmd, (wcslen(cmd) + 1) * sizeof(wchar_t));
+                    RegCloseKey(hKeyOverlayCmd);
+                } else {
+                    success = false;
+                }
+                
+                // Neutralize ms-gamebar as well
+                HKEY hKeyGamebar;
+                if (RegCreateKeyExW(HKEY_CLASSES_ROOT, L"ms-gamebar", 0, NULL, REG_OPTION_NON_VOLATILE, KEY_WRITE, NULL, &hKeyGamebar, NULL) == ERROR_SUCCESS) {
+                    wchar_t desc[] = L"URL:ms-gamebar";
+                    RegSetValueExW(hKeyGamebar, NULL, 0, REG_SZ, (const BYTE*)desc, (wcslen(desc) + 1) * sizeof(wchar_t));
+                    wchar_t proto[] = L"";
+                    RegSetValueExW(hKeyGamebar, L"URL Protocol", 0, REG_SZ, (const BYTE*)proto, (wcslen(proto) + 1) * sizeof(wchar_t));
+                    RegCloseKey(hKeyGamebar);
+                }
+                HKEY hKeyGamebarCmd;
+                if (RegCreateKeyExW(HKEY_CLASSES_ROOT, L"ms-gamebar\\shell\\open\\command", 0, NULL, REG_OPTION_NON_VOLATILE, KEY_WRITE, NULL, &hKeyGamebarCmd, NULL) == ERROR_SUCCESS) {
+                    wchar_t cmd[] = L"C:\\Windows\\System32\\systray.exe";
+                    RegSetValueExW(hKeyGamebarCmd, NULL, 0, REG_SZ, (const BYTE*)cmd, (wcslen(cmd) + 1) * sizeof(wchar_t));
+                    RegCloseKey(hKeyGamebarCmd);
+                }
+            } else {
+                // Restore defaults
+                QProcess delProc;
+                delProc.start("reg.exe", QStringList() << "delete" << "HKCR\\ms-gamingoverlay" << "/f");
+                delProc.waitForFinished();
+                delProc.start("reg.exe", QStringList() << "delete" << "HKCR\\ms-gamebar" << "/f");
+                delProc.waitForFinished();
+            }
+
+            if (success) {
+                QString logMsg = overlayVal ? tr("Gaming overlay notifications are now ENABLED.") : tr("Gaming overlay notifications are now DISABLED.");
+                emit systemStepReported(logMsg, "SUCCESS");
+            } else {
+                overlaySuccess = false;
+                emit systemStepReported(tr("Failed to update gaming overlay state."), "ERROR");
+            }
+#else
+            emit systemStepReported(tr("[Simulation] Gaming overlay set to: %1").arg(overlayVal ? "Enabled" : "Disabled"), "SUCCESS");
+#endif
+            m_gamingOverlayActive = overlayVal;
+            emit gamingOverlayActiveChanged(m_gamingOverlayActive);
+        }
+
+        m_systemProgress = 0.35;
         emit systemProgressChanged(m_systemProgress);
         QThread::msleep(500);
 
@@ -260,10 +475,14 @@ void Optimizer::startSystemOptimization() {
 
         m_driveStates = targets;
         m_originalWinSearchActive = searchVal;
+        m_originalHibernationActive = hibernationVal;
+        m_originalGamingOverlayActive = overlayVal;
         m_originalDriveStates = targets;
         
         emit driveStatesChanged(m_driveStates);
         emit originalWinSearchActiveChanged(m_originalWinSearchActive);
+        emit originalHibernationActiveChanged(m_originalHibernationActive);
+        emit originalGamingOverlayActiveChanged(m_originalGamingOverlayActive);
         emit originalDriveStatesChanged(m_originalDriveStates);
 
         m_isOptimizingSystem = false;
@@ -416,4 +635,209 @@ void Optimizer::refreshSystemInfo() {
     emit motherboardChanged(m_motherboard);
     emit storageChanged(m_storage);
     emit displayChanged(m_display);
+}
+
+void Optimizer::removeXboxEntirely() {
+    if (m_isOptimizingSystem) return;
+    
+    m_isOptimizingSystem = true;
+    m_systemProgress = 0.0;
+    emit isOptimizingSystemChanged(m_isOptimizingSystem);
+    emit systemProgressChanged(m_systemProgress);
+
+    emit systemStepReported(tr("Initializing Xbox package removal..."), "INFO");
+    Logger::log("Starting Xbox App Suite removal...", "INFO");
+
+    QThread* worker = QThread::create([this]() {
+        QStringList packages = { "XboxApp", "XboxGamingOverlay", "XboxTCUI", "XboxGameSpeechWindow" };
+        int progressStep = 0;
+        int totalSteps = packages.size() + 2;
+
+#ifdef Q_OS_WIN
+        for (const QString &pkg : packages) {
+            emit systemStepReported(tr("Removing package: %1...").arg(pkg), "INFO");
+            QProcess proc;
+            QString cmd = QString("Get-AppxPackage *%1* | Remove-AppxPackage").arg(pkg);
+            proc.start("powershell.exe", QStringList() << "-NoProfile" << "-NonInteractive" << "-Command" << cmd);
+            proc.waitForFinished(25000);
+            
+            progressStep++;
+            m_systemProgress = double(progressStep) / totalSteps;
+            emit systemProgressChanged(m_systemProgress);
+            
+            emit systemStepReported(tr("Package %1 removal command executed.").arg(pkg), "SUCCESS");
+            QThread::msleep(300);
+        }
+
+        // Delete all users Xbox packages
+        emit systemStepReported(tr("Purging Xbox packages for all users..."), "INFO");
+        {
+            QProcess proc;
+            proc.start("powershell.exe", QStringList() << "-NoProfile" << "-NonInteractive" << "-Command" << "Get-AppxPackage -AllUsers *Xbox* | Remove-AppxPackage");
+            proc.waitForFinished(35000);
+        }
+        progressStep++;
+        m_systemProgress = double(progressStep) / totalSteps;
+        emit systemProgressChanged(m_systemProgress);
+        emit systemStepReported(tr("All-users Xbox packages removed."), "SUCCESS");
+        QThread::msleep(300);
+
+        // Delete provisioned packages
+        emit systemStepReported(tr("Removing provisioned Xbox packages..."), "INFO");
+        {
+            QProcess proc;
+            proc.start("powershell.exe", QStringList() << "-NoProfile" << "-NonInteractive" << "-Command" << "Get-AppxProvisionedPackage -Online | Where-Object {$_.PackageName -like '*Xbox*'} | Remove-AppxProvisionedPackage -Online");
+            proc.waitForFinished(45000);
+        }
+        progressStep++;
+        m_systemProgress = 1.0;
+        emit systemProgressChanged(m_systemProgress);
+        emit systemStepReported(tr("Provisioned Xbox packages purged successfully."), "SUCCESS");
+        QThread::msleep(300);
+
+        // Re-check Xbox installed status
+        bool isXboxInstalled = false;
+        QProcess checkXboxProc;
+        checkXboxProc.start("powershell.exe", QStringList() << "-NoProfile" << "-NonInteractive" << "-Command" << "Get-AppxPackage XboxApp");
+        checkXboxProc.waitForFinished(10000);
+        QString checkOut = checkXboxProc.readAllStandardOutput().trimmed();
+        isXboxInstalled = !checkOut.isEmpty();
+        
+        m_xboxInstalled = isXboxInstalled;
+        emit xboxInstalledChanged(m_xboxInstalled);
+
+        if (!isXboxInstalled) {
+            emit systemStepReported(tr("Xbox Suite has been successfully uninstalled from this PC!"), "SUCCESS");
+            emit systemStepReported(tr("TIP: Enable 'Disable Game Bar Popup' to prevent system errors in games."), "WARNING");
+        } else {
+            emit systemStepReported(tr("Xbox removal complete. Some components may require a reboot to be fully cleared."), "WARNING");
+        }
+#else
+        // Simulation delay
+        for (int i = 0; i < totalSteps; i++) {
+            QThread::msleep(500);
+            progressStep++;
+            m_systemProgress = double(progressStep) / totalSteps;
+            emit systemProgressChanged(m_systemProgress);
+            emit systemStepReported(tr("[Simulation] Removed Xbox package step %1").arg(progressStep), "SUCCESS");
+        }
+        m_xboxInstalled = false;
+        emit xboxInstalledChanged(m_xboxInstalled);
+#endif
+
+        m_isOptimizingSystem = false;
+        emit isOptimizingSystemChanged(m_isOptimizingSystem);
+        emit systemOptimizationFinished(true);
+    });
+
+    connect(worker, &QThread::finished, worker, &QThread::deleteLater);
+    worker->start();
+}
+
+void Optimizer::restoreXboxEntirely() {
+    if (m_isOptimizingSystem) return;
+    
+    m_isOptimizingSystem = true;
+    m_systemProgress = 0.0;
+    emit isOptimizingSystemChanged(m_isOptimizingSystem);
+    emit systemProgressChanged(m_systemProgress);
+
+    emit systemStepReported(tr("Initializing Xbox package restoration..."), "INFO");
+    Logger::log("Starting Xbox App Suite restoration...", "INFO");
+
+    QThread* worker = QThread::create([this]() {
+        int totalSteps = 4;
+        int progressStep = 0;
+
+#ifdef Q_OS_WIN
+        // Step 1: Re-register via AppxPackage (AllUsers)
+        emit systemStepReported(tr("Re-registering Xbox packages from local store..."), "INFO");
+        {
+            QProcess proc;
+            proc.start("powershell.exe", QStringList() << "-NoProfile" << "-NonInteractive" << "-Command" << 
+                "Get-AppxPackage -AllUsers -Name *Xbox* | Foreach {Add-AppxPackage -DisableDevelopmentMode -Register \"$($_.InstallLocation)\\AppXManifest.xml\"}");
+            proc.waitForFinished(35000);
+        }
+        progressStep++;
+        m_systemProgress = double(progressStep) / totalSteps;
+        emit systemProgressChanged(m_systemProgress);
+        emit systemStepReported(tr("Local packages re-registered."), "SUCCESS");
+        QThread::msleep(300);
+
+        // Step 2: Re-register via ProvisionedPackages
+        emit systemStepReported(tr("Re-registering provisioned Xbox packages..."), "INFO");
+        {
+            QProcess proc;
+            proc.start("powershell.exe", QStringList() << "-NoProfile" << "-NonInteractive" << "-Command" << 
+                "Get-AppxProvisionedPackage -Online | Where-Object {$_.PackageName -like '*Xbox*'} | ForEach-Object { Add-AppxPackage -DisableDevelopmentMode -Register \"$($_.InstallLocation)\\AppXManifest.xml\" }");
+            proc.waitForFinished(35000);
+        }
+        progressStep++;
+        m_systemProgress = double(progressStep) / totalSteps;
+        emit systemProgressChanged(m_systemProgress);
+        emit systemStepReported(tr("Provisioned packages re-registered."), "SUCCESS");
+        QThread::msleep(300);
+
+        // Step 3: winget fallback for Xbox App
+        emit systemStepReported(tr("Downloading and installing Xbox App via winget..."), "INFO");
+        {
+            QProcess proc;
+            proc.start("cmd.exe", QStringList() << "/c" << "winget install Microsoft.XboxApp --source msstore --accept-source-agreements --accept-package-agreements");
+            proc.waitForFinished(70000);
+        }
+        progressStep++;
+        m_systemProgress = double(progressStep) / totalSteps;
+        emit systemProgressChanged(m_systemProgress);
+        emit systemStepReported(tr("Xbox App installation completed."), "SUCCESS");
+        QThread::msleep(300);
+
+        // Step 4: winget fallback for Xbox Game Bar
+        emit systemStepReported(tr("Downloading and installing Xbox Game Bar via winget..."), "INFO");
+        {
+            QProcess proc;
+            proc.start("cmd.exe", QStringList() << "/c" << "winget install Microsoft.XboxGamingOverlay --source msstore --accept-source-agreements --accept-package-agreements");
+            proc.waitForFinished(70000);
+        }
+        progressStep++;
+        m_systemProgress = 1.0;
+        emit systemProgressChanged(m_systemProgress);
+        emit systemStepReported(tr("Xbox Game Bar installation completed."), "SUCCESS");
+        QThread::msleep(300);
+
+        // Re-check Xbox installed status
+        bool isXboxInstalled = false;
+        QProcess checkXboxProc;
+        checkXboxProc.start("powershell.exe", QStringList() << "-NoProfile" << "-NonInteractive" << "-Command" << "Get-AppxPackage XboxApp");
+        checkXboxProc.waitForFinished(10000);
+        QString checkOut = checkXboxProc.readAllStandardOutput().trimmed();
+        isXboxInstalled = !checkOut.isEmpty();
+        
+        m_xboxInstalled = isXboxInstalled;
+        emit xboxInstalledChanged(m_xboxInstalled);
+
+        if (isXboxInstalled) {
+            emit systemStepReported(tr("Xbox Suite has been successfully restored!"), "SUCCESS");
+        } else {
+            emit systemStepReported(tr("Xbox restoration complete. A system reboot may be needed to complete the installation."), "WARNING");
+        }
+#else
+        // Simulation delay
+        for (int i = 0; i < totalSteps; i++) {
+            QThread::msleep(500);
+            progressStep++;
+            m_systemProgress = double(progressStep) / totalSteps;
+            emit systemProgressChanged(m_systemProgress);
+            emit systemStepReported(tr("[Simulation] Restored Xbox package step %1").arg(progressStep), "SUCCESS");
+        }
+        m_xboxInstalled = true;
+        emit xboxInstalledChanged(m_xboxInstalled);
+#endif
+
+        m_isOptimizingSystem = false;
+        emit isOptimizingSystemChanged(m_isOptimizingSystem);
+        emit systemOptimizationFinished(true);
+    });
+
+    connect(worker, &QThread::finished, worker, &QThread::deleteLater);
+    worker->start();
 }

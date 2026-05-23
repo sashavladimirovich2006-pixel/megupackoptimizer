@@ -146,6 +146,46 @@
         <source>Close</source>
         <translation>Закрити</translation>
     </message>
+    <message>
+        <location filename="../src/qml/views/OptimizationView.qml" line="535"/>
+        <source>Xbox App Integration</source>
+        <translation>Інтеграція Xbox App</translation>
+    </message>
+    <message>
+        <location filename="../src/qml/views/OptimizationView.qml" line="544"/>
+        <source>Purge the entire Xbox package suite for maximum performance, or restore it back via Microsoft Store/PowerShell.</source>
+        <translation>Повністю видаліть пакет програм Xbox для максимальної швидкості або відновіть його через Microsoft Store/PowerShell.</translation>
+    </message>
+    <message>
+        <location filename="../src/qml/views/OptimizationView.qml" line="555"/>
+        <source>Remove</source>
+        <translation>Видалити</translation>
+    </message>
+    <message>
+        <location filename="../src/qml/views/OptimizationView.qml" line="555"/>
+        <source>Removed</source>
+        <translation>Видалено</translation>
+    </message>
+    <message>
+        <location filename="../src/qml/views/OptimizationView.qml" line="568"/>
+        <source>Restore</source>
+        <translation>Відновити</translation>
+    </message>
+    <message>
+        <location filename="../src/qml/views/OptimizationView.qml" line="568"/>
+        <source>Restored</source>
+        <translation>Відновлено</translation>
+    </message>
+    <message>
+        <location filename="../src/qml/views/OptimizationView.qml" line="592"/>
+        <source>Disable Game Bar Popup</source>
+        <translation>Вимкнути помилку ms-gamingoverlay</translation>
+    </message>
+    <message>
+        <location filename="../src/qml/views/OptimizationView.qml" line="600"/>
+        <source>Neutralize ms-gamingoverlay triggers to stop 'You'll need a new app to open this link' errors when launching games.</source>
+        <translation>Нейтралізує тригери ms-gamingoverlay, щоб зупинити помилки 'Вам знадобиться нова програма для відкриття цього посилання' під час запуску ігор.</translation>
+    </message>
 </context>
 <context>
     <name>Optimizer</name>
@@ -293,6 +333,110 @@
         <location filename="../src/optimizer.cpp" line="601"/>
         <source>System optimization completed with warning/errors.</source>
         <translation>Оптимізацію системи завершено з попередженнями/помилками.</translation>
+    </message>
+    <message>
+        <source>Initializing Xbox package removal...</source>
+        <translation>Ініціалізація видалення пакетів Xbox...</translation>
+    </message>
+    <message>
+        <source>Removing package: %1...</source>
+        <translation>Видалення пакета: %1...</translation>
+    </message>
+    <message>
+        <source>Package %1 removal command executed.</source>
+        <translation>Команду видалення пакета %1 виконано.</translation>
+    </message>
+    <message>
+        <source>Purging Xbox packages for all users...</source>
+        <translation>Очищення пакетів Xbox для всіх користувачів...</translation>
+    </message>
+    <message>
+        <source>All-users Xbox packages removed.</source>
+        <translation>Пакети Xbox для всіх користувачів видалено.</translation>
+    </message>
+    <message>
+        <source>Removing provisioned Xbox packages...</source>
+        <translation>Видалення стандартних зарезервованих пакетів Xbox...</translation>
+    </message>
+    <message>
+        <source>Provisioned Xbox packages purged successfully.</source>
+        <translation>Зарезервовані пакети Xbox успішно очищено.</translation>
+    </message>
+    <message>
+        <source>Xbox Suite has been successfully uninstalled from this PC!</source>
+        <translation>Пакет програм Xbox успішно видалено з цього ПК!</translation>
+    </message>
+    <message>
+        <source>TIP: Enable 'Disable Game Bar Popup' to prevent system errors in games.</source>
+        <translation>ПОРАДА: Увімкніть 'Вимкнути помилку ms-gamingoverlay', щоб запобігти системним помилкам в іграх.</translation>
+    </message>
+    <message>
+        <source>Xbox removal complete. Some components may require a reboot to be fully cleared.</source>
+        <translation>Видалення Xbox завершено. Для повного очищення деяких компонентів може знадобитися перезавантаження.</translation>
+    </message>
+    <message>
+        <source>Initializing Xbox package restoration...</source>
+        <translation>Ініціалізація відновлення пакетів Xbox...</translation>
+    </message>
+    <message>
+        <source>Re-registering Xbox packages from local store...</source>
+        <translation>Повторна реєстрація пакетів Xbox з локального сховища...</translation>
+    </message>
+    <message>
+        <source>Local packages re-registered.</source>
+        <translation>Локальні пакети успішно перереєстровано.</translation>
+    </message>
+    <message>
+        <source>Re-registering provisioned Xbox packages...</source>
+        <translation>Повторна реєстрація зарезервованих пакетів Xbox...</translation>
+    </message>
+    <message>
+        <source>Provisioned packages re-registered.</source>
+        <translation>Зарезервовані пакети успішно перереєстровано.</translation>
+    </message>
+    <message>
+        <source>Downloading and installing Xbox App via winget...</source>
+        <translation>Завантаження та встановлення програми Xbox через winget...</translation>
+    </message>
+    <message>
+        <source>Xbox App installation completed.</source>
+        <translation>Встановлення програми Xbox завершено.</translation>
+    </message>
+    <message>
+        <source>Downloading and installing Xbox Game Bar via winget...</source>
+        <translation>Завантаження та встановлення Xbox Game Bar через winget...</translation>
+    </message>
+    <message>
+        <source>Xbox Game Bar installation completed.</source>
+        <translation>Встановлення Xbox Game Bar завершено.</translation>
+    </message>
+    <message>
+        <source>Xbox Suite has been successfully restored!</source>
+        <translation>Пакет програм Xbox успішно відновлено!</translation>
+    </message>
+    <message>
+        <source>Xbox restoration complete. A system reboot may be needed to complete the installation.</source>
+        <translation>Відновлення Xbox завершено. Для завершення встановлення може знадобитися перезавантаження системи.</translation>
+    </message>
+    <message>
+        <source>Configuring Xbox gaming overlay popups...</source>
+        <translation>Налаштування спливаючих вікон ігрового оверлею Xbox...</translation>
+    </message>
+    <message>
+        <source>Gaming overlay notifications are now ENABLED.</source>
+        <translation>Спливаючі вікна ігрового оверлею тепер УВІМКНЕНО.</translation>
+    </message>
+    <message>
+        <source>Gaming overlay notifications are now DISABLED.</source>
+        <translation>Спливаючі вікна ігрового оверлею тепер ВИМКНЕНО.</translation>
+    </message>
+    <message>
+        <source>Failed to update gaming overlay state.</source>
+        <translation>Не вдалося оновити стан ігрового оверлею.</translation>
+    </message>
+    <message>
+        <source>[Simulation] Gaming overlay set to: %1</source>
+        <translation>[Симуляція] Стан ігрового оверлею змінено на: %1</translation>
     </message>
 </context>
 <context>
