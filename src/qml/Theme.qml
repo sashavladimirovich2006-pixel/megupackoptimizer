@@ -1,7 +1,7 @@
 pragma Singleton
 import QtQuick
 
-QtObject {
+Item {
     id: root
 
     property string currentTheme: "Темная"
