@@ -66,3 +66,9 @@ The following rules must be strictly adhered to by all developers (human or AI) 
   - The user requested the removal of all options and checkboxes shown in the settings screenshot, simplifying the menu.
   - The UI now features a single centered frosted Acrylic panel for Language Selection.
   - The C++ backend class `Settings` remains untouched to prevent compilation and linker breaks inside the `Optimizer` engine (which depends on settings properties during processing steps). Default values for all settings continue to be loaded and stored in JSON format under the hood.
+
+### Phase 1: Dashboard UI Simplification
+- **Action**: Cleaned up the Dashboard screen by removing the Drag & Drop area, Action Panel, Statistics Card, and Optimization Guide panels from `DashboardView.qml`, leaving a completely blank canvas view.
+- **Detailed Rationale**:
+  - The user requested the removal of all informational tables, guide descriptions, and controls shown in the Dashboard screenshot.
+  - The view is now a clean empty component, preparing a fresh layout for when the user describes the exact pack optimization workflows they want to implement.
