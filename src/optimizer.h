@@ -121,6 +121,7 @@ signals:
 private:
     void resetStats();
     void scanDirectory(const QString &dirPath);
+    void detectSystemDrives();
 
     QString m_packPath;
     QString m_packName;

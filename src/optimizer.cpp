@@ -19,6 +19,7 @@
 Optimizer::Optimizer(QObject *parent) : QObject(parent) {
     resetStats();
     refreshSystemInfo();
+    detectSystemDrives();
     loadSystemStates();
 }
 
@@ -63,6 +64,14 @@ void Optimizer::loadPack(const QString &rawPath) {
 
     m_packPath = path;
     m_packName = info.fileName();
+    
+    // Dynamically update detected drive from pack path if it's not C:
+    QString packDrive = path.left(2).toUpper();
+    if (packDrive.contains(":") && packDrive.compare("C:", Qt::CaseInsensitive) != 0) {
+        m_detectedDriveLetter = packDrive;
+        emit detectedDriveLetterChanged(m_detectedDriveLetter);
+        loadSystemStates();
+    }
     
     Logger::log(QString("Scanning pack: %1 (%2)").arg(m_packName, m_packPath), "INFO");
 
@@ -580,8 +589,7 @@ void Optimizer::startSystemOptimization(bool searchVal, bool cVal, bool detected
                 emit systemStepReported(tr("Failed to update Drive %1 file attributes. Error: %2").arg(detLetter).arg(GetLastError()), "ERROR");
             }
         } else {
-            detSuccess = false;
-            emit systemStepReported(tr("Failed to query Drive %1 file attributes. Error: %2").arg(detLetter).arg(GetLastError()), "ERROR");
+            emit systemStepReported(tr("Drive %1 is not mounted or unavailable. Skipping.").arg(detLetter), "WARNING");
         }
 #else
         emit systemStepReported(tr("[Simulation] Drive %1 indexing set to: %2").arg(detLetter).arg(detectedVal ? "Enabled" : "Disabled"), "SUCCESS");
@@ -623,4 +631,28 @@ void Optimizer::showPath(const QString &funcName) {
         QProcess::startDetached("explorer.exe", QStringList() << (letter + "\\"));
         Logger::log(QString("Opening Drive %1 in File Explorer...").arg(letter), "INFO");
     }
+}
+
+void Optimizer::detectSystemDrives() {
+    QString detectedDrive = "D:";
+#ifdef Q_OS_WIN
+    wchar_t driveStrings[256];
+    DWORD len = GetLogicalDriveStringsW(254, driveStrings);
+    if (len > 0) {
+        wchar_t* drive = driveStrings;
+        while (*drive) {
+            UINT type = GetDriveTypeW(drive);
+            if (type == DRIVE_FIXED) {
+                QString letter = QString::fromWCharArray(drive).left(2).toUpper();
+                if (letter.compare("C:", Qt::CaseInsensitive) != 0) {
+                    detectedDrive = letter;
+                    break;
+                }
+            }
+            drive += wcslen(drive) + 1;
+        }
+    }
+#endif
+    m_detectedDriveLetter = detectedDrive;
+    emit detectedDriveLetterChanged(m_detectedDriveLetter);
 }
