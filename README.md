@@ -40,3 +40,10 @@ The following rules must be strictly adhered to by all developers (human or AI) 
   - Set up `Optimizer` core class to handle scanning files in directories or archives asynchronously.
   - Configured `CMakeLists.txt` using Qt6 declarative elements (`qt_add_qml_module`) to enable pre-compilation (AOT) of QML types into native C++ classes for rapid boot speeds and low memory consumption.
   - Designed custom QML components (`Theme`, `AcrylicPanel`, `LogViewer`) inside the Neo-Luna design language, offering a high-performance visual experience using hardware-accelerated QRHI.
+
+### Phase 1: Hotfix - GitHub Actions Build Error
+- **Action**: Removed the `qtdeclarative` optional module declaration from the GitHub Actions configuration (`.github/workflows/build.yml`).
+- **Detailed Rationale**:
+  - In Qt 6, the core QML/Quick declarative module is part of the default base installation.
+  - Specifying `modules: 'qtdeclarative'` caused `aqtinstall` to fail with a package parsing error on the GitHub Actions runner because it could not find a separate optional module by that name.
+  - Removing it resolves the build blockage, allowing the pipeline to use the default `qtbase` + `qtdeclarative` packages.

@@ -26,7 +26,6 @@ jobs:
         target: 'desktop'
         arch: 'win64_msvc2022_64'
         dir: '${{ github.workspace }}/../Qt'
-        modules: 'qtdeclarative'
 
     - name: Configure CMake
       run: |
