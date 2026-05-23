@@ -6,30 +6,175 @@ QtObject {
 
     property string currentTheme: "Темная"
 
+    // RGB Cycling Logic
+    property real rgbHue: 0.0
+    property color rgbAccent: Qt.hsla(rgbHue, 1.0, 0.5, 1.0)
+    property color rgbAccentLight: Qt.hsla(rgbHue, 1.0, 0.65, 1.0)
+    property color rgbAccentDark: Qt.hsla(rgbHue, 1.0, 0.35, 1.0)
+    property color rgbAccentGlow: Qt.hsla(rgbHue, 1.0, 0.5, 0.25)
+    property color rgbAccentDim: Qt.hsla(rgbHue, 1.0, 0.5, 0.15)
+
+    Timer {
+        id: rgbTimer
+        interval: 16 // ~60fps
+        running: root.currentTheme === "Ргб"
+        repeat: true
+        onTriggered: {
+            root.rgbHue += 0.005
+            if (root.rgbHue > 1.0) {
+                root.rgbHue -= 1.0
+            }
+        }
+    }
+
     // Background Colors
-    property color background: "#0B1019"
-    property color sidebarBg: "#080B12"
-    property color panelBg: "#131924"
-    property color headerBg: "#0E1420"
+    property color background: {
+        if (currentTheme === "Белоснежная") return "#FFFFFF";
+        if (currentTheme === "Темная") return "#0B1019";
+        if (currentTheme === "Blackout полностью черная") return "#000000";
+        if (currentTheme === "Ргб") return "#050508";
+        if (currentTheme === "Розовая") return "#FFE3E8";
+        if (currentTheme === "Black pink") return "#000000";
+        return "#0B1019";
+    }
+
+    property color sidebarBg: {
+        if (currentTheme === "Белоснежная") return "#F8FAFC";
+        if (currentTheme === "Темная") return "#080B12";
+        if (currentTheme === "Blackout полностью черная") return "#000000";
+        if (currentTheme === "Ргб") return "#020204";
+        if (currentTheme === "Розовая") return "#FFB3C1";
+        if (currentTheme === "Black pink") return "#0C0C0C";
+        return "#080B12";
+    }
+
+    property color panelBg: {
+        if (currentTheme === "Белоснежная") return "#F1F5F9";
+        if (currentTheme === "Темная") return "#131924";
+        if (currentTheme === "Blackout полностью черная") return "#0A0A0A";
+        if (currentTheme === "Ргб") return "#0A0A0F";
+        if (currentTheme === "Розовая") return "#FFF0F3";
+        if (currentTheme === "Black pink") return "#141414";
+        return "#131924";
+    }
+
+    property color headerBg: {
+        if (currentTheme === "Белоснежная") return "#E2E8F0";
+        if (currentTheme === "Темная") return "#0E1420";
+        if (currentTheme === "Blackout полностью черная") return "#050505";
+        if (currentTheme === "Ргб") return "#040406";
+        if (currentTheme === "Розовая") return "#FFCCD5";
+        if (currentTheme === "Black pink") return "#050505";
+        return "#0E1420";
+    }
     
     // Borders & Outlines
-    property color border: "#202D44"
-    property color borderHover: "#304264"
-    property color borderGlow: "#3B82F625"
+    property color border: {
+        if (currentTheme === "Ргб") return rgbAccent;
+        if (currentTheme === "Белоснежная") return "#CBD5E1";
+        if (currentTheme === "Темная") return "#202D44";
+        if (currentTheme === "Blackout полностью черная") return "#1C1C1E";
+        if (currentTheme === "Розовая") return "#FF85A2";
+        if (currentTheme === "Black pink") return "#FF85A2";
+        return "#202D44";
+    }
+
+    property color borderHover: {
+        if (currentTheme === "Ргб") return rgbAccentLight;
+        if (currentTheme === "Белоснежная") return "#94A3B8";
+        if (currentTheme === "Темная") return "#304264";
+        if (currentTheme === "Blackout полностью черная") return "#2C2C2E";
+        if (currentTheme === "Розовая") return "#FF5C8A";
+        if (currentTheme === "Black pink") return "#FF5C8A";
+        return "#304264";
+    }
+
+    property color borderGlow: {
+        if (currentTheme === "Ргб") return rgbAccentGlow;
+        if (currentTheme === "Белоснежная") return "#00000015";
+        if (currentTheme === "Темная") return "#FFBF0025";
+        if (currentTheme === "Blackout полностью черная") return "#FFBF0020";
+        if (currentTheme === "Розовая") return "#FF5C8A25";
+        if (currentTheme === "Black pink") return "#FF5C8A35";
+        return "#FFBF0025";
+    }
     
     // Text Colors
-    property color textPrimary: "#F8FAFC"
-    property color textSecondary: "#99A9C4"
-    property color textMuted: "#5F7499"
-    property color textInverse: "#0C111A"
+    property color textPrimary: {
+        if (currentTheme === "Белоснежная") return "#0F172A";
+        if (currentTheme === "Темная") return "#F8FAFC";
+        if (currentTheme === "Blackout полностью черная") return "#FFFFFF";
+        if (currentTheme === "Ргб") return "#FFFFFF";
+        if (currentTheme === "Розовая") return "#590D22";
+        if (currentTheme === "Black pink") return "#FFFFFF";
+        return "#F8FAFC";
+    }
+
+    property color textSecondary: {
+        if (currentTheme === "Белоснежная") return "#475569";
+        if (currentTheme === "Темная") return "#99A9C4";
+        if (currentTheme === "Blackout полностью черная") return "#8E8E93";
+        if (currentTheme === "Ргб") return "#8E8E93";
+        if (currentTheme === "Розовая") return "#800F2F";
+        if (currentTheme === "Black pink") return "#FFB3C1";
+        return "#99A9C4";
+    }
+
+    property color textMuted: {
+        if (currentTheme === "Белоснежная") return "#94A3B8";
+        if (currentTheme === "Темная") return "#5F7499";
+        if (currentTheme === "Blackout полностью черная") return "#48484A";
+        if (currentTheme === "Ргб") return "#48484A";
+        if (currentTheme === "Розовая") return "#A31D44";
+        if (currentTheme === "Black pink") return "#FF85A2";
+        return "#5F7499";
+    }
+
+    property color textInverse: {
+        if (currentTheme === "Белоснежная") return "#FFFFFF";
+        if (currentTheme === "Темная") return "#0C111A";
+        if (currentTheme === "Blackout полностью черная") return "#000000";
+        if (currentTheme === "Ргб") return "#000000";
+        if (currentTheme === "Розовая") return "#FFEBF0";
+        if (currentTheme === "Black pink") return "#000000";
+        return "#0C111A";
+    }
     
-    // Accents (Default: Amber Orange)
-    property color accent: "#FFBF00"
-    property color accentLight: "#FFE082"
-    property color accentDark: "#FF8F00"
-    property color yellowAccent: "#FFBF00" // Amber
-    property color accentGlow: "#FFBF0035"
-    property color accentDim: "#FFBF0015"
+    // Accents (Dynamic based on theme)
+    property color accent: {
+        if (currentTheme === "Ргб") return rgbAccent;
+        if (currentTheme === "Белоснежная" || currentTheme === "Розовая") return "#D97706";
+        return "#FFBF00";
+    }
+
+    property color accentLight: {
+        if (currentTheme === "Ргб") return rgbAccentLight;
+        if (currentTheme === "Белоснежная" || currentTheme === "Розовая") return "#F59E0B";
+        return "#FFE082";
+    }
+
+    property color accentDark: {
+        if (currentTheme === "Ргб") return rgbAccentDark;
+        if (currentTheme === "Белоснежная" || currentTheme === "Розовая") return "#B45309";
+        return "#FF8F00";
+    }
+
+    property color yellowAccent: {
+        if (currentTheme === "Белоснежная" || currentTheme === "Розовая") return "#D97706";
+        return "#FFBF00";
+    }
+
+    property color accentGlow: {
+        if (currentTheme === "Ргб") return rgbAccentGlow;
+        if (currentTheme === "Белоснежная" || currentTheme === "Розовая") return "#D9770630";
+        return "#FFBF0035";
+    }
+
+    property color accentDim: {
+        if (currentTheme === "Ргб") return rgbAccentDim;
+        if (currentTheme === "Белоснежная" || currentTheme === "Розовая") return "#D9770612";
+        return "#FFBF0015";
+    }
     
     // Functional Colors
     readonly property color success: "#10B981"
@@ -52,120 +197,5 @@ QtObject {
 
     function setTheme(name) {
         currentTheme = name;
-        if (name === "Белоснежная") {
-            background = "#FFFFFF";
-            sidebarBg = "#F8FAFC";
-            panelBg = "#F1F5F9";
-            headerBg = "#E2E8F0";
-            border = "#CBD5E1";
-            borderHover = "#94A3B8";
-            borderGlow = "#00000015";
-            textPrimary = "#0F172A";
-            textSecondary = "#475569";
-            textMuted = "#94A3B8";
-            textInverse = "#FFFFFF";
-            // Amber-Orange accent optimized for light background readability
-            accent = "#D97706";
-            accentLight = "#F59E0B";
-            accentDark = "#B45309";
-            yellowAccent = "#D97706";
-            accentGlow = "#D9770630";
-            accentDim = "#D9770612";
-        } else if (name === "Темная") {
-            background = "#0B1019";
-            sidebarBg = "#080B12";
-            panelBg = "#131924";
-            headerBg = "#0E1420";
-            border = "#202D44";
-            borderHover = "#304264";
-            borderGlow = "#FFBF0025";
-            textPrimary = "#F8FAFC";
-            textSecondary = "#99A9C4";
-            textMuted = "#5F7499";
-            textInverse = "#0C111A";
-            // Amber-Orange accent
-            accent = "#FFBF00";
-            accentLight = "#FFE082";
-            accentDark = "#FF8F00";
-            yellowAccent = "#FFBF00";
-            accentGlow = "#FFBF0035";
-            accentDim = "#FFBF0015";
-        } else if (name === "Blackout полностью черная") {
-            background = "#000000";
-            sidebarBg = "#000000";
-            panelBg = "#0A0A0A";
-            headerBg = "#050505";
-            border = "#1C1C1E";
-            borderHover = "#2C2C2E";
-            borderGlow = "#FFBF0020";
-            textPrimary = "#FFFFFF";
-            textSecondary = "#8E8E93";
-            textMuted = "#48484A";
-            textInverse = "#000000";
-            // Amber-Orange accent
-            accent = "#FFBF00";
-            accentLight = "#FFE082";
-            accentDark = "#FF8F00";
-            yellowAccent = "#FFBF00";
-            accentGlow = "#FFBF0035";
-            accentDim = "#FFBF0015";
-        } else if (name === "Ргб") {
-            background = "#0B0B0F";
-            sidebarBg = "#050508";
-            panelBg = "#12121A";
-            headerBg = "#08080C";
-            border = "#FF8F00"; // Orange gaming border
-            borderHover = "#FFBF00";
-            borderGlow = "#FFBF0025";
-            textPrimary = "#00FF66"; // Keep gamer green text primary
-            textSecondary = "#00FFFF";
-            textMuted = "#666688";
-            textInverse = "#0C111A";
-            // Amber-Orange accent
-            accent = "#FF8F00";
-            accentLight = "#FFBF00";
-            accentDark = "#D56F00";
-            yellowAccent = "#FFBF00";
-            accentGlow = "#FF8F0035";
-            accentDim = "#FF8F0015";
-        } else if (name === "Розовая") {
-            background = "#FFF0F3";
-            sidebarBg = "#FFE3E8";
-            panelBg = "#FFFFFF";
-            headerBg = "#FFD3DA";
-            border = "#FFCCD5";
-            borderHover = "#FFB3C1";
-            borderGlow = "#FF85A225";
-            textPrimary = "#593D44";
-            textSecondary = "#805E66";
-            textMuted = "#C299A2";
-            textInverse = "#FFF0F3";
-            // Amber-Orange accent readable on pink/light layout
-            accent = "#D97706";
-            accentLight = "#F59E0B";
-            accentDark = "#B45309";
-            yellowAccent = "#D97706";
-            accentGlow = "#D9770630";
-            accentDim = "#D9770612";
-        } else if (name === "Black pink") {
-            background = "#000000";
-            sidebarBg = "#0C0C0C";
-            panelBg = "#141414";
-            headerBg = "#050505";
-            border = "#444444";
-            borderHover = "#FF8F00";
-            borderGlow = "#FFBF0025";
-            textPrimary = "#FFFFFF";
-            textSecondary = "#FFB3C1";
-            textMuted = "#C299A2";
-            textInverse = "#000000";
-            // Amber-Orange accent
-            accent = "#FFBF00";
-            accentLight = "#FFE082";
-            accentDark = "#FF8F00";
-            yellowAccent = "#FFBF00";
-            accentGlow = "#FFBF0035";
-            accentDim = "#FFBF0015";
-        }
     }
 }

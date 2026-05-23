@@ -7,124 +7,203 @@ Item {
     id: root
     anchors.fill: parent
 
-    // Center the settings card in the page
-    AcrylicPanel {
-        width: 360
-        height: 240
-        anchors.centerIn: parent
+    // Main layout container spanning settings area
+    Column {
+        id: mainColumn
+        anchors.top: parent.top
+        anchors.left: parent.left
+        anchors.right: parent.right
+        anchors.margins: 24
+        spacing: 20
 
+        // 1. THEME SETTINGS SECTION
         Column {
-            anchors.fill: parent
-            spacing: 12
+            width: parent.width
+            spacing: 8
 
-            // Language Settings Title
             Text {
-                text: qsTr("Language Settings")
-                color: Theme.textPrimary
+                text: qsTr("THEME SETTINGS")
+                color: Theme.yellowAccent
                 font.family: Theme.fontFamily
-                font.pixelSize: 14
+                font.pixelSize: 11
                 font.bold: true
+                font.letterSpacing: 1.5
             }
 
-            Rectangle {
+            AcrylicPanel {
                 width: parent.width
-                height: 1
-                color: Theme.border
-                Behavior on color { ColorAnimation { duration: Theme.animNormal } }
-            }
+                height: 56
 
-            Row {
-                spacing: 12
-                anchors.horizontalCenter: parent.horizontalCenter
+                // Horizontal Row layout for Choose Theme
+                Item {
+                    anchors.fill: parent
+                    anchors.leftMargin: 16
+                    anchors.rightMargin: 16
 
-                Repeater {
-                    model: [
-                        { "code": "en", "name": qsTr("English") },
-                        { "code": "uk", "name": qsTr("Ukrainian") }
-                    ]
+                    Text {
+                        text: qsTr("Choose Interface Theme:")
+                        color: Theme.textPrimary
+                        font.family: Theme.fontFamily
+                        font.pixelSize: 12
+                        font.bold: true
+                        anchors.left: parent.left
+                        anchors.verticalCenter: parent.verticalCenter
+                    }
 
-                    delegate: Rectangle {
-                        width: 140
-                        height: 32
+                    // Interactive Box displaying current theme
+                    Rectangle {
+                        id: themeSelectBtn
+                        width: 160
+                        height: 36
                         radius: Theme.radiusSmall
-                        color: settingsBackend.language === modelData.code ? Theme.accent : "#1E293B"
-                        border.color: settingsBackend.language === modelData.code ? "transparent" : Theme.border
+                        color: themeMouseArea.containsMouse ? Theme.accentDim : "transparent"
+                        border.color: themeMouseArea.containsMouse ? Theme.accent : Theme.border
                         border.width: 1
+                        anchors.right: parent.right
+                        anchors.verticalCenter: parent.verticalCenter
 
-                        Text {
-                            text: modelData.name
-                            color: settingsBackend.language === modelData.code ? Theme.textInverse : Theme.textPrimary
-                            font.family: Theme.fontFamily
-                            font.pixelSize: 11
-                            font.bold: true
+                        Behavior on color { ColorAnimation { duration: Theme.animFast } }
+                        Behavior on border.color { ColorAnimation { duration: Theme.animFast } }
+
+                        Row {
                             anchors.centerIn: parent
+                            spacing: 8
+
+                            // Indicator circle showing active theme's primary color representation
+                            Rectangle {
+                                width: 10
+                                height: 10
+                                radius: 5
+                                color: {
+                                    if (Theme.currentTheme === "Белоснежная") return "#FFFFFF";
+                                    if (Theme.currentTheme === "Темная") return "#1E293B";
+                                    if (Theme.currentTheme === "Blackout полностью черная") return "#000000";
+                                    if (Theme.currentTheme === "Ргб") return Theme.rgbAccent;
+                                    if (Theme.currentTheme === "Розовая") return "#FF85A2";
+                                    return "#FF85A2"; // Black pink
+                                }
+                                border.color: "#66FFFFFF"
+                                border.width: 1
+                                anchors.verticalCenter: parent.verticalCenter
+                            }
+
+                            Text {
+                                text: Theme.currentTheme
+                                color: Theme.textPrimary
+                                font.family: Theme.fontFamily
+                                font.pixelSize: 12
+                                font.bold: true
+                                anchors.verticalCenter: parent.verticalCenter
+                            }
+
+                            Text {
+                                text: ">"
+                                color: Theme.textSecondary
+                                font.family: Theme.fontFamily
+                                font.pixelSize: 11
+                                font.bold: true
+                                anchors.verticalCenter: parent.verticalCenter
+                            }
                         }
 
                         MouseArea {
+                            id: themeMouseArea
                             anchors.fill: parent
+                            hoverEnabled: true
                             cursorShape: Qt.PointingHandCursor
-                            onClicked: settingsBackend.language = modelData.code
+                            onClicked: themeSidebar.isOpen = true
                         }
                     }
                 }
             }
+        }
 
-            Item { width: 1; height: 6 } // Small spacer
+        // 2. LANGUAGE SETTINGS SECTION
+        Column {
+            width: parent.width
+            spacing: 8
 
-            // Theme Customization Title
             Text {
-                text: qsTr("Theme Customization")
-                color: Theme.textPrimary
+                text: qsTr("LANGUAGE SETTINGS")
+                color: Theme.yellowAccent
                 font.family: Theme.fontFamily
-                font.pixelSize: 14
+                font.pixelSize: 11
                 font.bold: true
+                font.letterSpacing: 1.5
             }
 
-            Rectangle {
+            AcrylicPanel {
                 width: parent.width
-                height: 1
-                color: Theme.border
-                Behavior on color { ColorAnimation { duration: Theme.animNormal } }
-            }
+                height: 56
 
-            // Theme select button box
-            Rectangle {
-                width: parent.width
-                height: 40
-                radius: Theme.radiusSmall
-                color: Theme.accentDim
-                border.color: Theme.border
-                border.width: 1
-                anchors.horizontalCenter: parent.horizontalCenter
+                // Horizontal Row layout for Choose Language
+                Item {
+                    anchors.fill: parent
+                    anchors.leftMargin: 16
+                    anchors.rightMargin: 16
 
-                Behavior on color { ColorAnimation { duration: Theme.animNormal } }
-                Behavior on border.color { ColorAnimation { duration: Theme.animNormal } }
+                    Text {
+                        text: qsTr("Choose Interface Language:")
+                        color: Theme.textPrimary
+                        font.family: Theme.fontFamily
+                        font.pixelSize: 12
+                        font.bold: true
+                        anchors.left: parent.left
+                        anchors.verticalCenter: parent.verticalCenter
+                    }
 
-                Text {
-                    text: qsTr("Active:") + " " + Theme.currentTheme
-                    color: Theme.textPrimary
-                    font.family: Theme.fontFamily
-                    font.pixelSize: 12
-                    font.bold: true
-                    anchors.left: parent.left
-                    anchors.leftMargin: 12
-                    anchors.verticalCenter: parent.verticalCenter
-                }
+                    // Row of Language Option Buttons
+                    Row {
+                        spacing: 10
+                        anchors.right: parent.right
+                        anchors.verticalCenter: parent.verticalCenter
 
-                MeguButton {
-                    text: qsTr("Select Theme")
-                    anchors.right: parent.right
-                    anchors.rightMargin: 4
-                    anchors.verticalCenter: parent.verticalCenter
-                    width: 120
-                    accented: true
-                    onClicked: themeSidebar.isOpen = true
+                        Repeater {
+                            model: [
+                                { "code": "en", "name": qsTr("English") },
+                                { "code": "uk", "name": qsTr("Ukrainian") }
+                            ]
+
+                            delegate: Rectangle {
+                                width: 100
+                                height: 32
+                                radius: Theme.radiusSmall
+                                color: settingsBackend.language === modelData.code ? Theme.accent : "#1E293B"
+                                border.color: settingsBackend.language === modelData.code ? "transparent" : Theme.border
+                                border.width: 1
+
+                                Text {
+                                    text: modelData.name
+                                    color: settingsBackend.language === modelData.code ? Theme.textInverse : Theme.textPrimary
+                                    font.family: Theme.fontFamily
+                                    font.pixelSize: 11
+                                    font.bold: true
+                                    anchors.centerIn: parent
+                                }
+
+                                MouseArea {
+                                    anchors.fill: parent
+                                    cursorShape: Qt.PointingHandCursor
+                                    onClicked: settingsBackend.language = modelData.code
+                                }
+                            }
+                        }
+                    }
                 }
             }
         }
+
+        // Footnote tag
+        Text {
+            text: qsTr("* Changes are automatically applied and saved to config in real-time.")
+            color: Theme.textMuted
+            font.family: Theme.fontFamily
+            font.pixelSize: 10
+            font.italic: true
+        }
     }
 
-    // Dimmed backdrop when theme sidebar is open
+    // Backdrop for theme sidebar
     Rectangle {
         id: backdrop
         anchors.fill: parent
@@ -140,7 +219,6 @@ Item {
             anchors.fill: parent
             onClicked: {
                 themeSidebar.isOpen = false;
-                // Reset sliding page back to main list when closing
                 slidingPages.showSubPage = false;
             }
         }
@@ -165,7 +243,7 @@ Item {
             NumberAnimation { duration: Theme.animNormal; easing.type: Easing.OutCubic }
         }
 
-        // Inner highlight edge line
+        // Left highlight separator border
         Rectangle {
             width: 1
             height: parent.height
@@ -179,11 +257,11 @@ Item {
             anchors.margins: 20
             clip: true
 
-            // Row containing the primary list and secondary list (for sliding transition)
+            // Row containing the sliding pages
             Row {
                 id: slidingPages
                 height: parent.height
-                width: 560 // 280 width per page inside the padded container
+                width: 560
                 
                 x: showSubPage ? -280 : 0
                 Behavior on x {
@@ -214,7 +292,7 @@ Item {
                         Behavior on color { ColorAnimation { duration: Theme.animNormal } }
                     }
 
-                    // Theme Selection List
+                    // Main Themes
                     Column {
                         width: parent.width
                         spacing: 8
@@ -264,7 +342,7 @@ Item {
                                         }
                                     }
 
-                                    // Right arrow next to Pink theme
+                                    // Interactive arrow circle (overlayed via z-order)
                                     Rectangle {
                                         width: 24
                                         height: 24
@@ -274,6 +352,7 @@ Item {
                                         border.width: 1
                                         visible: modelData.hasSub
                                         anchors.verticalCenter: parent.verticalCenter
+                                        z: 10 // Puts arrow on top of parent item mouseArea!
 
                                         Behavior on color { ColorAnimation { duration: Theme.animFast } }
 
@@ -313,13 +392,12 @@ Item {
                     }
                 }
 
-                // Page 2: Sub-Theme Selector (Black pink)
+                // Page 2: Sub-Theme Selector
                 Column {
                     width: 280
                     height: parent.height
                     spacing: 16
 
-                    // Back Navigation Bar
                     Row {
                         spacing: 10
                         width: parent.width
@@ -349,7 +427,6 @@ Item {
                         Behavior on color { ColorAnimation { duration: Theme.animNormal } }
                     }
 
-                    // Special Black Pink Theme Item
                     Rectangle {
                         width: parent.width
                         height: 46
