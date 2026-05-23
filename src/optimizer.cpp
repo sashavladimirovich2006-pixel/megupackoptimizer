@@ -252,87 +252,117 @@ void Optimizer::startSystemOptimization() {
     bool hibernationVal = m_hibernationActive;
     bool overlayVal = m_gamingOverlayActive;
     QVariantMap targets = m_driveStates;
+    QVariantMap originalTargets = m_originalDriveStates;
+    bool origSearch = m_originalWinSearchActive;
+    bool origHibernation = m_originalHibernationActive;
+    bool origOverlay = m_originalGamingOverlayActive;
 
-    QThread* worker = QThread::create([this, searchVal, hibernationVal, overlayVal, targets]() {
-        // Step 1: Windows Search service
-        emit systemStepReported(tr("Processing Windows Search service..."), "INFO");
-        QThread::msleep(800);
-        
+    QThread* worker = QThread::create([this, searchVal, hibernationVal, overlayVal, targets, originalTargets, origSearch, origHibernation, origOverlay]() {
+        // Step 0: Check if anything actually changed
+        bool anyChanges = (searchVal != origSearch) || 
+                          (hibernationVal != origHibernation) || 
+                          (overlayVal != origOverlay);
+        if (!anyChanges) {
+            for (const QString &driveLetter : targets.keys()) {
+                if (targets.value(driveLetter).toBool() != originalTargets.value(driveLetter).toBool()) {
+                    anyChanges = true;
+                    break;
+                }
+            }
+        }
+
+        if (!anyChanges) {
+            QThread::msleep(600);
+            emit systemStepReported(tr("No changes detected. Everything is already up to date!"), "SUCCESS");
+            m_systemProgress = 1.0;
+            emit systemProgressChanged(m_systemProgress);
+            m_isOptimizingSystem = false;
+            emit isOptimizingSystemChanged(m_isOptimizingSystem);
+            emit systemOptimizationFinished(true);
+            return;
+        }
+
         bool wSearchSuccess = true;
+        // Step 1: Windows Search service (only if changed)
+        if (searchVal != origSearch) {
+            emit systemStepReported(tr("Processing Windows Search service..."), "INFO");
+            QThread::msleep(800);
+            
 #ifdef Q_OS_WIN
-        SC_HANDLE hSCM = OpenSCManagerW(NULL, NULL, SC_MANAGER_ALL_ACCESS);
-        if (hSCM) {
-            SC_HANDLE hService = OpenServiceW(hSCM, L"WSearch", SERVICE_CHANGE_CONFIG | SERVICE_STOP | SERVICE_START | SERVICE_QUERY_STATUS);
-            if (hService) {
-                DWORD startType = searchVal ? SERVICE_AUTO_START : SERVICE_DISABLED;
-                if (ChangeServiceConfigW(hService, SERVICE_NO_CHANGE, startType, SERVICE_NO_CHANGE, NULL, NULL, NULL, NULL, NULL, NULL, NULL)) {
-                    QString logMsg = searchVal ? tr("Windows Search startup set to Automatic.") : tr("Windows Search startup set to Disabled.");
-                    emit systemStepReported(logMsg, "INFO");
-                    
-                    SERVICE_STATUS_PROCESS ssp;
-                    DWORD bytesNeeded = 0;
-                    if (QueryServiceStatusEx(hService, SC_STATUS_PROCESS_INFO, reinterpret_cast<LPBYTE>(&ssp), sizeof(ssp), &bytesNeeded)) {
-                        if (!searchVal && ssp.dwCurrentState != SERVICE_STOPPED && ssp.dwCurrentState != SERVICE_STOP_PENDING) {
-                            emit systemStepReported(tr("Stopping Windows Search service..."), "INFO");
-                            SERVICE_STATUS status;
-                            ControlService(hService, SERVICE_CONTROL_STOP, &status);
-                            for (int i = 0; i < 15; ++i) {
-                                QThread::msleep(200);
-                                if (QueryServiceStatusEx(hService, SC_STATUS_PROCESS_INFO, reinterpret_cast<LPBYTE>(&ssp), sizeof(ssp), &bytesNeeded)) {
-                                    if (ssp.dwCurrentState == SERVICE_STOPPED) break;
-                                }
-                            }
-                            if (ssp.dwCurrentState == SERVICE_STOPPED) {
-                                emit systemStepReported(tr("Windows Search service stopped successfully."), "SUCCESS");
-                            } else {
-                                emit systemStepReported(tr("Windows Search service stop requested."), "WARNING");
-                            }
-                        } else if (searchVal && ssp.dwCurrentState != SERVICE_RUNNING && ssp.dwCurrentState != SERVICE_START_PENDING) {
-                            emit systemStepReported(tr("Starting Windows Search service..."), "INFO");
-                            if (StartServiceW(hService, 0, NULL)) {
+            SC_HANDLE hSCM = OpenSCManagerW(NULL, NULL, SC_MANAGER_ALL_ACCESS);
+            if (hSCM) {
+                SC_HANDLE hService = OpenServiceW(hSCM, L"WSearch", SERVICE_CHANGE_CONFIG | SERVICE_STOP | SERVICE_START | SERVICE_QUERY_STATUS);
+                if (hService) {
+                    DWORD startType = searchVal ? SERVICE_AUTO_START : SERVICE_DISABLED;
+                    if (ChangeServiceConfigW(hService, SERVICE_NO_CHANGE, startType, SERVICE_NO_CHANGE, NULL, NULL, NULL, NULL, NULL, NULL, NULL)) {
+                        QString logMsg = searchVal ? tr("Windows Search startup set to Automatic.") : tr("Windows Search startup set to Disabled.");
+                        emit systemStepReported(logMsg, "INFO");
+                        
+                        SERVICE_STATUS_PROCESS ssp;
+                        DWORD bytesNeeded = 0;
+                        if (QueryServiceStatusEx(hService, SC_STATUS_PROCESS_INFO, reinterpret_cast<LPBYTE>(&ssp), sizeof(ssp), &bytesNeeded)) {
+                            if (!searchVal && ssp.dwCurrentState != SERVICE_STOPPED && ssp.dwCurrentState != SERVICE_STOP_PENDING) {
+                                emit systemStepReported(tr("Stopping Windows Search service..."), "INFO");
+                                SERVICE_STATUS status;
+                                ControlService(hService, SERVICE_CONTROL_STOP, &status);
                                 for (int i = 0; i < 15; ++i) {
                                     QThread::msleep(200);
                                     if (QueryServiceStatusEx(hService, SC_STATUS_PROCESS_INFO, reinterpret_cast<LPBYTE>(&ssp), sizeof(ssp), &bytesNeeded)) {
-                                        if (ssp.dwCurrentState == SERVICE_RUNNING) break;
+                                        if (ssp.dwCurrentState == SERVICE_STOPPED) break;
                                     }
                                 }
-                                if (ssp.dwCurrentState == SERVICE_RUNNING) {
-                                    emit systemStepReported(tr("Windows Search service started successfully."), "SUCCESS");
+                                if (ssp.dwCurrentState == SERVICE_STOPPED) {
+                                    emit systemStepReported(tr("Windows Search service stopped successfully."), "SUCCESS");
                                 } else {
-                                    emit systemStepReported(tr("Windows Search service start pending."), "INFO");
+                                    emit systemStepReported(tr("Windows Search service stop requested."), "WARNING");
                                 }
-                            } else {
-                                emit systemStepReported(tr("Failed to start Windows Search service."), "ERROR");
+                            } else if (searchVal && ssp.dwCurrentState != SERVICE_RUNNING && ssp.dwCurrentState != SERVICE_START_PENDING) {
+                                emit systemStepReported(tr("Starting Windows Search service..."), "INFO");
+                                if (StartServiceW(hService, 0, NULL)) {
+                                    for (int i = 0; i < 15; ++i) {
+                                        QThread::msleep(200);
+                                        if (QueryServiceStatusEx(hService, SC_STATUS_PROCESS_INFO, reinterpret_cast<LPBYTE>(&ssp), sizeof(ssp), &bytesNeeded)) {
+                                            if (ssp.dwCurrentState == SERVICE_RUNNING) break;
+                                        }
+                                    }
+                                    if (ssp.dwCurrentState == SERVICE_RUNNING) {
+                                        emit systemStepReported(tr("Windows Search service started successfully."), "SUCCESS");
+                                    } else {
+                                        emit systemStepReported(tr("Windows Search service start pending."), "INFO");
+                                    }
+                                } else {
+                                    emit systemStepReported(tr("Failed to start Windows Search service."), "ERROR");
+                                }
                             }
                         }
+                    } else {
+                        wSearchSuccess = false;
+                        emit systemStepReported(tr("Failed to change Windows Search service configuration. Error: %1").arg(GetLastError()), "ERROR");
                     }
+                    CloseServiceHandle(hService);
                 } else {
                     wSearchSuccess = false;
-                    emit systemStepReported(tr("Failed to change Windows Search service configuration. Error: %1").arg(GetLastError()), "ERROR");
+                    emit systemStepReported(tr("Failed to open Windows Search service. Error: %1").arg(GetLastError()), "ERROR");
                 }
-                CloseServiceHandle(hService);
+                CloseServiceHandle(hSCM);
             } else {
                 wSearchSuccess = false;
-                emit systemStepReported(tr("Failed to open Windows Search service. Error: %1").arg(GetLastError()), "ERROR");
+                emit systemStepReported(tr("Failed to connect to SCM. Error: %1").arg(GetLastError()), "ERROR");
             }
-            CloseServiceHandle(hSCM);
-        } else {
-            wSearchSuccess = false;
-            emit systemStepReported(tr("Failed to connect to SCM. Error: %1").arg(GetLastError()), "ERROR");
-        }
 #else
-        emit systemStepReported(tr("[Simulation] Windows Search service state set to: %1").arg(searchVal ? "Enabled" : "Disabled"), "SUCCESS");
+            emit systemStepReported(tr("[Simulation] Windows Search service state set to: %1").arg(searchVal ? "Enabled" : "Disabled"), "SUCCESS");
 #endif
-        m_winSearchActive = searchVal;
-        emit winSearchActiveChanged(m_winSearchActive);
+            m_winSearchActive = searchVal;
+            emit winSearchActiveChanged(m_winSearchActive);
+        }
         
         m_systemProgress = 0.20;
         emit systemProgressChanged(m_systemProgress);
-        QThread::msleep(500);
+        QThread::msleep(300);
 
-        // Step 1.5: Hibernation Configuration
+        // Step 1.5: Hibernation Configuration (only if changed)
         bool hibernationSuccess = true;
-        if (hibernationVal != m_originalHibernationActive) {
+        if (hibernationVal != origHibernation) {
             emit systemStepReported(tr("Configuring system hibernation..."), "INFO");
             QThread::msleep(800);
 #ifdef Q_OS_WIN
@@ -366,9 +396,13 @@ void Optimizer::startSystemOptimization() {
             emit hibernationActiveChanged(m_hibernationActive);
         }
         
-        // Step 1.7: Gaming Overlay Configuration (Game Bar / ms-gamingoverlay popups)
+        m_systemProgress = 0.35;
+        emit systemProgressChanged(m_systemProgress);
+        QThread::msleep(300);
+
+        // Step 1.7: Gaming Overlay Configuration (only if changed)
         bool overlaySuccess = true;
-        if (overlayVal != m_originalGamingOverlayActive) {
+        if (overlayVal != origOverlay) {
             emit systemStepReported(tr("Configuring Xbox gaming overlay popups..."), "INFO");
             QThread::msleep(800);
 #ifdef Q_OS_WIN
@@ -454,52 +488,54 @@ void Optimizer::startSystemOptimization() {
             emit gamingOverlayActiveChanged(m_gamingOverlayActive);
         }
 
-        m_systemProgress = 0.35;
+        m_systemProgress = 0.50;
         emit systemProgressChanged(m_systemProgress);
-        QThread::msleep(500);
+        QThread::msleep(300);
 
-        // Steps 2+: Iterate drives in target list
+        // Steps 2+: Iterate drives in target list (only if changed)
         int driveIndex = 0;
         int totalDrives = targets.keys().size();
         bool overallDrivesSuccess = true;
         
         for (const QString &driveLetter : targets.keys()) {
-            emit systemStepReported(tr("Processing Drive %1 indexing...").arg(driveLetter), "INFO");
-            QThread::msleep(800);
-            
             bool targetVal = targets.value(driveLetter).toBool();
-            bool driveSuccess = true;
+            bool originalVal = originalTargets.value(driveLetter).toBool();
             
-            QString driveRoot = driveLetter + "\\";
+            if (targetVal != originalVal) {
+                emit systemStepReported(tr("Processing Drive %1 indexing...").arg(driveLetter), "INFO");
+                QThread::msleep(800);
+                
+                QString driveRoot = driveLetter + "\\";
 #ifdef Q_OS_WIN
-            DWORD attrs = GetFileAttributesW(reinterpret_cast<const wchar_t*>(driveRoot.utf16()));
-            if (attrs != INVALID_FILE_ATTRIBUTES) {
-                if (targetVal) {
-                    attrs &= ~FILE_ATTRIBUTE_NOT_CONTENT_INDEXED;
+                DWORD attrs = GetFileAttributesW(reinterpret_cast<const wchar_t*>(driveRoot.utf16()));
+                if (attrs != INVALID_FILE_ATTRIBUTES) {
+                    if (targetVal) {
+                        attrs &= ~FILE_ATTRIBUTE_NOT_CONTENT_INDEXED;
+                    } else {
+                        attrs |= FILE_ATTRIBUTE_NOT_CONTENT_INDEXED;
+                    }
+                    if (SetFileAttributesW(reinterpret_cast<const wchar_t*>(driveRoot.utf16()), attrs)) {
+                        QString logMsg = targetVal ? tr("Drive %1 content indexing is now ENABLED.").arg(driveLetter) : tr("Drive %1 content indexing is now DISABLED.").arg(driveLetter);
+                        emit systemStepReported(logMsg, "SUCCESS");
+                    } else {
+                        overallDrivesSuccess = false;
+                        emit systemStepReported(tr("Failed to update Drive %1 file attributes. Error: %2").arg(driveLetter).arg(GetLastError()), "ERROR");
+                    }
                 } else {
-                    attrs |= FILE_ATTRIBUTE_NOT_CONTENT_INDEXED;
+                    emit systemStepReported(tr("Drive %1 is not mounted or unavailable. Skipping.").arg(driveLetter), "WARNING");
                 }
-                if (SetFileAttributesW(reinterpret_cast<const wchar_t*>(driveRoot.utf16()), attrs)) {
-                    QString logMsg = targetVal ? tr("Drive %1 content indexing is now ENABLED.").arg(driveLetter) : tr("Drive %1 content indexing is now DISABLED.").arg(driveLetter);
-                    emit systemStepReported(logMsg, "SUCCESS");
-                } else {
-                    driveSuccess = false;
-                    overallDrivesSuccess = false;
-                    emit systemStepReported(tr("Failed to update Drive %1 file attributes. Error: %2").arg(driveLetter).arg(GetLastError()), "ERROR");
-                }
-            } else {
-                emit systemStepReported(tr("Drive %1 is not mounted or unavailable. Skipping.").arg(driveLetter), "WARNING");
-            }
 #else
-            emit systemStepReported(tr("[Simulation] Drive %1 indexing set to: %2").arg(driveLetter).arg(targetVal ? "Enabled" : "Disabled"), "SUCCESS");
+                emit systemStepReported(tr("[Simulation] Drive %1 indexing set to: %2").arg(driveLetter).arg(targetVal ? "Enabled" : "Disabled"), "SUCCESS");
 #endif
+            }
+            
             driveIndex++;
-            m_systemProgress = 0.25 + (0.75 * (double(driveIndex) / (totalDrives > 0 ? totalDrives : 1)));
+            m_systemProgress = 0.50 + (0.50 * (double(driveIndex) / (totalDrives > 0 ? totalDrives : 1)));
             emit systemProgressChanged(m_systemProgress);
-            QThread::msleep(500);
+            QThread::msleep(100);
         }
 
-        bool overallSuccess = wSearchSuccess && overallDrivesSuccess;
+        bool overallSuccess = wSearchSuccess && hibernationSuccess && overlaySuccess && overallDrivesSuccess;
         if (overallSuccess) {
             emit systemStepReported(tr("System optimization completed successfully!"), "SUCCESS");
             Logger::log("System optimization completed successfully!", "INFO");
