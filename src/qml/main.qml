@@ -258,38 +258,71 @@ ApplicationWindow {
         }
     }
 
-    // Dynamic View Loader
-    Loader {
-        id: viewLoader
+    // Preloaded views container for buttery-smooth cross-fade tab switching
+    Item {
+        id: viewContainer
         anchors.fill: parent
-        sourceComponent: {
-            if (activeTab === 0) return dashboardComponent;
-            if (activeTab === 1) return settingsComponent;
-            if (activeTab === 3) return optimizationComponent;
-            return logsComponent;
+        clip: true
+
+        DashboardView {
+            id: dashboardView
+            anchors.fill: parent
+            opacity: window.activeTab === 0 ? 1.0 : 0.0
+            visible: opacity > 0.0
+            enabled: opacity === 1.0
+            
+            Behavior on opacity {
+                NumberAnimation {
+                    duration: Theme.animNormal
+                    easing.type: Easing.OutCubic
+                }
+            }
         }
-    }
 
-    // Declared views
-    Component {
-        id: dashboardComponent
-        DashboardView {}
-    }
+        SettingsView {
+            id: settingsView
+            anchors.fill: parent
+            opacity: window.activeTab === 1 ? 1.0 : 0.0
+            visible: opacity > 0.0
+            enabled: opacity === 1.0
+            
+            Behavior on opacity {
+                NumberAnimation {
+                    duration: Theme.animNormal
+                    easing.type: Easing.OutCubic
+                }
+            }
+        }
 
-    Component {
-        id: settingsComponent
-        SettingsView {}
-    }
+        OptimizationView {
+            id: optimizationView
+            anchors.fill: parent
+            opacity: window.activeTab === 3 ? 1.0 : 0.0
+            visible: opacity > 0.0
+            enabled: opacity === 1.0
+            
+            Behavior on opacity {
+                NumberAnimation {
+                    duration: Theme.animNormal
+                    easing.type: Easing.OutCubic
+                }
+            }
+        }
 
-    Component {
-        id: optimizationComponent
-        OptimizationView {}
-    }
-
-    Component {
-        id: logsComponent
         LogViewer {
+            id: logsView
+            anchors.fill: parent
             anchors.margins: 20
+            opacity: window.activeTab === 2 ? 1.0 : 0.0
+            visible: opacity > 0.0
+            enabled: opacity === 1.0
+            
+            Behavior on opacity {
+                NumberAnimation {
+                    duration: Theme.animNormal
+                    easing.type: Easing.OutCubic
+                }
+            }
         }
     }
 }

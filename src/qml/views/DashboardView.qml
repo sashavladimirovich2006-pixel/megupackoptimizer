@@ -8,31 +8,17 @@ Item {
     anchors.fill: parent
     anchors.margins: 24
 
-    // Premium entry transition properties
-    property real yTranslation: 15
-    opacity: 0.0
+    // Premium reactive entry transition (runs butter-smooth on every tab switch!)
+    property bool isActive: opacity > 0.1
+    property real yTranslation: isActive ? 0 : 15
 
     transform: Translate {
         y: root.yTranslation
     }
 
-    ParallelAnimation {
-        id: entryAnim
-        running: true
-        
+    Behavior on yTranslation {
         NumberAnimation {
-            target: root
-            property: "opacity"
-            to: 1.0
-            duration: Theme.animSlow
-            easing.type: Easing.OutCubic
-        }
-        
-        NumberAnimation {
-            target: root
-            property: "yTranslation"
-            to: 0
-            duration: Theme.animSlow
+            duration: Theme.animNormal
             easing.type: Easing.OutCubic
         }
     }

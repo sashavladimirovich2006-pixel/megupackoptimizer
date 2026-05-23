@@ -5,6 +5,21 @@ import MeguPackOptimizer 1.0
 AcrylicPanel {
     id: root
     
+    // Premium reactive entry transition (runs butter-smooth on every tab switch!)
+    property bool isActive: opacity > 0.1
+    property real yTranslation: isActive ? 0 : 15
+
+    transform: Translate {
+        y: root.yTranslation
+    }
+
+    Behavior on yTranslation {
+        NumberAnimation {
+            duration: Theme.animNormal
+            easing.type: Easing.OutCubic
+        }
+    }
+
     implicitWidth: 500
     implicitHeight: 300
     
