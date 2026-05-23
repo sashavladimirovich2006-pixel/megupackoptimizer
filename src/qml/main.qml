@@ -85,15 +85,23 @@ ApplicationWindow {
                     text: qsTr("Dashboard")
                     iconSource: "qrc:/MeguPackOptimizer/src/resources/monitor.svg"
                     accented: window.activeTab === 0
-                    enabled: !optimizerBackend.isProcessing
+                    enabled: !optimizerBackend.isProcessing && !optimizerBackend.isOptimizingSystem
                     onClicked: window.activeTab = 0
+                }
+
+                MeguButton {
+                    text: qsTr("Optimization")
+                    iconSource: "qrc:/MeguPackOptimizer/src/resources/storage.svg"
+                    accented: window.activeTab === 3
+                    enabled: !optimizerBackend.isProcessing && !optimizerBackend.isOptimizingSystem
+                    onClicked: window.activeTab = 3
                 }
 
                 MeguButton {
                     text: qsTr("Settings")
                     iconSource: "qrc:/MeguPackOptimizer/src/resources/settings.svg"
                     accented: window.activeTab === 1
-                    enabled: !optimizerBackend.isProcessing
+                    enabled: !optimizerBackend.isProcessing && !optimizerBackend.isOptimizingSystem
                     onClicked: window.activeTab = 1
                 }
 
@@ -101,6 +109,7 @@ ApplicationWindow {
                     text: qsTr("Real-Time Logs")
                     iconSource: "qrc:/MeguPackOptimizer/src/resources/terminal.svg"
                     accented: window.activeTab === 2
+                    enabled: !optimizerBackend.isProcessing && !optimizerBackend.isOptimizingSystem
                     onClicked: window.activeTab = 2
                 }
             }
@@ -124,6 +133,7 @@ ApplicationWindow {
         sourceComponent: {
             if (activeTab === 0) return dashboardComponent;
             if (activeTab === 1) return settingsComponent;
+            if (activeTab === 3) return optimizationComponent;
             return logsComponent;
         }
     }
@@ -137,6 +147,11 @@ ApplicationWindow {
     Component {
         id: settingsComponent
         SettingsView {}
+    }
+
+    Component {
+        id: optimizationComponent
+        OptimizationView {}
     }
 
     Component {

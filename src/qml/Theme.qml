@@ -16,11 +16,11 @@ Item {
 
     Timer {
         id: rgbTimer
-        interval: 16 // ~60fps
+        interval: 32 // ~30fps, slower refresh
         running: root.currentTheme === "Ргб"
         repeat: true
         onTriggered: {
-            root.rgbHue += 0.005
+            root.rgbHue += 0.0003 // much slower color cycling
             if (root.rgbHue > 1.0) {
                 root.rgbHue -= 1.0
             }

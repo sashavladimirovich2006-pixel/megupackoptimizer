@@ -19,6 +19,7 @@ set(SOURCES
     src/settings.cpp
     src/optimizer.h
     src/optimizer.cpp
+    src/app.manifest
 )
 
 # Executable target definition
@@ -42,6 +43,7 @@ qt_add_qml_module(megu_pack_optimizer
         src/qml/components/SpecCard.qml
         src/qml/views/DashboardView.qml
         src/qml/views/SettingsView.qml
+        src/qml/views/OptimizationView.qml
     RESOURCES
         src/resources/settings.svg
         src/resources/folder.svg
@@ -78,5 +80,12 @@ if(CMAKE_BUILD_TYPE STREQUAL "Release")
 else()
     set_target_properties(megu_pack_optimizer PROPERTIES
         WIN32_EXECUTABLE OFF
+    )
+endif()
+
+# Require Administrator Privileges on Windows (like BoosterX)
+if(WIN32 AND MSVC)
+    target_link_options(megu_pack_optimizer PRIVATE
+        "/MANIFESTUAC:NO"
     )
 endif()

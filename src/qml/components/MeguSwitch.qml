@@ -6,7 +6,7 @@ Item {
     
     property string text: ""
     property bool checked: false
-    
+    property bool indeterminate: false
     
     signal toggled(bool isChecked)
     
@@ -29,21 +29,21 @@ Item {
             radius: 10
             anchors.verticalCenter: parent.verticalCenter
             
-            color: control.checked ? Theme.accent : "#232F44"
-            border.color: control.checked ? "transparent" : (mouseArea.containsMouse ? Theme.borderHover : Theme.border)
+            color: control.checked ? Theme.accent : (control.indeterminate ? Theme.accentDim : "#232F44")
+            border.color: (control.checked || control.indeterminate) ? Theme.accent : (mouseArea.containsMouse ? Theme.borderHover : Theme.border)
             border.width: 1
             
             Behavior on color { ColorAnimation { duration: Theme.animFast } }
             Behavior on border.color { ColorAnimation { duration: Theme.animFast } }
             
-            // Subtle glow around track when checked and hovered
+            // Subtle glow around track when checked/indeterminate and hovered
             Rectangle {
                 anchors.fill: parent
                 radius: parent.radius
                 color: "transparent"
                 border.color: Theme.accent
                 border.width: 1.5
-                opacity: (control.checked && mouseArea.containsMouse && control.enabled) ? 0.3 : 0.0
+                opacity: ((control.checked || control.indeterminate) && mouseArea.containsMouse && control.enabled) ? 0.3 : 0.0
                 Behavior on opacity { NumberAnimation { duration: Theme.animFast } }
             }
             
@@ -53,11 +53,11 @@ Item {
                 width: 14
                 height: 14
                 radius: 7
-                color: control.checked ? Theme.textInverse : Theme.textPrimary
+                color: (control.checked || control.indeterminate) ? Theme.textPrimary : Theme.textSecondary
                 anchors.verticalCenter: parent.verticalCenter
                 
-                // Position animation
-                x: control.checked ? (track.width - width - 3) : 3
+                // Position animation (middle if indeterminate, right if checked, left if unchecked)
+                x: control.indeterminate ? ((track.width - width) / 2) : (control.checked ? (track.width - width - 3) : 3)
                 
                 Behavior on x {
                     NumberAnimation {
@@ -88,7 +88,13 @@ Item {
         cursorShape: control.enabled ? Qt.PointingHandCursor : Qt.ArrowCursor
         onClicked: {
             if (control.enabled) {
-                control.checked = !control.checked;
+                // If it was indeterminate, toggling should turn it ON (checked=true, indeterminate=false)
+                if (control.indeterminate) {
+                    control.indeterminate = false;
+                    control.checked = true;
+                } else {
+                    control.checked = !control.checked;
+                }
                 control.toggled(control.checked);
             }
         }

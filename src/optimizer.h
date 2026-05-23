@@ -25,6 +25,14 @@ class Optimizer : public QObject {
     Q_PROPERTY(QString storage READ storage NOTIFY storageChanged)
     Q_PROPERTY(QString display READ display NOTIFY displayChanged)
 
+    // System Optimization properties
+    Q_PROPERTY(bool winSearchActive READ winSearchActive WRITE setWinSearchActive NOTIFY winSearchActiveChanged)
+    Q_PROPERTY(bool driveCActive READ driveCActive WRITE setDriveCActive NOTIFY driveCActiveChanged)
+    Q_PROPERTY(bool detectedDriveActive READ detectedDriveActive WRITE setDetectedDriveActive NOTIFY detectedDriveActiveChanged)
+    Q_PROPERTY(QString detectedDriveLetter READ detectedDriveLetter NOTIFY detectedDriveLetterChanged)
+    Q_PROPERTY(bool isOptimizingSystem READ isOptimizingSystem NOTIFY isOptimizingSystemChanged)
+    Q_PROPERTY(double systemProgress READ systemProgress NOTIFY systemProgressChanged)
+
 public:
     explicit Optimizer(QObject *parent = nullptr);
     ~Optimizer();
@@ -50,11 +58,29 @@ public:
     QString storage() const { return m_storage; }
     QString display() const { return m_display; }
 
+    // System Optimization getters
+    bool winSearchActive() const { return m_winSearchActive; }
+    bool driveCActive() const { return m_driveCActive; }
+    bool detectedDriveActive() const { return m_detectedDriveActive; }
+    QString detectedDriveLetter() const { return m_detectedDriveLetter; }
+    bool isOptimizingSystem() const { return m_isOptimizingSystem; }
+    double systemProgress() const { return m_systemProgress; }
+
+    // Setters for target system optimization state
+    void setWinSearchActive(bool val);
+    void setDriveCActive(bool val);
+    void setDetectedDriveActive(bool val);
+
     // Invokable methods for QML frontend
     Q_INVOKABLE void loadPack(const QString &rawPath);
     Q_INVOKABLE void startOptimization();
     Q_INVOKABLE void cancelOptimization();
     Q_INVOKABLE void refreshSystemInfo();
+
+    // System Optimization actions
+    Q_INVOKABLE void loadSystemStates();
+    Q_INVOKABLE void startSystemOptimization(bool searchVal, bool cVal, bool detectedVal);
+    Q_INVOKABLE void showPath(const QString &funcName);
 
 signals:
     void packPathChanged(const QString &val);
@@ -77,8 +103,20 @@ signals:
     void storageChanged(const QString &val);
     void displayChanged(const QString &val);
 
+    // System Optimization signals
+    void winSearchActiveChanged(bool val);
+    void driveCActiveChanged(bool val);
+    void detectedDriveActiveChanged(bool val);
+    void detectedDriveLetterChanged(const QString &val);
+    void isOptimizingSystemChanged(bool val);
+    void systemProgressChanged(double val);
+
     void scanFinished(bool success);
     void optimizationFinished(bool success);
+    
+    // Custom signal to report system optimization steps to LogViewer
+    void systemStepReported(const QString &msg, const QString &type);
+    void systemOptimizationFinished(bool success);
 
 private:
     void resetStats();
@@ -105,4 +143,12 @@ private:
     QString m_motherboard;
     QString m_storage;
     QString m_display;
+
+    // System Optimization state
+    bool m_winSearchActive = true;
+    bool m_driveCActive = true;
+    bool m_detectedDriveActive = true;
+    QString m_detectedDriveLetter = "C:";
+    bool m_isOptimizingSystem = false;
+    double m_systemProgress = 0.0;
 };
