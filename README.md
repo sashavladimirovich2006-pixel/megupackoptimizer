@@ -59,3 +59,10 @@ The following rules must be strictly adhered to by all developers (human or AI) 
     - Updated `CMakeLists.txt` to embed the compiled `translations/megu_pack_optimizer_uk.qm` directly inside the binary's resources under `qrc:/MeguPackOptimizer/translations/megu_pack_optimizer_uk.qm`.
     - Modified local build script `build.bat` and GitHub Actions runner file `.github/workflows/build.yml` to call `lrelease` to compile `.ts` into `.qm` resource files automatically before triggering the CMake configuration step.
     - Added automatic deployment copy of the resulting binary into the user-specified directory `C:\Users\alexa\Desktop\New` after a successful build execution. Reordered the steps to copy the `.exe` to the destination first, then run `windeployqt` directly on that target folder. This resolves version mismatch (e.g. entry point errors in `Qt6Qml.dll`) by ensuring that the correct matching Qt 6.11.1 dynamic libraries are deployed and overwrite any older DLLs in the output folder.
+
+### Phase 1: Settings UI Simplification
+- **Action**: Cleaned up the settings interface by removing the Texture Optimization, Audio Assets, JSON Options, and General Workflow cards from the SettingsView QML view. The C++ `Settings` properties remain compiled to retain backend logic compatibility.
+- **Detailed Rationale**:
+  - The user requested the removal of all options and checkboxes shown in the settings screenshot, simplifying the menu.
+  - The UI now features a single centered frosted Acrylic panel for Language Selection.
+  - The C++ backend class `Settings` remains untouched to prevent compilation and linker breaks inside the `Optimizer` engine (which depends on settings properties during processing steps). Default values for all settings continue to be loaded and stored in JSON format under the hood.
