@@ -35,7 +35,16 @@ if %ERRORLEVEL% neq 0 (
 )
 
 echo [5/5] Copying binary and deploying Qt6 QML dependencies directly to New...
-if not exist "C:\Users\alexa\Desktop\New" mkdir "C:\Users\alexa\Desktop\New"
+if not exist "C:\Users\alexa\Desktop\New" (
+    mkdir "C:\Users\alexa\Desktop\New"
+) else (
+    echo Cleaning old deployed DLLs and folders to prevent version mismatch...
+    pushd "C:\Users\alexa\Desktop\New"
+    for /d %%p in (*) do rmdir /s /q "%%p"
+    del /q *.dll
+    popd
+)
+
 copy /Y "build\megu_pack_optimizer.exe" "C:\Users\alexa\Desktop\New\megu_pack_optimizer.exe"
 
 if %ERRORLEVEL% neq 0 (
