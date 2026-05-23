@@ -222,14 +222,21 @@
         <translation>Увімкнено</translation>
     </message>
     <message>
-        <location filename="../src/qml/views/OptimizationView.qml" line="822"/>
-        <source>Disabled</source>
-        <translation>Вимкнено</translation>
-    </message>
-    <message>
         <location filename="../src/qml/views/OptimizationView.qml" line="832"/>
         <source>Apply</source>
         <translation>Застосувати</translation>
+    </message>
+    <message>
+        <source>INDEXING OPTIONS</source>
+        <translation>НАЛАШТУВАННЯ ІНДЕКСАЦІЇ</translation>
+    </message>
+    <message>
+        <source>XBOX APP & GAME BAR</source>
+        <translation>XBOX APP ТА GAME BAR</translation>
+    </message>
+    <message>
+        <source>MPO LATENCY TWEAK</source>
+        <translation>НАЛАШТУВАННЯ MPO</translation>
     </message>
 </context>
 <context>
