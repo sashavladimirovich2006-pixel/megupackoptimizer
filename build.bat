@@ -34,19 +34,19 @@ if %ERRORLEVEL% neq 0 (
     exit /b %ERRORLEVEL%
 )
 
-echo [5/5] Deploying Qt6 QML dependencies (windeployqt) and copying to New...
-"D:\Aps\Qt\6.11.1\msvc2022_64\bin\windeployqt.exe" --verbose 1 --no-translations --compiler-runtime --qmldir src/qml build/megu_pack_optimizer.exe
-
-if %ERRORLEVEL% neq 0 (
-    echo [ERROR] windeployqt failed to deploy dependencies!
-    exit /b %ERRORLEVEL%
-)
-
+echo [5/5] Copying binary and deploying Qt6 QML dependencies directly to New...
 if not exist "C:\Users\alexa\Desktop\New" mkdir "C:\Users\alexa\Desktop\New"
 copy /Y "build\megu_pack_optimizer.exe" "C:\Users\alexa\Desktop\New\megu_pack_optimizer.exe"
 
 if %ERRORLEVEL% neq 0 (
     echo [ERROR] Failed to copy executable to C:\Users\alexa\Desktop\New!
+    exit /b %ERRORLEVEL%
+)
+
+"D:\Aps\Qt\6.11.1\msvc2022_64\bin\windeployqt.exe" --verbose 1 --no-translations --compiler-runtime --qmldir src/qml C:\Users\alexa\Desktop\New\megu_pack_optimizer.exe
+
+if %ERRORLEVEL% neq 0 (
+    echo [ERROR] windeployqt failed to deploy dependencies to C:\Users\alexa\Desktop\New!
     exit /b %ERRORLEVEL%
 )
 
