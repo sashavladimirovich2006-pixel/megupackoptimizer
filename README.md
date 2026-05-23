@@ -42,8 +42,7 @@ The following rules must be strictly adhered to by all developers (human or AI) 
   - Designed custom QML components (`Theme`, `AcrylicPanel`, `LogViewer`) inside the Neo-Luna design language, offering a high-performance visual experience using hardware-accelerated QRHI.
 
 ### Phase 1: Hotfix - GitHub Actions Build Error
-- **Action**: Removed the `qtdeclarative` optional module declaration from the GitHub Actions configuration (`.github/workflows/build.yml`).
+- **Action**: Removed the `qtdeclarative` optional module declaration and corrected the target architecture to `win64_msvc2019_64` inside the GitHub Actions configuration (`.github/workflows/build.yml`).
 - **Detailed Rationale**:
-  - In Qt 6, the core QML/Quick declarative module is part of the default base installation.
-  - Specifying `modules: 'qtdeclarative'` caused `aqtinstall` to fail with a package parsing error on the GitHub Actions runner because it could not find a separate optional module by that name.
-  - Removing it resolves the build blockage, allowing the pipeline to use the default `qtbase` + `qtdeclarative` packages.
+  - In Qt 6, the core QML/Quick declarative module is part of the default base installation. Specifying `modules: 'qtdeclarative'` caused `aqtinstall` to fail with a package parsing error on the GitHub Actions runner.
+  - Additionally, for Qt version `6.5.3`, there is no pre-compiled `win64_msvc2022_64` package in the official repositories. The correct architecture string is `win64_msvc2019_64` (which is fully binary-compatible with MSVC 2022 on the CI runner). Fixing these parameters allows `aqtinstall` to parse the metadata and fetch the SDK correctly.
