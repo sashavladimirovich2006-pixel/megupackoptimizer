@@ -94,8 +94,10 @@ Item {
         anchors.right: parent.right
         anchors.margins: 24
         clip: true
+        contentHeight: mainColumn.implicitHeight
 
         Column {
+            id: mainColumn
             width: mainScroll.width - 12
             spacing: 24
 

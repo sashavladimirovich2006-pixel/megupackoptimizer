@@ -22,199 +22,204 @@ Item {
         }
     }
 
-    // Main layout container spanning settings area
-    Column {
-        id: mainColumn
-        anchors.top: parent.top
-        anchors.left: parent.left
-        anchors.right: parent.right
+    ScrollView {
+        id: mainScroll
+        anchors.fill: parent
         anchors.margins: 24
-        spacing: 20
+        clip: true
+        contentHeight: mainColumn.implicitHeight
 
-        // 1. THEME SETTINGS SECTION
+        // Main layout container spanning settings area
         Column {
-            width: parent.width
-            spacing: 8
+            id: mainColumn
+            width: mainScroll.width - 12
+            spacing: 20
 
-            Text {
-                text: qsTr("THEME SETTINGS")
-                color: Theme.yellowAccent
-                font.family: Theme.fontFamily
-                font.pixelSize: 11
-                font.bold: true
-                font.letterSpacing: 1.5
-            }
-
-            AcrylicPanel {
+            // 1. THEME SETTINGS SECTION
+            Column {
                 width: parent.width
-                height: 56
+                spacing: 8
 
-                // Horizontal Row layout for Choose Theme
-                Item {
-                    anchors.fill: parent
-                    anchors.leftMargin: 16
-                    anchors.rightMargin: 16
-
-                    Text {
-                        text: qsTr("Choose Interface Theme:")
-                        color: Theme.textPrimary
-                        font.family: Theme.fontFamily
-                        font.pixelSize: 12
-                        font.bold: true
-                        anchors.left: parent.left
-                        anchors.verticalCenter: parent.verticalCenter
-                    }
-
-                    // Interactive Box displaying current theme
-                    Rectangle {
-                        id: themeSelectBtn
-                        width: 160
-                        height: 36
-                        radius: Theme.radiusSmall
-                        color: themeMouseArea.containsMouse ? Theme.accentDim : "transparent"
-                        border.color: themeMouseArea.containsMouse ? Theme.accent : Theme.border
-                        border.width: 1
-                        anchors.right: parent.right
-                        anchors.verticalCenter: parent.verticalCenter
-
-                        Behavior on color { ColorAnimation { duration: Theme.animFast } }
-                        Behavior on border.color { ColorAnimation { duration: Theme.animFast } }
-
-                        Row {
-                            anchors.centerIn: parent
-                            spacing: 8
-
-                            // Indicator circle showing active theme's primary color representation
-                            Rectangle {
-                                width: 10
-                                height: 10
-                                radius: 5
-                                color: {
-                                    if (Theme.currentTheme === "Белоснежная") return "#FFFFFF";
-                                    if (Theme.currentTheme === "Темная") return "#1E293B";
-                                    if (Theme.currentTheme === "Blackout полностью черная") return "#000000";
-                                    if (Theme.currentTheme === "Ргб") return Theme.rgbAccent;
-                                    if (Theme.currentTheme === "Розовая") return "#FF85A2";
-                                    return "#FF85A2"; // Black pink
-                                }
-                                border.color: "#66FFFFFF"
-                                border.width: 1
-                                anchors.verticalCenter: parent.verticalCenter
-                            }
-
-                            Text {
-                                text: Theme.currentTheme
-                                color: Theme.textPrimary
-                                font.family: Theme.fontFamily
-                                font.pixelSize: 12
-                                font.bold: true
-                                anchors.verticalCenter: parent.verticalCenter
-                            }
-
-                            Text {
-                                text: ">"
-                                color: Theme.textSecondary
-                                font.family: Theme.fontFamily
-                                font.pixelSize: 11
-                                font.bold: true
-                                anchors.verticalCenter: parent.verticalCenter
-                            }
-                        }
-
-                        MouseArea {
-                            id: themeMouseArea
-                            anchors.fill: parent
-                            hoverEnabled: true
-                            cursorShape: Qt.PointingHandCursor
-                            onClicked: themeSidebar.isOpen = true
-                        }
-                    }
+                Text {
+                    text: qsTr("THEME SETTINGS")
+                    color: Theme.yellowAccent
+                    font.family: Theme.fontFamily
+                    font.pixelSize: 11
+                    font.bold: true
+                    font.letterSpacing: 1.5
                 }
-            }
-        }
 
-        // 2. LANGUAGE SETTINGS SECTION
-        Column {
-            width: parent.width
-            spacing: 8
+                AcrylicPanel {
+                    width: parent.width
+                    height: 56
 
-            Text {
-                text: qsTr("LANGUAGE SETTINGS")
-                color: Theme.yellowAccent
-                font.family: Theme.fontFamily
-                font.pixelSize: 11
-                font.bold: true
-                font.letterSpacing: 1.5
-            }
+                    // Horizontal Row layout for Choose Theme
+                    Item {
+                        anchors.fill: parent
+                        anchors.leftMargin: 16
+                        anchors.rightMargin: 16
 
-            AcrylicPanel {
-                width: parent.width
-                height: 56
+                        Text {
+                            text: qsTr("Choose Interface Theme:")
+                            color: Theme.textPrimary
+                            font.family: Theme.fontFamily
+                            font.pixelSize: 12
+                            font.bold: true
+                            anchors.left: parent.left
+                            anchors.verticalCenter: parent.verticalCenter
+                        }
 
-                // Horizontal Row layout for Choose Language
-                Item {
-                    anchors.fill: parent
-                    anchors.leftMargin: 16
-                    anchors.rightMargin: 16
+                        // Interactive Box displaying current theme
+                        Rectangle {
+                            id: themeSelectBtn
+                            width: 160
+                            height: 36
+                            radius: Theme.radiusSmall
+                            color: themeMouseArea.containsMouse ? Theme.accentDim : "transparent"
+                            border.color: themeMouseArea.containsMouse ? Theme.accent : Theme.border
+                            border.width: 1
+                            anchors.right: parent.right
+                            anchors.verticalCenter: parent.verticalCenter
 
-                    Text {
-                        text: qsTr("Choose Interface Language:")
-                        color: Theme.textPrimary
-                        font.family: Theme.fontFamily
-                        font.pixelSize: 12
-                        font.bold: true
-                        anchors.left: parent.left
-                        anchors.verticalCenter: parent.verticalCenter
-                    }
+                            Behavior on color { ColorAnimation { duration: Theme.animFast } }
+                            Behavior on border.color { ColorAnimation { duration: Theme.animFast } }
 
-                    // Row of Language Option Buttons
-                    Row {
-                        spacing: 10
-                        anchors.right: parent.right
-                        anchors.verticalCenter: parent.verticalCenter
+                            Row {
+                                anchors.centerIn: parent
+                                spacing: 8
 
-                        Repeater {
-                            model: [
-                                { "code": "en", "name": qsTr("English") },
-                                { "code": "uk", "name": qsTr("Ukrainian") }
-                            ]
-
-                            delegate: Rectangle {
-                                width: 100
-                                height: 32
-                                radius: Theme.radiusSmall
-                                color: settingsBackend.language === modelData.code ? Theme.accent : "#1E293B"
-                                border.color: settingsBackend.language === modelData.code ? "transparent" : Theme.border
-                                border.width: 1
+                                // Indicator circle showing active theme's primary color representation
+                                Rectangle {
+                                    width: 10
+                                    height: 10
+                                    radius: 5
+                                    color: {
+                                        if (Theme.currentTheme === "Белоснежная") return "#FFFFFF";
+                                        if (Theme.currentTheme === "Темная") return "#1E293B";
+                                        if (Theme.currentTheme === "Blackout полностью черная") return "#000000";
+                                        if (Theme.currentTheme === "Ргб") return Theme.rgbAccent;
+                                        if (Theme.currentTheme === "Розовая") return "#FF85A2";
+                                        return "#FF85A2"; // Black pink
+                                    }
+                                    border.color: "#66FFFFFF"
+                                    border.width: 1
+                                    anchors.verticalCenter: parent.verticalCenter
+                                }
 
                                 Text {
-                                    text: modelData.name
-                                    color: settingsBackend.language === modelData.code ? Theme.textInverse : Theme.textPrimary
+                                    text: Theme.currentTheme
+                                    color: Theme.textPrimary
+                                    font.family: Theme.fontFamily
+                                    font.pixelSize: 12
+                                    font.bold: true
+                                    anchors.verticalCenter: parent.verticalCenter
+                                }
+
+                                Text {
+                                    text: ">"
+                                    color: Theme.textSecondary
                                     font.family: Theme.fontFamily
                                     font.pixelSize: 11
                                     font.bold: true
-                                    anchors.centerIn: parent
+                                    anchors.verticalCenter: parent.verticalCenter
                                 }
+                            }
 
-                                MouseArea {
-                                    anchors.fill: parent
-                                    cursorShape: Qt.PointingHandCursor
-                                    onClicked: settingsBackend.language = modelData.code
+                            MouseArea {
+                                id: themeMouseArea
+                                anchors.fill: parent
+                                hoverEnabled: true
+                                cursorShape: Qt.PointingHandCursor
+                                onClicked: themeSidebar.isOpen = true
+                            }
+                        }
+                    }
+                }
+            }
+
+            // 2. LANGUAGE SETTINGS SECTION
+            Column {
+                width: parent.width
+                spacing: 8
+
+                Text {
+                    text: qsTr("LANGUAGE SETTINGS")
+                    color: Theme.yellowAccent
+                    font.family: Theme.fontFamily
+                    font.pixelSize: 11
+                    font.bold: true
+                    font.letterSpacing: 1.5
+                }
+
+                AcrylicPanel {
+                    width: parent.width
+                    height: 56
+
+                    // Horizontal Row layout for Choose Language
+                    Item {
+                        anchors.fill: parent
+                        anchors.leftMargin: 16
+                        anchors.rightMargin: 16
+
+                        Text {
+                            text: qsTr("Choose Interface Language:")
+                            color: Theme.textPrimary
+                            font.family: Theme.fontFamily
+                            font.pixelSize: 12
+                            font.bold: true
+                            anchors.left: parent.left
+                            anchors.verticalCenter: parent.verticalCenter
+                        }
+
+                        // Row of Language Option Buttons
+                        Row {
+                            spacing: 10
+                            anchors.right: parent.right
+                            anchors.verticalCenter: parent.verticalCenter
+
+                            Repeater {
+                                model: [
+                                    { "code": "en", "name": qsTr("English") },
+                                    { "code": "uk", "name": qsTr("Ukrainian") }
+                                ]
+
+                                delegate: Rectangle {
+                                    width: 100
+                                    height: 32
+                                    radius: Theme.radiusSmall
+                                    color: settingsBackend.language === modelData.code ? Theme.accent : "#1E293B"
+                                    border.color: settingsBackend.language === modelData.code ? "transparent" : Theme.border
+                                    border.width: 1
+
+                                    Text {
+                                        text: modelData.name
+                                        color: settingsBackend.language === modelData.code ? Theme.textInverse : Theme.textPrimary
+                                        font.family: Theme.fontFamily
+                                        font.pixelSize: 11
+                                        font.bold: true
+                                        anchors.centerIn: parent
+                                    }
+
+                                    MouseArea {
+                                        anchors.fill: parent
+                                        cursorShape: Qt.PointingHandCursor
+                                        onClicked: settingsBackend.language = modelData.code
+                                    }
                                 }
                             }
                         }
                     }
                 }
             }
-        }
 
-        // Footnote tag
-        Text {
-            text: qsTr("* Changes are automatically applied and saved to config in real-time.")
-            color: Theme.textMuted
-            font.family: Theme.fontFamily
-            font.pixelSize: 10
-            font.italic: true
+            // Footnote tag
+            Text {
+                text: qsTr("* Changes are automatically applied and saved to config in real-time.")
+                color: Theme.textMuted
+                font.family: Theme.fontFamily
+                font.pixelSize: 10
+                font.italic: true
+            }
         }
     }
 
