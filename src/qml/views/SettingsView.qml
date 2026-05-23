@@ -27,7 +27,7 @@ Item {
                     spacing: 12
 
                     Text {
-                        text: "Texture Optimization Options"
+                        text: qsTr("Texture Optimization Options")
                         color: Theme.textPrimary
                         font.family: Theme.fontFamily
                         font.pixelSize: 14
@@ -41,7 +41,7 @@ Item {
                     }
 
                     MeguSwitch {
-                        text: "Enable Texture Resolution Processing"
+                        text: qsTr("Enable Texture Resolution Processing")
                         checked: settingsBackend.optimizeImages
                         onToggled: (checked) => settingsBackend.optimizeImages = checked
                     }
@@ -53,7 +53,7 @@ Item {
                         opacity: settingsBackend.optimizeImages ? 1.0 : 0.4
                         
                         Text {
-                            text: "Maximum Texture Resolution Limit"
+                            text: qsTr("Maximum Texture Resolution Limit")
                             color: Theme.textSecondary
                             font.family: Theme.fontFamily
                             font.pixelSize: 11
@@ -94,7 +94,7 @@ Item {
                         }
                         
                         Text {
-                            text: "Textures exceeding the chosen limit will be downscaled, keeping resource footprint small."
+                            text: qsTr("Textures exceeding the chosen limit will be downscaled, keeping resource footprint small.")
                             color: Theme.textMuted
                             font.family: Theme.fontFamily
                             font.pixelSize: 10
@@ -106,7 +106,7 @@ Item {
                     Item { width: parent.width; height: 4 }
 
                     MeguSwitch {
-                        text: "Convert PNG textures to WebP compression format"
+                        text: qsTr("Convert PNG textures to WebP compression format")
                         checked: settingsBackend.pngToWebp
                         enabled: settingsBackend.optimizeImages
                         onToggled: (checked) => settingsBackend.pngToWebp = checked
@@ -124,7 +124,7 @@ Item {
                     spacing: 12
 
                     Text {
-                        text: "Audio Assets Processing"
+                        text: qsTr("Audio Assets Processing")
                         color: Theme.textPrimary
                         font.family: Theme.fontFamily
                         font.pixelSize: 14
@@ -138,13 +138,13 @@ Item {
                     }
 
                     MeguSwitch {
-                        text: "Enable Audio Downsampling & Compression"
+                        text: qsTr("Enable Audio Downsampling & Compression")
                         checked: settingsBackend.optimizeAudio
                         onToggled: (checked) => settingsBackend.optimizeAudio = checked
                     }
 
                     Text {
-                        text: "Analyzes ogg, wav, and mp3 files, reduces sample bitrates (e.g. down to 22.05kHz mono) and re-encodes under high-compression Ogg Vorbis to minimize audio footprint."
+                        text: qsTr("Analyzes ogg, wav, and mp3 files, reduces sample bitrates (e.g. down to 22.05kHz mono) and re-encodes under high-compression Ogg Vorbis to minimize audio footprint.")
                         color: Theme.textMuted
                         font.family: Theme.fontFamily
                         font.pixelSize: 11
@@ -171,7 +171,7 @@ Item {
                     spacing: 12
 
                     Text {
-                        text: "JSON & Meta Document Options"
+                        text: qsTr("JSON & Meta Document Options")
                         color: Theme.textPrimary
                         font.family: Theme.fontFamily
                         font.pixelSize: 14
@@ -185,19 +185,19 @@ Item {
                     }
 
                     MeguSwitch {
-                        text: "Minify JSON structures (remove linebreaks and margins)"
+                        text: qsTr("Minify JSON structures (remove linebreaks and margins)")
                         checked: settingsBackend.minifyJson
                         onToggled: (checked) => settingsBackend.minifyJson = checked
                     }
 
                     MeguSwitch {
-                        text: "Strip documentation comments and developer metadata"
+                        text: qsTr("Strip documentation comments and developer metadata")
                         checked: settingsBackend.stripJsonComments
                         onToggled: (checked) => settingsBackend.stripJsonComments = checked
                     }
 
                     Text {
-                        text: "Strips unneeded whitespace and internal elements from MCMeta, blockstates, and models."
+                        text: qsTr("Strips unneeded whitespace and internal elements from MCMeta, blockstates, and models.")
                         color: Theme.textMuted
                         font.family: Theme.fontFamily
                         font.pixelSize: 10
@@ -207,17 +207,77 @@ Item {
                 }
             }
 
-            // Workflow Optimization Panel
+            // Language Selection Panel
             AcrylicPanel {
                 width: parent.width
-                height: parent.height - 190 - 16
+                height: 120
 
                 Column {
                     anchors.fill: parent
                     spacing: 12
 
                     Text {
-                        text: "General Workflow Options"
+                        text: qsTr("Language Settings")
+                        color: Theme.textPrimary
+                        font.family: Theme.fontFamily
+                        font.pixelSize: 14
+                        font.bold: true
+                    }
+
+                    Rectangle {
+                        width: parent.width
+                        height: 1
+                        color: Theme.border
+                    }
+
+                    Row {
+                        spacing: 12
+
+                        Repeater {
+                            model: [
+                                { "code": "en", "name": qsTr("English") },
+                                { "code": "uk", "name": qsTr("Ukrainian") }
+                            ]
+
+                            delegate: Rectangle {
+                                width: 120
+                                height: 32
+                                radius: Theme.radiusSmall
+                                color: settingsBackend.language === modelData.code ? Theme.accent : "#1E293B"
+                                border.color: settingsBackend.language === modelData.code ? "transparent" : Theme.border
+                                border.width: 1
+
+                                Text {
+                                    text: modelData.name
+                                    color: settingsBackend.language === modelData.code ? Theme.textInverse : Theme.textPrimary
+                                    font.family: Theme.fontFamily
+                                    font.pixelSize: 11
+                                    font.bold: true
+                                    anchors.centerIn: parent
+                                }
+
+                                MouseArea {
+                                    anchors.fill: parent
+                                    cursorShape: Qt.PointingHandCursor
+                                    onClicked: settingsBackend.language = modelData.code
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+
+            // Workflow Optimization Panel
+            AcrylicPanel {
+                width: parent.width
+                height: parent.height - 190 - 120 - 32
+
+                Column {
+                    anchors.fill: parent
+                    spacing: 12
+
+                    Text {
+                        text: qsTr("General Workflow Options")
                         color: Theme.textPrimary
                         font.family: Theme.fontFamily
                         font.pixelSize: 14
@@ -231,19 +291,19 @@ Item {
                     }
 
                     MeguSwitch {
-                        text: "Auto-create backup archive (.zip) before optimizer runs"
+                        text: qsTr("Auto-create backup archive (.zip) before optimizer runs")
                         checked: settingsBackend.createBackup
                         onToggled: (checked) => settingsBackend.createBackup = checked
                     }
 
                     MeguSwitch {
-                        text: "Delete temporary directories after compiling optimized pack"
+                        text: qsTr("Delete temporary directories after compiling optimized pack")
                         checked: settingsBackend.deleteTempFiles
                         onToggled: (checked) => settingsBackend.deleteTempFiles = checked
                     }
 
                     Text {
-                        text: "Settings are automatically serialized and stored locally in megu_settings.json. Toggles apply immediately to the active thread configuration."
+                        text: qsTr("Settings are automatically serialized and stored locally in megu_settings.json. Toggles apply immediately to the active thread configuration.")
                         color: Theme.textMuted
                         font.family: Theme.fontFamily
                         font.pixelSize: 11

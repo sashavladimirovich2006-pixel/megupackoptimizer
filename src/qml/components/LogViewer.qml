@@ -31,7 +31,7 @@ AcrylicPanel {
                 }
                 
                 Text {
-                    text: "System Terminal Log"
+                    text: qsTr("System Terminal Log")
                     color: Theme.textPrimary
                     font.family: Theme.fontFamily
                     font.pixelSize: 12
@@ -47,7 +47,7 @@ AcrylicPanel {
                 spacing: 8
                 
                 MeguButton {
-                    text: "Clear"
+                    text: qsTr("Clear")
                     iconSource: "qrc:/MeguPackOptimizer/src/resources/close.svg"
                     anchors.verticalCenter: parent.verticalCenter
                     implicitHeight: 22
@@ -90,10 +90,6 @@ AcrylicPanel {
                     background: null
                     wrapMode: TextEdit.Wrap
                     text: ""
-                    
-                    // Simple syntax coloring based on log levels
-                    // We will parse incoming strings in C++ or do simple styling.
-                    // Actually, simple text appending is extremely fast and robust!
                 }
             }
         }
@@ -106,7 +102,6 @@ AcrylicPanel {
         function onLogAdded(line) {
             logText.append(line);
             if (root.autoScroll) {
-                // Delay slightly to allow text layout calculation to update
                 scrollTimer.restart();
             }
         }

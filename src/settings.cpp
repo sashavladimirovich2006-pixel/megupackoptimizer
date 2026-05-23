@@ -86,6 +86,14 @@ void Settings::setDeleteTempFiles(bool val) {
     }
 }
 
+void Settings::setLanguage(const QString &val) {
+    if (m_language != val) {
+        m_language = val;
+        emit languageChanged(val);
+        save();
+    }
+}
+
 void Settings::save() {
     QJsonObject obj;
     obj["optimizeImages"] = m_optimizeImages;
@@ -96,6 +104,7 @@ void Settings::save() {
     obj["optimizeAudio"] = m_optimizeAudio;
     obj["createBackup"] = m_createBackup;
     obj["deleteTempFiles"] = m_deleteTempFiles;
+    obj["language"] = m_language;
 
     QJsonDocument doc(obj);
     QFile file(m_settingsFilePath);
@@ -132,6 +141,7 @@ void Settings::load() {
             if (obj.contains("optimizeAudio")) m_optimizeAudio = obj["optimizeAudio"].toBool();
             if (obj.contains("createBackup")) m_createBackup = obj["createBackup"].toBool();
             if (obj.contains("deleteTempFiles")) m_deleteTempFiles = obj["deleteTempFiles"].toBool();
+            if (obj.contains("language")) m_language = obj["language"].toString();
 
             Logger::log("Settings loaded successfully from megu_settings.json", "INFO");
         } else {

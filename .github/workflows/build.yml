@@ -27,6 +27,12 @@ jobs:
         arch: 'win64_msvc2019_64'
         dir: '${{ github.workspace }}/../Qt'
 
+    - name: Compile Translations
+      shell: pwsh
+      run: |
+        $qtBinDir = "${{ env.Qt6_Dir }}/bin"
+        & "$qtBinDir/lrelease.exe" translations/megu_pack_optimizer_uk.ts -qm translations/megu_pack_optimizer_uk.qm
+
     - name: Configure CMake
       run: |
         cmake -G "Visual Studio 17 2022" -A x64 -B build -S . -DCMAKE_BUILD_TYPE=Release

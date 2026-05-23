@@ -11,7 +11,14 @@ if %ERRORLEVEL% neq 0 (
     exit /b %ERRORLEVEL%
 )
 
-echo [2/4] Configuring CMake with Qt6 & Ninja...
+echo [2/5] Compiling translations with lrelease...
+"D:\Aps\Qt\6.11.1\msvc2022_64\bin\lrelease.exe" translations\megu_pack_optimizer_uk.ts -qm translations\megu_pack_optimizer_uk.qm
+
+if %ERRORLEVEL% neq 0 (
+    echo [WARNING] lrelease failed to compile translations! Proceeding anyway...
+)
+
+echo [3/5] Configuring CMake with Qt6 & Ninja...
 "D:\Aps\Qt\Tools\CMake_64\bin\cmake.exe" -G "Ninja" -DCMAKE_MAKE_PROGRAM="D:\Aps\Qt\Tools\Ninja\ninja.exe" -DCMAKE_PREFIX_PATH="D:\Aps\Qt\6.11.1\msvc2022_64" -DCMAKE_BUILD_TYPE=Release -B build -S .
 
 if %ERRORLEVEL% neq 0 (
@@ -19,7 +26,7 @@ if %ERRORLEVEL% neq 0 (
     exit /b %ERRORLEVEL%
 )
 
-echo [3/4] Compiling C++ application...
+echo [4/5] Compiling C++ application...
 "D:\Aps\Qt\Tools\CMake_64\bin\cmake.exe" --build build
 
 if %ERRORLEVEL% neq 0 (
@@ -27,7 +34,7 @@ if %ERRORLEVEL% neq 0 (
     exit /b %ERRORLEVEL%
 )
 
-echo [4/4] Deploying Qt6 QML dependencies (windeployqt)...
+echo [5/5] Deploying Qt6 QML dependencies (windeployqt) and copying to New...
 "D:\Aps\Qt\6.11.1\msvc2022_64\bin\windeployqt.exe" --verbose 1 --no-translations --compiler-runtime --qmldir src/qml build/megu_pack_optimizer.exe
 
 if %ERRORLEVEL% neq 0 (
@@ -35,7 +42,15 @@ if %ERRORLEVEL% neq 0 (
     exit /b %ERRORLEVEL%
 )
 
+if not exist "C:\Users\alexa\Desktop\New" mkdir "C:\Users\alexa\Desktop\New"
+copy /Y "build\megu_pack_optimizer.exe" "C:\Users\alexa\Desktop\New\megu_pack_optimizer.exe"
+
+if %ERRORLEVEL% neq 0 (
+    echo [ERROR] Failed to copy executable to C:\Users\alexa\Desktop\New!
+    exit /b %ERRORLEVEL%
+)
+
 echo ===================================================
-echo  [SUCCESS] Megu Pack Optimizer built successfully!
-echo  Executable: C:\Users\alexa\.gemini\antigravity\scratch\megupackoptimizer\build\megu_pack_optimizer.exe
+echo  [SUCCESS] Megu Pack Optimizer built and deployed!
+echo  Executable: C:\Users\alexa\Desktop\New\megu_pack_optimizer.exe
 echo ===================================================

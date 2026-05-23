@@ -11,7 +11,7 @@ ApplicationWindow {
     height: 640
     minimumWidth: 800
     minimumHeight: 560
-    title: "Megu Pack Optimizer"
+    title: qsTr("Megu Pack Optimizer")
 
     // Background color matching the Slate Blue Neo-Luna palette
     background: Rectangle {
@@ -62,7 +62,7 @@ ApplicationWindow {
                     spacing: 1
                     
                     Text {
-                        text: "MEGU PACK OPTIMIZER"
+                        text: qsTr("MEGU PACK OPTIMIZER")
                         color: Theme.textPrimary
                         font.family: Theme.fontFamily
                         font.pixelSize: 13
@@ -71,7 +71,7 @@ ApplicationWindow {
                     }
                     
                     Text {
-                        text: "v1.0.0 Stable Build"
+                        text: qsTr("v1.0.0 Stable Build")
                         color: Theme.textMuted
                         font.family: Theme.fontFamily
                         font.pixelSize: 9
@@ -86,7 +86,7 @@ ApplicationWindow {
                 spacing: 8
 
                 MeguButton {
-                    text: "Dashboard"
+                    text: qsTr("Dashboard")
                     iconSource: "qrc:/MeguPackOptimizer/src/resources/folder.svg"
                     accented: window.activeTab === 0
                     enabled: !optimizerBackend.isProcessing
@@ -94,7 +94,7 @@ ApplicationWindow {
                 }
 
                 MeguButton {
-                    text: "Settings"
+                    text: qsTr("Settings")
                     iconSource: "qrc:/MeguPackOptimizer/src/resources/settings.svg"
                     accented: window.activeTab === 1
                     enabled: !optimizerBackend.isProcessing
@@ -102,7 +102,7 @@ ApplicationWindow {
                 }
 
                 MeguButton {
-                    text: "System Logs"
+                    text: qsTr("System Logs")
                     iconSource: "qrc:/MeguPackOptimizer/src/resources/terminal.svg"
                     accented: window.activeTab === 2
                     onClicked: window.activeTab = 2

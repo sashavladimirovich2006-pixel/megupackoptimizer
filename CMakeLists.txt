@@ -50,6 +50,7 @@ qt_add_qml_module(megu_pack_optimizer
         src/resources/check.svg
         src/resources/close.svg
         src/resources/terminal.svg
+        translations/megu_pack_optimizer_uk.qm
 )
 
 # Link Qt6 Libraries

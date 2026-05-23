@@ -46,3 +46,16 @@ The following rules must be strictly adhered to by all developers (human or AI) 
 - **Detailed Rationale**:
   - In Qt 6, the core QML/Quick declarative module is part of the default base installation. Specifying `modules: 'qtdeclarative'` caused `aqtinstall` to fail with a package parsing error on the GitHub Actions runner.
   - Additionally, for Qt version `6.5.3`, there is no pre-compiled `win64_msvc2022_64` package in the official repositories. The correct architecture string is `win64_msvc2019_64` (which is fully binary-compatible with MSVC 2022 on the CI runner). Fixing these parameters allows `aqtinstall` to parse the metadata and fetch the SDK correctly.
+
+### Phase 1: Multi-Language Support (English & Ukrainian)
+- **Action**: Implemented multi-language support (English as default and Ukrainian as an option) across the entire application interface. Integrated dynamic translation reloading using Qt's `QTranslator` and `QQmlApplicationEngine::retranslate()`. Added a dedicated language selection card inside the settings menu.
+- **Detailed Rationale**:
+  - **QML Translatability**: Wrapped all user-facing strings across all views (`main.qml`, `DashboardView.qml`, `SettingsView.qml`, and `LogViewer.qml`) in the standard `qsTr()` function.
+  - **C++ Settings Integration**: Added a `"language"` string property in the `Settings` class (`settings.h` and `settings.cpp`), serialized directly to `megu_settings.json` under the `"language"` key. Emits the `languageChanged` signal when set.
+  - **Dynamic Retranslation Engine**: In `main.cpp`, instantiated a persistent `QTranslator` object. Defined a loader function that connects to the `Settings::languageChanged` signal. When triggered, the translator dynamically loads the resource-linked binary translation file (`megu_pack_optimizer_uk.qm`), installs it into `QGuiApplication`, and triggers `QQmlApplicationEngine::retranslate()` to refresh all active bindings in the UI.
+  - **UI Language Selector**: Created an elegant language selection panel in `SettingsView.qml` conforming to the Neo-Luna dark slate and Zune Amber design. The selector uses button elements bound reactively to `settingsBackend.language`.
+  - **Build and CI Automation**:
+    - Wrote the translation source file `translations/megu_pack_optimizer_uk.ts` containing the mapping definitions for all contexts and messages.
+    - Updated `CMakeLists.txt` to embed the compiled `translations/megu_pack_optimizer_uk.qm` directly inside the binary's resources under `qrc:/MeguPackOptimizer/translations/megu_pack_optimizer_uk.qm`.
+    - Modified local build script `build.bat` and GitHub Actions runner file `.github/workflows/build.yml` to call `lrelease` to compile `.ts` into `.qm` resource files automatically before triggering the CMake configuration step.
+    - Added automatic deployment copy of the resulting binary into the user-specified directory `C:\Users\alexa\Desktop\New` after a successful build execution.

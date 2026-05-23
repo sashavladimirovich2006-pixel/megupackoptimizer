@@ -2,6 +2,7 @@
 #include <QQmlApplicationEngine>
 #include <QQmlContext>
 #include <QIcon>
+#include <QTranslator>
 #include <iostream>
 #include "logger.h"
 #include "settings.h"
@@ -28,6 +29,29 @@ int main(int argc, char* argv[]) {
 
     QQmlApplicationEngine engine;
     engine.addImportPath("qrc:/");
+
+    // Translator setup
+    QTranslator translator;
+    auto loadLanguage = [&app, &engine, &translator](const QString &lang) {
+        app.removeTranslator(&translator);
+        if (lang == "uk") {
+            if (translator.load(":/MeguPackOptimizer/translations/megu_pack_optimizer_uk.qm")) {
+                app.installTranslator(&translator);
+                Logger::log("Ukrainian translation loaded successfully", "INFO");
+            } else {
+                Logger::log("Failed to load Ukrainian translation from resource path", "WARNING");
+            }
+        } else {
+            Logger::log("Default language (English) selected", "INFO");
+        }
+        engine.retranslate();
+    };
+
+    // Load initial language
+    loadLanguage(settingsInstance.language());
+
+    // Connect language change signal to reload language dynamically
+    QObject::connect(&settingsInstance, &Settings::languageChanged, &app, loadLanguage);
 
     // Register backend contexts to QML for reactive bindings
     engine.rootContext()->setContextProperty("loggerBackend", &loggerInstance);
