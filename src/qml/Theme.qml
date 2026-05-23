@@ -16,11 +16,11 @@ Item {
 
     Timer {
         id: rgbTimer
-        interval: 32 // ~30fps, smooth slow color cycling
+        interval: 16 // smooth 60fps cycling
         running: root.currentTheme === "Ргб"
         repeat: true
         onTriggered: {
-            root.rgbHue += 0.0003
+            root.rgbHue += 0.001
             if (root.rgbHue > 1.0) {
                 root.rgbHue -= 1.0
             }
@@ -33,8 +33,8 @@ Item {
         if (currentTheme === "Темная") return "#0B1019";
         if (currentTheme === "Blackout полностью черная") return "#000000";
         if (currentTheme === "Ргб") return "#050508";
-        if (currentTheme === "Розовая") return "#FFF0F3";
-        if (currentTheme === "Black pink") return "#000000";
+        if (currentTheme === "Розовая") return "#FCF8F9";
+        if (currentTheme === "Black pink") return "#050406";
         return "#0B1019";
     }
 
@@ -43,8 +43,8 @@ Item {
         if (currentTheme === "Темная") return "#070A10";
         if (currentTheme === "Blackout полностью черная") return "#000000";
         if (currentTheme === "Ргб") return "#020204";
-        if (currentTheme === "Розовая") return "#FFCCD5";
-        if (currentTheme === "Black pink") return "#080808";
+        if (currentTheme === "Розовая") return "#F5EBED";
+        if (currentTheme === "Black pink") return "#0A090D";
         return "#070A10";
     }
 
@@ -53,8 +53,8 @@ Item {
         if (currentTheme === "Темная") return "#131924";
         if (currentTheme === "Blackout полностью черная") return "#0C0C0C";
         if (currentTheme === "Ргб") return "#0A0A0F";
-        if (currentTheme === "Розовая") return "#FFF5F7";
-        if (currentTheme === "Black pink") return "#120212";
+        if (currentTheme === "Розовая") return "#FFFFFF";
+        if (currentTheme === "Black pink") return "#110F15";
         return "#131924";
     }
 
@@ -63,8 +63,8 @@ Item {
         if (currentTheme === "Темная") return "#0E1420";
         if (currentTheme === "Blackout полностью черная") return "#080808";
         if (currentTheme === "Ргб") return "#040406";
-        if (currentTheme === "Розовая") return "#FFB3C1";
-        if (currentTheme === "Black pink") return "#060106";
+        if (currentTheme === "Розовая") return "#F0E0E3";
+        if (currentTheme === "Black pink") return "#0D0B10";
         return "#0E1420";
     }
     
@@ -74,8 +74,8 @@ Item {
         if (currentTheme === "Белоснежная") return "#E2E8F0";
         if (currentTheme === "Темная") return "#202D44";
         if (currentTheme === "Blackout полностью черная") return "#1F1F1F";
-        if (currentTheme === "Розовая") return "#FF85A2";
-        if (currentTheme === "Black pink") return "#FF1493";
+        if (currentTheme === "Розовая") return "#E5CCD1";
+        if (currentTheme === "Black pink") return "#3A1E2A";
         return "#202D44";
     }
 
@@ -84,8 +84,8 @@ Item {
         if (currentTheme === "Белоснежная") return "#CBD5E1";
         if (currentTheme === "Темная") return "#304264";
         if (currentTheme === "Blackout полностью черная") return "#2C2C2E";
-        if (currentTheme === "Розовая") return "#FF4D6D";
-        if (currentTheme === "Black pink") return "#FF69B4";
+        if (currentTheme === "Розовая") return "#D4A3AE";
+        if (currentTheme === "Black pink") return "#FF5E97";
         return "#304264";
     }
 
@@ -94,8 +94,8 @@ Item {
         if (currentTheme === "Белоснежная") return "#3B82F620";
         if (currentTheme === "Темная") return "#FFBF0025";
         if (currentTheme === "Blackout полностью черная") return "#FF9F0A20";
-        if (currentTheme === "Розовая") return "#FF4D6D25";
-        if (currentTheme === "Black pink") return "#FF149335";
+        if (currentTheme === "Розовая") return "#D48C9C20";
+        if (currentTheme === "Black pink") return "#FF5E9720";
         return "#FFBF0025";
     }
     
@@ -105,8 +105,8 @@ Item {
         if (currentTheme === "Темная") return "#F8FAFC";
         if (currentTheme === "Blackout полностью черная") return "#FFFFFF";
         if (currentTheme === "Ргб") return "#FFFFFF";
-        if (currentTheme === "Розовая") return "#5C0D24";
-        if (currentTheme === "Black pink") return "#FFFFFF";
+        if (currentTheme === "Розовая") return "#3D2228";
+        if (currentTheme === "Black pink") return "#F8F9FA";
         return "#F8FAFC";
     }
 
@@ -115,8 +115,8 @@ Item {
         if (currentTheme === "Темная") return "#94A3B8";
         if (currentTheme === "Blackout полностью черная") return "#A1A1A6";
         if (currentTheme === "Ргб") return "#A1A1A6";
-        if (currentTheme === "Розовая") return "#800F2F";
-        if (currentTheme === "Black pink") return "#FF69B4";
+        if (currentTheme === "Розовая") return "#6E4951";
+        if (currentTheme === "Black pink") return "#E598B7";
         return "#94A3B8";
     }
 
@@ -125,8 +125,8 @@ Item {
         if (currentTheme === "Темная") return "#64748B";
         if (currentTheme === "Blackout полностью черная") return "#515154";
         if (currentTheme === "Ргб") return "#515154";
-        if (currentTheme === "Розовая") return "#C9184A";
-        if (currentTheme === "Black pink") return "#C71585";
+        if (currentTheme === "Розовая") return "#9C737C";
+        if (currentTheme === "Black pink") return "#A37389";
         return "#64748B";
     }
 
@@ -135,8 +135,8 @@ Item {
         if (currentTheme === "Темная") return "#0B1019";
         if (currentTheme === "Blackout полностью черная") return "#000000";
         if (currentTheme === "Ргб") return "#000000";
-        if (currentTheme === "Розовая") return "#FFF0F3";
-        if (currentTheme === "Black pink") return "#000000";
+        if (currentTheme === "Розовая") return "#FFFFFF";
+        if (currentTheme === "Black pink") return "#050406";
         return "#0B1019";
     }
     
@@ -145,8 +145,8 @@ Item {
         if (currentTheme === "Ргб") return rgbAccent;
         if (currentTheme === "Белоснежная") return "#3B82F6"; // Fluent Blue
         if (currentTheme === "Blackout полностью черная") return "#FF9F0A"; // Neon Gold
-        if (currentTheme === "Розовая") return "#FF4D6D"; // Vibrant Plum Rose
-        if (currentTheme === "Black pink") return "#FF1493"; // Laser Pink
+        if (currentTheme === "Розовая") return "#D48C9C"; // Premium Blush Rose Gold
+        if (currentTheme === "Black pink") return "#FF5E97"; // Cyber Blush Orchid
         return "#FFBF00"; // Dark Slate Zune Amber
     }
 
@@ -154,8 +154,8 @@ Item {
         if (currentTheme === "Ргб") return rgbAccentLight;
         if (currentTheme === "Белоснежная") return "#60A5FA";
         if (currentTheme === "Blackout полностью черная") return "#FFE082";
-        if (currentTheme === "Розовая") return "#FF758F";
-        if (currentTheme === "Black pink") return "#FF69B4";
+        if (currentTheme === "Розовая") return "#E5B3BE";
+        if (currentTheme === "Black pink") return "#FF85B2";
         return "#FFE082";
     }
 
@@ -163,8 +163,8 @@ Item {
         if (currentTheme === "Ргб") return rgbAccentDark;
         if (currentTheme === "Белоснежная") return "#1D4ED8";
         if (currentTheme === "Blackout полностью черная") return "#FF8F00";
-        if (currentTheme === "Розовая") return "#C9184A";
-        if (currentTheme === "Black pink") return "#C71585";
+        if (currentTheme === "Розовая") return "#B26A7A";
+        if (currentTheme === "Black pink") return "#D6336B";
         return "#FF8F00";
     }
 
@@ -176,8 +176,8 @@ Item {
         if (currentTheme === "Ргб") return rgbAccentGlow;
         if (currentTheme === "Белоснежная") return "#3B82F635";
         if (currentTheme === "Blackout полностью черная") return "#FF9F0A30";
-        if (currentTheme === "Розовая") return "#FF4D6D35";
-        if (currentTheme === "Black pink") return "#FF149335";
+        if (currentTheme === "Розовая") return "#D48C9C35";
+        if (currentTheme === "Black pink") return "#FF5E9735";
         return "#FFBF0035";
     }
 
@@ -185,8 +185,8 @@ Item {
         if (currentTheme === "Ргб") return rgbAccentDim;
         if (currentTheme === "Белоснежная") return "#3B82F615";
         if (currentTheme === "Blackout полностью черная") return "#FF9F0A15";
-        if (currentTheme === "Розовая") return "#FF4D6D15";
-        if (currentTheme === "Black pink") return "#FF149315";
+        if (currentTheme === "Розовая") return "#D48C9C15";
+        if (currentTheme === "Black pink") return "#FF5E9715";
         return "#FFBF0015";
     }
     

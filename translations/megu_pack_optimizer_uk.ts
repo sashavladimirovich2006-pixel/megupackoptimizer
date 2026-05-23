@@ -231,7 +231,7 @@
         <translation>НАЛАШТУВАННЯ ІНДЕКСАЦІЇ</translation>
     </message>
     <message>
-        <source>XBOX APP & GAME BAR</source>
+        <source>XBOX APP &amp; GAME BAR</source>
         <translation>XBOX APP ТА GAME BAR</translation>
     </message>
     <message>
