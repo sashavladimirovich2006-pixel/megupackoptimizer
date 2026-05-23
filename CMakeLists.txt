@@ -39,6 +39,7 @@ qt_add_qml_module(megu_pack_optimizer
         src/qml/components/MeguSwitch.qml
         src/qml/components/MeguProgressBar.qml
         src/qml/components/LogViewer.qml
+        src/qml/components/SpecCard.qml
         src/qml/views/DashboardView.qml
         src/qml/views/SettingsView.qml
     RESOURCES
@@ -50,6 +51,13 @@ qt_add_qml_module(megu_pack_optimizer
         src/resources/check.svg
         src/resources/close.svg
         src/resources/terminal.svg
+        src/resources/monitor.svg
+        src/resources/cpu.svg
+        src/resources/cores.svg
+        src/resources/ram.svg
+        src/resources/gpu.svg
+        src/resources/motherboard.svg
+        src/resources/storage.svg
         translations/megu_pack_optimizer_uk.qm
 )
 

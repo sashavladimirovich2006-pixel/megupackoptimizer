@@ -4,48 +4,144 @@ import QtQuick
 QtObject {
     id: root
 
-    // --- NEO-LUNA PALETTE (Windows XP + Acrylic + Zune) ---
-    
+    property string currentTheme: "Dark"
+
     // Background Colors
-    readonly property color background: "#131924"      // Deep Slate Blue Base (60%)
-    readonly property color panelBg: "#D8212D44"       // Acrylic Glazed Slate Blue (~85% opaque #212D44)
-    readonly property color headerBg: "#E01A2436"      // Acrylic Tint Header
+    property color background: "#0B1019"
+    property color sidebarBg: "#080B12"
+    property color panelBg: "#131924"
+    property color headerBg: "#0E1420"
     
     // Borders & Outlines
-    readonly property color border: "#354769"          // Clean structural border
-    readonly property color borderHover: "#4A618F"     // Border on hover
-    readonly property color borderGlow: "#FFBF0025"     // Amber border glow
+    property color border: "#202D44"
+    property color borderHover: "#304264"
+    property color borderGlow: "#3B82F625"
     
     // Text Colors
-    readonly property color textPrimary: "#F8FAFC"     // Crisp white (Slate Blue 50)
-    readonly property color textSecondary: "#99A9C4"   // Dimmed slate (Slate Blue 300)
-    readonly property color textMuted: "#5F7499"       // Subdued slate (Slate Blue 500)
-    readonly property color textInverse: "#0C111A"     // Dark background contrast
+    property color textPrimary: "#F8FAFC"
+    property color textSecondary: "#99A9C4"
+    property color textMuted: "#5F7499"
+    property color textInverse: "#0C111A"
     
-    // Zune Accent System (10%)
-    readonly property color accent: "#FFBF00"          // Amber Orange 500
-    readonly property color accentLight: "#FFD033"     // Amber Orange 400 (Hover/Highlight)
-    readonly property color accentDark: "#D69F00"      // Amber Orange 600 (Press)
-    readonly property color accentGlow: "#FFBF0035"     // Glowing highlight drop shadow
-    readonly property color accentDim: "#FFBF0015"      // Low opacity accent
+    // Accents
+    property color accent: "#3B82F6"
+    property color accentLight: "#60A5FA"
+    property color accentDark: "#1D4ED8"
+    property color yellowAccent: "#FFBF00" // Amber
+    property color accentGlow: "#3B82F635"
+    property color accentDim: "#3B82F615"
     
     // Functional Colors
-    readonly property color success: "#10B981"         // Emerald Green
-    readonly property color warning: "#F59E0B"         // Amber Yellow
-    readonly property color error: "#EF4444"           // Crimson Red
-    readonly property color info: "#3B82F6"            // Bright Blue
+    readonly property color success: "#10B981"
+    readonly property color warning: "#F59E0B"
+    readonly property color error: "#EF4444"
+    readonly property color info: "#3B82F6"
 
-    // --- TYPOGRAPHY ---
+    // Typography
     readonly property string fontFamily: "Segoe UI Variable, Inter, Outfit, -apple-system, sans-serif"
 
-    // --- UI METRICS & GEOMETRY ---
-    // Radius values for the formula R_inner = R_outer - D
+    // UI Metrics & Geometry
     readonly property int radiusLarge: 16
     readonly property int radiusNormal: 10
     readonly property int radiusSmall: 6
 
-    // --- ANIMATION DURATIONS ---
+    // Animation Durations
     readonly property int animFast: 120
     readonly property int animNormal: 250
     readonly property int animSlow: 400
+
+    function setTheme(name) {
+        currentTheme = name;
+        if (name === "Light Mode") {
+            background = "#F1F5F9";
+            sidebarBg = "#E2E8F0";
+            panelBg = "#FFFFFF";
+            headerBg = "#CBD5E1";
+            border = "#CBD5E1";
+            borderHover = "#94A3B8";
+            borderGlow = "#2563EB25";
+            textPrimary = "#0F172A";
+            textSecondary = "#475569";
+            textMuted = "#94A3B8";
+            textInverse = "#F8FAFC";
+            accent = "#2563EB";
+            accentLight = "#3B82F6";
+            accentDark = "#1D4ED8";
+            yellowAccent = "#D97706";
+            accentGlow = "#2563EB35";
+            accentDim = "#2563EB15";
+        } else if (name === "Dark") {
+            background = "#0B1019";
+            sidebarBg = "#080B12";
+            panelBg = "#131924";
+            headerBg = "#0E1420";
+            border = "#202D44";
+            borderHover = "#304264";
+            borderGlow = "#3B82F625";
+            textPrimary = "#F8FAFC";
+            textSecondary = "#99A9C4";
+            textMuted = "#5F7499";
+            textInverse = "#0C111A";
+            accent = "#3B82F6";
+            accentLight = "#60A5FA";
+            accentDark = "#1D4ED8";
+            yellowAccent = "#FFBF00";
+            accentGlow = "#3B82F635";
+            accentDim = "#3B82F615";
+        } else if (name === "OLED Blackout") {
+            background = "#000000";
+            sidebarBg = "#000000";
+            panelBg = "#0C0C0C";
+            headerBg = "#050505";
+            border = "#1E1E1E";
+            borderHover = "#2E2E2E";
+            borderGlow = "#FFFFFF25";
+            textPrimary = "#FFFFFF";
+            textSecondary = "#A0A0A0";
+            textMuted = "#505050";
+            textInverse = "#000000";
+            accent = "#FFFFFF";
+            accentLight = "#E0E0E0";
+            accentDark = "#808080";
+            yellowAccent = "#FFBF00";
+            accentGlow = "#FFFFFF35";
+            accentDim = "#FFFFFF15";
+        } else if (name === "RGB Gamer") {
+            background = "#0B0B0F";
+            sidebarBg = "#050508";
+            panelBg = "#12121A";
+            headerBg = "#08080C";
+            border = "#EF4444";
+            borderHover = "#F87171";
+            borderGlow = "#FF007F25";
+            textPrimary = "#00FF66";
+            textSecondary = "#00FFFF";
+            textMuted = "#666688";
+            textInverse = "#0C111A";
+            accent = "#FF007F";
+            accentLight = "#FF66B2";
+            accentDark = "#C70039";
+            yellowAccent = "#FFCC00";
+            accentGlow = "#FF007F35";
+            accentDim = "#FF007F15";
+        } else if (name === "Sakura Pink") {
+            background = "#FFF0F3";
+            sidebarBg = "#FFE3E8";
+            panelBg = "#FFFFFF";
+            headerBg = "#FFD3DA";
+            border = "#FFCCD5";
+            borderHover = "#FFB3C1";
+            borderGlow = "#FF85A225";
+            textPrimary = "#593D44";
+            textSecondary = "#805E66";
+            textMuted = "#C299A2";
+            textInverse = "#FFF0F3";
+            accent = "#FF85A2";
+            accentLight = "#FFA4B6";
+            accentDark = "#F26487";
+            yellowAccent = "#FFB703";
+            accentGlow = "#FF85A235";
+            accentDim = "#FF85A215";
+        }
+    }
 }

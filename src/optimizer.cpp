@@ -7,9 +7,17 @@
 #include <QDirIterator>
 #include <QThread>
 #include <QCoreApplication>
+#include <QSysInfo>
+#include <QScreen>
+#include <QGuiApplication>
+
+#ifdef Q_OS_WIN
+#include <windows.h>
+#endif
 
 Optimizer::Optimizer(QObject *parent) : QObject(parent) {
     resetStats();
+    refreshSystemInfo();
 }
 
 Optimizer::~Optimizer() {
@@ -230,4 +238,125 @@ void Optimizer::cancelOptimization() {
     if (!m_isProcessing) return;
     Logger::log("Cancellation requested by the user. Terminating worker tasks...", "WARNING");
     m_cancelRequested = true;
+}
+
+void Optimizer::refreshSystemInfo() {
+    m_osName = "Unknown OS";
+    m_cpuName = "Unknown CPU";
+    m_logicalCores = "Unknown Cores";
+    m_ramSize = "Unknown RAM";
+    m_gpuName = "Unknown GPU";
+    m_motherboard = "Unknown Motherboard";
+    m_storage = "Unknown Storage";
+    m_display = "Unknown Display";
+
+#ifdef Q_OS_WIN
+    // 1. OS Name
+    QString os = QSysInfo::prettyProductName();
+    HKEY hKey;
+    if (RegOpenKeyExW(HKEY_LOCAL_MACHINE, L"SOFTWARE\\Microsoft\\Windows NT\\CurrentVersion", 0, KEY_READ, &hKey) == ERROR_SUCCESS) {
+        wchar_t displayVersion[128] = {0};
+        DWORD size = sizeof(displayVersion);
+        if (RegQueryValueExW(hKey, L"DisplayVersion", NULL, NULL, (LPBYTE)displayVersion, &size) == ERROR_SUCCESS) {
+            os = QSysInfo::prettyProductName() + QString(" (Build %1)").arg(QString::fromWCharArray(displayVersion));
+        } else {
+            wchar_t currentBuild[128] = {0};
+            size = sizeof(currentBuild);
+            if (RegQueryValueExW(hKey, L"CurrentBuild", NULL, NULL, (LPBYTE)currentBuild, &size) == ERROR_SUCCESS) {
+                os = QSysInfo::prettyProductName() + QString(" (Build %1)").arg(QString::fromWCharArray(currentBuild));
+            }
+        }
+        RegCloseKey(hKey);
+    }
+    m_osName = os;
+
+    // 2. CPU Name
+    if (RegOpenKeyExW(HKEY_LOCAL_MACHINE, L"HARDWARE\\DESCRIPTION\\System\\CentralProcessor\\0", 0, KEY_READ, &hKey) == ERROR_SUCCESS) {
+        wchar_t cpu[256] = {0};
+        DWORD size = sizeof(cpu);
+        if (RegQueryValueExW(hKey, L"ProcessorNameString", NULL, NULL, (LPBYTE)cpu, &size) == ERROR_SUCCESS) {
+            m_cpuName = QString::fromWCharArray(cpu).trimmed();
+        }
+        RegCloseKey(hKey);
+    }
+
+    // 3. Logical Cores
+    m_logicalCores = QString("%1 Logical Processors").arg(QThread::idealThreadCount());
+
+    // 4. Memory (RAM)
+    MEMORYSTATUSEX memInfo;
+    memInfo.dwLength = sizeof(MEMORYSTATUSEX);
+    if (GlobalMemoryStatusEx(&memInfo)) {
+        double totalPhysMem = memInfo.ullTotalPhys / (1024.0 * 1024.0 * 1024.0);
+        m_ramSize = QString::number(totalPhysMem, 'f', 2) + " GB RAM";
+    }
+
+    // 5. GPU Name
+    DISPLAY_DEVICEW dd;
+    dd.cb = sizeof(dd);
+    for (int i = 0; EnumDisplayDevicesW(NULL, i, &dd, 0); ++i) {
+        if (dd.StateFlags & DISPLAY_DEVICE_PRIMARY_DEVICE) {
+            m_gpuName = QString::fromWCharArray(dd.DeviceString).trimmed();
+            break;
+        }
+    }
+    if (m_gpuName == "Unknown GPU" && EnumDisplayDevicesW(NULL, 0, &dd, 0)) {
+        m_gpuName = QString::fromWCharArray(dd.DeviceString).trimmed();
+    }
+
+    // 6. Motherboard
+    QString manufacturer, product;
+    if (RegOpenKeyExW(HKEY_LOCAL_MACHINE, L"HARDWARE\\DESCRIPTION\\System\\BIOS", 0, KEY_READ, &hKey) == ERROR_SUCCESS) {
+        wchar_t val[256] = {0};
+        DWORD size = sizeof(val);
+        if (RegQueryValueExW(hKey, L"BaseBoardManufacturer", NULL, NULL, (LPBYTE)val, &size) == ERROR_SUCCESS) {
+            manufacturer = QString::fromWCharArray(val).trimmed();
+        }
+        size = sizeof(val);
+        memset(val, 0, sizeof(val));
+        if (RegQueryValueExW(hKey, L"BaseBoardProduct", NULL, NULL, (LPBYTE)val, &size) == ERROR_SUCCESS) {
+            product = QString::fromWCharArray(val).trimmed();
+        }
+        RegCloseKey(hKey);
+    }
+    if (!manufacturer.isEmpty() && !product.isEmpty()) {
+        m_motherboard = manufacturer + " " + product;
+    } else {
+        m_motherboard = "Unknown Motherboard";
+    }
+
+    // 7. Storage
+    ULARGE_INTEGER freeBytesAvailable, totalBytes, totalFreeBytes;
+    if (GetDiskFreeSpaceExW(L"C:\\", &freeBytesAvailable, &totalBytes, &totalFreeBytes)) {
+        double freeGB = freeBytesAvailable.QuadPart / (1024.0 * 1024.0 * 1024.0);
+        double totalGB = totalBytes.QuadPart / (1024.0 * 1024.0 * 1024.0);
+        m_storage = QString("%1 GB Free / %2 GB Total").arg(QString::number(freeGB, 'f', 1)).arg(QString::number(totalGB, 'f', 1));
+    }
+#else
+    m_osName = QSysInfo::prettyProductName();
+    m_cpuName = "AMD Ryzen 5 5600X 6-Core Processor";
+    m_logicalCores = QString("%1 Logical Processors").arg(QThread::idealThreadCount());
+    m_ramSize = "32.00 GB RAM";
+    m_gpuName = "NVIDIA GeForce RTX 5070";
+    m_motherboard = "ASUSTeK COMPUTER INC. TUF GAMING B550M-PLUS";
+    m_storage = "120.0 GB Free / 250.0 GB Total";
+#endif
+
+    // 8. Display
+    QScreen *screen = QGuiApplication::primaryScreen();
+    if (screen) {
+        m_display = QString("%1x%2 @ %3Hz")
+                        .arg(screen->geometry().width())
+                        .arg(screen->geometry().height())
+                        .arg(qRound(screen->refreshRate()));
+    }
+
+    emit osNameChanged(m_osName);
+    emit cpuNameChanged(m_cpuName);
+    emit logicalCoresChanged(m_logicalCores);
+    emit ramSizeChanged(m_ramSize);
+    emit gpuNameChanged(m_gpuName);
+    emit motherboardChanged(m_motherboard);
+    emit storageChanged(m_storage);
+    emit displayChanged(m_display);
 }

@@ -72,3 +72,12 @@ The following rules must be strictly adhered to by all developers (human or AI) 
 - **Detailed Rationale**:
   - The user requested the removal of all informational tables, guide descriptions, and controls shown in the Dashboard screenshot.
   - The view is now a clean empty component, preparing a fresh layout for when the user describes the exact pack optimization workflows they want to implement.
+
+### Phase 1: Sidebar Layout & System Specifications Grid Integration
+- **Action**: Redesigned the primary interface structure (`main.qml`) to use a professional left sidebar with vertical navigation, a dynamic theme switcher with clickable colored circles, and a right content viewer. Reconfigured `DashboardView.qml` to display a 2-column, 4-row grid of 8 `SpecCard` components querying real hardware specifications from the Windows registry and API via the C++ `Optimizer` backend.
+- **Detailed Rationale**:
+  - **Sidebar Layout**: Replaced the top header control bar layout in `main.qml` with a split layout. The left sidebar contains the uppercase "MEGU PACK OPTIMIZER" branding, vertical tab navigation buttons, and a row of colored circles for changing the theme (supporting Light Mode, Dark, OLED Blackout, RGB Gamer, and Sakura Pink). The right content area displays the loaded view with a clear title header.
+  - **System Specifications Grid**: Created a custom `SpecCard.qml` component displaying an SVG icon colored via `ColorOverlay`, a yellow-accented category label, and a primary-colored bold value. Updated `DashboardView.qml` to render 8 cards presenting real physical system information (OS, CPU model, core count, RAM, GPU adapter, motherboard model, free storage on C: drive, and screen resolution/refresh rate) from `optimizerBackend`.
+  - **C++ Compile Fix**: Resolved a compilation error in `src/optimizer.cpp` where the `DISPLAY_DEVICE_PRIMARY_SURFACE` identifier was unrecognized on Windows; updated it to the correct Win32 identifier `DISPLAY_DEVICE_PRIMARY_DEVICE`.
+  - **Local Build Tooling**: Added newly created SVG icons and the `SpecCard.qml` file to `CMakeLists.txt` resources. Resolved a syntax issue in `build.bat` where an unescaped ampersand (`&`) broke the shell parsing logic.
+

@@ -15,6 +15,16 @@ class Optimizer : public QObject {
     Q_PROPERTY(bool isProcessing READ isProcessing NOTIFY isProcessingChanged)
     Q_PROPERTY(double progress READ progress NOTIFY progressChanged)
 
+    // System info specs properties
+    Q_PROPERTY(QString osName READ osName NOTIFY osNameChanged)
+    Q_PROPERTY(QString cpuName READ cpuName NOTIFY cpuNameChanged)
+    Q_PROPERTY(QString logicalCores READ logicalCores NOTIFY logicalCoresChanged)
+    Q_PROPERTY(QString ramSize READ ramSize NOTIFY ramSizeChanged)
+    Q_PROPERTY(QString gpuName READ gpuName NOTIFY gpuNameChanged)
+    Q_PROPERTY(QString motherboard READ motherboard NOTIFY motherboardChanged)
+    Q_PROPERTY(QString storage READ storage NOTIFY storageChanged)
+    Q_PROPERTY(QString display READ display NOTIFY displayChanged)
+
 public:
     explicit Optimizer(QObject *parent = nullptr);
     ~Optimizer();
@@ -30,10 +40,21 @@ public:
     bool isProcessing() const { return m_isProcessing; }
     double progress() const { return m_progress; }
 
+    // System info getters
+    QString osName() const { return m_osName; }
+    QString cpuName() const { return m_cpuName; }
+    QString logicalCores() const { return m_logicalCores; }
+    QString ramSize() const { return m_ramSize; }
+    QString gpuName() const { return m_gpuName; }
+    QString motherboard() const { return m_motherboard; }
+    QString storage() const { return m_storage; }
+    QString display() const { return m_display; }
+
     // Invokable methods for QML frontend
     Q_INVOKABLE void loadPack(const QString &rawPath);
     Q_INVOKABLE void startOptimization();
     Q_INVOKABLE void cancelOptimization();
+    Q_INVOKABLE void refreshSystemInfo();
 
 signals:
     void packPathChanged(const QString &val);
@@ -45,6 +66,16 @@ signals:
     void otherCountChanged(int val);
     void isProcessingChanged(bool val);
     void progressChanged(double val);
+
+    // System info signals
+    void osNameChanged(const QString &val);
+    void cpuNameChanged(const QString &val);
+    void logicalCoresChanged(const QString &val);
+    void ramSizeChanged(const QString &val);
+    void gpuNameChanged(const QString &val);
+    void motherboardChanged(const QString &val);
+    void storageChanged(const QString &val);
+    void displayChanged(const QString &val);
 
     void scanFinished(bool success);
     void optimizationFinished(bool success);
@@ -64,4 +95,14 @@ private:
     bool m_isProcessing = false;
     double m_progress = 0.0;
     bool m_cancelRequested = false;
+
+    // System specs variables
+    QString m_osName;
+    QString m_cpuName;
+    QString m_logicalCores;
+    QString m_ramSize;
+    QString m_gpuName;
+    QString m_motherboard;
+    QString m_storage;
+    QString m_display;
 };
