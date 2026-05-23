@@ -196,7 +196,10 @@ Item {
             anchors.centerIn: parent
             width: 180
             height: 40
-            enabled: !optimizerBackend.isOptimizingSystem
+            enabled: !optimizerBackend.isOptimizingSystem && 
+                     ((root.subSearch !== optimizerBackend.winSearchActive) || 
+                      (root.subC !== optimizerBackend.driveCActive) || 
+                      (root.subDetected !== optimizerBackend.detectedDriveActive))
             onClicked: {
                 stepLogModel.clear();
                 optimizerBackend.startSystemOptimization(root.subSearch, root.subC, root.subDetected);
@@ -290,14 +293,14 @@ Item {
                     Behavior on color { ColorAnimation { duration: Theme.animNormal } }
                 }
 
-                // Sub-functions list
                 ScrollView {
+                    id: subScroll
                     width: parent.width
                     height: parent.height - 80
                     clip: true
 
                     Column {
-                        width: parent.width - 12
+                        width: subScroll.width - 12
                         spacing: 24
 
                         // 1. Windows Search service

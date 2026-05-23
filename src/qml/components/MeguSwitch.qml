@@ -88,14 +88,9 @@ Item {
         cursorShape: control.enabled ? Qt.PointingHandCursor : Qt.ArrowCursor
         onClicked: {
             if (control.enabled) {
-                // If it was indeterminate, toggling should turn it ON (checked=true, indeterminate=false)
-                if (control.indeterminate) {
-                    control.indeterminate = false;
-                    control.checked = true;
-                } else {
-                    control.checked = !control.checked;
-                }
-                control.toggled(control.checked);
+                // If it was indeterminate, toggling should turn it ON (checked=true)
+                var nextState = control.indeterminate ? true : !control.checked;
+                control.toggled(nextState);
             }
         }
     }
