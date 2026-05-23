@@ -196,17 +196,34 @@ void Optimizer::loadSystemStates() {
     emit gamingOverlayActiveChanged(m_gamingOverlayActive);
     emit originalGamingOverlayActiveChanged(m_originalGamingOverlayActive);
 
-    // Check Multi-Plane Overlay (MPO) OverlayTestMode in registry
+    // Check Multi-Plane Overlay (MPO) state in registry
     int currentMpo = 0; // default 0 (MPO Enabled)
 #ifdef Q_OS_WIN
-    HKEY hKeyDwm;
-    if (RegOpenKeyExW(HKEY_LOCAL_MACHINE, L"SOFTWARE\\Microsoft\\Windows\\Dwm", 0, KEY_READ, &hKeyDwm) == ERROR_SUCCESS) {
+    HKEY hKeyDrivers;
+    bool mpoDisabledAtDriver = false;
+    if (RegOpenKeyExW(HKEY_LOCAL_MACHINE, L"SYSTEM\\CurrentControlSet\\Control\\GraphicsDrivers", 0, KEY_READ, &hKeyDrivers) == ERROR_SUCCESS) {
         DWORD value = 0;
         DWORD size = sizeof(value);
-        if (RegQueryValueExW(hKeyDwm, L"OverlayTestMode", NULL, NULL, (LPBYTE)&value, &size) == ERROR_SUCCESS) {
-            currentMpo = static_cast<int>(value);
+        if (RegQueryValueExW(hKeyDrivers, L"DisableMPO", NULL, NULL, (LPBYTE)&value, &size) == ERROR_SUCCESS) {
+            if (value == 1) {
+                mpoDisabledAtDriver = true;
+            }
         }
-        RegCloseKey(hKeyDwm);
+        RegCloseKey(hKeyDrivers);
+    }
+
+    if (mpoDisabledAtDriver) {
+        currentMpo = 5;
+    } else {
+        HKEY hKeyDwm;
+        if (RegOpenKeyExW(HKEY_LOCAL_MACHINE, L"SOFTWARE\\Microsoft\\Windows\\Dwm", 0, KEY_READ, &hKeyDwm) == ERROR_SUCCESS) {
+            DWORD value = 0;
+            DWORD size = sizeof(value);
+            if (RegQueryValueExW(hKeyDwm, L"OverlayTestMode", NULL, NULL, (LPBYTE)&value, &size) == ERROR_SUCCESS) {
+                currentMpo = static_cast<int>(value);
+            }
+            RegCloseKey(hKeyDwm);
+        }
     }
 #else
     currentMpo = 5; // Simulation default
@@ -909,11 +926,11 @@ void Optimizer::applyMpoValue(int value) {
         // Support modern Windows 11 alternative graphics drivers key
         HKEY hKeyDrivers;
         if (RegCreateKeyExW(HKEY_LOCAL_MACHINE, L"SYSTEM\\CurrentControlSet\\Control\\GraphicsDrivers", 0, NULL, REG_OPTION_NON_VOLATILE, KEY_WRITE, NULL, &hKeyDrivers, NULL) == ERROR_SUCCESS) {
-            if (value == 0) {
-                RegDeleteValueW(hKeyDrivers, L"DisableMPO");
-            } else {
+            if (value == 5) {
                 DWORD val = 1;
                 RegSetValueExW(hKeyDrivers, L"DisableMPO", 0, REG_DWORD, (const BYTE*)&val, sizeof(val));
+            } else {
+                RegDeleteValueW(hKeyDrivers, L"DisableMPO");
             }
             RegCloseKey(hKeyDrivers);
         }
