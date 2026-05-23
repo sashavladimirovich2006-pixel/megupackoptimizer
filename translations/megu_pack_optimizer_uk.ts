@@ -391,7 +391,7 @@
     <message>
         <location filename="../src/qml/main.qml" line="14"/>
         <source>Megu Pack Optimizer</source>
-        <translation>Мегу Оптимізатор Паків</translation>
+        <translation>Мегу Пак Оптимізатор</translation>
     </message>
     <message>
         <location filename="../src/qml/main.qml" line="60"/>

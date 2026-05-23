@@ -8,21 +8,40 @@ Item {
     id: root
     anchors.fill: parent
 
-    // Target States (synced from backend initially, then edited locally before Optimize is clicked)
-    property bool subSearch: optimizerBackend.winSearchActive
-    property bool subC: optimizerBackend.driveCActive
-    property bool subDetected: optimizerBackend.detectedDriveActive
+    // Tri-State derived logic for main switch based on live states in backend
+    property bool allChecked: {
+        if (!optimizerBackend.winSearchActive) return false;
+        if (!optimizerBackend.driveStates || !optimizerBackend.driveStates["C:"]) return false;
+        var drives = optimizerBackend.fixedDrives;
+        for (var i = 0; i < drives.length; i++) {
+            var letter = drives[i];
+            if (!optimizerBackend.driveStates[letter]) return false;
+        }
+        return true;
+    }
+    property bool allUnchecked: {
+        if (optimizerBackend.winSearchActive) return false;
+        if (!optimizerBackend.driveStates || optimizerBackend.driveStates["C:"]) return false;
+        var drives = optimizerBackend.fixedDrives;
+        for (var i = 0; i < drives.length; i++) {
+            var letter = drives[i];
+            if (optimizerBackend.driveStates[letter]) return false;
+        }
+        return true;
+    }
+    property bool mainChecked: allChecked
+    property bool mainIndeterminate: !allChecked && !allUnchecked
 
-    // Tri-State derived logic for main switch
-    property bool mainChecked: subSearch && subC && subDetected
-    property bool mainIndeterminate: (subSearch || subC || subDetected) && !(subSearch && subC && subDetected)
-
-    // Sync sub-toggles with backend when backend values update
-    Connections {
-        target: optimizerBackend
-        function onWinSearchActiveChanged(val) { subSearch = val; }
-        function onDriveCActiveChanged(val) { subC = val; }
-        function onDetectedDriveActiveChanged(val) { subDetected = val; }
+    // Reactive computation of changes between current live states and original states
+    property bool hasChanges: {
+        if (optimizerBackend.winSearchActive !== optimizerBackend.originalWinSearchActive) return true;
+        if (!optimizerBackend.driveStates || !optimizerBackend.originalDriveStates) return false;
+        var keys = Object.keys(optimizerBackend.driveStates);
+        for (var i = 0; i < keys.length; i++) {
+            var key = keys[i];
+            if (optimizerBackend.driveStates[key] !== optimizerBackend.originalDriveStates[key]) return true;
+        }
+        return false;
     }
 
     // ListModel for live optimization steps
@@ -38,15 +57,16 @@ Item {
     }
 
     function toggleMain() {
-        if (mainIndeterminate || !mainChecked) {
-            subSearch = true;
-            subC = true;
-            subDetected = true;
-        } else {
-            subSearch = false;
-            subC = false;
-            subDetected = false;
+        var targetVal = (mainIndeterminate || !mainChecked);
+        optimizerBackend.winSearchActive = targetVal;
+        
+        var newStates = {};
+        newStates["C:"] = targetVal;
+        for (var i = 0; i < optimizerBackend.fixedDrives.length; i++) {
+            var letter = optimizerBackend.fixedDrives[i];
+            newStates[letter] = targetVal;
         }
+        optimizerBackend.driveStates = newStates;
     }
 
     Column {
@@ -196,13 +216,10 @@ Item {
             anchors.centerIn: parent
             width: 180
             height: 40
-            enabled: !optimizerBackend.isOptimizingSystem && 
-                     ((root.subSearch !== optimizerBackend.winSearchActive) || 
-                      (root.subC !== optimizerBackend.driveCActive) || 
-                      (root.subDetected !== optimizerBackend.detectedDriveActive))
+            enabled: !optimizerBackend.isOptimizingSystem && root.hasChanges
             onClicked: {
                 stepLogModel.clear();
-                optimizerBackend.startSystemOptimization(root.subSearch, root.subC, root.subDetected);
+                optimizerBackend.startSystemOptimization();
             }
         }
     }
@@ -310,8 +327,8 @@ Item {
 
                             MeguSwitch {
                                 text: qsTr("Windows Search service")
-                                checked: root.subSearch
-                                onToggled: { root.subSearch = isChecked; }
+                                checked: optimizerBackend.winSearchActive
+                                onToggled: { optimizerBackend.winSearchActive = isChecked; }
                                 width: parent.width
                             }
 
@@ -344,8 +361,12 @@ Item {
 
                             MeguSwitch {
                                 text: qsTr("Drive C: indexing")
-                                checked: root.subC
-                                onToggled: { root.subC = isChecked; }
+                                checked: !!optimizerBackend.driveStates["C:"]
+                                onToggled: {
+                                    var states = optimizerBackend.driveStates;
+                                    states["C:"] = isChecked;
+                                    optimizerBackend.driveStates = states;
+                                }
                                 width: parent.width
                             }
 
@@ -364,40 +385,47 @@ Item {
                                     hoverEnabled: true
                                     cursorShape: Qt.PointingHandCursor
                                     onClicked: {
-                                        optimizerBackend.showPath("Drive C: indexing");
+                                        optimizerBackend.showPath("C:");
                                     }
                                 }
                             }
                         }
 
-                        // 3. Indexing of drive detected by program
-                        Column {
-                            width: parent.width
-                            spacing: 6
-
-                            MeguSwitch {
-                                text: qsTr("Indexing of drive %1").arg(optimizerBackend.detectedDriveLetter)
-                                checked: root.subDetected
-                                onToggled: { root.subDetected = isChecked; }
+                        // 3. Repeater for dynamically detected other drives
+                        Repeater {
+                            model: optimizerBackend.fixedDrives
+                            delegate: Column {
                                 width: parent.width
-                            }
+                                spacing: 6
 
-                            Text {
-                                text: qsTr("Show Path")
-                                color: showPathDetMouse.containsMouse ? Theme.accentLight : Theme.accent
-                                font.family: Theme.fontFamily
-                                font.pixelSize: 11
-                                font.bold: true
-                                font.underline: true
-                                font.letterSpacing: 0.5
+                                MeguSwitch {
+                                    text: qsTr("Drive %1 indexing").arg(modelData)
+                                    checked: !!optimizerBackend.driveStates[modelData]
+                                    onToggled: {
+                                        var states = optimizerBackend.driveStates;
+                                        states[modelData] = isChecked;
+                                        optimizerBackend.driveStates = states;
+                                    }
+                                    width: parent.width
+                                }
 
-                                MouseArea {
-                                    id: showPathDetMouse
-                                    anchors.fill: parent
-                                    hoverEnabled: true
-                                    cursorShape: Qt.PointingHandCursor
-                                    onClicked: {
-                                        optimizerBackend.showPath("Detected Drive indexing");
+                                Text {
+                                    text: qsTr("Show Path")
+                                    color: showPathMouse.containsMouse ? Theme.accentLight : Theme.accent
+                                    font.family: Theme.fontFamily
+                                    font.pixelSize: 11
+                                    font.bold: true
+                                    font.underline: true
+                                    font.letterSpacing: 0.5
+
+                                    MouseArea {
+                                        id: showPathMouse
+                                        anchors.fill: parent
+                                        hoverEnabled: true
+                                        cursorShape: Qt.PointingHandCursor
+                                        onClicked: {
+                                            optimizerBackend.showPath(modelData);
+                                        }
                                     }
                                 }
                             }
