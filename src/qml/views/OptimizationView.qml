@@ -125,7 +125,7 @@ Item {
                 AcrylicPanel {
                     id: indexingPanel
                     width: parent.width
-                    height: expanded ? 72 + subContent.implicitHeight + 10 : 72
+                    height: expanded ? (indexingContentColumn.implicitHeight + 32) : 72
                     clip: true
                     
                     property bool expanded: false
@@ -138,6 +138,7 @@ Item {
                     }
 
                     Column {
+                        id: indexingContentColumn
                         anchors.left: parent.left
                         anchors.right: parent.right
                         anchors.top: parent.top
@@ -374,7 +375,7 @@ Item {
                 spacing: 8
 
                 Text {
-                    text: qsTr("MOUSE & SYSTEM TWEAKS")
+                    text: qsTr("LATENCY & MOUSE TWEAKS")
                     color: Theme.textSecondary
                     font.family: Theme.fontFamily
                     font.pixelSize: 10
@@ -385,7 +386,7 @@ Item {
                 AcrylicPanel {
                     id: xboxPanel
                     width: parent.width
-                    height: expanded ? 72 + xboxSubContent.implicitHeight + 10 : 72
+                    height: expanded ? (xboxContentColumn.implicitHeight + 32) : 72
                     clip: true
                     
                     property bool expanded: false
@@ -398,6 +399,7 @@ Item {
                     }
 
                     Column {
+                        id: xboxContentColumn
                         anchors.left: parent.left
                         anchors.right: parent.right
                         anchors.top: parent.top
@@ -622,6 +624,221 @@ Item {
                                     anchors.verticalCenter: parent.verticalCenter
                                     onToggled: {
                                         optimizerBackend.gamingOverlayActive = !isChecked;
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+
+                // 2.5 Multi-Plane Overlay (MPO) card
+                AcrylicPanel {
+                    id: mpoPanel
+                    width: parent.width
+                    height: expanded ? (mpoContentColumn.implicitHeight + 32) : 72
+                    clip: true
+                    
+                    property bool expanded: false
+                    
+                    Behavior on height {
+                        NumberAnimation {
+                            duration: Theme.animNormal
+                            easing.type: Easing.OutCubic
+                        }
+                    }
+
+                    Column {
+                        id: mpoContentColumn
+                        anchors.left: parent.left
+                        anchors.right: parent.right
+                        anchors.top: parent.top
+                        anchors.margins: 16
+                        spacing: 16
+
+                        // Collapsed Header area (Height: 40)
+                        Item {
+                            width: parent.width
+                            height: 40
+
+                            Row {
+                                anchors.left: parent.left
+                                anchors.verticalCenter: parent.verticalCenter
+                                spacing: 12
+
+                                Image {
+                                    source: "qrc:/MeguPackOptimizer/src/resources/monitor.svg"
+                                    width: 28
+                                    height: 28
+                                    sourceSize.width: 28
+                                    sourceSize.height: 28
+                                    anchors.verticalCenter: parent.verticalCenter
+                                }
+
+                                Column {
+                                    anchors.verticalCenter: parent.verticalCenter
+                                    spacing: 2
+
+                                    Text {
+                                        text: qsTr("Multi-Plane Overlay (MPO)")
+                                        color: Theme.textPrimary
+                                        font.family: Theme.fontFamily
+                                        font.pixelSize: 13
+                                        font.bold: true
+                                    }
+
+                                    Text {
+                                        text: qsTr("Configure DWM multi-plane overlay modes to optimize latency and eliminate game stuttering.")
+                                        color: Theme.textMuted
+                                        font.family: Theme.fontFamily
+                                        font.pixelSize: 10
+                                    }
+                                }
+                            }
+
+                            Row {
+                                anchors.right: parent.right
+                                anchors.verticalCenter: parent.verticalCenter
+                                spacing: 16
+
+                                // Current Value indicator pill
+                                Rectangle {
+                                    height: 24
+                                    width: 100
+                                    radius: 12
+                                    color: (optimizerBackend.mpoValue === 5) ? Theme.accentDim : "#1A2536"
+                                    border.color: (optimizerBackend.mpoValue === 5) ? Theme.accent : "#2B3F5C"
+                                    border.width: 1
+                                    anchors.verticalCenter: parent.verticalCenter
+
+                                    Text {
+                                        text: (optimizerBackend.mpoValue === 5) ? qsTr("MPO Disabled") : qsTr("MPO Default (0)")
+                                        color: (optimizerBackend.mpoValue === 5) ? Theme.accent : Theme.textSecondary
+                                        font.family: Theme.fontFamily
+                                        font.pixelSize: 10
+                                        font.bold: true
+                                        anchors.centerIn: parent
+                                    }
+                                }
+
+                                // Arrow button that rotates downward when expanded
+                                Rectangle {
+                                    width: 32
+                                    height: 32
+                                    radius: 16
+                                    color: mpoArrowMouseArea.containsMouse ? Theme.accentDim : "transparent"
+                                    border.color: mpoArrowMouseArea.containsMouse ? Theme.accent : Theme.border
+                                    border.width: 1
+                                    anchors.verticalCenter: parent.verticalCenter
+
+                                    Behavior on color { ColorAnimation { duration: Theme.animFast } }
+                                    Behavior on border.color { ColorAnimation { duration: Theme.animFast } }
+
+                                    Text {
+                                        text: "→"
+                                        color: Theme.accent
+                                        font.family: Theme.fontFamily
+                                        font.pixelSize: 16
+                                        font.bold: true
+                                        anchors.centerIn: parent
+                                        
+                                        rotation: mpoPanel.expanded ? 90 : 0
+                                        Behavior on rotation { NumberAnimation { duration: Theme.animNormal; easing.type: Easing.OutCubic } }
+                                    }
+
+                                    MouseArea {
+                                        id: mpoArrowMouseArea
+                                        anchors.fill: parent
+                                        hoverEnabled: true
+                                        cursorShape: Qt.PointingHandCursor
+                                        onClicked: {
+                                            mpoPanel.expanded = !mpoPanel.expanded;
+                                        }
+                                    }
+                                }
+                            }
+                        }
+
+                        // Expanding downward sub-content
+                        Column {
+                            id: mpoSubContent
+                            width: parent.width
+                            spacing: 16
+                            opacity: mpoPanel.expanded ? 1.0 : 0.0
+                            visible: opacity > 0.0
+                            
+                            Behavior on opacity { NumberAnimation { duration: Theme.animFast } }
+
+                            Rectangle {
+                                width: parent.width
+                                height: 1
+                                color: Theme.border
+                            }
+
+                            Row {
+                                width: parent.width
+                                spacing: 20
+
+                                Column {
+                                    width: parent.width - 340
+                                    spacing: 4
+                                    anchors.verticalCenter: parent.verticalCenter
+
+                                    Text {
+                                        text: qsTr("Multi-Plane Overlay Value")
+                                        color: Theme.textPrimary
+                                        font.family: Theme.fontFamily
+                                        font.pixelSize: 12
+                                        font.bold: true
+                                    }
+
+                                    Text {
+                                        text: qsTr("Select 5 to disable MPO completely (highly recommended for NVIDIA/AMD driver stutters) or 0 to restore default.")
+                                        color: Theme.textMuted
+                                        font.family: Theme.fontFamily
+                                        font.pixelSize: 9
+                                        wrapMode: Text.Wrap
+                                        width: parent.width
+                                    }
+                                }
+
+                                Row {
+                                    id: mpoSegmentRow
+                                    spacing: 10
+                                    anchors.verticalCenter: parent.verticalCenter
+                                    
+                                    property int selectedVal: optimizerBackend.mpoValue
+
+                                    MeguButton {
+                                        text: "0 (" + qsTr("Enabled") + ")"
+                                        width: 100
+                                        height: 36
+                                        accented: mpoSegmentRow.selectedVal === 0
+                                        onClicked: {
+                                            mpoSegmentRow.selectedVal = 0;
+                                        }
+                                    }
+
+                                    MeguButton {
+                                        text: "5 (" + qsTr("Disabled") + ")"
+                                        width: 100
+                                        height: 36
+                                        accented: mpoSegmentRow.selectedVal === 5
+                                        onClicked: {
+                                            mpoSegmentRow.selectedVal = 5;
+                                        }
+                                    }
+
+                                    MeguButton {
+                                        text: qsTr("Apply")
+                                        iconSource: "qrc:/MeguPackOptimizer/src/resources/play.svg"
+                                        accented: true
+                                        enabled: mpoSegmentRow.selectedVal !== optimizerBackend.mpoValue && !optimizerBackend.isOptimizingSystem
+                                        width: 100
+                                        height: 36
+                                        onClicked: {
+                                            stepLogModel.clear();
+                                            optimizerBackend.applyMpoValue(mpoSegmentRow.selectedVal);
+                                        }
                                     }
                                 }
                             }

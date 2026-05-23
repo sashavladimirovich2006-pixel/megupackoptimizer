@@ -196,6 +196,24 @@ void Optimizer::loadSystemStates() {
     emit gamingOverlayActiveChanged(m_gamingOverlayActive);
     emit originalGamingOverlayActiveChanged(m_originalGamingOverlayActive);
 
+    // Check Multi-Plane Overlay (MPO) OverlayTestMode in registry
+    int currentMpo = 0; // default 0 (MPO Enabled)
+#ifdef Q_OS_WIN
+    HKEY hKeyDwm;
+    if (RegOpenKeyExW(HKEY_LOCAL_MACHINE, L"SOFTWARE\\Microsoft\\Windows\\Dwm", 0, KEY_READ, &hKeyDwm) == ERROR_SUCCESS) {
+        DWORD value = 0;
+        DWORD size = sizeof(value);
+        if (RegQueryValueExW(hKeyDwm, L"OverlayTestMode", NULL, NULL, (LPBYTE)&value, &size) == ERROR_SUCCESS) {
+            currentMpo = static_cast<int>(value);
+        }
+        RegCloseKey(hKeyDwm);
+    }
+#else
+    currentMpo = 5; // Simulation default
+#endif
+    m_mpoValue = currentMpo;
+    emit mpoValueChanged(m_mpoValue);
+
     scanDrives();
     m_originalDriveStates = m_driveStates;
     emit originalDriveStatesChanged(m_originalDriveStates);
@@ -832,6 +850,102 @@ void Optimizer::restoreXboxEntirely() {
         m_xboxInstalled = true;
         emit xboxInstalledChanged(m_xboxInstalled);
 #endif
+
+        m_isOptimizingSystem = false;
+        emit isOptimizingSystemChanged(m_isOptimizingSystem);
+        emit systemOptimizationFinished(true);
+    });
+
+    connect(worker, &QThread::finished, worker, &QThread::deleteLater);
+    worker->start();
+}
+
+void Optimizer::applyMpoValue(int value) {
+    if (m_isOptimizingSystem) return;
+
+    m_isOptimizingSystem = true;
+    m_systemProgress = 0.0;
+    emit isOptimizingSystemChanged(m_isOptimizingSystem);
+    emit systemProgressChanged(m_systemProgress);
+
+    emit systemStepReported(tr("Initializing Multi-Plane Overlay (MPO) configuration..."), "INFO");
+    Logger::log("Starting MPO registry configuration...", "INFO");
+
+    QThread* worker = QThread::create([this, value]() {
+        m_systemProgress = 0.20;
+        emit systemProgressChanged(m_systemProgress);
+        QThread::msleep(600);
+
+        emit systemStepReported(tr("Analyzing graphics subsystem and DWM settings..."), "INFO");
+        m_systemProgress = 0.45;
+        emit systemProgressChanged(m_systemProgress);
+        QThread::msleep(800);
+
+        emit systemStepReported(tr("Applying MPO registry modifications..."), "INFO");
+
+#ifdef Q_OS_WIN
+        bool success = false;
+        HKEY hKeyDwm;
+        if (RegCreateKeyExW(HKEY_LOCAL_MACHINE, L"SOFTWARE\\Microsoft\\Windows\\Dwm", 0, NULL, REG_OPTION_NON_VOLATILE, KEY_WRITE, NULL, &hKeyDwm, NULL) == ERROR_SUCCESS) {
+            if (value == 0) {
+                // Delete OverlayTestMode to fully restore default behavior
+                if (RegDeleteValueW(hKeyDwm, L"OverlayTestMode") == ERROR_SUCCESS || GetLastError() == ERROR_FILE_NOT_FOUND) {
+                    success = true;
+                } else {
+                    DWORD val = 0;
+                    if (RegSetValueExW(hKeyDwm, L"OverlayTestMode", 0, REG_DWORD, (const BYTE*)&val, sizeof(val)) == ERROR_SUCCESS) {
+                        success = true;
+                    }
+                }
+            } else {
+                DWORD val = static_cast<DWORD>(value);
+                if (RegSetValueExW(hKeyDwm, L"OverlayTestMode", 0, REG_DWORD, (const BYTE*)&val, sizeof(val)) == ERROR_SUCCESS) {
+                    success = true;
+                }
+            }
+            RegCloseKey(hKeyDwm);
+        }
+
+        // Support modern Windows 11 alternative graphics drivers key
+        HKEY hKeyDrivers;
+        if (RegCreateKeyExW(HKEY_LOCAL_MACHINE, L"SYSTEM\\CurrentControlSet\\Control\\GraphicsDrivers", 0, NULL, REG_OPTION_NON_VOLATILE, KEY_WRITE, NULL, &hKeyDrivers, NULL) == ERROR_SUCCESS) {
+            if (value == 0) {
+                RegDeleteValueW(hKeyDrivers, L"DisableMPO");
+            } else {
+                DWORD val = 1;
+                RegSetValueExW(hKeyDrivers, L"DisableMPO", 0, REG_DWORD, (const BYTE*)&val, sizeof(val));
+            }
+            RegCloseKey(hKeyDrivers);
+        }
+
+        m_systemProgress = 0.80;
+        emit systemProgressChanged(m_systemProgress);
+        QThread::msleep(600);
+
+        if (success) {
+            m_mpoValue = value;
+            emit mpoValueChanged(m_mpoValue);
+            emit systemStepReported(tr("MPO configuration updated successfully in registry!"), "SUCCESS");
+            emit systemStepReported(tr("REBOOT RECOMMENDED: Please restart your PC to apply these graphics latency changes."), "WARNING");
+            Logger::log(QString("MPO OverlayTestMode successfully set to: %1").arg(value), "INFO");
+        } else {
+            emit systemStepReported(tr("Failed to update MPO configuration in registry. Error: %1").arg(GetLastError()), "ERROR");
+            Logger::log("Failed to update MPO registry keys.", "ERROR");
+        }
+#else
+        m_mpoValue = value;
+        emit mpoValueChanged(m_mpoValue);
+        m_systemProgress = 0.80;
+        emit systemProgressChanged(m_systemProgress);
+        QThread::msleep(600);
+        
+        emit systemStepReported(tr("[Simulation] MPO configuration updated to: %1").arg(value), "SUCCESS");
+        emit systemStepReported(tr("REBOOT RECOMMENDED: Please restart your PC to apply these graphics latency changes."), "WARNING");
+#endif
+
+        m_systemProgress = 1.0;
+        emit systemProgressChanged(m_systemProgress);
+        QThread::msleep(400);
 
         m_isOptimizingSystem = false;
         emit isOptimizingSystemChanged(m_isOptimizingSystem);

@@ -1,4 +1,12 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-  <path d="M2 9h20v6H2z"></path>
-  <path d="M6 15v2M10 15v2M14 15v2M18 15v2M6 9V7M10 9V7M14 9V7M18 9V7"></path>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+  <!-- RAM module board outline -->
+  <rect x="2" y="5" width="20" height="14" rx="2" />
+  <!-- Bottom PCIe/DDR gold track notch pins -->
+  <path d="M4 19v2M7 19v2M10 19v2M14 19v2M17 19v2M20 19v2" stroke-width="1.5" />
+  <!-- Dynamic Heatspreader vents/fins -->
+  <path d="M5 8h14M5 11h14M8 5v3M12 5v3M16 5v3" stroke-width="1.2" />
+  <!-- Integrated Memory chips -->
+  <rect x="5" y="14" width="3" height="3" rx="0.5" stroke-width="1" />
+  <rect x="10" y="14" width="3" height="3" rx="0.5" stroke-width="1" />
+  <rect x="16" y="14" width="3" height="3" rx="0.5" stroke-width="1" />
 </svg>

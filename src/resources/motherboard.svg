@@ -1,6 +1,14 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-  <rect x="3" y="3" width="18" height="18" rx="2"></rect>
-  <rect x="7" y="7" width="4" height="4"></rect>
-  <rect x="13" y="7" width="4" height="4"></rect>
-  <rect x="7" y="13" width="10" height="4"></rect>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+  <!-- Motherboard PCB border -->
+  <rect x="2" y="2" width="20" height="20" rx="3" />
+  <!-- CPU Socket outline -->
+  <rect x="6" y="5" width="6" height="6" rx="1" stroke-width="1.2" />
+  <circle cx="9" cy="8" r="1.2" />
+  <!-- RAM DDR DIMM memory slots -->
+  <path d="M15 4v8M17 4v8M19 4v8" stroke-width="1.2" />
+  <!-- PCIe expansion card slots -->
+  <path d="M5 15h12M5 18h8" stroke-width="1.5" stroke-linecap="square" />
+  <!-- Heatsink / VRM block -->
+  <rect x="5" y="2" width="8" height="1.5" rx="0.3" stroke-width="1" />
+  <rect x="15" y="14" width="4" height="4" rx="0.5" stroke-width="1" />
 </svg>

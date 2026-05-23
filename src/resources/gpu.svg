@@ -1,5 +1,16 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-  <rect x="2" y="5" width="20" height="14" rx="2"></rect>
-  <path d="M6 9a3 3 0 1 0 0 6 3 3 0 0 0 0-6zM14 9a3 3 0 1 0 0 6 3 3 0 0 0 0-6z"></path>
-  <path d="M2 12h4M14 12h8"></path>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+  <!-- Outer GPU shroud casing -->
+  <rect x="2" y="4" width="20" height="15" rx="3" />
+  <!-- PCIe slot pins at bottom -->
+  <path d="M5 19v2M8 19v2M11 19v2" stroke-width="1.5" />
+  <!-- Left Cooling Fan with blades -->
+  <circle cx="8" cy="11.5" r="3.5" />
+  <circle cx="8" cy="11.5" r="1" fill="white" />
+  <path d="M8 8v7M5 11.5h6" stroke-width="1" />
+  <!-- Right Cooling Fan with blades -->
+  <circle cx="16" cy="11.5" r="3.5" />
+  <circle cx="16" cy="11.5" r="1" fill="white" />
+  <path d="M16 8v7M13 11.5h6" stroke-width="1" />
+  <!-- Power connector port top right -->
+  <rect x="18" y="2" width="3" height="2" rx="0.5" stroke-width="1.2" />
 </svg>

@@ -186,6 +186,51 @@
         <source>Neutralize ms-gamingoverlay triggers to stop 'You'll need a new app to open this link' errors when launching games.</source>
         <translation>Нейтралізує тригери ms-gamingoverlay, щоб зупинити помилки 'Вам знадобиться нова програма для відкриття цього посилання' під час запуску ігор.</translation>
     </message>
+    <message>
+        <location filename="../src/qml/views/OptimizationView.qml" line="682"/>
+        <source>Multi-Plane Overlay (MPO)</source>
+        <translation>Multi-Plane Overlay (MPO)</translation>
+    </message>
+    <message>
+        <location filename="../src/qml/views/OptimizationView.qml" line="690"/>
+        <source>Configure DWM multi-plane overlay modes to optimize latency and eliminate game stuttering.</source>
+        <translation>Налаштуйте режими оверлею DWM для оптимізації затримки та усунення фризів в іграх.</translation>
+    </message>
+    <message>
+        <location filename="../src/qml/views/OptimizationView.qml" line="714"/>
+        <source>MPO Disabled</source>
+        <translation>MPO Вимкнено</translation>
+    </message>
+    <message>
+        <location filename="../src/qml/views/OptimizationView.qml" line="714"/>
+        <source>MPO Default (0)</source>
+        <translation>MPO За замовчуванням (0)</translation>
+    </message>
+    <message>
+        <location filename="../src/qml/views/OptimizationView.qml" line="787"/>
+        <source>Multi-Plane Overlay Value</source>
+        <translation>Значення Multi-Plane Overlay</translation>
+    </message>
+    <message>
+        <location filename="../src/qml/views/OptimizationView.qml" line="795"/>
+        <source>Select 5 to disable MPO completely (highly recommended for NVIDIA/AMD driver stutters) or 0 to restore default.</source>
+        <translation>Виберіть 5, щоб повністю вимкнути MPO (рекомендовано при фризах драйверів NVIDIA/AMD), або 0, щоб повернути за замовчуванням.</translation>
+    </message>
+    <message>
+        <location filename="../src/qml/views/OptimizationView.qml" line="812"/>
+        <source>Enabled</source>
+        <translation>Увімкнено</translation>
+    </message>
+    <message>
+        <location filename="../src/qml/views/OptimizationView.qml" line="822"/>
+        <source>Disabled</source>
+        <translation>Вимкнено</translation>
+    </message>
+    <message>
+        <location filename="../src/qml/views/OptimizationView.qml" line="832"/>
+        <source>Apply</source>
+        <translation>Застосувати</translation>
+    </message>
 </context>
 <context>
     <name>Optimizer</name>
@@ -437,6 +482,42 @@
     <message>
         <source>[Simulation] Gaming overlay set to: %1</source>
         <translation>[Симуляція] Стан ігрового оверлею змінено на: %1</translation>
+    </message>
+    <message>
+        <location filename="../src/optimizer.cpp" line="871"/>
+        <source>Initializing Multi-Plane Overlay (MPO) configuration...</source>
+        <translation>Ініціалізація налаштування Multi-Plane Overlay (MPO)...</translation>
+    </message>
+    <message>
+        <location filename="../src/optimizer.cpp" line="879"/>
+        <source>Analyzing graphics subsystem and DWM settings...</source>
+        <translation>Аналіз графічної підсистеми та параметрів DWM...</translation>
+    </message>
+    <message>
+        <location filename="../src/optimizer.cpp" line="884"/>
+        <source>Applying MPO registry modifications...</source>
+        <translation>Застосування модифікацій реєстру для MPO...</translation>
+    </message>
+    <message>
+        <location filename="../src/optimizer.cpp" line="928"/>
+        <source>MPO configuration updated successfully in registry!</source>
+        <translation>Налаштування MPO успішно оновлено в реєстрі!</translation>
+    </message>
+    <message>
+        <location filename="../src/optimizer.cpp" line="929"/>
+        <location filename="../src/optimizer.cpp" line="943"/>
+        <source>REBOOT RECOMMENDED: Please restart your PC to apply these graphics latency changes.</source>
+        <translation>РЕКОМЕНДОВАНО ПЕРЕЗАВАНТАЖЕННЯ: Будь ласка, перезавантажте ПК для застосування змін графічної затримки.</translation>
+    </message>
+    <message>
+        <location filename="../src/optimizer.cpp" line="932"/>
+        <source>Failed to update MPO configuration in registry. Error: %1</source>
+        <translation>Не вдалося оновити конфігурацію MPO в реєстрі. Помилка: %1</translation>
+    </message>
+    <message>
+        <location filename="../src/optimizer.cpp" line="942"/>
+        <source>[Simulation] MPO configuration updated to: %1</source>
+        <translation>[Симуляція] Налаштування MPO змінено на: %1</translation>
     </message>
 </context>
 <context>

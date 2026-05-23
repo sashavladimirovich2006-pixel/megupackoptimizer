@@ -25,6 +25,7 @@ class Optimizer : public QObject {
     Q_PROPERTY(bool xboxInstalled READ xboxInstalled NOTIFY xboxInstalledChanged)
     Q_PROPERTY(bool gamingOverlayActive READ gamingOverlayActive WRITE setGamingOverlayActive NOTIFY gamingOverlayActiveChanged)
     Q_PROPERTY(bool originalGamingOverlayActive READ originalGamingOverlayActive NOTIFY originalGamingOverlayActiveChanged)
+    Q_PROPERTY(int mpoValue READ mpoValue NOTIFY mpoValueChanged)
     Q_PROPERTY(QStringList fixedDrives READ fixedDrives NOTIFY fixedDrivesChanged)
     Q_PROPERTY(QVariantMap driveStates READ driveStates WRITE setDriveStates NOTIFY driveStatesChanged)
     Q_PROPERTY(QVariantMap originalDriveStates READ originalDriveStates NOTIFY originalDriveStatesChanged)
@@ -53,6 +54,7 @@ public:
     bool xboxInstalled() const { return m_xboxInstalled; }
     bool gamingOverlayActive() const { return m_gamingOverlayActive; }
     bool originalGamingOverlayActive() const { return m_originalGamingOverlayActive; }
+    int mpoValue() const { return m_mpoValue; }
     QStringList fixedDrives() const { return m_fixedDrives; }
     QVariantMap driveStates() const { return m_driveStates; }
     QVariantMap originalDriveStates() const { return m_originalDriveStates; }
@@ -73,6 +75,7 @@ public:
     Q_INVOKABLE void showPath(const QString &funcName);
     Q_INVOKABLE void removeXboxEntirely();
     Q_INVOKABLE void restoreXboxEntirely();
+    Q_INVOKABLE void applyMpoValue(int value);
 
 signals:
     // System info signals
@@ -93,6 +96,7 @@ signals:
     void xboxInstalledChanged(bool val);
     void gamingOverlayActiveChanged(bool val);
     void originalGamingOverlayActiveChanged(bool val);
+    void mpoValueChanged(int val);
     void fixedDrivesChanged(const QStringList &val);
     void driveStatesChanged(const QVariantMap &val);
     void originalDriveStatesChanged(const QVariantMap &val);
@@ -124,6 +128,7 @@ private:
     bool m_xboxInstalled = false;
     bool m_gamingOverlayActive = true;
     bool m_originalGamingOverlayActive = true;
+    int m_mpoValue = 0;
     QStringList m_fixedDrives;
     QVariantMap m_driveStates;
     QVariantMap m_originalDriveStates;
