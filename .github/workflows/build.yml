@@ -1,0 +1,63 @@
+name: Build Megu Pack Optimizer
+
+on:
+  push:
+    branches: [ main, master ]
+  pull_request:
+    branches: [ main, master ]
+
+jobs:
+  build-windows:
+    name: Build Windows Application
+    runs-on: windows-latest
+
+    steps:
+    - name: Checkout Repository
+      uses: actions/checkout@v4
+
+    - name: Set up MSVC
+      uses: ilammy/msvc-dev-cmd@v1
+
+    - name: Install Qt 6
+      uses: jurplel/install-qt-action@v3
+      with:
+        version: '6.5.3'
+        host: 'windows'
+        target: 'desktop'
+        arch: 'win64_msvc2022_64'
+        dir: '${{ github.workspace }}/../Qt'
+        modules: 'qtdeclarative'
+
+    - name: Configure CMake
+      run: |
+        cmake -G "Visual Studio 17 2022" -A x64 -B build -S . -DCMAKE_BUILD_TYPE=Release
+
+    - name: Build Application
+      run: |
+        cmake --build build --config Release
+
+    - name: Run Windows Deployment Tool (windeployqt)
+      shell: pwsh
+      run: |
+        # Locate windeployqt
+        $qtBinDir = "${{ env.Qt6_Dir }}/bin"
+        Write-Host "Qt Bin Directory: $qtBinDir"
+        & "$qtBinDir/windeployqt.exe" --verbose 1 --no-translations --compiler-runtime --qmldir src/qml build/Release/megu_pack_optimizer.exe
+
+    - name: Compress Build Artifacts
+      shell: pwsh
+      run: |
+        # Create a packaging directory with the executable and all needed dependencies
+        New-Item -ItemType Directory -Force -Path build/package
+        Copy-Item build/Release/megu_pack_optimizer.exe build/package/
+        
+        # Copy deployed DLLs and folders (e.g. platforms, qml)
+        Get-ChildItem build/Release/ -Exclude "*.obj", "*.iobj", "*.ipdb", "*.ilk", "*.pdb", "megu_pack_optimizer.exe" | ForEach-Object {
+            Copy-Item $_.FullName build/package/ -Recurse -Force
+        }
+
+    - name: Upload Executable
+      uses: actions/upload-artifact@v4
+      with:
+        name: MeguPackOptimizer-Windows
+        path: build/package/

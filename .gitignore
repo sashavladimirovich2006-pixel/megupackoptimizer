@@ -1,0 +1,43 @@
+# Build directories
+build/
+bin/
+out/
+x64/
+ARM64/
+
+# User Settings and Logs
+megu_settings.json
+megu_optimizer.log
+
+# CMake and IDE files
+CMakeUserPresets.json
+.vs/
+.idea/
+.vscode/
+*.suo
+*.user
+*.ncb
+*.sdf
+*.opensdf
+
+# Qt Creator specific files
+*.CMakeLists.txt.user
+CMakeLists.txt.user.*
+
+# C++ Object files and executables
+*.obj
+*.exe
+*.pdb
+*.ilk
+*.dll
+*.lib
+*.exp
+*.ninja
+*.ninja_deps
+*.ninja_log
+
+# OS files
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+.DS_Store
