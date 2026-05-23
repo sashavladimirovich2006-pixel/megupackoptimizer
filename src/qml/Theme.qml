@@ -4,7 +4,7 @@ import QtQuick
 QtObject {
     id: root
 
-    property string currentTheme: "Dark"
+    property string currentTheme: "Темная"
 
     // Background Colors
     property color background: "#0B1019"
@@ -23,13 +23,13 @@ QtObject {
     property color textMuted: "#5F7499"
     property color textInverse: "#0C111A"
     
-    // Accents
-    property color accent: "#3B82F6"
-    property color accentLight: "#60A5FA"
-    property color accentDark: "#1D4ED8"
+    // Accents (Default: Amber Orange)
+    property color accent: "#FFBF00"
+    property color accentLight: "#FFE082"
+    property color accentDark: "#FF8F00"
     property color yellowAccent: "#FFBF00" // Amber
-    property color accentGlow: "#3B82F635"
-    property color accentDim: "#3B82F615"
+    property color accentGlow: "#FFBF0035"
+    property color accentDim: "#FFBF0015"
     
     // Functional Colors
     readonly property color success: "#10B981"
@@ -52,79 +52,83 @@ QtObject {
 
     function setTheme(name) {
         currentTheme = name;
-        if (name === "Light Mode") {
-            background = "#F1F5F9";
-            sidebarBg = "#E2E8F0";
-            panelBg = "#FFFFFF";
-            headerBg = "#CBD5E1";
+        if (name === "Белоснежная") {
+            background = "#FFFFFF";
+            sidebarBg = "#F8FAFC";
+            panelBg = "#F1F5F9";
+            headerBg = "#E2E8F0";
             border = "#CBD5E1";
             borderHover = "#94A3B8";
-            borderGlow = "#2563EB25";
+            borderGlow = "#00000015";
             textPrimary = "#0F172A";
             textSecondary = "#475569";
             textMuted = "#94A3B8";
-            textInverse = "#F8FAFC";
-            accent = "#2563EB";
-            accentLight = "#3B82F6";
-            accentDark = "#1D4ED8";
+            textInverse = "#FFFFFF";
+            // Amber-Orange accent optimized for light background readability
+            accent = "#D97706";
+            accentLight = "#F59E0B";
+            accentDark = "#B45309";
             yellowAccent = "#D97706";
-            accentGlow = "#2563EB35";
-            accentDim = "#2563EB15";
-        } else if (name === "Dark") {
+            accentGlow = "#D9770630";
+            accentDim = "#D9770612";
+        } else if (name === "Темная") {
             background = "#0B1019";
             sidebarBg = "#080B12";
             panelBg = "#131924";
             headerBg = "#0E1420";
             border = "#202D44";
             borderHover = "#304264";
-            borderGlow = "#3B82F625";
+            borderGlow = "#FFBF0025";
             textPrimary = "#F8FAFC";
             textSecondary = "#99A9C4";
             textMuted = "#5F7499";
             textInverse = "#0C111A";
-            accent = "#3B82F6";
-            accentLight = "#60A5FA";
-            accentDark = "#1D4ED8";
+            // Amber-Orange accent
+            accent = "#FFBF00";
+            accentLight = "#FFE082";
+            accentDark = "#FF8F00";
             yellowAccent = "#FFBF00";
-            accentGlow = "#3B82F635";
-            accentDim = "#3B82F615";
-        } else if (name === "OLED Blackout") {
+            accentGlow = "#FFBF0035";
+            accentDim = "#FFBF0015";
+        } else if (name === "Blackout полностью черная") {
             background = "#000000";
             sidebarBg = "#000000";
-            panelBg = "#0C0C0C";
+            panelBg = "#0A0A0A";
             headerBg = "#050505";
-            border = "#1E1E1E";
-            borderHover = "#2E2E2E";
-            borderGlow = "#FFFFFF25";
+            border = "#1C1C1E";
+            borderHover = "#2C2C2E";
+            borderGlow = "#FFBF0020";
             textPrimary = "#FFFFFF";
-            textSecondary = "#A0A0A0";
-            textMuted = "#505050";
+            textSecondary = "#8E8E93";
+            textMuted = "#48484A";
             textInverse = "#000000";
-            accent = "#FFFFFF";
-            accentLight = "#E0E0E0";
-            accentDark = "#808080";
+            // Amber-Orange accent
+            accent = "#FFBF00";
+            accentLight = "#FFE082";
+            accentDark = "#FF8F00";
             yellowAccent = "#FFBF00";
-            accentGlow = "#FFFFFF35";
-            accentDim = "#FFFFFF15";
-        } else if (name === "RGB Gamer") {
+            accentGlow = "#FFBF0035";
+            accentDim = "#FFBF0015";
+        } else if (name === "Ргб") {
             background = "#0B0B0F";
             sidebarBg = "#050508";
             panelBg = "#12121A";
             headerBg = "#08080C";
-            border = "#EF4444";
-            borderHover = "#F87171";
-            borderGlow = "#FF007F25";
-            textPrimary = "#00FF66";
+            border = "#FF8F00"; // Orange gaming border
+            borderHover = "#FFBF00";
+            borderGlow = "#FFBF0025";
+            textPrimary = "#00FF66"; // Keep gamer green text primary
             textSecondary = "#00FFFF";
             textMuted = "#666688";
             textInverse = "#0C111A";
-            accent = "#FF007F";
-            accentLight = "#FF66B2";
-            accentDark = "#C70039";
-            yellowAccent = "#FFCC00";
-            accentGlow = "#FF007F35";
-            accentDim = "#FF007F15";
-        } else if (name === "Sakura Pink") {
+            // Amber-Orange accent
+            accent = "#FF8F00";
+            accentLight = "#FFBF00";
+            accentDark = "#D56F00";
+            yellowAccent = "#FFBF00";
+            accentGlow = "#FF8F0035";
+            accentDim = "#FF8F0015";
+        } else if (name === "Розовая") {
             background = "#FFF0F3";
             sidebarBg = "#FFE3E8";
             panelBg = "#FFFFFF";
@@ -136,12 +140,32 @@ QtObject {
             textSecondary = "#805E66";
             textMuted = "#C299A2";
             textInverse = "#FFF0F3";
-            accent = "#FF85A2";
-            accentLight = "#FFA4B6";
-            accentDark = "#F26487";
-            yellowAccent = "#FFB703";
-            accentGlow = "#FF85A235";
-            accentDim = "#FF85A215";
+            // Amber-Orange accent readable on pink/light layout
+            accent = "#D97706";
+            accentLight = "#F59E0B";
+            accentDark = "#B45309";
+            yellowAccent = "#D97706";
+            accentGlow = "#D9770630";
+            accentDim = "#D9770612";
+        } else if (name === "Black pink") {
+            background = "#000000";
+            sidebarBg = "#0C0C0C";
+            panelBg = "#141414";
+            headerBg = "#050505";
+            border = "#444444";
+            borderHover = "#FF8F00";
+            borderGlow = "#FFBF0025";
+            textPrimary = "#FFFFFF";
+            textSecondary = "#FFB3C1";
+            textMuted = "#C299A2";
+            textInverse = "#000000";
+            // Amber-Orange accent
+            accent = "#FFBF00";
+            accentLight = "#FFE082";
+            accentDark = "#FF8F00";
+            yellowAccent = "#FFBF00";
+            accentGlow = "#FFBF0035";
+            accentDim = "#FFBF0015";
         }
     }
 }

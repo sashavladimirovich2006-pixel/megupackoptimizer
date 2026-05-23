@@ -115,72 +115,13 @@ ApplicationWindow {
                 }
             }
 
-            // Bottom section: Theme Switcher & Footer
+            // Bottom section: Footer
             Column {
                 anchors.bottom: parent.bottom
                 anchors.left: parent.left
                 anchors.right: parent.right
                 anchors.margins: 18
-                spacing: 16
-
-                // Theme Switcher Section
-                Column {
-                    width: parent.width
-                    spacing: 8
-
-                    Text {
-                        text: qsTr("THEME SWITCHER")
-                        color: Theme.textMuted
-                        font.family: Theme.fontFamily
-                        font.pixelSize: 10
-                        font.bold: true
-                        font.letterSpacing: 1.5
-                    }
-
-                    Row {
-                        spacing: 10
-                        anchors.horizontalCenter: parent.horizontalCenter
-
-                        Repeater {
-                            model: [
-                                { name: "Light Mode", color: "#FFFFFF", border: "#CCCCCC" },
-                                { name: "Dark", color: "#1E293B", border: "transparent" },
-                                { name: "OLED Blackout", color: "#000000", border: "#444444" },
-                                { name: "RGB Gamer", color: "#FF007F", border: "transparent" },
-                                { name: "Sakura Pink", color: "#FF85A2", border: "transparent" }
-                            ]
-
-                            delegate: Rectangle {
-                                width: 22
-                                height: 22
-                                radius: 11
-                                color: modelData.color
-                                border.color: Theme.currentTheme === modelData.name ? Theme.accent : modelData.border
-                                border.width: Theme.currentTheme === modelData.name ? 2 : 1
-                                
-                                scale: Theme.currentTheme === modelData.name ? 1.15 : (mouseArea.containsMouse ? 1.1 : 1.0)
-                                Behavior on scale { NumberAnimation { duration: 100 } }
-
-                                MouseArea {
-                                    id: mouseArea
-                                    anchors.fill: parent
-                                    hoverEnabled: true
-                                    cursorShape: Qt.PointingHandCursor
-                                    onClicked: Theme.setTheme(modelData.name)
-                                }
-                            }
-                        }
-                    }
-
-                    Text {
-                        text: Theme.currentTheme
-                        color: Theme.textSecondary
-                        font.family: Theme.fontFamily
-                        font.pixelSize: 11
-                        horizontalAlignment: Text.AlignHCenter
-                        width: parent.width
-                    }
-                }
+                spacing: 12
 
                 // Divider
                 Rectangle {

@@ -81,3 +81,12 @@ The following rules must be strictly adhered to by all developers (human or AI) 
   - **C++ Compile Fix**: Resolved a compilation error in `src/optimizer.cpp` where the `DISPLAY_DEVICE_PRIMARY_SURFACE` identifier was unrecognized on Windows; updated it to the correct Win32 identifier `DISPLAY_DEVICE_PRIMARY_DEVICE`.
   - **Local Build Tooling**: Added newly created SVG icons and the `SpecCard.qml` file to `CMakeLists.txt` resources. Resolved a syntax issue in `build.bat` where an unescaped ampersand (`&`) broke the shell parsing logic.
 
+### Phase 1: Theme Settings Relocation and Sub-Drawer Navigation
+- **Action**: Moved the Theme Switcher from the left sidebar to a dedicated section within the settings panel (`SettingsView.qml`). Configured a set of custom themes (Белоснежная, Темная, Blackout полностью черная, Ргб, Розовая, and Black pink) in `Theme.qml` all featuring Zune's signature amber-orange accent style. Created a sliding theme selection drawer from the right edge with a secondary slide-out panel for the secret "Black pink" theme.
+- **Detailed Rationale**:
+  - **Sidebar Cleanup**: Cleaned up `main.qml` by removing the theme selector circles from the sidebar bottom column. The sidebar now strictly focuses on branding, vertical navigation, and versioning.
+  - **Sliding Drawer Architecture**: Inside `SettingsView.qml`, created a backdrop overlays system. Added a sliding `themeSidebar` rectangle with a nested `Row` layouts structure. Clicking on a theme in settings opens the drawer containing a `Repeater` of the primary themes.
+  - **Secret Sub-Drawer Navigation**: Clicking the arrow (`→`) to the right of the Pink theme item slides the row's x-coordinate to reveal Page 2 containing the special "Black pink" theme. Clicking "Back" slides back to the main list.
+  - **Amber Orange Accents**: Updated all theme definitions in `Theme.qml` to feature Zune Amber Orange (`#FFBF00` / `#D97706` / `#FF8F00`) as their accent color, keeping readable high-contrast orange variations on light backdrops.
+
+
