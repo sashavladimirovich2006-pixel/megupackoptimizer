@@ -14,6 +14,7 @@ int main(int argc, char* argv[]) {
     app.setApplicationName("Megu Pack Optimizer");
     app.setApplicationVersion("1.0.0");
     app.setOrganizationName("MeguStudio");
+    app.setWindowIcon(QIcon(":/MeguPackOptimizer/src/resources/megu_logo_transparent.png"));
 
     // Instantiate logger next
     Logger loggerInstance;
