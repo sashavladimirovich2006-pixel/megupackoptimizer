@@ -1,5 +1,6 @@
 import QtQuick
 import MeguPackOptimizer 1.0
+import Qt5Compat.GraphicalEffects
 
 Item {
     id: control
@@ -57,25 +58,45 @@ Item {
         anchors.centerIn: parent
         spacing: 6
         
-        Image {
-            id: btnIcon
-            source: control.iconSource
+        // Color-Overlaid Icon Container
+        Item {
+            id: iconContainer
             width: 14
             height: 14
             visible: control.iconSource !== ""
             anchors.verticalCenter: parent.verticalCenter
-            sourceSize.width: 14
-            sourceSize.height: 14
             
-            opacity: {
-                if (control.accented) return 1.0;
-                if (control.flat) {
-                    return mouseArea.containsMouse ? 0.95 : 0.65;
-                }
-                return 0.85;
+            Image {
+                id: btnIcon
+                source: control.iconSource
+                anchors.fill: parent
+                sourceSize.width: 14
+                sourceSize.height: 14
+                visible: false // Hidden so ColorOverlay handles drawing
             }
             
-            Behavior on opacity { NumberAnimation { duration: 100 } }
+            ColorOverlay {
+                anchors.fill: btnIcon
+                source: btnIcon
+                color: {
+                    if (control.accented) return Theme.textInverse;
+                    if (control.flat) {
+                        return mouseArea.containsMouse ? Theme.textPrimary : Theme.textSecondary;
+                    }
+                    return Theme.textPrimary;
+                }
+                
+                opacity: {
+                    if (control.accented) return 1.0;
+                    if (control.flat) {
+                        return mouseArea.containsMouse ? 0.95 : 0.65;
+                    }
+                    return 0.85;
+                }
+                
+                Behavior on color { ColorAnimation { duration: 100 } }
+                Behavior on opacity { NumberAnimation { duration: 100 } }
+            }
         }
         
         Text {
