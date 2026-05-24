@@ -922,6 +922,51 @@ Item {
                                 optimizerBackend.printerActive = isChecked;
                             }
                         }
+
+                        // Arrow button that slides right on hover & opens sidebar drawer for printers list
+                        Rectangle {
+                            width: 32
+                            height: 32
+                            radius: 16
+                            color: printerArrowMouseArea.containsMouse ? Theme.accentDim : "transparent"
+                            border.color: printerArrowMouseArea.containsMouse ? Theme.accent : Theme.border
+                            border.width: 1
+                            anchors.verticalCenter: parent.verticalCenter
+
+                            Behavior on color { ColorAnimation { duration: Theme.animFast } }
+                            Behavior on border.color { ColorAnimation { duration: Theme.animFast } }
+
+                            Item {
+                                width: 14
+                                height: 14
+                                anchors.centerIn: parent
+                                x: printerArrowMouseArea.containsMouse ? (parent.width/2 - 5) : (parent.width/2 - 7)
+                                Behavior on x { NumberAnimation { duration: Theme.animNormal; easing.type: Easing.OutCubic } }
+                                Image {
+                                    id: printerArrowImg
+                                    source: "qrc:/MeguPackOptimizer/src/resources/arrow.svg"
+                                    anchors.fill: parent
+                                    sourceSize.width: 14
+                                    sourceSize.height: 14
+                                    visible: false
+                                }
+                                ColorOverlay {
+                                    anchors.fill: printerArrowImg
+                                    source: printerArrowImg
+                                    color: printerArrowMouseArea.containsMouse ? Theme.accent : Theme.textSecondary
+                                }
+                            }
+
+                            MouseArea {
+                                id: printerArrowMouseArea
+                                anchors.fill: parent
+                                hoverEnabled: true
+                                cursorShape: Qt.PointingHandCursor
+                                onClicked: {
+                                    root.activeDrawer = "printer";
+                                }
+                            }
+                        }
                     }
                 }
             }
@@ -1115,6 +1160,7 @@ Item {
                             if (root.activeDrawer === "indexing") return qsTr("INDEXING OPTIONS");
                             if (root.activeDrawer === "xbox") return qsTr("XBOX APP & GAME BAR");
                             if (root.activeDrawer === "mpo") return qsTr("MPO LATENCY TWEAK");
+                            if (root.activeDrawer === "printer") return qsTr("PRINTER TWEAKS");
                             return "";
                         }
                         color: Theme.textPrimary
@@ -1174,6 +1220,7 @@ Item {
                         if (root.activeDrawer === "indexing") return indexingColumn.implicitHeight;
                         if (root.activeDrawer === "xbox") return xboxColumn.implicitHeight;
                         if (root.activeDrawer === "mpo") return mpoColumn.implicitHeight;
+                        if (root.activeDrawer === "printer") return printerColumn.implicitHeight;
                         return height;
                     }
 
@@ -1988,6 +2035,80 @@ Item {
                                     stepLogModel.clear();
                                     optimizerBackend.applyMpoValue(mpoContainer.selectedVal);
                                 }
+                            }
+                        }
+                    }
+
+                    // 4. Printer Options Content
+                    Column {
+                        id: printerColumn
+                        width: parent.width
+                        spacing: 20
+                        visible: root.activeDrawer === "printer"
+
+                        Text {
+                            text: qsTr("Detected print queues in Device Manager:")
+                            color: Theme.textSecondary
+                            font.family: Theme.fontFamily
+                            font.pixelSize: 11
+                            font.bold: true
+                        }
+
+                        // Display the list of detected printers
+                        Column {
+                            width: parent.width
+                            spacing: 10
+
+                            Repeater {
+                                model: optimizerBackend.detectedPrinters
+                                delegate: AcrylicPanel {
+                                    width: parent.width
+                                    height: 50
+
+                                    Row {
+                                        anchors.left: parent.left
+                                        anchors.verticalCenter: parent.verticalCenter
+                                        anchors.leftMargin: 12
+                                        spacing: 12
+
+                                        Item {
+                                            width: 20
+                                            height: 20
+                                            anchors.verticalCenter: parent.verticalCenter
+                                            Image {
+                                                id: printerQueueIcon
+                                                source: "qrc:/MeguPackOptimizer/src/resources/settings.svg"
+                                                anchors.fill: parent
+                                                sourceSize.width: 20
+                                                sourceSize.height: 20
+                                                visible: false
+                                            }
+                                            ColorOverlay {
+                                                anchors.fill: printerQueueIcon
+                                                source: printerQueueIcon
+                                                color: Theme.accent
+                                            }
+                                        }
+
+                                        Text {
+                                            text: modelData
+                                            color: Theme.textPrimary
+                                            font.family: Theme.fontFamily
+                                            font.pixelSize: 12
+                                            font.bold: true
+                                            anchors.verticalCenter: parent.verticalCenter
+                                        }
+                                    }
+                                }
+                            }
+                            
+                            // Fallback if no printers detected
+                            Text {
+                                text: qsTr("No print queues detected.")
+                                color: Theme.textMuted
+                                font.family: Theme.fontFamily
+                                font.pixelSize: 11
+                                visible: optimizerBackend.detectedPrinters.length === 0
                             }
                         }
                     }

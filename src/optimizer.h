@@ -39,6 +39,7 @@ class Optimizer : public QObject {
     Q_PROPERTY(bool originalFirewallActive READ originalFirewallActive NOTIFY originalFirewallActiveChanged)
     Q_PROPERTY(bool printerActive READ printerActive WRITE setPrinterActive NOTIFY printerActiveChanged)
     Q_PROPERTY(bool originalPrinterActive READ originalPrinterActive NOTIFY originalPrinterActiveChanged)
+    Q_PROPERTY(QStringList detectedPrinters READ detectedPrinters NOTIFY detectedPrintersChanged)
     Q_PROPERTY(int mpoValue READ mpoValue NOTIFY mpoValueChanged)
     Q_PROPERTY(QStringList fixedDrives READ fixedDrives NOTIFY fixedDrivesChanged)
     Q_PROPERTY(QVariantMap driveStates READ driveStates WRITE setDriveStates NOTIFY driveStatesChanged)
@@ -82,6 +83,7 @@ public:
     bool originalFirewallActive() const { return m_originalFirewallActive; }
     bool printerActive() const { return m_printerActive; }
     bool originalPrinterActive() const { return m_originalPrinterActive; }
+    QStringList detectedPrinters() const { return m_detectedPrinters; }
     int mpoValue() const { return m_mpoValue; }
     QStringList fixedDrives() const { return m_fixedDrives; }
     QVariantMap driveStates() const { return m_driveStates; }
@@ -142,6 +144,7 @@ signals:
     void originalFirewallActiveChanged(bool val);
     void printerActiveChanged(bool val);
     void originalPrinterActiveChanged(bool val);
+    void detectedPrintersChanged(const QStringList &val);
     void mpoValueChanged(int val);
     void fixedDrivesChanged(const QStringList &val);
     void driveStatesChanged(const QVariantMap &val);
@@ -188,6 +191,7 @@ private:
     bool m_originalFirewallActive = true;
     bool m_printerActive = true;
     bool m_originalPrinterActive = true;
+    QStringList m_detectedPrinters;
     int m_mpoValue = 0;
     QStringList m_fixedDrives;
     QVariantMap m_driveStates;

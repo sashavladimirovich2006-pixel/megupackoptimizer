@@ -14,6 +14,8 @@
 
 #ifdef Q_OS_WIN
 #include <windows.h>
+#include <winspool.h>
+#pragma comment(lib, "winspool.lib")
 #endif
 
 Optimizer::Optimizer(QObject *parent) : QObject(parent) {
@@ -186,6 +188,35 @@ void Optimizer::loadSystemStates() {
     m_originalPrinterActive = m_printerActive;
     emit printerActiveChanged(m_printerActive);
     emit originalPrinterActiveChanged(m_originalPrinterActive);
+
+    // Scan detected print queues using Win32 Spooler API (matches Device Manager "Print queues")
+    QStringList printers;
+#ifdef Q_OS_WIN
+    DWORD cbNeeded = 0;
+    DWORD cReturned = 0;
+    // Call EnumPrintersW to get size. We use PRINTER_ENUM_LOCAL | PRINTER_ENUM_CONNECTIONS.
+    // Level 4 is extremely fast and provides name and attributes.
+    EnumPrintersW(PRINTER_ENUM_LOCAL | PRINTER_ENUM_CONNECTIONS, NULL, 4, NULL, 0, &cbNeeded, &cReturned);
+    if (cbNeeded > 0) {
+        QByteArray buffer(static_cast<int>(cbNeeded), 0);
+        PRINTER_INFO_4W* pPrinterInfo = reinterpret_cast<PRINTER_INFO_4W*>(buffer.data());
+        if (EnumPrintersW(PRINTER_ENUM_LOCAL | PRINTER_ENUM_CONNECTIONS, NULL, 4, reinterpret_cast<LPBYTE>(pPrinterInfo), cbNeeded, &cbNeeded, &cReturned)) {
+            for (DWORD i = 0; i < cReturned; ++i) {
+                if (pPrinterInfo[i].pPrinterName) {
+                    printers.append(QString::fromWCharArray(pPrinterInfo[i].pPrinterName));
+                }
+            }
+        }
+    }
+#else
+    // Simulation fallbacks
+    printers.append("Root Print Queue");
+    printers.append("Microsoft Print to PDF");
+    printers.append("Microsoft XPS Document Writer");
+    printers.append("Fax");
+#endif
+    m_detectedPrinters = printers;
+    emit detectedPrintersChanged(m_detectedPrinters);
 
     // Read HibernateEnabled Registry Key on Windows
     bool isHibernationActive = false;
@@ -975,8 +1006,8 @@ void Optimizer::showPath(const QString &funcName) {
         QProcess::startDetached("cmd.exe", QStringList() << "/c" << "start windowsdefender://network");
         Logger::log("Opening Firewall & Network Protection settings...", "INFO");
     } else if (funcName == "printer") {
-        QProcess::startDetached("control.exe", QStringList() << "printers");
-        Logger::log("Opening Devices and Printers...", "INFO");
+        QProcess::startDetached("cmd.exe", QStringList() << "/c" << "start devmgmt.msc");
+        Logger::log("Opening Device Manager...", "INFO");
     } else {
         // Assume drive letter like "C:" or "D:"
         QString letter = funcName.trimmed();
