@@ -9,19 +9,6 @@ AcrylicPanel {
     property string value: ""
     property string iconSource: ""
 
-    border.color: card.containsMouse ? Theme.accent : Theme.border
-    
-    // Ambient glow border around card on hover
-    Rectangle {
-        anchors.fill: parent
-        radius: parent.radius
-        color: "transparent"
-        border.color: Theme.accent
-        border.width: 1.5
-        opacity: card.containsMouse ? 0.35 : 0.0
-        Behavior on opacity { NumberAnimation { duration: Theme.animFast } }
-    }
-    
     Item {
         anchors.fill: parent
         anchors.margins: 14
@@ -31,8 +18,8 @@ AcrylicPanel {
             anchors.fill: parent
             spacing: 14
             
-            // Micro-translation slide up on hover!
-            y: card.containsMouse ? -2 : 0
+            // Subdued, clean elevation adjustment on hover
+            y: card.containsMouse ? -1 : 0
             Behavior on y {
                 NumberAnimation {
                     duration: Theme.animNormal
@@ -40,14 +27,14 @@ AcrylicPanel {
                 }
             }
 
-            // Icon Container with colored background glow
+            // Icon Container with clean, non-glowing background
             Rectangle {
                 id: iconBg
                 width: 42
                 height: 42
                 radius: Theme.radiusSmall
-                color: card.containsMouse ? Theme.accentDim : "transparent"
-                border.color: card.containsMouse ? Theme.accent : Theme.border
+                color: card.containsMouse ? Theme.buttonBgHover : "transparent"
+                border.color: card.containsMouse ? Theme.borderHover : Theme.border
                 border.width: 1
                 anchors.verticalCenter: parent.verticalCenter
                 
@@ -71,7 +58,7 @@ AcrylicPanel {
                     ColorOverlay {
                         anchors.fill: img
                         source: img
-                        color: Theme.yellowAccent
+                        color: card.containsMouse ? Theme.accent : Theme.textSecondary
                         Behavior on color { ColorAnimation { duration: Theme.animNormal } }
                     }
                 }

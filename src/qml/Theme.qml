@@ -30,93 +30,93 @@ Item {
     // 1. Core Background Colors
     property color background: {
         if (currentTheme === "Белоснежная") return "#FAFAFA";
-        if (currentTheme === "Темная") return "#05070B"; // Premium obsidian black
+        if (currentTheme === "Темная") return "#070709"; // Ultra-sleek premium charcoal black
         if (currentTheme === "Blackout полностью черная") return "#000000";
         if (currentTheme === "Ргб") return "#050508";
         if (currentTheme === "Розовая") return "#FCF8F9";
         if (currentTheme === "Black pink") return "#050406";
-        return "#05070B";
+        return "#070709";
     }
 
     property color sidebarBg: {
         if (currentTheme === "Белоснежная") return "#F2F3F4F6"; // 95% opacity
-        if (currentTheme === "Темная") return "#E6030508"; // 90% opacity deep dark obsidian
-        if (currentTheme === "Blackout полностью черная") return "#E6000000"; // 90% opacity
-        if (currentTheme === "Ргб") return "#E6020204"; // 90%
+        if (currentTheme === "Темная") return "#F50A0B0E"; // Sleek solid dark gray sidebar
+        if (currentTheme === "Blackout полностью черная") return "#F5000000"; 
+        if (currentTheme === "Ргб") return "#F5020204"; 
         if (currentTheme === "Розовая") return "#F2F5EBED"; // 95% opacity
-        if (currentTheme === "Black pink") return "#E60A090D"; // 90% opacity
-        return "#E6030508";
+        if (currentTheme === "Black pink") return "#F50A090D"; 
+        return "#F50A0B0E";
     }
 
     property color panelBg: {
         if (currentTheme === "Белоснежная") return "#CCFFFFFF"; // 80% translucent white
-        if (currentTheme === "Темная") return "#B30B0F19"; // 70% translucent deep obsidian slate
-        if (currentTheme === "Blackout полностью черная") return "#B30C0C0C"; // 70% translucent black
-        if (currentTheme === "Ргб") return "#B3050508"; // 70% translucent
-        if (currentTheme === "Розовая") return "#CCD9E5EC"; // 80% translucent soft blush white
-        if (currentTheme === "Black pink") return "#B30A090D"; // 70% translucent orchid
-        return "#B30B0F19";
+        if (currentTheme === "Темная") return "#F80D0E12"; // 97% opaque sleek slate-black (matching reference!)
+        if (currentTheme === "Blackout полностью черная") return "#F8080808"; // 97% opaque charcoal
+        if (currentTheme === "Ргб") return "#F8050508"; 
+        if (currentTheme === "Розовая") return "#CCD9E5EC"; 
+        if (currentTheme === "Black pink") return "#F80A090D"; 
+        return "#F80D0E12";
     }
 
     property color buttonBg: {
         if (currentTheme === "Белоснежная") return "#B3F1F5F9"; // 70% translucent
-        if (currentTheme === "Темная") return "#731C2533"; // 45% translucent
-        if (currentTheme === "Blackout полностью черная") return "#73121212"; // 45% translucent
-        if (currentTheme === "Ргб") return "#730E0E14"; // 45% translucent
-        if (currentTheme === "Розовая") return "#B3F4E3E5"; // 70% translucent
-        if (currentTheme === "Black pink") return "#73141016"; // 45% translucent
-        return "#731C2533";
+        if (currentTheme === "Темная") return "#F816171B"; // 97% solid elegant button plate (matching reference!)
+        if (currentTheme === "Blackout полностью черная") return "#F8101010"; 
+        if (currentTheme === "Ргб") return "#F80E0E14"; 
+        if (currentTheme === "Розовая") return "#B3F4E3E5"; 
+        if (currentTheme === "Black pink") return "#F8141016"; 
+        return "#F816171B";
     }
 
     property color buttonBgHover: {
-        if (currentTheme === "Белоснежная") return "#CCE2E8F0"; // 80% translucent
-        if (currentTheme === "Темная") return "#992A374C"; // 60% translucent
-        if (currentTheme === "Blackout полностью черная") return "#991C1C1E"; // 60% translucent
-        if (currentTheme === "Ргб") return "#991A1A26"; // 60% translucent
-        if (currentTheme === "Розовая") return "#CCEACCD1"; // 80% translucent
-        if (currentTheme === "Black pink") return "#99241626"; // 60% translucent
-        return "#992A374C";
+        if (currentTheme === "Белоснежная") return "#CCE2E8F0"; 
+        if (currentTheme === "Темная") return "#F822242B"; // Subtle highlight on hover
+        if (currentTheme === "Blackout полностью черная") return "#F81C1C1C"; 
+        if (currentTheme === "Ргб") return "#F81A1A26"; 
+        if (currentTheme === "Розовая") return "#CCEACCD1"; 
+        if (currentTheme === "Black pink") return "#F8241626"; 
+        return "#F822242B";
     }
 
     property color buttonBgPressed: {
         if (currentTheme === "Белоснежная") return "#CBD5E1";
-        if (currentTheme === "Темная") return "#0C1017";
-        if (currentTheme === "Blackout полностью черная") return "#0A0A0A";
+        if (currentTheme === "Темная") return "#08090C";
+        if (currentTheme === "Blackout полностью черная") return "#000000";
         if (currentTheme === "Ргб") return "#06060A";
         if (currentTheme === "Розовая") return "#D5A3AE";
         if (currentTheme === "Black pink") return "#0F0A0F";
-        return "#0C1017";
+        return "#08090C";
     }
 
     property color headerBg: {
-        if (currentTheme === "Белоснежная") return "#E6E5E7EB"; // 90% translucent
-        if (currentTheme === "Темная") return "#D904060A"; // 85% translucent obsidian
-        if (currentTheme === "Blackout полностью черная") return "#D9050505"; // 85% translucent
-        if (currentTheme === "Ргб") return "#D9040406"; // 85% translucent
-        if (currentTheme === "Розовая") return "#E6F0E0E3"; // 90% translucent
-        if (currentTheme === "Black pink") return "#D90D0B10"; // 85% translucent
-        return "#D904060A";
+        if (currentTheme === "Белоснежная") return "#E6E5E7EB"; 
+        if (currentTheme === "Темная") return "#F8070709"; // Matches solid background
+        if (currentTheme === "Blackout полностью черная") return "#F8000000"; 
+        if (currentTheme === "Ргб") return "#F8040406"; 
+        if (currentTheme === "Розовая") return "#E6F0E0E3"; 
+        if (currentTheme === "Black pink") return "#F80D0B10"; 
+        return "#F8070709";
     }
     
     // 2. Borders & Outlines
     property color border: {
         if (currentTheme === "Ргб") return rgbAccent;
         if (currentTheme === "Белоснежная") return "#E2E8F0";
-        if (currentTheme === "Темная") return "#162233"; // Sleek dark border
-        if (currentTheme === "Blackout полностью черная") return "#1F1F1F";
+        if (currentTheme === "Темная") return "#1C1C22"; // Extremely thin sleek border (matching reference!)
+        if (currentTheme === "Blackout полностью черная") return "#141414";
         if (currentTheme === "Розовая") return "#E5CCD1";
-        if (currentTheme === "Black pink") return "#3A1E2A";
-        return "#162233";
+        if (currentTheme === "Black pink") return "#26151D";
+        return "#1C1C22";
     }
 
     property color borderHover: {
         if (currentTheme === "Ргб") return rgbAccentLight;
         if (currentTheme === "Белоснежная") return "#CBD5E1";
-        if (currentTheme === "Темная") return "#263B59";
-        if (currentTheme === "Blackout полностью черная") return "#2C2C2E";
+        if (currentTheme === "Темная") return "#2E2F38"; // Subtle high-end hover highlight (matching reference!)
+        if (currentTheme === "Blackout полностью черная") return "#242424";
         if (currentTheme === "Розовая") return "#D4A3AE";
-        if (currentTheme === "Black pink") return "#FF5E97";
-        return "#263B59";
+        if (currentTheme === "Black pink") return "#4C2436";
+        return "#2E2F38";
     }
 
     property color borderGlow: {
