@@ -7,6 +7,7 @@ Item {
     property string text: ""
     property string iconSource: ""
     property bool accented: false
+    property bool flat: false
     
     signal clicked()
     
@@ -42,6 +43,10 @@ Item {
             }
             if (control.accented) {
                 return "transparent"; // Managed by gradient
+            } else if (control.flat) {
+                if (mouseArea.pressed) return Theme.buttonBgPressed;
+                if (mouseArea.containsMouse) return Theme.accentDim;
+                return "transparent";
             } else {
                 return mouseArea.pressed ? Theme.buttonBgPressed : (mouseArea.containsMouse ? Theme.buttonBgHover : Theme.buttonBg);
             }
@@ -49,6 +54,9 @@ Item {
                
         border.color: {
             if (control.accented) return "transparent";
+            if (control.flat) {
+                return (mouseArea.containsMouse && control.enabled) ? Theme.accent : "transparent";
+            }
             return mouseArea.containsMouse ? Theme.accent : Theme.border;
         }
         border.width: 1
@@ -73,7 +81,7 @@ Item {
             border.color: "#1FFFFFFF" // subtle top-white light glow
             border.width: 1
             anchors.margins: 1
-            opacity: control.accented ? 0.4 : 0.15
+            opacity: control.accented ? 0.4 : (control.flat ? 0.0 : 0.15)
         }
     }
     
@@ -92,12 +100,26 @@ Item {
             anchors.verticalCenter: parent.verticalCenter
             sourceSize.width: 16
             sourceSize.height: 16
-            opacity: control.accented ? 1.0 : 0.8
+            opacity: {
+                if (control.accented) return 1.0;
+                if (control.flat) {
+                    return mouseArea.containsMouse ? 0.9 : 0.65;
+                }
+                return 0.8;
+            }
+            Behavior on opacity { NumberAnimation { duration: 120 } }
         }
         
         Text {
             text: control.text
-            color: control.accented ? Theme.textInverse : Theme.textPrimary
+            color: {
+                if (control.accented) return Theme.textInverse;
+                if (control.flat) {
+                    return mouseArea.containsMouse ? Theme.textPrimary : Theme.textSecondary;
+                }
+                return Theme.textPrimary;
+            }
+            Behavior on color { ColorAnimation { duration: 120 } }
             font.family: Theme.fontFamily
             font.pixelSize: 12
             font.bold: true

@@ -48,6 +48,7 @@ qt_add_qml_module(megu_pack_optimizer
         src/resources/settings.svg
         src/resources/folder.svg
         src/resources/play.svg
+        src/resources/bolt.svg
         src/resources/info.svg
         src/resources/warning.svg
         src/resources/check.svg

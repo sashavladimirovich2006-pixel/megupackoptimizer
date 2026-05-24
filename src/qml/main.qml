@@ -12,7 +12,14 @@ ApplicationWindow {
     height: 680
     minimumWidth: 800
     minimumHeight: 560
-    title: qsTr("Megu Pack Optimizer")
+    title: {
+        var tabName = "";
+        if (activeTab === 0) tabName = qsTr("Dashboard");
+        else if (activeTab === 3) tabName = qsTr("Optimization");
+        else if (activeTab === 1) tabName = qsTr("Settings");
+        else if (activeTab === 2) tabName = qsTr("Real-Time Logs");
+        return "Megu Pack Optimizer | " + tabName;
+    }
 
     background: Rectangle {
         color: Theme.background
@@ -131,26 +138,26 @@ ApplicationWindow {
                     spacing: 1
                     
                     Text {
-                        text: "Megu Pack Optimizer"
+                        text: "MEGU PACK"
                         color: Theme.textPrimary
                         font.family: Theme.fontFamily
-                        font.pixelSize: 15
+                        font.pixelSize: 13
                         font.bold: true
-                        font.letterSpacing: 1.0
+                        font.letterSpacing: 1.2
                     }
                     
                     Text {
-                        text: qsTr("SYSTEM OPTIMIZATION SUITE")
-                        color: Theme.yellowAccent
+                        text: "OPTIMIZER"
+                        color: Theme.accent
                         font.family: Theme.fontFamily
-                        font.pixelSize: 8
+                        font.pixelSize: 9
                         font.bold: true
-                        font.letterSpacing: 1.8
+                        font.letterSpacing: 2.5
                     }
                 }
             }
 
-            // Navigation Tab Container with Sliding Active Line
+            // Navigation Tab Container (Clean capsules style)
             Item {
                 anchors.centerIn: parent
                 height: parent.height
@@ -167,19 +174,23 @@ ApplicationWindow {
                         text: qsTr("Dashboard")
                         iconSource: "qrc:/MeguPackOptimizer/src/resources/monitor.svg"
                         accented: window.activeTab === 0
+                        flat: !accented
                         enabled: !optimizerBackend.isOptimizingSystem
                         onClicked: window.activeTab = 0
                         anchors.verticalCenter: parent.verticalCenter
+                        height: 34
                     }
                     
                     MeguButton {
                         id: tab3
                         text: qsTr("Optimization")
-                        iconSource: "qrc:/MeguPackOptimizer/src/resources/storage.svg"
+                        iconSource: "qrc:/MeguPackOptimizer/src/resources/bolt.svg"
                         accented: window.activeTab === 3
+                        flat: !accented
                         enabled: !optimizerBackend.isOptimizingSystem
                         onClicked: window.activeTab = 3
                         anchors.verticalCenter: parent.verticalCenter
+                        height: 34
                     }
                     
                     MeguButton {
@@ -187,9 +198,11 @@ ApplicationWindow {
                         text: qsTr("Settings")
                         iconSource: "qrc:/MeguPackOptimizer/src/resources/settings.svg"
                         accented: window.activeTab === 1
+                        flat: !accented
                         enabled: !optimizerBackend.isOptimizingSystem
                         onClicked: window.activeTab = 1
                         anchors.verticalCenter: parent.verticalCenter
+                        height: 34
                     }
                     
                     MeguButton {
@@ -197,51 +210,11 @@ ApplicationWindow {
                         text: qsTr("Real-Time Logs")
                         iconSource: "qrc:/MeguPackOptimizer/src/resources/terminal.svg"
                         accented: window.activeTab === 2
+                        flat: !accented
                         enabled: !optimizerBackend.isOptimizingSystem
                         onClicked: window.activeTab = 2
                         anchors.verticalCenter: parent.verticalCenter
-                    }
-                }
-                
-                // Sliding Active Tab Indicator Line
-                Rectangle {
-                    id: activeTabLine
-                    height: 3
-                    radius: 1.5
-                    color: Theme.accent
-                    y: parent.height - height - 1
-                    
-                    // Compute absolute X inside this container
-                    x: {
-                        var targetTab = tab1; // Default fallback
-                        if (window.activeTab === 0) targetTab = tab0;
-                        else if (window.activeTab === 3) targetTab = tab3;
-                        else if (window.activeTab === 1) targetTab = tab1;
-                        else if (window.activeTab === 2) targetTab = tab2;
-                        return tabsRow.x + targetTab.x + 8;
-                    }
-                    
-                    // Compute width relative to the target tab width
-                    width: {
-                        var targetTab = tab1;
-                        if (window.activeTab === 0) targetTab = tab0;
-                        else if (window.activeTab === 3) targetTab = tab3;
-                        else if (window.activeTab === 1) targetTab = tab1;
-                        else if (window.activeTab === 2) targetTab = tab2;
-                        return targetTab.width - 16;
-                    }
-                    
-                    Behavior on x {
-                        NumberAnimation {
-                            duration: Theme.animNormal
-                            easing.type: Easing.OutCubic
-                        }
-                    }
-                    Behavior on width {
-                        NumberAnimation {
-                            duration: Theme.animNormal
-                            easing.type: Easing.OutCubic
-                        }
+                        height: 34
                     }
                 }
             }
