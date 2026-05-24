@@ -99,6 +99,7 @@ Item {
     }
     property bool hibernationChanged: optimizerBackend.hibernationActive !== optimizerBackend.originalHibernationActive
     property bool powerPlanChanged: optimizerBackend.targetPowerSchemeGuid !== optimizerBackend.activePowerSchemeGuid
+    property bool bitlockerChanged: optimizerBackend.bitlockerActive !== optimizerBackend.originalBitlockerActive
 
     // Active sidebar state
     property string activeDrawer: ""
@@ -120,6 +121,7 @@ Item {
         if (notificationsChanged) count++;
         if (hibernationChanged) count++;
         if (powerPlanChanged) count++;
+        if (bitlockerChanged) count++;
         return count;
     }
 
@@ -210,6 +212,14 @@ Item {
                 optimizerBackend.selectPowerScheme(optimizerBackend.activePowerSchemeGuid);
             }
         });
+        if (bitlockerChanged) list.push({
+            name: qsTr("BitLocker Drive Encryption"),
+            icon: "qrc:/MeguPackOptimizer/src/resources/info.svg",
+            hasSidebar: false,
+            revert: function() {
+                optimizerBackend.bitlockerActive = optimizerBackend.originalBitlockerActive;
+            }
+        });
         return list;
     }
 
@@ -219,6 +229,7 @@ Item {
         var _xbc = xboxChanged;
         var _prn = printerChanged;
         var _pwr = powerPlanChanged;
+        var _btl = bitlockerChanged;
         var _ws = optimizerBackend.winSearchActive;
         var _ds = optimizerBackend.driveStates;
         var _ga = optimizerBackend.gamingOverlayActive;
@@ -365,6 +376,7 @@ Item {
         if (name === qsTr("Windows Notifications")) return notificationsPanel;
         if (name === qsTr("System Hibernation")) return hibernationPanel;
         if (name === qsTr("Power Plan")) return powerPlanPanel;
+        if (name === qsTr("BitLocker Drive Encryption")) return bitlockerPanel;
         return null;
     }
 
@@ -385,9 +397,9 @@ Item {
         scrollAnimation.to = targetY;
         scrollAnimation.start();
 
-        cardFlashAnim.stop();
-        cardFlashAnim.targetPanel = panel;
-        cardFlashAnim.start();
+        if (typeof panel.triggerLocateFlash === "function") {
+            panel.triggerLocateFlash();
+        }
     }
 
     NumberAnimation {
@@ -395,47 +407,6 @@ Item {
         property: "contentY"
         duration: 500
         easing.type: Easing.InOutQuad
-    }
-
-    SequentialAnimation {
-        id: cardFlashAnim
-        property var targetPanel: null
-
-        ScriptAction {
-            script: {
-                if (targetPanel) targetPanel.isFlashing = true;
-            }
-        }
-        PauseAnimation { duration: 150 }
-        ScriptAction {
-            script: {
-                if (targetPanel) targetPanel.isFlashing = false;
-            }
-        }
-        PauseAnimation { duration: 150 }
-        ScriptAction {
-            script: {
-                if (targetPanel) targetPanel.isFlashing = true;
-            }
-        }
-        PauseAnimation { duration: 150 }
-        ScriptAction {
-            script: {
-                if (targetPanel) targetPanel.isFlashing = false;
-            }
-        }
-        PauseAnimation { duration: 150 }
-        ScriptAction {
-            script: {
-                if (targetPanel) targetPanel.isFlashing = true;
-            }
-        }
-        PauseAnimation { duration: 150 }
-        ScriptAction {
-            script: {
-                if (targetPanel) targetPanel.isFlashing = false;
-            }
-        }
     }
 
     readonly property string txtChangesPending: qsTr("%1 changes pending")
@@ -1763,6 +1734,111 @@ Item {
                             anchors.verticalCenter: parent.verticalCenter
                             onToggled: (isChecked) => {
                                 optimizerBackend.hibernationActive = isChecked;
+                            }
+                        }
+                    }
+                }
+
+                // BitLocker Card
+                AcrylicPanel {
+                    id: bitlockerPanel
+                    width: parent.width
+                    height: 72
+
+                    Row {
+                        anchors.left: parent.left
+                        anchors.verticalCenter: parent.verticalCenter
+                        spacing: 12
+
+                        Item {
+                            width: 28
+                            height: 28
+                            anchors.verticalCenter: parent.verticalCenter
+                            Image {
+                                id: bitlockerIconImg
+                                source: "qrc:/MeguPackOptimizer/src/resources/info.svg"
+                                anchors.fill: parent
+                                sourceSize.width: 28
+                                sourceSize.height: 28
+                                visible: false
+                            }
+                            ColorOverlay {
+                                anchors.fill: bitlockerIconImg
+                                source: bitlockerIconImg
+                                color: Theme.accent
+                            }
+                        }
+
+                        Column {
+                            anchors.verticalCenter: parent.verticalCenter
+                            spacing: 2
+
+                            Row {
+                                spacing: 8
+                                Text {
+                                    text: qsTr("BitLocker Drive Encryption")
+                                    color: Theme.textPrimary
+                                    font.family: Theme.fontFamily
+                                    font.pixelSize: 13
+                                    font.bold: true
+                                }
+                                Rectangle {
+                                    visible: root.bitlockerChanged
+                                    height: 16
+                                    width: selectedTextBitLocker.contentWidth + 10
+                                    radius: 4
+                                    color: Theme.accentDim
+                                    border.color: Theme.accent
+                                    border.width: 1
+                                    anchors.verticalCenter: parent.verticalCenter
+                                    Text {
+                                        id: selectedTextBitLocker
+                                        text: qsTr("Selected for application")
+                                        color: Theme.accent
+                                        font.family: Theme.fontFamily
+                                        font.pixelSize: 8
+                                        font.bold: true
+                                        anchors.centerIn: parent
+                                    }
+                                }
+                            }
+
+                            Text {
+                                text: qsTr("Enable or disable the BitLocker drive encryption background manager service.")
+                                color: Theme.textMuted
+                                font.family: Theme.fontFamily
+                                font.pixelSize: 10
+                            }
+                        }
+                    }
+
+                    Row {
+                        anchors.right: parent.right
+                        anchors.verticalCenter: parent.verticalCenter
+                        spacing: 16
+
+                        Text {
+                            text: qsTr("Show Path")
+                            color: bitlockerPathMouse.containsMouse ? Theme.accentLight : Theme.accent
+                            font.family: Theme.fontFamily
+                            font.pixelSize: 11
+                            font.bold: true
+                            font.underline: true
+                            anchors.verticalCenter: parent.verticalCenter
+                            MouseArea {
+                                id: bitlockerPathMouse
+                                anchors.fill: parent
+                                hoverEnabled: true
+                                cursorShape: Qt.PointingHandCursor
+                                onClicked: { optimizerBackend.showPath("bitlocker"); }
+                            }
+                        }
+
+                        MeguSwitch {
+                            checked: optimizerBackend.bitlockerActive
+                            anchors.verticalCenter: parent.verticalCenter
+                            onToggled: (isChecked) => {
+                                optimizerBackend.bitlockerActive = isChecked;
                             }
                         }
                     }

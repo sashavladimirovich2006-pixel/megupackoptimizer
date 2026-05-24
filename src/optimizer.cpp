@@ -84,6 +84,13 @@ void Optimizer::setPrinterActive(bool val) {
     }
 }
 
+void Optimizer::setBitlockerActive(bool val) {
+    if (m_bitlockerActive != val) {
+        m_bitlockerActive = val;
+        emit bitlockerActiveChanged(m_bitlockerActive);
+    }
+}
+
 void Optimizer::setNotificationsActive(bool val) {
     if (m_notificationsActive != val) {
         m_notificationsActive = val;
@@ -266,6 +273,33 @@ void Optimizer::loadSystemStates() {
 #endif
     m_detectedPrinters = printers;
     emit detectedPrintersChanged(m_detectedPrinters);
+
+    // Query BitLocker (BDESVC) startup state on startup
+    bool isBitlockerDisabled = false;
+#ifdef Q_OS_WIN
+    SC_HANDLE hSCMBitLocker = OpenSCManagerW(NULL, NULL, SC_MANAGER_CONNECT);
+    if (hSCMBitLocker) {
+        SC_HANDLE hService = OpenServiceW(hSCMBitLocker, L"BDESVC", SERVICE_QUERY_CONFIG);
+        if (hService) {
+            DWORD bytesNeeded = 0;
+            if (!QueryServiceConfigW(hService, NULL, 0, &bytesNeeded) && GetLastError() == ERROR_INSUFFICIENT_BUFFER) {
+                QByteArray buffer(static_cast<int>(bytesNeeded), 0);
+                LPQUERY_SERVICE_CONFIGW pConfig = reinterpret_cast<LPQUERY_SERVICE_CONFIGW>(buffer.data());
+                if (QueryServiceConfigW(hService, pConfig, bytesNeeded, &bytesNeeded)) {
+                    if (pConfig->dwStartType == SERVICE_DISABLED) {
+                        isBitlockerDisabled = true;
+                    }
+                }
+            }
+            CloseServiceHandle(hService);
+        }
+        CloseServiceHandle(hSCMBitLocker);
+    }
+#endif
+    m_bitlockerActive = !isBitlockerDisabled;
+    m_originalBitlockerActive = m_bitlockerActive;
+    emit bitlockerActiveChanged(m_bitlockerActive);
+    emit originalBitlockerActiveChanged(m_originalBitlockerActive);
 
     // Read HibernateEnabled Registry Key on Windows
     bool isHibernationActive = false;
@@ -660,6 +694,7 @@ void Optimizer::startSystemOptimization() {
     bool gameModeVal = m_gameModeActive;
     bool firewallVal = m_firewallActive;
     bool printerVal = m_printerActive;
+    bool bitlockerVal = m_bitlockerActive;
     bool notificationsVal = m_notificationsActive;
     bool notifGlobalVal = m_notifGlobalActive;
     bool notifAppVal = m_notifAppActive;
@@ -678,13 +713,14 @@ void Optimizer::startSystemOptimization() {
     bool origGameMode = m_originalGameModeActive;
     bool origFirewall = m_originalFirewallActive;
     bool origPrinter = m_originalPrinterActive;
+    bool origBitlocker = m_originalBitlockerActive;
     bool origNotifications = m_originalNotificationsActive;
     bool origNotifGlobal = m_originalNotifGlobalActive;
     bool origNotifApp = m_originalNotifAppActive;
     bool origNotifSounds = m_originalNotifSoundsActive;
     bool origNotifLockscreen = m_originalNotifLockscreenActive;
 
-    QThread* worker = QThread::create([this, searchVal, hibernationVal, overlayVal, coreIsolationVal, mouseAccelVal, gameModeVal, firewallVal, printerVal, notificationsVal, notifGlobalVal, notifAppVal, notifSoundsVal, notifLockscreenVal, targetPowerSchemeVal, activePowerSchemeVal, targets, originalTargets, origSearch, origHibernation, origOverlay, origCoreIsolation, origMouseAccel, origGameMode, origFirewall, origPrinter, origNotifications, origNotifGlobal, origNotifApp, origNotifSounds, origNotifLockscreen]() {
+    QThread* worker = QThread::create([this, searchVal, hibernationVal, overlayVal, coreIsolationVal, mouseAccelVal, gameModeVal, firewallVal, printerVal, bitlockerVal, notificationsVal, notifGlobalVal, notifAppVal, notifSoundsVal, notifLockscreenVal, targetPowerSchemeVal, activePowerSchemeVal, targets, originalTargets, origSearch, origHibernation, origOverlay, origCoreIsolation, origMouseAccel, origGameMode, origFirewall, origPrinter, origBitlocker, origNotifications, origNotifGlobal, origNotifApp, origNotifSounds, origNotifLockscreen]() {
         // Step 0: Check if anything actually changed
         bool powerPlanChanged = (targetPowerSchemeVal != activePowerSchemeVal);
         bool anyChanges = (searchVal != origSearch) || 
@@ -695,6 +731,7 @@ void Optimizer::startSystemOptimization() {
                           (gameModeVal != origGameMode) ||
                           (firewallVal != origFirewall) ||
                           (printerVal != origPrinter) ||
+                          (bitlockerVal != origBitlocker) ||
                           (notificationsVal != origNotifications) ||
                           (notifGlobalVal != origNotifGlobal) ||
                           (notifAppVal != origNotifApp) ||
@@ -1129,6 +1166,79 @@ void Optimizer::startSystemOptimization() {
             emit printerActiveChanged(m_printerActive);
         }
 
+        // Step 1.98b: BitLocker Drive Encryption (BDESVC) Configuration (only if changed)
+        bool bitlockerSuccess = true;
+        if (bitlockerVal != origBitlocker) {
+            emit systemStepReported(tr("Processing BitLocker service..."), "INFO");
+            QThread::msleep(800);
+#ifdef Q_OS_WIN
+            SC_HANDLE hSCM = OpenSCManagerW(NULL, NULL, SC_MANAGER_ALL_ACCESS);
+            if (hSCM) {
+                SC_HANDLE hService = OpenServiceW(hSCM, L"BDESVC", SERVICE_CHANGE_CONFIG | SERVICE_STOP | SERVICE_START | SERVICE_QUERY_STATUS);
+                if (hService) {
+                    DWORD startType = bitlockerVal ? SERVICE_DEMAND_START : SERVICE_DISABLED;
+                    if (ChangeServiceConfigW(hService, SERVICE_NO_CHANGE, startType, SERVICE_NO_CHANGE, NULL, NULL, NULL, NULL, NULL, NULL, NULL)) {
+                        QString logMsg = bitlockerVal ? tr("BitLocker service startup set to Manual.") : tr("BitLocker service startup set to Disabled.");
+                        emit systemStepReported(logMsg, "INFO");
+                        
+                        SERVICE_STATUS_PROCESS ssp;
+                        DWORD bytesNeeded = 0;
+                        if (QueryServiceStatusEx(hService, SC_STATUS_PROCESS_INFO, reinterpret_cast<LPBYTE>(&ssp), sizeof(ssp), &bytesNeeded)) {
+                            if (!bitlockerVal && ssp.dwCurrentState != SERVICE_STOPPED && ssp.dwCurrentState != SERVICE_STOP_PENDING) {
+                                emit systemStepReported(tr("Stopping BitLocker service..."), "INFO");
+                                SERVICE_STATUS status;
+                                ControlService(hService, SERVICE_CONTROL_STOP, &status);
+                                for (int i = 0; i < 15; ++i) {
+                                    QThread::msleep(200);
+                                    if (QueryServiceStatusEx(hService, SC_STATUS_PROCESS_INFO, reinterpret_cast<LPBYTE>(&ssp), sizeof(ssp), &bytesNeeded)) {
+                                        if (ssp.dwCurrentState == SERVICE_STOPPED) break;
+                                    }
+                                }
+                                if (ssp.dwCurrentState == SERVICE_STOPPED) {
+                                    emit systemStepReported(tr("BitLocker service stopped successfully."), "SUCCESS");
+                                } else {
+                                    emit systemStepReported(tr("BitLocker service stop requested."), "WARNING");
+                                }
+                            } else if (bitlockerVal && ssp.dwCurrentState != SERVICE_RUNNING && ssp.dwCurrentState != SERVICE_START_PENDING) {
+                                emit systemStepReported(tr("Starting BitLocker service..."), "INFO");
+                                if (StartServiceW(hService, 0, NULL)) {
+                                    for (int i = 0; i < 15; ++i) {
+                                        QThread::msleep(200);
+                                        if (QueryServiceStatusEx(hService, SC_STATUS_PROCESS_INFO, reinterpret_cast<LPBYTE>(&ssp), sizeof(ssp), &bytesNeeded)) {
+                                            if (ssp.dwCurrentState == SERVICE_RUNNING) break;
+                                        }
+                                    }
+                                    if (ssp.dwCurrentState == SERVICE_RUNNING) {
+                                        emit systemStepReported(tr("BitLocker service started successfully."), "SUCCESS");
+                                    } else {
+                                        emit systemStepReported(tr("BitLocker service start pending."), "INFO");
+                                    }
+                                } else {
+                                    emit systemStepReported(tr("Failed to start BitLocker service."), "ERROR");
+                                }
+                            }
+                        }
+                    } else {
+                        bitlockerSuccess = false;
+                        emit systemStepReported(tr("Failed to change BitLocker service configuration. Error: %1").arg(GetLastError()), "ERROR");
+                    }
+                    CloseServiceHandle(hService);
+                } else {
+                    bitlockerSuccess = false;
+                    emit systemStepReported(tr("Failed to open BitLocker service. Error: %1").arg(GetLastError()), "ERROR");
+                }
+                CloseServiceHandle(hSCM);
+            } else {
+                bitlockerSuccess = false;
+                emit systemStepReported(tr("Failed to connect to SCM. Error: %1").arg(GetLastError()), "ERROR");
+            }
+#else
+            emit systemStepReported(tr("[Simulation] BitLocker service state set to: %1").arg(bitlockerVal ? "Enabled" : "Disabled"), "SUCCESS");
+#endif
+            m_bitlockerActive = bitlockerVal;
+            emit bitlockerActiveChanged(m_bitlockerActive);
+        }
+
         // Step 1.99: Windows Notifications Configuration (only if changed)
         bool notificationsSuccess = true;
         if ((notificationsVal != origNotifications) ||
@@ -1394,6 +1504,9 @@ void Optimizer::showPath(const QString &funcName) {
     } else if (funcName == "notifications") {
         QProcess::startDetached("cmd.exe", QStringList() << "/c" << "start ms-settings:notifications");
         Logger::log("Opening Windows Notifications Settings...", "INFO");
+    } else if (funcName == "bitlocker") {
+        QProcess::startDetached("control.exe", QStringList() << "/name" << "Microsoft.BitLockerDriveEncryption");
+        Logger::log("Opening BitLocker Drive Encryption Manager...", "INFO");
     } else {
         // Assume drive letter like "C:" or "D:"
         QString letter = funcName.trimmed();
