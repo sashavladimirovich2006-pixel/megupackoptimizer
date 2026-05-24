@@ -30,32 +30,32 @@ Item {
     // 1. Core Background Colors
     property color background: {
         if (currentTheme === "Белоснежная") return "#FAFAFA";
-        if (currentTheme === "Темная") return "#080B11"; // Deeper space black-blue
+        if (currentTheme === "Темная") return "#05070B"; // Premium obsidian black
         if (currentTheme === "Blackout полностью черная") return "#000000";
         if (currentTheme === "Ргб") return "#050508";
         if (currentTheme === "Розовая") return "#FCF8F9";
         if (currentTheme === "Black pink") return "#050406";
-        return "#080B11";
+        return "#05070B";
     }
 
     property color sidebarBg: {
         if (currentTheme === "Белоснежная") return "#F2F3F4F6"; // 95% opacity
-        if (currentTheme === "Темная") return "#E605080E"; // 90% opacity deep dark
+        if (currentTheme === "Темная") return "#E6030508"; // 90% opacity deep dark obsidian
         if (currentTheme === "Blackout полностью черная") return "#E6000000"; // 90% opacity
         if (currentTheme === "Ргб") return "#E6020204"; // 90%
         if (currentTheme === "Розовая") return "#F2F5EBED"; // 95% opacity
         if (currentTheme === "Black pink") return "#E60A090D"; // 90% opacity
-        return "#E605080E";
+        return "#E6030508";
     }
 
     property color panelBg: {
         if (currentTheme === "Белоснежная") return "#CCFFFFFF"; // 80% translucent white
-        if (currentTheme === "Темная") return "#B30F1524"; // 70% translucent deep slate
+        if (currentTheme === "Темная") return "#B30B0F19"; // 70% translucent deep obsidian slate
         if (currentTheme === "Blackout полностью черная") return "#B30C0C0C"; // 70% translucent black
         if (currentTheme === "Ргб") return "#B3050508"; // 70% translucent
         if (currentTheme === "Розовая") return "#CCD9E5EC"; // 80% translucent soft blush white
         if (currentTheme === "Black pink") return "#B30A090D"; // 70% translucent orchid
-        return "#B30F1524";
+        return "#B30B0F19";
     }
 
     property color buttonBg: {
@@ -90,43 +90,43 @@ Item {
 
     property color headerBg: {
         if (currentTheme === "Белоснежная") return "#E6E5E7EB"; // 90% translucent
-        if (currentTheme === "Темная") return "#D90B0F18"; // 85% translucent
+        if (currentTheme === "Темная") return "#D904060A"; // 85% translucent obsidian
         if (currentTheme === "Blackout полностью черная") return "#D9050505"; // 85% translucent
         if (currentTheme === "Ргб") return "#D9040406"; // 85% translucent
         if (currentTheme === "Розовая") return "#E6F0E0E3"; // 90% translucent
         if (currentTheme === "Black pink") return "#D90D0B10"; // 85% translucent
-        return "#D90B0F18";
+        return "#D904060A";
     }
     
     // 2. Borders & Outlines
     property color border: {
         if (currentTheme === "Ргб") return rgbAccent;
         if (currentTheme === "Белоснежная") return "#E2E8F0";
-        if (currentTheme === "Темная") return "#202D44";
+        if (currentTheme === "Темная") return "#162233"; // Sleek dark border
         if (currentTheme === "Blackout полностью черная") return "#1F1F1F";
         if (currentTheme === "Розовая") return "#E5CCD1";
         if (currentTheme === "Black pink") return "#3A1E2A";
-        return "#202D44";
+        return "#162233";
     }
 
     property color borderHover: {
         if (currentTheme === "Ргб") return rgbAccentLight;
         if (currentTheme === "Белоснежная") return "#CBD5E1";
-        if (currentTheme === "Темная") return "#304264";
+        if (currentTheme === "Темная") return "#263B59";
         if (currentTheme === "Blackout полностью черная") return "#2C2C2E";
         if (currentTheme === "Розовая") return "#D4A3AE";
         if (currentTheme === "Black pink") return "#FF5E97";
-        return "#304264";
+        return "#263B59";
     }
 
     property color borderGlow: {
         if (currentTheme === "Ргб") return rgbAccentGlow;
         if (currentTheme === "Белоснежная") return "#3B82F620";
-        if (currentTheme === "Темная") return "#FFBF0025";
+        if (currentTheme === "Темная") return "#00E5FF25";
         if (currentTheme === "Blackout полностью черная") return "#FF9F0A20";
         if (currentTheme === "Розовая") return "#D48C9C20";
         if (currentTheme === "Black pink") return "#FF5E9720";
-        return "#FFBF0025";
+        return "#00E5FF25";
     }
     
     // 3. Text Colors (Overhauled for maximum readability!)
@@ -142,32 +142,32 @@ Item {
 
     property color textSecondary: {
         if (currentTheme === "Белоснежная") return "#64748B";
-        if (currentTheme === "Темная") return "#94A3B8";
+        if (currentTheme === "Темная") return "#8A9CB2"; // Slate blue-gray secondary
         if (currentTheme === "Blackout полностью черная") return "#A1A1A6";
         if (currentTheme === "Ргб") return "#A1A1A6";
         if (currentTheme === "Розовая") return "#6E4951";
         if (currentTheme === "Black pink") return "#E598B7";
-        return "#94A3B8";
+        return "#8A9CB2";
     }
 
     property color textMuted: {
         if (currentTheme === "Белоснежная") return "#94A3B8";
-        if (currentTheme === "Темная") return "#64748B";
+        if (currentTheme === "Темная") return "#55677D";
         if (currentTheme === "Blackout полностью черная") return "#515154";
         if (currentTheme === "Ргб") return "#515154";
         if (currentTheme === "Розовая") return "#9C737C";
         if (currentTheme === "Black pink") return "#A37389";
-        return "#64748B";
+        return "#55677D";
     }
 
     property color textInverse: {
         if (currentTheme === "Белоснежная") return "#FFFFFF";
-        if (currentTheme === "Темная") return "#0B1019";
+        if (currentTheme === "Темная") return "#05070B";
         if (currentTheme === "Blackout полностью черная") return "#000000";
         if (currentTheme === "Ргб") return "#000000";
         if (currentTheme === "Розовая") return "#3D2228";
         if (currentTheme === "Black pink") return "#050406";
-        return "#0B1019";
+        return "#05070B";
     }
     
     // 4. Accent Overhaul (Gorgeous, bug-free brand colors!)
@@ -177,7 +177,7 @@ Item {
         if (currentTheme === "Blackout полностью черная") return "#FF9F0A"; // Neon Gold
         if (currentTheme === "Розовая") return "#D48C9C"; // Premium Blush Rose Gold
         if (currentTheme === "Black pink") return "#FF5E97"; // Cyber Blush Orchid
-        return "#FFBF00"; // Dark Slate Zune Amber
+        return "#00E5FF"; // Futuristic Electric Cyan
     }
 
     property color accentLight: {
@@ -186,7 +186,7 @@ Item {
         if (currentTheme === "Blackout полностью черная") return "#FFE082";
         if (currentTheme === "Розовая") return "#E5B3BE";
         if (currentTheme === "Black pink") return "#FF85B2";
-        return "#FFE082";
+        return "#80F3FF"; // Neon Light Cyan
     }
 
     property color accentDark: {
@@ -195,7 +195,7 @@ Item {
         if (currentTheme === "Blackout полностью черная") return "#FF8F00";
         if (currentTheme === "Розовая") return "#B26A7A";
         if (currentTheme === "Black pink") return "#D6336B";
-        return "#FF8F00";
+        return "#0097A7"; // Dark Cyan
     }
 
     property color yellowAccent: {
