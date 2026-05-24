@@ -84,7 +84,7 @@ ApplicationWindow {
                 anchors.verticalCenter: parent.verticalCenter
                 spacing: 14
 
-                // Aggressive geometric "M" custom vector shape
+                // Premium new transparent minimalist M logo
                 Item {
                     width: 32
                     height: 32
@@ -95,39 +95,17 @@ ApplicationWindow {
                         anchors.fill: parent
                         radius: 6
                         color: Theme.accent
-                        opacity: 0.15
+                        opacity: 0.12
                         scale: 1.1
                     }
                     
-                    Shape {
+                    Image {
+                        source: "qrc:/MeguPackOptimizer/src/resources/megu_logo_transparent.png"
                         anchors.fill: parent
-                        layer.enabled: true
-                        
-                        ShapePath {
-                            strokeWidth: 0
-                            strokeColor: "transparent"
-                            fillGradient: LinearGradient {
-                                x1: 0; y1: 0
-                                x2: 32; y2: 32
-                                GradientStop { position: 0.0; color: Theme.accentLight }
-                                GradientStop { position: 1.0; color: Theme.accent }
-                            }
-                            
-                            startX: 3; startY: 28
-                            
-                            PathLine { x: 7; y: 4 }      // left side outer slanted up
-                            PathLine { x: 12; y: 4 }     // left peak horizontal cut
-                            PathLine { x: 16; y: 15 }    // inner down to center
-                            PathLine { x: 20; y: 4 }     // inner up to right peak
-                            PathLine { x: 25; y: 4 }     // right peak horizontal cut
-                            PathLine { x: 29; y: 28 }    // right side outer slanted down
-                            PathLine { x: 23; y: 28 }    // right foot horizontal cut
-                            PathLine { x: 21; y: 14 }    // right inner slanted up
-                            PathLine { x: 16; y: 21 }    // center inner down
-                            PathLine { x: 11; y: 14 }    // left inner slanted up
-                            PathLine { x: 9; y: 28 }     // left foot left edge
-                            PathLine { x: 3; y: 28 }     // close path
-                        }
+                        anchors.margins: 2 // elegant slight inset margin for perfect visual balance
+                        smooth: true
+                        mipmap: true
+                        fillMode: Image.PreserveAspectFit
                     }
                 }
 
