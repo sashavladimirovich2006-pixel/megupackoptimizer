@@ -37,6 +37,8 @@ class Optimizer : public QObject {
     Q_PROPERTY(bool originalGameModeActive READ originalGameModeActive NOTIFY originalGameModeActiveChanged)
     Q_PROPERTY(bool firewallActive READ firewallActive WRITE setFirewallActive NOTIFY firewallActiveChanged)
     Q_PROPERTY(bool originalFirewallActive READ originalFirewallActive NOTIFY originalFirewallActiveChanged)
+    Q_PROPERTY(bool printerActive READ printerActive WRITE setPrinterActive NOTIFY printerActiveChanged)
+    Q_PROPERTY(bool originalPrinterActive READ originalPrinterActive NOTIFY originalPrinterActiveChanged)
     Q_PROPERTY(int mpoValue READ mpoValue NOTIFY mpoValueChanged)
     Q_PROPERTY(QStringList fixedDrives READ fixedDrives NOTIFY fixedDrivesChanged)
     Q_PROPERTY(QVariantMap driveStates READ driveStates WRITE setDriveStates NOTIFY driveStatesChanged)
@@ -78,6 +80,8 @@ public:
     bool originalGameModeActive() const { return m_originalGameModeActive; }
     bool firewallActive() const { return m_firewallActive; }
     bool originalFirewallActive() const { return m_originalFirewallActive; }
+    bool printerActive() const { return m_printerActive; }
+    bool originalPrinterActive() const { return m_originalPrinterActive; }
     int mpoValue() const { return m_mpoValue; }
     QStringList fixedDrives() const { return m_fixedDrives; }
     QVariantMap driveStates() const { return m_driveStates; }
@@ -93,6 +97,7 @@ public:
     void setMouseAccelerationActive(bool val);
     void setGameModeActive(bool val);
     void setFirewallActive(bool val);
+    void setPrinterActive(bool val);
     void setDriveStates(const QVariantMap &states);
 
 
@@ -135,6 +140,8 @@ signals:
     void originalGameModeActiveChanged(bool val);
     void firewallActiveChanged(bool val);
     void originalFirewallActiveChanged(bool val);
+    void printerActiveChanged(bool val);
+    void originalPrinterActiveChanged(bool val);
     void mpoValueChanged(int val);
     void fixedDrivesChanged(const QStringList &val);
     void driveStatesChanged(const QVariantMap &val);
@@ -179,6 +186,8 @@ private:
     bool m_originalGameModeActive = true;
     bool m_firewallActive = true;
     bool m_originalFirewallActive = true;
+    bool m_printerActive = true;
+    bool m_originalPrinterActive = true;
     int m_mpoValue = 0;
     QStringList m_fixedDrives;
     QVariantMap m_driveStates;

@@ -73,6 +73,13 @@ void Optimizer::setFirewallActive(bool val) {
     }
 }
 
+void Optimizer::setPrinterActive(bool val) {
+    if (m_printerActive != val) {
+        m_printerActive = val;
+        emit printerActiveChanged(m_printerActive);
+    }
+}
+
 void Optimizer::setDriveStates(const QVariantMap &states) {
     if (m_driveStates != states) {
         m_driveStates = states;
@@ -152,6 +159,33 @@ void Optimizer::loadSystemStates() {
     m_originalWinSearchActive = m_winSearchActive;
     emit winSearchActiveChanged(m_winSearchActive);
     emit originalWinSearchActiveChanged(m_originalWinSearchActive);
+
+    // Query Print Spooler (Printer) startup state on startup
+    bool isPrinterDisabled = false;
+#ifdef Q_OS_WIN
+    SC_HANDLE hSCMPrinter = OpenSCManagerW(NULL, NULL, SC_MANAGER_CONNECT);
+    if (hSCMPrinter) {
+        SC_HANDLE hService = OpenServiceW(hSCMPrinter, L"Spooler", SERVICE_QUERY_CONFIG);
+        if (hService) {
+            DWORD bytesNeeded = 0;
+            if (!QueryServiceConfigW(hService, NULL, 0, &bytesNeeded) && GetLastError() == ERROR_INSUFFICIENT_BUFFER) {
+                QByteArray buffer(static_cast<int>(bytesNeeded), 0);
+                LPQUERY_SERVICE_CONFIGW pConfig = reinterpret_cast<LPQUERY_SERVICE_CONFIGW>(buffer.data());
+                if (QueryServiceConfigW(hService, pConfig, bytesNeeded, &bytesNeeded)) {
+                    if (pConfig->dwStartType == SERVICE_DISABLED) {
+                        isPrinterDisabled = true;
+                    }
+                }
+            }
+            CloseServiceHandle(hService);
+        }
+        CloseServiceHandle(hSCMPrinter);
+    }
+#endif
+    m_printerActive = !isPrinterDisabled;
+    m_originalPrinterActive = m_printerActive;
+    emit printerActiveChanged(m_printerActive);
+    emit originalPrinterActiveChanged(m_originalPrinterActive);
 
     // Read HibernateEnabled Registry Key on Windows
     bool isHibernationActive = false;
@@ -384,6 +418,7 @@ void Optimizer::startSystemOptimization() {
     bool mouseAccelVal = m_mouseAccelerationActive;
     bool gameModeVal = m_gameModeActive;
     bool firewallVal = m_firewallActive;
+    bool printerVal = m_printerActive;
     QVariantMap targets = m_driveStates;
     QVariantMap originalTargets = m_originalDriveStates;
     bool origSearch = m_originalWinSearchActive;
@@ -393,8 +428,9 @@ void Optimizer::startSystemOptimization() {
     bool origMouseAccel = m_originalMouseAccelerationActive;
     bool origGameMode = m_originalGameModeActive;
     bool origFirewall = m_originalFirewallActive;
+    bool origPrinter = m_originalPrinterActive;
 
-    QThread* worker = QThread::create([this, searchVal, hibernationVal, overlayVal, coreIsolationVal, mouseAccelVal, gameModeVal, firewallVal, targets, originalTargets, origSearch, origHibernation, origOverlay, origCoreIsolation, origMouseAccel, origGameMode, origFirewall]() {
+    QThread* worker = QThread::create([this, searchVal, hibernationVal, overlayVal, coreIsolationVal, mouseAccelVal, gameModeVal, firewallVal, printerVal, targets, originalTargets, origSearch, origHibernation, origOverlay, origCoreIsolation, origMouseAccel, origGameMode, origFirewall, origPrinter]() {
         // Step 0: Check if anything actually changed
         bool anyChanges = (searchVal != origSearch) || 
                           (hibernationVal != origHibernation) || 
@@ -402,7 +438,8 @@ void Optimizer::startSystemOptimization() {
                           (coreIsolationVal != origCoreIsolation) ||
                           (mouseAccelVal != origMouseAccel) ||
                           (gameModeVal != origGameMode) ||
-                          (firewallVal != origFirewall);
+                          (firewallVal != origFirewall) ||
+                          (printerVal != origPrinter);
         if (!anyChanges) {
             for (const QString &driveLetter : targets.keys()) {
                 if (targets.value(driveLetter).toBool() != originalTargets.value(driveLetter).toBool()) {
@@ -758,6 +795,79 @@ void Optimizer::startSystemOptimization() {
             emit firewallActiveChanged(m_firewallActive);
         }
 
+        // Step 1.98: Print Spooler (Printer) Configuration (only if changed)
+        bool printerSuccess = true;
+        if (printerVal != origPrinter) {
+            emit systemStepReported(tr("Processing Print Spooler service..."), "INFO");
+            QThread::msleep(800);
+#ifdef Q_OS_WIN
+            SC_HANDLE hSCM = OpenSCManagerW(NULL, NULL, SC_MANAGER_ALL_ACCESS);
+            if (hSCM) {
+                SC_HANDLE hService = OpenServiceW(hSCM, L"Spooler", SERVICE_CHANGE_CONFIG | SERVICE_STOP | SERVICE_START | SERVICE_QUERY_STATUS);
+                if (hService) {
+                    DWORD startType = printerVal ? SERVICE_AUTO_START : SERVICE_DISABLED;
+                    if (ChangeServiceConfigW(hService, SERVICE_NO_CHANGE, startType, SERVICE_NO_CHANGE, NULL, NULL, NULL, NULL, NULL, NULL, NULL)) {
+                        QString logMsg = printerVal ? tr("Print Spooler startup set to Automatic.") : tr("Print Spooler startup set to Disabled.");
+                        emit systemStepReported(logMsg, "INFO");
+                        
+                        SERVICE_STATUS_PROCESS ssp;
+                        DWORD bytesNeeded = 0;
+                        if (QueryServiceStatusEx(hService, SC_STATUS_PROCESS_INFO, reinterpret_cast<LPBYTE>(&ssp), sizeof(ssp), &bytesNeeded)) {
+                            if (!printerVal && ssp.dwCurrentState != SERVICE_STOPPED && ssp.dwCurrentState != SERVICE_STOP_PENDING) {
+                                emit systemStepReported(tr("Stopping Print Spooler service..."), "INFO");
+                                SERVICE_STATUS status;
+                                ControlService(hService, SERVICE_CONTROL_STOP, &status);
+                                for (int i = 0; i < 15; ++i) {
+                                    QThread::msleep(200);
+                                    if (QueryServiceStatusEx(hService, SC_STATUS_PROCESS_INFO, reinterpret_cast<LPBYTE>(&ssp), sizeof(ssp), &bytesNeeded)) {
+                                        if (ssp.dwCurrentState == SERVICE_STOPPED) break;
+                                    }
+                                }
+                                if (ssp.dwCurrentState == SERVICE_STOPPED) {
+                                    emit systemStepReported(tr("Print Spooler service stopped successfully."), "SUCCESS");
+                                } else {
+                                    emit systemStepReported(tr("Print Spooler service stop requested."), "WARNING");
+                                }
+                            } else if (printerVal && ssp.dwCurrentState != SERVICE_RUNNING && ssp.dwCurrentState != SERVICE_START_PENDING) {
+                                emit systemStepReported(tr("Starting Print Spooler service..."), "INFO");
+                                if (StartServiceW(hService, 0, NULL)) {
+                                    for (int i = 0; i < 15; ++i) {
+                                        QThread::msleep(200);
+                                        if (QueryServiceStatusEx(hService, SC_STATUS_PROCESS_INFO, reinterpret_cast<LPBYTE>(&ssp), sizeof(ssp), &bytesNeeded)) {
+                                            if (ssp.dwCurrentState == SERVICE_RUNNING) break;
+                                        }
+                                    }
+                                    if (ssp.dwCurrentState == SERVICE_RUNNING) {
+                                        emit systemStepReported(tr("Print Spooler service started successfully."), "SUCCESS");
+                                    } else {
+                                        emit systemStepReported(tr("Print Spooler service start pending."), "INFO");
+                                    }
+                                } else {
+                                    emit systemStepReported(tr("Failed to start Print Spooler service."), "ERROR");
+                                }
+                            }
+                        }
+                    } else {
+                        printerSuccess = false;
+                        emit systemStepReported(tr("Failed to change Print Spooler service configuration. Error: %1").arg(GetLastError()), "ERROR");
+                    }
+                    CloseServiceHandle(hService);
+                } else {
+                    printerSuccess = false;
+                    emit systemStepReported(tr("Failed to open Print Spooler service. Error: %1").arg(GetLastError()), "ERROR");
+                }
+                CloseServiceHandle(hSCM);
+            } else {
+                printerSuccess = false;
+                emit systemStepReported(tr("Failed to connect to SCM. Error: %1").arg(GetLastError()), "ERROR");
+            }
+#else
+            emit systemStepReported(tr("[Simulation] Print Spooler service state set to: %1").arg(printerVal ? "Enabled" : "Disabled"), "SUCCESS");
+#endif
+            m_printerActive = printerVal;
+            emit printerActiveChanged(m_printerActive);
+        }
+
         m_systemProgress = 0.50;
         emit systemProgressChanged(m_systemProgress);
         QThread::msleep(300);
@@ -805,7 +915,7 @@ void Optimizer::startSystemOptimization() {
             QThread::msleep(100);
         }
 
-        bool overallSuccess = wSearchSuccess && hibernationSuccess && overlaySuccess && coreIsolationSuccess && mouseAccelSuccess && gameModeSuccess && firewallSuccess && overallDrivesSuccess;
+        bool overallSuccess = wSearchSuccess && hibernationSuccess && overlaySuccess && coreIsolationSuccess && mouseAccelSuccess && gameModeSuccess && firewallSuccess && printerSuccess && overallDrivesSuccess;
         if (overallSuccess) {
             emit systemStepReported(tr("System optimization completed successfully!"), "SUCCESS");
             Logger::log("System optimization completed successfully!", "INFO");
@@ -822,6 +932,7 @@ void Optimizer::startSystemOptimization() {
         m_originalMouseAccelerationActive = mouseAccelVal;
         m_originalGameModeActive = gameModeVal;
         m_originalFirewallActive = firewallVal;
+        m_originalPrinterActive = printerVal;
         m_originalDriveStates = targets;
         
         emit driveStatesChanged(m_driveStates);
@@ -832,6 +943,7 @@ void Optimizer::startSystemOptimization() {
         emit originalMouseAccelerationActiveChanged(m_originalMouseAccelerationActive);
         emit originalGameModeActiveChanged(m_originalGameModeActive);
         emit originalFirewallActiveChanged(m_originalFirewallActive);
+        emit originalPrinterActiveChanged(m_originalPrinterActive);
         emit originalDriveStatesChanged(m_originalDriveStates);
 
         m_isOptimizingSystem = false;
@@ -862,6 +974,9 @@ void Optimizer::showPath(const QString &funcName) {
     } else if (funcName == "firewall") {
         QProcess::startDetached("cmd.exe", QStringList() << "/c" << "start windowsdefender://network");
         Logger::log("Opening Firewall & Network Protection settings...", "INFO");
+    } else if (funcName == "printer") {
+        QProcess::startDetached("control.exe", QStringList() << "printers");
+        Logger::log("Opening Devices and Printers...", "INFO");
     } else {
         // Assume drive letter like "C:" or "D:"
         QString letter = funcName.trimmed();
