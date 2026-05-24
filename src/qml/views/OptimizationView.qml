@@ -1197,6 +1197,177 @@ Item {
                         }
                     }
                 }
+
+                // Power Plan Card
+                AcrylicPanel {
+                    width: parent.width
+                    height: 72
+
+                    Row {
+                        anchors.left: parent.left
+                        anchors.verticalCenter: parent.verticalCenter
+                        spacing: 12
+
+                        Item {
+                            width: 28
+                            height: 28
+                            anchors.verticalCenter: parent.verticalCenter
+                            Image {
+                                id: powerIconImg
+                                source: "qrc:/MeguPackOptimizer/src/resources/bolt.svg"
+                                anchors.fill: parent
+                                sourceSize.width: 28
+                                sourceSize.height: 28
+                                visible: false
+                            }
+                            ColorOverlay {
+                                anchors.fill: powerIconImg
+                                source: powerIconImg
+                                color: Theme.accent
+                            }
+                        }
+
+                        Column {
+                            anchors.verticalCenter: parent.verticalCenter
+                            spacing: 2
+
+                            Text {
+                                text: qsTr("Power Plan")
+                                color: Theme.textPrimary
+                                font.family: Theme.fontFamily
+                                font.pixelSize: 13
+                                font.bold: true
+                            }
+
+                            Text {
+                                text: qsTr("Select system power plans and unlock the hidden Ultimate Performance mode.")
+                                color: Theme.textMuted
+                                font.family: Theme.fontFamily
+                                font.pixelSize: 10
+                            }
+                        }
+                    }
+
+                    Row {
+                        anchors.right: parent.right
+                        anchors.verticalCenter: parent.verticalCenter
+                        spacing: 16
+
+                        // Current Power Plan status pill
+                        Rectangle {
+                            height: 24
+                            width: {
+                                var activeName = "";
+                                for (var i = 0; i < optimizerBackend.powerSchemes.length; i++) {
+                                    if (optimizerBackend.powerSchemes[i].isActive) {
+                                        activeName = optimizerBackend.powerSchemes[i].name;
+                                        break;
+                                    }
+                                }
+                                var cleanName = activeName.split(' (')[0];
+                                var fontMetricsWidth = cleanName.length * 5.5 + 20;
+                                return Math.max(80, Math.min(180, fontMetricsWidth));
+                            }
+                            radius: 12
+                            color: {
+                                var activeIsUltimate = false;
+                                for (var i = 0; i < optimizerBackend.powerSchemes.length; i++) {
+                                    if (optimizerBackend.powerSchemes[i].isActive && optimizerBackend.powerSchemes[i].isUltimate) {
+                                        activeIsUltimate = true;
+                                        break;
+                                    }
+                                }
+                                return activeIsUltimate ? Theme.accentDim : (Theme.currentTheme === "Белоснежная" || Theme.currentTheme === "Розовая" ? "#0F000000" : "#1A2536");
+                            }
+                            border.color: {
+                                var activeIsUltimate = false;
+                                for (var i = 0; i < optimizerBackend.powerSchemes.length; i++) {
+                                    if (optimizerBackend.powerSchemes[i].isActive && optimizerBackend.powerSchemes[i].isUltimate) {
+                                        activeIsUltimate = true;
+                                        break;
+                                    }
+                                }
+                                return activeIsUltimate ? Theme.accent : "#2B3F5C";
+                            }
+                            border.width: 1
+                            anchors.verticalCenter: parent.verticalCenter
+
+                            Text {
+                                text: {
+                                    var activeName = "";
+                                    for (var i = 0; i < optimizerBackend.powerSchemes.length; i++) {
+                                        if (optimizerBackend.powerSchemes[i].isActive) {
+                                            activeName = optimizerBackend.powerSchemes[i].name;
+                                            break;
+                                        }
+                                    }
+                                    if (activeName === "") return qsTr("Unknown");
+                                    var cleanName = activeName.split(' (')[0];
+                                    return cleanName;
+                                }
+                                color: {
+                                    var activeIsUltimate = false;
+                                    for (var i = 0; i < optimizerBackend.powerSchemes.length; i++) {
+                                        if (optimizerBackend.powerSchemes[i].isActive && optimizerBackend.powerSchemes[i].isUltimate) {
+                                            activeIsUltimate = true;
+                                            break;
+                                        }
+                                    }
+                                    return activeIsUltimate ? Theme.accent : Theme.textSecondary;
+                                }
+                                font.family: Theme.fontFamily
+                                font.pixelSize: 10
+                                font.bold: true
+                                anchors.centerIn: parent
+                            }
+                        }
+
+                        // Arrow button that slides right on hover & opens sidebar drawer for power plans list
+                        Rectangle {
+                            width: 32
+                            height: 32
+                            radius: 16
+                            color: powerArrowMouseArea.containsMouse ? Theme.accentDim : "transparent"
+                            border.color: powerArrowMouseArea.containsMouse ? Theme.accent : Theme.border
+                            border.width: 1
+                            anchors.verticalCenter: parent.verticalCenter
+
+                            Behavior on color { ColorAnimation { duration: Theme.animFast } }
+                            Behavior on border.color { ColorAnimation { duration: Theme.animFast } }
+
+                            Item {
+                                width: 14
+                                height: 14
+                                anchors.centerIn: parent
+                                x: powerArrowMouseArea.containsMouse ? (parent.width/2 - 5) : (parent.width/2 - 7)
+                                Behavior on x { NumberAnimation { duration: Theme.animNormal; easing.type: Easing.OutCubic } }
+                                Image {
+                                    id: powerArrowImg
+                                    source: "qrc:/MeguPackOptimizer/src/resources/arrow.svg"
+                                    anchors.fill: parent
+                                    sourceSize.width: 14
+                                    sourceSize.height: 14
+                                    visible: false
+                                }
+                                ColorOverlay {
+                                    anchors.fill: powerArrowImg
+                                    source: powerArrowImg
+                                    color: powerArrowMouseArea.containsMouse ? Theme.accent : Theme.textSecondary
+                                }
+                            }
+
+                            MouseArea {
+                                id: powerArrowMouseArea
+                                anchors.fill: parent
+                                hoverEnabled: true
+                                cursorShape: Qt.PointingHandCursor
+                                onClicked: {
+                                    root.activeDrawer = "power";
+                                }
+                            }
+                        }
+                    }
+                }
             }
         }
     }
@@ -1294,6 +1465,7 @@ Item {
                             if (root.activeDrawer === "mpo") return qsTr("MPO LATENCY TWEAK");
                             if (root.activeDrawer === "printer") return qsTr("PRINTER TWEAKS");
                             if (root.activeDrawer === "notifications") return qsTr("NOTIFICATION SETTINGS");
+                            if (root.activeDrawer === "power") return qsTr("POWER PLANS");
                             return "";
                         }
                         color: Theme.textPrimary
@@ -1355,6 +1527,7 @@ Item {
                         if (root.activeDrawer === "mpo") return mpoColumn.implicitHeight;
                         if (root.activeDrawer === "printer") return printerColumn.implicitHeight;
                         if (root.activeDrawer === "notifications") return notificationsColumn.implicitHeight;
+                        if (root.activeDrawer === "power") return powerColumn.implicitHeight;
                         return height;
                     }
 
@@ -2288,6 +2461,141 @@ Item {
                                 text: qsTr("Lock Screen Notifications")
                                 checked: optimizerBackend.notifLockscreenActive
                                 onToggled: (isChecked) => { optimizerBackend.notifLockscreenActive = isChecked; }
+                            }
+                        }
+                    }
+
+                    // 6. Power Plan Options Content
+                    Column {
+                        id: powerColumn
+                        width: parent.width
+                        spacing: 20
+                        visible: root.activeDrawer === "power"
+
+                        Column {
+                            width: parent.width
+                            spacing: 8
+                            Text {
+                                text: qsTr("Ultimate Performance Scheme")
+                                color: Theme.textPrimary
+                                font.family: Theme.fontFamily
+                                font.pixelSize: 12
+                                font.bold: true
+                            }
+                            Text {
+                                text: qsTr("Unlocks and enables the hidden Windows Ultimate Performance power scheme for zero latencies.")
+                                color: Theme.textMuted
+                                font.family: Theme.fontFamily
+                                font.pixelSize: 10
+                                wrapMode: Text.Wrap
+                                width: parent.width
+                            }
+                        }
+
+                        MeguButton {
+                            text: qsTr("Activate Ultimate Performance")
+                            iconSource: "qrc:/MeguPackOptimizer/src/resources/bolt.svg"
+                            accented: !optimizerBackend.ultimateSchemeUnlocked
+                            enabled: !optimizerBackend.ultimateSchemeUnlocked && !optimizerBackend.isOptimizingSystem
+                            width: parent.width
+                            height: 38
+                            onClicked: {
+                                optimizerBackend.activateUltimatePerformance();
+                            }
+                        }
+
+                        Rectangle {
+                            width: parent.width
+                            height: 1
+                            color: Theme.border
+                        }
+
+                        Text {
+                            text: qsTr("Available Power Schemes:")
+                            color: Theme.textSecondary
+                            font.family: Theme.fontFamily
+                            font.pixelSize: 11
+                            font.bold: true
+                        }
+
+                        // Display the list of detected power schemes
+                        Column {
+                            width: parent.width
+                            spacing: 10
+
+                            Repeater {
+                                model: optimizerBackend.powerSchemes
+                                delegate: AcrylicPanel {
+                                    id: schemePanel
+                                    width: parent.width
+                                    height: 50
+                                    
+                                    // Custom active border color
+                                    border.color: model.isActive ? Theme.accent : (schemeMouse.containsMouse ? Theme.borderHover : Theme.border)
+                                    color: model.isActive ? Theme.accentDim : (schemeMouse.containsMouse ? Theme.buttonBgHover : Theme.buttonBg)
+
+                                    Behavior on border.color { ColorAnimation { duration: Theme.animFast } }
+                                    Behavior on color { ColorAnimation { duration: Theme.animFast } }
+
+                                    Row {
+                                        anchors.left: parent.left
+                                        anchors.verticalCenter: parent.verticalCenter
+                                        anchors.leftMargin: 12
+                                        spacing: 12
+
+                                        Item {
+                                            width: 20
+                                            height: 20
+                                            anchors.verticalCenter: parent.verticalCenter
+                                            Image {
+                                                id: planIcon
+                                                source: "qrc:/MeguPackOptimizer/src/resources/bolt.svg"
+                                                anchors.fill: parent
+                                                sourceSize.width: 20
+                                                sourceSize.height: 20
+                                                visible: false
+                                            }
+                                            ColorOverlay {
+                                                anchors.fill: planIcon
+                                                source: planIcon
+                                                color: model.isActive ? Theme.accent : Theme.textMuted
+                                            }
+                                        }
+
+                                        Column {
+                                            anchors.verticalCenter: parent.verticalCenter
+                                            spacing: 1
+
+                                            Text {
+                                                text: {
+                                                    var rawName = model.name;
+                                                    // Clean up trailing translations from friendly name
+                                                    return rawName.split(' (')[0];
+                                                }
+                                                color: Theme.textPrimary
+                                                font.family: Theme.fontFamily
+                                                font.pixelSize: 12
+                                                font.bold: true
+                                            }
+                                            Text {
+                                                text: model.guid
+                                                color: Theme.textMuted
+                                                font.family: Theme.fontFamily
+                                                font.pixelSize: 8
+                                            }
+                                        }
+                                    }
+
+                                    MouseArea {
+                                        id: schemeMouse
+                                        anchors.fill: parent
+                                        hoverEnabled: true
+                                        cursorShape: Qt.PointingHandCursor
+                                        onClicked: {
+                                            optimizerBackend.selectPowerScheme(model.guid);
+                                        }
+                                    }
+                                }
                             }
                         }
                     }

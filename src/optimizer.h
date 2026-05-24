@@ -50,6 +50,9 @@ class Optimizer : public QObject {
     Q_PROPERTY(bool originalNotifSoundsActive READ originalNotifSoundsActive NOTIFY originalNotifSoundsActiveChanged)
     Q_PROPERTY(bool notifLockscreenActive READ notifLockscreenActive WRITE setNotifLockscreenActive NOTIFY notifLockscreenActiveChanged)
     Q_PROPERTY(bool originalNotifLockscreenActive READ originalNotifLockscreenActive NOTIFY originalNotifLockscreenActiveChanged)
+    Q_PROPERTY(QVariantList powerSchemes READ powerSchemes NOTIFY powerSchemesChanged)
+    Q_PROPERTY(bool ultimateSchemeUnlocked READ ultimateSchemeUnlocked NOTIFY ultimateSchemeUnlockedChanged)
+    Q_PROPERTY(QString activePowerSchemeGuid READ activePowerSchemeGuid NOTIFY activePowerSchemeGuidChanged)
     Q_PROPERTY(int mpoValue READ mpoValue NOTIFY mpoValueChanged)
     Q_PROPERTY(QStringList fixedDrives READ fixedDrives NOTIFY fixedDrivesChanged)
     Q_PROPERTY(QVariantMap driveStates READ driveStates WRITE setDriveStates NOTIFY driveStatesChanged)
@@ -104,6 +107,9 @@ public:
     bool originalNotifSoundsActive() const { return m_originalNotifSoundsActive; }
     bool notifLockscreenActive() const { return m_notifLockscreenActive; }
     bool originalNotifLockscreenActive() const { return m_originalNotifLockscreenActive; }
+    QVariantList powerSchemes() const { return m_powerSchemes; }
+    bool ultimateSchemeUnlocked() const { return m_ultimateSchemeUnlocked; }
+    QString activePowerSchemeGuid() const { return m_activePowerSchemeGuid; }
     int mpoValue() const { return m_mpoValue; }
     QStringList fixedDrives() const { return m_fixedDrives; }
     QVariantMap driveStates() const { return m_driveStates; }
@@ -138,6 +144,8 @@ public:
     Q_INVOKABLE void removeXboxComponent(const QString &componentName);
     Q_INVOKABLE void restoreXboxComponent(const QString &componentName);
     Q_INVOKABLE void applyMpoValue(int value);
+    Q_INVOKABLE void selectPowerScheme(const QString &guidStr);
+    Q_INVOKABLE void activateUltimatePerformance();
 
 signals:
     // System info signals
@@ -180,6 +188,9 @@ signals:
     void originalNotifSoundsActiveChanged(bool val);
     void notifLockscreenActiveChanged(bool val);
     void originalNotifLockscreenActiveChanged(bool val);
+    void powerSchemesChanged(const QVariantList &val);
+    void ultimateSchemeUnlockedChanged(bool val);
+    void activePowerSchemeGuidChanged(const QString &val);
     void mpoValueChanged(int val);
     void fixedDrivesChanged(const QStringList &val);
     void driveStatesChanged(const QVariantMap &val);
@@ -237,6 +248,9 @@ private:
     bool m_originalNotifSoundsActive = true;
     bool m_notifLockscreenActive = true;
     bool m_originalNotifLockscreenActive = true;
+    QVariantList m_powerSchemes;
+    bool m_ultimateSchemeUnlocked = false;
+    QString m_activePowerSchemeGuid;
     int m_mpoValue = 0;
     QStringList m_fixedDrives;
     QVariantMap m_driveStates;
