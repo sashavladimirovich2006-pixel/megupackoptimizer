@@ -170,27 +170,13 @@ Item {
                                 { "code": "uk", "name": qsTr("Ukrainian") }
                             ]
 
-                            delegate: Rectangle {
+                            delegate: MeguButton {
                                 width: 100
                                 height: 32
-                                radius: Theme.radiusSmall
-                                color: settingsBackend.language === modelData.code ? Theme.accent : Theme.buttonBg
-                                border.color: settingsBackend.language === modelData.code ? "transparent" : Theme.border
-                                border.width: 1
-
-                                Text {
-                                    text: modelData.name
-                                    color: settingsBackend.language === modelData.code ? Theme.textInverse : Theme.textPrimary
-                                    font.family: Theme.fontFamily
-                                    font.pixelSize: 11
-                                    font.bold: true
-                                    anchors.centerIn: parent
-                                }
-
-                                MouseArea {
-                                    anchors.fill: parent
-                                    cursorShape: Qt.PointingHandCursor
-                                    onClicked: settingsBackend.language = modelData.code
+                                text: modelData.name
+                                accented: settingsBackend.language === modelData.code
+                                onClicked: {
+                                    settingsBackend.language = modelData.code;
                                 }
                             }
                         }
