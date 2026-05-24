@@ -123,16 +123,81 @@ Item {
 
     property var pendingChangesList: {
         var list = [];
-        if (indexingChanged) list.push({ name: qsTr("File Indexing"), icon: "qrc:/MeguPackOptimizer/src/resources/storage.svg" });
-        if (xboxChanged) list.push({ name: qsTr("Xbox App & Game Bar"), icon: "qrc:/MeguPackOptimizer/src/resources/play.svg" });
-        if (coreIsolationChanged) list.push({ name: qsTr("Core Isolation"), icon: "qrc:/MeguPackOptimizer/src/resources/info.svg" });
-        if (mouseAccelerationChanged) list.push({ name: qsTr("Mouse Acceleration"), icon: "qrc:/MeguPackOptimizer/src/resources/arrow.svg" });
-        if (gameModeChanged) list.push({ name: qsTr("Game Mode"), icon: "qrc:/MeguPackOptimizer/src/resources/bolt.svg" });
-        if (firewallChanged) list.push({ name: qsTr("Windows Defender Firewall"), icon: "qrc:/MeguPackOptimizer/src/resources/info.svg" });
-        if (printerChanged) list.push({ name: qsTr("Print Spooler (Printer)"), icon: "qrc:/MeguPackOptimizer/src/resources/monitor.svg" });
-        if (notificationsChanged) list.push({ name: qsTr("Windows Notifications"), icon: "qrc:/MeguPackOptimizer/src/resources/info.svg" });
-        if (hibernationChanged) list.push({ name: qsTr("System Hibernation"), icon: "qrc:/MeguPackOptimizer/src/resources/folder.svg" });
-        if (powerPlanChanged) list.push({ name: qsTr("Power Plan"), icon: "qrc:/MeguPackOptimizer/src/resources/bolt.svg" });
+        if (indexingChanged) list.push({
+            name: qsTr("File Indexing"),
+            icon: "qrc:/MeguPackOptimizer/src/resources/storage.svg",
+            revert: function() {
+                optimizerBackend.winSearchActive = optimizerBackend.originalWinSearchActive;
+                optimizerBackend.driveStates = optimizerBackend.originalDriveStates;
+            }
+        });
+        if (xboxChanged) list.push({
+            name: qsTr("Xbox App & Game Bar"),
+            icon: "qrc:/MeguPackOptimizer/src/resources/play.svg",
+            revert: function() {
+                optimizerBackend.gamingOverlayActive = optimizerBackend.originalGamingOverlayActive;
+            }
+        });
+        if (coreIsolationChanged) list.push({
+            name: qsTr("Core Isolation"),
+            icon: "qrc:/MeguPackOptimizer/src/resources/info.svg",
+            revert: function() {
+                optimizerBackend.coreIsolationActive = optimizerBackend.originalCoreIsolationActive;
+            }
+        });
+        if (mouseAccelerationChanged) list.push({
+            name: qsTr("Mouse Acceleration"),
+            icon: "qrc:/MeguPackOptimizer/src/resources/arrow.svg",
+            revert: function() {
+                optimizerBackend.mouseAccelerationActive = optimizerBackend.originalMouseAccelerationActive;
+            }
+        });
+        if (gameModeChanged) list.push({
+            name: qsTr("Game Mode"),
+            icon: "qrc:/MeguPackOptimizer/src/resources/bolt.svg",
+            revert: function() {
+                optimizerBackend.gameModeActive = optimizerBackend.originalGameModeActive;
+            }
+        });
+        if (firewallChanged) list.push({
+            name: qsTr("Windows Defender Firewall"),
+            icon: "qrc:/MeguPackOptimizer/src/resources/info.svg",
+            revert: function() {
+                optimizerBackend.firewallActive = optimizerBackend.originalFirewallActive;
+            }
+        });
+        if (printerChanged) list.push({
+            name: qsTr("Print Spooler (Printer)"),
+            icon: "qrc:/MeguPackOptimizer/src/resources/monitor.svg",
+            revert: function() {
+                optimizerBackend.printerActive = optimizerBackend.originalPrinterActive;
+            }
+        });
+        if (notificationsChanged) list.push({
+            name: qsTr("Windows Notifications"),
+            icon: "qrc:/MeguPackOptimizer/src/resources/info.svg",
+            revert: function() {
+                optimizerBackend.notificationsActive = optimizerBackend.originalNotificationsActive;
+                optimizerBackend.notifGlobalActive = optimizerBackend.originalNotifGlobalActive;
+                optimizerBackend.notifAppActive = optimizerBackend.originalNotifAppActive;
+                optimizerBackend.notifSoundsActive = optimizerBackend.originalNotifSoundsActive;
+                optimizerBackend.notifLockscreenActive = optimizerBackend.originalNotifLockscreenActive;
+            }
+        });
+        if (hibernationChanged) list.push({
+            name: qsTr("System Hibernation"),
+            icon: "qrc:/MeguPackOptimizer/src/resources/folder.svg",
+            revert: function() {
+                optimizerBackend.hibernationActive = optimizerBackend.originalHibernationActive;
+            }
+        });
+        if (powerPlanChanged) list.push({
+            name: qsTr("Power Plan"),
+            icon: "qrc:/MeguPackOptimizer/src/resources/bolt.svg",
+            revert: function() {
+                optimizerBackend.selectPowerScheme(optimizerBackend.activePowerSchemeGuid);
+            }
+        });
         return list;
     }
 
@@ -3070,6 +3135,45 @@ Item {
                             width: parent.width
                             spacing: 8
                             height: 20
+
+                            // Revert Button (Cross)
+                            Rectangle {
+                                width: 16
+                                height: 16
+                                radius: 8
+                                color: revertMouse.containsMouse ? Theme.accentDim : "transparent"
+                                border.color: revertMouse.containsMouse ? Theme.accent : "transparent"
+                                border.width: 1
+                                anchors.verticalCenter: parent.verticalCenter
+                                Behavior on color { ColorAnimation { duration: Theme.animFast } }
+                                Behavior on border.color { ColorAnimation { duration: Theme.animFast } }
+
+                                Image {
+                                    id: revertCrossImg
+                                    source: "qrc:/MeguPackOptimizer/src/resources/close.svg"
+                                    anchors.centerIn: parent
+                                    width: 6
+                                    height: 6
+                                    sourceSize.width: 6
+                                    sourceSize.height: 6
+                                    visible: false
+                                }
+                                ColorOverlay {
+                                    anchors.fill: revertCrossImg
+                                    source: revertCrossImg
+                                    color: revertMouse.containsMouse ? Theme.accent : Theme.textMuted
+                                }
+
+                                MouseArea {
+                                    id: revertMouse
+                                    anchors.fill: parent
+                                    hoverEnabled: true
+                                    cursorShape: Qt.PointingHandCursor
+                                    onClicked: {
+                                        modelData.revert();
+                                    }
+                                }
+                            }
 
                             Item {
                                 width: 12
