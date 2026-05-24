@@ -708,13 +708,21 @@ Item {
                 }
 
                 // Dynamic options content
-                Item {
+                ScrollView {
                     width: parent.width
                     height: parent.height - 60
                     clip: true
+                    contentWidth: width
+                    contentHeight: {
+                        if (root.activeDrawer === "indexing") return indexingColumn.implicitHeight;
+                        if (root.activeDrawer === "xbox") return xboxColumn.implicitHeight;
+                        if (root.activeDrawer === "mpo") return mpoColumn.implicitHeight;
+                        return height;
+                    }
 
                     // 1. Indexing Options Content
                     Column {
+                        id: indexingColumn
                         width: parent.width
                         spacing: 20
                         visible: root.activeDrawer === "indexing"
@@ -817,55 +825,275 @@ Item {
 
                     // 2. Xbox Options Content
                     Column {
+                        id: xboxColumn
                         width: parent.width
-                        spacing: 20
+                        spacing: 16
                         visible: root.activeDrawer === "xbox"
 
+                        // Global action header
                         Column {
                             width: parent.width
                             spacing: 8
                             Text {
-                                text: qsTr("Xbox App Integration")
+                                text: qsTr("Xbox Suite (Bulk Actions)")
                                 color: Theme.textPrimary
                                 font.family: Theme.fontFamily
                                 font.pixelSize: 12
                                 font.bold: true
                             }
                             Text {
-                                text: qsTr("Purge the entire Xbox package suite for maximum performance, or restore it back via Microsoft Store/PowerShell.")
+                                text: qsTr("Purge or restore the entire Xbox app and telemetry suite for maximum performance.")
                                 color: Theme.textMuted
                                 font.family: Theme.fontFamily
-                                font.pixelSize: 10
+                                font.pixelSize: 9
                                 wrapMode: Text.Wrap
                                 width: parent.width
                             }
                         }
 
                         Row {
-                            spacing: 12
+                            spacing: 10
                             width: parent.width
                             MeguButton {
-                                text: optimizerBackend.xboxInstalled ? qsTr("Remove") : qsTr("Removed")
-                                iconSource: optimizerBackend.xboxInstalled ? "qrc:/MeguPackOptimizer/src/resources/close.svg" : "qrc:/MeguPackOptimizer/src/resources/check.svg"
+                                text: qsTr("Remove All")
+                                iconSource: "qrc:/MeguPackOptimizer/src/resources/close.svg"
                                 accented: optimizerBackend.xboxInstalled
                                 enabled: optimizerBackend.xboxInstalled && !optimizerBackend.isOptimizingSystem
-                                width: 130
-                                height: 36
+                                width: (parent.width - 10) / 2
+                                height: 32
                                 onClicked: {
                                     root.activeDrawer = "";
+                                    stepLogModel.clear();
                                     optimizerBackend.removeXboxEntirely();
                                 }
                             }
                             MeguButton {
-                                text: !optimizerBackend.xboxInstalled ? qsTr("Restore") : qsTr("Restored")
-                                iconSource: !optimizerBackend.xboxInstalled ? "qrc:/MeguPackOptimizer/src/resources/play.svg" : "qrc:/MeguPackOptimizer/src/resources/check.svg"
+                                text: qsTr("Restore All")
+                                iconSource: "qrc:/MeguPackOptimizer/src/resources/play.svg"
                                 accented: !optimizerBackend.xboxInstalled
-                                enabled: !optimizerBackend.xboxInstalled && !optimizerBackend.isOptimizingSystem
-                                width: 130
-                                height: 36
+                                enabled: !optimizerBackend.isOptimizingSystem
+                                width: (parent.width - 10) / 2
+                                height: 32
                                 onClicked: {
                                     root.activeDrawer = "";
+                                    stepLogModel.clear();
                                     optimizerBackend.restoreXboxEntirely();
+                                }
+                            }
+                        }
+
+                        Rectangle {
+                            width: parent.width
+                            height: 1
+                            color: Theme.border
+                        }
+
+                        // Individual component list title
+                        Text {
+                            text: qsTr("Individual Packages")
+                            color: Theme.textPrimary
+                            font.family: Theme.fontFamily
+                            font.pixelSize: 11
+                            font.bold: true
+                        }
+
+                        // Individual component list
+                        Column {
+                            width: parent.width
+                            spacing: 12
+
+                            // 1. Xbox App
+                            Row {
+                                width: parent.width
+                                spacing: 8
+                                Column {
+                                    width: parent.width - 78
+                                    spacing: 2
+                                    Text {
+                                        text: qsTr("Xbox App")
+                                        color: Theme.textPrimary
+                                        font.family: Theme.fontFamily
+                                        font.pixelSize: 10
+                                        font.bold: true
+                                    }
+                                    Text {
+                                        text: qsTr("Get-AppxPackage XboxApp | ...")
+                                        color: Theme.textMuted
+                                        font.family: Theme.fontFamily
+                                        font.pixelSize: 8
+                                        font.italic: true
+                                    }
+                                }
+                                MeguButton {
+                                    text: optimizerBackend.xboxAppInstalled ? qsTr("Remove") : qsTr("Restore")
+                                    accented: optimizerBackend.xboxAppInstalled
+                                    enabled: !optimizerBackend.isOptimizingSystem
+                                    width: 70
+                                    height: 26
+                                    onClicked: {
+                                        stepLogModel.clear();
+                                        if (optimizerBackend.xboxAppInstalled) {
+                                            optimizerBackend.removeXboxComponent("XboxApp");
+                                        } else {
+                                            optimizerBackend.restoreXboxComponent("XboxApp");
+                                        }
+                                    }
+                                }
+                            }
+
+                            // 2. Xbox Gaming Overlay
+                            Row {
+                                width: parent.width
+                                spacing: 8
+                                Column {
+                                    width: parent.width - 78
+                                    spacing: 2
+                                    Text {
+                                        text: qsTr("Xbox Gaming Overlay")
+                                        color: Theme.textPrimary
+                                        font.family: Theme.fontFamily
+                                        font.pixelSize: 10
+                                        font.bold: true
+                                    }
+                                    Text {
+                                        text: qsTr("Get-AppxPackage XboxGamingOverlay | ...")
+                                        color: Theme.textMuted
+                                        font.family: Theme.fontFamily
+                                        font.pixelSize: 8
+                                        font.italic: true
+                                    }
+                                }
+                                MeguButton {
+                                    text: optimizerBackend.xboxGamingOverlayInstalled ? qsTr("Remove") : qsTr("Restore")
+                                    accented: optimizerBackend.xboxGamingOverlayInstalled
+                                    enabled: !optimizerBackend.isOptimizingSystem
+                                    width: 70
+                                    height: 26
+                                    onClicked: {
+                                        stepLogModel.clear();
+                                        if (optimizerBackend.xboxGamingOverlayInstalled) {
+                                            optimizerBackend.removeXboxComponent("XboxGamingOverlay");
+                                        } else {
+                                            optimizerBackend.restoreXboxComponent("XboxGamingOverlay");
+                                        }
+                                    }
+                                }
+                            }
+
+                            // 3. Xbox TCUI
+                            Row {
+                                width: parent.width
+                                spacing: 8
+                                Column {
+                                    width: parent.width - 78
+                                    spacing: 2
+                                    Text {
+                                        text: qsTr("Xbox TCUI Dialogue")
+                                        color: Theme.textPrimary
+                                        font.family: Theme.fontFamily
+                                        font.pixelSize: 10
+                                        font.bold: true
+                                    }
+                                    Text {
+                                        text: qsTr("Get-AppxPackage XboxTCUI | ...")
+                                        color: Theme.textMuted
+                                        font.family: Theme.fontFamily
+                                        font.pixelSize: 8
+                                        font.italic: true
+                                    }
+                                }
+                                MeguButton {
+                                    text: optimizerBackend.xboxTcuiInstalled ? qsTr("Remove") : qsTr("Restore")
+                                    accented: optimizerBackend.xboxTcuiInstalled
+                                    enabled: !optimizerBackend.isOptimizingSystem
+                                    width: 70
+                                    height: 26
+                                    onClicked: {
+                                        stepLogModel.clear();
+                                        if (optimizerBackend.xboxTcuiInstalled) {
+                                            optimizerBackend.removeXboxComponent("XboxTCUI");
+                                        } else {
+                                            optimizerBackend.restoreXboxComponent("XboxTCUI");
+                                        }
+                                    }
+                                }
+                            }
+
+                            // 4. Xbox Game Speech Window
+                            Row {
+                                width: parent.width
+                                spacing: 8
+                                Column {
+                                    width: parent.width - 78
+                                    spacing: 2
+                                    Text {
+                                        text: qsTr("Xbox Game Speech Window")
+                                        color: Theme.textPrimary
+                                        font.family: Theme.fontFamily
+                                        font.pixelSize: 10
+                                        font.bold: true
+                                    }
+                                    Text {
+                                        text: qsTr("Get-AppxPackage XboxGameSpeechWindow | ...")
+                                        color: Theme.textMuted
+                                        font.family: Theme.fontFamily
+                                        font.pixelSize: 8
+                                        font.italic: true
+                                    }
+                                }
+                                MeguButton {
+                                    text: optimizerBackend.xboxSpeechWindowInstalled ? qsTr("Remove") : qsTr("Restore")
+                                    accented: optimizerBackend.xboxSpeechWindowInstalled
+                                    enabled: !optimizerBackend.isOptimizingSystem
+                                    width: 70
+                                    height: 26
+                                    onClicked: {
+                                        stepLogModel.clear();
+                                        if (optimizerBackend.xboxSpeechWindowInstalled) {
+                                            optimizerBackend.removeXboxComponent("XboxGameSpeechWindow");
+                                        } else {
+                                            optimizerBackend.restoreXboxComponent("XboxGameSpeechWindow");
+                                        }
+                                    }
+                                }
+                            }
+
+                            // 5. System Provisioned Packages
+                            Row {
+                                width: parent.width
+                                spacing: 8
+                                Column {
+                                    width: parent.width - 78
+                                    spacing: 2
+                                    Text {
+                                        text: qsTr("System Provisioned Packages")
+                                        color: Theme.textPrimary
+                                        font.family: Theme.fontFamily
+                                        font.pixelSize: 10
+                                        font.bold: true
+                                    }
+                                    Text {
+                                        text: qsTr("Get-AppxProvisionedPackage -Online | ...")
+                                        color: Theme.textMuted
+                                        font.family: Theme.fontFamily
+                                        font.pixelSize: 8
+                                        font.italic: true
+                                    }
+                                }
+                                MeguButton {
+                                    text: optimizerBackend.xboxInstalled ? qsTr("Remove") : qsTr("Restore")
+                                    accented: optimizerBackend.xboxInstalled
+                                    enabled: !optimizerBackend.isOptimizingSystem
+                                    width: 70
+                                    height: 26
+                                    onClicked: {
+                                        stepLogModel.clear();
+                                        if (optimizerBackend.xboxInstalled) {
+                                            optimizerBackend.removeXboxComponent("AllUsersAndProvisioned");
+                                        } else {
+                                            optimizerBackend.restoreXboxComponent("AllUsersAndProvisioned");
+                                        }
+                                    }
                                 }
                             }
                         }
@@ -899,6 +1127,7 @@ Item {
 
                     // 3. MPO Options Content
                     Column {
+                        id: mpoColumn
                         width: parent.width
                         spacing: 20
                         visible: root.activeDrawer === "mpo"

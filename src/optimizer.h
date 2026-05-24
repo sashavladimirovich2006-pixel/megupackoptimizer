@@ -23,6 +23,10 @@ class Optimizer : public QObject {
     Q_PROPERTY(bool hibernationActive READ hibernationActive WRITE setHibernationActive NOTIFY hibernationActiveChanged)
     Q_PROPERTY(bool originalHibernationActive READ originalHibernationActive NOTIFY originalHibernationActiveChanged)
     Q_PROPERTY(bool xboxInstalled READ xboxInstalled NOTIFY xboxInstalledChanged)
+    Q_PROPERTY(bool xboxAppInstalled READ xboxAppInstalled NOTIFY xboxStatesChanged)
+    Q_PROPERTY(bool xboxGamingOverlayInstalled READ xboxGamingOverlayInstalled NOTIFY xboxStatesChanged)
+    Q_PROPERTY(bool xboxTcuiInstalled READ xboxTcuiInstalled NOTIFY xboxStatesChanged)
+    Q_PROPERTY(bool xboxSpeechWindowInstalled READ xboxSpeechWindowInstalled NOTIFY xboxStatesChanged)
     Q_PROPERTY(bool gamingOverlayActive READ gamingOverlayActive WRITE setGamingOverlayActive NOTIFY gamingOverlayActiveChanged)
     Q_PROPERTY(bool originalGamingOverlayActive READ originalGamingOverlayActive NOTIFY originalGamingOverlayActiveChanged)
     Q_PROPERTY(int mpoValue READ mpoValue NOTIFY mpoValueChanged)
@@ -52,6 +56,10 @@ public:
     bool hibernationActive() const { return m_hibernationActive; }
     bool originalHibernationActive() const { return m_originalHibernationActive; }
     bool xboxInstalled() const { return m_xboxInstalled; }
+    bool xboxAppInstalled() const { return m_xboxAppInstalled; }
+    bool xboxGamingOverlayInstalled() const { return m_xboxGamingOverlayInstalled; }
+    bool xboxTcuiInstalled() const { return m_xboxTcuiInstalled; }
+    bool xboxSpeechWindowInstalled() const { return m_xboxSpeechWindowInstalled; }
     bool gamingOverlayActive() const { return m_gamingOverlayActive; }
     bool originalGamingOverlayActive() const { return m_originalGamingOverlayActive; }
     int mpoValue() const { return m_mpoValue; }
@@ -75,6 +83,8 @@ public:
     Q_INVOKABLE void showPath(const QString &funcName);
     Q_INVOKABLE void removeXboxEntirely();
     Q_INVOKABLE void restoreXboxEntirely();
+    Q_INVOKABLE void removeXboxComponent(const QString &componentName);
+    Q_INVOKABLE void restoreXboxComponent(const QString &componentName);
     Q_INVOKABLE void applyMpoValue(int value);
 
 signals:
@@ -94,6 +104,7 @@ signals:
     void hibernationActiveChanged(bool val);
     void originalHibernationActiveChanged(bool val);
     void xboxInstalledChanged(bool val);
+    void xboxStatesChanged();
     void gamingOverlayActiveChanged(bool val);
     void originalGamingOverlayActiveChanged(bool val);
     void mpoValueChanged(int val);
@@ -126,6 +137,10 @@ private:
     bool m_hibernationActive = false;
     bool m_originalHibernationActive = false;
     bool m_xboxInstalled = false;
+    bool m_xboxAppInstalled = false;
+    bool m_xboxGamingOverlayInstalled = false;
+    bool m_xboxTcuiInstalled = false;
+    bool m_xboxSpeechWindowInstalled = false;
     bool m_gamingOverlayActive = true;
     bool m_originalGamingOverlayActive = true;
     int m_mpoValue = 0;

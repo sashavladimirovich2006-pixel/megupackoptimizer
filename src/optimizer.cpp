@@ -145,19 +145,34 @@ void Optimizer::loadSystemStates() {
     emit hibernationActiveChanged(m_hibernationActive);
     emit originalHibernationActiveChanged(m_originalHibernationActive);
 
-    // Check if Xbox is installed on startup
-    bool isXboxInstalled = false;
+    // Check if Xbox packages are installed on startup
+    bool isXboxAppInstalled = false;
+    bool isXboxGamingOverlayInstalled = false;
+    bool isXboxTcuiInstalled = false;
+    bool isXboxSpeechWindowInstalled = false;
 #ifdef Q_OS_WIN
     QProcess checkXboxProc;
-    checkXboxProc.start("powershell.exe", QStringList() << "-NoProfile" << "-NonInteractive" << "-Command" << "Get-AppxPackage XboxApp");
-    checkXboxProc.waitForFinished(10000);
+    checkXboxProc.start("powershell.exe", QStringList() << "-NoProfile" << "-NonInteractive" << "-Command" << "Get-AppxPackage -Name *Xbox* | Select-Object Name");
+    checkXboxProc.waitForFinished(12000);
     QString checkOut = checkXboxProc.readAllStandardOutput().trimmed();
-    isXboxInstalled = !checkOut.isEmpty();
+    isXboxAppInstalled = checkOut.contains("XboxApp", Qt::CaseInsensitive);
+    isXboxGamingOverlayInstalled = checkOut.contains("XboxGamingOverlay", Qt::CaseInsensitive);
+    isXboxTcuiInstalled = checkOut.contains("Xbox.TCUI", Qt::CaseInsensitive) || checkOut.contains("XboxTCUI", Qt::CaseInsensitive);
+    isXboxSpeechWindowInstalled = checkOut.contains("XboxGameSpeechWindow", Qt::CaseInsensitive);
 #else
-    isXboxInstalled = true; // Simulation default
+    isXboxAppInstalled = true;
+    isXboxGamingOverlayInstalled = true;
+    isXboxTcuiInstalled = true;
+    isXboxSpeechWindowInstalled = true;
 #endif
-    m_xboxInstalled = isXboxInstalled;
+    m_xboxAppInstalled = isXboxAppInstalled;
+    m_xboxGamingOverlayInstalled = isXboxGamingOverlayInstalled;
+    m_xboxTcuiInstalled = isXboxTcuiInstalled;
+    m_xboxSpeechWindowInstalled = isXboxSpeechWindowInstalled;
+    m_xboxInstalled = m_xboxAppInstalled || m_xboxGamingOverlayInstalled || m_xboxTcuiInstalled || m_xboxSpeechWindowInstalled;
+
     emit xboxInstalledChanged(m_xboxInstalled);
+    emit xboxStatesChanged();
 
     // Check if gaming overlay popups are disabled/neutralized on startup
     bool isOverlayActive = true;
@@ -728,7 +743,7 @@ void Optimizer::removeXboxEntirely() {
         for (const QString &pkg : packages) {
             emit systemStepReported(tr("Removing package: %1...").arg(pkg), "INFO");
             QProcess proc;
-            QString cmd = QString("Get-AppxPackage *%1* | Remove-AppxPackage").arg(pkg);
+            QString cmd = QString("Get-AppxPackage %1 | Remove-AppxPackage").arg(pkg);
             proc.start("powershell.exe", QStringList() << "-NoProfile" << "-NonInteractive" << "-Command" << cmd);
             proc.waitForFinished(25000);
             
@@ -744,7 +759,7 @@ void Optimizer::removeXboxEntirely() {
         emit systemStepReported(tr("Purging Xbox packages for all users..."), "INFO");
         {
             QProcess proc;
-            proc.start("powershell.exe", QStringList() << "-NoProfile" << "-NonInteractive" << "-Command" << "Get-AppxPackage -AllUsers *Xbox* | Remove-AppxPackage");
+            proc.start("powershell.exe", QStringList() << "-NoProfile" << "-NonInteractive" << "-Command" << "Get-AppxPackage -AllUsers Xbox | Remove-AppxPackage");
             proc.waitForFinished(35000);
         }
         progressStep++;
@@ -767,17 +782,20 @@ void Optimizer::removeXboxEntirely() {
         QThread::msleep(300);
 
         // Re-check Xbox installed status
-        bool isXboxInstalled = false;
-        QProcess checkXboxProc;
-        checkXboxProc.start("powershell.exe", QStringList() << "-NoProfile" << "-NonInteractive" << "-Command" << "Get-AppxPackage XboxApp");
-        checkXboxProc.waitForFinished(10000);
-        QString checkOut = checkXboxProc.readAllStandardOutput().trimmed();
-        isXboxInstalled = !checkOut.isEmpty();
+        QProcess checkProc;
+        checkProc.start("powershell.exe", QStringList() << "-NoProfile" << "-NonInteractive" << "-Command" << "Get-AppxPackage -Name *Xbox* | Select-Object Name");
+        checkProc.waitForFinished(10000);
+        QString checkOut = checkProc.readAllStandardOutput().trimmed();
+        m_xboxAppInstalled = checkOut.contains("XboxApp", Qt::CaseInsensitive);
+        m_xboxGamingOverlayInstalled = checkOut.contains("XboxGamingOverlay", Qt::CaseInsensitive);
+        m_xboxTcuiInstalled = checkOut.contains("Xbox.TCUI", Qt::CaseInsensitive) || checkOut.contains("XboxTCUI", Qt::CaseInsensitive);
+        m_xboxSpeechWindowInstalled = checkOut.contains("XboxGameSpeechWindow", Qt::CaseInsensitive);
+        m_xboxInstalled = m_xboxAppInstalled || m_xboxGamingOverlayInstalled || m_xboxTcuiInstalled || m_xboxSpeechWindowInstalled;
         
-        m_xboxInstalled = isXboxInstalled;
         emit xboxInstalledChanged(m_xboxInstalled);
+        emit xboxStatesChanged();
 
-        if (!isXboxInstalled) {
+        if (!m_xboxInstalled) {
             emit systemStepReported(tr("Xbox Suite has been successfully uninstalled from this PC!"), "SUCCESS");
             emit systemStepReported(tr("TIP: Enable 'Disable Game Bar Popup' to prevent system errors in games."), "WARNING");
         } else {
@@ -792,8 +810,13 @@ void Optimizer::removeXboxEntirely() {
             emit systemProgressChanged(m_systemProgress);
             emit systemStepReported(tr("[Simulation] Removed Xbox package step %1").arg(progressStep), "SUCCESS");
         }
+        m_xboxAppInstalled = false;
+        m_xboxGamingOverlayInstalled = false;
+        m_xboxTcuiInstalled = false;
+        m_xboxSpeechWindowInstalled = false;
         m_xboxInstalled = false;
         emit xboxInstalledChanged(m_xboxInstalled);
+        emit xboxStatesChanged();
 #endif
 
         m_isOptimizingSystem = false;
@@ -876,17 +899,20 @@ void Optimizer::restoreXboxEntirely() {
         QThread::msleep(300);
 
         // Re-check Xbox installed status
-        bool isXboxInstalled = false;
-        QProcess checkXboxProc;
-        checkXboxProc.start("powershell.exe", QStringList() << "-NoProfile" << "-NonInteractive" << "-Command" << "Get-AppxPackage XboxApp");
-        checkXboxProc.waitForFinished(10000);
-        QString checkOut = checkXboxProc.readAllStandardOutput().trimmed();
-        isXboxInstalled = !checkOut.isEmpty();
+        QProcess checkProc;
+        checkProc.start("powershell.exe", QStringList() << "-NoProfile" << "-NonInteractive" << "-Command" << "Get-AppxPackage -Name *Xbox* | Select-Object Name");
+        checkProc.waitForFinished(10000);
+        QString checkOut = checkProc.readAllStandardOutput().trimmed();
+        m_xboxAppInstalled = checkOut.contains("XboxApp", Qt::CaseInsensitive);
+        m_xboxGamingOverlayInstalled = checkOut.contains("XboxGamingOverlay", Qt::CaseInsensitive);
+        m_xboxTcuiInstalled = checkOut.contains("Xbox.TCUI", Qt::CaseInsensitive) || checkOut.contains("XboxTCUI", Qt::CaseInsensitive);
+        m_xboxSpeechWindowInstalled = checkOut.contains("XboxGameSpeechWindow", Qt::CaseInsensitive);
+        m_xboxInstalled = m_xboxAppInstalled || m_xboxGamingOverlayInstalled || m_xboxTcuiInstalled || m_xboxSpeechWindowInstalled;
         
-        m_xboxInstalled = isXboxInstalled;
         emit xboxInstalledChanged(m_xboxInstalled);
+        emit xboxStatesChanged();
 
-        if (isXboxInstalled) {
+        if (m_xboxInstalled) {
             emit systemStepReported(tr("Xbox Suite has been successfully restored!"), "SUCCESS");
         } else {
             emit systemStepReported(tr("Xbox restoration complete. A system reboot may be needed to complete the installation."), "WARNING");
@@ -900,10 +926,193 @@ void Optimizer::restoreXboxEntirely() {
             emit systemProgressChanged(m_systemProgress);
             emit systemStepReported(tr("[Simulation] Restored Xbox package step %1").arg(progressStep), "SUCCESS");
         }
+        m_xboxAppInstalled = true;
+        m_xboxGamingOverlayInstalled = true;
+        m_xboxTcuiInstalled = true;
+        m_xboxSpeechWindowInstalled = true;
         m_xboxInstalled = true;
         emit xboxInstalledChanged(m_xboxInstalled);
+        emit xboxStatesChanged();
 #endif
 
+        m_isOptimizingSystem = false;
+        emit isOptimizingSystemChanged(m_isOptimizingSystem);
+        emit systemOptimizationFinished(true);
+    });
+
+    connect(worker, &QThread::finished, worker, &QThread::deleteLater);
+    worker->start();
+}
+
+void Optimizer::removeXboxComponent(const QString &componentName) {
+    if (m_isOptimizingSystem) return;
+
+    m_isOptimizingSystem = true;
+    m_systemProgress = 0.0;
+    emit isOptimizingSystemChanged(m_isOptimizingSystem);
+    emit systemProgressChanged(m_systemProgress);
+
+    emit systemStepReported(tr("Removing Xbox component: %1...").arg(componentName), "INFO");
+    Logger::log(QString("Starting removal of Xbox component: %1").arg(componentName), "INFO");
+
+    QThread* worker = QThread::create([this, componentName]() {
+#ifdef Q_OS_WIN
+        QProcess proc;
+        QString cmd;
+        if (componentName == "XboxApp") {
+            cmd = "Get-AppxPackage XboxApp | Remove-AppxPackage";
+        } else if (componentName == "XboxGamingOverlay") {
+            cmd = "Get-AppxPackage XboxGamingOverlay | Remove-AppxPackage";
+        } else if (componentName == "XboxTCUI") {
+            cmd = "Get-AppxPackage XboxTCUI | Remove-AppxPackage";
+        } else if (componentName == "XboxGameSpeechWindow") {
+            cmd = "Get-AppxPackage XboxGameSpeechWindow | Remove-AppxPackage";
+        } else if (componentName == "AllUsersAndProvisioned") {
+            emit systemStepReported(tr("Purging Xbox packages for all users..."), "INFO");
+            QProcess proc1;
+            proc1.start("powershell.exe", QStringList() << "-NoProfile" << "-NonInteractive" << "-Command" << "Get-AppxPackage -AllUsers Xbox | Remove-AppxPackage");
+            proc1.waitForFinished(35000);
+
+            emit systemStepReported(tr("Purging provisioned Xbox packages..."), "INFO");
+            QProcess proc2;
+            proc2.start("powershell.exe", QStringList() << "-NoProfile" << "-NonInteractive" << "-Command" << "Get-AppxProvisionedPackage -Online | Where-Object {$_.PackageName -like '*Xbox*'} | Remove-AppxProvisionedPackage -Online");
+            proc2.waitForFinished(45000);
+        }
+
+        if (!cmd.isEmpty()) {
+            proc.start("powershell.exe", QStringList() << "-NoProfile" << "-NonInteractive" << "-Command" << cmd);
+            proc.waitForFinished(30000);
+        }
+
+        m_systemProgress = 0.80;
+        emit systemProgressChanged(m_systemProgress);
+        QThread::msleep(400);
+
+        // Re-check
+        QProcess checkProc;
+        checkProc.start("powershell.exe", QStringList() << "-NoProfile" << "-NonInteractive" << "-Command" << "Get-AppxPackage -Name *Xbox* | Select-Object Name");
+        checkProc.waitForFinished(10000);
+        QString checkOut = checkProc.readAllStandardOutput().trimmed();
+        m_xboxAppInstalled = checkOut.contains("XboxApp", Qt::CaseInsensitive);
+        m_xboxGamingOverlayInstalled = checkOut.contains("XboxGamingOverlay", Qt::CaseInsensitive);
+        m_xboxTcuiInstalled = checkOut.contains("Xbox.TCUI", Qt::CaseInsensitive) || checkOut.contains("XboxTCUI", Qt::CaseInsensitive);
+        m_xboxSpeechWindowInstalled = checkOut.contains("XboxGameSpeechWindow", Qt::CaseInsensitive);
+        m_xboxInstalled = m_xboxAppInstalled || m_xboxGamingOverlayInstalled || m_xboxTcuiInstalled || m_xboxSpeechWindowInstalled;
+
+        emit xboxInstalledChanged(m_xboxInstalled);
+        emit xboxStatesChanged();
+
+        m_systemProgress = 1.0;
+        emit systemProgressChanged(m_systemProgress);
+        emit systemStepReported(tr("Component %1 uninstalled successfully!").arg(componentName), "SUCCESS");
+#else
+        QThread::msleep(1500);
+        if (componentName == "XboxApp") m_xboxAppInstalled = false;
+        else if (componentName == "XboxGamingOverlay") m_xboxGamingOverlayInstalled = false;
+        else if (componentName == "XboxTCUI") m_xboxTcuiInstalled = false;
+        else if (componentName == "XboxGameSpeechWindow") m_xboxSpeechWindowInstalled = false;
+        else if (componentName == "AllUsersAndProvisioned") {
+            m_xboxAppInstalled = false;
+            m_xboxGamingOverlayInstalled = false;
+            m_xboxTcuiInstalled = false;
+            m_xboxSpeechWindowInstalled = false;
+        }
+        m_xboxInstalled = m_xboxAppInstalled || m_xboxGamingOverlayInstalled || m_xboxTcuiInstalled || m_xboxSpeechWindowInstalled;
+
+        emit xboxInstalledChanged(m_xboxInstalled);
+        emit xboxStatesChanged();
+        
+        m_systemProgress = 1.0;
+        emit systemProgressChanged(m_systemProgress);
+        emit systemStepReported(tr("[Simulation] Removed component %1").arg(componentName), "SUCCESS");
+#endif
+        m_isOptimizingSystem = false;
+        emit isOptimizingSystemChanged(m_isOptimizingSystem);
+        emit systemOptimizationFinished(true);
+    });
+
+    connect(worker, &QThread::finished, worker, &QThread::deleteLater);
+    worker->start();
+}
+
+void Optimizer::restoreXboxComponent(const QString &componentName) {
+    if (m_isOptimizingSystem) return;
+
+    m_isOptimizingSystem = true;
+    m_systemProgress = 0.0;
+    emit isOptimizingSystemChanged(m_isOptimizingSystem);
+    emit systemProgressChanged(m_systemProgress);
+
+    emit systemStepReported(tr("Restoring Xbox component: %1...").arg(componentName), "INFO");
+    Logger::log(QString("Starting restoration of Xbox component: %1").arg(componentName), "INFO");
+
+    QThread* worker = QThread::create([this, componentName]() {
+#ifdef Q_OS_WIN
+        QProcess proc;
+        QString cmd;
+        if (componentName == "XboxApp") {
+            cmd = "winget install Microsoft.XboxApp --source msstore --accept-source-agreements --accept-package-agreements";
+        } else if (componentName == "XboxGamingOverlay") {
+            cmd = "Get-AppxPackage -AllUsers -Name *XboxGamingOverlay* | Foreach {Add-AppxPackage -DisableDevelopmentMode -Register \"$($_.InstallLocation)\\AppXManifest.xml\"}";
+        } else if (componentName == "XboxTCUI") {
+            cmd = "Get-AppxPackage -AllUsers -Name *XboxTCUI* | Foreach {Add-AppxPackage -DisableDevelopmentMode -Register \"$($_.InstallLocation)\\AppXManifest.xml\"}";
+        } else if (componentName == "XboxGameSpeechWindow") {
+            cmd = "Get-AppxPackage -AllUsers -Name *XboxGameSpeechWindow* | Foreach {Add-AppxPackage -DisableDevelopmentMode -Register \"$($_.InstallLocation)\\AppXManifest.xml\"}";
+        } else if (componentName == "AllUsersAndProvisioned") {
+            cmd = "Get-AppxPackage -AllUsers -Name *Xbox* | Foreach {Add-AppxPackage -DisableDevelopmentMode -Register \"$($_.InstallLocation)\\AppXManifest.xml\"}";
+        }
+
+        if (!cmd.isEmpty()) {
+            if (componentName == "XboxApp") {
+                proc.start("cmd.exe", QStringList() << "/c" << cmd);
+            } else {
+                proc.start("powershell.exe", QStringList() << "-NoProfile" << "-NonInteractive" << "-Command" << cmd);
+            }
+            proc.waitForFinished(60000);
+        }
+
+        m_systemProgress = 0.80;
+        emit systemProgressChanged(m_systemProgress);
+        QThread::msleep(400);
+
+        // Re-check
+        QProcess checkProc;
+        checkProc.start("powershell.exe", QStringList() << "-NoProfile" << "-NonInteractive" << "-Command" << "Get-AppxPackage -Name *Xbox* | Select-Object Name");
+        checkProc.waitForFinished(10000);
+        QString checkOut = checkProc.readAllStandardOutput().trimmed();
+        m_xboxAppInstalled = checkOut.contains("XboxApp", Qt::CaseInsensitive);
+        m_xboxGamingOverlayInstalled = checkOut.contains("XboxGamingOverlay", Qt::CaseInsensitive);
+        m_xboxTcuiInstalled = checkOut.contains("Xbox.TCUI", Qt::CaseInsensitive) || checkOut.contains("XboxTCUI", Qt::CaseInsensitive);
+        m_xboxSpeechWindowInstalled = checkOut.contains("XboxGameSpeechWindow", Qt::CaseInsensitive);
+        m_xboxInstalled = m_xboxAppInstalled || m_xboxGamingOverlayInstalled || m_xboxTcuiInstalled || m_xboxSpeechWindowInstalled;
+
+        emit xboxInstalledChanged(m_xboxInstalled);
+        emit xboxStatesChanged();
+
+        m_systemProgress = 1.0;
+        emit systemProgressChanged(m_systemProgress);
+        emit systemStepReported(tr("Component %1 restored successfully!").arg(componentName), "SUCCESS");
+#else
+        QThread::msleep(1500);
+        if (componentName == "XboxApp") m_xboxAppInstalled = true;
+        else if (componentName == "XboxGamingOverlay") m_xboxGamingOverlayInstalled = true;
+        else if (componentName == "XboxTCUI") m_xboxTcuiInstalled = true;
+        else if (componentName == "XboxGameSpeechWindow") m_xboxSpeechWindowInstalled = true;
+        else if (componentName == "AllUsersAndProvisioned") {
+            m_xboxAppInstalled = true;
+            m_xboxGamingOverlayInstalled = true;
+            m_xboxTcuiInstalled = true;
+            m_xboxSpeechWindowInstalled = true;
+        }
+        m_xboxInstalled = m_xboxAppInstalled || m_xboxGamingOverlayInstalled || m_xboxTcuiInstalled || m_xboxSpeechWindowInstalled;
+
+        emit xboxInstalledChanged(m_xboxInstalled);
+        emit xboxStatesChanged();
+        
+        m_systemProgress = 1.0;
+        emit systemProgressChanged(m_systemProgress);
+        emit systemStepReported(tr("[Simulation] Restored component %1").arg(componentName), "SUCCESS");
+#endif
         m_isOptimizingSystem = false;
         emit isOptimizingSystemChanged(m_isOptimizingSystem);
         emit systemOptimizationFinished(true);
