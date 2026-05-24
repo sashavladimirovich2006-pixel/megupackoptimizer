@@ -121,12 +121,12 @@ Item {
 
     property color borderGlow: {
         if (currentTheme === "Ргб") return rgbAccentGlow;
-        if (currentTheme === "Белоснежная") return "#FF9F0A20";
-        if (currentTheme === "Темная") return "#FF9F0A20";
-        if (currentTheme === "Blackout полностью черная") return "#FF9F0A20";
-        if (currentTheme === "Розовая") return "#D48C9C20";
-        if (currentTheme === "Black pink") return "#FF5E9720";
-        return "#FF9F0A20";
+        if (currentTheme === "Белоснежная") return "#20FF9F0A";
+        if (currentTheme === "Темная") return "#20FF9F0A";
+        if (currentTheme === "Blackout полностью черная") return "#20FF9F0A";
+        if (currentTheme === "Розовая") return "#20D48C9C";
+        if (currentTheme === "Black pink") return "#20FF5E97";
+        return "#20FF9F0A";
     }
     
     // 3. Text Colors (Overhauled for maximum readability!)
@@ -204,20 +204,20 @@ Item {
 
     property color accentGlow: {
         if (currentTheme === "Ргб") return rgbAccentGlow;
-        if (currentTheme === "Белоснежная") return "#FF9F0A30";
-        if (currentTheme === "Blackout полностью черная") return "#FF9F0A30";
-        if (currentTheme === "Розовая") return "#D48C9C35";
-        if (currentTheme === "Black pink") return "#FF5E9735";
-        return "#FF9F0A30";
+        if (currentTheme === "Белоснежная") return "#30FF9F0A";
+        if (currentTheme === "Blackout полностью черная") return "#30FF9F0A";
+        if (currentTheme === "Розовая") return "#35D48C9C";
+        if (currentTheme === "Black pink") return "#35FF5E97";
+        return "#30FF9F0A";
     }
 
     property color accentDim: {
         if (currentTheme === "Ргб") return rgbAccentDim;
-        if (currentTheme === "Белоснежная") return "#FF9F0A15";
-        if (currentTheme === "Blackout полностью черная") return "#FF9F0A15";
-        if (currentTheme === "Розовая") return "#D48C9C15";
-        if (currentTheme === "Black pink") return "#FF5E9715";
-        return "#FF9F0A15";
+        if (currentTheme === "Белоснежная") return "#15FF9F0A";
+        if (currentTheme === "Blackout полностью черная") return "#15FF9F0A";
+        if (currentTheme === "Розовая") return "#15D48C9C";
+        if (currentTheme === "Black pink") return "#15FF5E97";
+        return "#15FF9F0A";
     }
     
     // 5. Functional Colors
