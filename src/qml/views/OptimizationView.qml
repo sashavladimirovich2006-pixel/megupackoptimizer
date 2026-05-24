@@ -104,6 +104,47 @@ Item {
     property string activeDrawer: ""
     property bool sidebarOpen: activeDrawer !== ""
 
+    property bool islandExpanded: false
+
+    property int pendingChangesCount: {
+        var count = 0;
+        if (indexingChanged) count++;
+        if (xboxChanged) count++;
+        if (coreIsolationChanged) count++;
+        if (mouseAccelerationChanged) count++;
+        if (gameModeChanged) count++;
+        if (firewallChanged) count++;
+        if (printerChanged) count++;
+        if (notificationsChanged) count++;
+        if (hibernationChanged) count++;
+        if (powerPlanChanged) count++;
+        return count;
+    }
+
+    property var pendingChangesList: {
+        var list = [];
+        if (indexingChanged) list.push({ name: qsTr("File Indexing"), icon: "qrc:/MeguPackOptimizer/src/resources/storage.svg" });
+        if (xboxChanged) list.push({ name: qsTr("Xbox App & Game Bar"), icon: "qrc:/MeguPackOptimizer/src/resources/play.svg" });
+        if (coreIsolationChanged) list.push({ name: qsTr("Core Isolation"), icon: "qrc:/MeguPackOptimizer/src/resources/info.svg" });
+        if (mouseAccelerationChanged) list.push({ name: qsTr("Mouse Acceleration"), icon: "qrc:/MeguPackOptimizer/src/resources/arrow.svg" });
+        if (gameModeChanged) list.push({ name: qsTr("Game Mode"), icon: "qrc:/MeguPackOptimizer/src/resources/bolt.svg" });
+        if (firewallChanged) list.push({ name: qsTr("Windows Defender Firewall"), icon: "qrc:/MeguPackOptimizer/src/resources/info.svg" });
+        if (printerChanged) list.push({ name: qsTr("Print Spooler (Printer)"), icon: "qrc:/MeguPackOptimizer/src/resources/monitor.svg" });
+        if (notificationsChanged) list.push({ name: qsTr("Windows Notifications"), icon: "qrc:/MeguPackOptimizer/src/resources/info.svg" });
+        if (hibernationChanged) list.push({ name: qsTr("System Hibernation"), icon: "qrc:/MeguPackOptimizer/src/resources/folder.svg" });
+        if (powerPlanChanged) list.push({ name: qsTr("Power Plan"), icon: "qrc:/MeguPackOptimizer/src/resources/bolt.svg" });
+        return list;
+    }
+
+    onPendingChangesCountChanged: {
+        if (pendingChangesCount === 0) {
+            islandExpanded = false;
+        }
+    }
+
+    readonly property string txtChangesPending: qsTr("%1 changes pending")
+    readonly property string txtPendingListTitle: qsTr("Pending Changes:")
+
     // ListModel for live optimization steps
     ListModel {
         id: stepLogModel
@@ -2848,6 +2889,228 @@ Item {
                         }
                     }
                 }
+            }
+        }
+    }
+
+    // Dynamic Island Floating Overlay
+    Rectangle {
+        id: dynamicIsland
+        anchors.horizontalCenter: parent.horizontalCenter
+        y: (root.pendingChangesCount > 0) ? 20 : -100
+        opacity: (root.pendingChangesCount > 0) ? 1.0 : 0.0
+        visible: opacity > 0.0
+        z: 120
+
+        width: root.islandExpanded ? 300 : 160
+        height: root.islandExpanded ? (80 + root.pendingChangesCount * 26) : 34
+        radius: root.islandExpanded ? 20 : 17
+
+        color: "#F0080B10" // Obsidian background with 94% opacity
+        border.color: Theme.accent
+        border.width: 1
+
+        // Smooth animations mimicking Apple's Dynamic Island physics
+        Behavior on y { NumberAnimation { duration: 350; easing.type: Easing.OutBack } }
+        Behavior on opacity { NumberAnimation { duration: 250 } }
+        Behavior on width { NumberAnimation { duration: 350; easing.type: Easing.OutBack } }
+        Behavior on height { NumberAnimation { duration: 350; easing.type: Easing.OutBack } }
+        Behavior on radius { NumberAnimation { duration: 350; easing.type: Easing.OutBack } }
+
+        // Glow backing
+        layer.enabled: true
+        layer.effect: DropShadow {
+            horizontalOffset: 0
+            verticalOffset: 4
+            radius: 12
+            samples: 17
+            color: "#66000000"
+        }
+
+        // Inner content layout
+        Item {
+            anchors.fill: parent
+            anchors.margins: 10
+
+            // Collapsed content (Pill mode)
+            Row {
+                id: collapsedRow
+                anchors.centerIn: parent
+                spacing: 8
+                opacity: root.islandExpanded ? 0.0 : 1.0
+                visible: opacity > 0.0
+                Behavior on opacity { NumberAnimation { duration: 150 } }
+
+                Item {
+                    width: 14
+                    height: 14
+                    anchors.verticalCenter: parent.verticalCenter
+                    Image {
+                        id: islandBoltIcon
+                        source: "qrc:/MeguPackOptimizer/src/resources/bolt.svg"
+                        anchors.fill: parent
+                        sourceSize.width: 14
+                        sourceSize.height: 14
+                        visible: false
+                    }
+                    ColorOverlay {
+                        anchors.fill: islandBoltIcon
+                        source: islandBoltIcon
+                        color: Theme.accent
+                    }
+                }
+
+                Text {
+                    text: root.txtChangesPending.arg(root.pendingChangesCount)
+                    color: Theme.textPrimary
+                    font.family: Theme.fontFamily
+                    font.pixelSize: 10
+                    font.bold: true
+                    anchors.verticalCenter: parent.verticalCenter
+                }
+
+                Item {
+                    width: 10
+                    height: 10
+                    anchors.verticalCenter: parent.verticalCenter
+                    Image {
+                        id: islandArrowIcon
+                        source: "qrc:/MeguPackOptimizer/src/resources/arrow.svg"
+                        anchors.fill: parent
+                        sourceSize.width: 10
+                        sourceSize.height: 10
+                        visible: false
+                        rotation: 90
+                    }
+                    ColorOverlay {
+                        anchors.fill: islandArrowIcon
+                        source: islandArrowIcon
+                        color: Theme.textSecondary
+                    }
+                }
+            }
+
+            // Expanded content (Detailed list mode)
+            Column {
+                id: expandedColumn
+                anchors.fill: parent
+                spacing: 10
+                opacity: root.islandExpanded ? 1.0 : 0.0
+                visible: opacity > 0.0
+                Behavior on opacity { NumberAnimation { duration: 250 } }
+
+                // Header Item
+                Item {
+                    width: parent.width
+                    height: 20
+
+                    Text {
+                        text: root.txtPendingListTitle
+                        color: Theme.accent
+                        font.family: Theme.fontFamily
+                        font.pixelSize: 11
+                        font.bold: true
+                        anchors.left: parent.left
+                        anchors.verticalCenter: parent.verticalCenter
+                    }
+
+                    // Collapse button
+                    Rectangle {
+                        width: 20
+                        height: 20
+                        radius: 10
+                        color: islandCloseMouse.containsMouse ? Theme.accentDim : "transparent"
+                        anchors.right: parent.right
+                        anchors.verticalCenter: parent.verticalCenter
+                        Behavior on color { ColorAnimation { duration: Theme.animFast } }
+
+                        Image {
+                            id: islandCloseImg
+                            source: "qrc:/MeguPackOptimizer/src/resources/close.svg"
+                            anchors.centerIn: parent
+                            width: 8
+                            height: 8
+                            sourceSize.width: 8
+                            sourceSize.height: 8
+                            visible: false
+                        }
+                        ColorOverlay {
+                            anchors.fill: islandCloseImg
+                            source: islandCloseImg
+                            color: islandCloseMouse.containsMouse ? Theme.accent : Theme.textMuted
+                        }
+
+                        MouseArea {
+                            id: islandCloseMouse
+                            anchors.fill: parent
+                            hoverEnabled: true
+                            cursorShape: Qt.PointingHandCursor
+                            onClicked: {
+                                root.islandExpanded = false;
+                            }
+                        }
+                    }
+                }
+
+                // Divider line
+                Rectangle {
+                    width: parent.width
+                    height: 1
+                    color: Theme.border
+                }
+
+                // List of pending items
+                Column {
+                    width: parent.width
+                    spacing: 6
+
+                    Repeater {
+                        model: root.pendingChangesList
+                        delegate: Row {
+                            width: parent.width
+                            spacing: 8
+                            height: 20
+
+                            Item {
+                                width: 12
+                                height: 12
+                                anchors.verticalCenter: parent.verticalCenter
+                                Image {
+                                    id: itemIcon
+                                    source: modelData.icon
+                                    anchors.fill: parent
+                                    sourceSize.width: 12
+                                    sourceSize.height: 12
+                                    visible: false
+                                }
+                                ColorOverlay {
+                                    anchors.fill: itemIcon
+                                    source: itemIcon
+                                    color: Theme.accent
+                                }
+                            }
+
+                            Text {
+                                text: modelData.name
+                                color: Theme.textPrimary
+                                font.family: Theme.fontFamily
+                                font.pixelSize: 10
+                                font.bold: true
+                                anchors.verticalCenter: parent.verticalCenter
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
+        // Tap area to toggle expanded state (only when clicking the main body)
+        MouseArea {
+            anchors.fill: parent
+            z: -1 // Behind close button to let close button click handle separately
+            cursorShape: Qt.PointingHandCursor
+            onClicked: {
+                root.islandExpanded = !root.islandExpanded;
             }
         }
     }
