@@ -40,6 +40,16 @@ class Optimizer : public QObject {
     Q_PROPERTY(bool printerActive READ printerActive WRITE setPrinterActive NOTIFY printerActiveChanged)
     Q_PROPERTY(bool originalPrinterActive READ originalPrinterActive NOTIFY originalPrinterActiveChanged)
     Q_PROPERTY(QStringList detectedPrinters READ detectedPrinters NOTIFY detectedPrintersChanged)
+    Q_PROPERTY(bool notificationsActive READ notificationsActive WRITE setNotificationsActive NOTIFY notificationsActiveChanged)
+    Q_PROPERTY(bool originalNotificationsActive READ originalNotificationsActive NOTIFY originalNotificationsActiveChanged)
+    Q_PROPERTY(bool notifGlobalActive READ notifGlobalActive WRITE setNotifGlobalActive NOTIFY notifGlobalActiveChanged)
+    Q_PROPERTY(bool originalNotifGlobalActive READ originalNotifGlobalActive NOTIFY originalNotifGlobalActiveChanged)
+    Q_PROPERTY(bool notifAppActive READ notifAppActive WRITE setNotifAppActive NOTIFY notifAppActiveChanged)
+    Q_PROPERTY(bool originalNotifAppActive READ originalNotifAppActive NOTIFY originalNotifAppActiveChanged)
+    Q_PROPERTY(bool notifSoundsActive READ notifSoundsActive WRITE setNotifSoundsActive NOTIFY notifSoundsActiveChanged)
+    Q_PROPERTY(bool originalNotifSoundsActive READ originalNotifSoundsActive NOTIFY originalNotifSoundsActiveChanged)
+    Q_PROPERTY(bool notifLockscreenActive READ notifLockscreenActive WRITE setNotifLockscreenActive NOTIFY notifLockscreenActiveChanged)
+    Q_PROPERTY(bool originalNotifLockscreenActive READ originalNotifLockscreenActive NOTIFY originalNotifLockscreenActiveChanged)
     Q_PROPERTY(int mpoValue READ mpoValue NOTIFY mpoValueChanged)
     Q_PROPERTY(QStringList fixedDrives READ fixedDrives NOTIFY fixedDrivesChanged)
     Q_PROPERTY(QVariantMap driveStates READ driveStates WRITE setDriveStates NOTIFY driveStatesChanged)
@@ -84,6 +94,16 @@ public:
     bool printerActive() const { return m_printerActive; }
     bool originalPrinterActive() const { return m_originalPrinterActive; }
     QStringList detectedPrinters() const { return m_detectedPrinters; }
+    bool notificationsActive() const { return m_notificationsActive; }
+    bool originalNotificationsActive() const { return m_originalNotificationsActive; }
+    bool notifGlobalActive() const { return m_notifGlobalActive; }
+    bool originalNotifGlobalActive() const { return m_originalNotifGlobalActive; }
+    bool notifAppActive() const { return m_notifAppActive; }
+    bool originalNotifAppActive() const { return m_originalNotifAppActive; }
+    bool notifSoundsActive() const { return m_notifSoundsActive; }
+    bool originalNotifSoundsActive() const { return m_originalNotifSoundsActive; }
+    bool notifLockscreenActive() const { return m_notifLockscreenActive; }
+    bool originalNotifLockscreenActive() const { return m_originalNotifLockscreenActive; }
     int mpoValue() const { return m_mpoValue; }
     QStringList fixedDrives() const { return m_fixedDrives; }
     QVariantMap driveStates() const { return m_driveStates; }
@@ -100,6 +120,11 @@ public:
     void setGameModeActive(bool val);
     void setFirewallActive(bool val);
     void setPrinterActive(bool val);
+    void setNotificationsActive(bool val);
+    void setNotifGlobalActive(bool val);
+    void setNotifAppActive(bool val);
+    void setNotifSoundsActive(bool val);
+    void setNotifLockscreenActive(bool val);
     void setDriveStates(const QVariantMap &states);
 
 
@@ -145,6 +170,16 @@ signals:
     void printerActiveChanged(bool val);
     void originalPrinterActiveChanged(bool val);
     void detectedPrintersChanged(const QStringList &val);
+    void notificationsActiveChanged(bool val);
+    void originalNotificationsActiveChanged(bool val);
+    void notifGlobalActiveChanged(bool val);
+    void originalNotifGlobalActiveChanged(bool val);
+    void notifAppActiveChanged(bool val);
+    void originalNotifAppActiveChanged(bool val);
+    void notifSoundsActiveChanged(bool val);
+    void originalNotifSoundsActiveChanged(bool val);
+    void notifLockscreenActiveChanged(bool val);
+    void originalNotifLockscreenActiveChanged(bool val);
     void mpoValueChanged(int val);
     void fixedDrivesChanged(const QStringList &val);
     void driveStatesChanged(const QVariantMap &val);
@@ -192,6 +227,16 @@ private:
     bool m_printerActive = true;
     bool m_originalPrinterActive = true;
     QStringList m_detectedPrinters;
+    bool m_notificationsActive = true;
+    bool m_originalNotificationsActive = true;
+    bool m_notifGlobalActive = true;
+    bool m_originalNotifGlobalActive = true;
+    bool m_notifAppActive = true;
+    bool m_originalNotifAppActive = true;
+    bool m_notifSoundsActive = true;
+    bool m_originalNotifSoundsActive = true;
+    bool m_notifLockscreenActive = true;
+    bool m_originalNotifLockscreenActive = true;
     int m_mpoValue = 0;
     QStringList m_fixedDrives;
     QVariantMap m_driveStates;

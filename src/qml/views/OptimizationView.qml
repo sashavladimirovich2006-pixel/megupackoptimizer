@@ -58,6 +58,11 @@ Item {
         if (optimizerBackend.gameModeActive !== optimizerBackend.originalGameModeActive) return true;
         if (optimizerBackend.firewallActive !== optimizerBackend.originalFirewallActive) return true;
         if (optimizerBackend.printerActive !== optimizerBackend.originalPrinterActive) return true;
+        if (optimizerBackend.notificationsActive !== optimizerBackend.originalNotificationsActive) return true;
+        if (optimizerBackend.notifGlobalActive !== optimizerBackend.originalNotifGlobalActive) return true;
+        if (optimizerBackend.notifAppActive !== optimizerBackend.originalNotifAppActive) return true;
+        if (optimizerBackend.notifSoundsActive !== optimizerBackend.originalNotifSoundsActive) return true;
+        if (optimizerBackend.notifLockscreenActive !== optimizerBackend.originalNotifLockscreenActive) return true;
         if (!optimizerBackend.driveStates || !optimizerBackend.originalDriveStates) return false;
         var keys = Object.keys(optimizerBackend.driveStates);
         for (var i = 0; i < keys.length; i++) {
@@ -969,6 +974,133 @@ Item {
                         }
                     }
                 }
+
+                // Notifications Panel
+                AcrylicPanel {
+                    width: parent.width
+                    height: 72
+
+                    Row {
+                        anchors.left: parent.left
+                        anchors.verticalCenter: parent.verticalCenter
+                        spacing: 12
+
+                        Item {
+                            width: 28
+                            height: 28
+                            anchors.verticalCenter: parent.verticalCenter
+                            Image {
+                                id: notificationsIconImg
+                                source: "qrc:/MeguPackOptimizer/src/resources/info.svg"
+                                anchors.fill: parent
+                                sourceSize.width: 28
+                                sourceSize.height: 28
+                                visible: false
+                            }
+                            ColorOverlay {
+                                anchors.fill: notificationsIconImg
+                                source: notificationsIconImg
+                                color: Theme.accent
+                            }
+                        }
+
+                        Column {
+                            anchors.verticalCenter: parent.verticalCenter
+                            spacing: 2
+
+                            Text {
+                                text: qsTr("Windows Notifications")
+                                color: Theme.textPrimary
+                                font.family: Theme.fontFamily
+                                font.pixelSize: 13
+                                font.bold: true
+                            }
+
+                            Text {
+                                text: qsTr("Disabling background notifications frees CPU interrupts and stabilizes FPS.")
+                                color: Theme.textMuted
+                                font.family: Theme.fontFamily
+                                font.pixelSize: 10
+                            }
+                        }
+                    }
+
+                    Row {
+                        anchors.right: parent.right
+                        anchors.verticalCenter: parent.verticalCenter
+                        spacing: 16
+
+                        Text {
+                            text: qsTr("Show Path")
+                            color: notificationsPathMouse.containsMouse ? Theme.accentLight : Theme.accent
+                            font.family: Theme.fontFamily
+                            font.pixelSize: 11
+                            font.bold: true
+                            font.underline: true
+                            anchors.verticalCenter: parent.verticalCenter
+                            MouseArea {
+                                id: notificationsPathMouse
+                                anchors.fill: parent
+                                hoverEnabled: true
+                                cursorShape: Qt.PointingHandCursor
+                                onClicked: { optimizerBackend.showPath("notifications"); }
+                            }
+                        }
+
+                        MeguSwitch {
+                            checked: optimizerBackend.notificationsActive
+                            anchors.verticalCenter: parent.verticalCenter
+                            onToggled: (isChecked) => {
+                                optimizerBackend.notificationsActive = isChecked;
+                            }
+                        }
+
+                        // Arrow button that slides right on hover & opens sidebar drawer for notifications config
+                        Rectangle {
+                            width: 32
+                            height: 32
+                            radius: 16
+                            color: notificationsArrowMouseArea.containsMouse ? Theme.accentDim : "transparent"
+                            border.color: notificationsArrowMouseArea.containsMouse ? Theme.accent : Theme.border
+                            border.width: 1
+                            anchors.verticalCenter: parent.verticalCenter
+
+                            Behavior on color { ColorAnimation { duration: Theme.animFast } }
+                            Behavior on border.color { ColorAnimation { duration: Theme.animFast } }
+
+                            Item {
+                                width: 14
+                                height: 14
+                                anchors.centerIn: parent
+                                x: notificationsArrowMouseArea.containsMouse ? (parent.width/2 - 5) : (parent.width/2 - 7)
+                                Behavior on x { NumberAnimation { duration: Theme.animNormal; easing.type: Easing.OutCubic } }
+                                Image {
+                                    id: notificationsArrowImg
+                                    source: "qrc:/MeguPackOptimizer/src/resources/arrow.svg"
+                                    anchors.fill: parent
+                                    sourceSize.width: 14
+                                    sourceSize.height: 14
+                                    visible: false
+                                }
+                                ColorOverlay {
+                                    anchors.fill: notificationsArrowImg
+                                    source: notificationsArrowImg
+                                    color: notificationsArrowMouseArea.containsMouse ? Theme.accent : Theme.textSecondary
+                                }
+                            }
+
+                            MouseArea {
+                                id: notificationsArrowMouseArea
+                                anchors.fill: parent
+                                hoverEnabled: true
+                                cursorShape: Qt.PointingHandCursor
+                                onClicked: {
+                                    root.activeDrawer = "notifications";
+                                }
+                            }
+                        }
+                    }
+                }
             }
 
             // 3. HIBERNATION CATEGORY
@@ -1161,6 +1293,7 @@ Item {
                             if (root.activeDrawer === "xbox") return qsTr("XBOX APP & GAME BAR");
                             if (root.activeDrawer === "mpo") return qsTr("MPO LATENCY TWEAK");
                             if (root.activeDrawer === "printer") return qsTr("PRINTER TWEAKS");
+                            if (root.activeDrawer === "notifications") return qsTr("NOTIFICATION SETTINGS");
                             return "";
                         }
                         color: Theme.textPrimary
@@ -1221,6 +1354,7 @@ Item {
                         if (root.activeDrawer === "xbox") return xboxColumn.implicitHeight;
                         if (root.activeDrawer === "mpo") return mpoColumn.implicitHeight;
                         if (root.activeDrawer === "printer") return printerColumn.implicitHeight;
+                        if (root.activeDrawer === "notifications") return notificationsColumn.implicitHeight;
                         return height;
                     }
 
@@ -2109,6 +2243,51 @@ Item {
                                 font.family: Theme.fontFamily
                                 font.pixelSize: 11
                                 visible: optimizerBackend.detectedPrinters.length === 0
+                            }
+                        }
+                    }
+
+                    // 5. Notifications Options Content
+                    Column {
+                        id: notificationsColumn
+                        width: parent.width
+                        spacing: 20
+                        visible: root.activeDrawer === "notifications"
+
+                        Text {
+                            text: qsTr("Configure custom Windows notification and sound alert rules.")
+                            color: Theme.textSecondary
+                            font.family: Theme.fontFamily
+                            font.pixelSize: 11
+                            font.bold: true
+                        }
+
+                        Column {
+                            width: parent.width
+                            spacing: 12
+
+                            MeguSwitch {
+                                text: qsTr("Global Toast Notifications")
+                                checked: optimizerBackend.notifGlobalActive
+                                onToggled: (isChecked) => { optimizerBackend.notifGlobalActive = isChecked; }
+                            }
+
+                            MeguSwitch {
+                                text: qsTr("App Notifications")
+                                checked: optimizerBackend.notifAppActive
+                                onToggled: (isChecked) => { optimizerBackend.notifAppActive = isChecked; }
+                            }
+
+                            MeguSwitch {
+                                text: qsTr("Notification Sounds")
+                                checked: optimizerBackend.notifSoundsActive
+                                onToggled: (isChecked) => { optimizerBackend.notifSoundsActive = isChecked; }
+                            }
+
+                            MeguSwitch {
+                                text: qsTr("Lock Screen Notifications")
+                                checked: optimizerBackend.notifLockscreenActive
+                                onToggled: (isChecked) => { optimizerBackend.notifLockscreenActive = isChecked; }
                             }
                         }
                     }

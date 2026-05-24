@@ -82,6 +82,53 @@ void Optimizer::setPrinterActive(bool val) {
     }
 }
 
+void Optimizer::setNotificationsActive(bool val) {
+    if (m_notificationsActive != val) {
+        m_notificationsActive = val;
+        emit notificationsActiveChanged(m_notificationsActive);
+
+        // Propagate to sub-options for uniform toggle feel
+        setNotifGlobalActive(val);
+        setNotifAppActive(val);
+        setNotifSoundsActive(val);
+        setNotifLockscreenActive(val);
+    }
+}
+
+void Optimizer::setNotifGlobalActive(bool val) {
+    if (m_notifGlobalActive != val) {
+        m_notifGlobalActive = val;
+        emit notifGlobalActiveChanged(m_notifGlobalActive);
+        
+        // Also update main switch if global push is changed
+        if (m_notificationsActive != val) {
+            m_notificationsActive = val;
+            emit notificationsActiveChanged(m_notificationsActive);
+        }
+    }
+}
+
+void Optimizer::setNotifAppActive(bool val) {
+    if (m_notifAppActive != val) {
+        m_notifAppActive = val;
+        emit notifAppActiveChanged(m_notifAppActive);
+    }
+}
+
+void Optimizer::setNotifSoundsActive(bool val) {
+    if (m_notifSoundsActive != val) {
+        m_notifSoundsActive = val;
+        emit notifSoundsActiveChanged(m_notifSoundsActive);
+    }
+}
+
+void Optimizer::setNotifLockscreenActive(bool val) {
+    if (m_notifLockscreenActive != val) {
+        m_notifLockscreenActive = val;
+        emit notifLockscreenActiveChanged(m_notifLockscreenActive);
+    }
+}
+
 void Optimizer::setDriveStates(const QVariantMap &states) {
     if (m_driveStates != states) {
         m_driveStates = states;
@@ -425,6 +472,82 @@ void Optimizer::loadSystemStates() {
     m_mpoValue = currentMpo;
     emit mpoValueChanged(m_mpoValue);
 
+    // Check Windows Notifications state on startup
+    bool isNotificationsActive = true;
+    bool isNotifGlobalActive = true;
+    bool isNotifAppActive = true;
+    bool isNotifSoundsActive = true;
+    bool isNotifLockscreenActive = true;
+
+#ifdef Q_OS_WIN
+    // 1. ToastEnabled under HKCU\Software\Microsoft\Windows\CurrentVersion\PushNotifications
+    HKEY hKeyPush;
+    if (RegOpenKeyExW(HKEY_CURRENT_USER, L"Software\\Microsoft\\Windows\\CurrentVersion\\PushNotifications", 0, KEY_READ, &hKeyPush) == ERROR_SUCCESS) {
+        DWORD value = 1;
+        DWORD size = sizeof(value);
+        if (RegQueryValueExW(hKeyPush, L"ToastEnabled", NULL, NULL, (LPBYTE)&value, &size) == ERROR_SUCCESS) {
+            isNotifGlobalActive = (value != 0);
+        }
+        RegCloseKey(hKeyPush);
+    }
+
+    // 2. Settings under HKCU\Software\Microsoft\Windows\CurrentVersion\Notifications\Settings
+    HKEY hKeySettings;
+    if (RegOpenKeyExW(HKEY_CURRENT_USER, L"Software\\Microsoft\\Windows\\CurrentVersion\\Notifications\\Settings", 0, KEY_READ, &hKeySettings) == ERROR_SUCCESS) {
+        DWORD valApp = 1;
+        DWORD valSounds = 1;
+        DWORD valLock = 1;
+        DWORD size = sizeof(DWORD);
+        if (RegQueryValueExW(hKeySettings, L"NOC_GLOBAL_SETTING_TOASTS_ENABLED", NULL, NULL, (LPBYTE)&valApp, &size) == ERROR_SUCCESS) {
+            isNotifAppActive = (valApp != 0);
+        }
+        size = sizeof(DWORD);
+        if (RegQueryValueExW(hKeySettings, L"NOC_GLOBAL_SETTING_ALLOW_NOTIFICATION_SOUND", NULL, NULL, (LPBYTE)&valSounds, &size) == ERROR_SUCCESS) {
+            isNotifSoundsActive = (valSounds != 0);
+        }
+        size = sizeof(DWORD);
+        if (RegQueryValueExW(hKeySettings, L"NOC_GLOBAL_SETTING_ALLOW_TOASTS_ABOVE_LOCK", NULL, NULL, (LPBYTE)&valLock, &size) == ERROR_SUCCESS) {
+            isNotifLockscreenActive = (valLock != 0);
+        }
+        RegCloseKey(hKeySettings);
+    }
+    
+    // Main notifications active property is true if push notifications (Toasts) are active
+    isNotificationsActive = isNotifGlobalActive;
+#else
+    // Simulation defaults
+    isNotificationsActive = true;
+    isNotifGlobalActive = true;
+    isNotifAppActive = true;
+    isNotifSoundsActive = true;
+    isNotifLockscreenActive = true;
+#endif
+
+    m_notificationsActive = isNotificationsActive;
+    m_originalNotificationsActive = m_notificationsActive;
+    emit notificationsActiveChanged(m_notificationsActive);
+    emit originalNotificationsActiveChanged(m_originalNotificationsActive);
+
+    m_notifGlobalActive = isNotifGlobalActive;
+    m_originalNotifGlobalActive = m_notifGlobalActive;
+    emit notifGlobalActiveChanged(m_notifGlobalActive);
+    emit originalNotifGlobalActiveChanged(m_originalNotifGlobalActive);
+
+    m_notifAppActive = isNotifAppActive;
+    m_originalNotifAppActive = m_notifAppActive;
+    emit notifAppActiveChanged(m_notifAppActive);
+    emit originalNotifAppActiveChanged(m_originalNotifAppActive);
+
+    m_notifSoundsActive = isNotifSoundsActive;
+    m_originalNotifSoundsActive = m_notifSoundsActive;
+    emit notifSoundsActiveChanged(m_notifSoundsActive);
+    emit originalNotifSoundsActiveChanged(m_originalNotifSoundsActive);
+
+    m_notifLockscreenActive = isNotifLockscreenActive;
+    m_originalNotifLockscreenActive = m_notifLockscreenActive;
+    emit notifLockscreenActiveChanged(m_notifLockscreenActive);
+    emit originalNotifLockscreenActiveChanged(m_originalNotifLockscreenActive);
+
     scanDrives();
     m_originalDriveStates = m_driveStates;
     emit originalDriveStatesChanged(m_originalDriveStates);
@@ -450,6 +573,11 @@ void Optimizer::startSystemOptimization() {
     bool gameModeVal = m_gameModeActive;
     bool firewallVal = m_firewallActive;
     bool printerVal = m_printerActive;
+    bool notificationsVal = m_notificationsActive;
+    bool notifGlobalVal = m_notifGlobalActive;
+    bool notifAppVal = m_notifAppActive;
+    bool notifSoundsVal = m_notifSoundsActive;
+    bool notifLockscreenVal = m_notifLockscreenActive;
     QVariantMap targets = m_driveStates;
     QVariantMap originalTargets = m_originalDriveStates;
     bool origSearch = m_originalWinSearchActive;
@@ -460,8 +588,13 @@ void Optimizer::startSystemOptimization() {
     bool origGameMode = m_originalGameModeActive;
     bool origFirewall = m_originalFirewallActive;
     bool origPrinter = m_originalPrinterActive;
+    bool origNotifications = m_originalNotificationsActive;
+    bool origNotifGlobal = m_originalNotifGlobalActive;
+    bool origNotifApp = m_originalNotifAppActive;
+    bool origNotifSounds = m_originalNotifSoundsActive;
+    bool origNotifLockscreen = m_originalNotifLockscreenActive;
 
-    QThread* worker = QThread::create([this, searchVal, hibernationVal, overlayVal, coreIsolationVal, mouseAccelVal, gameModeVal, firewallVal, printerVal, targets, originalTargets, origSearch, origHibernation, origOverlay, origCoreIsolation, origMouseAccel, origGameMode, origFirewall, origPrinter]() {
+    QThread* worker = QThread::create([this, searchVal, hibernationVal, overlayVal, coreIsolationVal, mouseAccelVal, gameModeVal, firewallVal, printerVal, notificationsVal, notifGlobalVal, notifAppVal, notifSoundsVal, notifLockscreenVal, targets, originalTargets, origSearch, origHibernation, origOverlay, origCoreIsolation, origMouseAccel, origGameMode, origFirewall, origPrinter, origNotifications, origNotifGlobal, origNotifApp, origNotifSounds, origNotifLockscreen]() {
         // Step 0: Check if anything actually changed
         bool anyChanges = (searchVal != origSearch) || 
                           (hibernationVal != origHibernation) || 
@@ -470,7 +603,12 @@ void Optimizer::startSystemOptimization() {
                           (mouseAccelVal != origMouseAccel) ||
                           (gameModeVal != origGameMode) ||
                           (firewallVal != origFirewall) ||
-                          (printerVal != origPrinter);
+                          (printerVal != origPrinter) ||
+                          (notificationsVal != origNotifications) ||
+                          (notifGlobalVal != origNotifGlobal) ||
+                          (notifAppVal != origNotifApp) ||
+                          (notifSoundsVal != origNotifSounds) ||
+                          (notifLockscreenVal != origNotifLockscreen);
         if (!anyChanges) {
             for (const QString &driveLetter : targets.keys()) {
                 if (targets.value(driveLetter).toBool() != originalTargets.value(driveLetter).toBool()) {
@@ -899,6 +1037,74 @@ void Optimizer::startSystemOptimization() {
             emit printerActiveChanged(m_printerActive);
         }
 
+        // Step 1.99: Windows Notifications Configuration (only if changed)
+        bool notificationsSuccess = true;
+        if ((notificationsVal != origNotifications) ||
+            (notifGlobalVal != origNotifGlobal) ||
+            (notifAppVal != origNotifApp) ||
+            (notifSoundsVal != origNotifSounds) ||
+            (notifLockscreenVal != origNotifLockscreen)) {
+
+            emit systemStepReported(tr("Processing Windows notifications configuration..."), "INFO");
+            QThread::msleep(800);
+
+#ifdef Q_OS_WIN
+            bool ok = true;
+            HKEY hKeyPush;
+            // 1. ToastEnabled under HKCU\Software\Microsoft\Windows\CurrentVersion\PushNotifications
+            if (RegCreateKeyExW(HKEY_CURRENT_USER, L"Software\\Microsoft\\Windows\\CurrentVersion\\PushNotifications", 0, NULL, REG_OPTION_NON_VOLATILE, KEY_WRITE, NULL, &hKeyPush, NULL) == ERROR_SUCCESS) {
+                DWORD val = notifGlobalVal ? 1 : 0;
+                if (RegSetValueExW(hKeyPush, L"ToastEnabled", 0, REG_DWORD, (const BYTE*)&val, sizeof(val)) != ERROR_SUCCESS) {
+                    ok = false;
+                }
+                RegCloseKey(hKeyPush);
+            } else {
+                ok = false;
+            }
+
+            // 2. Settings under HKCU\Software\Microsoft\Windows\CurrentVersion\Notifications\Settings
+            HKEY hKeySettings;
+            if (RegCreateKeyExW(HKEY_CURRENT_USER, L"Software\\Microsoft\\Windows\\CurrentVersion\\Notifications\\Settings", 0, NULL, REG_OPTION_NON_VOLATILE, KEY_WRITE, NULL, &hKeySettings, NULL) == ERROR_SUCCESS) {
+                DWORD valApp = notifAppVal ? 1 : 0;
+                DWORD valSounds = notifSoundsVal ? 1 : 0;
+                DWORD valLock = notifLockscreenVal ? 1 : 0;
+
+                if (RegSetValueExW(hKeySettings, L"NOC_GLOBAL_SETTING_TOASTS_ENABLED", 0, REG_DWORD, (const BYTE*)&valApp, sizeof(valApp)) != ERROR_SUCCESS) {
+                    ok = false;
+                }
+                if (RegSetValueExW(hKeySettings, L"NOC_GLOBAL_SETTING_ALLOW_NOTIFICATION_SOUND", 0, REG_DWORD, (const BYTE*)&valSounds, sizeof(valSounds)) != ERROR_SUCCESS) {
+                    ok = false;
+                }
+                if (RegSetValueExW(hKeySettings, L"NOC_GLOBAL_SETTING_ALLOW_TOASTS_ABOVE_LOCK", 0, REG_DWORD, (const BYTE*)&valLock, sizeof(valLock)) != ERROR_SUCCESS) {
+                    ok = false;
+                }
+                RegCloseKey(hKeySettings);
+            } else {
+                ok = false;
+            }
+
+            if (ok) {
+                emit systemStepReported(tr("Windows notifications updated successfully."), "SUCCESS");
+            } else {
+                notificationsSuccess = false;
+                emit systemStepReported(tr("Failed to update Windows notifications. Error: %1").arg(GetLastError()), "ERROR");
+            }
+#else
+            emit systemStepReported(tr("[Simulation] Windows notifications set to: %1").arg(notificationsVal ? "Enabled" : "Disabled"), "SUCCESS");
+#endif
+            m_notificationsActive = notificationsVal;
+            m_notifGlobalActive = notifGlobalVal;
+            m_notifAppActive = notifAppVal;
+            m_notifSoundsActive = notifSoundsVal;
+            m_notifLockscreenActive = notifLockscreenVal;
+
+            emit notificationsActiveChanged(m_notificationsActive);
+            emit notifGlobalActiveChanged(m_notifGlobalActive);
+            emit notifAppActiveChanged(m_notifAppActive);
+            emit notifSoundsActiveChanged(m_notifSoundsActive);
+            emit notifLockscreenActiveChanged(m_notifLockscreenActive);
+        }
+
         m_systemProgress = 0.50;
         emit systemProgressChanged(m_systemProgress);
         QThread::msleep(300);
@@ -946,7 +1152,7 @@ void Optimizer::startSystemOptimization() {
             QThread::msleep(100);
         }
 
-        bool overallSuccess = wSearchSuccess && hibernationSuccess && overlaySuccess && coreIsolationSuccess && mouseAccelSuccess && gameModeSuccess && firewallSuccess && printerSuccess && overallDrivesSuccess;
+        bool overallSuccess = wSearchSuccess && hibernationSuccess && overlaySuccess && coreIsolationSuccess && mouseAccelSuccess && gameModeSuccess && firewallSuccess && printerSuccess && notificationsSuccess && overallDrivesSuccess;
         if (overallSuccess) {
             emit systemStepReported(tr("System optimization completed successfully!"), "SUCCESS");
             Logger::log("System optimization completed successfully!", "INFO");
@@ -964,6 +1170,11 @@ void Optimizer::startSystemOptimization() {
         m_originalGameModeActive = gameModeVal;
         m_originalFirewallActive = firewallVal;
         m_originalPrinterActive = printerVal;
+        m_originalNotificationsActive = notificationsVal;
+        m_originalNotifGlobalActive = notifGlobalVal;
+        m_originalNotifAppActive = notifAppVal;
+        m_originalNotifSoundsActive = notifSoundsVal;
+        m_originalNotifLockscreenActive = notifLockscreenVal;
         m_originalDriveStates = targets;
         
         emit driveStatesChanged(m_driveStates);
@@ -975,6 +1186,11 @@ void Optimizer::startSystemOptimization() {
         emit originalGameModeActiveChanged(m_originalGameModeActive);
         emit originalFirewallActiveChanged(m_originalFirewallActive);
         emit originalPrinterActiveChanged(m_originalPrinterActive);
+        emit originalNotificationsActiveChanged(m_originalNotificationsActive);
+        emit originalNotifGlobalActiveChanged(m_originalNotifGlobalActive);
+        emit originalNotifAppActiveChanged(m_originalNotifAppActive);
+        emit originalNotifSoundsActiveChanged(m_originalNotifSoundsActive);
+        emit originalNotifLockscreenActiveChanged(m_originalNotifLockscreenActive);
         emit originalDriveStatesChanged(m_originalDriveStates);
 
         m_isOptimizingSystem = false;
@@ -1008,6 +1224,9 @@ void Optimizer::showPath(const QString &funcName) {
     } else if (funcName == "printer") {
         QProcess::startDetached("cmd.exe", QStringList() << "/c" << "start devmgmt.msc");
         Logger::log("Opening Device Manager...", "INFO");
+    } else if (funcName == "notifications") {
+        QProcess::startDetached("cmd.exe", QStringList() << "/c" << "start ms-settings:notifications");
+        Logger::log("Opening Windows Notifications Settings...", "INFO");
     } else {
         // Assume drive letter like "C:" or "D:"
         QString letter = funcName.trimmed();
