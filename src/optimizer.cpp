@@ -633,6 +633,7 @@ void Optimizer::loadSystemStates() {
     emit powerSchemesChanged(m_powerSchemes);
     emit ultimateSchemeUnlockedChanged(m_ultimateSchemeUnlocked);
     emit activePowerSchemeGuidChanged(m_activePowerSchemeGuid);
+    emit targetPowerSchemeGuidChanged(m_targetPowerSchemeGuid);
 
     scanDrives();
     m_originalDriveStates = m_driveStates;
@@ -1250,6 +1251,9 @@ void Optimizer::startSystemOptimization() {
                         QString name = QString::fromWCharArray((const wchar_t*)friendlyName);
                         if (name.isEmpty()) name = targetPowerSchemeVal;
                         
+                        m_activePowerSchemeGuid = targetPowerSchemeVal;
+                        emit activePowerSchemeGuidChanged(m_activePowerSchemeGuid);
+                        
                         emit systemStepReported(tr("Power plan changed to: %1").arg(name), "SUCCESS");
                         Logger::log(QString("Power scheme successfully set active: %1").arg(name), "INFO");
                     } else {
@@ -1264,6 +1268,8 @@ void Optimizer::startSystemOptimization() {
             }
 #else
             // Simulation
+            m_activePowerSchemeGuid = targetPowerSchemeVal;
+            emit activePowerSchemeGuidChanged(m_activePowerSchemeGuid);
             emit systemStepReported(tr("[Simulation] Power plan changed to: %1").arg(targetPowerSchemeVal), "SUCCESS");
 #endif
         }
@@ -2025,6 +2031,7 @@ void Optimizer::applyMpoValue(int value) {
 
 void Optimizer::selectPowerScheme(const QString &guidStr) {
     m_targetPowerSchemeGuid = guidStr.toUpper();
+    emit targetPowerSchemeGuidChanged(m_targetPowerSchemeGuid);
     
     // Update m_powerSchemes locally to highlight the selected target scheme
     for (int i = 0; i < m_powerSchemes.size(); ++i) {
@@ -2044,6 +2051,7 @@ void Optimizer::selectPowerScheme(const QString &guidStr) {
 void Optimizer::activateUltimatePerformance() {
     // Stage Ultimate Performance activation
     m_targetPowerSchemeGuid = "{E9A22B95-E3B0-4B87-A177-728978ED6022}";
+    emit targetPowerSchemeGuidChanged(m_targetPowerSchemeGuid);
     
     // Update ultimate unlocked state (staged in UI)
     m_ultimateSchemeUnlocked = true;

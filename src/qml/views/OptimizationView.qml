@@ -63,6 +63,7 @@ Item {
         if (optimizerBackend.notifAppActive !== optimizerBackend.originalNotifAppActive) return true;
         if (optimizerBackend.notifSoundsActive !== optimizerBackend.originalNotifSoundsActive) return true;
         if (optimizerBackend.notifLockscreenActive !== optimizerBackend.originalNotifLockscreenActive) return true;
+        if (optimizerBackend.targetPowerSchemeGuid !== optimizerBackend.activePowerSchemeGuid) return true;
         if (!optimizerBackend.driveStates || !optimizerBackend.originalDriveStates) return false;
         var keys = Object.keys(optimizerBackend.driveStates);
         for (var i = 0; i < keys.length; i++) {
@@ -71,6 +72,33 @@ Item {
         }
         return false;
     }
+
+    property bool indexingChanged: {
+        if (optimizerBackend.winSearchActive !== optimizerBackend.originalWinSearchActive) return true;
+        if (!optimizerBackend.driveStates || !optimizerBackend.originalDriveStates) return false;
+        var keys = Object.keys(optimizerBackend.driveStates);
+        for (var i = 0; i < keys.length; i++) {
+            var key = keys[i];
+            if (optimizerBackend.driveStates[key] !== optimizerBackend.originalDriveStates[key]) return true;
+        }
+        return false;
+    }
+    property bool xboxChanged: optimizerBackend.gamingOverlayActive !== optimizerBackend.originalGamingOverlayActive
+    property bool coreIsolationChanged: optimizerBackend.coreIsolationActive !== optimizerBackend.originalCoreIsolationActive
+    property bool mouseAccelerationChanged: optimizerBackend.mouseAccelerationActive !== optimizerBackend.originalMouseAccelerationActive
+    property bool gameModeChanged: optimizerBackend.gameModeActive !== optimizerBackend.originalGameModeActive
+    property bool firewallChanged: optimizerBackend.firewallActive !== optimizerBackend.originalFirewallActive
+    property bool printerChanged: optimizerBackend.printerActive !== optimizerBackend.originalPrinterActive
+    property bool notificationsChanged: {
+        if (optimizerBackend.notificationsActive !== optimizerBackend.originalNotificationsActive) return true;
+        if (optimizerBackend.notifGlobalActive !== optimizerBackend.originalNotifGlobalActive) return true;
+        if (optimizerBackend.notifAppActive !== optimizerBackend.originalNotifAppActive) return true;
+        if (optimizerBackend.notifSoundsActive !== optimizerBackend.originalNotifSoundsActive) return true;
+        if (optimizerBackend.notifLockscreenActive !== optimizerBackend.originalNotifLockscreenActive) return true;
+        return false;
+    }
+    property bool hibernationChanged: optimizerBackend.hibernationActive !== optimizerBackend.originalHibernationActive
+    property bool powerPlanChanged: optimizerBackend.targetPowerSchemeGuid !== optimizerBackend.activePowerSchemeGuid
 
     // Active sidebar state
     property string activeDrawer: ""
@@ -172,12 +200,34 @@ Item {
                             anchors.verticalCenter: parent.verticalCenter
                             spacing: 2
 
-                            Text {
-                                text: qsTr("File Indexing")
-                                color: Theme.textPrimary
-                                font.family: Theme.fontFamily
-                                font.pixelSize: 13
-                                font.bold: true
+                            Row {
+                                spacing: 8
+                                Text {
+                                    text: qsTr("File Indexing")
+                                    color: Theme.textPrimary
+                                    font.family: Theme.fontFamily
+                                    font.pixelSize: 13
+                                    font.bold: true
+                                }
+                                Rectangle {
+                                    visible: root.indexingChanged
+                                    height: 16
+                                    width: selectedText1.contentWidth + 10
+                                    radius: 4
+                                    color: Theme.accentDim
+                                    border.color: Theme.accent
+                                    border.width: 1
+                                    anchors.verticalCenter: parent.verticalCenter
+                                    Text {
+                                        id: selectedText1
+                                        text: qsTr("Selected for application")
+                                        color: Theme.accent
+                                        font.family: Theme.fontFamily
+                                        font.pixelSize: 8
+                                        font.bold: true
+                                        anchors.centerIn: parent
+                                    }
+                                }
                             }
 
                             Text {
@@ -300,12 +350,34 @@ Item {
                             anchors.verticalCenter: parent.verticalCenter
                             spacing: 2
 
-                            Text {
-                                text: qsTr("Xbox App & Game Bar")
-                                color: Theme.textPrimary
-                                font.family: Theme.fontFamily
-                                font.pixelSize: 13
-                                font.bold: true
+                            Row {
+                                spacing: 8
+                                Text {
+                                    text: qsTr("Xbox App & Game Bar")
+                                    color: Theme.textPrimary
+                                    font.family: Theme.fontFamily
+                                    font.pixelSize: 13
+                                    font.bold: true
+                                }
+                                Rectangle {
+                                    visible: root.xboxChanged
+                                    height: 16
+                                    width: selectedText2.contentWidth + 10
+                                    radius: 4
+                                    color: Theme.accentDim
+                                    border.color: Theme.accent
+                                    border.width: 1
+                                    anchors.verticalCenter: parent.verticalCenter
+                                    Text {
+                                        id: selectedText2
+                                        text: qsTr("Selected for application")
+                                        color: Theme.accent
+                                        font.family: Theme.fontFamily
+                                        font.pixelSize: 8
+                                        font.bold: true
+                                        anchors.centerIn: parent
+                                    }
+                                }
                             }
 
                             Text {
@@ -553,12 +625,34 @@ Item {
                             anchors.verticalCenter: parent.verticalCenter
                             spacing: 2
 
-                            Text {
-                                text: qsTr("Core Isolation")
-                                color: Theme.textPrimary
-                                font.family: Theme.fontFamily
-                                font.pixelSize: 13
-                                font.bold: true
+                            Row {
+                                spacing: 8
+                                Text {
+                                    text: qsTr("Core Isolation")
+                                    color: Theme.textPrimary
+                                    font.family: Theme.fontFamily
+                                    font.pixelSize: 13
+                                    font.bold: true
+                                }
+                                Rectangle {
+                                    visible: root.coreIsolationChanged
+                                    height: 16
+                                    width: selectedText3.contentWidth + 10
+                                    radius: 4
+                                    color: Theme.accentDim
+                                    border.color: Theme.accent
+                                    border.width: 1
+                                    anchors.verticalCenter: parent.verticalCenter
+                                    Text {
+                                        id: selectedText3
+                                        text: qsTr("Selected for application")
+                                        color: Theme.accent
+                                        font.family: Theme.fontFamily
+                                        font.pixelSize: 8
+                                        font.bold: true
+                                        anchors.centerIn: parent
+                                    }
+                                }
                             }
 
                             Text {
@@ -635,12 +729,34 @@ Item {
                             anchors.verticalCenter: parent.verticalCenter
                             spacing: 2
 
-                            Text {
-                                text: qsTr("Mouse Acceleration")
-                                color: Theme.textPrimary
-                                font.family: Theme.fontFamily
-                                font.pixelSize: 13
-                                font.bold: true
+                            Row {
+                                spacing: 8
+                                Text {
+                                    text: qsTr("Mouse Acceleration")
+                                    color: Theme.textPrimary
+                                    font.family: Theme.fontFamily
+                                    font.pixelSize: 13
+                                    font.bold: true
+                                }
+                                Rectangle {
+                                    visible: root.mouseAccelerationChanged
+                                    height: 16
+                                    width: selectedText4.contentWidth + 10
+                                    radius: 4
+                                    color: Theme.accentDim
+                                    border.color: Theme.accent
+                                    border.width: 1
+                                    anchors.verticalCenter: parent.verticalCenter
+                                    Text {
+                                        id: selectedText4
+                                        text: qsTr("Selected for application")
+                                        color: Theme.accent
+                                        font.family: Theme.fontFamily
+                                        font.pixelSize: 8
+                                        font.bold: true
+                                        anchors.centerIn: parent
+                                    }
+                                }
                             }
 
                             Text {
@@ -717,12 +833,34 @@ Item {
                             anchors.verticalCenter: parent.verticalCenter
                             spacing: 2
 
-                            Text {
-                                text: qsTr("Game Mode")
-                                color: Theme.textPrimary
-                                font.family: Theme.fontFamily
-                                font.pixelSize: 13
-                                font.bold: true
+                            Row {
+                                spacing: 8
+                                Text {
+                                    text: qsTr("Game Mode")
+                                    color: Theme.textPrimary
+                                    font.family: Theme.fontFamily
+                                    font.pixelSize: 13
+                                    font.bold: true
+                                }
+                                Rectangle {
+                                    visible: root.gameModeChanged
+                                    height: 16
+                                    width: selectedText5.contentWidth + 10
+                                    radius: 4
+                                    color: Theme.accentDim
+                                    border.color: Theme.accent
+                                    border.width: 1
+                                    anchors.verticalCenter: parent.verticalCenter
+                                    Text {
+                                        id: selectedText5
+                                        text: qsTr("Selected for application")
+                                        color: Theme.accent
+                                        font.family: Theme.fontFamily
+                                        font.pixelSize: 8
+                                        font.bold: true
+                                        anchors.centerIn: parent
+                                    }
+                                }
                             }
 
                             Text {
@@ -799,12 +937,34 @@ Item {
                             anchors.verticalCenter: parent.verticalCenter
                             spacing: 2
 
-                            Text {
-                                text: qsTr("Windows Defender Firewall")
-                                color: Theme.textPrimary
-                                font.family: Theme.fontFamily
-                                font.pixelSize: 13
-                                font.bold: true
+                            Row {
+                                spacing: 8
+                                Text {
+                                    text: qsTr("Windows Defender Firewall")
+                                    color: Theme.textPrimary
+                                    font.family: Theme.fontFamily
+                                    font.pixelSize: 13
+                                    font.bold: true
+                                }
+                                Rectangle {
+                                    visible: root.firewallChanged
+                                    height: 16
+                                    width: selectedText6.contentWidth + 10
+                                    radius: 4
+                                    color: Theme.accentDim
+                                    border.color: Theme.accent
+                                    border.width: 1
+                                    anchors.verticalCenter: parent.verticalCenter
+                                    Text {
+                                        id: selectedText6
+                                        text: qsTr("Selected for application")
+                                        color: Theme.accent
+                                        font.family: Theme.fontFamily
+                                        font.pixelSize: 8
+                                        font.bold: true
+                                        anchors.centerIn: parent
+                                    }
+                                }
                             }
 
                             Text {
@@ -881,12 +1041,34 @@ Item {
                             anchors.verticalCenter: parent.verticalCenter
                             spacing: 2
 
-                            Text {
-                                text: qsTr("Print Spooler (Printer)")
-                                color: Theme.textPrimary
-                                font.family: Theme.fontFamily
-                                font.pixelSize: 13
-                                font.bold: true
+                            Row {
+                                spacing: 8
+                                Text {
+                                    text: qsTr("Print Spooler (Printer)")
+                                    color: Theme.textPrimary
+                                    font.family: Theme.fontFamily
+                                    font.pixelSize: 13
+                                    font.bold: true
+                                }
+                                Rectangle {
+                                    visible: root.printerChanged
+                                    height: 16
+                                    width: selectedText7.contentWidth + 10
+                                    radius: 4
+                                    color: Theme.accentDim
+                                    border.color: Theme.accent
+                                    border.width: 1
+                                    anchors.verticalCenter: parent.verticalCenter
+                                    Text {
+                                        id: selectedText7
+                                        text: qsTr("Selected for application")
+                                        color: Theme.accent
+                                        font.family: Theme.fontFamily
+                                        font.pixelSize: 8
+                                        font.bold: true
+                                        anchors.centerIn: parent
+                                    }
+                                }
                             }
 
                             Text {
@@ -1008,12 +1190,34 @@ Item {
                             anchors.verticalCenter: parent.verticalCenter
                             spacing: 2
 
-                            Text {
-                                text: qsTr("Windows Notifications")
-                                color: Theme.textPrimary
-                                font.family: Theme.fontFamily
-                                font.pixelSize: 13
-                                font.bold: true
+                            Row {
+                                spacing: 8
+                                Text {
+                                    text: qsTr("Windows Notifications")
+                                    color: Theme.textPrimary
+                                    font.family: Theme.fontFamily
+                                    font.pixelSize: 13
+                                    font.bold: true
+                                }
+                                Rectangle {
+                                    visible: root.notificationsChanged
+                                    height: 16
+                                    width: selectedText8.contentWidth + 10
+                                    radius: 4
+                                    color: Theme.accentDim
+                                    border.color: Theme.accent
+                                    border.width: 1
+                                    anchors.verticalCenter: parent.verticalCenter
+                                    Text {
+                                        id: selectedText8
+                                        text: qsTr("Selected for application")
+                                        color: Theme.accent
+                                        font.family: Theme.fontFamily
+                                        font.pixelSize: 8
+                                        font.bold: true
+                                        anchors.centerIn: parent
+                                    }
+                                }
                             }
 
                             Text {
@@ -1149,12 +1353,34 @@ Item {
                             anchors.verticalCenter: parent.verticalCenter
                             spacing: 2
 
-                            Text {
-                                text: qsTr("System Hibernation")
-                                color: Theme.textPrimary
-                                font.family: Theme.fontFamily
-                                font.pixelSize: 13
-                                font.bold: true
+                            Row {
+                                spacing: 8
+                                Text {
+                                    text: qsTr("System Hibernation")
+                                    color: Theme.textPrimary
+                                    font.family: Theme.fontFamily
+                                    font.pixelSize: 13
+                                    font.bold: true
+                                }
+                                Rectangle {
+                                    visible: root.hibernationChanged
+                                    height: 16
+                                    width: selectedText9.contentWidth + 10
+                                    radius: 4
+                                    color: Theme.accentDim
+                                    border.color: Theme.accent
+                                    border.width: 1
+                                    anchors.verticalCenter: parent.verticalCenter
+                                    Text {
+                                        id: selectedText9
+                                        text: qsTr("Selected for application")
+                                        color: Theme.accent
+                                        font.family: Theme.fontFamily
+                                        font.pixelSize: 8
+                                        font.bold: true
+                                        anchors.centerIn: parent
+                                    }
+                                }
                             }
 
                             Text {
@@ -1231,12 +1457,34 @@ Item {
                             anchors.verticalCenter: parent.verticalCenter
                             spacing: 2
 
-                            Text {
-                                text: qsTr("Power Plan")
-                                color: Theme.textPrimary
-                                font.family: Theme.fontFamily
-                                font.pixelSize: 13
-                                font.bold: true
+                            Row {
+                                spacing: 8
+                                Text {
+                                    text: qsTr("Power Plan")
+                                    color: Theme.textPrimary
+                                    font.family: Theme.fontFamily
+                                    font.pixelSize: 13
+                                    font.bold: true
+                                }
+                                Rectangle {
+                                    visible: root.powerPlanChanged
+                                    height: 16
+                                    width: selectedText10.contentWidth + 10
+                                    radius: 4
+                                    color: Theme.accentDim
+                                    border.color: Theme.accent
+                                    border.width: 1
+                                    anchors.verticalCenter: parent.verticalCenter
+                                    Text {
+                                        id: selectedText10
+                                        text: qsTr("Selected for application")
+                                        color: Theme.accent
+                                        font.family: Theme.fontFamily
+                                        font.pixelSize: 8
+                                        font.bold: true
+                                        anchors.centerIn: parent
+                                    }
+                                }
                             }
 
                             Text {

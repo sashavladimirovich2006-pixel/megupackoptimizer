@@ -53,6 +53,7 @@ class Optimizer : public QObject {
     Q_PROPERTY(QVariantList powerSchemes READ powerSchemes NOTIFY powerSchemesChanged)
     Q_PROPERTY(bool ultimateSchemeUnlocked READ ultimateSchemeUnlocked NOTIFY ultimateSchemeUnlockedChanged)
     Q_PROPERTY(QString activePowerSchemeGuid READ activePowerSchemeGuid NOTIFY activePowerSchemeGuidChanged)
+    Q_PROPERTY(QString targetPowerSchemeGuid READ targetPowerSchemeGuid NOTIFY targetPowerSchemeGuidChanged)
     Q_PROPERTY(int mpoValue READ mpoValue NOTIFY mpoValueChanged)
     Q_PROPERTY(QStringList fixedDrives READ fixedDrives NOTIFY fixedDrivesChanged)
     Q_PROPERTY(QVariantMap driveStates READ driveStates WRITE setDriveStates NOTIFY driveStatesChanged)
@@ -110,6 +111,7 @@ public:
     QVariantList powerSchemes() const { return m_powerSchemes; }
     bool ultimateSchemeUnlocked() const { return m_ultimateSchemeUnlocked; }
     QString activePowerSchemeGuid() const { return m_activePowerSchemeGuid; }
+    QString targetPowerSchemeGuid() const { return m_targetPowerSchemeGuid; }
     int mpoValue() const { return m_mpoValue; }
     QStringList fixedDrives() const { return m_fixedDrives; }
     QVariantMap driveStates() const { return m_driveStates; }
@@ -191,6 +193,7 @@ signals:
     void powerSchemesChanged(const QVariantList &val);
     void ultimateSchemeUnlockedChanged(bool val);
     void activePowerSchemeGuidChanged(const QString &val);
+    void targetPowerSchemeGuidChanged(const QString &val);
     void mpoValueChanged(int val);
     void fixedDrivesChanged(const QStringList &val);
     void driveStatesChanged(const QVariantMap &val);
