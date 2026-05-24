@@ -2531,8 +2531,8 @@ Item {
                                     height: 50
                                     
                                     // Custom active border color
-                                    border.color: model.isActive ? Theme.accent : (schemeMouse.containsMouse ? Theme.borderHover : Theme.border)
-                                    color: model.isActive ? Theme.accentDim : (schemeMouse.containsMouse ? Theme.buttonBgHover : Theme.buttonBg)
+                                    border.color: modelData.isActive ? Theme.accent : (schemeMouse.containsMouse ? Theme.borderHover : Theme.border)
+                                    color: modelData.isActive ? Theme.accentDim : (schemeMouse.containsMouse ? Theme.buttonBgHover : Theme.buttonBg)
 
                                     Behavior on border.color { ColorAnimation { duration: Theme.animFast } }
                                     Behavior on color { ColorAnimation { duration: Theme.animFast } }
@@ -2558,7 +2558,7 @@ Item {
                                             ColorOverlay {
                                                 anchors.fill: planIcon
                                                 source: planIcon
-                                                color: model.isActive ? Theme.accent : Theme.textMuted
+                                                color: modelData.isActive ? Theme.accent : Theme.textMuted
                                             }
                                         }
 
@@ -2568,7 +2568,7 @@ Item {
 
                                             Text {
                                                 text: {
-                                                    var rawName = model.name;
+                                                    var rawName = modelData.name;
                                                     // Clean up trailing translations from friendly name
                                                     return rawName.split(' (')[0];
                                                 }
@@ -2578,7 +2578,7 @@ Item {
                                                 font.bold: true
                                             }
                                             Text {
-                                                text: model.guid
+                                                text: modelData.guid
                                                 color: Theme.textMuted
                                                 font.family: Theme.fontFamily
                                                 font.pixelSize: 8
@@ -2592,7 +2592,7 @@ Item {
                                         hoverEnabled: true
                                         cursorShape: Qt.PointingHandCursor
                                         onClicked: {
-                                            optimizerBackend.selectPowerScheme(model.guid);
+                                            optimizerBackend.selectPowerScheme(modelData.guid);
                                         }
                                     }
                                 }
