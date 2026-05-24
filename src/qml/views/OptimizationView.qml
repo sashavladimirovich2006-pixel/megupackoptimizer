@@ -54,6 +54,7 @@ Item {
         if (optimizerBackend.hibernationActive !== optimizerBackend.originalHibernationActive) return true;
         if (optimizerBackend.gamingOverlayActive !== optimizerBackend.originalGamingOverlayActive) return true;
         if (optimizerBackend.coreIsolationActive !== optimizerBackend.originalCoreIsolationActive) return true;
+        if (optimizerBackend.mouseAccelerationActive !== optimizerBackend.originalMouseAccelerationActive) return true;
         if (!optimizerBackend.driveStates || !optimizerBackend.originalDriveStates) return false;
         var keys = Object.keys(optimizerBackend.driveStates);
         for (var i = 0; i < keys.length; i++) {
@@ -561,12 +562,116 @@ Item {
                         }
                     }
 
-                    MeguSwitch {
+                    Row {
                         anchors.right: parent.right
                         anchors.verticalCenter: parent.verticalCenter
-                        checked: optimizerBackend.coreIsolationActive
-                        onToggled: {
-                            optimizerBackend.coreIsolationActive = isChecked;
+                        spacing: 16
+
+                        Text {
+                            text: qsTr("Show Path")
+                            color: ciPathMouse.containsMouse ? Theme.accentLight : Theme.accent
+                            font.family: Theme.fontFamily
+                            font.pixelSize: 11
+                            font.bold: true
+                            font.underline: true
+                            anchors.verticalCenter: parent.verticalCenter
+                            MouseArea {
+                                id: ciPathMouse
+                                anchors.fill: parent
+                                hoverEnabled: true
+                                cursorShape: Qt.PointingHandCursor
+                                onClicked: { optimizerBackend.showPath("coreisolation"); }
+                            }
+                        }
+
+                        MeguSwitch {
+                            checked: optimizerBackend.coreIsolationActive
+                            anchors.verticalCenter: parent.verticalCenter
+                            onToggled: {
+                                optimizerBackend.coreIsolationActive = isChecked;
+                            }
+                        }
+                    }
+                }
+
+                // Mouse Acceleration Panel
+                AcrylicPanel {
+                    width: parent.width
+                    height: 72
+
+                    Row {
+                        anchors.left: parent.left
+                        anchors.verticalCenter: parent.verticalCenter
+                        spacing: 12
+
+                        Item {
+                            width: 28
+                            height: 28
+                            anchors.verticalCenter: parent.verticalCenter
+                            Image {
+                                id: mouseIconImg
+                                source: "qrc:/MeguPackOptimizer/src/resources/arrow.svg"
+                                anchors.fill: parent
+                                sourceSize.width: 28
+                                sourceSize.height: 28
+                                visible: false
+                            }
+                            ColorOverlay {
+                                anchors.fill: mouseIconImg
+                                source: mouseIconImg
+                                color: Theme.accent
+                            }
+                        }
+
+                        Column {
+                            anchors.verticalCenter: parent.verticalCenter
+                            spacing: 2
+
+                            Text {
+                                text: qsTr("Mouse Acceleration")
+                                color: Theme.textPrimary
+                                font.family: Theme.fontFamily
+                                font.pixelSize: 13
+                                font.bold: true
+                            }
+
+                            Text {
+                                text: qsTr("Enhance pointer precision toggle to enable or disable system mouse acceleration.")
+                                color: Theme.textMuted
+                                font.family: Theme.fontFamily
+                                font.pixelSize: 10
+                            }
+                        }
+                    }
+
+                    Row {
+                        anchors.right: parent.right
+                        anchors.verticalCenter: parent.verticalCenter
+                        spacing: 16
+
+                        Text {
+                            text: qsTr("Show Path")
+                            color: mousePathMouse.containsMouse ? Theme.accentLight : Theme.accent
+                            font.family: Theme.fontFamily
+                            font.pixelSize: 11
+                            font.bold: true
+                            font.underline: true
+                            anchors.verticalCenter: parent.verticalCenter
+                            MouseArea {
+                                id: mousePathMouse
+                                anchors.fill: parent
+                                hoverEnabled: true
+                                cursorShape: Qt.PointingHandCursor
+                                onClicked: { optimizerBackend.showPath("mouseacceleration"); }
+                            }
+                        }
+
+                        MeguSwitch {
+                            checked: optimizerBackend.mouseAccelerationActive
+                            anchors.verticalCenter: parent.verticalCenter
+                            onToggled: {
+                                optimizerBackend.mouseAccelerationActive = isChecked;
+                            }
                         }
                     }
                 }
@@ -635,12 +740,34 @@ Item {
                         }
                     }
 
-                    MeguSwitch {
+                    Row {
                         anchors.right: parent.right
                         anchors.verticalCenter: parent.verticalCenter
-                        checked: optimizerBackend.hibernationActive
-                        onToggled: {
-                            optimizerBackend.hibernationActive = isChecked;
+                        spacing: 16
+
+                        Text {
+                            text: qsTr("Show Path")
+                            color: hibernationPathMouse.containsMouse ? Theme.accentLight : Theme.accent
+                            font.family: Theme.fontFamily
+                            font.pixelSize: 11
+                            font.bold: true
+                            font.underline: true
+                            anchors.verticalCenter: parent.verticalCenter
+                            MouseArea {
+                                id: hibernationPathMouse
+                                anchors.fill: parent
+                                hoverEnabled: true
+                                cursorShape: Qt.PointingHandCursor
+                                onClicked: { optimizerBackend.showPath("hibernation"); }
+                            }
+                        }
+
+                        MeguSwitch {
+                            checked: optimizerBackend.hibernationActive
+                            anchors.verticalCenter: parent.verticalCenter
+                            onToggled: {
+                                optimizerBackend.hibernationActive = isChecked;
+                            }
                         }
                     }
                 }

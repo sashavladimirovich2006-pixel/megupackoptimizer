@@ -100,4 +100,16 @@ The following rules must be strictly adhered to by all developers (human or AI) 
   - **Core Isolation Toggle**: Exposed `coreIsolationActive` C++ Q_PROPERTY binding to HVCI registry path `System\\CurrentControlSet\\Control\\DeviceGuard\\Scenarios\\HypervisorEnforcedCodeIntegrity\\Enabled`. Disabling memory integrity is a common latancy optimization, which is now toggled directly from the UI and executed in a background thread.
   - **Ukrainian Localization**: Ran `lupdate` to locate all newly introduced string entries, injected matching translations using a Python mapping script, compiled the resulting resources via `lrelease`, and added Rule 4 to the codebase policy ensuring mandatory translation of all strings to Ukrainian.
 
+### Phase 1: Mouse Acceleration Toggle & "Show Path" Shortcuts Integration
+- **Action**: Implemented a "Mouse Acceleration" (Enhance Pointer Precision) toggle in the Latency & Mouse tweaks category, integrated "Show Path" settings shortcuts on cards without sub-drawers (System Hibernation, Core Isolation, and Mouse Acceleration), updated all UI and log strings to Ukrainian, and rebuilt/packaged the application.
+- **Detailed Rationale**:
+  - **Mouse Acceleration**: Added C++ backend properties and getters/setters (`mouseAccelerationActive`, `originalMouseAccelerationActive`) in `src/optimizer.h`. Toggled the system mouse acceleration settings in a worker QThread via Win32 `SystemParametersInfoW` using `SPI_GETMOUSE`/`SPI_SETMOUSE` with custom threshold values `[6, 10, 1]` or `[0, 0, 0]` to toggle Enhance Pointer Precision dynamically.
+  - **Show Path Shortcuts**: Exposed the `showPath(QString)` method in C++ to open target Windows configuration utilities asynchronously via `QProcess::startDetached`. Tapping "Show Path" triggers:
+    - *Hibernation*: `powercfg.cpl`
+    - *Core Isolation*: `ms-settings:privacy-security-coreisolation`
+    - *Mouse Acceleration*: `control.exe main.cpl,,1` (launches Pointer Options directly).
+  - **QML Layout Integration**: Designed a new Mouse Acceleration card in `src/qml/views/OptimizationView.qml` with the Fluent arrow icon and a switch. Placed "Show Path" text links next to the status switches on the Hibernation, Core Isolation, and Mouse Acceleration panels.
+  - **Ukrainian Localization & Build**: Fully updated `translations/megu_pack_optimizer_uk.ts` with translations for all new strings, generated `.qm` binary files, and compiled the package using `build.bat` for deployment to `D:\Aps\Git\MPONERE\`.
+
+
 

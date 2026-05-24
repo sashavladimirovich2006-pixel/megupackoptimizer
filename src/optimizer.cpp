@@ -52,6 +52,13 @@ void Optimizer::setCoreIsolationActive(bool val) {
     }
 }
 
+void Optimizer::setMouseAccelerationActive(bool val) {
+    if (m_mouseAccelerationActive != val) {
+        m_mouseAccelerationActive = val;
+        emit mouseAccelerationActiveChanged(m_mouseAccelerationActive);
+    }
+}
+
 void Optimizer::setDriveStates(const QVariantMap &states) {
     if (m_driveStates != states) {
         m_driveStates = states;
@@ -238,6 +245,21 @@ void Optimizer::loadSystemStates() {
     emit coreIsolationActiveChanged(m_coreIsolationActive);
     emit originalCoreIsolationActiveChanged(m_originalCoreIsolationActive);
 
+    // Check Mouse Acceleration state on startup
+    bool isMouseAccelerationActive = false;
+#ifdef Q_OS_WIN
+    int mouseParams[3] = {0};
+    if (SystemParametersInfoW(SPI_GETMOUSE, 0, mouseParams, 0)) {
+        isMouseAccelerationActive = (mouseParams[2] != 0);
+    }
+#else
+    isMouseAccelerationActive = true; // Simulation default
+#endif
+    m_mouseAccelerationActive = isMouseAccelerationActive;
+    m_originalMouseAccelerationActive = m_mouseAccelerationActive;
+    emit mouseAccelerationActiveChanged(m_mouseAccelerationActive);
+    emit originalMouseAccelerationActiveChanged(m_originalMouseAccelerationActive);
+
     // Check Multi-Plane Overlay (MPO) state in registry
     int currentMpo = 0; // default 0 (MPO Enabled)
 #ifdef Q_OS_WIN
@@ -294,19 +316,22 @@ void Optimizer::startSystemOptimization() {
     bool hibernationVal = m_hibernationActive;
     bool overlayVal = m_gamingOverlayActive;
     bool coreIsolationVal = m_coreIsolationActive;
+    bool mouseAccelVal = m_mouseAccelerationActive;
     QVariantMap targets = m_driveStates;
     QVariantMap originalTargets = m_originalDriveStates;
     bool origSearch = m_originalWinSearchActive;
     bool origHibernation = m_originalHibernationActive;
     bool origOverlay = m_originalGamingOverlayActive;
     bool origCoreIsolation = m_originalCoreIsolationActive;
+    bool origMouseAccel = m_originalMouseAccelerationActive;
 
-    QThread* worker = QThread::create([this, searchVal, hibernationVal, overlayVal, coreIsolationVal, targets, originalTargets, origSearch, origHibernation, origOverlay, origCoreIsolation]() {
+    QThread* worker = QThread::create([this, searchVal, hibernationVal, overlayVal, coreIsolationVal, mouseAccelVal, targets, originalTargets, origSearch, origHibernation, origOverlay, origCoreIsolation, origMouseAccel]() {
         // Step 0: Check if anything actually changed
         bool anyChanges = (searchVal != origSearch) || 
                           (hibernationVal != origHibernation) || 
                           (overlayVal != origOverlay) ||
-                          (coreIsolationVal != origCoreIsolation);
+                          (coreIsolationVal != origCoreIsolation) ||
+                          (mouseAccelVal != origMouseAccel);
         if (!anyChanges) {
             for (const QString &driveLetter : targets.keys()) {
                 if (targets.value(driveLetter).toBool() != originalTargets.value(driveLetter).toBool()) {
@@ -567,6 +592,42 @@ void Optimizer::startSystemOptimization() {
             emit coreIsolationActiveChanged(m_coreIsolationActive);
         }
 
+        // Step 1.85: Mouse Acceleration Configuration (only if changed)
+        bool mouseAccelSuccess = true;
+        if (mouseAccelVal != origMouseAccel) {
+            emit systemStepReported(tr("Configuring mouse acceleration..."), "INFO");
+            QThread::msleep(800);
+#ifdef Q_OS_WIN
+            bool success = false;
+            int mouseParams[3] = {0};
+            if (SystemParametersInfoW(SPI_GETMOUSE, 0, mouseParams, 0)) {
+                mouseParams[2] = mouseAccelVal ? 1 : 0;
+                if (mouseAccelVal) {
+                    if (mouseParams[0] == 0) mouseParams[0] = 6;
+                    if (mouseParams[1] == 0) mouseParams[1] = 10;
+                } else {
+                    mouseParams[0] = 0;
+                    mouseParams[1] = 0;
+                }
+                if (SystemParametersInfoW(SPI_SETMOUSE, 0, mouseParams, SPIF_UPDATEINIFILE | SPIF_SENDCHANGE)) {
+                    success = true;
+                }
+            }
+            
+            if (success) {
+                QString logMsg = mouseAccelVal ? tr("Mouse acceleration is now ENABLED.") : tr("Mouse acceleration is now DISABLED.");
+                emit systemStepReported(logMsg, "SUCCESS");
+            } else {
+                mouseAccelSuccess = false;
+                emit systemStepReported(tr("Failed to update mouse acceleration state."), "ERROR");
+            }
+#else
+            emit systemStepReported(tr("[Simulation] Mouse acceleration set to: %1").arg(mouseAccelVal ? "Enabled" : "Disabled"), "SUCCESS");
+#endif
+            m_mouseAccelerationActive = mouseAccelVal;
+            emit mouseAccelerationActiveChanged(m_mouseAccelerationActive);
+        }
+
         m_systemProgress = 0.50;
         emit systemProgressChanged(m_systemProgress);
         QThread::msleep(300);
@@ -614,7 +675,7 @@ void Optimizer::startSystemOptimization() {
             QThread::msleep(100);
         }
 
-        bool overallSuccess = wSearchSuccess && hibernationSuccess && overlaySuccess && coreIsolationSuccess && overallDrivesSuccess;
+        bool overallSuccess = wSearchSuccess && hibernationSuccess && overlaySuccess && coreIsolationSuccess && mouseAccelSuccess && overallDrivesSuccess;
         if (overallSuccess) {
             emit systemStepReported(tr("System optimization completed successfully!"), "SUCCESS");
             Logger::log("System optimization completed successfully!", "INFO");
@@ -628,6 +689,7 @@ void Optimizer::startSystemOptimization() {
         m_originalHibernationActive = hibernationVal;
         m_originalGamingOverlayActive = overlayVal;
         m_originalCoreIsolationActive = coreIsolationVal;
+        m_originalMouseAccelerationActive = mouseAccelVal;
         m_originalDriveStates = targets;
         
         emit driveStatesChanged(m_driveStates);
@@ -635,6 +697,7 @@ void Optimizer::startSystemOptimization() {
         emit originalHibernationActiveChanged(m_originalHibernationActive);
         emit originalGamingOverlayActiveChanged(m_originalGamingOverlayActive);
         emit originalCoreIsolationActiveChanged(m_originalCoreIsolationActive);
+        emit originalMouseAccelerationActiveChanged(m_originalMouseAccelerationActive);
         emit originalDriveStatesChanged(m_originalDriveStates);
 
         m_isOptimizingSystem = false;
@@ -650,6 +713,15 @@ void Optimizer::showPath(const QString &funcName) {
     if (funcName == "Windows Search service" || funcName == "wsearch") {
         QProcess::startDetached("cmd.exe", QStringList() << "/c" << "start services.msc");
         Logger::log("Opening Services Manager for Windows Search...", "INFO");
+    } else if (funcName == "hibernation") {
+        QProcess::startDetached("cmd.exe", QStringList() << "/c" << "start powercfg.cpl");
+        Logger::log("Opening Power Options...", "INFO");
+    } else if (funcName == "coreisolation") {
+        QProcess::startDetached("cmd.exe", QStringList() << "/c" << "start ms-settings:privacy-security-coreisolation");
+        Logger::log("Opening Core Isolation settings...", "INFO");
+    } else if (funcName == "mouseacceleration") {
+        QProcess::startDetached("cmd.exe", QStringList() << "/c" << "control.exe main.cpl,,1");
+        Logger::log("Opening Mouse Properties...", "INFO");
     } else {
         // Assume drive letter like "C:" or "D:"
         QString letter = funcName.trimmed();
