@@ -29,6 +29,8 @@ class Optimizer : public QObject {
     Q_PROPERTY(bool xboxSpeechWindowInstalled READ xboxSpeechWindowInstalled NOTIFY xboxStatesChanged)
     Q_PROPERTY(bool gamingOverlayActive READ gamingOverlayActive WRITE setGamingOverlayActive NOTIFY gamingOverlayActiveChanged)
     Q_PROPERTY(bool originalGamingOverlayActive READ originalGamingOverlayActive NOTIFY originalGamingOverlayActiveChanged)
+    Q_PROPERTY(bool coreIsolationActive READ coreIsolationActive WRITE setCoreIsolationActive NOTIFY coreIsolationActiveChanged)
+    Q_PROPERTY(bool originalCoreIsolationActive READ originalCoreIsolationActive NOTIFY originalCoreIsolationActiveChanged)
     Q_PROPERTY(int mpoValue READ mpoValue NOTIFY mpoValueChanged)
     Q_PROPERTY(QStringList fixedDrives READ fixedDrives NOTIFY fixedDrivesChanged)
     Q_PROPERTY(QVariantMap driveStates READ driveStates WRITE setDriveStates NOTIFY driveStatesChanged)
@@ -62,6 +64,8 @@ public:
     bool xboxSpeechWindowInstalled() const { return m_xboxSpeechWindowInstalled; }
     bool gamingOverlayActive() const { return m_gamingOverlayActive; }
     bool originalGamingOverlayActive() const { return m_originalGamingOverlayActive; }
+    bool coreIsolationActive() const { return m_coreIsolationActive; }
+    bool originalCoreIsolationActive() const { return m_originalCoreIsolationActive; }
     int mpoValue() const { return m_mpoValue; }
     QStringList fixedDrives() const { return m_fixedDrives; }
     QVariantMap driveStates() const { return m_driveStates; }
@@ -73,6 +77,7 @@ public:
     void setWinSearchActive(bool val);
     void setHibernationActive(bool val);
     void setGamingOverlayActive(bool val);
+    void setCoreIsolationActive(bool val);
     void setDriveStates(const QVariantMap &states);
 
 
@@ -107,6 +112,8 @@ signals:
     void xboxStatesChanged();
     void gamingOverlayActiveChanged(bool val);
     void originalGamingOverlayActiveChanged(bool val);
+    void coreIsolationActiveChanged(bool val);
+    void originalCoreIsolationActiveChanged(bool val);
     void mpoValueChanged(int val);
     void fixedDrivesChanged(const QStringList &val);
     void driveStatesChanged(const QVariantMap &val);
@@ -143,6 +150,8 @@ private:
     bool m_xboxSpeechWindowInstalled = false;
     bool m_gamingOverlayActive = true;
     bool m_originalGamingOverlayActive = true;
+    bool m_coreIsolationActive = false;
+    bool m_originalCoreIsolationActive = false;
     int m_mpoValue = 0;
     QStringList m_fixedDrives;
     QVariantMap m_driveStates;

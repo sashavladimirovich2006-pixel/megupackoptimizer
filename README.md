@@ -15,6 +15,9 @@ The following rules must be strictly adhered to by all developers (human or AI) 
 3. **No External Referencing**:
    Do not include links to the git repository inside this README.md. Additionally, do not make any references or comparisons to other software, tools, or projects of similar origin or functionality.
 
+4. **Mandatory Ukrainian Language Translation**:
+   All user interface labels, button text, notifications, description lines, and log steps MUST always be translated to the Ukrainian language. Any time new text elements are introduced or modified in QML or C++, you must immediately run `lupdate` to update the TS file, write the appropriate translations in `translations/megu_pack_optimizer_uk.ts`, and compile it using `lrelease` before publishing your changes.
+
 ---
 
 ## Technical Architecture
@@ -88,5 +91,13 @@ The following rules must be strictly adhered to by all developers (human or AI) 
   - **Sliding Drawer Architecture**: Inside `SettingsView.qml`, created a backdrop overlays system. Added a sliding `themeSidebar` rectangle with a nested `Row` layouts structure. Clicking on a theme in settings opens the drawer containing a `Repeater` of the primary themes.
   - **Secret Sub-Drawer Navigation**: Clicking the arrow (`→`) to the right of the Pink theme item slides the row's x-coordinate to reveal Page 2 containing the special "Black pink" theme. Clicking "Back" slides back to the main list.
   - **Amber Orange Accents**: Updated all theme definitions in `Theme.qml` to feature Zune Amber Orange (`#FFBF00` / `#D97706` / `#FF8F00`) as their accent color, keeping readable high-contrast orange variations on light backdrops.
+
+### Phase 1: Custom Icon, Theme Alignment, Core Isolation & Ukrainian Translation Overhaul
+- **Action**: Embedded a custom multi-resolution application launcher icon, aligned Light/Dark theme accents to Zune amber-orange, corrected the Pink theme card and page colors, implemented a Core Isolation (HVCI) toggle under Latency tweaks, translated 58 untranslated strings to Ukrainian, and established Rule 4 in the README.md requiring all interface text to be translated.
+- **Detailed Rationale**:
+  - **Launcher Icon**: Compiled a high-resolution logo into a Windows-native `.ico` file containing resolutions from 16x16 to 256x256. Bound the icon using `src/resources.rc` and registered it in `CMakeLists.txt` executable sources for native compilation.
+  - **Theme Alignment**: Aligned the default "Темная" and "Белоснежная" theme accents to the amber-orange color `#FF9F0A` of the "Blackout" theme. Fixed the inverse text contrast (`textInverse`) in light mode to use a dark charcoal color (`#05070B`) on top of the orange background. Corrected the Pink theme colors (`background` to `#FCE5E8`, `sidebarBg` to `#F2F4D0D5`, and `panelBg` to `#CCF6E9EB`) to eliminate light grey/blue remnants.
+  - **Core Isolation Toggle**: Exposed `coreIsolationActive` C++ Q_PROPERTY binding to HVCI registry path `System\\CurrentControlSet\\Control\\DeviceGuard\\Scenarios\\HypervisorEnforcedCodeIntegrity\\Enabled`. Disabling memory integrity is a common latancy optimization, which is now toggled directly from the UI and executed in a background thread.
+  - **Ukrainian Localization**: Ran `lupdate` to locate all newly introduced string entries, injected matching translations using a Python mapping script, compiled the resulting resources via `lrelease`, and added Rule 4 to the codebase policy ensuring mandatory translation of all strings to Ukrainian.
 
 

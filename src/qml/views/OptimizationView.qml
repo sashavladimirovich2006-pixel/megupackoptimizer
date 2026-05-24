@@ -53,6 +53,7 @@ Item {
         if (optimizerBackend.winSearchActive !== optimizerBackend.originalWinSearchActive) return true;
         if (optimizerBackend.hibernationActive !== optimizerBackend.originalHibernationActive) return true;
         if (optimizerBackend.gamingOverlayActive !== optimizerBackend.originalGamingOverlayActive) return true;
+        if (optimizerBackend.coreIsolationActive !== optimizerBackend.originalCoreIsolationActive) return true;
         if (!optimizerBackend.driveStates || !optimizerBackend.originalDriveStates) return false;
         var keys = Object.keys(optimizerBackend.driveStates);
         for (var i = 0; i < keys.length; i++) {
@@ -506,6 +507,66 @@ Item {
                                     root.activeDrawer = "mpo";
                                 }
                             }
+                        }
+                    }
+                }
+
+                // Core Isolation Panel
+                AcrylicPanel {
+                    width: parent.width
+                    height: 72
+
+                    Row {
+                        anchors.left: parent.left
+                        anchors.verticalCenter: parent.verticalCenter
+                        spacing: 12
+
+                        Item {
+                            width: 28
+                            height: 28
+                            anchors.verticalCenter: parent.verticalCenter
+                            Image {
+                                id: coresIconImg
+                                source: "qrc:/MeguPackOptimizer/src/resources/cores.svg"
+                                anchors.fill: parent
+                                sourceSize.width: 28
+                                sourceSize.height: 28
+                                visible: false
+                            }
+                            ColorOverlay {
+                                anchors.fill: coresIconImg
+                                source: coresIconImg
+                                color: Theme.accent
+                            }
+                        }
+
+                        Column {
+                            anchors.verticalCenter: parent.verticalCenter
+                            spacing: 2
+
+                            Text {
+                                text: qsTr("Core Isolation")
+                                color: Theme.textPrimary
+                                font.family: Theme.fontFamily
+                                font.pixelSize: 13
+                                font.bold: true
+                            }
+
+                            Text {
+                                text: qsTr("Disabling kernel memory integrity reduces CPU overhead and input latency.")
+                                color: Theme.textMuted
+                                font.family: Theme.fontFamily
+                                font.pixelSize: 10
+                            }
+                        }
+                    }
+
+                    MeguSwitch {
+                        anchors.right: parent.right
+                        anchors.verticalCenter: parent.verticalCenter
+                        checked: optimizerBackend.coreIsolationActive
+                        onToggled: {
+                            optimizerBackend.coreIsolationActive = isChecked;
                         }
                     }
                 }

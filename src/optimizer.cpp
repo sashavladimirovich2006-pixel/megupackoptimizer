@@ -45,6 +45,13 @@ void Optimizer::setGamingOverlayActive(bool val) {
     }
 }
 
+void Optimizer::setCoreIsolationActive(bool val) {
+    if (m_coreIsolationActive != val) {
+        m_coreIsolationActive = val;
+        emit coreIsolationActiveChanged(m_coreIsolationActive);
+    }
+}
+
 void Optimizer::setDriveStates(const QVariantMap &states) {
     if (m_driveStates != states) {
         m_driveStates = states;
@@ -211,6 +218,26 @@ void Optimizer::loadSystemStates() {
     emit gamingOverlayActiveChanged(m_gamingOverlayActive);
     emit originalGamingOverlayActiveChanged(m_originalGamingOverlayActive);
 
+    // Check Core Isolation (Memory Integrity) state on startup
+    bool isCoreIsolationActive = false;
+#ifdef Q_OS_WIN
+    HKEY hKeyCI;
+    if (RegOpenKeyExW(HKEY_LOCAL_MACHINE, L"SYSTEM\\CurrentControlSet\\Control\\DeviceGuard\\Scenarios\\HypervisorEnforcedCodeIntegrity", 0, KEY_READ, &hKeyCI) == ERROR_SUCCESS) {
+        DWORD value = 0;
+        DWORD size = sizeof(value);
+        if (RegQueryValueExW(hKeyCI, L"Enabled", NULL, NULL, (LPBYTE)&value, &size) == ERROR_SUCCESS) {
+            isCoreIsolationActive = (value == 1);
+        }
+        RegCloseKey(hKeyCI);
+    }
+#else
+    isCoreIsolationActive = true; // Simulation default
+#endif
+    m_coreIsolationActive = isCoreIsolationActive;
+    m_originalCoreIsolationActive = m_coreIsolationActive;
+    emit coreIsolationActiveChanged(m_coreIsolationActive);
+    emit originalCoreIsolationActiveChanged(m_originalCoreIsolationActive);
+
     // Check Multi-Plane Overlay (MPO) state in registry
     int currentMpo = 0; // default 0 (MPO Enabled)
 #ifdef Q_OS_WIN
@@ -266,17 +293,20 @@ void Optimizer::startSystemOptimization() {
     bool searchVal = m_winSearchActive;
     bool hibernationVal = m_hibernationActive;
     bool overlayVal = m_gamingOverlayActive;
+    bool coreIsolationVal = m_coreIsolationActive;
     QVariantMap targets = m_driveStates;
     QVariantMap originalTargets = m_originalDriveStates;
     bool origSearch = m_originalWinSearchActive;
     bool origHibernation = m_originalHibernationActive;
     bool origOverlay = m_originalGamingOverlayActive;
+    bool origCoreIsolation = m_originalCoreIsolationActive;
 
-    QThread* worker = QThread::create([this, searchVal, hibernationVal, overlayVal, targets, originalTargets, origSearch, origHibernation, origOverlay]() {
+    QThread* worker = QThread::create([this, searchVal, hibernationVal, overlayVal, coreIsolationVal, targets, originalTargets, origSearch, origHibernation, origOverlay, origCoreIsolation]() {
         // Step 0: Check if anything actually changed
         bool anyChanges = (searchVal != origSearch) || 
                           (hibernationVal != origHibernation) || 
-                          (overlayVal != origOverlay);
+                          (overlayVal != origOverlay) ||
+                          (coreIsolationVal != origCoreIsolation);
         if (!anyChanges) {
             for (const QString &driveLetter : targets.keys()) {
                 if (targets.value(driveLetter).toBool() != originalTargets.value(driveLetter).toBool()) {
@@ -507,6 +537,40 @@ void Optimizer::startSystemOptimization() {
         emit systemProgressChanged(m_systemProgress);
         QThread::msleep(300);
 
+        // Step 1.8: Core Isolation / Memory Integrity Configuration (only if changed)
+        bool coreIsolationSuccess = true;
+        if (coreIsolationVal != origCoreIsolation) {
+            emit systemStepReported(tr("Configuring Core Isolation (Memory Integrity)..."), "INFO");
+            QThread::msleep(800);
+#ifdef Q_OS_WIN
+            bool success = false;
+            HKEY hKeyCI;
+            if (RegCreateKeyExW(HKEY_LOCAL_MACHINE, L"SYSTEM\\CurrentControlSet\\Control\\DeviceGuard\\Scenarios\\HypervisorEnforcedCodeIntegrity", 0, NULL, REG_OPTION_NON_VOLATILE, KEY_WRITE, NULL, &hKeyCI, NULL) == ERROR_SUCCESS) {
+                DWORD val = coreIsolationVal ? 1 : 0;
+                if (RegSetValueExW(hKeyCI, L"Enabled", 0, REG_DWORD, (const BYTE*)&val, sizeof(val)) == ERROR_SUCCESS) {
+                    success = true;
+                }
+                RegCloseKey(hKeyCI);
+            }
+            
+            if (success) {
+                QString logMsg = coreIsolationVal ? tr("Core Isolation is now ENABLED.") : tr("Core Isolation is now DISABLED.");
+                emit systemStepReported(logMsg, "SUCCESS");
+            } else {
+                coreIsolationSuccess = false;
+                emit systemStepReported(tr("Failed to update Core Isolation state. Error: %1").arg(GetLastError()), "ERROR");
+            }
+#else
+            emit systemStepReported(tr("[Simulation] Core Isolation set to: %1").arg(coreIsolationVal ? "Enabled" : "Disabled"), "SUCCESS");
+#endif
+            m_coreIsolationActive = coreIsolationVal;
+            emit coreIsolationActiveChanged(m_coreIsolationActive);
+        }
+
+        m_systemProgress = 0.50;
+        emit systemProgressChanged(m_systemProgress);
+        QThread::msleep(300);
+
         // Steps 2+: Iterate drives in target list (only if changed)
         int driveIndex = 0;
         int totalDrives = targets.keys().size();
@@ -550,7 +614,7 @@ void Optimizer::startSystemOptimization() {
             QThread::msleep(100);
         }
 
-        bool overallSuccess = wSearchSuccess && hibernationSuccess && overlaySuccess && overallDrivesSuccess;
+        bool overallSuccess = wSearchSuccess && hibernationSuccess && overlaySuccess && coreIsolationSuccess && overallDrivesSuccess;
         if (overallSuccess) {
             emit systemStepReported(tr("System optimization completed successfully!"), "SUCCESS");
             Logger::log("System optimization completed successfully!", "INFO");
@@ -563,12 +627,14 @@ void Optimizer::startSystemOptimization() {
         m_originalWinSearchActive = searchVal;
         m_originalHibernationActive = hibernationVal;
         m_originalGamingOverlayActive = overlayVal;
+        m_originalCoreIsolationActive = coreIsolationVal;
         m_originalDriveStates = targets;
         
         emit driveStatesChanged(m_driveStates);
         emit originalWinSearchActiveChanged(m_originalWinSearchActive);
         emit originalHibernationActiveChanged(m_originalHibernationActive);
         emit originalGamingOverlayActiveChanged(m_originalGamingOverlayActive);
+        emit originalCoreIsolationActiveChanged(m_originalCoreIsolationActive);
         emit originalDriveStatesChanged(m_originalDriveStates);
 
         m_isOptimizingSystem = false;
