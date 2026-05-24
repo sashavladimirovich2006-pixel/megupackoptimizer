@@ -65,585 +65,590 @@
 <context>
     <name>OptimizationView</name>
     <message>
-        <location filename="../src/qml/views/OptimizationView.qml" line="469"/>
+        <location filename="../src/qml/views/OptimizationView.qml" line="481"/>
         <source>SYSTEM OPTIMIZATION</source>
         <translation>СИСТЕМНА ОПТИМІЗАЦІЯ</translation>
     </message>
     <message>
-        <location filename="../src/qml/views/OptimizationView.qml" line="135"/>
-        <location filename="../src/qml/views/OptimizationView.qml" line="273"/>
-        <location filename="../src/qml/views/OptimizationView.qml" line="381"/>
-        <location filename="../src/qml/views/OptimizationView.qml" line="527"/>
+        <location filename="../src/qml/views/OptimizationView.qml" line="147"/>
+        <location filename="../src/qml/views/OptimizationView.qml" line="285"/>
+        <location filename="../src/qml/views/OptimizationView.qml" line="393"/>
+        <location filename="../src/qml/views/OptimizationView.qml" line="539"/>
         <source>File Indexing</source>
         <translation>Індексація файлів</translation>
     </message>
     <message>
-        <location filename="../src/qml/views/OptimizationView.qml" line="555"/>
+        <location filename="../src/qml/views/OptimizationView.qml" line="567"/>
         <source>Controls file search indexing services and drive index properties.</source>
         <translation>Керує службами індексації пошуку файлів та властивостями індексації дисків.</translation>
     </message>
     <message>
-        <location filename="../src/qml/views/OptimizationView.qml" line="2182"/>
+        <location filename="../src/qml/views/OptimizationView.qml" line="2204"/>
         <source>Optimize</source>
         <translation>Оптимізувати</translation>
     </message>
     <message>
-        <location filename="../src/qml/views/OptimizationView.qml" line="276"/>
-        <location filename="../src/qml/views/OptimizationView.qml" line="2347"/>
+        <location filename="../src/qml/views/OptimizationView.qml" line="288"/>
+        <location filename="../src/qml/views/OptimizationView.qml" line="2369"/>
         <source>Windows Search service</source>
         <translation>Служба Windows Search</translation>
     </message>
     <message>
-        <location filename="../src/qml/views/OptimizationView.qml" line="995"/>
-        <location filename="../src/qml/views/OptimizationView.qml" line="1100"/>
-        <location filename="../src/qml/views/OptimizationView.qml" line="1205"/>
-        <location filename="../src/qml/views/OptimizationView.qml" line="1310"/>
-        <location filename="../src/qml/views/OptimizationView.qml" line="1415"/>
-        <location filename="../src/qml/views/OptimizationView.qml" line="1520"/>
-        <location filename="../src/qml/views/OptimizationView.qml" line="1670"/>
-        <location filename="../src/qml/views/OptimizationView.qml" line="1834"/>
-        <location filename="../src/qml/views/OptimizationView.qml" line="1949"/>
-        <location filename="../src/qml/views/OptimizationView.qml" line="2353"/>
-        <location filename="../src/qml/views/OptimizationView.qml" line="2385"/>
-        <location filename="../src/qml/views/OptimizationView.qml" line="2419"/>
+        <location filename="../src/qml/views/OptimizationView.qml" line="1007"/>
+        <location filename="../src/qml/views/OptimizationView.qml" line="1112"/>
+        <location filename="../src/qml/views/OptimizationView.qml" line="1217"/>
+        <location filename="../src/qml/views/OptimizationView.qml" line="1332"/>
+        <location filename="../src/qml/views/OptimizationView.qml" line="1437"/>
+        <location filename="../src/qml/views/OptimizationView.qml" line="1542"/>
+        <location filename="../src/qml/views/OptimizationView.qml" line="1692"/>
+        <location filename="../src/qml/views/OptimizationView.qml" line="1856"/>
+        <location filename="../src/qml/views/OptimizationView.qml" line="1971"/>
+        <location filename="../src/qml/views/OptimizationView.qml" line="2375"/>
+        <location filename="../src/qml/views/OptimizationView.qml" line="2407"/>
+        <location filename="../src/qml/views/OptimizationView.qml" line="2441"/>
         <source>Show Path</source>
         <translation>Показати шлях</translation>
     </message>
     <message>
-        <location filename="../src/qml/views/OptimizationView.qml" line="284"/>
-        <location filename="../src/qml/views/OptimizationView.qml" line="2375"/>
+        <location filename="../src/qml/views/OptimizationView.qml" line="296"/>
+        <location filename="../src/qml/views/OptimizationView.qml" line="2397"/>
         <source>Drive C: indexing</source>
         <translation>Індексація диска С</translation>
     </message>
     <message>
-        <location filename="../src/qml/views/OptimizationView.qml" line="3158"/>
+        <location filename="../src/qml/views/OptimizationView.qml" line="3180"/>
         <source>Detected print queues in Device Manager:</source>
         <translation>Виявлені черги друку в Диспетчері пристроїв:</translation>
     </message>
     <message>
-        <location filename="../src/qml/views/OptimizationView.qml" line="3215"/>
+        <location filename="../src/qml/views/OptimizationView.qml" line="3237"/>
         <source>No print queues detected.</source>
         <translation>Черг друку не виявлено.</translation>
     </message>
     <message>
-        <location filename="../src/qml/views/OptimizationView.qml" line="3232"/>
+        <location filename="../src/qml/views/OptimizationView.qml" line="3254"/>
         <source>Configure custom Windows notification and sound alert rules.</source>
         <translation>Налаштування кастомних правил сповіщень та звукових сигналів Windows.</translation>
     </message>
     <message>
-        <location filename="../src/qml/views/OptimizationView.qml" line="327"/>
-        <location filename="../src/qml/views/OptimizationView.qml" line="3244"/>
+        <location filename="../src/qml/views/OptimizationView.qml" line="339"/>
+        <location filename="../src/qml/views/OptimizationView.qml" line="3266"/>
         <source>Global Toast Notifications</source>
         <translation>Глобальні спливаючі сповіщення</translation>
     </message>
     <message>
-        <location filename="../src/qml/views/OptimizationView.qml" line="335"/>
-        <location filename="../src/qml/views/OptimizationView.qml" line="3250"/>
+        <location filename="../src/qml/views/OptimizationView.qml" line="347"/>
+        <location filename="../src/qml/views/OptimizationView.qml" line="3272"/>
         <source>App Notifications</source>
         <translation>Сповіщення від додатків</translation>
     </message>
     <message>
-        <location filename="../src/qml/views/OptimizationView.qml" line="343"/>
-        <location filename="../src/qml/views/OptimizationView.qml" line="3256"/>
+        <location filename="../src/qml/views/OptimizationView.qml" line="355"/>
+        <location filename="../src/qml/views/OptimizationView.qml" line="3278"/>
         <source>Notification Sounds</source>
         <translation>Звуки сповіщень</translation>
     </message>
     <message>
-        <location filename="../src/qml/views/OptimizationView.qml" line="351"/>
-        <location filename="../src/qml/views/OptimizationView.qml" line="3262"/>
+        <location filename="../src/qml/views/OptimizationView.qml" line="363"/>
+        <location filename="../src/qml/views/OptimizationView.qml" line="3284"/>
         <source>Lock Screen Notifications</source>
         <translation>Сповіщення на екрані блокування</translation>
     </message>
     <message>
-        <location filename="../src/qml/views/OptimizationView.qml" line="3280"/>
+        <location filename="../src/qml/views/OptimizationView.qml" line="3302"/>
         <source>Ultimate Performance Scheme</source>
         <translation>Схема максимальної продуктивності</translation>
     </message>
     <message>
-        <location filename="../src/qml/views/OptimizationView.qml" line="3287"/>
+        <location filename="../src/qml/views/OptimizationView.qml" line="3309"/>
         <source>Unlocks and enables the hidden Windows Ultimate Performance power scheme for zero latencies.</source>
         <translation>Розблоковує та вмикає приховану схему живлення Windows &quot;Максимальна продуктивність&quot; для нульових затримок.</translation>
     </message>
     <message>
-        <location filename="../src/qml/views/OptimizationView.qml" line="3297"/>
+        <location filename="../src/qml/views/OptimizationView.qml" line="3319"/>
         <source>Activate Ultimate Performance</source>
         <translation>Активувати максимальну продуктивність</translation>
     </message>
     <message>
-        <location filename="../src/qml/views/OptimizationView.qml" line="3315"/>
+        <location filename="../src/qml/views/OptimizationView.qml" line="3337"/>
         <source>Available Power Schemes:</source>
         <translation>Доступні схеми живлення:</translation>
     </message>
     <message>
-        <location filename="../src/qml/views/OptimizationView.qml" line="3805"/>
+        <location filename="../src/qml/views/OptimizationView.qml" line="3827"/>
         <source>%1 Details</source>
         <translation>Деталі %1</translation>
     </message>
     <message>
-        <location filename="../src/qml/views/OptimizationView.qml" line="4018"/>
+        <location filename="../src/qml/views/OptimizationView.qml" line="4040"/>
         <source>SYSTEM OPTIMIZATION IN PROGRESS</source>
         <translation>ВИКОНУЄТЬСЯ ОПТИМІЗАЦІЯ СИСТЕМИ</translation>
     </message>
     <message>
-        <location filename="../src/qml/views/OptimizationView.qml" line="4018"/>
+        <location filename="../src/qml/views/OptimizationView.qml" line="4040"/>
         <source>OPTIMIZATION COMPLETE</source>
         <translation>ОПТИМІЗАЦІЮ ЗАВЕРШЕНО</translation>
     </message>
     <message>
-        <location filename="../src/qml/views/OptimizationView.qml" line="4029"/>
+        <location filename="../src/qml/views/OptimizationView.qml" line="4051"/>
         <source>Applying disk indexing settings...</source>
         <translation>Застосування налаштувань індексації дисків...</translation>
     </message>
     <message>
-        <location filename="../src/qml/views/OptimizationView.qml" line="4029"/>
+        <location filename="../src/qml/views/OptimizationView.qml" line="4051"/>
         <source>Finished system modifications.</source>
         <translation>Модифікацію системи завершено.</translation>
     </message>
     <message>
-        <location filename="../src/qml/views/OptimizationView.qml" line="4069"/>
+        <location filename="../src/qml/views/OptimizationView.qml" line="4091"/>
         <source>Close</source>
         <translation>Закрити</translation>
     </message>
     <message>
-        <location filename="../src/qml/views/OptimizationView.qml" line="2551"/>
-        <location filename="../src/qml/views/OptimizationView.qml" line="2597"/>
-        <location filename="../src/qml/views/OptimizationView.qml" line="2643"/>
-        <location filename="../src/qml/views/OptimizationView.qml" line="2689"/>
-        <location filename="../src/qml/views/OptimizationView.qml" line="2735"/>
+        <location filename="../src/qml/views/OptimizationView.qml" line="2573"/>
+        <location filename="../src/qml/views/OptimizationView.qml" line="2619"/>
+        <location filename="../src/qml/views/OptimizationView.qml" line="2665"/>
+        <location filename="../src/qml/views/OptimizationView.qml" line="2711"/>
+        <location filename="../src/qml/views/OptimizationView.qml" line="2757"/>
         <source>Remove</source>
         <translation>Видалити</translation>
     </message>
     <message>
-        <location filename="../src/qml/views/OptimizationView.qml" line="729"/>
+        <location filename="../src/qml/views/OptimizationView.qml" line="741"/>
         <source>Removed</source>
         <translation>Видалено</translation>
     </message>
     <message>
-        <location filename="../src/qml/views/OptimizationView.qml" line="296"/>
-        <location filename="../src/qml/views/OptimizationView.qml" line="2409"/>
+        <location filename="../src/qml/views/OptimizationView.qml" line="308"/>
+        <location filename="../src/qml/views/OptimizationView.qml" line="2431"/>
         <source>Drive %1 indexing</source>
         <translation>Індексація диска %1</translation>
     </message>
     <message>
-        <location filename="../src/qml/views/OptimizationView.qml" line="2450"/>
+        <location filename="../src/qml/views/OptimizationView.qml" line="2472"/>
         <source>Xbox Suite (Bulk Actions)</source>
         <translation>Пакет Xbox (Групові дії)</translation>
     </message>
     <message>
-        <location filename="../src/qml/views/OptimizationView.qml" line="2457"/>
+        <location filename="../src/qml/views/OptimizationView.qml" line="2479"/>
         <source>Purge or restore the entire Xbox app and telemetry suite for maximum performance.</source>
         <translation>Видалення або відновлення всього пакету Xbox та телеметрії для максимальної продуктивності.</translation>
     </message>
     <message>
-        <location filename="../src/qml/views/OptimizationView.qml" line="2470"/>
+        <location filename="../src/qml/views/OptimizationView.qml" line="2492"/>
         <source>Remove All</source>
         <translation>Видалити все</translation>
     </message>
     <message>
-        <location filename="../src/qml/views/OptimizationView.qml" line="2483"/>
+        <location filename="../src/qml/views/OptimizationView.qml" line="2505"/>
         <source>Restore All</source>
         <translation>Відновити все</translation>
     </message>
     <message>
-        <location filename="../src/qml/views/OptimizationView.qml" line="2505"/>
+        <location filename="../src/qml/views/OptimizationView.qml" line="2527"/>
         <source>Individual Packages</source>
         <translation>Окремі пакети</translation>
     </message>
     <message>
-        <location filename="../src/qml/views/OptimizationView.qml" line="2525"/>
+        <location filename="../src/qml/views/OptimizationView.qml" line="2547"/>
         <source>Xbox App</source>
         <translation>Додаток Xbox</translation>
     </message>
     <message>
-        <location filename="../src/qml/views/OptimizationView.qml" line="2532"/>
+        <location filename="../src/qml/views/OptimizationView.qml" line="2554"/>
         <source>Get-AppxPackage XboxApp | ...</source>
         <translation>Get-AppxPackage XboxApp | ...</translation>
     </message>
     <message>
-        <location filename="../src/qml/views/OptimizationView.qml" line="2540"/>
-        <location filename="../src/qml/views/OptimizationView.qml" line="2586"/>
-        <location filename="../src/qml/views/OptimizationView.qml" line="2632"/>
-        <location filename="../src/qml/views/OptimizationView.qml" line="2678"/>
-        <location filename="../src/qml/views/OptimizationView.qml" line="2724"/>
+        <location filename="../src/qml/views/OptimizationView.qml" line="2562"/>
+        <location filename="../src/qml/views/OptimizationView.qml" line="2608"/>
+        <location filename="../src/qml/views/OptimizationView.qml" line="2654"/>
+        <location filename="../src/qml/views/OptimizationView.qml" line="2700"/>
+        <location filename="../src/qml/views/OptimizationView.qml" line="2746"/>
         <source>Restore</source>
         <translation>Відновити</translation>
     </message>
     <message>
-        <location filename="../src/qml/views/OptimizationView.qml" line="309"/>
-        <location filename="../src/qml/views/OptimizationView.qml" line="2758"/>
+        <location filename="../src/qml/views/OptimizationView.qml" line="321"/>
+        <location filename="../src/qml/views/OptimizationView.qml" line="2780"/>
         <source>Disable Game Bar Popup</source>
         <translation>Вимкнути помилку ms-gamingoverlay</translation>
     </message>
     <message>
-        <location filename="../src/qml/views/OptimizationView.qml" line="2765"/>
+        <location filename="../src/qml/views/OptimizationView.qml" line="2787"/>
         <source>Neutralize ms-gamingoverlay triggers to stop &apos;You&apos;ll need a new app to open this link&apos; errors when launching games.</source>
         <translation>Нейтралізує тригери ms-gamingoverlay, щоб зупинити помилки &apos;Вам знадобиться нова програма для відкриття цього посилання&apos; під час запуску ігор.</translation>
     </message>
     <message>
-        <location filename="../src/qml/views/OptimizationView.qml" line="820"/>
+        <location filename="../src/qml/views/OptimizationView.qml" line="832"/>
         <source>Multi-Plane Overlay (MPO)</source>
         <translation>Multi-Plane Overlay (MPO)</translation>
     </message>
     <message>
-        <location filename="../src/qml/views/OptimizationView.qml" line="828"/>
+        <location filename="../src/qml/views/OptimizationView.qml" line="840"/>
         <source>Configure DWM multi-plane overlay modes to optimize latency and eliminate game stuttering.</source>
         <translation>Налаштуйте режими оверлею DWM для оптимізації затримки та усунення фризів в іграх.</translation>
     </message>
     <message>
-        <location filename="../src/qml/views/OptimizationView.qml" line="2786"/>
+        <location filename="../src/qml/views/OptimizationView.qml" line="2808"/>
         <source>Multi-Plane Overlay Value</source>
         <translation>Значення Multi-Plane Overlay</translation>
     </message>
     <message>
-        <location filename="../src/qml/views/OptimizationView.qml" line="3135"/>
+        <location filename="../src/qml/views/OptimizationView.qml" line="3157"/>
         <source>Apply</source>
         <translation>Застосувати</translation>
     </message>
     <message>
-        <location filename="../src/qml/views/OptimizationView.qml" line="2264"/>
+        <location filename="../src/qml/views/OptimizationView.qml" line="2286"/>
         <source>INDEXING OPTIONS</source>
         <translation>НАЛАШТУВАННЯ ІНДЕКСАЦІЇ</translation>
     </message>
     <message>
-        <location filename="../src/qml/views/OptimizationView.qml" line="483"/>
+        <location filename="../src/qml/views/OptimizationView.qml" line="495"/>
         <source>DRIVES &amp; INDEXING</source>
         <translation>ДИСКИ ТА ІНДЕКСАЦІЯ</translation>
     </message>
     <message>
-        <location filename="../src/qml/views/OptimizationView.qml" line="544"/>
-        <location filename="../src/qml/views/OptimizationView.qml" line="694"/>
-        <location filename="../src/qml/views/OptimizationView.qml" line="970"/>
-        <location filename="../src/qml/views/OptimizationView.qml" line="1075"/>
-        <location filename="../src/qml/views/OptimizationView.qml" line="1180"/>
-        <location filename="../src/qml/views/OptimizationView.qml" line="1285"/>
-        <location filename="../src/qml/views/OptimizationView.qml" line="1390"/>
-        <location filename="../src/qml/views/OptimizationView.qml" line="1495"/>
-        <location filename="../src/qml/views/OptimizationView.qml" line="1645"/>
-        <location filename="../src/qml/views/OptimizationView.qml" line="1809"/>
-        <location filename="../src/qml/views/OptimizationView.qml" line="1914"/>
-        <location filename="../src/qml/views/OptimizationView.qml" line="2029"/>
+        <location filename="../src/qml/views/OptimizationView.qml" line="556"/>
+        <location filename="../src/qml/views/OptimizationView.qml" line="706"/>
+        <location filename="../src/qml/views/OptimizationView.qml" line="982"/>
+        <location filename="../src/qml/views/OptimizationView.qml" line="1087"/>
+        <location filename="../src/qml/views/OptimizationView.qml" line="1192"/>
+        <location filename="../src/qml/views/OptimizationView.qml" line="1298"/>
+        <location filename="../src/qml/views/OptimizationView.qml" line="1412"/>
+        <location filename="../src/qml/views/OptimizationView.qml" line="1517"/>
+        <location filename="../src/qml/views/OptimizationView.qml" line="1667"/>
+        <location filename="../src/qml/views/OptimizationView.qml" line="1831"/>
+        <location filename="../src/qml/views/OptimizationView.qml" line="1936"/>
+        <location filename="../src/qml/views/OptimizationView.qml" line="2051"/>
         <source>Selected for application</source>
         <translation>Обрано для застосування</translation>
     </message>
     <message>
-        <location filename="../src/qml/views/OptimizationView.qml" line="632"/>
+        <location filename="../src/qml/views/OptimizationView.qml" line="644"/>
         <source>LATENCY &amp; MOUSE TWEAKS</source>
         <translation>ЗАТРИМКА ТА МИША</translation>
     </message>
     <message>
-        <location filename="../src/qml/views/OptimizationView.qml" line="144"/>
-        <location filename="../src/qml/views/OptimizationView.qml" line="306"/>
-        <location filename="../src/qml/views/OptimizationView.qml" line="382"/>
-        <location filename="../src/qml/views/OptimizationView.qml" line="677"/>
+        <location filename="../src/qml/views/OptimizationView.qml" line="156"/>
+        <location filename="../src/qml/views/OptimizationView.qml" line="318"/>
+        <location filename="../src/qml/views/OptimizationView.qml" line="394"/>
+        <location filename="../src/qml/views/OptimizationView.qml" line="689"/>
         <source>Xbox App &amp; Game Bar</source>
         <translation>Додаток Xbox та Game Bar</translation>
     </message>
     <message>
-        <location filename="../src/qml/views/OptimizationView.qml" line="705"/>
+        <location filename="../src/qml/views/OptimizationView.qml" line="717"/>
         <source>Completely remove all Xbox overlays, TCUI, and game bar apps to optimize mouse input latency.</source>
         <translation>Повне видалення оверлеїв Xbox, TCUI та ігрової панелі для оптимізації затримки введення миші.</translation>
     </message>
     <message>
-        <location filename="../src/qml/views/OptimizationView.qml" line="729"/>
+        <location filename="../src/qml/views/OptimizationView.qml" line="741"/>
         <source>Installed</source>
         <translation>Встановлено</translation>
     </message>
     <message>
-        <location filename="../src/qml/views/OptimizationView.qml" line="857"/>
+        <location filename="../src/qml/views/OptimizationView.qml" line="869"/>
         <source>Disabled (5)</source>
         <translation>Вимкнено (5)</translation>
     </message>
     <message>
-        <location filename="../src/qml/views/OptimizationView.qml" line="858"/>
+        <location filename="../src/qml/views/OptimizationView.qml" line="870"/>
         <source>Default (0)</source>
         <translation>За замовчуванням (0)</translation>
     </message>
     <message>
-        <location filename="../src/qml/views/OptimizationView.qml" line="859"/>
+        <location filename="../src/qml/views/OptimizationView.qml" line="871"/>
         <source>Mode %1</source>
         <translation>Режим %1</translation>
     </message>
     <message>
-        <location filename="../src/qml/views/OptimizationView.qml" line="184"/>
-        <location filename="../src/qml/views/OptimizationView.qml" line="315"/>
-        <location filename="../src/qml/views/OptimizationView.qml" line="388"/>
-        <location filename="../src/qml/views/OptimizationView.qml" line="1478"/>
+        <location filename="../src/qml/views/OptimizationView.qml" line="196"/>
+        <location filename="../src/qml/views/OptimizationView.qml" line="327"/>
+        <location filename="../src/qml/views/OptimizationView.qml" line="400"/>
+        <location filename="../src/qml/views/OptimizationView.qml" line="1500"/>
         <source>Print Spooler (Printer)</source>
         <translation>Служба друку (Принтер)</translation>
     </message>
     <message>
-        <location filename="../src/qml/views/OptimizationView.qml" line="1506"/>
+        <location filename="../src/qml/views/OptimizationView.qml" line="1528"/>
         <source>Disabling the print spooler frees memory and reduces background latency for gaming.</source>
         <translation>Вимкнення служби друку звільняє пам&apos;ять та зменшує фонову затримку для ігор.</translation>
     </message>
     <message>
-        <location filename="../src/qml/views/OptimizationView.qml" line="192"/>
-        <location filename="../src/qml/views/OptimizationView.qml" line="324"/>
-        <location filename="../src/qml/views/OptimizationView.qml" line="389"/>
-        <location filename="../src/qml/views/OptimizationView.qml" line="1628"/>
+        <location filename="../src/qml/views/OptimizationView.qml" line="204"/>
+        <location filename="../src/qml/views/OptimizationView.qml" line="336"/>
+        <location filename="../src/qml/views/OptimizationView.qml" line="401"/>
+        <location filename="../src/qml/views/OptimizationView.qml" line="1650"/>
         <source>Windows Notifications</source>
         <translation>Сповіщення Windows</translation>
     </message>
     <message>
-        <location filename="../src/qml/views/OptimizationView.qml" line="1656"/>
+        <location filename="../src/qml/views/OptimizationView.qml" line="1678"/>
         <source>Disabling background notifications frees CPU interrupts and stabilizes FPS.</source>
         <translation>Вимкнення фонових сповіщень звільняє переривання процесора та стабілізує FPS.</translation>
     </message>
     <message>
-        <location filename="../src/qml/views/OptimizationView.qml" line="1748"/>
+        <location filename="../src/qml/views/OptimizationView.qml" line="1770"/>
         <source>POWER &amp; STORAGE</source>
         <translation>ЖИВЛЕННЯ ТА НАКОПИЧУВАЧІ</translation>
     </message>
     <message>
-        <location filename="../src/qml/views/OptimizationView.qml" line="204"/>
-        <location filename="../src/qml/views/OptimizationView.qml" line="390"/>
-        <location filename="../src/qml/views/OptimizationView.qml" line="1792"/>
+        <location filename="../src/qml/views/OptimizationView.qml" line="216"/>
+        <location filename="../src/qml/views/OptimizationView.qml" line="402"/>
+        <location filename="../src/qml/views/OptimizationView.qml" line="1814"/>
         <source>System Hibernation</source>
         <translation>Гібернація системи</translation>
     </message>
     <message>
-        <location filename="../src/qml/views/OptimizationView.qml" line="1820"/>
+        <location filename="../src/qml/views/OptimizationView.qml" line="1842"/>
         <source>Enable or disable Windows hibernation mode to free up disk space.</source>
         <translation>Увімкнення або вимкнення режиму гібернації Windows для звільнення місця на диску.</translation>
     </message>
     <message>
-        <location filename="../src/qml/views/OptimizationView.qml" line="212"/>
-        <location filename="../src/qml/views/OptimizationView.qml" line="357"/>
-        <location filename="../src/qml/views/OptimizationView.qml" line="370"/>
-        <location filename="../src/qml/views/OptimizationView.qml" line="391"/>
-        <location filename="../src/qml/views/OptimizationView.qml" line="2012"/>
+        <location filename="../src/qml/views/OptimizationView.qml" line="224"/>
+        <location filename="../src/qml/views/OptimizationView.qml" line="369"/>
+        <location filename="../src/qml/views/OptimizationView.qml" line="382"/>
+        <location filename="../src/qml/views/OptimizationView.qml" line="403"/>
+        <location filename="../src/qml/views/OptimizationView.qml" line="2034"/>
         <source>Power Plan</source>
         <translation>Режим живлення</translation>
     </message>
     <message>
-        <location filename="../src/qml/views/OptimizationView.qml" line="425"/>
+        <location filename="../src/qml/views/OptimizationView.qml" line="437"/>
         <source>%1 changes pending</source>
         <translation>%1 змін очікує</translation>
     </message>
     <message>
-        <location filename="../src/qml/views/OptimizationView.qml" line="426"/>
+        <location filename="../src/qml/views/OptimizationView.qml" line="438"/>
         <source>Pending Changes:</source>
         <translation>Очікують змін:</translation>
     </message>
     <message>
-        <location filename="../src/qml/views/OptimizationView.qml" line="2040"/>
+        <location filename="../src/qml/views/OptimizationView.qml" line="2062"/>
         <source>Select system power plans and unlock the hidden Ultimate Performance mode.</source>
         <translation>Вибір системних схем живлення та розблокування прихованого режиму максимальної продуктивності.</translation>
     </message>
     <message>
-        <location filename="../src/qml/views/OptimizationView.qml" line="359"/>
-        <location filename="../src/qml/views/OptimizationView.qml" line="360"/>
-        <location filename="../src/qml/views/OptimizationView.qml" line="2101"/>
+        <location filename="../src/qml/views/OptimizationView.qml" line="371"/>
+        <location filename="../src/qml/views/OptimizationView.qml" line="372"/>
+        <location filename="../src/qml/views/OptimizationView.qml" line="2123"/>
         <source>Unknown</source>
         <translation>Невідомо</translation>
     </message>
     <message>
-        <location filename="../src/qml/views/OptimizationView.qml" line="220"/>
-        <location filename="../src/qml/views/OptimizationView.qml" line="392"/>
-        <location filename="../src/qml/views/OptimizationView.qml" line="1897"/>
+        <location filename="../src/qml/views/OptimizationView.qml" line="232"/>
+        <location filename="../src/qml/views/OptimizationView.qml" line="404"/>
+        <location filename="../src/qml/views/OptimizationView.qml" line="1919"/>
         <source>BitLocker Drive Encryption</source>
         <translation>Шифрування дисків BitLocker</translation>
     </message>
     <message>
-        <location filename="../src/qml/views/OptimizationView.qml" line="228"/>
-        <location filename="../src/qml/views/OptimizationView.qml" line="386"/>
-        <location filename="../src/qml/views/OptimizationView.qml" line="1268"/>
+        <location filename="../src/qml/views/OptimizationView.qml" line="240"/>
+        <location filename="../src/qml/views/OptimizationView.qml" line="398"/>
+        <location filename="../src/qml/views/OptimizationView.qml" line="1281"/>
         <source>Discord In-Game Overlay</source>
         <translation>Ігровий оверлей Discord</translation>
     </message>
     <message>
-        <location filename="../src/qml/views/OptimizationView.qml" line="276"/>
-        <location filename="../src/qml/views/OptimizationView.qml" line="276"/>
-        <location filename="../src/qml/views/OptimizationView.qml" line="284"/>
-        <location filename="../src/qml/views/OptimizationView.qml" line="284"/>
+        <location filename="../src/qml/views/OptimizationView.qml" line="288"/>
+        <location filename="../src/qml/views/OptimizationView.qml" line="288"/>
         <location filename="../src/qml/views/OptimizationView.qml" line="296"/>
         <location filename="../src/qml/views/OptimizationView.qml" line="296"/>
-        <location filename="../src/qml/views/OptimizationView.qml" line="309"/>
-        <location filename="../src/qml/views/OptimizationView.qml" line="309"/>
-        <location filename="../src/qml/views/OptimizationView.qml" line="318"/>
-        <location filename="../src/qml/views/OptimizationView.qml" line="318"/>
-        <location filename="../src/qml/views/OptimizationView.qml" line="327"/>
-        <location filename="../src/qml/views/OptimizationView.qml" line="327"/>
-        <location filename="../src/qml/views/OptimizationView.qml" line="335"/>
-        <location filename="../src/qml/views/OptimizationView.qml" line="335"/>
-        <location filename="../src/qml/views/OptimizationView.qml" line="343"/>
-        <location filename="../src/qml/views/OptimizationView.qml" line="343"/>
-        <location filename="../src/qml/views/OptimizationView.qml" line="351"/>
-        <location filename="../src/qml/views/OptimizationView.qml" line="351"/>
+        <location filename="../src/qml/views/OptimizationView.qml" line="308"/>
+        <location filename="../src/qml/views/OptimizationView.qml" line="308"/>
+        <location filename="../src/qml/views/OptimizationView.qml" line="321"/>
+        <location filename="../src/qml/views/OptimizationView.qml" line="321"/>
+        <location filename="../src/qml/views/OptimizationView.qml" line="330"/>
+        <location filename="../src/qml/views/OptimizationView.qml" line="330"/>
+        <location filename="../src/qml/views/OptimizationView.qml" line="339"/>
+        <location filename="../src/qml/views/OptimizationView.qml" line="339"/>
+        <location filename="../src/qml/views/OptimizationView.qml" line="347"/>
+        <location filename="../src/qml/views/OptimizationView.qml" line="347"/>
+        <location filename="../src/qml/views/OptimizationView.qml" line="355"/>
+        <location filename="../src/qml/views/OptimizationView.qml" line="355"/>
+        <location filename="../src/qml/views/OptimizationView.qml" line="363"/>
+        <location filename="../src/qml/views/OptimizationView.qml" line="363"/>
         <source>Enabled</source>
         <translation>Увімкнено</translation>
     </message>
     <message>
-        <location filename="../src/qml/views/OptimizationView.qml" line="276"/>
-        <location filename="../src/qml/views/OptimizationView.qml" line="276"/>
-        <location filename="../src/qml/views/OptimizationView.qml" line="284"/>
-        <location filename="../src/qml/views/OptimizationView.qml" line="284"/>
+        <location filename="../src/qml/views/OptimizationView.qml" line="288"/>
+        <location filename="../src/qml/views/OptimizationView.qml" line="288"/>
         <location filename="../src/qml/views/OptimizationView.qml" line="296"/>
         <location filename="../src/qml/views/OptimizationView.qml" line="296"/>
-        <location filename="../src/qml/views/OptimizationView.qml" line="309"/>
-        <location filename="../src/qml/views/OptimizationView.qml" line="309"/>
-        <location filename="../src/qml/views/OptimizationView.qml" line="318"/>
-        <location filename="../src/qml/views/OptimizationView.qml" line="318"/>
-        <location filename="../src/qml/views/OptimizationView.qml" line="327"/>
-        <location filename="../src/qml/views/OptimizationView.qml" line="327"/>
-        <location filename="../src/qml/views/OptimizationView.qml" line="335"/>
-        <location filename="../src/qml/views/OptimizationView.qml" line="335"/>
-        <location filename="../src/qml/views/OptimizationView.qml" line="343"/>
-        <location filename="../src/qml/views/OptimizationView.qml" line="343"/>
-        <location filename="../src/qml/views/OptimizationView.qml" line="351"/>
-        <location filename="../src/qml/views/OptimizationView.qml" line="351"/>
-        <location filename="../src/qml/views/OptimizationView.qml" line="1933"/>
+        <location filename="../src/qml/views/OptimizationView.qml" line="308"/>
+        <location filename="../src/qml/views/OptimizationView.qml" line="308"/>
+        <location filename="../src/qml/views/OptimizationView.qml" line="321"/>
+        <location filename="../src/qml/views/OptimizationView.qml" line="321"/>
+        <location filename="../src/qml/views/OptimizationView.qml" line="330"/>
+        <location filename="../src/qml/views/OptimizationView.qml" line="330"/>
+        <location filename="../src/qml/views/OptimizationView.qml" line="339"/>
+        <location filename="../src/qml/views/OptimizationView.qml" line="339"/>
+        <location filename="../src/qml/views/OptimizationView.qml" line="347"/>
+        <location filename="../src/qml/views/OptimizationView.qml" line="347"/>
+        <location filename="../src/qml/views/OptimizationView.qml" line="355"/>
+        <location filename="../src/qml/views/OptimizationView.qml" line="355"/>
+        <location filename="../src/qml/views/OptimizationView.qml" line="363"/>
+        <location filename="../src/qml/views/OptimizationView.qml" line="363"/>
+        <location filename="../src/qml/views/OptimizationView.qml" line="1955"/>
         <source>Disabled</source>
         <translation>Вимкнено</translation>
     </message>
     <message>
-        <location filename="../src/qml/views/OptimizationView.qml" line="318"/>
+        <location filename="../src/qml/views/OptimizationView.qml" line="330"/>
         <source>Print Spooler</source>
         <translation>Диспетчер друку</translation>
     </message>
     <message>
-        <location filename="../src/qml/views/OptimizationView.qml" line="1296"/>
+        <location filename="../src/qml/views/OptimizationView.qml" line="1309"/>
         <source>Disable Discord&apos;s in-game overlay DLL injection to reduce CPU overhead and eliminate graphics micro-stutters.</source>
         <translation>Відключення інжекції DLL ігрового оверлея Discord для зниження навантаження на процесор та усунення мікро-фризів.</translation>
     </message>
     <message>
-        <location filename="../src/qml/views/OptimizationView.qml" line="1925"/>
+        <location filename="../src/qml/views/OptimizationView.qml" line="1317"/>
+        <source>Close Discord before optimization</source>
+        <translation>Закрийте Discord перед оптимізацією</translation>
+    </message>
+    <message>
+        <location filename="../src/qml/views/OptimizationView.qml" line="1947"/>
         <source>Enable or disable the BitLocker drive encryption background manager service.</source>
         <translation>Увімкнення або вимкнення служби фонового диспетчера шифрування дисків BitLocker.</translation>
     </message>
     <message>
-        <location filename="../src/qml/views/OptimizationView.qml" line="1932"/>
+        <location filename="../src/qml/views/OptimizationView.qml" line="1954"/>
         <source>Status: Service: %1 | Encryption (C:): %2</source>
         <translation>Статус: Служба: %1 | Шифрування (C:): %2</translation>
     </message>
     <message>
-        <location filename="../src/qml/views/OptimizationView.qml" line="1933"/>
+        <location filename="../src/qml/views/OptimizationView.qml" line="1955"/>
         <source>Active</source>
         <translation>Активна</translation>
     </message>
     <message>
-        <location filename="../src/qml/views/OptimizationView.qml" line="1934"/>
+        <location filename="../src/qml/views/OptimizationView.qml" line="1956"/>
         <source>Encrypted</source>
         <translation>Зашифровано</translation>
     </message>
     <message>
-        <location filename="../src/qml/views/OptimizationView.qml" line="1934"/>
+        <location filename="../src/qml/views/OptimizationView.qml" line="1956"/>
         <source>Not Encrypted</source>
         <translation>Не зашифровано</translation>
     </message>
     <message>
-        <location filename="../src/qml/views/OptimizationView.qml" line="2265"/>
+        <location filename="../src/qml/views/OptimizationView.qml" line="2287"/>
         <source>XBOX APP &amp; GAME BAR</source>
         <translation>XBOX APP ТА GAME BAR</translation>
     </message>
     <message>
-        <location filename="../src/qml/views/OptimizationView.qml" line="2266"/>
+        <location filename="../src/qml/views/OptimizationView.qml" line="2288"/>
         <source>MPO LATENCY TWEAK</source>
         <translation>НАЛАШТУВАННЯ MPO</translation>
     </message>
     <message>
-        <location filename="../src/qml/views/OptimizationView.qml" line="2267"/>
+        <location filename="../src/qml/views/OptimizationView.qml" line="2289"/>
         <source>PRINTER TWEAKS</source>
         <translation>НАЛАШТУВАННЯ ПРИНТЕРІВ</translation>
     </message>
     <message>
-        <location filename="../src/qml/views/OptimizationView.qml" line="2268"/>
+        <location filename="../src/qml/views/OptimizationView.qml" line="2290"/>
         <source>NOTIFICATION SETTINGS</source>
         <translation>НАЛАШТУВАННЯ СПОВІЩЕНЬ</translation>
     </message>
     <message>
-        <location filename="../src/qml/views/OptimizationView.qml" line="2269"/>
+        <location filename="../src/qml/views/OptimizationView.qml" line="2291"/>
         <source>POWER PLANS</source>
         <translation>СХЕМИ ЖИВЛЕННЯ</translation>
     </message>
     <message>
-        <location filename="../src/qml/views/OptimizationView.qml" line="2571"/>
+        <location filename="../src/qml/views/OptimizationView.qml" line="2593"/>
         <source>Xbox Gaming Overlay</source>
         <translation>Ігровий оверлей Xbox</translation>
     </message>
     <message>
-        <location filename="../src/qml/views/OptimizationView.qml" line="2578"/>
+        <location filename="../src/qml/views/OptimizationView.qml" line="2600"/>
         <source>Get-AppxPackage XboxGamingOverlay | ...</source>
         <translation>Get-AppxPackage XboxGamingOverlay | ...</translation>
     </message>
     <message>
-        <location filename="../src/qml/views/OptimizationView.qml" line="2617"/>
+        <location filename="../src/qml/views/OptimizationView.qml" line="2639"/>
         <source>Xbox TCUI Dialogue</source>
         <translation>Діалог Xbox TCUI</translation>
     </message>
     <message>
-        <location filename="../src/qml/views/OptimizationView.qml" line="2624"/>
+        <location filename="../src/qml/views/OptimizationView.qml" line="2646"/>
         <source>Get-AppxPackage XboxTCUI | ...</source>
         <translation>Get-AppxPackage XboxTCUI | ...</translation>
     </message>
     <message>
-        <location filename="../src/qml/views/OptimizationView.qml" line="2663"/>
+        <location filename="../src/qml/views/OptimizationView.qml" line="2685"/>
         <source>Xbox Game Speech Window</source>
         <translation>Вікно мовлення ігор Xbox</translation>
     </message>
     <message>
-        <location filename="../src/qml/views/OptimizationView.qml" line="2670"/>
+        <location filename="../src/qml/views/OptimizationView.qml" line="2692"/>
         <source>Get-AppxPackage XboxGameSpeechWindow | ...</source>
         <translation>Get-AppxPackage XboxGameSpeechWindow | ...</translation>
     </message>
     <message>
-        <location filename="../src/qml/views/OptimizationView.qml" line="2709"/>
+        <location filename="../src/qml/views/OptimizationView.qml" line="2731"/>
         <source>System Provisioned Packages</source>
         <translation>Попередньо встановлені пакети системи</translation>
     </message>
     <message>
-        <location filename="../src/qml/views/OptimizationView.qml" line="2716"/>
+        <location filename="../src/qml/views/OptimizationView.qml" line="2738"/>
         <source>Get-AppxProvisionedPackage -Online | ...</source>
         <translation>Get-AppxProvisionedPackage -Online | ...</translation>
     </message>
     <message>
-        <location filename="../src/qml/views/OptimizationView.qml" line="2793"/>
+        <location filename="../src/qml/views/OptimizationView.qml" line="2815"/>
         <source>Choose any MPO overlay flag from 0 to 5. 5 disables MPO completely to resolve driver bugs, while 0 restores Windows default.</source>
         <translation>Оберіть будь-який прапорець оверлею MPO від 0 до 5. 5 повністю вимикає MPO для вирішення помилок драйверів, а 0 відновлює значення за замовчуванням.</translation>
     </message>
     <message>
-        <location filename="../src/qml/views/OptimizationView.qml" line="2847"/>
-        <location filename="../src/qml/views/OptimizationView.qml" line="3119"/>
+        <location filename="../src/qml/views/OptimizationView.qml" line="2869"/>
+        <location filename="../src/qml/views/OptimizationView.qml" line="3141"/>
         <source>0 (Default): Dynamic overlays are fully active. Lowest latency in windowed games, but causes micro-stuttering, Chromium browser lags, or black screen flickering on modern GPU drivers.</source>
         <translation>0 (За замовчуванням): Динамічні оверлеї повністю активні. Найменша затримка в іграх у віконному режимі, але викликає мікрофризи, затримки в браузерах Chromium або мерехтіння чорного екрана на сучасних драйверах відеокарт.</translation>
     </message>
     <message>
-        <location filename="../src/qml/views/OptimizationView.qml" line="2896"/>
-        <location filename="../src/qml/views/OptimizationView.qml" line="3120"/>
+        <location filename="../src/qml/views/OptimizationView.qml" line="2918"/>
+        <location filename="../src/qml/views/OptimizationView.qml" line="3142"/>
         <source>1: Disables hardware MPO overlay promotion. Direct GPU rendering is bypassed, which can fix dual-monitor desktop stuttering.</source>
         <translation>1: Вимикає апаратне просування оверлею MPO. Прямий рендеринг GPU обходиться, що може виправити заїкання робочого столу на двох моніторах.</translation>
     </message>
     <message>
-        <location filename="../src/qml/views/OptimizationView.qml" line="2945"/>
-        <location filename="../src/qml/views/OptimizationView.qml" line="3121"/>
+        <location filename="../src/qml/views/OptimizationView.qml" line="2967"/>
+        <location filename="../src/qml/views/OptimizationView.qml" line="3143"/>
         <source>2: Disables software-emulated MPO overlays, forcing DWM to only allocate native hardware paths.</source>
         <translation>2: Вимикає програмно-емульовані оверлеї MPO, змушуючи DWM виділяти лише нативні апаратні шляхи.</translation>
     </message>
     <message>
-        <location filename="../src/qml/views/OptimizationView.qml" line="2994"/>
-        <location filename="../src/qml/views/OptimizationView.qml" line="3122"/>
+        <location filename="../src/qml/views/OptimizationView.qml" line="3016"/>
+        <location filename="../src/qml/views/OptimizationView.qml" line="3144"/>
         <source>3: Disables both hardware and software overlays. Forces legacy composition limits.</source>
         <translation>3: Вимикає як апаратні, так і програмні оверлеї. Примусово встановлює застарілі ліміти композиції.</translation>
     </message>
     <message>
-        <location filename="../src/qml/views/OptimizationView.qml" line="3043"/>
-        <location filename="../src/qml/views/OptimizationView.qml" line="3123"/>
+        <location filename="../src/qml/views/OptimizationView.qml" line="3065"/>
+        <location filename="../src/qml/views/OptimizationView.qml" line="3145"/>
         <source>4: Forces complete DWM composition. Promotes zero window structures to independent planes.</source>
         <translation>4: Примусово встановлює повну композицію DWM. Не перетворює структури вікон у незалежні площини.</translation>
     </message>
     <message>
-        <location filename="../src/qml/views/OptimizationView.qml" line="3092"/>
-        <location filename="../src/qml/views/OptimizationView.qml" line="3124"/>
+        <location filename="../src/qml/views/OptimizationView.qml" line="3114"/>
+        <location filename="../src/qml/views/OptimizationView.qml" line="3146"/>
         <source>5 (Recommended): Completely disables all MPO modes. Official NVIDIA/AMD hotfix to eliminate stuttering, browser lag, and screen flickers.</source>
         <translation>5 (Рекомендовано): Повністю вимикає всі режими MPO. Офіційний хотфікс NVIDIA/AMD для усунення заїкань, затримок у браузері та мерехтіння екрана.</translation>
     </message>
     <message>
-        <location filename="../src/qml/views/OptimizationView.qml" line="4152"/>
+        <location filename="../src/qml/views/OptimizationView.qml" line="4174"/>
         <source>Discord Process Detected</source>
         <translation>Виявлено процес Discord</translation>
     </message>
     <message>
-        <location filename="../src/qml/views/OptimizationView.qml" line="4162"/>
+        <location filename="../src/qml/views/OptimizationView.qml" line="4184"/>
         <source>Discord is currently running. It must be closed to safely lock/unlock overlay files.
 
 Would you like to close Discord now and proceed?</source>
@@ -652,65 +657,65 @@ Would you like to close Discord now and proceed?</source>
 Бажаєте закрити Discord зараз і продовжити?</translation>
     </message>
     <message>
-        <location filename="../src/qml/views/OptimizationView.qml" line="4176"/>
+        <location filename="../src/qml/views/OptimizationView.qml" line="4198"/>
         <source>Close &amp; Optimize</source>
         <translation>Закрити та оптимізувати</translation>
     </message>
     <message>
-        <location filename="../src/qml/views/OptimizationView.qml" line="4189"/>
+        <location filename="../src/qml/views/OptimizationView.qml" line="4211"/>
         <source>Skip Overlay</source>
         <translation>Пропустити оверлей</translation>
     </message>
     <message>
-        <location filename="../src/qml/views/OptimizationView.qml" line="4202"/>
+        <location filename="../src/qml/views/OptimizationView.qml" line="4224"/>
         <source>Cancel</source>
         <translation>Скасувати</translation>
     </message>
     <message>
-        <location filename="../src/qml/views/OptimizationView.qml" line="152"/>
-        <location filename="../src/qml/views/OptimizationView.qml" line="383"/>
-        <location filename="../src/qml/views/OptimizationView.qml" line="953"/>
+        <location filename="../src/qml/views/OptimizationView.qml" line="164"/>
+        <location filename="../src/qml/views/OptimizationView.qml" line="395"/>
+        <location filename="../src/qml/views/OptimizationView.qml" line="965"/>
         <source>Core Isolation</source>
         <translation>Ізоляція ядра</translation>
     </message>
     <message>
-        <location filename="../src/qml/views/OptimizationView.qml" line="981"/>
+        <location filename="../src/qml/views/OptimizationView.qml" line="993"/>
         <source>Disabling kernel memory integrity reduces CPU overhead and input latency.</source>
         <translation>Вимкнення цілісності пам&apos;яті ядра знижує навантаження на процесор та затримку введення.</translation>
     </message>
     <message>
-        <location filename="../src/qml/views/OptimizationView.qml" line="160"/>
-        <location filename="../src/qml/views/OptimizationView.qml" line="384"/>
-        <location filename="../src/qml/views/OptimizationView.qml" line="1058"/>
+        <location filename="../src/qml/views/OptimizationView.qml" line="172"/>
+        <location filename="../src/qml/views/OptimizationView.qml" line="396"/>
+        <location filename="../src/qml/views/OptimizationView.qml" line="1070"/>
         <source>Mouse Acceleration</source>
         <translation>Акселерація миші</translation>
     </message>
     <message>
-        <location filename="../src/qml/views/OptimizationView.qml" line="1086"/>
+        <location filename="../src/qml/views/OptimizationView.qml" line="1098"/>
         <source>Enhance pointer precision toggle to enable or disable system mouse acceleration.</source>
         <translation>Перемикач підвищення точності покажчика для увімкнення або вимкнення системного прискорення миші.</translation>
     </message>
     <message>
-        <location filename="../src/qml/views/OptimizationView.qml" line="168"/>
-        <location filename="../src/qml/views/OptimizationView.qml" line="385"/>
-        <location filename="../src/qml/views/OptimizationView.qml" line="1163"/>
+        <location filename="../src/qml/views/OptimizationView.qml" line="180"/>
+        <location filename="../src/qml/views/OptimizationView.qml" line="397"/>
+        <location filename="../src/qml/views/OptimizationView.qml" line="1175"/>
         <source>Game Mode</source>
         <translation>Ігровий режим</translation>
     </message>
     <message>
-        <location filename="../src/qml/views/OptimizationView.qml" line="1191"/>
+        <location filename="../src/qml/views/OptimizationView.qml" line="1203"/>
         <source>Enables or disables Windows Game Mode to prioritize gaming performance and stabilize FPS.</source>
         <translation>Увімкнення або вимкнення ігрового режиму Windows для пріоритезації ігрової продуктивності та стабілізації FPS.</translation>
     </message>
     <message>
-        <location filename="../src/qml/views/OptimizationView.qml" line="176"/>
-        <location filename="../src/qml/views/OptimizationView.qml" line="387"/>
-        <location filename="../src/qml/views/OptimizationView.qml" line="1373"/>
+        <location filename="../src/qml/views/OptimizationView.qml" line="188"/>
+        <location filename="../src/qml/views/OptimizationView.qml" line="399"/>
+        <location filename="../src/qml/views/OptimizationView.qml" line="1395"/>
         <source>Windows Defender Firewall</source>
         <translation>Брандмауер Windows</translation>
     </message>
     <message>
-        <location filename="../src/qml/views/OptimizationView.qml" line="1401"/>
+        <location filename="../src/qml/views/OptimizationView.qml" line="1423"/>
         <source>Enables or disables Windows Defender Firewall to control network traffic protection.</source>
         <translation>Увімкнення або вимкнення брандмауера Windows для контролю захисту мережевого трафіку.</translation>
     </message>

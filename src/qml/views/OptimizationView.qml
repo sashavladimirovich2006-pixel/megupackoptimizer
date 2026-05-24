@@ -104,6 +104,18 @@ Item {
     property bool bitlockerChanged: optimizerBackend.bitlockerActive !== optimizerBackend.originalBitlockerActive
     property bool discordOverlayChanged: optimizerBackend.discordOverlayActive !== optimizerBackend.originalDiscordOverlayActive
 
+    property bool isDiscordOpen: false
+    Timer {
+        id: discordCheckTimer
+        interval: 2000
+        running: true
+        repeat: true
+        triggeredOnStart: true
+        onTriggered: {
+            root.isDiscordOpen = optimizerBackend.isDiscordRunning();
+        }
+    }
+
     // Active sidebar state
     property string activeDrawer: ""
     property bool sidebarOpen: activeDrawer !== ""
@@ -1232,7 +1244,8 @@ Item {
                 AcrylicPanel {
                     id: discordOverlayPanel
                     width: parent.width
-                    height: 72
+                    height: root.isDiscordOpen ? 84 : 72
+                    Behavior on height { NumberAnimation { duration: Theme.animNormal; easing.type: Easing.InOutQuad } }
 
                     Row {
                         anchors.left: parent.left
@@ -1297,6 +1310,15 @@ Item {
                                 color: Theme.textMuted
                                 font.family: Theme.fontFamily
                                 font.pixelSize: 10
+                            }
+
+                            Text {
+                                visible: root.isDiscordOpen
+                                text: qsTr("Close Discord before optimization")
+                                color: Theme.warning
+                                font.family: Theme.fontFamily
+                                font.pixelSize: 9
+                                font.bold: true
                             }
                         }
                     }
