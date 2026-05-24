@@ -9,15 +9,7 @@ AcrylicPanel {
     property string value: ""
     property string iconSource: ""
 
-    // Hover effect for the card
-    MouseArea {
-        id: mouseArea
-        anchors.fill: parent
-        hoverEnabled: true
-        cursorShape: Qt.ArrowCursor
-    }
-
-    border.color: mouseArea.containsMouse ? Theme.accent : Theme.border
+    border.color: card.containsMouse ? Theme.accent : Theme.border
     
     // Ambient glow border around card on hover
     Rectangle {
@@ -26,7 +18,7 @@ AcrylicPanel {
         color: "transparent"
         border.color: Theme.accent
         border.width: 1.5
-        opacity: mouseArea.containsMouse ? 0.35 : 0.0
+        opacity: card.containsMouse ? 0.35 : 0.0
         Behavior on opacity { NumberAnimation { duration: Theme.animFast } }
     }
     
@@ -40,7 +32,7 @@ AcrylicPanel {
             spacing: 14
             
             // Micro-translation slide up on hover!
-            y: mouseArea.containsMouse ? -2 : 0
+            y: card.containsMouse ? -2 : 0
             Behavior on y {
                 NumberAnimation {
                     duration: Theme.animNormal
@@ -54,8 +46,8 @@ AcrylicPanel {
                 width: 42
                 height: 42
                 radius: Theme.radiusSmall
-                color: mouseArea.containsMouse ? Theme.accentDim : "transparent"
-                border.color: mouseArea.containsMouse ? Theme.accent : Theme.border
+                color: card.containsMouse ? Theme.accentDim : "transparent"
+                border.color: card.containsMouse ? Theme.accent : Theme.border
                 border.width: 1
                 anchors.verticalCenter: parent.verticalCenter
                 
@@ -93,7 +85,7 @@ AcrylicPanel {
 
                 Text {
                     text: card.title
-                    color: mouseArea.containsMouse ? Theme.accent : Theme.textSecondary
+                    color: card.containsMouse ? Theme.accent : Theme.textSecondary
                     font.family: Theme.fontFamily
                     font.pixelSize: 11
                     font.bold: true

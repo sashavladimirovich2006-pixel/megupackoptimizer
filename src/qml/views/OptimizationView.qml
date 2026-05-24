@@ -522,183 +522,26 @@ Item {
         }
     }
 
-    // Bottom Action Bar with Futuristic Concentric "CORE OPTIMIZER" Engine Button
+    // Bottom Action Bar
     Item {
         id: bottomActionBar
         anchors.bottom: parent.bottom
         anchors.left: parent.left
         anchors.right: parent.right
-        height: 160 // Taller to fit the gorgeous circular reactor engine perfectly
+        height: 80
 
-        Item {
-            id: coreOptimizerButton
-            width: 120
-            height: 120
+        MeguButton {
+            id: optimizeButton
+            text: qsTr("Optimize")
+            iconSource: "qrc:/MeguPackOptimizer/src/resources/play.svg"
+            accented: true
             anchors.centerIn: parent
-            
-            property bool isEnabled: !optimizerBackend.isOptimizingSystem && root.hasChanges
-            property bool isHovered: mouseArea.containsMouse && isEnabled
-            property bool isPressed: mouseArea.pressed && isEnabled
-
-            // Smooth micro-scaling tactile response
-            scale: isPressed ? 0.94 : (isHovered ? 1.06 : 1.0)
-            Behavior on scale { NumberAnimation { duration: 120; easing.type: Easing.OutCubic } }
-
-            // 1. Ambient pulsing neon background glow
-            Rectangle {
-                anchors.fill: parent
-                radius: width / 2
-                color: coreOptimizerButton.isEnabled ? Theme.accent : Theme.textMuted
-                opacity: coreOptimizerButton.isEnabled ? (coreOptimizerButton.isHovered ? 0.20 : 0.08) : 0.03
-                scale: coreOptimizerButton.isEnabled ? (coreOptimizerButton.isHovered ? 1.12 : 1.0) : 1.0
-                
-                Behavior on opacity { NumberAnimation { duration: Theme.animNormal } }
-                Behavior on scale { NumberAnimation { duration: Theme.animNormal; easing.type: Easing.OutBack } }
-
-                SequentialAnimation on opacity {
-                    running: coreOptimizerButton.isEnabled && !coreOptimizerButton.isHovered
-                    loops: Animation.Infinite
-                    NumberAnimation { to: 0.14; duration: 2500; easing.type: Easing.InOutQuad }
-                    NumberAnimation { to: 0.08; duration: 2500; easing.type: Easing.InOutQuad }
-                }
-            }
-
-            // 2. Outer orbiting neon ring with spinning active bead (matching dashboard core theme!)
-            Rectangle {
-                anchors.fill: parent
-                radius: width / 2
-                color: "transparent"
-                border.color: coreOptimizerButton.isEnabled ? Theme.accent : Theme.border
-                border.width: 1
-                opacity: coreOptimizerButton.isEnabled ? (coreOptimizerButton.isHovered ? 0.5 : 0.3) : 0.15
-                
-                Behavior on opacity { NumberAnimation { duration: Theme.animNormal } }
-
-                RotationAnimation on rotation {
-                    from: 0
-                    to: 360
-                    duration: 10000
-                    loops: Animation.Infinite
-                    running: coreOptimizerButton.isEnabled
-                }
-                
-                Rectangle {
-                    width: 6
-                    height: 6
-                    radius: 3
-                    color: coreOptimizerButton.isEnabled ? Theme.accentLight : Theme.textMuted
-                    anchors.horizontalCenter: parent.horizontalCenter
-                    y: -3
-                }
-            }
-
-            // 3. Middle counter-rotating ring with smaller neon bead
-            Rectangle {
-                width: parent.width - 16
-                height: parent.height - 16
-                radius: width / 2
-                anchors.centerIn: parent
-                color: "transparent"
-                border.color: coreOptimizerButton.isEnabled ? Theme.accent : Theme.border
-                border.width: 1
-                opacity: coreOptimizerButton.isEnabled ? (coreOptimizerButton.isHovered ? 0.4 : 0.2) : 0.08
-
-                Behavior on opacity { NumberAnimation { duration: Theme.animNormal } }
-
-                RotationAnimation on rotation {
-                    from: 360
-                    to: 0
-                    duration: 7000
-                    loops: Animation.Infinite
-                    running: coreOptimizerButton.isEnabled
-                }
-
-                Rectangle {
-                    width: 4
-                    height: 4
-                    radius: 2
-                    color: coreOptimizerButton.isEnabled ? Theme.yellowAccent : Theme.textMuted
-                    anchors.horizontalCenter: parent.horizontalCenter
-                    y: -2
-                }
-            }
-
-            // 4. Central tactile physical reactor core
-            Rectangle {
-                width: parent.width - 32
-                height: parent.height - 32
-                radius: width / 2
-                anchors.centerIn: parent
-                
-                // Adapts background and border glows beautifully to the current theme colors
-                color: coreOptimizerButton.isPressed ? Theme.buttonBgPressed : (coreOptimizerButton.isHovered ? Theme.buttonBgHover : Theme.buttonBg)
-                border.color: coreOptimizerButton.isEnabled ? (coreOptimizerButton.isHovered ? Theme.accentLight : Theme.accent) : Theme.border
-                border.width: 1.5
-
-                Behavior on color { ColorAnimation { duration: 100 } }
-                Behavior on border.color { ColorAnimation { duration: Theme.animFast } }
-
-                // Embedded inner glowing reactor layer
-                Rectangle {
-                    anchors.fill: parent
-                    radius: width / 2
-                    color: coreOptimizerButton.isEnabled ? Theme.accent : "transparent"
-                    opacity: coreOptimizerButton.isEnabled ? (coreOptimizerButton.isHovered ? 0.12 : 0.04) : 0.0
-                    Behavior on opacity { NumberAnimation { duration: Theme.animFast } }
-                }
-
-                // Cyber-Reactor graphics & descriptions
-                Column {
-                    anchors.centerIn: parent
-                    spacing: 2
-
-                    Image {
-                        source: "qrc:/MeguPackOptimizer/src/resources/bolt.svg"
-                        width: 20
-                        height: 20
-                        sourceSize.width: 20
-                        sourceSize.height: 20
-                        anchors.horizontalCenter: parent.horizontalCenter
-                        opacity: coreOptimizerButton.isEnabled ? (coreOptimizerButton.isHovered ? 1.0 : 0.8) : 0.3
-                        
-                        scale: coreOptimizerButton.isHovered ? 1.12 : 1.0
-                        Behavior on scale { NumberAnimation { duration: 150; easing.type: Easing.OutBack } }
-                    }
-
-                    Text {
-                        text: qsTr("OPTIMIZE")
-                        color: coreOptimizerButton.isEnabled ? Theme.textPrimary : Theme.textMuted
-                        font.family: Theme.fontFamily
-                        font.pixelSize: 10
-                        font.bold: true
-                        font.letterSpacing: 1.5
-                        anchors.horizontalCenter: parent.horizontalCenter
-                    }
-                    
-                    Text {
-                        text: coreOptimizerButton.isEnabled ? (coreOptimizerButton.isHovered ? qsTr("READY") : qsTr("PENDING")) : qsTr("READY")
-                        color: coreOptimizerButton.isEnabled ? Theme.accent : Theme.textMuted
-                        font.family: Theme.fontFamily
-                        font.pixelSize: 7
-                        font.bold: true
-                        font.letterSpacing: 1.2
-                        anchors.horizontalCenter: parent.horizontalCenter
-                    }
-                }
-            }
-
-            MouseArea {
-                id: mouseArea
-                anchors.fill: parent
-                hoverEnabled: true
-                cursorShape: coreOptimizerButton.isEnabled ? Qt.PointingHandCursor : Qt.ArrowCursor
-                
-                onClicked: {
-                    if (coreOptimizerButton.isEnabled) {
-                        stepLogModel.clear();
-                        optimizerBackend.startSystemOptimization();
-                    }
-                }
+            width: 180
+            height: 40
+            enabled: !optimizerBackend.isOptimizingSystem && root.hasChanges
+            onClicked: {
+                stepLogModel.clear();
+                optimizerBackend.startSystemOptimization();
             }
         }
     }
