@@ -42,6 +42,8 @@ class Optimizer : public QObject {
     Q_PROPERTY(bool bitlockerActive READ bitlockerActive WRITE setBitlockerActive NOTIFY bitlockerActiveChanged)
     Q_PROPERTY(bool originalBitlockerActive READ originalBitlockerActive NOTIFY originalBitlockerActiveChanged)
     Q_PROPERTY(bool bitlockerDriveEncrypted READ bitlockerDriveEncrypted NOTIFY bitlockerDriveEncryptedChanged)
+    Q_PROPERTY(bool discordOverlayActive READ discordOverlayActive WRITE setDiscordOverlayActive NOTIFY discordOverlayActiveChanged)
+    Q_PROPERTY(bool originalDiscordOverlayActive READ originalDiscordOverlayActive NOTIFY originalDiscordOverlayActiveChanged)
     Q_PROPERTY(QStringList detectedPrinters READ detectedPrinters NOTIFY detectedPrintersChanged)
     Q_PROPERTY(bool notificationsActive READ notificationsActive WRITE setNotificationsActive NOTIFY notificationsActiveChanged)
     Q_PROPERTY(bool originalNotificationsActive READ originalNotificationsActive NOTIFY originalNotificationsActiveChanged)
@@ -103,6 +105,8 @@ public:
     bool bitlockerActive() const { return m_bitlockerActive; }
     bool originalBitlockerActive() const { return m_originalBitlockerActive; }
     bool bitlockerDriveEncrypted() const { return m_bitlockerDriveEncrypted; }
+    bool discordOverlayActive() const { return m_discordOverlayActive; }
+    bool originalDiscordOverlayActive() const { return m_originalDiscordOverlayActive; }
     QStringList detectedPrinters() const { return m_detectedPrinters; }
     bool notificationsActive() const { return m_notificationsActive; }
     bool originalNotificationsActive() const { return m_originalNotificationsActive; }
@@ -135,12 +139,16 @@ public:
     void setFirewallActive(bool val);
     void setPrinterActive(bool val);
     void setBitlockerActive(bool val);
+    void setDiscordOverlayActive(bool val);
     void setNotificationsActive(bool val);
     void setNotifGlobalActive(bool val);
     void setNotifAppActive(bool val);
     void setNotifSoundsActive(bool val);
     void setNotifLockscreenActive(bool val);
     void setDriveStates(const QVariantMap &states);
+    
+    Q_INVOKABLE bool isDiscordRunning();
+    Q_INVOKABLE void killDiscord();
 
 
     // Invokable methods for QML frontend
@@ -189,6 +197,8 @@ signals:
     void bitlockerActiveChanged(bool val);
     void originalBitlockerActiveChanged(bool val);
     void bitlockerDriveEncryptedChanged(bool val);
+    void discordOverlayActiveChanged(bool val);
+    void originalDiscordOverlayActiveChanged(bool val);
     void detectedPrintersChanged(const QStringList &val);
     void notificationsActiveChanged(bool val);
     void originalNotificationsActiveChanged(bool val);
@@ -217,6 +227,8 @@ signals:
 
 private:
     void scanDrives();
+    bool checkIsDiscordOverlayActive();
+    void setDiscordOverlayFilesActive(bool active);
 
     // System specs variables
     QString m_osName;
@@ -253,6 +265,8 @@ private:
     bool m_bitlockerActive = true;
     bool m_originalBitlockerActive = true;
     bool m_bitlockerDriveEncrypted = false;
+    bool m_discordOverlayActive = true;
+    bool m_originalDiscordOverlayActive = true;
     QStringList m_detectedPrinters;
     bool m_notificationsActive = true;
     bool m_originalNotificationsActive = true;

@@ -19,6 +19,7 @@
 #include <shlobj.h>
 #include <propkey.h>
 #include <propvarutil.h>
+#include <tlhelp32.h>
 #pragma comment(lib, "winspool.lib")
 #pragma comment(lib, "powrprof.lib")
 #pragma comment(lib, "propsys.lib")
@@ -92,6 +93,13 @@ void Optimizer::setBitlockerActive(bool val) {
     if (m_bitlockerActive != val) {
         m_bitlockerActive = val;
         emit bitlockerActiveChanged(m_bitlockerActive);
+    }
+}
+
+void Optimizer::setDiscordOverlayActive(bool val) {
+    if (m_discordOverlayActive != val) {
+        m_discordOverlayActive = val;
+        emit discordOverlayActiveChanged(m_discordOverlayActive);
     }
 }
 
@@ -327,6 +335,12 @@ void Optimizer::loadSystemStates() {
     emit bitlockerActiveChanged(m_bitlockerActive);
     emit originalBitlockerActiveChanged(m_originalBitlockerActive);
     emit bitlockerDriveEncryptedChanged(m_bitlockerDriveEncrypted);
+
+    // Query active state of Discord In-Game Overlay
+    m_discordOverlayActive = checkIsDiscordOverlayActive();
+    m_originalDiscordOverlayActive = m_discordOverlayActive;
+    emit discordOverlayActiveChanged(m_discordOverlayActive);
+    emit originalDiscordOverlayActiveChanged(m_originalDiscordOverlayActive);
 
     // Read HibernateEnabled Registry Key on Windows
     bool isHibernationActive = false;
@@ -722,6 +736,7 @@ void Optimizer::startSystemOptimization() {
     bool firewallVal = m_firewallActive;
     bool printerVal = m_printerActive;
     bool bitlockerVal = m_bitlockerActive;
+    bool discordOverlayVal = m_discordOverlayActive;
     bool notificationsVal = m_notificationsActive;
     bool notifGlobalVal = m_notifGlobalActive;
     bool notifAppVal = m_notifAppActive;
@@ -741,13 +756,14 @@ void Optimizer::startSystemOptimization() {
     bool origFirewall = m_originalFirewallActive;
     bool origPrinter = m_originalPrinterActive;
     bool origBitlocker = m_originalBitlockerActive;
+    bool origDiscordOverlay = m_originalDiscordOverlayActive;
     bool origNotifications = m_originalNotificationsActive;
     bool origNotifGlobal = m_originalNotifGlobalActive;
     bool origNotifApp = m_originalNotifAppActive;
     bool origNotifSounds = m_originalNotifSoundsActive;
     bool origNotifLockscreen = m_originalNotifLockscreenActive;
 
-    QThread* worker = QThread::create([this, searchVal, hibernationVal, overlayVal, coreIsolationVal, mouseAccelVal, gameModeVal, firewallVal, printerVal, bitlockerVal, notificationsVal, notifGlobalVal, notifAppVal, notifSoundsVal, notifLockscreenVal, targetPowerSchemeVal, activePowerSchemeVal, targets, originalTargets, origSearch, origHibernation, origOverlay, origCoreIsolation, origMouseAccel, origGameMode, origFirewall, origPrinter, origBitlocker, origNotifications, origNotifGlobal, origNotifApp, origNotifSounds, origNotifLockscreen]() {
+    QThread* worker = QThread::create([this, searchVal, hibernationVal, overlayVal, coreIsolationVal, mouseAccelVal, gameModeVal, firewallVal, printerVal, bitlockerVal, discordOverlayVal, notificationsVal, notifGlobalVal, notifAppVal, notifSoundsVal, notifLockscreenVal, targetPowerSchemeVal, activePowerSchemeVal, targets, originalTargets, origSearch, origHibernation, origOverlay, origCoreIsolation, origMouseAccel, origGameMode, origFirewall, origPrinter, origBitlocker, origDiscordOverlay, origNotifications, origNotifGlobal, origNotifApp, origNotifSounds, origNotifLockscreen]() {
         // Step 0: Check if anything actually changed
         bool powerPlanChanged = (targetPowerSchemeVal != activePowerSchemeVal);
         bool anyChanges = (searchVal != origSearch) || 
@@ -759,6 +775,7 @@ void Optimizer::startSystemOptimization() {
                           (firewallVal != origFirewall) ||
                           (printerVal != origPrinter) ||
                           (bitlockerVal != origBitlocker) ||
+                          (discordOverlayVal != origDiscordOverlay) ||
                           (notificationsVal != origNotifications) ||
                           (notifGlobalVal != origNotifGlobal) ||
                           (notifAppVal != origNotifApp) ||
@@ -1266,6 +1283,30 @@ void Optimizer::startSystemOptimization() {
             emit bitlockerActiveChanged(m_bitlockerActive);
         }
 
+        // Step 1.98c: Discord Overlay Configuration (only if changed)
+        if (discordOverlayVal != origDiscordOverlay) {
+            emit systemStepReported(tr("Processing Discord Overlay..."), "INFO");
+            QThread::msleep(800);
+#ifdef Q_OS_WIN
+            if (isDiscordRunning()) {
+                emit systemStepReported(tr("Closing running Discord processes to unlock files..."), "INFO");
+                killDiscord();
+                QThread::msleep(500);
+            }
+            
+            setDiscordOverlayFilesActive(discordOverlayVal);
+            if (discordOverlayVal) {
+                emit systemStepReported(tr("Discord Overlay successfully enabled."), "SUCCESS");
+            } else {
+                emit systemStepReported(tr("Discord Overlay successfully disabled."), "SUCCESS");
+            }
+#else
+            emit systemStepReported(tr("[Simulation] Discord Overlay set to: %1").arg(discordOverlayVal ? "Enabled" : "Disabled"), "SUCCESS");
+#endif
+            m_discordOverlayActive = discordOverlayVal;
+            emit discordOverlayActiveChanged(m_discordOverlayActive);
+        }
+
         // Step 1.99: Windows Notifications Configuration (only if changed)
         bool notificationsSuccess = true;
         if ((notificationsVal != origNotifications) ||
@@ -1534,6 +1575,11 @@ void Optimizer::showPath(const QString &funcName) {
     } else if (funcName == "bitlocker") {
         QProcess::startDetached("control.exe", QStringList() << "/name" << "Microsoft.BitLockerDriveEncryption");
         Logger::log("Opening BitLocker Drive Encryption Manager...", "INFO");
+    } else if (funcName == "discord") {
+        QString path = QDir::homePath() + "/AppData/Roaming/discord";
+        path = QDir::toNativeSeparators(path);
+        QProcess::startDetached("explorer.exe", QStringList() << path);
+        Logger::log("Opening Discord AppData directory in File Explorer...", "INFO");
     } else {
         // Assume drive letter like "C:" or "D:"
         QString letter = funcName.trimmed();
@@ -2209,7 +2255,6 @@ void Optimizer::activateUltimatePerformance() {
         }
         m_powerSchemes[i] = map;
     }
-    
     if (!found) {
         QVariantMap ultMap;
         ultMap["name"] = tr("Ultimate Performance Scheme");
@@ -2221,4 +2266,123 @@ void Optimizer::activateUltimatePerformance() {
     emit powerSchemesChanged(m_powerSchemes);
     
     Logger::log("Staged Ultimate Performance power scheme activation.", "INFO");
+}
+
+bool Optimizer::isDiscordRunning() {
+#ifdef Q_OS_WIN
+    bool running = false;
+    HANDLE hSnapshot = CreateToolhelp32Snapshot(TH32CS_SNAPPROCESS, 0);
+    if (hSnapshot != INVALID_HANDLE_VALUE) {
+        PROCESSENTRY32W pe32;
+        pe32.dwSize = sizeof(pe32);
+        if (Process32FirstW(hSnapshot, &pe32)) {
+            do {
+                if (wcscmp(pe32.szExeFile, L"Discord.exe") == 0 || 
+                    wcscmp(pe32.szExeFile, L"discord.exe") == 0) {
+                    running = true;
+                    break;
+                }
+            } while (Process32NextW(hSnapshot, &pe32));
+        }
+        CloseHandle(hSnapshot);
+    }
+    return running;
+#else
+    return false;
+#endif
+}
+
+void Optimizer::killDiscord() {
+#ifdef Q_OS_WIN
+    HANDLE hSnapshot = CreateToolhelp32Snapshot(TH32CS_SNAPPROCESS, 0);
+    if (hSnapshot != INVALID_HANDLE_VALUE) {
+        PROCESSENTRY32W pe32;
+        pe32.dwSize = sizeof(pe32);
+        if (Process32FirstW(hSnapshot, &pe32)) {
+            do {
+                if (wcscmp(pe32.szExeFile, L"Discord.exe") == 0 || 
+                    wcscmp(pe32.szExeFile, L"discord.exe") == 0) {
+                    HANDLE hProcess = OpenProcess(PROCESS_TERMINATE, FALSE, pe32.th32ProcessID);
+                    if (hProcess) {
+                        TerminateProcess(hProcess, 0);
+                        CloseHandle(hProcess);
+                    }
+                }
+            } while (Process32NextW(hSnapshot, &pe32));
+        }
+        CloseHandle(hSnapshot);
+    }
+    Logger::log("Closed running Discord instances to unlock hook files.", "INFO");
+#endif
+}
+
+bool Optimizer::checkIsDiscordOverlayActive() {
+    QString appData = QDir::homePath() + "/AppData/Roaming";
+    QStringList discordDirs = { "discord", "discordcanary", "discordptb" };
+    
+    bool foundDll = false;
+    bool foundDisabled = false;
+    
+    for (const QString &dirName : discordDirs) {
+        QString discordPath = appData + "/" + dirName;
+        if (!QDir(discordPath).exists()) continue;
+        
+        QDirIterator it(discordPath, QDirIterator::Subdirectories);
+        while (it.hasNext()) {
+            QString filePath = it.next();
+            QString fileName = QFileInfo(filePath).fileName();
+            
+            if (fileName.compare("DiscordHook64.dll", Qt::CaseInsensitive) == 0 ||
+                fileName.compare("DiscordHook.dll", Qt::CaseInsensitive) == 0) {
+                foundDll = true;
+            } else if (fileName.compare("DiscordHook64.dll.disabled", Qt::CaseInsensitive) == 0 ||
+                       fileName.compare("DiscordHook.dll.disabled", Qt::CaseInsensitive) == 0) {
+                foundDisabled = true;
+            }
+        }
+    }
+    
+    if (foundDisabled && !foundDll) {
+        return false;
+    }
+    return true; // Default to active/enabled
+}
+
+void Optimizer::setDiscordOverlayFilesActive(bool active) {
+    QString appData = QDir::homePath() + "/AppData/Roaming";
+    QStringList discordDirs = { "discord", "discordcanary", "discordptb" };
+    
+    for (const QString &dirName : discordDirs) {
+        QString discordPath = appData + "/" + dirName;
+        if (!QDir(discordPath).exists()) continue;
+        
+        QDirIterator it(discordPath, QDirIterator::Subdirectories);
+        while (it.hasNext()) {
+            QString filePath = it.next();
+            QFileInfo fileInfo(filePath);
+            QString fileName = fileInfo.fileName();
+            
+            if (active) {
+                if (fileName.compare("DiscordHook64.dll.disabled", Qt::CaseInsensitive) == 0) {
+                    QString newPath = fileInfo.absolutePath() + "/DiscordHook64.dll";
+                    QFile::rename(filePath, newPath);
+                    Logger::log("Restored Discord Overlay DLL: " + newPath, "INFO");
+                } else if (fileName.compare("DiscordHook.dll.disabled", Qt::CaseInsensitive) == 0) {
+                    QString newPath = fileInfo.absolutePath() + "/DiscordHook.dll";
+                    QFile::rename(filePath, newPath);
+                    Logger::log("Restored Discord Overlay DLL: " + newPath, "INFO");
+                }
+            } else {
+                if (fileName.compare("DiscordHook64.dll", Qt::CaseInsensitive) == 0) {
+                    QString newPath = filePath + ".disabled";
+                    QFile::rename(filePath, newPath);
+                    Logger::log("Disabled Discord Overlay DLL: " + newPath, "INFO");
+                } else if (fileName.compare("DiscordHook.dll", Qt::CaseInsensitive) == 0) {
+                    QString newPath = filePath + ".disabled";
+                    QFile::rename(filePath, newPath);
+                    Logger::log("Disabled Discord Overlay DLL: " + newPath, "INFO");
+                }
+            }
+        }
+    }
 }

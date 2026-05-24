@@ -58,6 +58,8 @@ Item {
         if (optimizerBackend.gameModeActive !== optimizerBackend.originalGameModeActive) return true;
         if (optimizerBackend.firewallActive !== optimizerBackend.originalFirewallActive) return true;
         if (optimizerBackend.printerActive !== optimizerBackend.originalPrinterActive) return true;
+        if (optimizerBackend.bitlockerActive !== optimizerBackend.originalBitlockerActive) return true;
+        if (optimizerBackend.discordOverlayActive !== optimizerBackend.originalDiscordOverlayActive) return true;
         if (optimizerBackend.notificationsActive !== optimizerBackend.originalNotificationsActive) return true;
         if (optimizerBackend.notifGlobalActive !== optimizerBackend.originalNotifGlobalActive) return true;
         if (optimizerBackend.notifAppActive !== optimizerBackend.originalNotifAppActive) return true;
@@ -100,6 +102,7 @@ Item {
     property bool hibernationChanged: optimizerBackend.hibernationActive !== optimizerBackend.originalHibernationActive
     property bool powerPlanChanged: optimizerBackend.targetPowerSchemeGuid !== optimizerBackend.activePowerSchemeGuid
     property bool bitlockerChanged: optimizerBackend.bitlockerActive !== optimizerBackend.originalBitlockerActive
+    property bool discordOverlayChanged: optimizerBackend.discordOverlayActive !== optimizerBackend.originalDiscordOverlayActive
 
     // Active sidebar state
     property string activeDrawer: ""
@@ -122,6 +125,7 @@ Item {
         if (hibernationChanged) count++;
         if (powerPlanChanged) count++;
         if (bitlockerChanged) count++;
+        if (discordOverlayChanged) count++;
         return count;
     }
 
@@ -218,6 +222,14 @@ Item {
             hasSidebar: false,
             revert: function() {
                 optimizerBackend.bitlockerActive = optimizerBackend.originalBitlockerActive;
+            }
+        });
+        if (discordOverlayChanged) list.push({
+            name: qsTr("Discord In-Game Overlay"),
+            icon: "qrc:/MeguPackOptimizer/src/resources/folder.svg",
+            hasSidebar: false,
+            revert: function() {
+                optimizerBackend.discordOverlayActive = optimizerBackend.originalDiscordOverlayActive;
             }
         });
         return list;
@@ -371,6 +383,7 @@ Item {
         if (name === qsTr("Core Isolation")) return coreIsolationPanel;
         if (name === qsTr("Mouse Acceleration")) return mouseAccelerationPanel;
         if (name === qsTr("Game Mode")) return gameModePanel;
+        if (name === qsTr("Discord In-Game Overlay")) return discordOverlayPanel;
         if (name === qsTr("Windows Defender Firewall")) return firewallPanel;
         if (name === qsTr("Print Spooler (Printer)")) return printerPanel;
         if (name === qsTr("Windows Notifications")) return notificationsPanel;
@@ -1210,6 +1223,111 @@ Item {
                             anchors.verticalCenter: parent.verticalCenter
                             onToggled: (isChecked) => {
                                 optimizerBackend.gameModeActive = isChecked;
+                            }
+                        }
+                    }
+                }
+
+                // Discord Overlay Panel
+                AcrylicPanel {
+                    id: discordOverlayPanel
+                    width: parent.width
+                    height: 72
+
+                    Row {
+                        anchors.left: parent.left
+                        anchors.verticalCenter: parent.verticalCenter
+                        spacing: 12
+
+                        Item {
+                            width: 28
+                            height: 28
+                            anchors.verticalCenter: parent.verticalCenter
+                            Image {
+                                id: discordIconImg
+                                source: "qrc:/MeguPackOptimizer/src/resources/folder.svg"
+                                anchors.fill: parent
+                                sourceSize.width: 28
+                                sourceSize.height: 28
+                                visible: false
+                            }
+                            ColorOverlay {
+                                anchors.fill: discordIconImg
+                                source: discordIconImg
+                                color: Theme.accent
+                            }
+                        }
+
+                        Column {
+                            anchors.verticalCenter: parent.verticalCenter
+                            spacing: 2
+
+                            Row {
+                                spacing: 8
+                                Text {
+                                    text: qsTr("Discord In-Game Overlay")
+                                    color: Theme.textPrimary
+                                    font.family: Theme.fontFamily
+                                    font.pixelSize: 13
+                                    font.bold: true
+                                }
+                                Rectangle {
+                                    visible: root.discordOverlayChanged
+                                    height: 16
+                                    width: selectedTextDiscord.contentWidth + 10
+                                    radius: 4
+                                    color: Theme.accentDim
+                                    border.color: Theme.accent
+                                    border.width: 1
+                                    anchors.verticalCenter: parent.verticalCenter
+                                    Text {
+                                        id: selectedTextDiscord
+                                        text: qsTr("Selected for application")
+                                        color: Theme.accent
+                                        font.family: Theme.fontFamily
+                                        font.pixelSize: 8
+                                        font.bold: true
+                                        anchors.centerIn: parent
+                                    }
+                                }
+                            }
+
+                            Text {
+                                text: qsTr("Disable Discord's in-game overlay DLL injection to reduce CPU overhead and eliminate graphics micro-stutters.")
+                                color: Theme.textMuted
+                                font.family: Theme.fontFamily
+                                font.pixelSize: 10
+                            }
+                        }
+                    }
+
+                    Row {
+                        anchors.right: parent.right
+                        anchors.verticalCenter: parent.verticalCenter
+                        spacing: 16
+
+                        Text {
+                            text: qsTr("Show Path")
+                            color: discordPathMouse.containsMouse ? Theme.accentLight : Theme.accent
+                            font.family: Theme.fontFamily
+                            font.pixelSize: 11
+                            font.bold: true
+                            font.underline: true
+                            anchors.verticalCenter: parent.verticalCenter
+                            MouseArea {
+                                id: discordPathMouse
+                                anchors.fill: parent
+                                hoverEnabled: true
+                                cursorShape: Qt.PointingHandCursor
+                                onClicked: { optimizerBackend.showPath("discord"); }
+                            }
+                        }
+
+                        MeguSwitch {
+                            checked: optimizerBackend.discordOverlayActive
+                            anchors.verticalCenter: parent.verticalCenter
+                            onToggled: (isChecked) => {
+                                optimizerBackend.discordOverlayActive = isChecked;
                             }
                         }
                     }
@@ -2069,8 +2187,12 @@ Item {
             height: 40
             enabled: !optimizerBackend.isOptimizingSystem && root.hasChanges
             onClicked: {
-                stepLogModel.clear();
-                optimizerBackend.startSystemOptimization();
+                if (root.discordOverlayChanged && optimizerBackend.isDiscordRunning()) {
+                    discordCloseDialog.open();
+                } else {
+                    stepLogModel.clear();
+                    optimizerBackend.startSystemOptimization();
+                }
             }
         }
     }
@@ -3951,6 +4073,139 @@ Item {
                         width: 100
                         onClicked: {
                             progressOverlay.showFinishedOverlay = false;
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    // DISCORD CLOSE PROCESS PROMPT OVERLAY
+    Rectangle {
+        id: discordCloseDialog
+        anchors.fill: parent
+        color: "#CC05070B"
+        z: 9999
+        visible: false
+        opacity: 0.0
+        
+        Behavior on opacity { NumberAnimation { duration: Theme.animNormal } }
+        
+        function open() {
+            visible = true;
+            opacity = 1.0;
+        }
+        
+        function close() {
+            opacity = 0.0;
+            closeTimer.start();
+        }
+        
+        Timer {
+            id: closeTimer
+            interval: Theme.animNormal
+            onTriggered: discordCloseDialog.visible = false;
+        }
+
+        MouseArea {
+            anchors.fill: parent
+            onClicked: discordCloseDialog.close();
+        }
+
+        AcrylicPanel {
+            anchors.centerIn: parent
+            width: 320
+            height: 180
+            radius: 12
+            
+            MouseArea {
+                anchors.fill: parent
+                acceptedButtons: Qt.AllButtons
+            }
+
+            Column {
+                anchors.fill: parent
+                anchors.margins: 20
+                spacing: 16
+
+                Row {
+                    spacing: 10
+                    width: parent.width
+                    Item {
+                        width: 24
+                        height: 24
+                        Image {
+                            id: warnImg
+                            source: "qrc:/MeguPackOptimizer/src/resources/warning.svg"
+                            anchors.fill: parent
+                            sourceSize.width: 24
+                            sourceSize.height: 24
+                            visible: false
+                        }
+                        ColorOverlay {
+                            anchors.fill: warnImg
+                            source: warnImg
+                            color: Theme.accent
+                        }
+                    }
+                    Text {
+                        text: qsTr("Discord Process Detected")
+                        color: Theme.textPrimary
+                        font.family: Theme.fontFamily
+                        font.pixelSize: 14
+                        font.bold: true
+                        anchors.verticalCenter: parent.verticalCenter
+                    }
+                }
+
+                Text {
+                    text: qsTr("Discord is currently running. It must be closed to safely lock/unlock overlay files.\n\nWould you like to close Discord now and proceed?")
+                    color: Theme.textSecondary
+                    font.family: Theme.fontFamily
+                    font.pixelSize: 11
+                    width: parent.width
+                    wrapMode: Text.WordWrap
+                }
+
+                Row {
+                    width: parent.width
+                    spacing: 10
+                    layoutDirection: Qt.RightToLeft
+
+                    MeguButton {
+                        text: qsTr("Close & Optimize")
+                        accented: true
+                        width: 120
+                        height: 30
+                        onClicked: {
+                            discordCloseDialog.close();
+                            stepLogModel.clear();
+                            optimizerBackend.killDiscord();
+                            optimizerBackend.startSystemOptimization();
+                        }
+                    }
+
+                    MeguButton {
+                        text: qsTr("Skip Overlay")
+                        accented: false
+                        width: 100
+                        height: 30
+                        onClicked: {
+                            discordCloseDialog.close();
+                            optimizerBackend.discordOverlayActive = optimizerBackend.originalDiscordOverlayActive;
+                            stepLogModel.clear();
+                            optimizerBackend.startSystemOptimization();
+                        }
+                    }
+
+                    MeguButton {
+                        text: qsTr("Cancel")
+                        accented: false
+                        flat: true
+                        width: 60
+                        height: 30
+                        onClicked: {
+                            discordCloseDialog.close();
                         }
                     }
                 }
