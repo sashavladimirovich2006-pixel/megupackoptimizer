@@ -32,7 +32,7 @@ Item {
             color: {
                 if (control.checked) return Theme.accent;
                 if (control.indeterminate) return Theme.accentDim;
-                return (Theme.currentTheme === "Белоснежная") ? "#CBD5E1" : "#121A26";
+                return (Theme.currentTheme === "Белоснежная" || Theme.currentTheme === "Розовая") ? Theme.buttonBg : "#121A26";
             }
             border.color: (control.checked || control.indeterminate) ? Theme.accent : (mouseArea.containsMouse ? Theme.borderHover : Theme.border)
             border.width: 1

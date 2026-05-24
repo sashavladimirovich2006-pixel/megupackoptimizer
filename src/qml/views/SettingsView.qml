@@ -187,7 +187,7 @@ Item {
                                     width: 100
                                     height: 32
                                     radius: Theme.radiusSmall
-                                    color: settingsBackend.language === modelData.code ? Theme.accent : "#1E293B"
+                                    color: settingsBackend.language === modelData.code ? Theme.accent : Theme.buttonBg
                                     border.color: settingsBackend.language === modelData.code ? "transparent" : Theme.border
                                     border.width: 1
 

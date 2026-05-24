@@ -20,7 +20,7 @@ Item {
             width: parent.width
             height: 10
             radius: 5
-            color: "#161E2E"
+            color: Theme.buttonBg
             border.color: Theme.border
             border.width: 1
             

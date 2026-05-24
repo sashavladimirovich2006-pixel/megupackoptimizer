@@ -43,13 +43,13 @@ Item {
             if (control.accented) {
                 return "transparent"; // Managed by gradient
             } else {
-                return mouseArea.pressed ? "#1E2A3E" : (mouseArea.containsMouse ? "#141D2B" : "#0D111A");
+                return mouseArea.pressed ? Theme.buttonBgPressed : (mouseArea.containsMouse ? Theme.buttonBgHover : Theme.buttonBg);
             }
         }
                
         border.color: {
             if (control.accented) return "transparent";
-            return mouseArea.containsMouse ? Theme.accent : "#202E44";
+            return mouseArea.containsMouse ? Theme.accent : Theme.border;
         }
         border.width: 1
         

@@ -58,6 +58,36 @@ Item {
         return "#131924";
     }
 
+    property color buttonBg: {
+        if (currentTheme === "Белоснежная") return "#F1F5F9";
+        if (currentTheme === "Темная") return "#1C2533";
+        if (currentTheme === "Blackout полностью черная") return "#121212";
+        if (currentTheme === "Ргб") return "#0E0E14";
+        if (currentTheme === "Розовая") return "#F4E3E5";
+        if (currentTheme === "Black pink") return "#141016";
+        return "#1C2533";
+    }
+
+    property color buttonBgHover: {
+        if (currentTheme === "Белоснежная") return "#E2E8F0";
+        if (currentTheme === "Темная") return "#2A374C";
+        if (currentTheme === "Blackout полностью черная") return "#1C1C1E";
+        if (currentTheme === "Ргб") return "#1A1A26";
+        if (currentTheme === "Розовая") return "#EACCD1";
+        if (currentTheme === "Black pink") return "#241626";
+        return "#2A374C";
+    }
+
+    property color buttonBgPressed: {
+        if (currentTheme === "Белоснежная") return "#CBD5E1";
+        if (currentTheme === "Темная") return "#0C1017";
+        if (currentTheme === "Blackout полностью черная") return "#0A0A0A";
+        if (currentTheme === "Ргб") return "#06060A";
+        if (currentTheme === "Розовая") return "#D5A3AE";
+        if (currentTheme === "Black pink") return "#0F0A0F";
+        return "#0C1017";
+    }
+
     property color headerBg: {
         if (currentTheme === "Белоснежная") return "#E5E7EB";
         if (currentTheme === "Темная") return "#0E1420";
@@ -135,7 +165,7 @@ Item {
         if (currentTheme === "Темная") return "#0B1019";
         if (currentTheme === "Blackout полностью черная") return "#000000";
         if (currentTheme === "Ргб") return "#000000";
-        if (currentTheme === "Розовая") return "#FFFFFF";
+        if (currentTheme === "Розовая") return "#3D2228";
         if (currentTheme === "Black pink") return "#050406";
         return "#0B1019";
     }
