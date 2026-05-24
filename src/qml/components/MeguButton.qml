@@ -124,16 +124,9 @@ Item {
             Behavior on color { ColorAnimation { duration: 100 } }
         }
     }
-    
-    // Subdued, premium physical press response
-    scale: mouseArea.pressed && control.enabled ? 0.97 : 1.0
-    Behavior on scale {
-        NumberAnimation {
-            duration: 80
-            easing.type: Easing.OutQuad
-        }
-    }
-    
+    // Subdued, premium physical press response (scale kept stable at 1.0)
+    scale: 1.0
+
     MouseArea {
         id: mouseArea
         anchors.fill: parent

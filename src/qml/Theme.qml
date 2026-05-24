@@ -59,33 +59,33 @@ Item {
     }
 
     property color buttonBg: {
-        if (currentTheme === "Белоснежная") return "#B3F1F5F9"; // 70% translucent
-        if (currentTheme === "Темная") return "#F816171B"; // 97% solid elegant button plate (matching reference!)
-        if (currentTheme === "Blackout полностью черная") return "#F8101010"; 
-        if (currentTheme === "Ргб") return "#F80E0E14"; 
-        if (currentTheme === "Розовая") return "#B3F4E3E5"; 
-        if (currentTheme === "Black pink") return "#F8141016"; 
-        return "#F816171B";
+        if (currentTheme === "Белоснежная") return "#10000000"; // 6% translucent dark on white
+        if (currentTheme === "Темная") return "#16FFFFFF"; // 8.6% translucent white on slate
+        if (currentTheme === "Blackout полностью черная") return "#16FFFFFF"; 
+        if (currentTheme === "Ргб") return "#16FFFFFF"; 
+        if (currentTheme === "Розовая") return "#40FFFFFF"; // 25% translucent white on pink
+        if (currentTheme === "Black pink") return "#16FFFFFF"; 
+        return "#16FFFFFF";
     }
 
     property color buttonBgHover: {
-        if (currentTheme === "Белоснежная") return "#CCE2E8F0"; 
-        if (currentTheme === "Темная") return "#F822242B"; // Subtle highlight on hover
-        if (currentTheme === "Blackout полностью черная") return "#F81C1C1C"; 
-        if (currentTheme === "Ргб") return "#F81A1A26"; 
-        if (currentTheme === "Розовая") return "#CCEACCD1"; 
-        if (currentTheme === "Black pink") return "#F8241626"; 
-        return "#F822242B";
+        if (currentTheme === "Белоснежная") return "#1D000000"; // 11.4% translucent
+        if (currentTheme === "Темная") return "#26FFFFFF"; // 15% translucent white on slate
+        if (currentTheme === "Blackout полностью черная") return "#26FFFFFF"; 
+        if (currentTheme === "Ргб") return "#26FFFFFF"; 
+        if (currentTheme === "Розовая") return "#60FFFFFF"; // 37.6% translucent white
+        if (currentTheme === "Black pink") return "#26FFFFFF"; 
+        return "#26FFFFFF";
     }
 
     property color buttonBgPressed: {
-        if (currentTheme === "Белоснежная") return "#CBD5E1";
-        if (currentTheme === "Темная") return "#08090C";
-        if (currentTheme === "Blackout полностью черная") return "#000000";
-        if (currentTheme === "Ргб") return "#06060A";
-        if (currentTheme === "Розовая") return "#D5A3AE";
-        if (currentTheme === "Black pink") return "#0F0A0F";
-        return "#08090C";
+        if (currentTheme === "Белоснежная") return "#2A000000"; // 16.5% translucent
+        if (currentTheme === "Темная") return "#36FFFFFF"; // 21% translucent white on slate
+        if (currentTheme === "Blackout полностью черная") return "#36FFFFFF"; 
+        if (currentTheme === "Ргб") return "#36FFFFFF"; 
+        if (currentTheme === "Розовая") return "#80FFFFFF"; // 50% translucent white
+        if (currentTheme === "Black pink") return "#36FFFFFF"; 
+        return "#36FFFFFF";
     }
 
     property color headerBg: {
