@@ -16,8 +16,12 @@
 #include <windows.h>
 #include <winspool.h>
 #include <powrprof.h>
+#include <shlobj.h>
+#include <propkey.h>
+#include <propvarutil.h>
 #pragma comment(lib, "winspool.lib")
 #pragma comment(lib, "powrprof.lib")
+#pragma comment(lib, "propsys.lib")
 #endif
 
 Optimizer::Optimizer(QObject *parent) : QObject(parent) {
@@ -276,6 +280,7 @@ void Optimizer::loadSystemStates() {
 
     // Query BitLocker (BDESVC) startup state on startup
     bool isBitlockerDisabled = false;
+    bool isDriveCEncrypted = false;
 #ifdef Q_OS_WIN
     SC_HANDLE hSCMBitLocker = OpenSCManagerW(NULL, NULL, SC_MANAGER_CONNECT);
     if (hSCMBitLocker) {
@@ -295,11 +300,33 @@ void Optimizer::loadSystemStates() {
         }
         CloseServiceHandle(hSCMBitLocker);
     }
+
+    // Query actual BitLocker drive encryption protection on the C:\ drive
+    IShellItem2* pItem = nullptr;
+    HRESULT hr = SHCreateItemFromParsingName(L"C:\\", NULL, IID_PPV_ARGS(&pItem));
+    if (SUCCEEDED(hr)) {
+        PROPERTYKEY pKey;
+        hr = PSGetPropertyKeyFromName(L"System.Volume.BitLockerProtection", &pKey);
+        if (SUCCEEDED(hr)) {
+            PROPVARIANT prop;
+            PropVariantInit(&prop);
+            hr = pItem->GetProperty(pKey, &prop);
+            if (SUCCEEDED(hr)) {
+                int status = prop.intVal;
+                // Status values: 1 (On), 3 (Encrypting), 5 (Suspended), 6 (On/Locked) indicate active protection
+                isDriveCEncrypted = (status == 1 || status == 3 || status == 5 || status == 6);
+                PropVariantClear(&prop);
+            }
+        }
+        pItem->Release();
+    }
 #endif
     m_bitlockerActive = !isBitlockerDisabled;
     m_originalBitlockerActive = m_bitlockerActive;
+    m_bitlockerDriveEncrypted = isDriveCEncrypted;
     emit bitlockerActiveChanged(m_bitlockerActive);
     emit originalBitlockerActiveChanged(m_originalBitlockerActive);
+    emit bitlockerDriveEncryptedChanged(m_bitlockerDriveEncrypted);
 
     // Read HibernateEnabled Registry Key on Windows
     bool isHibernationActive = false;

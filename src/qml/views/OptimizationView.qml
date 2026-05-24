@@ -1743,7 +1743,7 @@ Item {
                 AcrylicPanel {
                     id: bitlockerPanel
                     width: parent.width
-                    height: 72
+                    height: 80
 
                     Row {
                         anchors.left: parent.left
@@ -1808,6 +1808,16 @@ Item {
                                 color: Theme.textMuted
                                 font.family: Theme.fontFamily
                                 font.pixelSize: 10
+                            }
+
+                            Text {
+                                text: qsTr("Status: Service: %1 | Encryption (C:): %2")
+                                      .arg(optimizerBackend.bitlockerActive ? qsTr("Active") : qsTr("Disabled"))
+                                      .arg(optimizerBackend.bitlockerDriveEncrypted ? qsTr("Encrypted") : qsTr("Not Encrypted"))
+                                color: Theme.accent
+                                font.family: Theme.fontFamily
+                                font.pixelSize: 9
+                                font.bold: true
                             }
                         }
                     }
