@@ -121,12 +121,12 @@ Item {
 
     property color borderGlow: {
         if (currentTheme === "Ргб") return rgbAccentGlow;
-        if (currentTheme === "Белоснежная") return "#3B82F620";
-        if (currentTheme === "Темная") return "#00E5FF25";
+        if (currentTheme === "Белоснежная") return "#FF9F0A20";
+        if (currentTheme === "Темная") return "#FF9F0A20";
         if (currentTheme === "Blackout полностью черная") return "#FF9F0A20";
         if (currentTheme === "Розовая") return "#D48C9C20";
         if (currentTheme === "Black pink") return "#FF5E9720";
-        return "#00E5FF25";
+        return "#FF9F0A20";
     }
     
     // 3. Text Colors (Overhauled for maximum readability!)
@@ -161,7 +161,7 @@ Item {
     }
 
     property color textInverse: {
-        if (currentTheme === "Белоснежная") return "#FFFFFF";
+        if (currentTheme === "Белоснежная") return "#05070B";
         if (currentTheme === "Темная") return "#05070B";
         if (currentTheme === "Blackout полностью черная") return "#000000";
         if (currentTheme === "Ргб") return "#000000";
@@ -173,29 +173,29 @@ Item {
     // 4. Accent Overhaul (Gorgeous, bug-free brand colors!)
     property color accent: {
         if (currentTheme === "Ргб") return rgbAccent;
-        if (currentTheme === "Белоснежная") return "#3B82F6"; // Fluent Blue
+        if (currentTheme === "Белоснежная") return "#FF9F0A"; // Amber Orange
         if (currentTheme === "Blackout полностью черная") return "#FF9F0A"; // Neon Gold
         if (currentTheme === "Розовая") return "#D48C9C"; // Premium Blush Rose Gold
         if (currentTheme === "Black pink") return "#FF5E97"; // Cyber Blush Orchid
-        return "#00E5FF"; // Futuristic Electric Cyan
+        return "#FF9F0A"; // Default for "Темная"
     }
 
     property color accentLight: {
         if (currentTheme === "Ргб") return rgbAccentLight;
-        if (currentTheme === "Белоснежная") return "#60A5FA";
+        if (currentTheme === "Белоснежная") return "#FFE082";
         if (currentTheme === "Blackout полностью черная") return "#FFE082";
         if (currentTheme === "Розовая") return "#E5B3BE";
         if (currentTheme === "Black pink") return "#FF85B2";
-        return "#80F3FF"; // Neon Light Cyan
+        return "#FFE082"; // Default for "Темная"
     }
 
     property color accentDark: {
         if (currentTheme === "Ргб") return rgbAccentDark;
-        if (currentTheme === "Белоснежная") return "#1D4ED8";
+        if (currentTheme === "Белоснежная") return "#FF8F00";
         if (currentTheme === "Blackout полностью черная") return "#FF8F00";
         if (currentTheme === "Розовая") return "#B26A7A";
         if (currentTheme === "Black pink") return "#D6336B";
-        return "#0097A7"; // Dark Cyan
+        return "#FF8F00"; // Default for "Темная"
     }
 
     property color yellowAccent: {
@@ -204,20 +204,20 @@ Item {
 
     property color accentGlow: {
         if (currentTheme === "Ргб") return rgbAccentGlow;
-        if (currentTheme === "Белоснежная") return "#3B82F635";
+        if (currentTheme === "Белоснежная") return "#FF9F0A30";
         if (currentTheme === "Blackout полностью черная") return "#FF9F0A30";
         if (currentTheme === "Розовая") return "#D48C9C35";
         if (currentTheme === "Black pink") return "#FF5E9735";
-        return "#FFBF0035";
+        return "#FF9F0A30";
     }
 
     property color accentDim: {
         if (currentTheme === "Ргб") return rgbAccentDim;
-        if (currentTheme === "Белоснежная") return "#3B82F615";
+        if (currentTheme === "Белоснежная") return "#FF9F0A15";
         if (currentTheme === "Blackout полностью черная") return "#FF9F0A15";
         if (currentTheme === "Розовая") return "#D48C9C15";
         if (currentTheme === "Black pink") return "#FF5E9715";
-        return "#FFBF0015";
+        return "#FF9F0A15";
     }
     
     // 5. Functional Colors
