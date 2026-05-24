@@ -372,9 +372,16 @@ Item {
         var panel = getParentCard(categoryName);
         if (!panel) return;
 
+        var flick = mainScroll.contentItem;
+        if (!flick) return;
+
         scrollAnimation.stop();
         var targetY = panel.mapToItem(mainColumn, 0, 0).y - (mainScroll.height - panel.height) / 2;
-        targetY = Math.max(0, Math.min(targetY, mainScroll.contentHeight - mainScroll.height));
+        var maxScroll = flick.contentHeight - mainScroll.height;
+        if (maxScroll < 0) maxScroll = 0;
+        targetY = Math.max(0, Math.min(targetY, maxScroll));
+        
+        scrollAnimation.target = flick;
         scrollAnimation.to = targetY;
         scrollAnimation.start();
 
@@ -385,7 +392,6 @@ Item {
 
     NumberAnimation {
         id: scrollAnimation
-        target: mainScroll
         property: "contentY"
         duration: 500
         easing.type: Easing.InOutQuad

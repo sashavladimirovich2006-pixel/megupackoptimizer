@@ -13,7 +13,7 @@ Rectangle {
     border.color: isFlashing ? Theme.accent : (hoverArea.containsMouse ? Theme.borderHover : Theme.border)
     border.width: 1
 
-    Behavior on border.color { ColorAnimation { duration: Theme.animNormal } }
+    Behavior on border.color { enabled: !panel.isFlashing; ColorAnimation { duration: Theme.animNormal } }
     Behavior on color { ColorAnimation { duration: Theme.animNormal } }
 
     // Thin elegant inner border for that clean physical edge
