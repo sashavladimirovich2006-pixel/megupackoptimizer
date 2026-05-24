@@ -53,7 +53,7 @@ Item {
         if (currentTheme === "Темная") return "#F80D0E12"; // 97% opaque sleek slate-black (matching reference!)
         if (currentTheme === "Blackout полностью черная") return "#F8080808"; // 97% opaque charcoal
         if (currentTheme === "Ргб") return "#F8050508"; 
-        if (currentTheme === "Розовая") return "#CCD9E5EC"; 
+        if (currentTheme === "Розовая") return "#CCF5E4E7"; 
         if (currentTheme === "Black pink") return "#F80A090D"; 
         return "#F80D0E12";
     }
