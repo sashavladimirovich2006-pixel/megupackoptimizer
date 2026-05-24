@@ -251,6 +251,7 @@ private:
     QVariantList m_powerSchemes;
     bool m_ultimateSchemeUnlocked = false;
     QString m_activePowerSchemeGuid;
+    QString m_targetPowerSchemeGuid;
     int m_mpoValue = 0;
     QStringList m_fixedDrives;
     QVariantMap m_driveStates;

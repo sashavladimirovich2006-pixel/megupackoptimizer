@@ -628,6 +628,7 @@ void Optimizer::loadSystemStates() {
     m_powerSchemes = schemesList;
     m_ultimateSchemeUnlocked = isUltimateUnlocked;
     m_activePowerSchemeGuid = activeSchemeGuidStr;
+    m_targetPowerSchemeGuid = activeSchemeGuidStr;
 
     emit powerSchemesChanged(m_powerSchemes);
     emit ultimateSchemeUnlockedChanged(m_ultimateSchemeUnlocked);
@@ -663,6 +664,9 @@ void Optimizer::startSystemOptimization() {
     bool notifAppVal = m_notifAppActive;
     bool notifSoundsVal = m_notifSoundsActive;
     bool notifLockscreenVal = m_notifLockscreenActive;
+    QString targetPowerSchemeVal = m_targetPowerSchemeGuid;
+    QString activePowerSchemeVal = m_activePowerSchemeGuid;
+
     QVariantMap targets = m_driveStates;
     QVariantMap originalTargets = m_originalDriveStates;
     bool origSearch = m_originalWinSearchActive;
@@ -679,8 +683,9 @@ void Optimizer::startSystemOptimization() {
     bool origNotifSounds = m_originalNotifSoundsActive;
     bool origNotifLockscreen = m_originalNotifLockscreenActive;
 
-    QThread* worker = QThread::create([this, searchVal, hibernationVal, overlayVal, coreIsolationVal, mouseAccelVal, gameModeVal, firewallVal, printerVal, notificationsVal, notifGlobalVal, notifAppVal, notifSoundsVal, notifLockscreenVal, targets, originalTargets, origSearch, origHibernation, origOverlay, origCoreIsolation, origMouseAccel, origGameMode, origFirewall, origPrinter, origNotifications, origNotifGlobal, origNotifApp, origNotifSounds, origNotifLockscreen]() {
+    QThread* worker = QThread::create([this, searchVal, hibernationVal, overlayVal, coreIsolationVal, mouseAccelVal, gameModeVal, firewallVal, printerVal, notificationsVal, notifGlobalVal, notifAppVal, notifSoundsVal, notifLockscreenVal, targetPowerSchemeVal, activePowerSchemeVal, targets, originalTargets, origSearch, origHibernation, origOverlay, origCoreIsolation, origMouseAccel, origGameMode, origFirewall, origPrinter, origNotifications, origNotifGlobal, origNotifApp, origNotifSounds, origNotifLockscreen]() {
         // Step 0: Check if anything actually changed
+        bool powerPlanChanged = (targetPowerSchemeVal != activePowerSchemeVal);
         bool anyChanges = (searchVal != origSearch) || 
                           (hibernationVal != origHibernation) || 
                           (overlayVal != origOverlay) ||
@@ -693,7 +698,8 @@ void Optimizer::startSystemOptimization() {
                           (notifGlobalVal != origNotifGlobal) ||
                           (notifAppVal != origNotifApp) ||
                           (notifSoundsVal != origNotifSounds) ||
-                          (notifLockscreenVal != origNotifLockscreen);
+                          (notifLockscreenVal != origNotifLockscreen) ||
+                          powerPlanChanged;
         if (!anyChanges) {
             for (const QString &driveLetter : targets.keys()) {
                 if (targets.value(driveLetter).toBool() != originalTargets.value(driveLetter).toBool()) {
@@ -1194,6 +1200,74 @@ void Optimizer::startSystemOptimization() {
         emit systemProgressChanged(m_systemProgress);
         QThread::msleep(300);
 
+        // Step 4.5: Power Plan Configuration (only if changed)
+        bool powerPlanSuccess = true;
+        if (powerPlanChanged) {
+            emit systemStepReported(tr("Configuring Windows power settings..."), "INFO");
+            QThread::msleep(800);
+            
+#ifdef Q_OS_WIN
+            bool success = true;
+            const QString ultimateGuidStr = "{E9A22B95-E3B0-4B87-A177-728978ED6022}";
+            
+            // Check if we need to duplicate/unlock Ultimate Performance scheme
+            if (targetPowerSchemeVal == ultimateGuidStr) {
+                GUID schemeGuid;
+                DWORD bufferSize = sizeof(GUID);
+                DWORD index = 0;
+                bool found = false;
+                const GUID ultimateGuid = { 0xe9a22b95, 0xe3b0, 0x4b87, { 0xa1, 0x77, 0x72, 0x89, 0x78, 0xed, 0x60, 0x22 } };
+                while (PowerEnumerate(NULL, NULL, NULL, ACCESS_SCHEME, index, (UCHAR*)&schemeGuid, &bufferSize) == ERROR_SUCCESS) {
+                    if (IsEqualGUID(schemeGuid, ultimateGuid)) {
+                        found = true;
+                        break;
+                    }
+                    index++;
+                    bufferSize = sizeof(GUID);
+                }
+                
+                if (!found) {
+                    QProcess proc;
+                    proc.start("powercfg.exe", QStringList() << "-duplicatescheme" << "e9a22b95-e3b0-4b87-a177-728978ed6022");
+                    if (!proc.waitForFinished(8000)) {
+                        success = false;
+                        powerPlanSuccess = false;
+                        emit systemStepReported(tr("Failed to duplicate Ultimate Performance power scheme."), "ERROR");
+                        Logger::log("Failed to run powercfg duplicatescheme command.", "ERROR");
+                    }
+                }
+            }
+            
+            if (success) {
+                GUID guid;
+                HRESULT hr = CLSIDFromString((LPCOLESTR)targetPowerSchemeVal.utf16(), &guid);
+                if (SUCCEEDED(hr)) {
+                    DWORD err = PowerSetActiveScheme(NULL, &guid);
+                    if (err == ERROR_SUCCESS) {
+                        UCHAR friendlyName[256] = {0};
+                        DWORD friendlyNameSize = sizeof(friendlyName);
+                        PowerReadFriendlyName(NULL, &guid, NULL, NULL, friendlyName, &friendlyNameSize);
+                        QString name = QString::fromWCharArray((const wchar_t*)friendlyName);
+                        if (name.isEmpty()) name = targetPowerSchemeVal;
+                        
+                        emit systemStepReported(tr("Power plan changed to: %1").arg(name), "SUCCESS");
+                        Logger::log(QString("Power scheme successfully set active: %1").arg(name), "INFO");
+                    } else {
+                        powerPlanSuccess = false;
+                        emit systemStepReported(tr("Failed to change power scheme."), "ERROR");
+                        Logger::log(QString("Failed to set active scheme: %1").arg(err), "ERROR");
+                    }
+                } else {
+                    powerPlanSuccess = false;
+                    emit systemStepReported(tr("Failed to change power scheme."), "ERROR");
+                }
+            }
+#else
+            // Simulation
+            emit systemStepReported(tr("[Simulation] Power plan changed to: %1").arg(targetPowerSchemeVal), "SUCCESS");
+#endif
+        }
+
         // Steps 2+: Iterate drives in target list (only if changed)
         int driveIndex = 0;
         int totalDrives = targets.keys().size();
@@ -1237,7 +1311,7 @@ void Optimizer::startSystemOptimization() {
             QThread::msleep(100);
         }
 
-        bool overallSuccess = wSearchSuccess && hibernationSuccess && overlaySuccess && coreIsolationSuccess && mouseAccelSuccess && gameModeSuccess && firewallSuccess && printerSuccess && notificationsSuccess && overallDrivesSuccess;
+        bool overallSuccess = wSearchSuccess && hibernationSuccess && overlaySuccess && coreIsolationSuccess && mouseAccelSuccess && gameModeSuccess && firewallSuccess && printerSuccess && notificationsSuccess && powerPlanSuccess && overallDrivesSuccess;
         if (overallSuccess) {
             emit systemStepReported(tr("System optimization completed successfully!"), "SUCCESS");
             Logger::log("System optimization completed successfully!", "INFO");
@@ -1262,6 +1336,8 @@ void Optimizer::startSystemOptimization() {
         m_originalNotifLockscreenActive = notifLockscreenVal;
         m_originalDriveStates = targets;
         
+        loadSystemStates();
+
         emit driveStatesChanged(m_driveStates);
         emit originalWinSearchActiveChanged(m_originalWinSearchActive);
         emit originalHibernationActiveChanged(m_originalHibernationActive);
@@ -1948,95 +2024,53 @@ void Optimizer::applyMpoValue(int value) {
 }
 
 void Optimizer::selectPowerScheme(const QString &guidStr) {
-#ifdef Q_OS_WIN
-    GUID guid;
-    HRESULT hr = CLSIDFromString((LPCOLESTR)guidStr.utf16(), &guid);
-    if (SUCCEEDED(hr)) {
-        DWORD err = PowerSetActiveScheme(NULL, &guid);
-        if (err == ERROR_SUCCESS) {
-            // Find the scheme friendly name
-            UCHAR friendlyName[256] = {0};
-            DWORD friendlyNameSize = sizeof(friendlyName);
-            PowerReadFriendlyName(NULL, &guid, NULL, NULL, friendlyName, &friendlyNameSize);
-            QString name = QString::fromWCharArray((const wchar_t*)friendlyName);
-            if (name.isEmpty()) {
-                name = guidStr;
-            }
-            Logger::log(QString("Power scheme set to: %1").arg(name), "INFO");
-            emit systemStepReported(tr("Power plan changed to: %1").arg(name), "SUCCESS");
-        } else {
-            emit systemStepReported(tr("Failed to change power scheme."), "ERROR");
-        }
-    } else {
-        emit systemStepReported(tr("Failed to change power scheme."), "ERROR");
-    }
-#else
-    // Simulation
+    m_targetPowerSchemeGuid = guidStr.toUpper();
+    
+    // Update m_powerSchemes locally to highlight the selected target scheme
     for (int i = 0; i < m_powerSchemes.size(); ++i) {
         QVariantMap map = m_powerSchemes[i].toMap();
-        if (map["guid"].toString() == guidStr) {
+        if (map["guid"].toString().toUpper() == m_targetPowerSchemeGuid) {
             map["isActive"] = true;
-            m_activePowerSchemeGuid = guidStr;
-            m_powerSchemes[i] = map;
         } else {
             map["isActive"] = false;
-            m_powerSchemes[i] = map;
         }
+        m_powerSchemes[i] = map;
     }
     emit powerSchemesChanged(m_powerSchemes);
-    emit activePowerSchemeGuidChanged(m_activePowerSchemeGuid);
-    emit systemStepReported(tr("[Simulation] Power plan changed to: %1").arg(guidStr), "SUCCESS");
-#endif
-
-    loadSystemStates();
+    
+    Logger::log(QString("Staged target power scheme to: %1").arg(m_targetPowerSchemeGuid), "INFO");
 }
 
 void Optimizer::activateUltimatePerformance() {
-    emit systemStepReported(tr("Configuring Windows power settings..."), "INFO");
-#ifdef Q_OS_WIN
-    // Duplicate the Ultimate Performance power scheme if not already unlocked
-    QProcess proc;
-    proc.start("powercfg.exe", QStringList() << "-duplicatescheme" << "e9a22b95-e3b0-4b87-a177-728978ed6022");
-    if (proc.waitForFinished(8000)) {
-        // Now also set it active
-        GUID ultimateGuid = { 0xe9a22b95, 0xe3b0, 0x4b87, { 0xa1, 0x77, 0x72, 0x89, 0x78, 0xed, 0x60, 0x22 } };
-        DWORD err = PowerSetActiveScheme(NULL, &ultimateGuid);
-        if (err == ERROR_SUCCESS) {
-            emit systemStepReported(tr("Ultimate Performance power scheme unlocked and activated successfully."), "SUCCESS");
-            Logger::log("Ultimate Performance scheme successfully unlocked and set active.", "INFO");
-        } else {
-            emit systemStepReported(tr("Failed to activate Ultimate Performance scheme, but duplicated it successfully."), "WARNING");
-            Logger::log("Failed to set Ultimate Performance active.", "WARNING");
-        }
-    } else {
-        emit systemStepReported(tr("Failed to duplicate Ultimate Performance power scheme."), "ERROR");
-        Logger::log("Failed to run powercfg duplicatescheme command.", "ERROR");
-    }
-#else
-    // Simulation
-    QVariantMap ultMap;
-    ultMap["name"] = "Ultimate Performance (Максимальна продуктивність)";
-    ultMap["guid"] = "{E9A22B95-E3B0-4B87-A177-728978ED6022}";
-    ultMap["isActive"] = true;
-    ultMap["isUltimate"] = true;
-
-    // Remove active from others
+    // Stage Ultimate Performance activation
+    m_targetPowerSchemeGuid = "{E9A22B95-E3B0-4B87-A177-728978ED6022}";
+    
+    // Update ultimate unlocked state (staged in UI)
+    m_ultimateSchemeUnlocked = true;
+    emit ultimateSchemeUnlockedChanged(m_ultimateSchemeUnlocked);
+    
+    // De-activate other schemes and activate Ultimate Performance in m_powerSchemes
+    bool found = false;
     for (int i = 0; i < m_powerSchemes.size(); ++i) {
         QVariantMap map = m_powerSchemes[i].toMap();
-        map["isActive"] = false;
+        if (map["guid"].toString().toUpper() == m_targetPowerSchemeGuid) {
+            map["isActive"] = true;
+            found = true;
+        } else {
+            map["isActive"] = false;
+        }
         m_powerSchemes[i] = map;
     }
-
-    m_powerSchemes.append(ultMap);
-    m_ultimateSchemeUnlocked = true;
-    m_activePowerSchemeGuid = "{E9A22B95-E3B0-4B87-A177-728978ED6022}";
-
+    
+    if (!found) {
+        QVariantMap ultMap;
+        ultMap["name"] = tr("Ultimate Performance Scheme");
+        ultMap["guid"] = m_targetPowerSchemeGuid;
+        ultMap["isActive"] = true;
+        ultMap["isUltimate"] = true;
+        m_powerSchemes.append(ultMap);
+    }
     emit powerSchemesChanged(m_powerSchemes);
-    emit ultimateSchemeUnlockedChanged(m_ultimateSchemeUnlocked);
-    emit activePowerSchemeGuidChanged(m_activePowerSchemeGuid);
-
-    emit systemStepReported(tr("[Simulation] Ultimate Performance power scheme unlocked and activated successfully."), "SUCCESS");
-#endif
-
-    loadSystemStates();
+    
+    Logger::log("Staged Ultimate Performance power scheme activation.", "INFO");
 }
