@@ -10,6 +10,25 @@ Item {
     // Premium reactive entry transition (runs butter-smooth on every tab switch!)
     property bool isActive: opacity > 0.1
     property real yTranslation: isActive ? 0 : 15
+ 
+    function getTranslatedThemeName(themeName) {
+        if (settingsBackend.language === "en") {
+            if (themeName === "Белоснежная") return "Snow White";
+            if (themeName === "Темная") return "Dark";
+            if (themeName === "Blackout полностью черная") return "OLED Blackout";
+            if (themeName === "Ргб") return "RGB Gamer";
+            if (themeName === "Розовая") return "Sakura Pink";
+            if (themeName === "Black pink") return "Black Pink";
+        } else if (settingsBackend.language === "uk") {
+            if (themeName === "Белоснежная") return "Білосніжна";
+            if (themeName === "Темная") return "Темна";
+            if (themeName === "Blackout полностью черная") return "Абсолютно чорна";
+            if (themeName === "Ргб") return "RGB-Геймер";
+            if (themeName === "Розовая") return "Рожева";
+            if (themeName === "Black pink") return "Чорно-рожева";
+        }
+        return themeName;
+    }
 
     transform: Translate {
         y: root.yTranslation
@@ -101,7 +120,7 @@ Item {
                             }
 
                             Text {
-                                text: Theme.currentTheme
+                                text: getTranslatedThemeName(Theme.currentTheme)
                                 color: Theme.textPrimary
                                 font.family: Theme.fontFamily
                                 font.pixelSize: 12
@@ -330,7 +349,7 @@ Item {
                                         width: modelData.hasSub ? parent.width - 32 : parent.width
 
                                         Text {
-                                            text: modelData.name
+                                            text: getTranslatedThemeName(modelData.name)
                                             color: Theme.currentTheme === modelData.name ? Theme.accent : Theme.textPrimary
                                             font.family: Theme.fontFamily
                                             font.pixelSize: 12
@@ -437,7 +456,7 @@ Item {
                             anchors.verticalCenter: parent.verticalCenter
 
                             Text {
-                                text: "Black pink"
+                                text: getTranslatedThemeName("Black pink")
                                 color: Theme.currentTheme === "Black pink" ? Theme.accent : Theme.textPrimary
                                 font.family: Theme.fontFamily
                                 font.pixelSize: 12
