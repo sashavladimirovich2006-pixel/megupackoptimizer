@@ -118,7 +118,16 @@ The following rules must be strictly adhered to by all developers (human or AI) 
   - **Settings Shortcut**: Linked the Game Mode "Show Path" option to launch `ms-settings:gaming-gamemode` asynchronously via `QProcess::startDetached`.
   - **QML Integration**: Added a new card to `src/qml/views/OptimizationView.qml` inside the Latency column. The card utilizes `bolt.svg` and is bound reactively to the backend Game Mode property.
   - **Ukrainian Translations & Packaging**: Compiled Ukrainian translations using `lrelease` in `build.bat` after updating `translations/megu_pack_optimizer_uk.ts`. Deployed the updated binary to `D:\Aps\Git\MPONERE\megu_pack_optimizer.exe`.
-
-
-
+### Phase 1: Windows Defender Firewall Toggle, Precise Settings URIs & QML Parameter Bug Fix
+- **Action**: Implemented a "Windows Defender Firewall" toggle in the Latency & Mouse tweaks category, overhauled the settings launcher shortcuts to target precise sub-pages, fixed a critical QML switch parameter binding bug, updated all new strings to Ukrainian, and successfully built and packaged the updated binary.
+- **Detailed Rationale**:
+  - **Firewall Integration**: Declared properties, getters, setter, and signals (`firewallActive`, `originalFirewallActive`) in `src/optimizer.h`. Toggled the firewall profile states under standard/domain/public profiles using `netsh advfirewall` via background process execution. Startup state is queried from `HKLM\SYSTEM\CurrentControlSet\Services\SharedAccess\Parameters\FirewallPolicy\`.
+  - **Precise Settings Shortcuts**: Upgraded settings launcher shortcuts in `showPath()` to launch specific sub-pages directly:
+    - *Hibernation*: Opens the classic System Settings "Choose what the power buttons do" page via `control.exe /name Microsoft.PowerOptions /page pageGlobalSettings` where the Hibernation options exist.
+    - *Core Isolation*: Launches Device Security via `windowsdefender://devicesecurity`.
+    - *Firewall*: Launches Firewall & network protection via `windowsdefender://network`.
+    - *Mouse Acceleration*: Launches Mouse Properties Pointer Options tab via `control.exe main.cpl,,1`.
+    - *Drive Indexing*: Opens the native Drive Properties dialog window via the PowerShell COM command `[Void](New-Object -ComObject Shell.Application).NameSpace('<drive>').Self.InvokeVerb('Properties')` so the indexing checkbox is visible.
+  - **QML Switch Parameter Bug**: Corrected the signal handler syntax for all 10 `MeguSwitch` controls in `src/qml/views/OptimizationView.qml`. Declared the formal argument `onToggled: (isChecked) => { ... }` to fix the deprecation warning and prevent `undefined` values being cast to `false` in the C++ backend.
+  - **Ukrainian Localization & Packaging**: Validated that all new labels, log messages, and descriptions are fully translated to Ukrainian in `translations/megu_pack_optimizer_uk.ts`. Compiled resources and built the final binary via `build.bat` deploying it to `D:\Aps\Git\MPONERE\megu_pack_optimizer.exe`.
 
