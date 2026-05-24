@@ -848,8 +848,8 @@ void Optimizer::showPath(const QString &funcName) {
         QProcess::startDetached("cmd.exe", QStringList() << "/c" << "start services.msc");
         Logger::log("Opening Services Manager for Windows Search...", "INFO");
     } else if (funcName == "hibernation") {
-        QProcess::startDetached("control.exe", QStringList() << "powercfg.cpl,,1");
-        Logger::log("Opening Power Options Choose what the power buttons do settings...", "INFO");
+        QProcess::startDetached("control.exe", QStringList() << "/name" << "Microsoft.PowerOptions" << "/page" << "pageGlobalSettings");
+        Logger::log("Opening Power Options Global Settings...", "INFO");
     } else if (funcName == "coreisolation") {
         QProcess::startDetached("cmd.exe", QStringList() << "/c" << "start windowsdefender://devicesecurity");
         Logger::log("Opening Device Security (Core Isolation) settings...", "INFO");
