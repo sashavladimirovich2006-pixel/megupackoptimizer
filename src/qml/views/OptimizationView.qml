@@ -2,6 +2,7 @@ import QtQuick
 import QtQuick.Controls
 import QtQuick.Layouts
 import MeguPackOptimizer 1.0
+import Qt5Compat.GraphicalEffects
 import "../components"
 
 Item {
@@ -138,13 +139,23 @@ Item {
                         anchors.verticalCenter: parent.verticalCenter
                         spacing: 12
 
-                        Image {
-                            source: "qrc:/MeguPackOptimizer/src/resources/storage.svg"
+                        Item {
                             width: 28
                             height: 28
-                            sourceSize.width: 28
-                            sourceSize.height: 28
                             anchors.verticalCenter: parent.verticalCenter
+                            Image {
+                                id: storageIconImg
+                                source: "qrc:/MeguPackOptimizer/src/resources/storage.svg"
+                                anchors.fill: parent
+                                sourceSize.width: 28
+                                sourceSize.height: 28
+                                visible: false
+                            }
+                            ColorOverlay {
+                                anchors.fill: storageIconImg
+                                source: storageIconImg
+                                color: Theme.accent
+                            }
                         }
 
                         Column {
@@ -196,17 +207,25 @@ Item {
                             Behavior on color { ColorAnimation { duration: Theme.animFast } }
                             Behavior on border.color { ColorAnimation { duration: Theme.animFast } }
 
-                            Image {
-                                source: "qrc:/MeguPackOptimizer/src/resources/arrow.svg"
+                            Item {
                                 width: 14
                                 height: 14
-                                sourceSize.width: 14
-                                sourceSize.height: 14
                                 anchors.centerIn: parent
-
-                                // Premium sliding micro-animation
                                 x: arrowMouseArea.containsMouse ? (parent.width/2 - 5) : (parent.width/2 - 7)
                                 Behavior on x { NumberAnimation { duration: Theme.animNormal; easing.type: Easing.OutCubic } }
+                                Image {
+                                    id: arrow1Img
+                                    source: "qrc:/MeguPackOptimizer/src/resources/arrow.svg"
+                                    anchors.fill: parent
+                                    sourceSize.width: 14
+                                    sourceSize.height: 14
+                                    visible: false
+                                }
+                                ColorOverlay {
+                                    anchors.fill: arrow1Img
+                                    source: arrow1Img
+                                    color: arrowMouseArea.containsMouse ? Theme.accent : Theme.textSecondary
+                                }
                             }
 
                             MouseArea {
@@ -248,14 +267,24 @@ Item {
                         anchors.verticalCenter: parent.verticalCenter
                         spacing: 12
 
-                        Image {
-                            source: "qrc:/MeguPackOptimizer/src/resources/settings.svg"
-                            width: 28
-                            height: 28
-                            sourceSize.width: 28
-                            sourceSize.height: 28
-                            anchors.verticalCenter: parent.verticalCenter
-                        }
+                        Item {
+                                width: 28
+                                height: 28
+                                anchors.verticalCenter: parent.verticalCenter
+                                Image {
+                                    id: settingsIconImg
+                                    source: "qrc:/MeguPackOptimizer/src/resources/settings.svg"
+                                    anchors.fill: parent
+                                    sourceSize.width: 28
+                                    sourceSize.height: 28
+                                    visible: false
+                                }
+                                ColorOverlay {
+                                    anchors.fill: settingsIconImg
+                                    source: settingsIconImg
+                                    color: Theme.accent
+                                }
+                            }
 
                         Column {
                             anchors.verticalCenter: parent.verticalCenter
@@ -316,17 +345,25 @@ Item {
                             Behavior on color { ColorAnimation { duration: Theme.animFast } }
                             Behavior on border.color { ColorAnimation { duration: Theme.animFast } }
 
-                            Image {
-                                source: "qrc:/MeguPackOptimizer/src/resources/arrow.svg"
+                            Item {
                                 width: 14
                                 height: 14
-                                sourceSize.width: 14
-                                sourceSize.height: 14
                                 anchors.centerIn: parent
-
-                                // Premium sliding micro-animation
                                 x: xboxArrowMouseArea.containsMouse ? (parent.width/2 - 5) : (parent.width/2 - 7)
                                 Behavior on x { NumberAnimation { duration: Theme.animNormal; easing.type: Easing.OutCubic } }
+                                Image {
+                                    id: arrow2Img
+                                    source: "qrc:/MeguPackOptimizer/src/resources/arrow.svg"
+                                    anchors.fill: parent
+                                    sourceSize.width: 14
+                                    sourceSize.height: 14
+                                    visible: false
+                                }
+                                ColorOverlay {
+                                    anchors.fill: arrow2Img
+                                    source: arrow2Img
+                                    color: xboxArrowMouseArea.containsMouse ? Theme.accent : Theme.textSecondary
+                                }
                             }
 
                             MouseArea {
@@ -353,13 +390,23 @@ Item {
                         anchors.verticalCenter: parent.verticalCenter
                         spacing: 12
 
-                        Image {
-                            source: "qrc:/MeguPackOptimizer/src/resources/monitor.svg"
+                        Item {
                             width: 28
                             height: 28
-                            sourceSize.width: 28
-                            sourceSize.height: 28
                             anchors.verticalCenter: parent.verticalCenter
+                            Image {
+                                id: monitorIconImg
+                                source: "qrc:/MeguPackOptimizer/src/resources/monitor.svg"
+                                anchors.fill: parent
+                                sourceSize.width: 28
+                                sourceSize.height: 28
+                                visible: false
+                            }
+                            ColorOverlay {
+                                anchors.fill: monitorIconImg
+                                source: monitorIconImg
+                                color: Theme.accent
+                            }
                         }
 
                         Column {
@@ -429,17 +476,25 @@ Item {
                             Behavior on color { ColorAnimation { duration: Theme.animFast } }
                             Behavior on border.color { ColorAnimation { duration: Theme.animFast } }
 
-                            Image {
-                                source: "qrc:/MeguPackOptimizer/src/resources/arrow.svg"
+                            Item {
                                 width: 14
                                 height: 14
-                                sourceSize.width: 14
-                                sourceSize.height: 14
                                 anchors.centerIn: parent
-
-                                // Premium sliding micro-animation
                                 x: mpoArrowMouseArea.containsMouse ? (parent.width/2 - 5) : (parent.width/2 - 7)
                                 Behavior on x { NumberAnimation { duration: Theme.animNormal; easing.type: Easing.OutCubic } }
+                                Image {
+                                    id: arrow3Img
+                                    source: "qrc:/MeguPackOptimizer/src/resources/arrow.svg"
+                                    anchors.fill: parent
+                                    sourceSize.width: 14
+                                    sourceSize.height: 14
+                                    visible: false
+                                }
+                                ColorOverlay {
+                                    anchors.fill: arrow3Img
+                                    source: arrow3Img
+                                    color: mpoArrowMouseArea.containsMouse ? Theme.accent : Theme.textSecondary
+                                }
                             }
 
                             MouseArea {
@@ -479,13 +534,23 @@ Item {
                         anchors.verticalCenter: parent.verticalCenter
                         spacing: 12
 
-                        Image {
-                            source: "qrc:/MeguPackOptimizer/src/resources/cpu.svg"
+                        Item {
                             width: 28
                             height: 28
-                            sourceSize.width: 28
-                            sourceSize.height: 28
                             anchors.verticalCenter: parent.verticalCenter
+                            Image {
+                                id: cpuIconImg
+                                source: "qrc:/MeguPackOptimizer/src/resources/cpu.svg"
+                                anchors.fill: parent
+                                sourceSize.width: 28
+                                sourceSize.height: 28
+                                visible: false
+                            }
+                            ColorOverlay {
+                                anchors.fill: cpuIconImg
+                                source: cpuIconImg
+                                color: Theme.accent
+                            }
                         }
 
                         Column {
