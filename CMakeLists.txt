@@ -20,6 +20,7 @@ set(SOURCES
     src/optimizer.h
     src/optimizer.cpp
     src/app.manifest
+    src/resources.rc
 )
 
 # Executable target definition
