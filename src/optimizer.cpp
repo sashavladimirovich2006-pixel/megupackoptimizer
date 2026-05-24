@@ -876,7 +876,7 @@ void Optimizer::restoreXboxEntirely() {
         emit systemStepReported(tr("Downloading and installing Xbox App via winget..."), "INFO");
         {
             QProcess proc;
-            proc.start("cmd.exe", QStringList() << "/c" << "winget install Microsoft.XboxApp --source msstore --accept-source-agreements --accept-package-agreements");
+            proc.start("cmd.exe", QStringList() << "/c" << "winget install 9MV0B5HZVK9Z --source msstore --accept-source-agreements --accept-package-agreements");
             proc.waitForFinished(70000);
         }
         progressStep++;
@@ -889,7 +889,7 @@ void Optimizer::restoreXboxEntirely() {
         emit systemStepReported(tr("Downloading and installing Xbox Game Bar via winget..."), "INFO");
         {
             QProcess proc;
-            proc.start("cmd.exe", QStringList() << "/c" << "winget install Microsoft.XboxGamingOverlay --source msstore --accept-source-agreements --accept-package-agreements");
+            proc.start("cmd.exe", QStringList() << "/c" << "winget install 9NZKPSTSNW4P --source msstore --accept-source-agreements --accept-package-agreements");
             proc.waitForFinished(70000);
         }
         progressStep++;
@@ -1051,9 +1051,9 @@ void Optimizer::restoreXboxComponent(const QString &componentName) {
         QProcess proc;
         QString cmd;
         if (componentName == "XboxApp") {
-            cmd = "winget install Microsoft.XboxApp --source msstore --accept-source-agreements --accept-package-agreements";
+            cmd = "winget install 9MV0B5HZVK9Z --source msstore --accept-source-agreements --accept-package-agreements";
         } else if (componentName == "XboxGamingOverlay") {
-            cmd = "Get-AppxPackage -AllUsers -Name *XboxGamingOverlay* | Foreach {Add-AppxPackage -DisableDevelopmentMode -Register \"$($_.InstallLocation)\\AppXManifest.xml\"}";
+            cmd = "winget install 9NZKPSTSNW4P --source msstore --accept-source-agreements --accept-package-agreements";
         } else if (componentName == "XboxTCUI") {
             cmd = "Get-AppxPackage -AllUsers -Name *XboxTCUI* | Foreach {Add-AppxPackage -DisableDevelopmentMode -Register \"$($_.InstallLocation)\\AppXManifest.xml\"}";
         } else if (componentName == "XboxGameSpeechWindow") {
@@ -1063,12 +1063,12 @@ void Optimizer::restoreXboxComponent(const QString &componentName) {
         }
 
         if (!cmd.isEmpty()) {
-            if (componentName == "XboxApp") {
+            if (componentName == "XboxApp" || componentName == "XboxGamingOverlay") {
                 proc.start("cmd.exe", QStringList() << "/c" << cmd);
             } else {
                 proc.start("powershell.exe", QStringList() << "-NoProfile" << "-NonInteractive" << "-Command" << cmd);
             }
-            proc.waitForFinished(60000);
+            proc.waitForFinished(75000);
         }
 
         m_systemProgress = 0.80;
