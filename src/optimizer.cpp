@@ -848,20 +848,20 @@ void Optimizer::showPath(const QString &funcName) {
         QProcess::startDetached("cmd.exe", QStringList() << "/c" << "start services.msc");
         Logger::log("Opening Services Manager for Windows Search...", "INFO");
     } else if (funcName == "hibernation") {
-        QProcess::startDetached("control.exe", QStringList() << "/name" << "Microsoft.PowerOptions" << "/page" << "pageGlobalSettings");
-        Logger::log("Opening Power Options Global Settings...", "INFO");
+        QProcess::startDetached("control.exe", QStringList() << "powercfg.cpl,,1");
+        Logger::log("Opening Power Options Choose what the power buttons do settings...", "INFO");
     } else if (funcName == "coreisolation") {
-        QProcess::startDetached("cmd.exe", QStringList() << "/c" << "start ms-settings:privacy-security-coreisolation");
-        Logger::log("Opening Core Isolation settings...", "INFO");
+        QProcess::startDetached("cmd.exe", QStringList() << "/c" << "start windowsdefender://devicesecurity");
+        Logger::log("Opening Device Security (Core Isolation) settings...", "INFO");
     } else if (funcName == "mouseacceleration") {
-        QProcess::startDetached("cmd.exe", QStringList() << "/c" << "control.exe main.cpl,,1");
-        Logger::log("Opening Mouse Properties...", "INFO");
+        QProcess::startDetached("control.exe", QStringList() << "main.cpl,,1");
+        Logger::log("Opening Mouse Properties (Pointer Options)...", "INFO");
     } else if (funcName == "gamemode") {
         QProcess::startDetached("cmd.exe", QStringList() << "/c" << "start ms-settings:gaming-gamemode");
         Logger::log("Opening Game Mode settings...", "INFO");
     } else if (funcName == "firewall") {
-        QProcess::startDetached("cmd.exe", QStringList() << "/c" << "start windowsdefender://networkprotection");
-        Logger::log("Opening Windows Defender Firewall settings...", "INFO");
+        QProcess::startDetached("cmd.exe", QStringList() << "/c" << "start windowsdefender://network");
+        Logger::log("Opening Firewall & Network Protection settings...", "INFO");
     } else {
         // Assume drive letter like "C:" or "D:"
         QString letter = funcName.trimmed();
@@ -875,8 +875,9 @@ void Optimizer::showPath(const QString &funcName) {
         if (!letter.endsWith("\\")) {
             letter += "\\";
         }
-        QProcess::startDetached("explorer.exe", QStringList() << letter);
-        Logger::log(QString("Opening Drive %1 in File Explorer...").arg(letter), "INFO");
+        QString cmd = QString("[Void](New-Object -ComObject Shell.Application).NameSpace('%1').Self.InvokeVerb('Properties')").arg(letter);
+        QProcess::startDetached("powershell.exe", QStringList() << "-NoProfile" << "-NonInteractive" << "-Command" << cmd);
+        Logger::log(QString("Opening Drive %1 properties dialog for indexing settings...").arg(letter), "INFO");
     }
 }
 
