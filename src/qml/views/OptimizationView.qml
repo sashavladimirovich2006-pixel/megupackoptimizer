@@ -55,6 +55,7 @@ Item {
         if (optimizerBackend.gamingOverlayActive !== optimizerBackend.originalGamingOverlayActive) return true;
         if (optimizerBackend.coreIsolationActive !== optimizerBackend.originalCoreIsolationActive) return true;
         if (optimizerBackend.mouseAccelerationActive !== optimizerBackend.originalMouseAccelerationActive) return true;
+        if (optimizerBackend.gameModeActive !== optimizerBackend.originalGameModeActive) return true;
         if (!optimizerBackend.driveStates || !optimizerBackend.originalDriveStates) return false;
         var keys = Object.keys(optimizerBackend.driveStates);
         for (var i = 0; i < keys.length; i++) {
@@ -671,6 +672,88 @@ Item {
                             anchors.verticalCenter: parent.verticalCenter
                             onToggled: {
                                 optimizerBackend.mouseAccelerationActive = isChecked;
+                            }
+                        }
+                    }
+                }
+
+                // Game Mode Panel
+                AcrylicPanel {
+                    width: parent.width
+                    height: 72
+
+                    Row {
+                        anchors.left: parent.left
+                        anchors.verticalCenter: parent.verticalCenter
+                        spacing: 12
+
+                        Item {
+                            width: 28
+                            height: 28
+                            anchors.verticalCenter: parent.verticalCenter
+                            Image {
+                                id: gameModeIconImg
+                                source: "qrc:/MeguPackOptimizer/src/resources/bolt.svg"
+                                anchors.fill: parent
+                                sourceSize.width: 28
+                                sourceSize.height: 28
+                                visible: false
+                            }
+                            ColorOverlay {
+                                anchors.fill: gameModeIconImg
+                                source: gameModeIconImg
+                                color: Theme.accent
+                            }
+                        }
+
+                        Column {
+                            anchors.verticalCenter: parent.verticalCenter
+                            spacing: 2
+
+                            Text {
+                                text: qsTr("Game Mode")
+                                color: Theme.textPrimary
+                                font.family: Theme.fontFamily
+                                font.pixelSize: 13
+                                font.bold: true
+                            }
+
+                            Text {
+                                text: qsTr("Enables or disables Windows Game Mode to prioritize gaming performance and stabilize FPS.")
+                                color: Theme.textMuted
+                                font.family: Theme.fontFamily
+                                font.pixelSize: 10
+                            }
+                        }
+                    }
+
+                    Row {
+                        anchors.right: parent.right
+                        anchors.verticalCenter: parent.verticalCenter
+                        spacing: 16
+
+                        Text {
+                            text: qsTr("Show Path")
+                            color: gameModePathMouse.containsMouse ? Theme.accentLight : Theme.accent
+                            font.family: Theme.fontFamily
+                            font.pixelSize: 11
+                            font.bold: true
+                            font.underline: true
+                            anchors.verticalCenter: parent.verticalCenter
+                            MouseArea {
+                                id: gameModePathMouse
+                                anchors.fill: parent
+                                hoverEnabled: true
+                                cursorShape: Qt.PointingHandCursor
+                                onClicked: { optimizerBackend.showPath("gamemode"); }
+                            }
+                        }
+
+                        MeguSwitch {
+                            checked: optimizerBackend.gameModeActive
+                            anchors.verticalCenter: parent.verticalCenter
+                            onToggled: {
+                                optimizerBackend.gameModeActive = isChecked;
                             }
                         }
                     }

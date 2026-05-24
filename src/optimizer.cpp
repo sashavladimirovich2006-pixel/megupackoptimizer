@@ -59,6 +59,13 @@ void Optimizer::setMouseAccelerationActive(bool val) {
     }
 }
 
+void Optimizer::setGameModeActive(bool val) {
+    if (m_gameModeActive != val) {
+        m_gameModeActive = val;
+        emit gameModeActiveChanged(m_gameModeActive);
+    }
+}
+
 void Optimizer::setDriveStates(const QVariantMap &states) {
     if (m_driveStates != states) {
         m_driveStates = states;
@@ -260,6 +267,32 @@ void Optimizer::loadSystemStates() {
     emit mouseAccelerationActiveChanged(m_mouseAccelerationActive);
     emit originalMouseAccelerationActiveChanged(m_originalMouseAccelerationActive);
 
+    // Check Game Mode state on startup
+    bool isGameModeActive = true;
+#ifdef Q_OS_WIN
+    HKEY hKeyGB;
+    if (RegOpenKeyExW(HKEY_CURRENT_USER, L"Software\\Microsoft\\GameBar", 0, KEY_READ, &hKeyGB) == ERROR_SUCCESS) {
+        DWORD val1 = 1;
+        DWORD val2 = 1;
+        DWORD size1 = sizeof(val1);
+        DWORD size2 = sizeof(val2);
+        
+        bool query1 = (RegQueryValueExW(hKeyGB, L"AllowAutoGameMode", NULL, NULL, (LPBYTE)&val1, &size1) == ERROR_SUCCESS);
+        bool query2 = (RegQueryValueExW(hKeyGB, L"AutoGameModeEnabled", NULL, NULL, (LPBYTE)&val2, &size2) == ERROR_SUCCESS);
+        
+        if ((query1 && val1 == 0) || (query2 && val2 == 0)) {
+            isGameModeActive = false;
+        }
+        RegCloseKey(hKeyGB);
+    }
+#else
+    isGameModeActive = true; // Simulation default
+#endif
+    m_gameModeActive = isGameModeActive;
+    m_originalGameModeActive = m_gameModeActive;
+    emit gameModeActiveChanged(m_gameModeActive);
+    emit originalGameModeActiveChanged(m_originalGameModeActive);
+
     // Check Multi-Plane Overlay (MPO) state in registry
     int currentMpo = 0; // default 0 (MPO Enabled)
 #ifdef Q_OS_WIN
@@ -317,6 +350,7 @@ void Optimizer::startSystemOptimization() {
     bool overlayVal = m_gamingOverlayActive;
     bool coreIsolationVal = m_coreIsolationActive;
     bool mouseAccelVal = m_mouseAccelerationActive;
+    bool gameModeVal = m_gameModeActive;
     QVariantMap targets = m_driveStates;
     QVariantMap originalTargets = m_originalDriveStates;
     bool origSearch = m_originalWinSearchActive;
@@ -324,14 +358,16 @@ void Optimizer::startSystemOptimization() {
     bool origOverlay = m_originalGamingOverlayActive;
     bool origCoreIsolation = m_originalCoreIsolationActive;
     bool origMouseAccel = m_originalMouseAccelerationActive;
+    bool origGameMode = m_originalGameModeActive;
 
-    QThread* worker = QThread::create([this, searchVal, hibernationVal, overlayVal, coreIsolationVal, mouseAccelVal, targets, originalTargets, origSearch, origHibernation, origOverlay, origCoreIsolation, origMouseAccel]() {
+    QThread* worker = QThread::create([this, searchVal, hibernationVal, overlayVal, coreIsolationVal, mouseAccelVal, gameModeVal, targets, originalTargets, origSearch, origHibernation, origOverlay, origCoreIsolation, origMouseAccel, origGameMode]() {
         // Step 0: Check if anything actually changed
         bool anyChanges = (searchVal != origSearch) || 
                           (hibernationVal != origHibernation) || 
                           (overlayVal != origOverlay) ||
                           (coreIsolationVal != origCoreIsolation) ||
-                          (mouseAccelVal != origMouseAccel);
+                          (mouseAccelVal != origMouseAccel) ||
+                          (gameModeVal != origGameMode);
         if (!anyChanges) {
             for (const QString &driveLetter : targets.keys()) {
                 if (targets.value(driveLetter).toBool() != originalTargets.value(driveLetter).toBool()) {
@@ -628,6 +664,41 @@ void Optimizer::startSystemOptimization() {
             emit mouseAccelerationActiveChanged(m_mouseAccelerationActive);
         }
 
+        // Step 1.9: Windows Game Mode Configuration (only if changed)
+        bool gameModeSuccess = true;
+        if (gameModeVal != origGameMode) {
+            emit systemStepReported(tr("Configuring Windows Game Mode..."), "INFO");
+            QThread::msleep(800);
+#ifdef Q_OS_WIN
+            bool success = true;
+            HKEY hKeyGB;
+            if (RegCreateKeyExW(HKEY_CURRENT_USER, L"Software\\Microsoft\\GameBar", 0, NULL, REG_OPTION_NON_VOLATILE, KEY_WRITE, NULL, &hKeyGB, NULL) == ERROR_SUCCESS) {
+                DWORD val = gameModeVal ? 1 : 0;
+                if (RegSetValueExW(hKeyGB, L"AllowAutoGameMode", 0, REG_DWORD, (const BYTE*)&val, sizeof(val)) != ERROR_SUCCESS) {
+                    success = false;
+                }
+                if (RegSetValueExW(hKeyGB, L"AutoGameModeEnabled", 0, REG_DWORD, (const BYTE*)&val, sizeof(val)) != ERROR_SUCCESS) {
+                    success = false;
+                }
+                RegCloseKey(hKeyGB);
+            } else {
+                success = false;
+            }
+            
+            if (success) {
+                QString logMsg = gameModeVal ? tr("Windows Game Mode is now ENABLED.") : tr("Windows Game Mode is now DISABLED.");
+                emit systemStepReported(logMsg, "SUCCESS");
+            } else {
+                gameModeSuccess = false;
+                emit systemStepReported(tr("Failed to update Windows Game Mode state."), "ERROR");
+            }
+#else
+            emit systemStepReported(tr("[Simulation] Windows Game Mode set to: %1").arg(gameModeVal ? "Enabled" : "Disabled"), "SUCCESS");
+#endif
+            m_gameModeActive = gameModeVal;
+            emit gameModeActiveChanged(m_gameModeActive);
+        }
+
         m_systemProgress = 0.50;
         emit systemProgressChanged(m_systemProgress);
         QThread::msleep(300);
@@ -675,7 +746,7 @@ void Optimizer::startSystemOptimization() {
             QThread::msleep(100);
         }
 
-        bool overallSuccess = wSearchSuccess && hibernationSuccess && overlaySuccess && coreIsolationSuccess && mouseAccelSuccess && overallDrivesSuccess;
+        bool overallSuccess = wSearchSuccess && hibernationSuccess && overlaySuccess && coreIsolationSuccess && mouseAccelSuccess && gameModeSuccess && overallDrivesSuccess;
         if (overallSuccess) {
             emit systemStepReported(tr("System optimization completed successfully!"), "SUCCESS");
             Logger::log("System optimization completed successfully!", "INFO");
@@ -690,6 +761,7 @@ void Optimizer::startSystemOptimization() {
         m_originalGamingOverlayActive = overlayVal;
         m_originalCoreIsolationActive = coreIsolationVal;
         m_originalMouseAccelerationActive = mouseAccelVal;
+        m_originalGameModeActive = gameModeVal;
         m_originalDriveStates = targets;
         
         emit driveStatesChanged(m_driveStates);
@@ -698,6 +770,7 @@ void Optimizer::startSystemOptimization() {
         emit originalGamingOverlayActiveChanged(m_originalGamingOverlayActive);
         emit originalCoreIsolationActiveChanged(m_originalCoreIsolationActive);
         emit originalMouseAccelerationActiveChanged(m_originalMouseAccelerationActive);
+        emit originalGameModeActiveChanged(m_originalGameModeActive);
         emit originalDriveStatesChanged(m_originalDriveStates);
 
         m_isOptimizingSystem = false;
@@ -722,6 +795,9 @@ void Optimizer::showPath(const QString &funcName) {
     } else if (funcName == "mouseacceleration") {
         QProcess::startDetached("cmd.exe", QStringList() << "/c" << "control.exe main.cpl,,1");
         Logger::log("Opening Mouse Properties...", "INFO");
+    } else if (funcName == "gamemode") {
+        QProcess::startDetached("cmd.exe", QStringList() << "/c" << "start ms-settings:gaming-gamemode");
+        Logger::log("Opening Game Mode settings...", "INFO");
     } else {
         // Assume drive letter like "C:" or "D:"
         QString letter = funcName.trimmed();

@@ -111,5 +111,14 @@ The following rules must be strictly adhered to by all developers (human or AI) 
   - **QML Layout Integration**: Designed a new Mouse Acceleration card in `src/qml/views/OptimizationView.qml` with the Fluent arrow icon and a switch. Placed "Show Path" text links next to the status switches on the Hibernation, Core Isolation, and Mouse Acceleration panels.
   - **Ukrainian Localization & Build**: Fully updated `translations/megu_pack_optimizer_uk.ts` with translations for all new strings, generated `.qm` binary files, and compiled the package using `build.bat` for deployment to `D:\Aps\Git\MPONERE\`.
 
+### Phase 1: Windows Game Mode Toggle & "Show Path" Shortcut Integration
+- **Action**: Implemented a "Game Mode" toggle in the Latency & Mouse tweaks category, integrated the "Show Path" settings shortcut (`ms-settings:gaming-gamemode`) for the Game Mode card, updated all new strings to Ukrainian, and successfully built and packaged the updated application binary.
+- **Detailed Rationale**:
+  - **Game Mode Logic**: Declared properties, getters, setter, and signals (`gameModeActive`, `originalGameModeActive`) in `src/optimizer.h`. Toggled the automatic Game Mode state in the registry under `HKCU\Software\Microsoft\GameBar` for values `AllowAutoGameMode` and `AutoGameModeEnabled`. Startup state is read using `RegOpenKeyExW` and `RegQueryValueExW`.
+  - **Settings Shortcut**: Linked the Game Mode "Show Path" option to launch `ms-settings:gaming-gamemode` asynchronously via `QProcess::startDetached`.
+  - **QML Integration**: Added a new card to `src/qml/views/OptimizationView.qml` inside the Latency column. The card utilizes `bolt.svg` and is bound reactively to the backend Game Mode property.
+  - **Ukrainian Translations & Packaging**: Compiled Ukrainian translations using `lrelease` in `build.bat` after updating `translations/megu_pack_optimizer_uk.ts`. Deployed the updated binary to `D:\Aps\Git\MPONERE\megu_pack_optimizer.exe`.
+
+
 
 

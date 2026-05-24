@@ -33,6 +33,8 @@ class Optimizer : public QObject {
     Q_PROPERTY(bool originalCoreIsolationActive READ originalCoreIsolationActive NOTIFY originalCoreIsolationActiveChanged)
     Q_PROPERTY(bool mouseAccelerationActive READ mouseAccelerationActive WRITE setMouseAccelerationActive NOTIFY mouseAccelerationActiveChanged)
     Q_PROPERTY(bool originalMouseAccelerationActive READ originalMouseAccelerationActive NOTIFY originalMouseAccelerationActiveChanged)
+    Q_PROPERTY(bool gameModeActive READ gameModeActive WRITE setGameModeActive NOTIFY gameModeActiveChanged)
+    Q_PROPERTY(bool originalGameModeActive READ originalGameModeActive NOTIFY originalGameModeActiveChanged)
     Q_PROPERTY(int mpoValue READ mpoValue NOTIFY mpoValueChanged)
     Q_PROPERTY(QStringList fixedDrives READ fixedDrives NOTIFY fixedDrivesChanged)
     Q_PROPERTY(QVariantMap driveStates READ driveStates WRITE setDriveStates NOTIFY driveStatesChanged)
@@ -70,6 +72,8 @@ public:
     bool originalCoreIsolationActive() const { return m_originalCoreIsolationActive; }
     bool mouseAccelerationActive() const { return m_mouseAccelerationActive; }
     bool originalMouseAccelerationActive() const { return m_originalMouseAccelerationActive; }
+    bool gameModeActive() const { return m_gameModeActive; }
+    bool originalGameModeActive() const { return m_originalGameModeActive; }
     int mpoValue() const { return m_mpoValue; }
     QStringList fixedDrives() const { return m_fixedDrives; }
     QVariantMap driveStates() const { return m_driveStates; }
@@ -83,6 +87,7 @@ public:
     void setGamingOverlayActive(bool val);
     void setCoreIsolationActive(bool val);
     void setMouseAccelerationActive(bool val);
+    void setGameModeActive(bool val);
     void setDriveStates(const QVariantMap &states);
 
 
@@ -121,6 +126,8 @@ signals:
     void originalCoreIsolationActiveChanged(bool val);
     void mouseAccelerationActiveChanged(bool val);
     void originalMouseAccelerationActiveChanged(bool val);
+    void gameModeActiveChanged(bool val);
+    void originalGameModeActiveChanged(bool val);
     void mpoValueChanged(int val);
     void fixedDrivesChanged(const QStringList &val);
     void driveStatesChanged(const QVariantMap &val);
@@ -161,6 +168,8 @@ private:
     bool m_originalCoreIsolationActive = false;
     bool m_mouseAccelerationActive = false;
     bool m_originalMouseAccelerationActive = false;
+    bool m_gameModeActive = true;
+    bool m_originalGameModeActive = true;
     int m_mpoValue = 0;
     QStringList m_fixedDrives;
     QVariantMap m_driveStates;
