@@ -31,7 +31,7 @@ Rectangle {
                 panel.flashOpacity = 1.0;
             }
         }
-        PauseAnimation { duration: 2000 }
+        PauseAnimation { duration: 3000 }
         NumberAnimation {
             id: flashOpacityAnim
             target: panel
