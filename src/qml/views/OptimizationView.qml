@@ -56,6 +56,7 @@ Item {
         if (optimizerBackend.coreIsolationActive !== optimizerBackend.originalCoreIsolationActive) return true;
         if (optimizerBackend.mouseAccelerationActive !== optimizerBackend.originalMouseAccelerationActive) return true;
         if (optimizerBackend.gameModeActive !== optimizerBackend.originalGameModeActive) return true;
+        if (optimizerBackend.firewallActive !== optimizerBackend.originalFirewallActive) return true;
         if (!optimizerBackend.driveStates || !optimizerBackend.originalDriveStates) return false;
         var keys = Object.keys(optimizerBackend.driveStates);
         for (var i = 0; i < keys.length; i++) {
@@ -192,7 +193,7 @@ Item {
                             checked: root.mainChecked
                             indeterminate: root.mainIndeterminate
                             anchors.verticalCenter: parent.verticalCenter
-                            onToggled: {
+                            onToggled: (isChecked) => {
                                 root.toggleMain();
                             }
                         }
@@ -588,7 +589,7 @@ Item {
                         MeguSwitch {
                             checked: optimizerBackend.coreIsolationActive
                             anchors.verticalCenter: parent.verticalCenter
-                            onToggled: {
+                            onToggled: (isChecked) => {
                                 optimizerBackend.coreIsolationActive = isChecked;
                             }
                         }
@@ -670,7 +671,7 @@ Item {
                         MeguSwitch {
                             checked: optimizerBackend.mouseAccelerationActive
                             anchors.verticalCenter: parent.verticalCenter
-                            onToggled: {
+                            onToggled: (isChecked) => {
                                 optimizerBackend.mouseAccelerationActive = isChecked;
                             }
                         }
@@ -752,8 +753,90 @@ Item {
                         MeguSwitch {
                             checked: optimizerBackend.gameModeActive
                             anchors.verticalCenter: parent.verticalCenter
-                            onToggled: {
+                            onToggled: (isChecked) => {
                                 optimizerBackend.gameModeActive = isChecked;
+                            }
+                        }
+                    }
+                }
+
+                // Firewall Panel
+                AcrylicPanel {
+                    width: parent.width
+                    height: 72
+
+                    Row {
+                        anchors.left: parent.left
+                        anchors.verticalCenter: parent.verticalCenter
+                        spacing: 12
+
+                        Item {
+                            width: 28
+                            height: 28
+                            anchors.verticalCenter: parent.verticalCenter
+                            Image {
+                                id: firewallIconImg
+                                source: "qrc:/MeguPackOptimizer/src/resources/warning.svg"
+                                anchors.fill: parent
+                                sourceSize.width: 28
+                                sourceSize.height: 28
+                                visible: false
+                            }
+                            ColorOverlay {
+                                anchors.fill: firewallIconImg
+                                source: firewallIconImg
+                                color: Theme.accent
+                            }
+                        }
+
+                        Column {
+                            anchors.verticalCenter: parent.verticalCenter
+                            spacing: 2
+
+                            Text {
+                                text: qsTr("Windows Defender Firewall")
+                                color: Theme.textPrimary
+                                font.family: Theme.fontFamily
+                                font.pixelSize: 13
+                                font.bold: true
+                            }
+
+                            Text {
+                                text: qsTr("Enables or disables Windows Defender Firewall to control network traffic protection.")
+                                color: Theme.textMuted
+                                font.family: Theme.fontFamily
+                                font.pixelSize: 10
+                            }
+                        }
+                    }
+
+                    Row {
+                        anchors.right: parent.right
+                        anchors.verticalCenter: parent.verticalCenter
+                        spacing: 16
+
+                        Text {
+                            text: qsTr("Show Path")
+                            color: firewallPathMouse.containsMouse ? Theme.accentLight : Theme.accent
+                            font.family: Theme.fontFamily
+                            font.pixelSize: 11
+                            font.bold: true
+                            font.underline: true
+                            anchors.verticalCenter: parent.verticalCenter
+                            MouseArea {
+                                id: firewallPathMouse
+                                anchors.fill: parent
+                                hoverEnabled: true
+                                cursorShape: Qt.PointingHandCursor
+                                onClicked: { optimizerBackend.showPath("firewall"); }
+                            }
+                        }
+
+                        MeguSwitch {
+                            checked: optimizerBackend.firewallActive
+                            anchors.verticalCenter: parent.verticalCenter
+                            onToggled: (isChecked) => {
+                                optimizerBackend.firewallActive = isChecked;
                             }
                         }
                     }
@@ -848,7 +931,7 @@ Item {
                         MeguSwitch {
                             checked: optimizerBackend.hibernationActive
                             anchors.verticalCenter: parent.verticalCenter
-                            onToggled: {
+                            onToggled: (isChecked) => {
                                 optimizerBackend.hibernationActive = isChecked;
                             }
                         }
@@ -1025,7 +1108,7 @@ Item {
                             MeguSwitch {
                                 text: qsTr("Windows Search service")
                                 checked: optimizerBackend.winSearchActive
-                                onToggled: { optimizerBackend.winSearchActive = isChecked; }
+                                onToggled: (isChecked) => { optimizerBackend.winSearchActive = isChecked; }
                                 anchors.verticalCenter: parent.verticalCenter
                             }
                             Text {
@@ -1053,7 +1136,7 @@ Item {
                             MeguSwitch {
                                 text: qsTr("Drive C: indexing")
                                 checked: !!optimizerBackend.driveStates["C:"]
-                                onToggled: {
+                                onToggled: (isChecked) => {
                                     var states = optimizerBackend.driveStates;
                                     states["C:"] = isChecked;
                                     optimizerBackend.driveStates = states;
@@ -1087,7 +1170,7 @@ Item {
                                 MeguSwitch {
                                     text: qsTr("Drive %1 indexing").arg(modelData)
                                     checked: !!optimizerBackend.driveStates[modelData]
-                                    onToggled: {
+                                    onToggled: (isChecked) => {
                                         var states = optimizerBackend.driveStates;
                                         states[modelData] = isChecked;
                                         optimizerBackend.driveStates = states;
@@ -1436,7 +1519,7 @@ Item {
                             MeguSwitch {
                                 text: qsTr("Disable Game Bar Popup")
                                 checked: !optimizerBackend.gamingOverlayActive
-                                onToggled: {
+                                onToggled: (isChecked) => {
                                     optimizerBackend.gamingOverlayActive = !isChecked;
                                 }
                             }

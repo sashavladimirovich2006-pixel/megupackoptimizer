@@ -66,6 +66,13 @@ void Optimizer::setGameModeActive(bool val) {
     }
 }
 
+void Optimizer::setFirewallActive(bool val) {
+    if (m_firewallActive != val) {
+        m_firewallActive = val;
+        emit firewallActiveChanged(m_firewallActive);
+    }
+}
+
 void Optimizer::setDriveStates(const QVariantMap &states) {
     if (m_driveStates != states) {
         m_driveStates = states;
@@ -287,6 +294,37 @@ void Optimizer::loadSystemStates() {
     emit gameModeActiveChanged(m_gameModeActive);
     emit originalGameModeActiveChanged(m_originalGameModeActive);
 
+    // Check Firewall state on startup (using standard/domain/public HKLM profile statuses)
+    bool isFirewallActive = false;
+#ifdef Q_OS_WIN
+    const wchar_t* subkeys[] = {
+        L"SYSTEM\\CurrentControlSet\\Services\\SharedAccess\\Parameters\\FirewallPolicy\\StandardProfile",
+        L"SYSTEM\\CurrentControlSet\\Services\\SharedAccess\\Parameters\\FirewallPolicy\\DomainProfile",
+        L"SYSTEM\\CurrentControlSet\\Services\\SharedAccess\\Parameters\\FirewallPolicy\\PublicProfile"
+    };
+    for (int i = 0; i < 3; i++) {
+        HKEY hKeyFW;
+        if (RegOpenKeyExW(HKEY_LOCAL_MACHINE, subkeys[i], 0, KEY_READ, &hKeyFW) == ERROR_SUCCESS) {
+            DWORD val = 0;
+            DWORD size = sizeof(val);
+            if (RegQueryValueExW(hKeyFW, L"EnableFirewall", NULL, NULL, (LPBYTE)&val, &size) == ERROR_SUCCESS) {
+                if (val != 0) {
+                    isFirewallActive = true;
+                }
+            } else {
+                isFirewallActive = true; // Default if key exists but fails to read
+            }
+            RegCloseKey(hKeyFW);
+        }
+    }
+#else
+    isFirewallActive = true; // Simulation default
+#endif
+    m_firewallActive = isFirewallActive;
+    m_originalFirewallActive = m_firewallActive;
+    emit firewallActiveChanged(m_firewallActive);
+    emit originalFirewallActiveChanged(m_originalFirewallActive);
+
     // Check Multi-Plane Overlay (MPO) state in registry
     int currentMpo = 0; // default 0 (MPO Enabled)
 #ifdef Q_OS_WIN
@@ -345,6 +383,7 @@ void Optimizer::startSystemOptimization() {
     bool coreIsolationVal = m_coreIsolationActive;
     bool mouseAccelVal = m_mouseAccelerationActive;
     bool gameModeVal = m_gameModeActive;
+    bool firewallVal = m_firewallActive;
     QVariantMap targets = m_driveStates;
     QVariantMap originalTargets = m_originalDriveStates;
     bool origSearch = m_originalWinSearchActive;
@@ -353,15 +392,17 @@ void Optimizer::startSystemOptimization() {
     bool origCoreIsolation = m_originalCoreIsolationActive;
     bool origMouseAccel = m_originalMouseAccelerationActive;
     bool origGameMode = m_originalGameModeActive;
+    bool origFirewall = m_originalFirewallActive;
 
-    QThread* worker = QThread::create([this, searchVal, hibernationVal, overlayVal, coreIsolationVal, mouseAccelVal, gameModeVal, targets, originalTargets, origSearch, origHibernation, origOverlay, origCoreIsolation, origMouseAccel, origGameMode]() {
+    QThread* worker = QThread::create([this, searchVal, hibernationVal, overlayVal, coreIsolationVal, mouseAccelVal, gameModeVal, firewallVal, targets, originalTargets, origSearch, origHibernation, origOverlay, origCoreIsolation, origMouseAccel, origGameMode, origFirewall]() {
         // Step 0: Check if anything actually changed
         bool anyChanges = (searchVal != origSearch) || 
                           (hibernationVal != origHibernation) || 
                           (overlayVal != origOverlay) ||
                           (coreIsolationVal != origCoreIsolation) ||
                           (mouseAccelVal != origMouseAccel) ||
-                          (gameModeVal != origGameMode);
+                          (gameModeVal != origGameMode) ||
+                          (firewallVal != origFirewall);
         if (!anyChanges) {
             for (const QString &driveLetter : targets.keys()) {
                 if (targets.value(driveLetter).toBool() != originalTargets.value(driveLetter).toBool()) {
@@ -693,6 +734,30 @@ void Optimizer::startSystemOptimization() {
             emit gameModeActiveChanged(m_gameModeActive);
         }
 
+        // Step 1.95: Windows Defender Firewall Configuration (only if changed)
+        bool firewallSuccess = true;
+        if (firewallVal != origFirewall) {
+            emit systemStepReported(tr("Configuring Windows Defender Firewall..."), "INFO");
+            QThread::msleep(800);
+#ifdef Q_OS_WIN
+            QProcess process;
+            process.start("netsh", QStringList() << "advfirewall" << "set" << "allprofiles" << "state" << (firewallVal ? "on" : "off"));
+            bool finished = process.waitForFinished(5000);
+            
+            if (finished && process.exitCode() == 0) {
+                QString logMsg = firewallVal ? tr("Windows Defender Firewall is now ENABLED.") : tr("Windows Defender Firewall is now DISABLED.");
+                emit systemStepReported(logMsg, "SUCCESS");
+            } else {
+                firewallSuccess = false;
+                emit systemStepReported(tr("Failed to update Windows Defender Firewall state."), "ERROR");
+            }
+#else
+            emit systemStepReported(tr("[Simulation] Windows Defender Firewall set to: %1").arg(firewallVal ? "Enabled" : "Disabled"), "SUCCESS");
+#endif
+            m_firewallActive = firewallVal;
+            emit firewallActiveChanged(m_firewallActive);
+        }
+
         m_systemProgress = 0.50;
         emit systemProgressChanged(m_systemProgress);
         QThread::msleep(300);
@@ -740,7 +805,7 @@ void Optimizer::startSystemOptimization() {
             QThread::msleep(100);
         }
 
-        bool overallSuccess = wSearchSuccess && hibernationSuccess && overlaySuccess && coreIsolationSuccess && mouseAccelSuccess && gameModeSuccess && overallDrivesSuccess;
+        bool overallSuccess = wSearchSuccess && hibernationSuccess && overlaySuccess && coreIsolationSuccess && mouseAccelSuccess && gameModeSuccess && firewallSuccess && overallDrivesSuccess;
         if (overallSuccess) {
             emit systemStepReported(tr("System optimization completed successfully!"), "SUCCESS");
             Logger::log("System optimization completed successfully!", "INFO");
@@ -756,6 +821,7 @@ void Optimizer::startSystemOptimization() {
         m_originalCoreIsolationActive = coreIsolationVal;
         m_originalMouseAccelerationActive = mouseAccelVal;
         m_originalGameModeActive = gameModeVal;
+        m_originalFirewallActive = firewallVal;
         m_originalDriveStates = targets;
         
         emit driveStatesChanged(m_driveStates);
@@ -765,6 +831,7 @@ void Optimizer::startSystemOptimization() {
         emit originalCoreIsolationActiveChanged(m_originalCoreIsolationActive);
         emit originalMouseAccelerationActiveChanged(m_originalMouseAccelerationActive);
         emit originalGameModeActiveChanged(m_originalGameModeActive);
+        emit originalFirewallActiveChanged(m_originalFirewallActive);
         emit originalDriveStatesChanged(m_originalDriveStates);
 
         m_isOptimizingSystem = false;
@@ -792,6 +859,9 @@ void Optimizer::showPath(const QString &funcName) {
     } else if (funcName == "gamemode") {
         QProcess::startDetached("cmd.exe", QStringList() << "/c" << "start ms-settings:gaming-gamemode");
         Logger::log("Opening Game Mode settings...", "INFO");
+    } else if (funcName == "firewall") {
+        QProcess::startDetached("cmd.exe", QStringList() << "/c" << "start windowsdefender://networkprotection");
+        Logger::log("Opening Windows Defender Firewall settings...", "INFO");
     } else {
         // Assume drive letter like "C:" or "D:"
         QString letter = funcName.trimmed();
