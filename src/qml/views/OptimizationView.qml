@@ -905,9 +905,9 @@ Item {
                             // 1. Xbox App
                             Row {
                                 width: parent.width
-                                spacing: 8
+                                spacing: 6
                                 Column {
-                                    width: parent.width - 78
+                                    width: parent.width - 144
                                     spacing: 2
                                     Text {
                                         text: qsTr("Xbox App")
@@ -925,18 +925,25 @@ Item {
                                     }
                                 }
                                 MeguButton {
-                                    text: optimizerBackend.xboxAppInstalled ? qsTr("Remove") : qsTr("Restore")
-                                    accented: optimizerBackend.xboxAppInstalled
-                                    enabled: !optimizerBackend.isOptimizingSystem
-                                    width: 70
+                                    text: qsTr("Restore")
+                                    accented: false
+                                    enabled: !optimizerBackend.xboxAppInstalled && !optimizerBackend.isOptimizingSystem
+                                    width: 66
                                     height: 26
                                     onClicked: {
                                         stepLogModel.clear();
-                                        if (optimizerBackend.xboxAppInstalled) {
-                                            optimizerBackend.removeXboxComponent("XboxApp");
-                                        } else {
-                                            optimizerBackend.restoreXboxComponent("XboxApp");
-                                        }
+                                        optimizerBackend.restoreXboxComponent("XboxApp");
+                                    }
+                                }
+                                MeguButton {
+                                    text: qsTr("Remove")
+                                    accented: true
+                                    enabled: optimizerBackend.xboxAppInstalled && !optimizerBackend.isOptimizingSystem
+                                    width: 66
+                                    height: 26
+                                    onClicked: {
+                                        stepLogModel.clear();
+                                        optimizerBackend.removeXboxComponent("XboxApp");
                                     }
                                 }
                             }
@@ -944,9 +951,9 @@ Item {
                             // 2. Xbox Gaming Overlay
                             Row {
                                 width: parent.width
-                                spacing: 8
+                                spacing: 6
                                 Column {
-                                    width: parent.width - 78
+                                    width: parent.width - 144
                                     spacing: 2
                                     Text {
                                         text: qsTr("Xbox Gaming Overlay")
@@ -964,18 +971,25 @@ Item {
                                     }
                                 }
                                 MeguButton {
-                                    text: optimizerBackend.xboxGamingOverlayInstalled ? qsTr("Remove") : qsTr("Restore")
-                                    accented: optimizerBackend.xboxGamingOverlayInstalled
-                                    enabled: !optimizerBackend.isOptimizingSystem
-                                    width: 70
+                                    text: qsTr("Restore")
+                                    accented: false
+                                    enabled: !optimizerBackend.xboxGamingOverlayInstalled && !optimizerBackend.isOptimizingSystem
+                                    width: 66
                                     height: 26
                                     onClicked: {
                                         stepLogModel.clear();
-                                        if (optimizerBackend.xboxGamingOverlayInstalled) {
-                                            optimizerBackend.removeXboxComponent("XboxGamingOverlay");
-                                        } else {
-                                            optimizerBackend.restoreXboxComponent("XboxGamingOverlay");
-                                        }
+                                        optimizerBackend.restoreXboxComponent("XboxGamingOverlay");
+                                    }
+                                }
+                                MeguButton {
+                                    text: qsTr("Remove")
+                                    accented: true
+                                    enabled: optimizerBackend.xboxGamingOverlayInstalled && !optimizerBackend.isOptimizingSystem
+                                    width: 66
+                                    height: 26
+                                    onClicked: {
+                                        stepLogModel.clear();
+                                        optimizerBackend.removeXboxComponent("XboxGamingOverlay");
                                     }
                                 }
                             }
@@ -983,9 +997,9 @@ Item {
                             // 3. Xbox TCUI
                             Row {
                                 width: parent.width
-                                spacing: 8
+                                spacing: 6
                                 Column {
-                                    width: parent.width - 78
+                                    width: parent.width - 144
                                     spacing: 2
                                     Text {
                                         text: qsTr("Xbox TCUI Dialogue")
@@ -1003,18 +1017,25 @@ Item {
                                     }
                                 }
                                 MeguButton {
-                                    text: optimizerBackend.xboxTcuiInstalled ? qsTr("Remove") : qsTr("Restore")
-                                    accented: optimizerBackend.xboxTcuiInstalled
-                                    enabled: !optimizerBackend.isOptimizingSystem
-                                    width: 70
+                                    text: qsTr("Restore")
+                                    accented: false
+                                    enabled: !optimizerBackend.xboxTcuiInstalled && !optimizerBackend.isOptimizingSystem
+                                    width: 66
                                     height: 26
                                     onClicked: {
                                         stepLogModel.clear();
-                                        if (optimizerBackend.xboxTcuiInstalled) {
-                                            optimizerBackend.removeXboxComponent("XboxTCUI");
-                                        } else {
-                                            optimizerBackend.restoreXboxComponent("XboxTCUI");
-                                        }
+                                        optimizerBackend.restoreXboxComponent("XboxTCUI");
+                                    }
+                                }
+                                MeguButton {
+                                    text: qsTr("Remove")
+                                    accented: true
+                                    enabled: optimizerBackend.xboxTcuiInstalled && !optimizerBackend.isOptimizingSystem
+                                    width: 66
+                                    height: 26
+                                    onClicked: {
+                                        stepLogModel.clear();
+                                        optimizerBackend.removeXboxComponent("XboxTCUI");
                                     }
                                 }
                             }
@@ -1022,9 +1043,9 @@ Item {
                             // 4. Xbox Game Speech Window
                             Row {
                                 width: parent.width
-                                spacing: 8
+                                spacing: 6
                                 Column {
-                                    width: parent.width - 78
+                                    width: parent.width - 144
                                     spacing: 2
                                     Text {
                                         text: qsTr("Xbox Game Speech Window")
@@ -1042,18 +1063,25 @@ Item {
                                     }
                                 }
                                 MeguButton {
-                                    text: optimizerBackend.xboxSpeechWindowInstalled ? qsTr("Remove") : qsTr("Restore")
-                                    accented: optimizerBackend.xboxSpeechWindowInstalled
-                                    enabled: !optimizerBackend.isOptimizingSystem
-                                    width: 70
+                                    text: qsTr("Restore")
+                                    accented: false
+                                    enabled: !optimizerBackend.xboxSpeechWindowInstalled && !optimizerBackend.isOptimizingSystem
+                                    width: 66
                                     height: 26
                                     onClicked: {
                                         stepLogModel.clear();
-                                        if (optimizerBackend.xboxSpeechWindowInstalled) {
-                                            optimizerBackend.removeXboxComponent("XboxGameSpeechWindow");
-                                        } else {
-                                            optimizerBackend.restoreXboxComponent("XboxGameSpeechWindow");
-                                        }
+                                        optimizerBackend.restoreXboxComponent("XboxGameSpeechWindow");
+                                    }
+                                }
+                                MeguButton {
+                                    text: qsTr("Remove")
+                                    accented: true
+                                    enabled: optimizerBackend.xboxSpeechWindowInstalled && !optimizerBackend.isOptimizingSystem
+                                    width: 66
+                                    height: 26
+                                    onClicked: {
+                                        stepLogModel.clear();
+                                        optimizerBackend.removeXboxComponent("XboxGameSpeechWindow");
                                     }
                                 }
                             }
@@ -1061,9 +1089,9 @@ Item {
                             // 5. System Provisioned Packages
                             Row {
                                 width: parent.width
-                                spacing: 8
+                                spacing: 6
                                 Column {
-                                    width: parent.width - 78
+                                    width: parent.width - 144
                                     spacing: 2
                                     Text {
                                         text: qsTr("System Provisioned Packages")
@@ -1081,18 +1109,25 @@ Item {
                                     }
                                 }
                                 MeguButton {
-                                    text: optimizerBackend.xboxInstalled ? qsTr("Remove") : qsTr("Restore")
-                                    accented: optimizerBackend.xboxInstalled
-                                    enabled: !optimizerBackend.isOptimizingSystem
-                                    width: 70
+                                    text: qsTr("Restore")
+                                    accented: false
+                                    enabled: !optimizerBackend.xboxInstalled && !optimizerBackend.isOptimizingSystem
+                                    width: 66
                                     height: 26
                                     onClicked: {
                                         stepLogModel.clear();
-                                        if (optimizerBackend.xboxInstalled) {
-                                            optimizerBackend.removeXboxComponent("AllUsersAndProvisioned");
-                                        } else {
-                                            optimizerBackend.restoreXboxComponent("AllUsersAndProvisioned");
-                                        }
+                                        optimizerBackend.restoreXboxComponent("AllUsersAndProvisioned");
+                                    }
+                                }
+                                MeguButton {
+                                    text: qsTr("Remove")
+                                    accented: true
+                                    enabled: optimizerBackend.xboxInstalled && !optimizerBackend.isOptimizingSystem
+                                    width: 66
+                                    height: 26
+                                    onClicked: {
+                                        stepLogModel.clear();
+                                        optimizerBackend.removeXboxComponent("AllUsersAndProvisioned");
                                     }
                                 }
                             }

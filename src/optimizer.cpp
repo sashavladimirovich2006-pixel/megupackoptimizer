@@ -960,13 +960,13 @@ void Optimizer::removeXboxComponent(const QString &componentName) {
         QProcess proc;
         QString cmd;
         if (componentName == "XboxApp") {
-            cmd = "Get-AppxPackage XboxApp | Remove-AppxPackage";
+            cmd = "Get-AppxPackage *XboxApp* | Remove-AppxPackage";
         } else if (componentName == "XboxGamingOverlay") {
-            cmd = "Get-AppxPackage XboxGamingOverlay | Remove-AppxPackage";
+            cmd = "Get-AppxPackage *XboxGamingOverlay* | Remove-AppxPackage";
         } else if (componentName == "XboxTCUI") {
-            cmd = "Get-AppxPackage XboxTCUI | Remove-AppxPackage";
+            cmd = "Get-AppxPackage *Xbox.TCUI* | Remove-AppxPackage";
         } else if (componentName == "XboxGameSpeechWindow") {
-            cmd = "Get-AppxPackage XboxGameSpeechWindow | Remove-AppxPackage";
+            cmd = "Get-AppxPackage *XboxGameSpeechWindow* | Remove-AppxPackage";
         } else if (componentName == "AllUsersAndProvisioned") {
             emit systemStepReported(tr("Purging Xbox packages for all users..."), "INFO");
             QProcess proc1;
