@@ -1,1 +1,2 @@
 IDI_ICON1 ICON "resources/app.ico"
+// Force recompile to embed the new amber-orange logo icon: 2026-05-24

@@ -86,17 +86,17 @@ ApplicationWindow {
 
                 // Premium new transparent minimalist M logo
                 Item {
-                    width: 32
-                    height: 32
+                    width: 40
+                    height: 40
                     anchors.verticalCenter: parent.verticalCenter
                     
                     // Soft glowing backing for the logo
                     Rectangle {
                         anchors.fill: parent
-                        radius: 6
+                        radius: 8
                         color: Theme.accent
                         opacity: 0.12
-                        scale: 1.1
+                        scale: 1.05
                     }
                     
                     Image {
