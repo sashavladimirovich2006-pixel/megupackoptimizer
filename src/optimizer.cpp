@@ -714,8 +714,8 @@ void Optimizer::showPath(const QString &funcName) {
         QProcess::startDetached("cmd.exe", QStringList() << "/c" << "start services.msc");
         Logger::log("Opening Services Manager for Windows Search...", "INFO");
     } else if (funcName == "hibernation") {
-        QProcess::startDetached("cmd.exe", QStringList() << "/c" << "start powercfg.cpl");
-        Logger::log("Opening Power Options...", "INFO");
+        QProcess::startDetached("control.exe", QStringList() << "/name" << "Microsoft.PowerOptions" << "/page" << "pageGlobalSettings");
+        Logger::log("Opening Power Options Global Settings...", "INFO");
     } else if (funcName == "coreisolation") {
         QProcess::startDetached("cmd.exe", QStringList() << "/c" << "start ms-settings:privacy-security-coreisolation");
         Logger::log("Opening Core Isolation settings...", "INFO");
