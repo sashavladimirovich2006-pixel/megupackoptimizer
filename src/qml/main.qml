@@ -12,6 +12,7 @@ ApplicationWindow {
     height: 680
     minimumWidth: 800
     minimumHeight: 560
+    flags: Qt.Window | Qt.FramelessWindowHint
     title: {
         var tabName = "";
         if (activeTab === 0) tabName = qsTr("Dashboard");
@@ -23,38 +24,40 @@ ApplicationWindow {
 
     background: Rectangle {
         color: Theme.background
+        border.color: Theme.border
+        border.width: 1
         
         // Large subtle glowing background sphere (glassmorphism peak!)
         Rectangle {
-            width: 400
-            height: 400
-            radius: 200
+            width: 450
+            height: 450
+            radius: 225
             color: Theme.accent
-            opacity: 0.05
-            x: -100
-            y: -100
+            opacity: 0.12
+            x: -50
+            y: -50
             
             // Pulsing animation for ambient glow
             SequentialAnimation on opacity {
                 loops: Animation.Infinite
-                NumberAnimation { to: 0.08; duration: 4000; easing.type: Easing.InOutQuad }
-                NumberAnimation { to: 0.05; duration: 4000; easing.type: Easing.InOutQuad }
+                NumberAnimation { to: 0.18; duration: 4000; easing.type: Easing.InOutQuad }
+                NumberAnimation { to: 0.12; duration: 4000; easing.type: Easing.InOutQuad }
             }
         }
         
         Rectangle {
-            width: 500
-            height: 500
-            radius: 250
+            width: 550
+            height: 550
+            radius: 275
             color: Theme.yellowAccent
-            opacity: 0.03
-            x: parent.width - 300
-            y: parent.height - 300
+            opacity: 0.08
+            x: parent.width - 250
+            y: parent.height - 250
             
             SequentialAnimation on opacity {
                 loops: Animation.Infinite
-                NumberAnimation { to: 0.06; duration: 5000; easing.type: Easing.InOutQuad }
-                NumberAnimation { to: 0.03; duration: 5000; easing.type: Easing.InOutQuad }
+                NumberAnimation { to: 0.14; duration: 5000; easing.type: Easing.InOutQuad }
+                NumberAnimation { to: 0.08; duration: 5000; easing.type: Easing.InOutQuad }
             }
         }
         
@@ -69,11 +72,40 @@ ApplicationWindow {
         width: parent.width
         height: 60
         color: Theme.headerBg
-        border.color: Theme.border
-        border.width: 1
+        border.width: 0
+
+        // Custom bottom border for header
+        Rectangle {
+            anchors.bottom: parent.bottom
+            anchors.left: parent.left
+            anchors.right: parent.right
+            height: 1
+            color: Theme.border
+        }
 
         Behavior on color { ColorAnimation { duration: Theme.animNormal } }
-        Behavior on border.color { ColorAnimation { duration: Theme.animNormal } }
+
+        // Custom drag handler to move window when dragging empty areas of header
+        MouseArea {
+            anchors.fill: parent
+            property point clickPos: "0,0"
+            onPressed: (mouse) => {
+                clickPos = Qt.point(mouse.x, mouse.y)
+            }
+            onPositionChanged: (mouse) => {
+                if (window.visibility === Window.Maximized) return;
+                var delta = Qt.point(mouse.x - clickPos.x, mouse.y - clickPos.y)
+                window.x += delta.x
+                window.y += delta.y
+            }
+            onDoubleClicked: {
+                if (window.visibility === Window.Maximized) {
+                    window.showNormal()
+                } else {
+                    window.showMaximized()
+                }
+            }
+        }
 
         Item {
             anchors.fill: parent
@@ -222,11 +254,108 @@ ApplicationWindow {
             // Version Label
             Text {
                 anchors.right: parent.right
+                anchors.rightMargin: 154
                 anchors.verticalCenter: parent.verticalCenter
                 text: qsTr("v1.0.0 Stable")
                 color: Theme.textMuted
                 font.family: Theme.fontFamily
                 font.pixelSize: 11
+            }
+        }
+
+        // Custom Window Control Buttons (Minimize, Maximize, Close)
+        Row {
+            id: windowControls
+            anchors.right: parent.right
+            anchors.top: parent.top
+            anchors.bottom: parent.bottom
+            spacing: 0
+            z: 10
+            
+            // Minimize Button
+            Rectangle {
+                width: 46
+                height: parent.height
+                color: minMouse.containsMouse ? (Theme.currentTheme === "Белоснежная" || Theme.currentTheme === "Розовая" ? "#0F000000" : "#1AFFFFFF") : "transparent"
+                
+                Rectangle {
+                    width: 10
+                    height: 1.5
+                    color: Theme.textPrimary
+                    anchors.centerIn: parent
+                }
+                
+                MouseArea {
+                    id: minMouse
+                    anchors.fill: parent
+                    hoverEnabled: true
+                    onClicked: window.showMinimized()
+                }
+            }
+            
+            // Maximize / Restore Button
+            Rectangle {
+                width: 46
+                height: parent.height
+                color: maxMouse.containsMouse ? (Theme.currentTheme === "Белоснежная" || Theme.currentTheme === "Розовая" ? "#0F000000" : "#1AFFFFFF") : "transparent"
+                
+                Rectangle {
+                    width: 10
+                    height: 10
+                    color: "transparent"
+                    border.color: Theme.textPrimary
+                    border.width: 1.5
+                    anchors.centerIn: parent
+                    
+                    Rectangle {
+                        visible: window.visibility === Window.Maximized
+                        width: 8
+                        height: 8
+                        color: "transparent"
+                        border.color: Theme.textPrimary
+                        border.width: 1.5
+                        x: 3
+                        y: -3
+                    }
+                }
+                
+                MouseArea {
+                    id: maxMouse
+                    anchors.fill: parent
+                    hoverEnabled: true
+                    onClicked: {
+                        if (window.visibility === Window.Maximized) {
+                            window.showNormal()
+                        } else {
+                            window.showMaximized()
+                        }
+                    }
+                }
+            }
+            
+            // Close Button
+            Rectangle {
+                width: 46
+                height: parent.height
+                color: closeMouse.containsMouse ? "#E81123" : "transparent"
+                
+                Image {
+                    source: "qrc:/MeguPackOptimizer/src/resources/close.svg"
+                    width: 10
+                    height: 10
+                    anchors.centerIn: parent
+                    sourceSize.width: 10
+                    sourceSize.height: 10
+                    opacity: closeMouse.containsMouse ? 1.0 : 0.8
+                    Behavior on opacity { NumberAnimation { duration: 100 } }
+                }
+                
+                MouseArea {
+                    id: closeMouse
+                    anchors.fill: parent
+                    hoverEnabled: true
+                    onClicked: window.close()
+                }
             }
         }
     }
@@ -296,6 +425,32 @@ ApplicationWindow {
                     easing.type: Easing.OutCubic
                 }
             }
+        }
+    }
+
+    // Custom Border Resize Gripper in Bottom-Right Corner for Frameless Window
+    MouseArea {
+        id: resizeArea
+        width: 16
+        height: 16
+        anchors.bottom: parent.bottom
+        anchors.right: parent.right
+        cursorShape: Qt.SizeFDiagCursor
+        z: 100
+        
+        property point clickPos: "0,0"
+        onPressed: (mouse) => {
+            clickPos = Qt.point(mouse.x, mouse.y)
+        }
+        onPositionChanged: (mouse) => {
+            var deltaX = mouse.x - clickPos.x
+            var deltaY = mouse.y - clickPos.y
+            
+            var newW = window.width + deltaX
+            var newH = window.height + deltaY
+            
+            if (newW >= window.minimumWidth) window.width = newW;
+            if (newH >= window.minimumHeight) window.height = newH;
         }
     }
 }

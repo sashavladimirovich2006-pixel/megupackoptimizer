@@ -132,103 +132,90 @@ Item {
                     id: indexingPanel
                     width: parent.width
                     height: 72
-                    clip: true
 
-                    Item {
-                        anchors.fill: parent
-                        anchors.margins: 16
+                    Row {
+                        anchors.left: parent.left
+                        anchors.verticalCenter: parent.verticalCenter
+                        spacing: 12
 
-                        // Collapsed Header area (Height: 40)
-                        Item {
-                            width: parent.width
-                            height: 40
+                        Image {
+                            source: "qrc:/MeguPackOptimizer/src/resources/storage.svg"
+                            width: 28
+                            height: 28
+                            sourceSize.width: 28
+                            sourceSize.height: 28
                             anchors.verticalCenter: parent.verticalCenter
+                        }
 
-                            Row {
-                                anchors.left: parent.left
-                                anchors.verticalCenter: parent.verticalCenter
-                                spacing: 12
+                        Column {
+                            anchors.verticalCenter: parent.verticalCenter
+                            spacing: 2
 
-                                Image {
-                                    source: "qrc:/MeguPackOptimizer/src/resources/storage.svg"
-                                    width: 28
-                                    height: 28
-                                    sourceSize.width: 28
-                                    sourceSize.height: 28
-                                    anchors.verticalCenter: parent.verticalCenter
-                                }
-
-                                Column {
-                                    anchors.verticalCenter: parent.verticalCenter
-                                    spacing: 2
-
-                                    Text {
-                                        text: qsTr("File Indexing")
-                                        color: Theme.textPrimary
-                                        font.family: Theme.fontFamily
-                                        font.pixelSize: 13
-                                        font.bold: true
-                                    }
-
-                                    Text {
-                                        text: qsTr("Controls file search indexing services and drive index properties.")
-                                        color: Theme.textMuted
-                                        font.family: Theme.fontFamily
-                                        font.pixelSize: 10
-                                    }
-                                }
+                            Text {
+                                text: qsTr("File Indexing")
+                                color: Theme.textPrimary
+                                font.family: Theme.fontFamily
+                                font.pixelSize: 13
+                                font.bold: true
                             }
 
-                            Row {
-                                anchors.right: parent.right
-                                anchors.verticalCenter: parent.verticalCenter
-                                spacing: 16
+                            Text {
+                                text: qsTr("Controls file search indexing services and drive index properties.")
+                                color: Theme.textMuted
+                                font.family: Theme.fontFamily
+                                font.pixelSize: 10
+                            }
+                        }
+                    }
 
-                                MeguSwitch {
-                                    id: mainIndexingSwitch
-                                    checked: root.mainChecked
-                                    indeterminate: root.mainIndeterminate
-                                    anchors.verticalCenter: parent.verticalCenter
-                                    onToggled: {
-                                        root.toggleMain();
-                                    }
-                                }
+                    Row {
+                        anchors.right: parent.right
+                        anchors.verticalCenter: parent.verticalCenter
+                        spacing: 16
 
-                                // Arrow button that slides right on hover & opens sidebar drawer
-                                Rectangle {
-                                    width: 32
-                                    height: 32
-                                    radius: 16
-                                    color: arrowMouseArea.containsMouse ? Theme.accentDim : "transparent"
-                                    border.color: arrowMouseArea.containsMouse ? Theme.accent : Theme.border
-                                    border.width: 1
-                                    anchors.verticalCenter: parent.verticalCenter
+                        MeguSwitch {
+                            id: mainIndexingSwitch
+                            checked: root.mainChecked
+                            indeterminate: root.mainIndeterminate
+                            anchors.verticalCenter: parent.verticalCenter
+                            onToggled: {
+                                root.toggleMain();
+                            }
+                        }
 
-                                    Behavior on color { ColorAnimation { duration: Theme.animFast } }
-                                    Behavior on border.color { ColorAnimation { duration: Theme.animFast } }
+                        // Arrow button that slides right on hover & opens sidebar drawer
+                        Rectangle {
+                            width: 32
+                            height: 32
+                            radius: 16
+                            color: arrowMouseArea.containsMouse ? Theme.accentDim : "transparent"
+                            border.color: arrowMouseArea.containsMouse ? Theme.accent : Theme.border
+                            border.width: 1
+                            anchors.verticalCenter: parent.verticalCenter
 
-                                    Image {
-                                        source: "qrc:/MeguPackOptimizer/src/resources/arrow.svg"
-                                        width: 14
-                                        height: 14
-                                        sourceSize.width: 14
-                                        sourceSize.height: 14
-                                        anchors.centerIn: parent
+                            Behavior on color { ColorAnimation { duration: Theme.animFast } }
+                            Behavior on border.color { ColorAnimation { duration: Theme.animFast } }
 
-                                        // Premium sliding micro-animation
-                                        x: arrowMouseArea.containsMouse ? (parent.width/2 - 5) : (parent.width/2 - 7)
-                                        Behavior on x { NumberAnimation { duration: Theme.animNormal; easing.type: Easing.OutCubic } }
-                                    }
+                            Image {
+                                source: "qrc:/MeguPackOptimizer/src/resources/arrow.svg"
+                                width: 14
+                                height: 14
+                                sourceSize.width: 14
+                                sourceSize.height: 14
+                                anchors.centerIn: parent
 
-                                    MouseArea {
-                                        id: arrowMouseArea
-                                        anchors.fill: parent
-                                        hoverEnabled: true
-                                        cursorShape: Qt.PointingHandCursor
-                                        onClicked: {
-                                            root.activeDrawer = "indexing";
-                                        }
-                                    }
+                                // Premium sliding micro-animation
+                                x: arrowMouseArea.containsMouse ? (parent.width/2 - 5) : (parent.width/2 - 7)
+                                Behavior on x { NumberAnimation { duration: Theme.animNormal; easing.type: Easing.OutCubic } }
+                            }
+
+                            MouseArea {
+                                id: arrowMouseArea
+                                anchors.fill: parent
+                                hoverEnabled: true
+                                cursorShape: Qt.PointingHandCursor
+                                onClicked: {
+                                    root.activeDrawer = "indexing";
                                 }
                             }
                         }
@@ -255,113 +242,100 @@ Item {
                     id: xboxPanel
                     width: parent.width
                     height: 72
-                    clip: true
 
-                    Item {
-                        anchors.fill: parent
-                        anchors.margins: 16
+                    Row {
+                        anchors.left: parent.left
+                        anchors.verticalCenter: parent.verticalCenter
+                        spacing: 12
 
-                        // Collapsed Header area (Height: 40)
-                        Item {
-                            width: parent.width
-                            height: 40
+                        Image {
+                            source: "qrc:/MeguPackOptimizer/src/resources/settings.svg"
+                            width: 28
+                            height: 28
+                            sourceSize.width: 28
+                            sourceSize.height: 28
                             anchors.verticalCenter: parent.verticalCenter
+                        }
 
-                            Row {
-                                anchors.left: parent.left
-                                anchors.verticalCenter: parent.verticalCenter
-                                spacing: 12
+                        Column {
+                            anchors.verticalCenter: parent.verticalCenter
+                            spacing: 2
 
-                                Image {
-                                    source: "qrc:/MeguPackOptimizer/src/resources/settings.svg"
-                                    width: 28
-                                    height: 28
-                                    sourceSize.width: 28
-                                    sourceSize.height: 28
-                                    anchors.verticalCenter: parent.verticalCenter
-                                }
-
-                                Column {
-                                    anchors.verticalCenter: parent.verticalCenter
-                                    spacing: 2
-
-                                    Text {
-                                        text: qsTr("Xbox App & Game Bar")
-                                        color: Theme.textPrimary
-                                        font.family: Theme.fontFamily
-                                        font.pixelSize: 13
-                                        font.bold: true
-                                    }
-
-                                    Text {
-                                        text: qsTr("Completely remove all Xbox overlays, TCUI, and game bar apps to optimize mouse input latency.")
-                                        color: Theme.textMuted
-                                        font.family: Theme.fontFamily
-                                        font.pixelSize: 10
-                                    }
-                                }
+                            Text {
+                                text: qsTr("Xbox App & Game Bar")
+                                color: Theme.textPrimary
+                                font.family: Theme.fontFamily
+                                font.pixelSize: 13
+                                font.bold: true
                             }
 
-                            Row {
-                                anchors.right: parent.right
-                                anchors.verticalCenter: parent.verticalCenter
-                                spacing: 16
+                            Text {
+                                text: qsTr("Completely remove all Xbox overlays, TCUI, and game bar apps to optimize mouse input latency.")
+                                color: Theme.textMuted
+                                font.family: Theme.fontFamily
+                                font.pixelSize: 10
+                            }
+                        }
+                    }
 
-                                // Status text pill: Installed / Removed
-                                Rectangle {
-                                    height: 24
-                                    width: 80
-                                    radius: 12
-                                    color: optimizerBackend.xboxInstalled ? "#1A2536" : Theme.accentDim
-                                    border.color: optimizerBackend.xboxInstalled ? "#2B3F5C" : Theme.accent
-                                    border.width: 1
-                                    anchors.verticalCenter: parent.verticalCenter
+                    Row {
+                        anchors.right: parent.right
+                        anchors.verticalCenter: parent.verticalCenter
+                        spacing: 16
 
-                                    Text {
-                                        text: optimizerBackend.xboxInstalled ? qsTr("Installed") : qsTr("Removed")
-                                        color: optimizerBackend.xboxInstalled ? Theme.textSecondary : Theme.accent
-                                        font.family: Theme.fontFamily
-                                        font.pixelSize: 10
-                                        font.bold: true
-                                        anchors.centerIn: parent
-                                    }
-                                }
+                        // Status text pill: Installed / Removed
+                        Rectangle {
+                            height: 24
+                            width: 80
+                            radius: 12
+                            color: optimizerBackend.xboxInstalled ? (Theme.currentTheme === "Белоснежная" || Theme.currentTheme === "Розовая" ? "#0F000000" : "#1A2536") : Theme.accentDim
+                            border.color: optimizerBackend.xboxInstalled ? (Theme.currentTheme === "Белоснежная" || Theme.currentTheme === "Розовая" ? "#2B3F5C" : "#2B3F5C") : Theme.accent
+                            border.width: 1
+                            anchors.verticalCenter: parent.verticalCenter
 
-                                // Arrow button
-                                Rectangle {
-                                    width: 32
-                                    height: 32
-                                    radius: 16
-                                    color: xboxArrowMouseArea.containsMouse ? Theme.accentDim : "transparent"
-                                    border.color: xboxArrowMouseArea.containsMouse ? Theme.accent : Theme.border
-                                    border.width: 1
-                                    anchors.verticalCenter: parent.verticalCenter
+                            Text {
+                                text: optimizerBackend.xboxInstalled ? qsTr("Installed") : qsTr("Removed")
+                                color: optimizerBackend.xboxInstalled ? Theme.textSecondary : Theme.accent
+                                font.family: Theme.fontFamily
+                                font.pixelSize: 10
+                                font.bold: true
+                                anchors.centerIn: parent
+                            }
+                        }
 
-                                    Behavior on color { ColorAnimation { duration: Theme.animFast } }
-                                    Behavior on border.color { ColorAnimation { duration: Theme.animFast } }
+                        // Arrow button
+                        Rectangle {
+                            width: 32
+                            height: 32
+                            radius: 16
+                            color: xboxArrowMouseArea.containsMouse ? Theme.accentDim : "transparent"
+                            border.color: xboxArrowMouseArea.containsMouse ? Theme.accent : Theme.border
+                            border.width: 1
+                            anchors.verticalCenter: parent.verticalCenter
 
-                                    Image {
-                                        source: "qrc:/MeguPackOptimizer/src/resources/arrow.svg"
-                                        width: 14
-                                        height: 14
-                                        sourceSize.width: 14
-                                        sourceSize.height: 14
-                                        anchors.centerIn: parent
+                            Behavior on color { ColorAnimation { duration: Theme.animFast } }
+                            Behavior on border.color { ColorAnimation { duration: Theme.animFast } }
 
-                                        // Premium sliding micro-animation
-                                        x: xboxArrowMouseArea.containsMouse ? (parent.width/2 - 5) : (parent.width/2 - 7)
-                                        Behavior on x { NumberAnimation { duration: Theme.animNormal; easing.type: Easing.OutCubic } }
-                                    }
+                            Image {
+                                source: "qrc:/MeguPackOptimizer/src/resources/arrow.svg"
+                                width: 14
+                                height: 14
+                                sourceSize.width: 14
+                                sourceSize.height: 14
+                                anchors.centerIn: parent
 
-                                    MouseArea {
-                                        id: xboxArrowMouseArea
-                                        anchors.fill: parent
-                                        hoverEnabled: true
-                                        cursorShape: Qt.PointingHandCursor
-                                        onClicked: {
-                                            root.activeDrawer = "xbox";
-                                        }
-                                    }
+                                // Premium sliding micro-animation
+                                x: xboxArrowMouseArea.containsMouse ? (parent.width/2 - 5) : (parent.width/2 - 7)
+                                Behavior on x { NumberAnimation { duration: Theme.animNormal; easing.type: Easing.OutCubic } }
+                            }
+
+                            MouseArea {
+                                id: xboxArrowMouseArea
+                                anchors.fill: parent
+                                hoverEnabled: true
+                                cursorShape: Qt.PointingHandCursor
+                                onClicked: {
+                                    root.activeDrawer = "xbox";
                                 }
                             }
                         }
@@ -373,121 +347,108 @@ Item {
                     id: mpoPanel
                     width: parent.width
                     height: 72
-                    clip: true
 
-                    Item {
-                        anchors.fill: parent
-                        anchors.margins: 16
+                    Row {
+                        anchors.left: parent.left
+                        anchors.verticalCenter: parent.verticalCenter
+                        spacing: 12
 
-                        // Collapsed Header area (Height: 40)
-                        Item {
-                            width: parent.width
-                            height: 40
+                        Image {
+                            source: "qrc:/MeguPackOptimizer/src/resources/monitor.svg"
+                            width: 28
+                            height: 28
+                            sourceSize.width: 28
+                            sourceSize.height: 28
                             anchors.verticalCenter: parent.verticalCenter
+                        }
 
-                            Row {
-                                anchors.left: parent.left
-                                anchors.verticalCenter: parent.verticalCenter
-                                spacing: 12
+                        Column {
+                            anchors.verticalCenter: parent.verticalCenter
+                            spacing: 2
 
-                                Image {
-                                    source: "qrc:/MeguPackOptimizer/src/resources/monitor.svg"
-                                    width: 28
-                                    height: 28
-                                    sourceSize.width: 28
-                                    sourceSize.height: 28
-                                    anchors.verticalCenter: parent.verticalCenter
-                                }
-
-                                Column {
-                                    anchors.verticalCenter: parent.verticalCenter
-                                    spacing: 2
-
-                                    Text {
-                                        text: qsTr("Multi-Plane Overlay (MPO)")
-                                        color: Theme.textPrimary
-                                        font.family: Theme.fontFamily
-                                        font.pixelSize: 13
-                                        font.bold: true
-                                    }
-
-                                    Text {
-                                        text: qsTr("Configure DWM multi-plane overlay modes to optimize latency and eliminate game stuttering.")
-                                        color: Theme.textMuted
-                                        font.family: Theme.fontFamily
-                                        font.pixelSize: 10
-                                    }
-                                }
+                            Text {
+                                text: qsTr("Multi-Plane Overlay (MPO)")
+                                color: Theme.textPrimary
+                                font.family: Theme.fontFamily
+                                font.pixelSize: 13
+                                font.bold: true
                             }
 
-                            Row {
-                                anchors.right: parent.right
-                                anchors.verticalCenter: parent.verticalCenter
-                                spacing: 16
+                            Text {
+                                text: qsTr("Configure DWM multi-plane overlay modes to optimize latency and eliminate game stuttering.")
+                                color: Theme.textMuted
+                                font.family: Theme.fontFamily
+                                font.pixelSize: 10
+                            }
+                        }
+                    }
 
-                                // Current Value indicator pill
-                                Rectangle {
-                                    height: 24
-                                    width: {
-                                        if (optimizerBackend.mpoValue === 0) return 90;
-                                        if (optimizerBackend.mpoValue === 5) return 100;
-                                        return 85;
-                                    }
-                                    radius: 12
-                                    color: (optimizerBackend.mpoValue === 5) ? Theme.accentDim : "#1A2536"
-                                    border.color: (optimizerBackend.mpoValue === 5) ? Theme.accent : "#2B3F5C"
-                                    border.width: 1
-                                    anchors.verticalCenter: parent.verticalCenter
+                    Row {
+                        anchors.right: parent.right
+                        anchors.verticalCenter: parent.verticalCenter
+                        spacing: 16
 
-                                    Text {
-                                        text: {
-                                            if (optimizerBackend.mpoValue === 5) return qsTr("Disabled (5)");
-                                            if (optimizerBackend.mpoValue === 0) return qsTr("Default (0)");
-                                            return qsTr("Mode %1").arg(optimizerBackend.mpoValue);
-                                        }
-                                        color: (optimizerBackend.mpoValue === 5) ? Theme.accent : Theme.textSecondary
-                                        font.family: Theme.fontFamily
-                                        font.pixelSize: 10
-                                        font.bold: true
-                                        anchors.centerIn: parent
-                                    }
+                        // Current Value indicator pill
+                        Rectangle {
+                            height: 24
+                            width: {
+                                if (optimizerBackend.mpoValue === 0) return 90;
+                                if (optimizerBackend.mpoValue === 5) return 100;
+                                return 85;
+                            }
+                            radius: 12
+                            color: (optimizerBackend.mpoValue === 5) ? Theme.accentDim : (Theme.currentTheme === "Белоснежная" || Theme.currentTheme === "Розовая" ? "#0F000000" : "#1A2536")
+                            border.color: (optimizerBackend.mpoValue === 5) ? Theme.accent : "#2B3F5C"
+                            border.width: 1
+                            anchors.verticalCenter: parent.verticalCenter
+
+                            Text {
+                                text: {
+                                    if (optimizerBackend.mpoValue === 5) return qsTr("Disabled (5)");
+                                    if (optimizerBackend.mpoValue === 0) return qsTr("Default (0)");
+                                    return qsTr("Mode %1").arg(optimizerBackend.mpoValue);
                                 }
+                                color: (optimizerBackend.mpoValue === 5) ? Theme.accent : Theme.textSecondary
+                                font.family: Theme.fontFamily
+                                font.pixelSize: 10
+                                font.bold: true
+                                anchors.centerIn: parent
+                            }
+                        }
 
-                                // Arrow button
-                                Rectangle {
-                                    width: 32
-                                    height: 32
-                                    radius: 16
-                                    color: mpoArrowMouseArea.containsMouse ? Theme.accentDim : "transparent"
-                                    border.color: mpoArrowMouseArea.containsMouse ? Theme.accent : Theme.border
-                                    border.width: 1
-                                    anchors.verticalCenter: parent.verticalCenter
+                        // Arrow button
+                        Rectangle {
+                            width: 32
+                            height: 32
+                            radius: 16
+                            color: mpoArrowMouseArea.containsMouse ? Theme.accentDim : "transparent"
+                            border.color: mpoArrowMouseArea.containsMouse ? Theme.accent : Theme.border
+                            border.width: 1
+                            anchors.verticalCenter: parent.verticalCenter
 
-                                    Behavior on color { ColorAnimation { duration: Theme.animFast } }
-                                    Behavior on border.color { ColorAnimation { duration: Theme.animFast } }
+                            Behavior on color { ColorAnimation { duration: Theme.animFast } }
+                            Behavior on border.color { ColorAnimation { duration: Theme.animFast } }
 
-                                    Image {
-                                        source: "qrc:/MeguPackOptimizer/src/resources/arrow.svg"
-                                        width: 14
-                                        height: 14
-                                        sourceSize.width: 14
-                                        sourceSize.height: 14
-                                        anchors.centerIn: parent
+                            Image {
+                                source: "qrc:/MeguPackOptimizer/src/resources/arrow.svg"
+                                width: 14
+                                height: 14
+                                sourceSize.width: 14
+                                sourceSize.height: 14
+                                anchors.centerIn: parent
 
-                                        // Premium sliding micro-animation
-                                        x: mpoArrowMouseArea.containsMouse ? (parent.width/2 - 5) : (parent.width/2 - 7)
-                                        Behavior on x { NumberAnimation { duration: Theme.animNormal; easing.type: Easing.OutCubic } }
-                                    }
+                                // Premium sliding micro-animation
+                                x: mpoArrowMouseArea.containsMouse ? (parent.width/2 - 5) : (parent.width/2 - 7)
+                                Behavior on x { NumberAnimation { duration: Theme.animNormal; easing.type: Easing.OutCubic } }
+                            }
 
-                                    MouseArea {
-                                        id: mpoArrowMouseArea
-                                        anchors.fill: parent
-                                        hoverEnabled: true
-                                        cursorShape: Qt.PointingHandCursor
-                                        onClicked: {
-                                            root.activeDrawer = "mpo";
-                                        }
-                                    }
+                            MouseArea {
+                                id: mpoArrowMouseArea
+                                anchors.fill: parent
+                                hoverEnabled: true
+                                cursorShape: Qt.PointingHandCursor
+                                onClicked: {
+                                    root.activeDrawer = "mpo";
                                 }
                             }
                         }
@@ -513,53 +474,47 @@ Item {
                     width: parent.width
                     height: 72
 
-                    Item {
-                        anchors.fill: parent
-                        anchors.leftMargin: 16
-                        anchors.rightMargin: 16
+                    Row {
+                        anchors.left: parent.left
+                        anchors.verticalCenter: parent.verticalCenter
+                        spacing: 12
 
-                        Row {
-                            anchors.left: parent.left
+                        Image {
+                            source: "qrc:/MeguPackOptimizer/src/resources/cpu.svg"
+                            width: 28
+                            height: 28
+                            sourceSize.width: 28
+                            sourceSize.height: 28
                             anchors.verticalCenter: parent.verticalCenter
-                            spacing: 12
-
-                            Image {
-                                source: "qrc:/MeguPackOptimizer/src/resources/cpu.svg"
-                                width: 28
-                                height: 28
-                                sourceSize.width: 28
-                                sourceSize.height: 28
-                                anchors.verticalCenter: parent.verticalCenter
-                            }
-
-                            Column {
-                                anchors.verticalCenter: parent.verticalCenter
-                                spacing: 2
-
-                                Text {
-                                    text: qsTr("System Hibernation")
-                                    color: Theme.textPrimary
-                                    font.family: Theme.fontFamily
-                                    font.pixelSize: 13
-                                    font.bold: true
-                                }
-
-                                Text {
-                                    text: qsTr("Enable or disable Windows hibernation mode to free up disk space.")
-                                    color: Theme.textMuted
-                                    font.family: Theme.fontFamily
-                                    font.pixelSize: 10
-                                }
-                            }
                         }
 
-                        MeguSwitch {
-                            anchors.right: parent.right
+                        Column {
                             anchors.verticalCenter: parent.verticalCenter
-                            checked: optimizerBackend.hibernationActive
-                            onToggled: {
-                                optimizerBackend.hibernationActive = isChecked;
+                            spacing: 2
+
+                            Text {
+                                text: qsTr("System Hibernation")
+                                color: Theme.textPrimary
+                                font.family: Theme.fontFamily
+                                font.pixelSize: 13
+                                font.bold: true
                             }
+
+                            Text {
+                                text: qsTr("Enable or disable Windows hibernation mode to free up disk space.")
+                                color: Theme.textMuted
+                                font.family: Theme.fontFamily
+                                font.pixelSize: 10
+                            }
+                        }
+                    }
+
+                    MeguSwitch {
+                        anchors.right: parent.right
+                        anchors.verticalCenter: parent.verticalCenter
+                        checked: optimizerBackend.hibernationActive
+                        onToggled: {
+                            optimizerBackend.hibernationActive = isChecked;
                         }
                     }
                 }

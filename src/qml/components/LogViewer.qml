@@ -79,7 +79,7 @@ AcrylicPanel {
         Rectangle {
             width: parent.width
             height: parent.height - 34
-            color: "#0B1019" // Terminal background
+            color: Theme.sidebarBg // Theme-aware dynamic translucent background
             radius: Theme.radiusSmall
             border.color: Theme.border
             border.width: 1
@@ -99,7 +99,7 @@ AcrylicPanel {
                     id: logText
                     readOnly: true
                     selectByMouse: true
-                    color: Theme.textSecondary
+                    color: Theme.textPrimary // High-contrast crisp text matching active theme
                     font.family: "Consolas, Courier New, monospace"
                     font.pixelSize: 11
                     background: null

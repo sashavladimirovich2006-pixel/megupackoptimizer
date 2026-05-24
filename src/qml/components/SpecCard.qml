@@ -93,13 +93,15 @@ AcrylicPanel {
 
                 Text {
                     text: card.title
-                    color: Theme.yellowAccent
+                    color: mouseArea.containsMouse ? Theme.accent : Theme.textSecondary
                     font.family: Theme.fontFamily
                     font.pixelSize: 11
                     font.bold: true
                     font.letterSpacing: 0.5
                     elide: Text.ElideRight
                     width: parent.width
+                    
+                    Behavior on color { ColorAnimation { duration: Theme.animFast } }
                 }
 
                 Text {
