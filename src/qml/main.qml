@@ -27,40 +27,6 @@ ApplicationWindow {
         border.color: Theme.border
         border.width: 1
         
-        // Large subtle glowing background sphere (glassmorphism peak!)
-        Rectangle {
-            width: 450
-            height: 450
-            radius: 225
-            color: Theme.accent
-            opacity: 0.12
-            x: -50
-            y: -50
-            
-            // Pulsing animation for ambient glow
-            SequentialAnimation on opacity {
-                loops: Animation.Infinite
-                NumberAnimation { to: 0.18; duration: 4000; easing.type: Easing.InOutQuad }
-                NumberAnimation { to: 0.12; duration: 4000; easing.type: Easing.InOutQuad }
-            }
-        }
-        
-        Rectangle {
-            width: 550
-            height: 550
-            radius: 275
-            color: Theme.yellowAccent
-            opacity: 0.08
-            x: parent.width - 250
-            y: parent.height - 250
-            
-            SequentialAnimation on opacity {
-                loops: Animation.Infinite
-                NumberAnimation { to: 0.14; duration: 5000; easing.type: Easing.InOutQuad }
-                NumberAnimation { to: 0.08; duration: 5000; easing.type: Easing.InOutQuad }
-            }
-        }
-        
         Behavior on color { ColorAnimation { duration: Theme.animNormal } }
     }
 
