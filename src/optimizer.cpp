@@ -267,21 +267,15 @@ void Optimizer::loadSystemStates() {
     emit mouseAccelerationActiveChanged(m_mouseAccelerationActive);
     emit originalMouseAccelerationActiveChanged(m_originalMouseAccelerationActive);
 
-    // Check Game Mode state on startup
+    // Check Game Mode state on startup (using AutoGameModeEnabled as primary settings indicator)
     bool isGameModeActive = true;
 #ifdef Q_OS_WIN
     HKEY hKeyGB;
     if (RegOpenKeyExW(HKEY_CURRENT_USER, L"Software\\Microsoft\\GameBar", 0, KEY_READ, &hKeyGB) == ERROR_SUCCESS) {
-        DWORD val1 = 1;
         DWORD val2 = 1;
-        DWORD size1 = sizeof(val1);
         DWORD size2 = sizeof(val2);
-        
-        bool query1 = (RegQueryValueExW(hKeyGB, L"AllowAutoGameMode", NULL, NULL, (LPBYTE)&val1, &size1) == ERROR_SUCCESS);
-        bool query2 = (RegQueryValueExW(hKeyGB, L"AutoGameModeEnabled", NULL, NULL, (LPBYTE)&val2, &size2) == ERROR_SUCCESS);
-        
-        if ((query1 && val1 == 0) || (query2 && val2 == 0)) {
-            isGameModeActive = false;
+        if (RegQueryValueExW(hKeyGB, L"AutoGameModeEnabled", NULL, NULL, (LPBYTE)&val2, &size2) == ERROR_SUCCESS) {
+            isGameModeActive = (val2 != 0);
         }
         RegCloseKey(hKeyGB);
     }
