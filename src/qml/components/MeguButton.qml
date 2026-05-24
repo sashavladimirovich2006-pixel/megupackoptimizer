@@ -26,10 +26,12 @@ Item {
         
         color: {
             if (!control.enabled) {
-                return control.accented ? Theme.accentDark : "transparent";
+                return control.accented ? Qt.rgba(Theme.accent.r, Theme.accent.g, Theme.accent.b, 0.05) : "transparent";
             }
             if (control.accented) {
-                return mouseArea.pressed ? Theme.accentDark : (mouseArea.containsMouse ? Theme.accentLight : Theme.accent);
+                return mouseArea.pressed ? Qt.rgba(Theme.accent.r, Theme.accent.g, Theme.accent.b, 0.30) : 
+                       (mouseArea.containsMouse ? Qt.rgba(Theme.accent.r, Theme.accent.g, Theme.accent.b, 0.20) : 
+                        Qt.rgba(Theme.accent.r, Theme.accent.g, Theme.accent.b, 0.12));
             } else if (control.flat) {
                 if (mouseArea.pressed) return Theme.buttonBgPressed;
                 if (mouseArea.containsMouse) return Theme.buttonBgHover;
@@ -40,7 +42,12 @@ Item {
         }
                
         border.color: {
-            if (control.accented) return "transparent";
+            if (control.accented) {
+                if (!control.enabled) return Qt.rgba(Theme.accent.r, Theme.accent.g, Theme.accent.b, 0.10);
+                return mouseArea.pressed ? Qt.rgba(Theme.accent.r, Theme.accent.g, Theme.accent.b, 0.50) : 
+                       (mouseArea.containsMouse ? Qt.rgba(Theme.accent.r, Theme.accent.g, Theme.accent.b, 0.40) : 
+                        Qt.rgba(Theme.accent.r, Theme.accent.g, Theme.accent.b, 0.25));
+            }
             if (control.flat) {
                 return (mouseArea.containsMouse && control.enabled) ? Theme.borderHover : "transparent";
             }
@@ -79,7 +86,7 @@ Item {
                 anchors.fill: btnIcon
                 source: btnIcon
                 color: {
-                    if (control.accented) return Theme.textInverse;
+                    if (control.accented) return Theme.accent;
                     if (control.flat) {
                         return mouseArea.containsMouse ? Theme.textPrimary : Theme.textSecondary;
                     }
@@ -102,7 +109,7 @@ Item {
         Text {
             text: control.text
             color: {
-                if (control.accented) return Theme.textInverse;
+                if (control.accented) return Theme.textPrimary;
                 if (control.flat) {
                     return mouseArea.containsMouse ? Theme.textPrimary : Theme.textSecondary;
                 }
