@@ -12,21 +12,12 @@ Item {
     property real yTranslation: isActive ? 0 : 15
  
     function getTranslatedThemeName(themeName) {
-        if (settingsBackend.language === "en") {
-            if (themeName === "Белоснежная") return "Snow White";
-            if (themeName === "Темная") return "Dark";
-            if (themeName === "Blackout полностью черная") return "OLED Blackout";
-            if (themeName === "Ргб") return "RGB Gamer";
-            if (themeName === "Розовая") return "Sakura Pink";
-            if (themeName === "Black pink") return "Black Pink";
-        } else if (settingsBackend.language === "uk") {
-            if (themeName === "Белоснежная") return "Білосніжна";
-            if (themeName === "Темная") return "Темна";
-            if (themeName === "Blackout полностью черная") return "Абсолютно чорна";
-            if (themeName === "Ргб") return "RGB-Геймер";
-            if (themeName === "Розовая") return "Рожева";
-            if (themeName === "Black pink") return "Чорно-рожева";
-        }
+        if (themeName === "Белоснежная") return qsTr("Snow White");
+        if (themeName === "Темная") return qsTr("Dark");
+        if (themeName === "Blackout полностью черная") return qsTr("OLED Blackout");
+        if (themeName === "Ргб") return qsTr("RGB Gamer");
+        if (themeName === "Розовая") return qsTr("Sakura Pink");
+        if (themeName === "Black pink") return qsTr("Black Pink");
         return themeName;
     }
 
