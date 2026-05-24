@@ -105,6 +105,8 @@ Item {
     property bool sidebarOpen: activeDrawer !== ""
 
     property bool islandExpanded: false
+    property string currentIslandPage: "main"
+    property string islandDetailCategory: ""
 
     property int pendingChangesCount: {
         var count = 0;
@@ -126,6 +128,7 @@ Item {
         if (indexingChanged) list.push({
             name: qsTr("File Indexing"),
             icon: "qrc:/MeguPackOptimizer/src/resources/storage.svg",
+            hasSidebar: true,
             revert: function() {
                 optimizerBackend.winSearchActive = optimizerBackend.originalWinSearchActive;
                 optimizerBackend.driveStates = optimizerBackend.originalDriveStates;
@@ -134,6 +137,7 @@ Item {
         if (xboxChanged) list.push({
             name: qsTr("Xbox App & Game Bar"),
             icon: "qrc:/MeguPackOptimizer/src/resources/play.svg",
+            hasSidebar: true,
             revert: function() {
                 optimizerBackend.gamingOverlayActive = optimizerBackend.originalGamingOverlayActive;
             }
@@ -141,6 +145,7 @@ Item {
         if (coreIsolationChanged) list.push({
             name: qsTr("Core Isolation"),
             icon: "qrc:/MeguPackOptimizer/src/resources/info.svg",
+            hasSidebar: false,
             revert: function() {
                 optimizerBackend.coreIsolationActive = optimizerBackend.originalCoreIsolationActive;
             }
@@ -148,6 +153,7 @@ Item {
         if (mouseAccelerationChanged) list.push({
             name: qsTr("Mouse Acceleration"),
             icon: "qrc:/MeguPackOptimizer/src/resources/arrow.svg",
+            hasSidebar: false,
             revert: function() {
                 optimizerBackend.mouseAccelerationActive = optimizerBackend.originalMouseAccelerationActive;
             }
@@ -155,6 +161,7 @@ Item {
         if (gameModeChanged) list.push({
             name: qsTr("Game Mode"),
             icon: "qrc:/MeguPackOptimizer/src/resources/bolt.svg",
+            hasSidebar: false,
             revert: function() {
                 optimizerBackend.gameModeActive = optimizerBackend.originalGameModeActive;
             }
@@ -162,6 +169,7 @@ Item {
         if (firewallChanged) list.push({
             name: qsTr("Windows Defender Firewall"),
             icon: "qrc:/MeguPackOptimizer/src/resources/info.svg",
+            hasSidebar: false,
             revert: function() {
                 optimizerBackend.firewallActive = optimizerBackend.originalFirewallActive;
             }
@@ -169,6 +177,7 @@ Item {
         if (printerChanged) list.push({
             name: qsTr("Print Spooler (Printer)"),
             icon: "qrc:/MeguPackOptimizer/src/resources/monitor.svg",
+            hasSidebar: true,
             revert: function() {
                 optimizerBackend.printerActive = optimizerBackend.originalPrinterActive;
             }
@@ -176,6 +185,7 @@ Item {
         if (notificationsChanged) list.push({
             name: qsTr("Windows Notifications"),
             icon: "qrc:/MeguPackOptimizer/src/resources/info.svg",
+            hasSidebar: true,
             revert: function() {
                 optimizerBackend.notificationsActive = optimizerBackend.originalNotificationsActive;
                 optimizerBackend.notifGlobalActive = optimizerBackend.originalNotifGlobalActive;
@@ -187,6 +197,7 @@ Item {
         if (hibernationChanged) list.push({
             name: qsTr("System Hibernation"),
             icon: "qrc:/MeguPackOptimizer/src/resources/folder.svg",
+            hasSidebar: false,
             revert: function() {
                 optimizerBackend.hibernationActive = optimizerBackend.originalHibernationActive;
             }
@@ -194,6 +205,7 @@ Item {
         if (powerPlanChanged) list.push({
             name: qsTr("Power Plan"),
             icon: "qrc:/MeguPackOptimizer/src/resources/bolt.svg",
+            hasSidebar: true,
             revert: function() {
                 optimizerBackend.selectPowerScheme(optimizerBackend.activePowerSchemeGuid);
             }
@@ -201,9 +213,222 @@ Item {
         return list;
     }
 
+    property var pendingSubOptionsList: {
+        var _idx = indexingChanged;
+        var _ntf = notificationsChanged;
+        var _xbc = xboxChanged;
+        var _prn = printerChanged;
+        var _pwr = powerPlanChanged;
+        var _ws = optimizerBackend.winSearchActive;
+        var _ds = optimizerBackend.driveStates;
+        var _ga = optimizerBackend.gamingOverlayActive;
+        var _pa = optimizerBackend.printerActive;
+        var _tg = optimizerBackend.targetPowerSchemeGuid;
+        var _ng = optimizerBackend.notifGlobalActive;
+        var _na = optimizerBackend.notifAppActive;
+        var _ns = optimizerBackend.notifSoundsActive;
+        var _nl = optimizerBackend.notifLockscreenActive;
+
+        return getPendingSubOptions(root.islandDetailCategory);
+    }
+
     onPendingChangesCountChanged: {
         if (pendingChangesCount === 0) {
             islandExpanded = false;
+            currentIslandPage = "main";
+        }
+    }
+
+    onPendingSubOptionsListChanged: {
+        if (islandExpanded && currentIslandPage === "detail" && pendingSubOptionsList.length === 0) {
+            currentIslandPage = "main";
+        }
+    }
+
+    function getPendingSubOptions(category) {
+        var subList = [];
+        if (category === qsTr("File Indexing")) {
+            if (optimizerBackend.winSearchActive !== optimizerBackend.originalWinSearchActive) {
+                subList.push({
+                    name: qsTr("Windows Search service") + ": " + (optimizerBackend.originalWinSearchActive ? qsTr("Enabled") : qsTr("Disabled")) + " -> " + (optimizerBackend.winSearchActive ? qsTr("Enabled") : qsTr("Disabled")),
+                    revert: function() {
+                        optimizerBackend.winSearchActive = optimizerBackend.originalWinSearchActive;
+                    }
+                });
+            }
+            if (!!optimizerBackend.driveStates["C:"] !== !!optimizerBackend.originalDriveStates["C:"]) {
+                subList.push({
+                    name: qsTr("Drive C: indexing") + ": " + (optimizerBackend.originalDriveStates["C:"] ? qsTr("Enabled") : qsTr("Disabled")) + " -> " + (optimizerBackend.driveStates["C:"] ? qsTr("Enabled") : qsTr("Disabled")),
+                    revert: function() {
+                        var ds = optimizerBackend.driveStates;
+                        ds["C:"] = optimizerBackend.originalDriveStates["C:"];
+                        optimizerBackend.driveStates = ds;
+                    }
+                });
+            }
+            for (var i = 0; i < optimizerBackend.fixedDrives.length; i++) {
+                (function(letter) {
+                    if (!!optimizerBackend.driveStates[letter] !== !!optimizerBackend.originalDriveStates[letter]) {
+                        subList.push({
+                            name: qsTr("Drive %1 indexing").arg(letter) + ": " + (optimizerBackend.originalDriveStates[letter] ? qsTr("Enabled") : qsTr("Disabled")) + " -> " + (optimizerBackend.driveStates[letter] ? qsTr("Enabled") : qsTr("Disabled")),
+                            revert: function() {
+                                var ds = optimizerBackend.driveStates;
+                                ds[letter] = optimizerBackend.originalDriveStates[letter];
+                                optimizerBackend.driveStates = ds;
+                            }
+                        });
+                    }
+                })(optimizerBackend.fixedDrives[i]);
+            }
+        } else if (category === qsTr("Xbox App & Game Bar")) {
+            if (optimizerBackend.gamingOverlayActive !== optimizerBackend.originalGamingOverlayActive) {
+                subList.push({
+                    name: qsTr("Disable Game Bar Popup") + ": " + (optimizerBackend.originalGamingOverlayActive ? qsTr("Disabled") : qsTr("Enabled")) + " -> " + (optimizerBackend.gamingOverlayActive ? qsTr("Disabled") : qsTr("Enabled")),
+                    revert: function() {
+                        optimizerBackend.gamingOverlayActive = optimizerBackend.originalGamingOverlayActive;
+                    }
+                });
+            }
+        } else if (category === qsTr("Print Spooler (Printer)")) {
+            if (optimizerBackend.printerActive !== optimizerBackend.originalPrinterActive) {
+                subList.push({
+                    name: qsTr("Print Spooler") + ": " + (optimizerBackend.originalPrinterActive ? qsTr("Enabled") : qsTr("Disabled")) + " -> " + (optimizerBackend.printerActive ? qsTr("Enabled") : qsTr("Disabled")),
+                    revert: function() {
+                        optimizerBackend.printerActive = optimizerBackend.originalPrinterActive;
+                    }
+                });
+            }
+        } else if (category === qsTr("Windows Notifications")) {
+            if (optimizerBackend.notifGlobalActive !== optimizerBackend.originalNotifGlobalActive) {
+                subList.push({
+                    name: qsTr("Global Toast Notifications") + ": " + (optimizerBackend.originalNotifGlobalActive ? qsTr("Enabled") : qsTr("Disabled")) + " -> " + (optimizerBackend.notifGlobalActive ? qsTr("Enabled") : qsTr("Disabled")),
+                    revert: function() {
+                        optimizerBackend.notifGlobalActive = optimizerBackend.originalNotifGlobalActive;
+                    }
+                });
+            }
+            if (optimizerBackend.notifAppActive !== optimizerBackend.originalNotifAppActive) {
+                subList.push({
+                    name: qsTr("App Notifications") + ": " + (optimizerBackend.originalNotifAppActive ? qsTr("Enabled") : qsTr("Disabled")) + " -> " + (optimizerBackend.notifAppActive ? qsTr("Enabled") : qsTr("Disabled")),
+                    revert: function() {
+                        optimizerBackend.notifAppActive = optimizerBackend.originalNotifAppActive;
+                    }
+                });
+            }
+            if (optimizerBackend.notifSoundsActive !== optimizerBackend.originalNotifSoundsActive) {
+                subList.push({
+                    name: qsTr("Notification Sounds") + ": " + (optimizerBackend.originalNotifSoundsActive ? qsTr("Enabled") : qsTr("Disabled")) + " -> " + (optimizerBackend.notifSoundsActive ? qsTr("Enabled") : qsTr("Disabled")),
+                    revert: function() {
+                        optimizerBackend.notifSoundsActive = optimizerBackend.originalNotifSoundsActive;
+                    }
+                });
+            }
+            if (optimizerBackend.notifLockscreenActive !== optimizerBackend.originalNotifLockscreenActive) {
+                subList.push({
+                    name: qsTr("Lock Screen Notifications") + ": " + (optimizerBackend.originalNotifLockscreenActive ? qsTr("Enabled") : qsTr("Disabled")) + " -> " + (optimizerBackend.notifLockscreenActive ? qsTr("Enabled") : qsTr("Disabled")),
+                    revert: function() {
+                        optimizerBackend.notifLockscreenActive = optimizerBackend.originalNotifLockscreenActive;
+                    }
+                });
+            }
+        } else if (category === qsTr("Power Plan")) {
+            if (optimizerBackend.targetPowerSchemeGuid !== optimizerBackend.activePowerSchemeGuid) {
+                var originalName = qsTr("Unknown");
+                var targetName = qsTr("Unknown");
+                for (var j = 0; j < optimizerBackend.powerSchemes.length; j++) {
+                    if (optimizerBackend.powerSchemes[j].guid === optimizerBackend.activePowerSchemeGuid) {
+                        originalName = optimizerBackend.powerSchemes[j].name.split(' (')[0];
+                    }
+                    if (optimizerBackend.powerSchemes[j].guid === optimizerBackend.targetPowerSchemeGuid) {
+                        targetName = optimizerBackend.powerSchemes[j].name.split(' (')[0];
+                    }
+                }
+                subList.push({
+                    name: qsTr("Power Plan") + ": " + originalName + " -> " + targetName,
+                    revert: function() {
+                        optimizerBackend.selectPowerScheme(optimizerBackend.activePowerSchemeGuid);
+                    }
+                });
+            }
+        }
+        return subList;
+    }
+
+    function getParentCard(name) {
+        if (name === qsTr("File Indexing")) return indexingPanel;
+        if (name === qsTr("Xbox App & Game Bar")) return xboxPanel;
+        if (name === qsTr("Core Isolation")) return coreIsolationPanel;
+        if (name === qsTr("Mouse Acceleration")) return mouseAccelerationPanel;
+        if (name === qsTr("Game Mode")) return gameModePanel;
+        if (name === qsTr("Windows Defender Firewall")) return firewallPanel;
+        if (name === qsTr("Print Spooler (Printer)")) return printerPanel;
+        if (name === qsTr("Windows Notifications")) return notificationsPanel;
+        if (name === qsTr("System Hibernation")) return hibernationPanel;
+        if (name === qsTr("Power Plan")) return powerPlanPanel;
+        return null;
+    }
+
+    function locateFunction(categoryName) {
+        var panel = getParentCard(categoryName);
+        if (!panel) return;
+
+        scrollAnimation.stop();
+        var targetY = panel.mapToItem(mainColumn, 0, 0).y - (mainScroll.height - panel.height) / 2;
+        targetY = Math.max(0, Math.min(targetY, mainScroll.contentHeight - mainScroll.height));
+        scrollAnimation.to = targetY;
+        scrollAnimation.start();
+
+        cardFlashAnim.stop();
+        cardFlashAnim.targetPanel = panel;
+        cardFlashAnim.start();
+    }
+
+    NumberAnimation {
+        id: scrollAnimation
+        target: mainScroll
+        property: "contentY"
+        duration: 500
+        easing.type: Easing.InOutQuad
+    }
+
+    SequentialAnimation {
+        id: cardFlashAnim
+        property var targetPanel: null
+
+        ScriptAction {
+            script: {
+                if (targetPanel) targetPanel.isFlashing = true;
+            }
+        }
+        PauseAnimation { duration: 150 }
+        ScriptAction {
+            script: {
+                if (targetPanel) targetPanel.isFlashing = false;
+            }
+        }
+        PauseAnimation { duration: 150 }
+        ScriptAction {
+            script: {
+                if (targetPanel) targetPanel.isFlashing = true;
+            }
+        }
+        PauseAnimation { duration: 150 }
+        ScriptAction {
+            script: {
+                if (targetPanel) targetPanel.isFlashing = false;
+            }
+        }
+        PauseAnimation { duration: 150 }
+        ScriptAction {
+            script: {
+                if (targetPanel) targetPanel.isFlashing = true;
+            }
+        }
+        PauseAnimation { duration: 150 }
+        ScriptAction {
+            script: {
+                if (targetPanel) targetPanel.isFlashing = false;
+            }
         }
     }
 
@@ -700,6 +925,7 @@ Item {
 
                 // Core Isolation Panel
                 AcrylicPanel {
+                    id: coreIsolationPanel
                     width: parent.width
                     height: 72
 
@@ -804,6 +1030,7 @@ Item {
 
                 // Mouse Acceleration Panel
                 AcrylicPanel {
+                    id: mouseAccelerationPanel
                     width: parent.width
                     height: 72
 
@@ -908,6 +1135,7 @@ Item {
 
                 // Game Mode Panel
                 AcrylicPanel {
+                    id: gameModePanel
                     width: parent.width
                     height: 72
 
@@ -1012,6 +1240,7 @@ Item {
 
                 // Firewall Panel
                 AcrylicPanel {
+                    id: firewallPanel
                     width: parent.width
                     height: 72
 
@@ -1116,6 +1345,7 @@ Item {
 
                 // Printer Panel
                 AcrylicPanel {
+                    id: printerPanel
                     width: parent.width
                     height: 72
 
@@ -1265,6 +1495,7 @@ Item {
 
                 // Notifications Panel
                 AcrylicPanel {
+                    id: notificationsPanel
                     width: parent.width
                     height: 72
 
@@ -1428,6 +1659,7 @@ Item {
                 }
 
                 AcrylicPanel {
+                    id: hibernationPanel
                     width: parent.width
                     height: 72
 
@@ -1532,6 +1764,7 @@ Item {
 
                 // Power Plan Card
                 AcrylicPanel {
+                    id: powerPlanPanel
                     width: parent.width
                     height: 72
 
@@ -2967,8 +3200,8 @@ Item {
         visible: opacity > 0.0
         z: 120
 
-        width: root.islandExpanded ? 300 : 160
-        height: root.islandExpanded ? (80 + root.pendingChangesCount * 26) : 34
+        width: root.islandExpanded ? (root.currentIslandPage === "detail" ? 340 : 320) : 160
+        height: root.islandExpanded ? (root.currentIslandPage === "detail" ? (80 + root.pendingSubOptionsList.length * 28) : (80 + root.pendingChangesCount * 28)) : 34
         radius: root.islandExpanded ? 20 : 17
 
         color: "#F0080B10" // Obsidian background with 94% opacity
@@ -3064,143 +3297,455 @@ Item {
                 visible: opacity > 0.0
                 Behavior on opacity { NumberAnimation { duration: 250 } }
 
-                // Header Item
-                Item {
+                // PAGE 1: MAIN LIST
+                Column {
+                    id: page1Layout
                     width: parent.width
-                    height: 20
+                    spacing: 10
+                    visible: root.currentIslandPage === "main"
+                    opacity: visible ? 1.0 : 0.0
+                    Behavior on opacity { NumberAnimation { duration: 150 } }
 
-                    Text {
-                        text: root.txtPendingListTitle
-                        color: Theme.accent
-                        font.family: Theme.fontFamily
-                        font.pixelSize: 11
-                        font.bold: true
-                        anchors.left: parent.left
-                        anchors.verticalCenter: parent.verticalCenter
-                    }
-
-                    // Collapse button
-                    Rectangle {
-                        width: 20
+                    // Header Item
+                    Item {
+                        width: parent.width
                         height: 20
-                        radius: 10
-                        color: islandCloseMouse.containsMouse ? Theme.accentDim : "transparent"
-                        anchors.right: parent.right
-                        anchors.verticalCenter: parent.verticalCenter
-                        Behavior on color { ColorAnimation { duration: Theme.animFast } }
 
-                        Image {
-                            id: islandCloseImg
-                            source: "qrc:/MeguPackOptimizer/src/resources/close.svg"
-                            anchors.centerIn: parent
-                            width: 8
-                            height: 8
-                            sourceSize.width: 8
-                            sourceSize.height: 8
-                            visible: false
-                        }
-                        ColorOverlay {
-                            anchors.fill: islandCloseImg
-                            source: islandCloseImg
-                            color: islandCloseMouse.containsMouse ? Theme.accent : Theme.textMuted
+                        Text {
+                            text: root.txtPendingListTitle
+                            color: Theme.accent
+                            font.family: Theme.fontFamily
+                            font.pixelSize: 11
+                            font.bold: true
+                            anchors.left: parent.left
+                            anchors.verticalCenter: parent.verticalCenter
                         }
 
-                        MouseArea {
-                            id: islandCloseMouse
-                            anchors.fill: parent
-                            hoverEnabled: true
-                            cursorShape: Qt.PointingHandCursor
-                            onClicked: {
-                                root.islandExpanded = false;
+                        // Collapse button
+                        Rectangle {
+                            width: 20
+                            height: 20
+                            radius: 10
+                            color: islandCloseMouse.containsMouse ? Theme.accentDim : "transparent"
+                            anchors.right: parent.right
+                            anchors.verticalCenter: parent.verticalCenter
+                            Behavior on color { ColorAnimation { duration: Theme.animFast } }
+
+                            Image {
+                                id: islandCloseImg
+                                source: "qrc:/MeguPackOptimizer/src/resources/close.svg"
+                                anchors.centerIn: parent
+                                width: 8
+                                height: 8
+                                sourceSize.width: 8
+                                sourceSize.height: 8
+                                visible: false
+                            }
+                            ColorOverlay {
+                                anchors.fill: islandCloseImg
+                                source: islandCloseImg
+                                color: islandCloseMouse.containsMouse ? Theme.accent : Theme.textMuted
+                            }
+
+                            MouseArea {
+                                id: islandCloseMouse
+                                anchors.fill: parent
+                                hoverEnabled: true
+                                cursorShape: Qt.PointingHandCursor
+                                onClicked: {
+                                    root.islandExpanded = false;
+                                }
                             }
                         }
                     }
-                }
 
-                // Divider line
-                Rectangle {
-                    width: parent.width
-                    height: 1
-                    color: Theme.border
-                }
+                    // Divider line
+                    Rectangle {
+                        width: parent.width
+                        height: 1
+                        color: Theme.border
+                    }
 
-                // List of pending items
-                Column {
-                    width: parent.width
-                    spacing: 6
+                    // List of pending items
+                    Column {
+                        width: parent.width
+                        spacing: 8
 
-                    Repeater {
-                        model: root.pendingChangesList
-                        delegate: Row {
-                            width: parent.width
-                            spacing: 8
-                            height: 20
+                        Repeater {
+                            model: root.pendingChangesList
+                            delegate: Row {
+                                width: parent.width
+                                spacing: 8
+                                height: 20
 
-                            // Revert Button (Cross)
-                            Rectangle {
-                                width: 16
-                                height: 16
-                                radius: 8
-                                color: revertMouse.containsMouse ? Theme.accentDim : "transparent"
-                                border.color: revertMouse.containsMouse ? Theme.accent : "transparent"
-                                border.width: 1
-                                anchors.verticalCenter: parent.verticalCenter
-                                Behavior on color { ColorAnimation { duration: Theme.animFast } }
-                                Behavior on border.color { ColorAnimation { duration: Theme.animFast } }
+                                // Revert Button (Cross)
+                                Rectangle {
+                                    width: 16
+                                    height: 16
+                                    radius: 8
+                                    color: revertMouse.containsMouse ? Theme.accentDim : "transparent"
+                                    border.color: revertMouse.containsMouse ? Theme.accent : "transparent"
+                                    border.width: 1
+                                    anchors.verticalCenter: parent.verticalCenter
+                                    Behavior on color { ColorAnimation { duration: Theme.animFast } }
+                                    Behavior on border.color { ColorAnimation { duration: Theme.animFast } }
 
-                                Image {
-                                    id: revertCrossImg
-                                    source: "qrc:/MeguPackOptimizer/src/resources/close.svg"
-                                    anchors.centerIn: parent
-                                    width: 6
-                                    height: 6
-                                    sourceSize.width: 6
-                                    sourceSize.height: 6
-                                    visible: false
+                                    Image {
+                                        id: revertCrossImg
+                                        source: "qrc:/MeguPackOptimizer/src/resources/close.svg"
+                                        anchors.centerIn: parent
+                                        width: 6
+                                        height: 6
+                                        sourceSize.width: 6
+                                        sourceSize.height: 6
+                                        visible: false
+                                    }
+                                    ColorOverlay {
+                                        anchors.fill: revertCrossImg
+                                        source: revertCrossImg
+                                        color: revertMouse.containsMouse ? Theme.accent : Theme.textMuted
+                                    }
+
+                                    MouseArea {
+                                        id: revertMouse
+                                        anchors.fill: parent
+                                        hoverEnabled: true
+                                        cursorShape: Qt.PointingHandCursor
+                                        onClicked: {
+                                            modelData.revert();
+                                        }
+                                    }
                                 }
-                                ColorOverlay {
-                                    anchors.fill: revertCrossImg
-                                    source: revertCrossImg
-                                    color: revertMouse.containsMouse ? Theme.accent : Theme.textMuted
+
+                                // Category Icon
+                                Item {
+                                    width: 12
+                                    height: 12
+                                    anchors.verticalCenter: parent.verticalCenter
+                                    Image {
+                                        id: itemIcon
+                                        source: modelData.icon
+                                        anchors.fill: parent
+                                        sourceSize.width: 12
+                                        sourceSize.height: 12
+                                        visible: false
+                                    }
+                                    ColorOverlay {
+                                        anchors.fill: itemIcon
+                                        source: itemIcon
+                                        color: Theme.accent
+                                    }
                                 }
 
-                                MouseArea {
-                                    id: revertMouse
-                                    anchors.fill: parent
-                                    hoverEnabled: true
-                                    cursorShape: Qt.PointingHandCursor
-                                    onClicked: {
-                                        modelData.revert();
+                                // Name of function/card
+                                Text {
+                                    text: modelData.name
+                                    color: Theme.textPrimary
+                                    font.family: Theme.fontFamily
+                                    font.pixelSize: 10
+                                    font.bold: true
+                                    anchors.verticalCenter: parent.verticalCenter
+                                    width: parent.width - 16 - 12 - 16 - (modelData.hasSidebar ? 16 : 0) - 24 // Dynamic sizing based on whether sidebar chevron is shown
+                                    elide: Text.ElideRight
+                                }
+
+                                // Locate (Eye) button
+                                Rectangle {
+                                    width: 16
+                                    height: 16
+                                    radius: 8
+                                    color: eyeMouse.containsMouse ? Theme.accentDim : "transparent"
+                                    border.color: eyeMouse.containsMouse ? Theme.accent : "transparent"
+                                    border.width: 1
+                                    anchors.verticalCenter: parent.verticalCenter
+                                    Behavior on color { ColorAnimation { duration: Theme.animFast } }
+                                    Behavior on border.color { ColorAnimation { duration: Theme.animFast } }
+
+                                    Image {
+                                        id: eyeIconImg
+                                        source: "qrc:/MeguPackOptimizer/src/resources/eye.svg"
+                                        anchors.centerIn: parent
+                                        width: 10
+                                        height: 10
+                                        sourceSize.width: 10
+                                        sourceSize.height: 10
+                                        visible: false
+                                    }
+                                    ColorOverlay {
+                                        anchors.fill: eyeIconImg
+                                        source: eyeIconImg
+                                        color: eyeMouse.containsMouse ? Theme.accent : Theme.textMuted
+                                    }
+
+                                    MouseArea {
+                                        id: eyeMouse
+                                        anchors.fill: parent
+                                        hoverEnabled: true
+                                        cursorShape: Qt.PointingHandCursor
+                                        onClicked: {
+                                            root.locateFunction(modelData.name);
+                                        }
+                                    }
+                                }
+
+                                // Arrow chevron button (for cards with sidebar)
+                                Rectangle {
+                                    width: 16
+                                    height: 16
+                                    radius: 8
+                                    visible: modelData.hasSidebar
+                                    color: arrowMouse.containsMouse ? Theme.accentDim : "transparent"
+                                    border.color: arrowMouse.containsMouse ? Theme.accent : "transparent"
+                                    border.width: 1
+                                    anchors.verticalCenter: parent.verticalCenter
+                                    Behavior on color { ColorAnimation { duration: Theme.animFast } }
+                                    Behavior on border.color { ColorAnimation { duration: Theme.animFast } }
+
+                                    Image {
+                                        id: chevronImg
+                                        source: "qrc:/MeguPackOptimizer/src/resources/arrow.svg"
+                                        anchors.centerIn: parent
+                                        width: 8
+                                        height: 8
+                                        sourceSize.width: 8
+                                        sourceSize.height: 8
+                                        visible: false
+                                        rotation: 90
+                                    }
+                                    ColorOverlay {
+                                        anchors.fill: chevronImg
+                                        source: chevronImg
+                                        color: arrowMouse.containsMouse ? Theme.accent : Theme.textMuted
+                                    }
+
+                                    MouseArea {
+                                        id: arrowMouse
+                                        anchors.fill: parent
+                                        hoverEnabled: true
+                                        cursorShape: Qt.PointingHandCursor
+                                        onClicked: {
+                                            root.islandDetailCategory = modelData.name;
+                                            root.currentIslandPage = "detail";
+                                        }
                                     }
                                 }
                             }
+                        }
+                    }
+                }
 
-                            Item {
-                                width: 12
-                                height: 12
-                                anchors.verticalCenter: parent.verticalCenter
-                                Image {
-                                    id: itemIcon
-                                    source: modelData.icon
-                                    anchors.fill: parent
-                                    sourceSize.width: 12
-                                    sourceSize.height: 12
-                                    visible: false
-                                }
-                                ColorOverlay {
-                                    anchors.fill: itemIcon
-                                    source: itemIcon
-                                    color: Theme.accent
-                                }
+                // PAGE 2: DETAIL LIST
+                Column {
+                    id: page2Layout
+                    width: parent.width
+                    spacing: 10
+                    visible: root.currentIslandPage === "detail"
+                    opacity: visible ? 1.0 : 0.0
+                    Behavior on opacity { NumberAnimation { duration: 150 } }
+
+                    // Header Item
+                    Item {
+                        width: parent.width
+                        height: 20
+
+                        // Back arrow
+                        Rectangle {
+                            id: backBtn
+                            width: 20
+                            height: 20
+                            radius: 10
+                            color: backMouse.containsMouse ? Theme.accentDim : "transparent"
+                            anchors.left: parent.left
+                            anchors.verticalCenter: parent.verticalCenter
+                            Behavior on color { ColorAnimation { duration: Theme.animFast } }
+
+                            Image {
+                                id: backArrowImg
+                                source: "qrc:/MeguPackOptimizer/src/resources/arrow.svg"
+                                anchors.centerIn: parent
+                                width: 8
+                                height: 8
+                                sourceSize.width: 8
+                                sourceSize.height: 8
+                                visible: false
+                                rotation: 270 // Point left (arrow points right normally, so rotate 270)
+                            }
+                            ColorOverlay {
+                                anchors.fill: backArrowImg
+                                source: backArrowImg
+                                color: backMouse.containsMouse ? Theme.accent : Theme.textMuted
                             }
 
-                            Text {
-                                text: modelData.name
-                                color: Theme.textPrimary
-                                font.family: Theme.fontFamily
-                                font.pixelSize: 10
-                                font.bold: true
-                                anchors.verticalCenter: parent.verticalCenter
+                            MouseArea {
+                                id: backMouse
+                                anchors.fill: parent
+                                hoverEnabled: true
+                                cursorShape: Qt.PointingHandCursor
+                                onClicked: {
+                                    root.currentIslandPage = "main";
+                                }
+                            }
+                        }
+
+                        Text {
+                            text: qsTr("%1 Details").arg(root.islandDetailCategory)
+                            color: Theme.accent
+                            font.family: Theme.fontFamily
+                            font.pixelSize: 11
+                            font.bold: true
+                            anchors.left: backBtn.right
+                            anchors.leftMargin: 6
+                            anchors.verticalCenter: parent.verticalCenter
+                            width: parent.width - 50
+                            elide: Text.ElideRight
+                        }
+
+                        // Close button (returns to collapsed state)
+                        Rectangle {
+                            width: 20
+                            height: 20
+                            radius: 10
+                            color: detailCloseMouse.containsMouse ? Theme.accentDim : "transparent"
+                            anchors.right: parent.right
+                            anchors.verticalCenter: parent.verticalCenter
+                            Behavior on color { ColorAnimation { duration: Theme.animFast } }
+
+                            Image {
+                                id: detailCloseImg
+                                source: "qrc:/MeguPackOptimizer/src/resources/close.svg"
+                                anchors.centerIn: parent
+                                width: 8
+                                height: 8
+                                sourceSize.width: 8
+                                sourceSize.height: 8
+                                visible: false
+                            }
+                            ColorOverlay {
+                                anchors.fill: detailCloseImg
+                                source: detailCloseImg
+                                color: detailCloseMouse.containsMouse ? Theme.accent : Theme.textMuted
+                            }
+
+                            MouseArea {
+                                id: detailCloseMouse
+                                anchors.fill: parent
+                                hoverEnabled: true
+                                cursorShape: Qt.PointingHandCursor
+                                onClicked: {
+                                    root.islandExpanded = false;
+                                }
+                            }
+                        }
+                    }
+
+                    // Divider line
+                    Rectangle {
+                        width: parent.width
+                        height: 1
+                        color: Theme.border
+                    }
+
+                    // List of pending sub-options
+                    Column {
+                        width: parent.width
+                        spacing: 8
+
+                        Repeater {
+                            model: root.pendingSubOptionsList
+                            delegate: Row {
+                                width: parent.width
+                                spacing: 8
+                                height: 20
+
+                                // Revert Button (Cross)
+                                Rectangle {
+                                    width: 16
+                                    height: 16
+                                    radius: 8
+                                    color: subRevertMouse.containsMouse ? Theme.accentDim : "transparent"
+                                    border.color: subRevertMouse.containsMouse ? Theme.accent : "transparent"
+                                    border.width: 1
+                                    anchors.verticalCenter: parent.verticalCenter
+                                    Behavior on color { ColorAnimation { duration: Theme.animFast } }
+                                    Behavior on border.color { ColorAnimation { duration: Theme.animFast } }
+
+                                    Image {
+                                        id: subRevertCrossImg
+                                        source: "qrc:/MeguPackOptimizer/src/resources/close.svg"
+                                        anchors.centerIn: parent
+                                        width: 6
+                                        height: 6
+                                        sourceSize.width: 6
+                                        sourceSize.height: 6
+                                        visible: false
+                                    }
+                                    ColorOverlay {
+                                        anchors.fill: subRevertCrossImg
+                                        source: subRevertCrossImg
+                                        color: subRevertMouse.containsMouse ? Theme.accent : Theme.textMuted
+                                    }
+
+                                    MouseArea {
+                                        id: subRevertMouse
+                                        anchors.fill: parent
+                                        hoverEnabled: true
+                                        cursorShape: Qt.PointingHandCursor
+                                        onClicked: {
+                                            modelData.revert();
+                                        }
+                                    }
+                                }
+
+                                // Sub-option text description
+                                Text {
+                                    text: modelData.name
+                                    color: Theme.textPrimary
+                                    font.family: Theme.fontFamily
+                                    font.pixelSize: 9
+                                    font.bold: true
+                                    anchors.verticalCenter: parent.verticalCenter
+                                    width: parent.width - 16 - 8 - 16 - 12 // Space for cross, eye, margin
+                                    elide: Text.ElideRight
+                                }
+
+                                // Locate (Eye) button
+                                Rectangle {
+                                    width: 16
+                                    height: 16
+                                    radius: 8
+                                    color: subEyeMouse.containsMouse ? Theme.accentDim : "transparent"
+                                    border.color: subEyeMouse.containsMouse ? Theme.accent : "transparent"
+                                    border.width: 1
+                                    anchors.verticalCenter: parent.verticalCenter
+                                    Behavior on color { ColorAnimation { duration: Theme.animFast } }
+                                    Behavior on border.color { ColorAnimation { duration: Theme.animFast } }
+
+                                    Image {
+                                        id: subEyeIconImg
+                                        source: "qrc:/MeguPackOptimizer/src/resources/eye.svg"
+                                        anchors.centerIn: parent
+                                        width: 10
+                                        height: 10
+                                        sourceSize.width: 10
+                                        sourceSize.height: 10
+                                        visible: false
+                                    }
+                                    ColorOverlay {
+                                        anchors.fill: subEyeIconImg
+                                        source: subEyeIconImg
+                                        color: subEyeMouse.containsMouse ? Theme.accent : Theme.textMuted
+                                    }
+
+                                    MouseArea {
+                                        id: subEyeMouse
+                                        anchors.fill: parent
+                                        hoverEnabled: true
+                                        cursorShape: Qt.PointingHandCursor
+                                        onClicked: {
+                                            root.locateFunction(root.islandDetailCategory);
+                                        }
+                                    }
+                                }
                             }
                         }
                     }

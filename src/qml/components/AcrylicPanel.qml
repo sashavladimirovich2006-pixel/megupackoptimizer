@@ -6,9 +6,11 @@ Rectangle {
     
     readonly property bool containsMouse: hoverArea.containsMouse
 
+    property bool isFlashing: false
+
     color: Theme.panelBg
     radius: 8
-    border.color: hoverArea.containsMouse ? Theme.borderHover : Theme.border
+    border.color: isFlashing ? Theme.accent : (hoverArea.containsMouse ? Theme.borderHover : Theme.border)
     border.width: 1
 
     Behavior on border.color { ColorAnimation { duration: Theme.animNormal } }

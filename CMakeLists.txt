@@ -63,6 +63,7 @@ qt_add_qml_module(megu_pack_optimizer
         src/resources/motherboard.svg
         src/resources/storage.svg
         src/resources/arrow.svg
+        src/resources/eye.svg
         src/resources/help.svg
         src/resources/megu_logo_transparent.png
         translations/megu_pack_optimizer_uk.qm
