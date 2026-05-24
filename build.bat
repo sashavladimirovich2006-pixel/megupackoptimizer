@@ -34,32 +34,28 @@ if %ERRORLEVEL% neq 0 (
     exit /b %ERRORLEVEL%
 )
 
-echo [5/5] Copying binary and deploying Qt6 QML dependencies directly to New...
-if not exist "C:\Users\alexa\Desktop\New" (
-    mkdir "C:\Users\alexa\Desktop\New"
+echo [5/5] Copying binary and deploying Qt6 QML dependencies directly to D:\Aps\Git\MPONERE...
+if not exist "D:\Aps\Git\MPONERE" (
+    mkdir "D:\Aps\Git\MPONERE"
 ) else (
-    echo Cleaning old deployed DLLs and folders to prevent version mismatch...
-    pushd "C:\Users\alexa\Desktop\New"
-    for /d %%p in (*) do rmdir /s /q "%%p"
-    del /q *.dll
-    popd
+    echo Overwriting binary in deployment folder...
 )
 
-copy /Y "build\megu_pack_optimizer.exe" "C:\Users\alexa\Desktop\New\megu_pack_optimizer.exe"
+copy /Y "build\megu_pack_optimizer.exe" "D:\Aps\Git\MPONERE\megu_pack_optimizer.exe"
 
 if %ERRORLEVEL% neq 0 (
-    echo [ERROR] Failed to copy executable to C:\Users\alexa\Desktop\New!
+    echo [ERROR] Failed to copy executable to D:\Aps\Git\MPONERE!
     exit /b %ERRORLEVEL%
 )
 
-"D:\Aps\Qt\6.11.1\msvc2022_64\bin\windeployqt.exe" --verbose 1 --no-translations --compiler-runtime --qmldir src/qml C:\Users\alexa\Desktop\New\megu_pack_optimizer.exe
+"D:\Aps\Qt\6.11.1\msvc2022_64\bin\windeployqt.exe" --verbose 1 --no-translations --compiler-runtime --qmldir src/qml D:\Aps\Git\MPONERE\megu_pack_optimizer.exe
 
 if %ERRORLEVEL% neq 0 (
-    echo [ERROR] windeployqt failed to deploy dependencies to C:\Users\alexa\Desktop\New!
+    echo [ERROR] windeployqt failed to deploy dependencies to D:\Aps\Git\MPONERE!
     exit /b %ERRORLEVEL%
 )
 
 echo ===================================================
 echo  [SUCCESS] Megu Pack Optimizer built and deployed!
-echo  Executable: C:\Users\alexa\Desktop\New\megu_pack_optimizer.exe
+echo  Executable: D:\Aps\Git\MPONERE\megu_pack_optimizer.exe
 echo ===================================================
