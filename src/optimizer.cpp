@@ -103,6 +103,69 @@ void Optimizer::setDiscordOverlayActive(bool val) {
     }
 }
 
+void Optimizer::setDefenderActive(bool val) {
+    if (m_defenderActive != val) {
+        m_defenderActive = val;
+        emit defenderActiveChanged(m_defenderActive);
+
+        // Propagate to sub-options for uniform toggle feel
+        setDefenderRegistryActive(val);
+        setDefenderCmdActive(val);
+        setDefenderServiceActive(val);
+    }
+}
+
+void Optimizer::setDefenderRegistryActive(bool val) {
+    if (m_defenderRegistryActive != val) {
+        m_defenderRegistryActive = val;
+        emit defenderRegistryActiveChanged(m_defenderRegistryActive);
+
+        // Update main toggle
+        bool allMatch = (m_defenderRegistryActive == val) && (m_defenderCmdActive == val) && (m_defenderServiceActive == val);
+        if (allMatch && m_defenderActive != val) {
+            m_defenderActive = val;
+            emit defenderActiveChanged(m_defenderActive);
+        } else if (!val && m_defenderActive) {
+            m_defenderActive = false;
+            emit defenderActiveChanged(m_defenderActive);
+        }
+    }
+}
+
+void Optimizer::setDefenderCmdActive(bool val) {
+    if (m_defenderCmdActive != val) {
+        m_defenderCmdActive = val;
+        emit defenderCmdActiveChanged(m_defenderCmdActive);
+
+        // Update main toggle
+        bool allMatch = (m_defenderRegistryActive == val) && (m_defenderCmdActive == val) && (m_defenderServiceActive == val);
+        if (allMatch && m_defenderActive != val) {
+            m_defenderActive = val;
+            emit defenderActiveChanged(m_defenderActive);
+        } else if (!val && m_defenderActive) {
+            m_defenderActive = false;
+            emit defenderActiveChanged(m_defenderActive);
+        }
+    }
+}
+
+void Optimizer::setDefenderServiceActive(bool val) {
+    if (m_defenderServiceActive != val) {
+        m_defenderServiceActive = val;
+        emit defenderServiceActiveChanged(m_defenderServiceActive);
+
+        // Update main toggle
+        bool allMatch = (m_defenderRegistryActive == val) && (m_defenderCmdActive == val) && (m_defenderServiceActive == val);
+        if (allMatch && m_defenderActive != val) {
+            m_defenderActive = val;
+            emit defenderActiveChanged(m_defenderActive);
+        } else if (!val && m_defenderActive) {
+            m_defenderActive = false;
+            emit defenderActiveChanged(m_defenderActive);
+        }
+    }
+}
+
 void Optimizer::setNotificationsActive(bool val) {
     if (m_notificationsActive != val) {
         m_notificationsActive = val;
@@ -710,6 +773,109 @@ void Optimizer::loadSystemStates() {
     emit activePowerSchemeGuidChanged(m_activePowerSchemeGuid);
     emit targetPowerSchemeGuidChanged(m_targetPowerSchemeGuid);
 
+    // ----------------------------------------------------
+    // Load Windows Defender States
+    // ----------------------------------------------------
+    bool isDefenderRegistryActive = true;
+    bool isDefenderCmdActive = true;
+    bool isDefenderServiceActive = true;
+
+#ifdef Q_OS_WIN
+    // 1. Check Registry policies
+    HKEY hKeyDef;
+    if (RegOpenKeyExW(HKEY_LOCAL_MACHINE, L"SOFTWARE\\Policies\\Microsoft\\Windows Defender", 0, KEY_READ, &hKeyDef) == ERROR_SUCCESS) {
+        DWORD valSpy = 0;
+        DWORD sizeSpy = sizeof(valSpy);
+        if (RegQueryValueExW(hKeyDef, L"DisableAntiSpyware", NULL, NULL, (LPBYTE)&valSpy, &sizeSpy) == ERROR_SUCCESS && valSpy == 1) {
+            isDefenderRegistryActive = false;
+        }
+        DWORD valAV = 0;
+        DWORD sizeAV = sizeof(valAV);
+        if (RegQueryValueExW(hKeyDef, L"DisableAntiVirus", NULL, NULL, (LPBYTE)&valAV, &sizeAV) == ERROR_SUCCESS && valAV == 1) {
+            isDefenderRegistryActive = false;
+        }
+        RegCloseKey(hKeyDef);
+    }
+    
+    HKEY hKeyDefRT;
+    if (RegOpenKeyExW(HKEY_LOCAL_MACHINE, L"SOFTWARE\\Policies\\Microsoft\\Windows Defender\\Real-Time Protection", 0, KEY_READ, &hKeyDefRT) == ERROR_SUCCESS) {
+        DWORD valRT = 0;
+        DWORD sizeRT = sizeof(valRT);
+        if (RegQueryValueExW(hKeyDefRT, L"DisableRealtimeMonitoring", NULL, NULL, (LPBYTE)&valRT, &sizeRT) == ERROR_SUCCESS && valRT == 1) {
+            isDefenderRegistryActive = false;
+        }
+        RegCloseKey(hKeyDefRT);
+    }
+
+    // 2. Check PowerShell command preferences (real-time monitoring in HKLM system defender key)
+    HKEY hKeyDefSys;
+    if (RegOpenKeyExW(HKEY_LOCAL_MACHINE, L"SOFTWARE\\Microsoft\\Windows Defender\\Real-Time Protection", 0, KEY_READ, &hKeyDefSys) == ERROR_SUCCESS) {
+        DWORD valRTSys = 0;
+        DWORD sizeRTSys = sizeof(valRTSys);
+        if (RegQueryValueExW(hKeyDefSys, L"DisableRealtimeMonitoring", NULL, NULL, (LPBYTE)&valRTSys, &sizeRTSys) == ERROR_SUCCESS && valRTSys == 1) {
+            isDefenderCmdActive = false;
+        }
+        RegCloseKey(hKeyDefSys);
+    }
+
+    // 3. Check service state (WinDefend)
+    SC_HANDLE hSCMDefender = OpenSCManagerW(NULL, NULL, SC_MANAGER_CONNECT);
+    if (hSCMDefender) {
+        SC_HANDLE hServiceDefender = OpenServiceW(hSCMDefender, L"WinDefend", SERVICE_QUERY_CONFIG | SERVICE_QUERY_STATUS);
+        if (hServiceDefender) {
+            DWORD bytesNeeded = 0;
+            if (!QueryServiceConfigW(hServiceDefender, NULL, 0, &bytesNeeded) && GetLastError() == ERROR_INSUFFICIENT_BUFFER) {
+                QUERY_SERVICE_CONFIGW* pConfig = (QUERY_SERVICE_CONFIGW*)LocalAlloc(LPTR, bytesNeeded);
+                if (pConfig && QueryServiceConfigW(hServiceDefender, pConfig, bytesNeeded, &bytesNeeded)) {
+                    if (pConfig->dwStartType == SERVICE_DISABLED) {
+                        isDefenderServiceActive = false;
+                    }
+                    LocalFree(pConfig);
+                }
+            }
+            SERVICE_STATUS_PROCESS status;
+            DWORD bytesNeeded2 = 0;
+            if (QueryServiceStatusEx(hServiceDefender, SC_STATUS_PROCESS_INFO, (LPBYTE)&status, sizeof(status), &bytesNeeded2)) {
+                if (status.dwCurrentState == SERVICE_STOPPED) {
+                    isDefenderServiceActive = false;
+                }
+            }
+            CloseServiceHandle(hServiceDefender);
+        } else {
+            DWORD err = GetLastError();
+            if (err == ERROR_SERVICE_DOES_NOT_EXIST) {
+                isDefenderServiceActive = false;
+            }
+        }
+        CloseServiceHandle(hSCMDefender);
+    }
+#else
+    // Simulation defaults
+    isDefenderRegistryActive = true;
+    isDefenderCmdActive = true;
+    isDefenderServiceActive = true;
+#endif
+
+    m_defenderRegistryActive = isDefenderRegistryActive;
+    m_originalDefenderRegistryActive = m_defenderRegistryActive;
+    emit defenderRegistryActiveChanged(m_defenderRegistryActive);
+    emit originalDefenderRegistryActiveChanged(m_originalDefenderRegistryActive);
+
+    m_defenderCmdActive = isDefenderCmdActive;
+    m_originalDefenderCmdActive = m_defenderCmdActive;
+    emit defenderCmdActiveChanged(m_defenderCmdActive);
+    emit originalDefenderCmdActiveChanged(m_originalDefenderCmdActive);
+
+    m_defenderServiceActive = isDefenderServiceActive;
+    m_originalDefenderServiceActive = m_defenderServiceActive;
+    emit defenderServiceActiveChanged(m_defenderServiceActive);
+    emit originalDefenderServiceActiveChanged(m_originalDefenderServiceActive);
+
+    m_defenderActive = isDefenderRegistryActive && isDefenderCmdActive && isDefenderServiceActive;
+    m_originalDefenderActive = m_defenderActive;
+    emit defenderActiveChanged(m_defenderActive);
+    emit originalDefenderActiveChanged(m_originalDefenderActive);
+
     scanDrives();
     m_originalDriveStates = m_driveStates;
     emit originalDriveStatesChanged(m_originalDriveStates);
@@ -744,6 +910,10 @@ void Optimizer::startSystemOptimization() {
     bool notifLockscreenVal = m_notifLockscreenActive;
     QString targetPowerSchemeVal = m_targetPowerSchemeGuid;
     QString activePowerSchemeVal = m_activePowerSchemeGuid;
+    bool defenderVal = m_defenderActive;
+    bool defenderRegistryVal = m_defenderRegistryActive;
+    bool defenderCmdVal = m_defenderCmdActive;
+    bool defenderServiceVal = m_defenderServiceActive;
 
     QVariantMap targets = m_driveStates;
     QVariantMap originalTargets = m_originalDriveStates;
@@ -762,8 +932,12 @@ void Optimizer::startSystemOptimization() {
     bool origNotifApp = m_originalNotifAppActive;
     bool origNotifSounds = m_originalNotifSoundsActive;
     bool origNotifLockscreen = m_originalNotifLockscreenActive;
+    bool origDefender = m_originalDefenderActive;
+    bool origDefenderRegistry = m_originalDefenderRegistryActive;
+    bool origDefenderCmd = m_originalDefenderCmdActive;
+    bool origDefenderService = m_originalDefenderServiceActive;
 
-    QThread* worker = QThread::create([this, searchVal, hibernationVal, overlayVal, coreIsolationVal, mouseAccelVal, gameModeVal, firewallVal, printerVal, bitlockerVal, discordOverlayVal, notificationsVal, notifGlobalVal, notifAppVal, notifSoundsVal, notifLockscreenVal, targetPowerSchemeVal, activePowerSchemeVal, targets, originalTargets, origSearch, origHibernation, origOverlay, origCoreIsolation, origMouseAccel, origGameMode, origFirewall, origPrinter, origBitlocker, origDiscordOverlay, origNotifications, origNotifGlobal, origNotifApp, origNotifSounds, origNotifLockscreen]() {
+    QThread* worker = QThread::create([this, searchVal, hibernationVal, overlayVal, coreIsolationVal, mouseAccelVal, gameModeVal, firewallVal, printerVal, bitlockerVal, discordOverlayVal, notificationsVal, notifGlobalVal, notifAppVal, notifSoundsVal, notifLockscreenVal, targetPowerSchemeVal, activePowerSchemeVal, defenderVal, defenderRegistryVal, defenderCmdVal, defenderServiceVal, targets, originalTargets, origSearch, origHibernation, origOverlay, origCoreIsolation, origMouseAccel, origGameMode, origFirewall, origPrinter, origBitlocker, origDiscordOverlay, origNotifications, origNotifGlobal, origNotifApp, origNotifSounds, origNotifLockscreen, origDefender, origDefenderRegistry, origDefenderCmd, origDefenderService]() {
         // Step 0: Check if anything actually changed
         bool powerPlanChanged = (targetPowerSchemeVal != activePowerSchemeVal);
         bool anyChanges = (searchVal != origSearch) || 
@@ -781,6 +955,10 @@ void Optimizer::startSystemOptimization() {
                           (notifAppVal != origNotifApp) ||
                           (notifSoundsVal != origNotifSounds) ||
                           (notifLockscreenVal != origNotifLockscreen) ||
+                          (defenderVal != origDefender) ||
+                          (defenderRegistryVal != origDefenderRegistry) ||
+                          (defenderCmdVal != origDefenderCmd) ||
+                          (defenderServiceVal != origDefenderService) ||
                           powerPlanChanged;
         if (!anyChanges) {
             for (const QString &driveLetter : targets.keys()) {
@@ -1375,6 +1553,112 @@ void Optimizer::startSystemOptimization() {
             emit notifLockscreenActiveChanged(m_notifLockscreenActive);
         }
 
+        // Step 1.99d: Windows Defender Configuration (only if changed)
+        bool defenderSuccess = true;
+        if ((defenderVal != origDefender) ||
+            (defenderRegistryVal != origDefenderRegistry) ||
+            (defenderCmdVal != origDefenderCmd) ||
+            (defenderServiceVal != origDefenderService)) {
+
+            emit systemStepReported(tr("Processing Windows Defender configuration..."), "INFO");
+            QThread::msleep(800);
+
+#ifdef Q_OS_WIN
+            bool ok = true;
+
+            // 1. Registry Policies
+            if (defenderRegistryVal != origDefenderRegistry) {
+                emit systemStepReported(tr("Applying Windows Defender registry policies..."), "INFO");
+                HKEY hKeyDef;
+                if (RegCreateKeyExW(HKEY_LOCAL_MACHINE, L"SOFTWARE\\Policies\\Microsoft\\Windows Defender", 0, NULL, REG_OPTION_NON_VOLATILE, KEY_WRITE, NULL, &hKeyDef, NULL) == ERROR_SUCCESS) {
+                    DWORD val = defenderRegistryVal ? 0 : 1;
+                    RegSetValueExW(hKeyDef, L"DisableAntiSpyware", 0, REG_DWORD, (const BYTE*)&val, sizeof(val));
+                    RegSetValueExW(hKeyDef, L"DisableAntiVirus", 0, REG_DWORD, (const BYTE*)&val, sizeof(val));
+                    RegCloseKey(hKeyDef);
+                } else {
+                    ok = false;
+                }
+
+                HKEY hKeyDefRT;
+                if (RegCreateKeyExW(HKEY_LOCAL_MACHINE, L"SOFTWARE\\Policies\\Microsoft\\Windows Defender\\Real-Time Protection", 0, NULL, REG_OPTION_NON_VOLATILE, KEY_WRITE, NULL, &hKeyDefRT, NULL) == ERROR_SUCCESS) {
+                    DWORD val = defenderRegistryVal ? 0 : 1;
+                    RegSetValueExW(hKeyDefRT, L"DisableBehaviorMonitoring", 0, REG_DWORD, (const BYTE*)&val, sizeof(val));
+                    RegSetValueExW(hKeyDefRT, L"DisableOnAccessProtection", 0, REG_DWORD, (const BYTE*)&val, sizeof(val));
+                    RegSetValueExW(hKeyDefRT, L"DisableScanOnRealtimeEnable", 0, REG_DWORD, (const BYTE*)&val, sizeof(val));
+                    RegSetValueExW(hKeyDefRT, L"DisableRealtimeMonitoring", 0, REG_DWORD, (const BYTE*)&val, sizeof(val));
+                    RegCloseKey(hKeyDefRT);
+                } else {
+                    ok = false;
+                }
+            }
+
+            // 2. PowerShell Command Preferences
+            if (defenderCmdVal != origDefenderCmd) {
+                emit systemStepReported(tr("Applying Windows Defender PowerShell preferences..."), "INFO");
+                QString cmd;
+                if (!defenderCmdVal) {
+                    cmd = "-NoProfile -NonInteractive -Command \"Set-MpPreference -DisableRealtimeMonitoring $true -DisableBehaviorMonitoring $true -DisableIOAVProtection $true -DisableIntrusionPreventionSystem $true -DisableScriptScanning $true -DisableBlockAtFirstSight $true -SubmitSamplesConsent 2 -MAPSReporting 0\"";
+                } else {
+                    cmd = "-NoProfile -NonInteractive -Command \"Set-MpPreference -DisableRealtimeMonitoring $false -DisableBehaviorMonitoring $false -DisableIOAVProtection $false -DisableIntrusionPreventionSystem $false -DisableScriptScanning $false -DisableBlockAtFirstSight $false -SubmitSamplesConsent 0 -MAPSReporting 2\"";
+                }
+                QProcess proc;
+                proc.start("powershell.exe", QStringList() << cmd);
+                proc.waitForFinished(12000);
+            }
+
+            // 3. Antivirus Services & Drivers
+            if (defenderServiceVal != origDefenderService) {
+                emit systemStepReported(tr("Configuring Windows Defender services..."), "INFO");
+                
+                SC_HANDLE hSCM = OpenSCManagerW(NULL, NULL, SC_MANAGER_ALL_ACCESS);
+                if (hSCM) {
+                    const wchar_t* services[] = { L"WinDefend", L"Sense", L"WdFilter", L"WdBoot" };
+                    for (int i = 0; i < 4; ++i) {
+                        SC_HANDLE hService = OpenServiceW(hSCM, services[i], SERVICE_CHANGE_CONFIG | SERVICE_STOP);
+                        if (hService) {
+                            DWORD startType = defenderServiceVal ? SERVICE_AUTO_START : SERVICE_DISABLED;
+                            if (i >= 2) {
+                                startType = defenderServiceVal ? SERVICE_SYSTEM_START : SERVICE_DISABLED;
+                            }
+                            if (!ChangeServiceConfigW(hService, SERVICE_NO_CHANGE, startType, SERVICE_NO_CHANGE, NULL, NULL, NULL, NULL, NULL, NULL, NULL)) {
+                                DWORD err = GetLastError();
+                                if (err == ERROR_ACCESS_DENIED) {
+                                    emit systemStepReported(tr("Warning: Unable to modify service '%1'. This is typically blocked by Windows Tamper Protection. Please disable 'Tamper Protection' in Windows Security settings first.").arg(QString::fromWCharArray(services[i])), "WARNING");
+                                }
+                            }
+                            if (!defenderServiceVal) {
+                                SERVICE_STATUS status;
+                                ControlService(hService, SERVICE_CONTROL_STOP, &status);
+                            }
+                            CloseServiceHandle(hService);
+                        }
+                    }
+                    CloseServiceHandle(hSCM);
+                } else {
+                    ok = false;
+                }
+            }
+
+            if (ok) {
+                emit systemStepReported(tr("Windows Defender optimization completed."), "SUCCESS");
+            } else {
+                defenderSuccess = false;
+                emit systemStepReported(tr("Failed to apply some Windows Defender settings."), "WARNING");
+            }
+#else
+            emit systemStepReported(tr("[Simulation] Windows Defender active set to: %1").arg(defenderVal ? "Enabled" : "Disabled"), "SUCCESS");
+#endif
+            m_defenderActive = defenderVal;
+            m_defenderRegistryActive = defenderRegistryVal;
+            m_defenderCmdActive = defenderCmdVal;
+            m_defenderServiceActive = defenderServiceVal;
+
+            emit defenderActiveChanged(m_defenderActive);
+            emit defenderRegistryActiveChanged(m_defenderRegistryActive);
+            emit defenderCmdActiveChanged(m_defenderCmdActive);
+            emit defenderServiceActiveChanged(m_defenderServiceActive);
+        }
+
         m_systemProgress = 0.50;
         emit systemProgressChanged(m_systemProgress);
         QThread::msleep(300);
@@ -1495,7 +1779,7 @@ void Optimizer::startSystemOptimization() {
             QThread::msleep(100);
         }
 
-        bool overallSuccess = wSearchSuccess && hibernationSuccess && overlaySuccess && coreIsolationSuccess && mouseAccelSuccess && gameModeSuccess && firewallSuccess && printerSuccess && notificationsSuccess && powerPlanSuccess && overallDrivesSuccess;
+        bool overallSuccess = wSearchSuccess && hibernationSuccess && overlaySuccess && coreIsolationSuccess && mouseAccelSuccess && gameModeSuccess && firewallSuccess && printerSuccess && notificationsSuccess && powerPlanSuccess && defenderSuccess && overallDrivesSuccess;
         if (overallSuccess) {
             emit systemStepReported(tr("System optimization completed successfully!"), "SUCCESS");
             Logger::log("System optimization completed successfully!", "INFO");
@@ -1518,6 +1802,10 @@ void Optimizer::startSystemOptimization() {
         m_originalNotifAppActive = notifAppVal;
         m_originalNotifSoundsActive = notifSoundsVal;
         m_originalNotifLockscreenActive = notifLockscreenVal;
+        m_originalDefenderActive = defenderVal;
+        m_originalDefenderRegistryActive = defenderRegistryVal;
+        m_originalDefenderCmdActive = defenderCmdVal;
+        m_originalDefenderServiceActive = defenderServiceVal;
         m_originalDriveStates = targets;
         
         loadSystemStates();
@@ -1536,6 +1824,10 @@ void Optimizer::startSystemOptimization() {
         emit originalNotifAppActiveChanged(m_originalNotifAppActive);
         emit originalNotifSoundsActiveChanged(m_originalNotifSoundsActive);
         emit originalNotifLockscreenActiveChanged(m_originalNotifLockscreenActive);
+        emit originalDefenderActiveChanged(m_originalDefenderActive);
+        emit originalDefenderRegistryActiveChanged(m_originalDefenderRegistryActive);
+        emit originalDefenderCmdActiveChanged(m_originalDefenderCmdActive);
+        emit originalDefenderServiceActiveChanged(m_originalDefenderServiceActive);
         emit originalDriveStatesChanged(m_originalDriveStates);
 
         m_isOptimizingSystem = false;
@@ -1580,6 +1872,9 @@ void Optimizer::showPath(const QString &funcName) {
         path = QDir::toNativeSeparators(path);
         QProcess::startDetached("explorer.exe", QStringList() << path);
         Logger::log("Opening Discord AppData directory in File Explorer...", "INFO");
+    } else if (funcName == "defender") {
+        QProcess::startDetached("cmd.exe", QStringList() << "/c" << "start windowsdefender://threatsettings");
+        Logger::log("Opening Windows Defender Virus & threat protection settings...", "INFO");
     } else {
         // Assume drive letter like "C:" or "D:"
         QString letter = funcName.trimmed();

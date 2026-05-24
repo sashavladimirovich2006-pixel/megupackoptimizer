@@ -66,6 +66,10 @@ Item {
         if (optimizerBackend.notifSoundsActive !== optimizerBackend.originalNotifSoundsActive) return true;
         if (optimizerBackend.notifLockscreenActive !== optimizerBackend.originalNotifLockscreenActive) return true;
         if (optimizerBackend.targetPowerSchemeGuid !== optimizerBackend.activePowerSchemeGuid) return true;
+        if (optimizerBackend.defenderActive !== optimizerBackend.originalDefenderActive) return true;
+        if (optimizerBackend.defenderRegistryActive !== optimizerBackend.originalDefenderRegistryActive) return true;
+        if (optimizerBackend.defenderCmdActive !== optimizerBackend.originalDefenderCmdActive) return true;
+        if (optimizerBackend.defenderServiceActive !== optimizerBackend.originalDefenderServiceActive) return true;
         if (!optimizerBackend.driveStates || !optimizerBackend.originalDriveStates) return false;
         var keys = Object.keys(optimizerBackend.driveStates);
         for (var i = 0; i < keys.length; i++) {
@@ -103,6 +107,10 @@ Item {
     property bool powerPlanChanged: optimizerBackend.targetPowerSchemeGuid !== optimizerBackend.activePowerSchemeGuid
     property bool bitlockerChanged: optimizerBackend.bitlockerActive !== optimizerBackend.originalBitlockerActive
     property bool discordOverlayChanged: optimizerBackend.discordOverlayActive !== optimizerBackend.originalDiscordOverlayActive
+    property bool defenderChanged: optimizerBackend.defenderActive !== optimizerBackend.originalDefenderActive ||
+                                   optimizerBackend.defenderRegistryActive !== optimizerBackend.originalDefenderRegistryActive ||
+                                   optimizerBackend.defenderCmdActive !== optimizerBackend.originalDefenderCmdActive ||
+                                   optimizerBackend.defenderServiceActive !== optimizerBackend.originalDefenderServiceActive
 
     property bool isDiscordOpen: false
     Timer {
@@ -138,6 +146,7 @@ Item {
         if (powerPlanChanged) count++;
         if (bitlockerChanged) count++;
         if (discordOverlayChanged) count++;
+        if (defenderChanged) count++;
         return count;
     }
 
@@ -244,6 +253,17 @@ Item {
                 optimizerBackend.discordOverlayActive = optimizerBackend.originalDiscordOverlayActive;
             }
         });
+        if (defenderChanged) list.push({
+            name: qsTr("Windows Defender"),
+            icon: "qrc:/MeguPackOptimizer/src/resources/warning.svg",
+            hasSidebar: true,
+            revert: function() {
+                optimizerBackend.defenderActive = optimizerBackend.originalDefenderActive;
+                optimizerBackend.defenderRegistryActive = optimizerBackend.originalDefenderRegistryActive;
+                optimizerBackend.defenderCmdActive = optimizerBackend.originalDefenderCmdActive;
+                optimizerBackend.defenderServiceActive = optimizerBackend.originalDefenderServiceActive;
+            }
+        });
         return list;
     }
 
@@ -263,6 +283,10 @@ Item {
         var _na = optimizerBackend.notifAppActive;
         var _ns = optimizerBackend.notifSoundsActive;
         var _nl = optimizerBackend.notifLockscreenActive;
+        var _dfa = optimizerBackend.defenderActive;
+        var _dfr = optimizerBackend.defenderRegistryActive;
+        var _dfc = optimizerBackend.defenderCmdActive;
+        var _dfs = optimizerBackend.defenderServiceActive;
 
         return getPendingSubOptions(root.islandDetailCategory);
     }
@@ -385,6 +409,31 @@ Item {
                     }
                 });
             }
+        } else if (category === qsTr("Windows Defender")) {
+            if (optimizerBackend.defenderRegistryActive !== optimizerBackend.originalDefenderRegistryActive) {
+                subList.push({
+                    name: qsTr("Registry Disablement Policies") + ": " + (optimizerBackend.originalDefenderRegistryActive ? qsTr("Enabled") : qsTr("Disabled")) + " -> " + (optimizerBackend.defenderRegistryActive ? qsTr("Enabled") : qsTr("Disabled")),
+                    revert: function() {
+                        optimizerBackend.defenderRegistryActive = optimizerBackend.originalDefenderRegistryActive;
+                    }
+                });
+            }
+            if (optimizerBackend.defenderCmdActive !== optimizerBackend.originalDefenderCmdActive) {
+                subList.push({
+                    name: qsTr("PowerShell Preference Adjustments") + ": " + (optimizerBackend.originalDefenderCmdActive ? qsTr("Enabled") : qsTr("Disabled")) + " -> " + (optimizerBackend.defenderCmdActive ? qsTr("Enabled") : qsTr("Disabled")),
+                    revert: function() {
+                        optimizerBackend.defenderCmdActive = optimizerBackend.originalDefenderCmdActive;
+                    }
+                });
+            }
+            if (optimizerBackend.defenderServiceActive !== optimizerBackend.originalDefenderServiceActive) {
+                subList.push({
+                    name: qsTr("Antivirus Services & Drivers") + ": " + (optimizerBackend.originalDefenderServiceActive ? qsTr("Enabled") : qsTr("Disabled")) + " -> " + (optimizerBackend.defenderServiceActive ? qsTr("Enabled") : qsTr("Disabled")),
+                    revert: function() {
+                        optimizerBackend.defenderServiceActive = optimizerBackend.originalDefenderServiceActive;
+                    }
+                });
+            }
         }
         return subList;
     }
@@ -402,6 +451,7 @@ Item {
         if (name === qsTr("System Hibernation")) return hibernationPanel;
         if (name === qsTr("Power Plan")) return powerPlanPanel;
         if (name === qsTr("BitLocker Drive Encryption")) return bitlockerPanel;
+        if (name === qsTr("Windows Defender")) return defenderPanel;
         return null;
     }
 
@@ -1994,6 +2044,155 @@ Item {
                     }
                 }
 
+                // Windows Defender Card
+                AcrylicPanel {
+                    id: defenderPanel
+                    width: parent.width
+                    height: 72
+
+                    Row {
+                        anchors.left: parent.left
+                        anchors.verticalCenter: parent.verticalCenter
+                        spacing: 12
+
+                        Item {
+                            width: 28
+                            height: 28
+                            anchors.verticalCenter: parent.verticalCenter
+                            Image {
+                                id: defenderIconImg
+                                source: "qrc:/MeguPackOptimizer/src/resources/warning.svg"
+                                anchors.fill: parent
+                                sourceSize.width: 28
+                                sourceSize.height: 28
+                                visible: false
+                            }
+                            ColorOverlay {
+                                anchors.fill: defenderIconImg
+                                source: defenderIconImg
+                                color: Theme.accent
+                            }
+                        }
+
+                        Column {
+                            anchors.verticalCenter: parent.verticalCenter
+                            spacing: 2
+
+                            Row {
+                                spacing: 8
+                                Text {
+                                    text: qsTr("Windows Defender")
+                                    color: Theme.textPrimary
+                                    font.family: Theme.fontFamily
+                                    font.pixelSize: 13
+                                    font.bold: true
+                                }
+                                Rectangle {
+                                    visible: root.defenderChanged
+                                    height: 16
+                                    width: selectedTextDefender.contentWidth + 10
+                                    radius: 4
+                                    color: Theme.accentDim
+                                    border.color: Theme.accent
+                                    border.width: 1
+                                    anchors.verticalCenter: parent.verticalCenter
+                                    Text {
+                                        id: selectedTextDefender
+                                        text: qsTr("Selected for application")
+                                        color: Theme.accent
+                                        font.family: Theme.fontFamily
+                                        font.pixelSize: 8
+                                        font.bold: true
+                                        anchors.centerIn: parent
+                                    }
+                                }
+                            }
+
+                            Text {
+                                text: qsTr("Disable Microsoft Defender Antivirus protection, real-time scanning, and services to minimize system latency and resource consumption.")
+                                color: Theme.textMuted
+                                font.family: Theme.fontFamily
+                                font.pixelSize: 10
+                            }
+                        }
+                    }
+
+                    Row {
+                        anchors.right: parent.right
+                        anchors.verticalCenter: parent.verticalCenter
+                        spacing: 16
+
+                        Text {
+                            text: qsTr("Show Path")
+                            color: defenderPathMouse.containsMouse ? Theme.accentLight : Theme.accent
+                            font.family: Theme.fontFamily
+                            font.pixelSize: 11
+                            font.bold: true
+                            font.underline: true
+                            anchors.verticalCenter: parent.verticalCenter
+                            MouseArea {
+                                id: defenderPathMouse
+                                anchors.fill: parent
+                                hoverEnabled: true
+                                cursorShape: Qt.PointingHandCursor
+                                onClicked: { optimizerBackend.showPath("defender"); }
+                            }
+                        }
+
+                        // Arrow button that slides right on hover & opens sidebar drawer for Windows Defender options
+                        Rectangle {
+                            width: 32
+                            height: 32
+                            radius: 16
+                            color: defenderArrowMouseArea.containsMouse ? Theme.accentDim : "transparent"
+                            border.color: defenderArrowMouseArea.containsMouse ? Theme.accent : Theme.border
+                            border.width: 1
+                            anchors.verticalCenter: parent.verticalCenter
+
+                            Behavior on color { ColorAnimation { duration: Theme.animFast } }
+                            Behavior on border.color { ColorAnimation { duration: Theme.animFast } }
+
+                            Item {
+                                width: 14
+                                height: 14
+                                anchors.centerIn: parent
+                                Image {
+                                    id: defenderArrowImg
+                                    source: "qrc:/MeguPackOptimizer/src/resources/arrow.svg"
+                                    anchors.fill: parent
+                                    sourceSize.width: 14
+                                    sourceSize.height: 14
+                                    visible: false
+                                }
+                                ColorOverlay {
+                                    anchors.fill: defenderArrowImg
+                                    source: defenderArrowImg
+                                    color: defenderArrowMouseArea.containsMouse ? Theme.accent : Theme.textSecondary
+                                    transform: Rotation { origin.x: 7; origin.y: 7; angle: 0 }
+                                }
+                            }
+
+                            MouseArea {
+                                id: defenderArrowMouseArea
+                                anchors.fill: parent
+                                hoverEnabled: true
+                                cursorShape: Qt.PointingHandCursor
+                                onClicked: {
+                                    root.activeDrawer = "defender";
+                                }
+                            }
+                        }
+
+                        MeguSwitch {
+                            checked: optimizerBackend.defenderActive
+                            anchors.verticalCenter: parent.verticalCenter
+                            onToggled: (isChecked) => {
+                                optimizerBackend.defenderActive = isChecked;
+                            }
+                        }
+                    }
+                }
+
                 // Power Plan Card
                 AcrylicPanel {
                     id: powerPlanPanel
@@ -2289,6 +2488,7 @@ Item {
                             if (root.activeDrawer === "printer") return qsTr("PRINTER TWEAKS");
                             if (root.activeDrawer === "notifications") return qsTr("NOTIFICATION SETTINGS");
                             if (root.activeDrawer === "power") return qsTr("POWER PLANS");
+                            if (root.activeDrawer === "defender") return qsTr("WINDOWS DEFENDER");
                             return "";
                         }
                         color: Theme.textPrimary
@@ -2351,6 +2551,7 @@ Item {
                         if (root.activeDrawer === "printer") return printerColumn.implicitHeight;
                         if (root.activeDrawer === "notifications") return notificationsColumn.implicitHeight;
                         if (root.activeDrawer === "power") return powerColumn.implicitHeight;
+                        if (root.activeDrawer === "defender") return defenderColumn.implicitHeight;
                         return height;
                     }
 
@@ -3419,6 +3620,89 @@ Item {
                                         }
                                     }
                                 }
+                            }
+                        }
+                    }
+
+                    // 7. Windows Defender Options Content
+                    Column {
+                        id: defenderColumn
+                        width: parent.width
+                        spacing: 20
+                        visible: root.activeDrawer === "defender"
+
+                        Text {
+                            text: qsTr("Configure custom Windows Defender protection settings and services.")
+                            color: Theme.textSecondary
+                            font.family: Theme.fontFamily
+                            font.pixelSize: 11
+                            font.bold: true
+                        }
+
+                        // Informational warning box
+                        AcrylicPanel {
+                            width: parent.width
+                            height: 60
+                            border.color: Theme.warning
+                            color: Theme.accentDim
+
+                            Row {
+                                anchors.fill: parent
+                                anchors.margins: 10
+                                spacing: 10
+
+                                Item {
+                                    width: 18
+                                    height: 18
+                                    anchors.verticalCenter: parent.verticalCenter
+                                    Image {
+                                        id: drawerWarningIcon
+                                        source: "qrc:/MeguPackOptimizer/src/resources/warning.svg"
+                                        anchors.fill: parent
+                                        sourceSize.width: 18
+                                        sourceSize.height: 18
+                                        visible: false
+                                    }
+                                    ColorOverlay {
+                                        anchors.fill: drawerWarningIcon
+                                        source: drawerWarningIcon
+                                        color: Theme.warning
+                                    }
+                                }
+
+                                Text {
+                                    text: qsTr("Disable the startup of WinDefend, Sense, WdFilter, and WdBoot services. Note: Requires disabling Tamper Protection.")
+                                    color: Theme.warning
+                                    font.family: Theme.fontFamily
+                                    font.pixelSize: 9
+                                    font.bold: true
+                                    wrapMode: Text.Wrap
+                                    width: parent.width - 38
+                                    anchors.verticalCenter: parent.verticalCenter
+                                }
+                            }
+                        }
+
+                        Column {
+                            width: parent.width
+                            spacing: 12
+
+                            MeguSwitch {
+                                text: qsTr("Registry Disablement Policies")
+                                checked: optimizerBackend.defenderRegistryActive
+                                onToggled: (isChecked) => { optimizerBackend.defenderRegistryActive = isChecked; }
+                            }
+
+                            MeguSwitch {
+                                text: qsTr("PowerShell Preference Adjustments")
+                                checked: optimizerBackend.defenderCmdActive
+                                onToggled: (isChecked) => { optimizerBackend.defenderCmdActive = isChecked; }
+                            }
+
+                            MeguSwitch {
+                                text: qsTr("Antivirus Services & Drivers")
+                                checked: optimizerBackend.defenderServiceActive
+                                onToggled: (isChecked) => { optimizerBackend.defenderServiceActive = isChecked; }
                             }
                         }
                     }

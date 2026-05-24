@@ -44,6 +44,14 @@ class Optimizer : public QObject {
     Q_PROPERTY(bool bitlockerDriveEncrypted READ bitlockerDriveEncrypted NOTIFY bitlockerDriveEncryptedChanged)
     Q_PROPERTY(bool discordOverlayActive READ discordOverlayActive WRITE setDiscordOverlayActive NOTIFY discordOverlayActiveChanged)
     Q_PROPERTY(bool originalDiscordOverlayActive READ originalDiscordOverlayActive NOTIFY originalDiscordOverlayActiveChanged)
+    Q_PROPERTY(bool defenderActive READ defenderActive WRITE setDefenderActive NOTIFY defenderActiveChanged)
+    Q_PROPERTY(bool originalDefenderActive READ originalDefenderActive NOTIFY originalDefenderActiveChanged)
+    Q_PROPERTY(bool defenderRegistryActive READ defenderRegistryActive WRITE setDefenderRegistryActive NOTIFY defenderRegistryActiveChanged)
+    Q_PROPERTY(bool originalDefenderRegistryActive READ originalDefenderRegistryActive NOTIFY originalDefenderRegistryActiveChanged)
+    Q_PROPERTY(bool defenderCmdActive READ defenderCmdActive WRITE setDefenderCmdActive NOTIFY defenderCmdActiveChanged)
+    Q_PROPERTY(bool originalDefenderCmdActive READ originalDefenderCmdActive NOTIFY originalDefenderCmdActiveChanged)
+    Q_PROPERTY(bool defenderServiceActive READ defenderServiceActive WRITE setDefenderServiceActive NOTIFY defenderServiceActiveChanged)
+    Q_PROPERTY(bool originalDefenderServiceActive READ originalDefenderServiceActive NOTIFY originalDefenderServiceActiveChanged)
     Q_PROPERTY(QStringList detectedPrinters READ detectedPrinters NOTIFY detectedPrintersChanged)
     Q_PROPERTY(bool notificationsActive READ notificationsActive WRITE setNotificationsActive NOTIFY notificationsActiveChanged)
     Q_PROPERTY(bool originalNotificationsActive READ originalNotificationsActive NOTIFY originalNotificationsActiveChanged)
@@ -107,6 +115,14 @@ public:
     bool bitlockerDriveEncrypted() const { return m_bitlockerDriveEncrypted; }
     bool discordOverlayActive() const { return m_discordOverlayActive; }
     bool originalDiscordOverlayActive() const { return m_originalDiscordOverlayActive; }
+    bool defenderActive() const { return m_defenderActive; }
+    bool originalDefenderActive() const { return m_originalDefenderActive; }
+    bool defenderRegistryActive() const { return m_defenderRegistryActive; }
+    bool originalDefenderRegistryActive() const { return m_originalDefenderRegistryActive; }
+    bool defenderCmdActive() const { return m_defenderCmdActive; }
+    bool originalDefenderCmdActive() const { return m_originalDefenderCmdActive; }
+    bool defenderServiceActive() const { return m_defenderServiceActive; }
+    bool originalDefenderServiceActive() const { return m_originalDefenderServiceActive; }
     QStringList detectedPrinters() const { return m_detectedPrinters; }
     bool notificationsActive() const { return m_notificationsActive; }
     bool originalNotificationsActive() const { return m_originalNotificationsActive; }
@@ -140,6 +156,10 @@ public:
     void setPrinterActive(bool val);
     void setBitlockerActive(bool val);
     void setDiscordOverlayActive(bool val);
+    void setDefenderActive(bool val);
+    void setDefenderRegistryActive(bool val);
+    void setDefenderCmdActive(bool val);
+    void setDefenderServiceActive(bool val);
     void setNotificationsActive(bool val);
     void setNotifGlobalActive(bool val);
     void setNotifAppActive(bool val);
@@ -199,6 +219,14 @@ signals:
     void bitlockerDriveEncryptedChanged(bool val);
     void discordOverlayActiveChanged(bool val);
     void originalDiscordOverlayActiveChanged(bool val);
+    void defenderActiveChanged(bool val);
+    void originalDefenderActiveChanged(bool val);
+    void defenderRegistryActiveChanged(bool val);
+    void originalDefenderRegistryActiveChanged(bool val);
+    void defenderCmdActiveChanged(bool val);
+    void originalDefenderCmdActiveChanged(bool val);
+    void defenderServiceActiveChanged(bool val);
+    void originalDefenderServiceActiveChanged(bool val);
     void detectedPrintersChanged(const QStringList &val);
     void notificationsActiveChanged(bool val);
     void originalNotificationsActiveChanged(bool val);
@@ -267,6 +295,14 @@ private:
     bool m_bitlockerDriveEncrypted = false;
     bool m_discordOverlayActive = true;
     bool m_originalDiscordOverlayActive = true;
+    bool m_defenderActive = true;
+    bool m_originalDefenderActive = true;
+    bool m_defenderRegistryActive = true;
+    bool m_originalDefenderRegistryActive = true;
+    bool m_defenderCmdActive = true;
+    bool m_originalDefenderCmdActive = true;
+    bool m_defenderServiceActive = true;
+    bool m_originalDefenderServiceActive = true;
     QStringList m_detectedPrinters;
     bool m_notificationsActive = true;
     bool m_originalNotificationsActive = true;
