@@ -33,7 +33,7 @@ Item {
         if (currentTheme === "Темная") return "#070709"; // Ultra-sleek premium charcoal black
         if (currentTheme === "Blackout полностью черная") return "#000000";
         if (currentTheme === "Ргб") return "#050508";
-        if (currentTheme === "Розовая") return "#FCF8F9";
+        if (currentTheme === "Розовая") return "#FCE5E8"; // Beautiful pastel rose background
         if (currentTheme === "Black pink") return "#050406";
         return "#070709";
     }
@@ -43,7 +43,7 @@ Item {
         if (currentTheme === "Темная") return "#F50A0B0E"; // Sleek solid dark gray sidebar
         if (currentTheme === "Blackout полностью черная") return "#F5000000"; 
         if (currentTheme === "Ргб") return "#F5020204"; 
-        if (currentTheme === "Розовая") return "#F2F5EBED"; // 95% opacity
+        if (currentTheme === "Розовая") return "#F2F4D0D5"; // Translucent warm rose-grey sidebar
         if (currentTheme === "Black pink") return "#F50A090D"; 
         return "#F50A0B0E";
     }
@@ -53,7 +53,7 @@ Item {
         if (currentTheme === "Темная") return "#F80D0E12"; // 97% opaque sleek slate-black (matching reference!)
         if (currentTheme === "Blackout полностью черная") return "#F8080808"; // 97% opaque charcoal
         if (currentTheme === "Ргб") return "#F8050508"; 
-        if (currentTheme === "Розовая") return "#CCF5E4E7"; 
+        if (currentTheme === "Розовая") return "#CCF6E9EB"; // 80% translucent warm pastel pink card
         if (currentTheme === "Black pink") return "#F80A090D"; 
         return "#F80D0E12";
     }
@@ -93,7 +93,7 @@ Item {
         if (currentTheme === "Темная") return "#F8070709"; // Matches solid background
         if (currentTheme === "Blackout полностью черная") return "#F8000000"; 
         if (currentTheme === "Ргб") return "#F8040406"; 
-        if (currentTheme === "Розовая") return "#E6F0E0E3"; 
+        if (currentTheme === "Розовая") return "#E6FADCE1"; 
         if (currentTheme === "Black pink") return "#F80D0B10"; 
         return "#F8070709";
     }
