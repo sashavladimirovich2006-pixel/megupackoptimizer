@@ -73,6 +73,8 @@ class Optimizer : public QObject {
     Q_PROPERTY(QString activePowerSchemeGuid READ activePowerSchemeGuid NOTIFY activePowerSchemeGuidChanged)
     Q_PROPERTY(QString targetPowerSchemeGuid READ targetPowerSchemeGuid NOTIFY targetPowerSchemeGuidChanged)
     Q_PROPERTY(int mpoValue READ mpoValue NOTIFY mpoValueChanged)
+    Q_PROPERTY(bool remoteAccessActive READ remoteAccessActive WRITE setRemoteAccessActive NOTIFY remoteAccessActiveChanged)
+    Q_PROPERTY(bool originalRemoteAccessActive READ originalRemoteAccessActive NOTIFY originalRemoteAccessActiveChanged)
     Q_PROPERTY(QStringList fixedDrives READ fixedDrives NOTIFY fixedDrivesChanged)
     Q_PROPERTY(QVariantMap driveStates READ driveStates WRITE setDriveStates NOTIFY driveStatesChanged)
     Q_PROPERTY(QVariantMap originalDriveStates READ originalDriveStates NOTIFY originalDriveStatesChanged)
@@ -157,6 +159,8 @@ public:
     QString activePowerSchemeGuid() const { return m_activePowerSchemeGuid; }
     QString targetPowerSchemeGuid() const { return m_targetPowerSchemeGuid; }
     int mpoValue() const { return m_mpoValue; }
+    bool remoteAccessActive() const { return m_remoteAccessActive; }
+    bool originalRemoteAccessActive() const { return m_originalRemoteAccessActive; }
     QStringList fixedDrives() const { return m_fixedDrives; }
     QVariantMap driveStates() const { return m_driveStates; }
     QVariantMap originalDriveStates() const { return m_originalDriveStates; }
@@ -185,6 +189,7 @@ public:
     void setNotifLockscreenActive(bool val);
     void setDriveStates(const QVariantMap &states);
     void setUsbPowerSavingActive(bool val);
+    void setRemoteAccessActive(bool val);
     
     Q_INVOKABLE bool isDiscordRunning();
     Q_INVOKABLE void killDiscord();
@@ -270,6 +275,8 @@ signals:
     void activePowerSchemeGuidChanged(const QString &val);
     void targetPowerSchemeGuidChanged(const QString &val);
     void mpoValueChanged(int val);
+    void remoteAccessActiveChanged(bool val);
+    void originalRemoteAccessActiveChanged(bool val);
     void fixedDrivesChanged(const QStringList &val);
     void driveStatesChanged(const QVariantMap &val);
     void originalDriveStatesChanged(const QVariantMap &val);
@@ -350,6 +357,8 @@ private:
     QString m_activePowerSchemeGuid;
     QString m_targetPowerSchemeGuid;
     int m_mpoValue = 0;
+    bool m_remoteAccessActive = false;
+    bool m_originalRemoteAccessActive = false;
     QStringList m_fixedDrives;
     QVariantMap m_driveStates;
     QVariantMap m_originalDriveStates;

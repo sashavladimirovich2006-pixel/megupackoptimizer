@@ -82,6 +82,13 @@ void Optimizer::setFirewallActive(bool val) {
     }
 }
 
+void Optimizer::setRemoteAccessActive(bool val) {
+    if (m_remoteAccessActive != val) {
+        m_remoteAccessActive = val;
+        emit remoteAccessActiveChanged(m_remoteAccessActive);
+    }
+}
+
 void Optimizer::setPrinterActive(bool val) {
     if (m_printerActive != val) {
         m_printerActive = val;
@@ -645,6 +652,28 @@ void Optimizer::loadSystemStates() {
     emit firewallActiveChanged(m_firewallActive);
     emit originalFirewallActiveChanged(m_originalFirewallActive);
 
+    // Check Remote Access (RDP) state on startup
+    bool isRemoteAccessActive = false;
+#ifdef Q_OS_WIN
+    HKEY hKeyTS;
+    if (RegOpenKeyExW(HKEY_LOCAL_MACHINE, L"SYSTEM\\CurrentControlSet\\Control\\Terminal Server", 0, KEY_READ, &hKeyTS) == ERROR_SUCCESS) {
+        DWORD val = 1; // default disabled
+        DWORD size = sizeof(val);
+        if (RegQueryValueExW(hKeyTS, L"fDenyTSConnections", NULL, NULL, (LPBYTE)&val, &size) == ERROR_SUCCESS) {
+            if (val == 0) {
+                isRemoteAccessActive = true;
+            }
+        }
+        RegCloseKey(hKeyTS);
+    }
+#else
+    isRemoteAccessActive = false; // Simulation default
+#endif
+    m_remoteAccessActive = isRemoteAccessActive;
+    m_originalRemoteAccessActive = m_remoteAccessActive;
+    emit remoteAccessActiveChanged(m_remoteAccessActive);
+    emit originalRemoteAccessActiveChanged(m_originalRemoteAccessActive);
+
     // Check Multi-Plane Overlay (MPO) state in registry
     int currentMpo = 0; // default 0 (MPO Enabled)
 #ifdef Q_OS_WIN
@@ -1088,6 +1117,7 @@ void Optimizer::startSystemOptimization() {
     bool defenderRegistryVal = m_defenderRegistryActive;
     bool defenderCmdVal = m_defenderCmdActive;
     bool defenderServiceVal = m_defenderServiceActive;
+    bool remoteAccessVal = m_remoteAccessActive;
 
     QVariantMap targets = m_driveStates;
     QVariantMap originalTargets = m_originalDriveStates;
@@ -1110,11 +1140,12 @@ void Optimizer::startSystemOptimization() {
     bool origDefenderRegistry = m_originalDefenderRegistryActive;
     bool origDefenderCmd = m_originalDefenderCmdActive;
     bool origDefenderService = m_originalDefenderServiceActive;
+    bool origRemoteAccess = m_originalRemoteAccessActive;
 
     QVariantList usbDevicesVal = m_usbDevices;
     QVariantList origUsbDevicesVal = m_originalUsbDevices;
 
-    QThread* worker = QThread::create([this, searchVal, hibernationVal, overlayVal, coreIsolationVal, mouseAccelVal, gameModeVal, firewallVal, printerVal, bitlockerVal, discordOverlayVal, notificationsVal, notifGlobalVal, notifAppVal, notifSoundsVal, notifLockscreenVal, targetPowerSchemeVal, activePowerSchemeVal, defenderVal, defenderRegistryVal, defenderCmdVal, defenderServiceVal, targets, originalTargets, origSearch, origHibernation, origOverlay, origCoreIsolation, origMouseAccel, origGameMode, origFirewall, origPrinter, origBitlocker, origDiscordOverlay, origNotifications, origNotifGlobal, origNotifApp, origNotifSounds, origNotifLockscreen, origDefender, origDefenderRegistry, origDefenderCmd, origDefenderService, usbDevicesVal, origUsbDevicesVal]() {
+    QThread* worker = QThread::create([this, searchVal, hibernationVal, overlayVal, coreIsolationVal, mouseAccelVal, gameModeVal, firewallVal, printerVal, bitlockerVal, discordOverlayVal, notificationsVal, notifGlobalVal, notifAppVal, notifSoundsVal, notifLockscreenVal, targetPowerSchemeVal, activePowerSchemeVal, defenderVal, defenderRegistryVal, defenderCmdVal, defenderServiceVal, remoteAccessVal, targets, originalTargets, origSearch, origHibernation, origOverlay, origCoreIsolation, origMouseAccel, origGameMode, origFirewall, origPrinter, origBitlocker, origDiscordOverlay, origNotifications, origNotifGlobal, origNotifApp, origNotifSounds, origNotifLockscreen, origDefender, origDefenderRegistry, origDefenderCmd, origDefenderService, origRemoteAccess, usbDevicesVal, origUsbDevicesVal]() {
         // Step 0: Check if anything actually changed
         bool powerPlanChanged = (targetPowerSchemeVal != activePowerSchemeVal);
         bool usbChanged = false;
@@ -1148,6 +1179,7 @@ void Optimizer::startSystemOptimization() {
                           (defenderRegistryVal != origDefenderRegistry) ||
                           (defenderCmdVal != origDefenderCmd) ||
                           (defenderServiceVal != origDefenderService) ||
+                          (remoteAccessVal != origRemoteAccess) ||
                           powerPlanChanged ||
                           usbChanged;
         if (!anyChanges) {
@@ -2009,6 +2041,53 @@ void Optimizer::startSystemOptimization() {
             }
         }
 
+        // Step 1.99f: Remote Access (RDP) Configuration (only if changed)
+        bool remoteAccessSuccess = true;
+        if (remoteAccessVal != origRemoteAccess) {
+            emit systemStepReported(tr("Configuring Remote Access (RDP)..."), "INFO");
+            QThread::msleep(800);
+            
+            bool ok = true;
+#ifdef Q_OS_WIN
+            HKEY hKeyTS;
+            if (RegOpenKeyExW(HKEY_LOCAL_MACHINE, L"SYSTEM\\CurrentControlSet\\Control\\Terminal Server", 0, KEY_SET_VALUE, &hKeyTS) == ERROR_SUCCESS) {
+                DWORD pnpVal = remoteAccessVal ? 0 : 1;
+                if (RegSetValueExW(hKeyTS, L"fDenyTSConnections", 0, REG_DWORD, (LPBYTE)&pnpVal, sizeof(pnpVal)) == ERROR_SUCCESS) {
+                    emit systemStepReported(remoteAccessVal ? tr("Remote Access enabled in registry.") : tr("Remote Access disabled in registry."), "SUCCESS");
+                } else {
+                    ok = false;
+                    emit systemStepReported(tr("Failed to write Remote Access registry value."), "ERROR");
+                }
+                RegCloseKey(hKeyTS);
+            } else {
+                ok = false;
+                emit systemStepReported(tr("Failed to open Terminal Server registry key."), "ERROR");
+            }
+
+            // Configure Service & Firewall Rules
+            QString psCmd = remoteAccessVal ? 
+                "Set-Service -Name TermService -StartupType Automatic; Start-Service -Name TermService -ErrorAction SilentlyContinue; Enable-NetFirewallRule -DisplayGroup 'Remote Desktop' -ErrorAction SilentlyContinue" :
+                "Stop-Service -Name TermService -Force -ErrorAction SilentlyContinue; Set-Service -Name TermService -StartupType Disabled; Disable-NetFirewallRule -DisplayGroup 'Remote Desktop' -ErrorAction SilentlyContinue";
+
+            QProcess rdpProc;
+            rdpProc.start("powershell.exe", QStringList() << "-NoProfile" << "-NonInteractive" << "-ExecutionPolicy" << "Bypass" << "-Command" << psCmd);
+            if (rdpProc.waitForFinished(15000)) {
+                emit systemStepReported(remoteAccessVal ? tr("Remote Desktop service and firewall rules enabled.") : tr("Remote Desktop service and firewall rules disabled."), "SUCCESS");
+            } else {
+                ok = false;
+                emit systemStepReported(tr("Failed to configure Remote Desktop service / firewall."), "ERROR");
+            }
+#else
+            emit systemStepReported(tr("[Simulation] Remote Access (RDP) set to %1.").arg(remoteAccessVal ? tr("Enabled") : tr("Disabled")), "SUCCESS");
+#endif
+            if (ok) {
+                emit systemStepReported(tr("Remote Access (RDP) configuration completed."), "SUCCESS");
+            } else {
+                remoteAccessSuccess = false;
+                emit systemStepReported(tr("Failed to configure Remote Access (RDP)."), "WARNING");
+            }
+        }
+
         // Steps 2+: Iterate drives in target list (only if changed)
         int driveIndex = 0;
         int totalDrives = targets.keys().size();
@@ -2052,7 +2131,7 @@ void Optimizer::startSystemOptimization() {
             QThread::msleep(100);
         }
 
-        bool overallSuccess = wSearchSuccess && hibernationSuccess && overlaySuccess && coreIsolationSuccess && mouseAccelSuccess && gameModeSuccess && firewallSuccess && printerSuccess && notificationsSuccess && powerPlanSuccess && defenderSuccess && overallDrivesSuccess && usbSuccess;
+        bool overallSuccess = wSearchSuccess && hibernationSuccess && overlaySuccess && coreIsolationSuccess && mouseAccelSuccess && gameModeSuccess && firewallSuccess && printerSuccess && notificationsSuccess && powerPlanSuccess && defenderSuccess && overallDrivesSuccess && usbSuccess && remoteAccessSuccess;
         if (overallSuccess) {
             emit systemStepReported(tr("System optimization completed successfully!"), "SUCCESS");
             Logger::log("System optimization completed successfully!", "INFO");
@@ -2079,6 +2158,7 @@ void Optimizer::startSystemOptimization() {
         m_originalDefenderRegistryActive = defenderRegistryVal;
         m_originalDefenderCmdActive = defenderCmdVal;
         m_originalDefenderServiceActive = defenderServiceVal;
+        m_originalRemoteAccessActive = remoteAccessVal;
         m_originalDriveStates = targets;
         
         loadSystemStates();
@@ -2101,6 +2181,7 @@ void Optimizer::startSystemOptimization() {
         emit originalDefenderRegistryActiveChanged(m_originalDefenderRegistryActive);
         emit originalDefenderCmdActiveChanged(m_originalDefenderCmdActive);
         emit originalDefenderServiceActiveChanged(m_originalDefenderServiceActive);
+        emit originalRemoteAccessActiveChanged(m_originalRemoteAccessActive);
         emit originalDriveStatesChanged(m_originalDriveStates);
 
         m_isOptimizingSystem = false;
@@ -2148,6 +2229,9 @@ void Optimizer::showPath(const QString &funcName) {
     } else if (funcName == "defender") {
         QProcess::startDetached("cmd.exe", QStringList() << "/c" << "start windowsdefender://threatsettings");
         Logger::log("Opening Windows Defender Virus & threat protection settings...", "INFO");
+    } else if (funcName == "remoteaccess" || funcName == "rdp") {
+        QProcess::startDetached("cmd.exe", QStringList() << "/c" << "start ms-settings:remotedesktop");
+        Logger::log("Opening Remote Desktop settings...", "INFO");
     } else {
         // Assume drive letter like "C:" or "D:"
         QString letter = funcName.trimmed();

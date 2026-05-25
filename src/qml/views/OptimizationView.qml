@@ -70,6 +70,7 @@ Item {
         if (optimizerBackend.defenderRegistryActive !== optimizerBackend.originalDefenderRegistryActive) return true;
         if (optimizerBackend.defenderCmdActive !== optimizerBackend.originalDefenderCmdActive) return true;
         if (optimizerBackend.defenderServiceActive !== optimizerBackend.originalDefenderServiceActive) return true;
+        if (optimizerBackend.remoteAccessActive !== optimizerBackend.originalRemoteAccessActive) return true;
         if (optimizerBackend.usbChanged) return true;
         if (!optimizerBackend.driveStates || !optimizerBackend.originalDriveStates) return false;
         var keys = Object.keys(optimizerBackend.driveStates);
@@ -113,6 +114,7 @@ Item {
                                    optimizerBackend.defenderCmdActive !== optimizerBackend.originalDefenderCmdActive ||
                                    optimizerBackend.defenderServiceActive !== optimizerBackend.originalDefenderServiceActive
     property bool usbPowerSavingChanged: optimizerBackend.usbChanged
+    property bool remoteAccessChanged: optimizerBackend.remoteAccessActive !== optimizerBackend.originalRemoteAccessActive
 
     property bool isDiscordOpen: false
     Timer {
@@ -150,6 +152,7 @@ Item {
         if (discordOverlayChanged) count++;
         if (defenderChanged) count++;
         if (usbPowerSavingChanged) count++;
+        if (remoteAccessChanged) count++;
         return count;
     }
 
@@ -273,6 +276,14 @@ Item {
             hasSidebar: true,
             revert: function() {
                 optimizerBackend.revertUsbDevices();
+            }
+        });
+        if (remoteAccessChanged) list.push({
+            name: qsTr("Remote Access (RDP)"),
+            icon: "qrc:/MeguPackOptimizer/src/resources/play.svg",
+            hasSidebar: false,
+            revert: function() {
+                optimizerBackend.remoteAccessActive = optimizerBackend.originalRemoteAccessActive;
             }
         });
         return list;
@@ -481,6 +492,7 @@ Item {
         if (name === qsTr("BitLocker Drive Encryption")) return bitlockerPanel;
         if (name === qsTr("Windows Defender")) return defenderPanel;
         if (name === qsTr("USB 3.0 Power Saving")) return usbPanel;
+        if (name === qsTr("Remote Access (RDP)")) return remoteAccessPanel;
         return null;
     }
 
@@ -1534,6 +1546,111 @@ Item {
                             anchors.verticalCenter: parent.verticalCenter
                             onToggled: (isChecked) => {
                                 optimizerBackend.firewallActive = isChecked;
+                            }
+                        }
+                    }
+                }
+
+                // Remote Access (RDP) Panel
+                AcrylicPanel {
+                    id: remoteAccessPanel
+                    width: parent.width
+                    height: 72
+
+                    Row {
+                        anchors.left: parent.left
+                        anchors.verticalCenter: parent.verticalCenter
+                        spacing: 12
+
+                        Item {
+                            width: 28
+                            height: 28
+                            anchors.verticalCenter: parent.verticalCenter
+                            Image {
+                                id: remoteAccessIconImg
+                                source: "qrc:/MeguPackOptimizer/src/resources/play.svg"
+                                anchors.fill: parent
+                                sourceSize.width: 28
+                                sourceSize.height: 28
+                                visible: false
+                            }
+                            ColorOverlay {
+                                anchors.fill: remoteAccessIconImg
+                                source: remoteAccessIconImg
+                                color: Theme.accent
+                            }
+                        }
+
+                        Column {
+                            anchors.verticalCenter: parent.verticalCenter
+                            spacing: 2
+
+                            Row {
+                                spacing: 8
+                                Text {
+                                    text: qsTr("Remote Access (RDP)")
+                                    color: Theme.textPrimary
+                                    font.family: Theme.fontFamily
+                                    font.pixelSize: 13
+                                    font.bold: true
+                                }
+                                Rectangle {
+                                    visible: root.remoteAccessChanged
+                                    height: 16
+                                    width: selectedTextRdp.contentWidth + 10
+                                    radius: 4
+                                    color: Theme.accentDim
+                                    border.color: Theme.accent
+                                    border.width: 1
+                                    anchors.verticalCenter: parent.verticalCenter
+                                    Text {
+                                        id: selectedTextRdp
+                                        text: qsTr("Selected for application")
+                                        color: Theme.accent
+                                        font.family: Theme.fontFamily
+                                        font.pixelSize: 8
+                                        font.bold: true
+                                        anchors.centerIn: parent
+                                    }
+                                }
+                            }
+
+                            Text {
+                                text: qsTr("Enables or disables Remote Desktop connections (RDP) to securely connect and manage this computer from another device.")
+                                color: Theme.textMuted
+                                font.family: Theme.fontFamily
+                                font.pixelSize: 10
+                            }
+                        }
+                    }
+
+                    Row {
+                        anchors.right: parent.right
+                        anchors.verticalCenter: parent.verticalCenter
+                        spacing: 16
+
+                        Text {
+                            text: qsTr("Show Path")
+                            color: remoteAccessPathMouse.containsMouse ? Theme.accentLight : Theme.accent
+                            font.family: Theme.fontFamily
+                            font.pixelSize: 11
+                            font.bold: true
+                            font.underline: true
+                            anchors.verticalCenter: parent.verticalCenter
+                            MouseArea {
+                                id: remoteAccessPathMouse
+                                anchors.fill: parent
+                                hoverEnabled: true
+                                cursorShape: Qt.PointingHandCursor
+                                onClicked: { optimizerBackend.showPath("remoteaccess"); }
+                            }
+                        }
+
+                        MeguSwitch {
+                            checked: optimizerBackend.remoteAccessActive
+                            anchors.verticalCenter: parent.verticalCenter
+                            onToggled: (isChecked) => {
+                                optimizerBackend.remoteAccessActive = isChecked;
                             }
                         }
                     }
