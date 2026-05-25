@@ -2220,7 +2220,7 @@ Would you like to close Discord now and proceed?</source>
     <message>
         <location filename="../src/qml/main.qml" line="504" />
         <source>Core Optimization</source>
-        <translation>Основна оптимізація</translation>
+        <translation>Основна</translation>
     </message>
     <message>
         <location filename="../src/qml/main.qml" line="518" />

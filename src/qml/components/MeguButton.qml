@@ -15,7 +15,7 @@ Item {
     signal clicked()
     signal dropdownClicked()
     
-    implicitWidth: Math.max(control.hasDropdown ? 114 : 90, buttonLayout.implicitWidth + (control.hasDropdown ? 56 : 28))
+    implicitWidth: Math.max(control.hasDropdown ? 130 : 90, buttonLayout.implicitWidth + (control.hasDropdown ? 56 : 28))
     implicitHeight: 34 // Compact and extremely clean height matching modern UI standards
     
     opacity: control.enabled ? 1.0 : 0.35
@@ -64,6 +64,19 @@ Item {
         
         Behavior on color { ColorAnimation { duration: 100 } }
         Behavior on border.color { ColorAnimation { duration: 100 } }
+
+        // Seamless merge overlay for bottom corners and bottom border when dropdown is open
+        Rectangle {
+            anchors.left: parent.left
+            anchors.right: parent.right
+            anchors.bottom: parent.bottom
+            anchors.leftMargin: 1
+            anchors.rightMargin: 1
+            anchors.bottomMargin: -1
+            height: parent.radius + 1
+            color: parent.color
+            visible: control.hasDropdown && control.dropdownOpen
+        }
     }
     
     // Main content area (left side of button)

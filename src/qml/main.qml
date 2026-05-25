@@ -474,23 +474,23 @@ ApplicationWindow {
     Popup {
         id: optDropdown
         parent: tab3
-        x: (parent.width - width) / 2
-        y: parent.height
-        width: 180
+        x: 0
+        y: parent.height - 1
+        width: parent.width
         height: implicitHeight
         padding: 6
         
         enter: Transition {
             ParallelAnimation {
                 NumberAnimation { property: "opacity"; from: 0.0; to: 1.0; duration: 150; easing.type: Easing.OutQuad }
-                NumberAnimation { property: "y"; from: tab3.height - 8; to: tab3.height; duration: 150; easing.type: Easing.OutQuad }
+                NumberAnimation { property: "y"; from: tab3.height - 8; to: tab3.height - 1; duration: 150; easing.type: Easing.OutQuad }
             }
         }
         
         exit: Transition {
             ParallelAnimation {
                 NumberAnimation { property: "opacity"; from: 1.0; to: 0.0; duration: 120; easing.type: Easing.OutQuad }
-                NumberAnimation { property: "y"; from: tab3.height; to: tab3.height - 8; duration: 120; easing.type: Easing.OutQuad }
+                NumberAnimation { property: "y"; from: tab3.height - 1; to: tab3.height - 8; duration: 120; easing.type: Easing.OutQuad }
             }
         }
         
@@ -499,6 +499,18 @@ ApplicationWindow {
             border.color: tab3.accented ? Qt.rgba(Theme.accent.r, Theme.accent.g, Theme.accent.b, 0.4) : Theme.border
             border.width: 1
             radius: 8
+            
+            // Seamless merge overlay for top corners and top border when open
+            Rectangle {
+                anchors.left: parent.left
+                anchors.right: parent.right
+                anchors.top: parent.top
+                anchors.leftMargin: 1
+                anchors.rightMargin: 1
+                anchors.topMargin: -1
+                height: 8
+                color: "#F80D0E12"
+            }
             
             layer.enabled: true
             layer.effect: DropShadow {
