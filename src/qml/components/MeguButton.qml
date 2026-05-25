@@ -160,15 +160,11 @@ Item {
         anchors.top: parent.top
         anchors.bottom: parent.bottom
         
-        Image {
-            id: chevronIcon
-            source: "qrc:/MeguPackOptimizer/src/resources/arrow.svg"
+        Item {
+            id: chevronWrapper
             width: 8
             height: 8
             anchors.centerIn: parent
-            sourceSize.width: 8
-            sourceSize.height: 8
-            visible: false
             rotation: control.dropdownOpen ? 90 : 0
             
             Behavior on rotation {
@@ -177,16 +173,25 @@ Item {
                     easing.type: Easing.InOutQuad
                 }
             }
-        }
-        
-        ColorOverlay {
-            anchors.fill: chevronIcon
-            source: chevronIcon
-            color: control.accented ? Theme.accent : ((dropdownMouseArea.containsMouse || mouseArea.containsMouse) ? Theme.textPrimary : Theme.textSecondary)
-            opacity: control.accented ? 1.0 : ((dropdownMouseArea.containsMouse || mouseArea.containsMouse) ? 0.95 : 0.65)
+
+            Image {
+                id: chevronIcon
+                source: "qrc:/MeguPackOptimizer/src/resources/arrow.svg"
+                anchors.fill: parent
+                sourceSize.width: 8
+                sourceSize.height: 8
+                visible: false
+            }
             
-            Behavior on color { ColorAnimation { duration: 100 } }
-            Behavior on opacity { NumberAnimation { duration: 100 } }
+            ColorOverlay {
+                anchors.fill: parent
+                source: chevronIcon
+                color: control.accented ? Theme.accent : ((dropdownMouseArea.containsMouse || mouseArea.containsMouse) ? Theme.textPrimary : Theme.textSecondary)
+                opacity: control.accented ? 1.0 : ((dropdownMouseArea.containsMouse || mouseArea.containsMouse) ? 0.95 : 0.65)
+                
+                Behavior on color { ColorAnimation { duration: 100 } }
+                Behavior on opacity { NumberAnimation { duration: 100 } }
+            }
         }
     }
     

@@ -475,14 +475,28 @@ ApplicationWindow {
         id: optDropdown
         parent: tab3
         x: (parent.width - width) / 2
-        y: parent.height + 6
+        y: parent.height
         width: 180
         height: implicitHeight
         padding: 6
         
+        enter: Transition {
+            ParallelAnimation {
+                NumberAnimation { property: "opacity"; from: 0.0; to: 1.0; duration: 150; easing.type: Easing.OutQuad }
+                NumberAnimation { property: "y"; from: tab3.height - 8; to: tab3.height; duration: 150; easing.type: Easing.OutQuad }
+            }
+        }
+        
+        exit: Transition {
+            ParallelAnimation {
+                NumberAnimation { property: "opacity"; from: 1.0; to: 0.0; duration: 120; easing.type: Easing.OutQuad }
+                NumberAnimation { property: "y"; from: tab3.height; to: tab3.height - 8; duration: 120; easing.type: Easing.OutQuad }
+            }
+        }
+        
         background: Rectangle {
             color: "#F80D0E12"
-            border.color: Theme.border
+            border.color: tab3.accented ? Qt.rgba(Theme.accent.r, Theme.accent.g, Theme.accent.b, 0.4) : Theme.border
             border.width: 1
             radius: 8
             
