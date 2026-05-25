@@ -668,12 +668,245 @@ Item {
             spacing: 24
 
             Text {
-                text: root.currentSection === "telemetry" ? qsTr("TELEMETRY SETTINGS") : qsTr("SYSTEM OPTIMIZATION")
+                text: root.currentSection === "telemetry" ? qsTr("TELEMETRY SETTINGS") : 
+                      root.currentSection === "games" ? qsTr("VIDEO GAMES OPTIMIZATION") :
+                      qsTr("SYSTEM OPTIMIZATION")
                 color: Theme.yellowAccent
                 font.family: Theme.fontFamily
                 font.pixelSize: 11
                 font.bold: true
                 font.letterSpacing: 1.5
+            }
+
+            // 0.5. VIDEO GAMES CATEGORY
+            Column {
+                visible: root.currentSection === "games"
+                width: parent.width
+                spacing: 12
+
+                Text {
+                    text: qsTr("VIDEO GAMES OPTIMIZATION")
+                    color: Theme.textSecondary
+                    font.family: Theme.fontFamily
+                    font.pixelSize: 10
+                    font.bold: true
+                    font.letterSpacing: 1
+                }
+
+                AcrylicPanel {
+                    id: cs2Panel
+                    width: parent.width
+                    height: implicitHeight
+                    implicitHeight: mainLayout.implicitHeight + (detailsExpanded ? detailsContainer.implicitHeight + 16 : 0)
+                    
+                    property bool detailsExpanded: false
+
+                    Behavior on implicitHeight {
+                        NumberAnimation { duration: Theme.animNormal; easing.type: Easing.InOutQuad }
+                    }
+
+                    Column {
+                        id: mainPanelColumn
+                        anchors.left: parent.left
+                        anchors.right: parent.right
+                        anchors.top: parent.top
+                        anchors.margins: 16
+                        spacing: 16
+
+                        // CS2 Header card row
+                        Row {
+                            id: mainLayout
+                            width: parent.width
+                            spacing: 16
+
+                            // Game Logo placeholder or icon
+                            Rectangle {
+                                width: 44
+                                height: 44
+                                radius: 8
+                                color: Theme.accentDim
+                                border.color: Theme.accent
+                                border.width: 1
+                                anchors.verticalCenter: parent.verticalCenter
+
+                                Image {
+                                    source: "qrc:/MeguPackOptimizer/src/resources/play.svg"
+                                    anchors.centerIn: parent
+                                    width: 20
+                                    height: 20
+                                    sourceSize.width: 20
+                                    sourceSize.height: 20
+                                }
+                            }
+
+                            Column {
+                                anchors.verticalCenter: parent.verticalCenter
+                                spacing: 2
+                                width: parent.width - 44 - 16 - 120 - 16
+
+                                Text {
+                                    text: "Counter-Strike 2"
+                                    color: Theme.textPrimary
+                                    font.family: Theme.fontFamily
+                                    font.pixelSize: 14
+                                    font.bold: true
+                                }
+
+                                Text {
+                                    text: qsTr("Launch parameters and performance optimization")
+                                    color: Theme.textSecondary
+                                    font.family: Theme.fontFamily
+                                    font.pixelSize: 11
+                                    width: parent.width
+                                    elide: Text.ElideRight
+                                }
+                            }
+
+                            // Open / Close button
+                            MeguButton {
+                                id: openBtn
+                                text: cs2Panel.detailsExpanded ? qsTr("Close") : qsTr("Open")
+                                accented: cs2Panel.detailsExpanded
+                                flat: !cs2Panel.detailsExpanded
+                                height: 30
+                                width: 90
+                                anchors.verticalCenter: parent.verticalCenter
+                                onClicked: {
+                                    cs2Panel.detailsExpanded = !cs2Panel.detailsExpanded
+                                }
+                            }
+                        }
+
+                        // Sliding drawer options list
+                        Column {
+                            id: detailsContainer
+                            width: parent.width
+                            spacing: 12
+                            visible: cs2Panel.detailsExpanded
+                            opacity: cs2Panel.detailsExpanded ? 1.0 : 0.0
+
+                            Behavior on opacity {
+                                NumberAnimation { duration: Theme.animNormal }
+                            }
+
+                            // Horizontal separator line
+                            Rectangle {
+                                width: parent.width
+                                height: 1
+                                color: Theme.border
+                            }
+
+                            Text {
+                                text: qsTr("Launch Options (Click name to toggle, will apply on 'Optimize')")
+                                color: Theme.yellowAccent
+                                font.family: Theme.fontFamily
+                                font.pixelSize: 11
+                                font.bold: true
+                            }
+
+                            // Repeater of launch options
+                            Column {
+                                width: parent.width
+                                spacing: 8
+                                
+                                Repeater {
+                                    model: ListModel {
+                                        id: launchOptionsModel
+                                        Component.onCompleted: {
+                                            append({ name: "-allow_third_party_software", desc: qsTr("Allows third-party software (OBS, overlays, etc.) to hook into the game.") })
+                                            append({ name: "-noreflex", desc: qsTr("Disables NVIDIA Reflex, useful if you experience stutters with it.") })
+                                            append({ name: "-noaafonts", desc: qsTr("Disables anti-aliasing for screen fonts, slightly improving text rendering performance.") })
+                                            append({ name: "-language English", desc: qsTr("Forces the game language to English.") })
+                                            append({ name: "+fps_max 0", desc: qsTr("Removes the frame rate cap for maximum FPS.") })
+                                            append({ name: "-freq 170", desc: qsTr("Forces the monitor refresh rate to 170Hz (adjust to your monitor).") })
+                                            append({ name: "-nojoy", desc: qsTr("Disables joystick initialization, freeing up memory and reducing startup time.") })
+                                            append({ name: "-high", desc: qsTr("Launches the game in high CPU priority mode.") })
+                                            append({ name: "-fullscreen", desc: qsTr("Forces the game to start in fullscreen mode.") })
+                                            append({ name: "-forcenovsync", desc: qsTr("Forces V-Sync to be disabled to minimize input lag.") })
+                                            append({ name: "-softparticlesdefaultoff", desc: qsTr("Disables soft blending for particles, improving performance near smoke.") })
+                                            append({ name: "+r_dynamic 0", desc: qsTr("Disables dynamic lighting, removing FPS drops during gunfights.") })
+                                            append({ name: "+cl_interp 0", desc: qsTr("Sets interpolation to minimum, making network hit registration faster.") })
+                                            append({ name: "+cl_hideserverip", desc: qsTr("Hides the server IP address in console and status to prevent DDoS.") })
+                                            append({ name: "+mat_queue_mode 2", desc: qsTr("Forces multi-threaded material queue mode for multi-core processors.") })
+                                        }
+                                    }
+
+                                    delegate: Rectangle {
+                                        width: parent.width
+                                        height: 52
+                                        radius: 6
+                                        color: mouseRow.containsMouse ? Theme.buttonBgHover : "transparent"
+                                        border.color: checkedState ? Qt.rgba(Theme.accent.r, Theme.accent.g, Theme.accent.b, 0.3) : (mouseRow.containsMouse ? Theme.borderHover : "transparent")
+                                        border.width: 1
+                                        
+                                        property bool checkedState: {
+                                            var optMap = optimizerBackend.cs2LaunchOptions;
+                                            return optMap && optMap[model.name] === true;
+                                        }
+
+                                        Row {
+                                            anchors.fill: parent
+                                            anchors.leftMargin: 12
+                                            anchors.rightMargin: 12
+                                            spacing: 12
+
+                                            MeguSwitch {
+                                                id: optSwitch
+                                                checked: parent.parent.checkedState
+                                                anchors.verticalCenter: parent.verticalCenter
+                                                onCheckedChanged: {
+                                                    var optMap = optimizerBackend.cs2LaunchOptions;
+                                                    if (optMap) {
+                                                        optMap[model.name] = checked;
+                                                        optimizerBackend.cs2LaunchOptions = optMap;
+                                                    }
+                                                }
+                                            }
+
+                                            Column {
+                                                anchors.verticalCenter: parent.verticalCenter
+                                                spacing: 2
+                                                width: parent.width - optSwitch.width - 12
+
+                                                Text {
+                                                    text: model.name
+                                                    color: parent.parent.parent.checkedState ? Theme.accent : Theme.textPrimary
+                                                    font.family: Theme.fontFamily
+                                                    font.pixelSize: 12
+                                                    font.bold: true
+                                                }
+
+                                                Text {
+                                                    text: model.desc
+                                                    color: Theme.textSecondary
+                                                    font.family: Theme.fontFamily
+                                                    font.pixelSize: 10
+                                                    elide: Text.ElideRight
+                                                    width: parent.width
+                                                }
+                                            }
+                                        }
+
+                                        MouseArea {
+                                            id: mouseRow
+                                            anchors.fill: parent
+                                            hoverEnabled: true
+                                            cursorShape: Qt.PointingHandCursor
+                                            onClicked: {
+                                                var optMap = optimizerBackend.cs2LaunchOptions;
+                                                if (optMap) {
+                                                    var cur = optMap[model.name] === true;
+                                                    optMap[model.name] = !cur;
+                                                    optimizerBackend.cs2LaunchOptions = optMap;
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
             }
 
             // 1. DRIVES INDEXING CATEGORY

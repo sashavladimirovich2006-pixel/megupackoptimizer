@@ -11,6 +11,7 @@
 #include <QScreen>
 #include <QGuiApplication>
 #include <QProcess>
+#include <QRegularExpression>
 
 #ifdef Q_OS_WIN
 #include <windows.h>
@@ -24,6 +25,131 @@
 #pragma comment(lib, "powrprof.lib")
 #pragma comment(lib, "propsys.lib")
 #endif
+
+namespace {
+    const QStringList CS2_MANAGED_OPTIONS = {
+        "-allow_third_party_software",
+        "-noreflex",
+        "-noaafonts",
+        "-language English",
+        "+fps_max 0",
+        "-freq 170",
+        "-nojoy",
+        "-high",
+        "-fullscreen",
+        "-forcenovsync",
+        "-softparticlesdefaultoff",
+        "+r_dynamic 0",
+        "+cl_interp 0",
+        "+cl_hideserverip",
+        "+mat_queue_mode 2"
+    };
+
+    QString getVdfLaunchOptions(const QString &filePath, const QString &appId) {
+        QFile file(filePath);
+        if (!file.open(QIODevice::ReadOnly | QIODevice::Text)) {
+            return "";
+        }
+        QString content = QString::fromUtf8(file.readAll());
+        file.close();
+
+        QRegularExpression appRegex(QString("\"%1\"\\s*\\{").arg(appId));
+        QRegularExpressionMatch match = appRegex.match(content);
+        if (!match.hasMatch()) {
+            return "";
+        }
+
+        int startIdx = match.capturedEnd();
+        int count = 1;
+        int idx = startIdx;
+        int closeIdx = -1;
+        while (count > 0 && idx < content.length()) {
+            QChar ch = content.at(idx);
+            if (ch == '{') {
+                count++;
+            } else if (ch == '}') {
+                count--;
+                if (count == 0) {
+                    closeIdx = idx;
+                    break;
+                }
+            }
+            idx++;
+        }
+
+        if (closeIdx == -1) {
+            return "";
+        }
+
+        QString appBlock = content.mid(startIdx, closeIdx - startIdx);
+        QRegularExpression launchOptRegex("\"LaunchOptions\"\\s*\"([^\"]*)\"");
+        QRegularExpressionMatch loMatch = launchOptRegex.match(appBlock);
+        if (loMatch.hasMatch()) {
+            return loMatch.captured(1);
+        }
+        return "";
+    }
+
+    bool updateVdfLaunchOptions(const QString &filePath, const QString &appId, const QString &newLaunchOptions) {
+        QFile file(filePath);
+        if (!file.open(QIODevice::ReadOnly | QIODevice::Text)) {
+            return false;
+        }
+        QString content = QString::fromUtf8(file.readAll());
+        file.close();
+
+        QRegularExpression appRegex(QString("\"%1\"\\s*\\{").arg(appId));
+        QRegularExpressionMatch match = appRegex.match(content);
+        if (!match.hasMatch()) {
+            return false;
+        }
+
+        int startIdx = match.capturedEnd();
+        int count = 1;
+        int idx = startIdx;
+        int closeIdx = -1;
+        while (count > 0 && idx < content.length()) {
+            QChar ch = content.at(idx);
+            if (ch == '{') {
+                count++;
+            } else if (ch == '}') {
+                count--;
+                if (count == 0) {
+                    closeIdx = idx;
+                    break;
+                }
+            }
+            idx++;
+        }
+
+        if (closeIdx == -1) {
+            return false;
+        }
+
+        QString appBlock = content.mid(startIdx, closeIdx - startIdx);
+        QRegularExpression launchOptRegex("\"LaunchOptions\"\\s*\"([^\"]*)\"");
+        QRegularExpressionMatch loMatch = launchOptRegex.match(appBlock);
+
+        QString newAppBlock;
+        if (loMatch.hasMatch()) {
+            int loStart = loMatch.capturedStart();
+            int loEnd = loMatch.capturedEnd();
+            newAppBlock = appBlock.left(loStart) + QString("\"LaunchOptions\"\t\t\"%1\"").arg(newLaunchOptions) + appBlock.mid(loEnd);
+        } else {
+            QString indent = "\t\t\t\t\t\t";
+            newAppBlock = QString("\n%1\"LaunchOptions\"\t\t\"%2\"").arg(indent, newLaunchOptions) + appBlock;
+        }
+
+        QString newContent = content.left(startIdx) + newAppBlock + content.mid(closeIdx);
+
+        if (!file.open(QIODevice::WriteOnly | QIODevice::Text)) {
+            return false;
+        }
+        file.write(newContent.toUtf8());
+        file.close();
+        return true;
+    }
+}
 
 Optimizer::Optimizer(QObject *parent) : QObject(parent) {
     refreshSystemInfo();
@@ -165,6 +291,13 @@ void Optimizer::setWindowsUpdateMode(int mode) {
     if (m_windowsUpdateMode != mode) {
         m_windowsUpdateMode = mode;
         emit windowsUpdateModeChanged(m_windowsUpdateMode);
+    }
+}
+
+void Optimizer::setCs2LaunchOptions(const QVariantMap &val) {
+    if (m_cs2LaunchOptions != val) {
+        m_cs2LaunchOptions = val;
+        emit cs2LaunchOptionsChanged(m_cs2LaunchOptions);
     }
 }
 
@@ -1305,6 +1438,77 @@ void Optimizer::loadSystemStates() {
     m_originalWindowsUpdateMode = updateMode;
     emit windowsUpdateModeChanged(m_windowsUpdateMode);
     emit originalWindowsUpdateModeChanged(m_originalWindowsUpdateMode);
+
+    // ----------------------------------------------------
+    // Load Counter-Strike 2 launch options
+    // ----------------------------------------------------
+    QString steamPath = "";
+#ifdef Q_OS_WIN
+    HKEY hKeySteam;
+    if (RegOpenKeyExW(HKEY_CURRENT_USER, L"Software\\Valve\\Steam", 0, KEY_READ, &hKeySteam) == ERROR_SUCCESS) {
+        wchar_t pathBuf[512] = {0};
+        DWORD size = sizeof(pathBuf);
+        if (RegQueryValueExW(hKeySteam, L"SteamPath", NULL, NULL, (LPBYTE)pathBuf, &size) == ERROR_SUCCESS) {
+            steamPath = QString::fromWCharArray(pathBuf).replace("/", "\\");
+        }
+        RegCloseKey(hKeySteam);
+    }
+    if (steamPath.isEmpty()) {
+        if (RegOpenKeyExW(HKEY_LOCAL_MACHINE, L"SOFTWARE\\WOW6432Node\\Valve\\Steam", 0, KEY_READ, &hKeySteam) == ERROR_SUCCESS) {
+            wchar_t pathBuf[512] = {0};
+            DWORD size = sizeof(pathBuf);
+            if (RegQueryValueExW(hKeySteam, L"InstallPath", NULL, NULL, (LPBYTE)pathBuf, &size) == ERROR_SUCCESS) {
+                steamPath = QString::fromWCharArray(pathBuf).replace("/", "\\");
+            }
+            RegCloseKey(hKeySteam);
+        }
+    }
+#endif
+
+    QVariantMap cs2Options;
+    for (const QString &opt : CS2_MANAGED_OPTIONS) {
+        cs2Options[opt] = false;
+    }
+
+    QString firstLaunchOptions = "";
+    bool loadedFromProfile = false;
+
+    if (!steamPath.isEmpty() && QDir(steamPath).exists()) {
+        QString userdataPath = steamPath + "/userdata";
+        QDir userdataDir(userdataPath);
+        if (userdataDir.exists()) {
+            QStringList subdirs = userdataDir.entryList(QDir::Dirs | QDir::NoDotAndDotDot);
+            for (const QString &subdir : subdirs) {
+                QString vdfPath = userdataPath + "/" + subdir + "/config/localconfig.vdf";
+                if (QFile::exists(vdfPath)) {
+                    QString opts = getVdfLaunchOptions(vdfPath, "730");
+                    if (!opts.isEmpty() && !loadedFromProfile) {
+                        firstLaunchOptions = opts;
+                        loadedFromProfile = true;
+                    }
+                }
+            }
+        }
+    }
+
+#ifndef Q_OS_WIN
+    // Simulation defaults for development
+    cs2Options["-allow_third_party_software"] = true;
+    cs2Options["-noreflex"] = true;
+#else
+    if (loadedFromProfile) {
+        for (const QString &opt : CS2_MANAGED_OPTIONS) {
+            if (firstLaunchOptions.contains(opt, Qt::CaseInsensitive)) {
+                cs2Options[opt] = true;
+            }
+        }
+    }
+#endif
+
+    m_cs2LaunchOptions = cs2Options;
+    m_originalCs2LaunchOptions = cs2Options;
+    emit cs2LaunchOptionsChanged(m_cs2LaunchOptions);
+    emit originalCs2LaunchOptionsChanged(m_originalCs2LaunchOptions);
 }
 
 void Optimizer::startSystemOptimization() {
@@ -1348,6 +1552,32 @@ void Optimizer::startSystemOptimization() {
     bool telemetryWerVal = m_telemetryWerActive;
     int windowsUpdateModeVal = m_windowsUpdateMode;
 
+    QString steamPathVal = "";
+#ifdef Q_OS_WIN
+    HKEY hKeySteam;
+    if (RegOpenKeyExW(HKEY_CURRENT_USER, L"Software\\Valve\\Steam", 0, KEY_READ, &hKeySteam) == ERROR_SUCCESS) {
+        wchar_t pathBuf[512] = {0};
+        DWORD size = sizeof(pathBuf);
+        if (RegQueryValueExW(hKeySteam, L"SteamPath", NULL, NULL, (LPBYTE)pathBuf, &size) == ERROR_SUCCESS) {
+            steamPathVal = QString::fromWCharArray(pathBuf).replace("/", "\\");
+        }
+        RegCloseKey(hKeySteam);
+    }
+    if (steamPathVal.isEmpty()) {
+        if (RegOpenKeyExW(HKEY_LOCAL_MACHINE, L"SOFTWARE\\WOW6432Node\\Valve\\Steam", 0, KEY_READ, &hKeySteam) == ERROR_SUCCESS) {
+            wchar_t pathBuf[512] = {0};
+            DWORD size = sizeof(pathBuf);
+            if (RegQueryValueExW(hKeySteam, L"InstallPath", NULL, NULL, (LPBYTE)pathBuf, &size) == ERROR_SUCCESS) {
+                steamPathVal = QString::fromWCharArray(pathBuf).replace("/", "\\");
+            }
+            RegCloseKey(hKeySteam);
+        }
+    }
+#endif
+
+    QVariantMap cs2OptionsVal = m_cs2LaunchOptions;
+    QVariantMap origCs2OptionsVal = m_originalCs2LaunchOptions;
+
     QVariantMap targets = m_driveStates;
     QVariantMap originalTargets = m_originalDriveStates;
     bool origSearch = m_originalWinSearchActive;
@@ -1380,7 +1610,7 @@ void Optimizer::startSystemOptimization() {
     QVariantList usbDevicesVal = m_usbDevices;
     QVariantList origUsbDevicesVal = m_originalUsbDevices;
 
-    QThread* worker = QThread::create([this, searchVal, hibernationVal, overlayVal, coreIsolationVal, mouseAccelVal, gameModeVal, firewallVal, printerVal, bitlockerVal, discordOverlayVal, notificationsVal, notifGlobalVal, notifAppVal, notifSoundsVal, notifLockscreenVal, targetPowerSchemeVal, activePowerSchemeVal, defenderVal, defenderRegistryVal, defenderCmdVal, defenderServiceVal, remoteAccessVal, telemetryVal, telemetryDiagTrackVal, telemetryWapPushVal, telemetryCeipVal, telemetryWerVal, windowsUpdateModeVal, targets, originalTargets, origSearch, origHibernation, origOverlay, origCoreIsolation, origMouseAccel, origGameMode, origFirewall, origPrinter, origBitlocker, origDiscordOverlay, origNotifications, origNotifGlobal, origNotifApp, origNotifSounds, origNotifLockscreen, origDefender, origDefenderRegistry, origDefenderCmd, origDefenderService, origRemoteAccess, origTelemetry, origTelemetryDiagTrack, origTelemetryWapPush, origTelemetryCeip, origTelemetryWer, origWindowsUpdateMode, usbDevicesVal, origUsbDevicesVal]() {
+    QThread* worker = QThread::create([this, searchVal, hibernationVal, overlayVal, coreIsolationVal, mouseAccelVal, gameModeVal, firewallVal, printerVal, bitlockerVal, discordOverlayVal, notificationsVal, notifGlobalVal, notifAppVal, notifSoundsVal, notifLockscreenVal, targetPowerSchemeVal, activePowerSchemeVal, defenderVal, defenderRegistryVal, defenderCmdVal, defenderServiceVal, remoteAccessVal, telemetryVal, telemetryDiagTrackVal, telemetryWapPushVal, telemetryCeipVal, telemetryWerVal, windowsUpdateModeVal, targets, originalTargets, origSearch, origHibernation, origOverlay, origCoreIsolation, origMouseAccel, origGameMode, origFirewall, origPrinter, origBitlocker, origDiscordOverlay, origNotifications, origNotifGlobal, origNotifApp, origNotifSounds, origNotifLockscreen, origDefender, origDefenderRegistry, origDefenderCmd, origDefenderService, origRemoteAccess, origTelemetry, origTelemetryDiagTrack, origTelemetryWapPush, origTelemetryCeip, origTelemetryWer, origWindowsUpdateMode, usbDevicesVal, origUsbDevicesVal, steamPathVal, cs2OptionsVal, origCs2OptionsVal]() {
         // Step 0: Check if anything actually changed
         bool powerPlanChanged = (targetPowerSchemeVal != activePowerSchemeVal);
         bool usbChanged = false;
@@ -1402,6 +1632,8 @@ void Optimizer::startSystemOptimization() {
                                 (telemetryWerVal != origTelemetryWer);
 
         bool windowsUpdateModeChanged = (windowsUpdateModeVal != origWindowsUpdateMode);
+
+        bool cs2Changed = (cs2OptionsVal != origCs2OptionsVal);
 
         bool anyChanges = (searchVal != origSearch) || 
                           (hibernationVal != origHibernation) || 
@@ -1426,7 +1658,8 @@ void Optimizer::startSystemOptimization() {
                           telemetryChanged ||
                           windowsUpdateModeChanged ||
                           powerPlanChanged ||
-                          usbChanged;
+                          usbChanged ||
+                          cs2Changed;
         if (!anyChanges) {
             for (const QString &driveLetter : targets.keys()) {
                 if (targets.value(driveLetter).toBool() != originalTargets.value(driveLetter).toBool()) {
@@ -2859,7 +3092,88 @@ void Optimizer::startSystemOptimization() {
             QThread::msleep(100);
         }
 
-        bool overallSuccess = wSearchSuccess && hibernationSuccess && overlaySuccess && coreIsolationSuccess && mouseAccelSuccess && gameModeSuccess && firewallSuccess && printerSuccess && notificationsSuccess && powerPlanSuccess && defenderSuccess && overallDrivesSuccess && usbSuccess && remoteAccessSuccess && telemetrySuccess && windowsUpdateSuccess;
+        // Step 2.5: Counter-Strike 2 launch options (only if changed)
+        bool cs2Success = true;
+        if (cs2OptionsVal != origCs2OptionsVal) {
+            emit systemStepReported(tr("Processing Counter-Strike 2 launch options..."), "INFO");
+            QThread::msleep(800);
+
+            QStringList cs2NewManaged;
+            for (const QString &opt : CS2_MANAGED_OPTIONS) {
+                if (cs2OptionsVal.value(opt).toBool()) {
+                    cs2NewManaged.append(opt);
+                }
+            }
+
+#ifdef Q_OS_WIN
+            bool steamRunning = false;
+            HANDLE hSnapshot = CreateToolhelp32Snapshot(TH32CS_SNAPPROCESS, 0);
+            if (hSnapshot != INVALID_HANDLE_VALUE) {
+                PROCESSENTRY32W pe32;
+                pe32.dwSize = sizeof(pe32);
+                if (Process32FirstW(hSnapshot, &pe32)) {
+                    do {
+                        if (wcscmp(pe32.szExeFile, L"steam.exe") == 0 || 
+                            wcscmp(pe32.szExeFile, L"Steam.exe") == 0) {
+                            steamRunning = true;
+                            HANDLE hProcess = OpenProcess(PROCESS_TERMINATE, FALSE, pe32.th32ProcessID);
+                            if (hProcess) {
+                                TerminateProcess(hProcess, 0);
+                                CloseHandle(hProcess);
+                            }
+                        }
+                    } while (Process32NextW(hSnapshot, &pe32));
+                }
+                CloseHandle(hSnapshot);
+            }
+            if (steamRunning) {
+                emit systemStepReported(tr("Steam process detected and closed to prevent configuration overwrite."), "WARNING");
+                QThread::msleep(1500);
+            }
+
+            if (!steamPathVal.isEmpty() && QDir(steamPathVal).exists()) {
+                QString userdataPath = steamPathVal + "/userdata";
+                QDir userdataDir(userdataPath);
+                if (userdataDir.exists()) {
+                    QStringList subdirs = userdataDir.entryList(QDir::Dirs | QDir::NoDotAndDotDot);
+                    int updatedCount = 0;
+                    for (const QString &subdir : subdirs) {
+                        QString vdfPath = userdataPath + "/" + subdir + "/config/localconfig.vdf";
+                        if (QFile::exists(vdfPath)) {
+                            QString oldVal = getVdfLaunchOptions(vdfPath, "730");
+                            QString cleanedVal = oldVal;
+                            for (const QString &opt : CS2_MANAGED_OPTIONS) {
+                                cleanedVal.replace(opt, "", Qt::CaseInsensitive);
+                            }
+                            cleanedVal = cleanedVal.simplified();
+                            
+                            QStringList mergedOptions;
+                            if (!cleanedVal.isEmpty()) {
+                                mergedOptions.append(cleanedVal);
+                            }
+                            mergedOptions.append(cs2NewManaged);
+                            QString newVal = mergedOptions.join(" ");
+                            
+                            if (updateVdfLaunchOptions(vdfPath, "730", newVal)) {
+                                updatedCount++;
+                            }
+                        }
+                    }
+                    emit systemStepReported(tr("Counter-Strike 2 launch options updated for %1 profiles.").arg(updatedCount), "SUCCESS");
+                } else {
+                    cs2Success = false;
+                    emit systemStepReported(tr("Steam userdata directory not found."), "ERROR");
+                }
+            } else {
+                cs2Success = false;
+                emit systemStepReported(tr("Steam path not found. Cannot apply launch options."), "ERROR");
+            }
+#else
+            emit systemStepReported(tr("[Simulation] Counter-Strike 2 launch options set to: %1").arg(cs2NewManaged.join(" ")), "SUCCESS");
+#endif
+        }
+
+        bool overallSuccess = wSearchSuccess && hibernationSuccess && overlaySuccess && coreIsolationSuccess && mouseAccelSuccess && gameModeSuccess && firewallSuccess && printerSuccess && notificationsSuccess && powerPlanSuccess && defenderSuccess && overallDrivesSuccess && usbSuccess && remoteAccessSuccess && telemetrySuccess && windowsUpdateSuccess && cs2Success;
         if (overallSuccess) {
             emit systemStepReported(tr("System optimization completed successfully!"), "SUCCESS");
             Logger::log("System optimization completed successfully!", "INFO");
@@ -2893,6 +3207,7 @@ void Optimizer::startSystemOptimization() {
         m_originalTelemetryCeipActive = telemetryCeipVal;
         m_originalTelemetryWerActive = telemetryWerVal;
         m_originalWindowsUpdateMode = windowsUpdateModeVal;
+        m_originalCs2LaunchOptions = cs2OptionsVal;
         m_originalDriveStates = targets;
         
         loadSystemStates();

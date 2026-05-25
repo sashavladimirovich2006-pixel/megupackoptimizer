@@ -31,6 +31,9 @@ Item {
             if (!control.enabled) {
                 return control.accented ? Qt.rgba(Theme.accent.r, Theme.accent.g, Theme.accent.b, 0.05) : "transparent";
             }
+            if (control.hasDropdown && control.dropdownOpen) {
+                return Theme.panelBg;
+            }
             var isPressed = mouseArea.pressed || dropdownMouseArea.pressed;
             var isHovered = mouseArea.containsMouse || dropdownMouseArea.containsMouse;
             if (control.accented) {
@@ -47,6 +50,9 @@ Item {
         }
                
         border.color: {
+            if (control.hasDropdown && control.dropdownOpen) {
+                return Theme.border;
+            }
             var isPressed = mouseArea.pressed || dropdownMouseArea.pressed;
             var isHovered = mouseArea.containsMouse || dropdownMouseArea.containsMouse;
             if (control.accented) {

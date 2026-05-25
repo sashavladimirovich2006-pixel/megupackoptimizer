@@ -473,30 +473,34 @@ ApplicationWindow {
 
     Popup {
         id: optDropdown
-        parent: tab3
-        x: 0
-        y: parent.height - 1
-        width: parent.width
+        parent: window.contentItem
+        x: {
+            var pt = tab3.mapToItem(window.contentItem, 0, 0);
+            return pt.x;
+        }
+        y: {
+            var pt = tab3.mapToItem(window.contentItem, 0, tab3.height);
+            return pt.y - 1;
+        }
+        width: tab3.width
         height: implicitHeight
         padding: 6
         
         enter: Transition {
             ParallelAnimation {
                 NumberAnimation { property: "opacity"; from: 0.0; to: 1.0; duration: 150; easing.type: Easing.OutQuad }
-                NumberAnimation { property: "y"; from: tab3.height - 8; to: tab3.height - 1; duration: 150; easing.type: Easing.OutQuad }
             }
         }
         
         exit: Transition {
             ParallelAnimation {
                 NumberAnimation { property: "opacity"; from: 1.0; to: 0.0; duration: 120; easing.type: Easing.OutQuad }
-                NumberAnimation { property: "y"; from: tab3.height - 1; to: tab3.height - 8; duration: 120; easing.type: Easing.OutQuad }
             }
         }
         
         background: Rectangle {
-            color: "#F80D0E12"
-            border.color: tab3.accented ? Qt.rgba(Theme.accent.r, Theme.accent.g, Theme.accent.b, 0.4) : Theme.border
+            color: Theme.panelBg
+            border.color: Theme.border
             border.width: 1
             radius: 8
             
@@ -509,7 +513,7 @@ ApplicationWindow {
                 anchors.rightMargin: 1
                 anchors.topMargin: -1
                 height: 8
-                color: "#F80D0E12"
+                color: Theme.panelBg
             }
             
             layer.enabled: true
@@ -526,6 +530,20 @@ ApplicationWindow {
             spacing: 4
             width: parent.width
             
+            MeguButton {
+                width: parent.width
+                height: 30
+                text: qsTr("Video Games")
+                iconSource: "qrc:/MeguPackOptimizer/src/resources/play.svg"
+                accented: window.activeTab === 3 && optimizationView.currentSection === "games"
+                flat: !accented
+                onClicked: {
+                    window.activeTab = 3;
+                    optimizationView.currentSection = "games";
+                    optDropdown.close();
+                }
+            }
+
             MeguButton {
                 width: parent.width
                 height: 30
