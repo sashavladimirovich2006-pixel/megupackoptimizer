@@ -92,13 +92,16 @@ void Optimizer::setRemoteAccessActive(bool val) {
 void Optimizer::setTelemetryActive(bool val) {
     if (m_telemetryActive != val) {
         m_telemetryActive = val;
-        emit telemetryActiveChanged(m_telemetryActive);
+        m_telemetryDiagTrackActive = val;
+        m_telemetryWapPushActive = val;
+        m_telemetryCeipActive = val;
+        m_telemetryWerActive = val;
 
-        // Propagate to sub-options for uniform toggle feel
-        setTelemetryDiagTrackActive(val);
-        setTelemetryWapPushActive(val);
-        setTelemetryCeipActive(val);
-        setTelemetryWerActive(val);
+        emit telemetryActiveChanged(m_telemetryActive);
+        emit telemetryDiagTrackActiveChanged(m_telemetryDiagTrackActive);
+        emit telemetryWapPushActiveChanged(m_telemetryWapPushActive);
+        emit telemetryCeipActiveChanged(m_telemetryCeipActive);
+        emit telemetryWerActiveChanged(m_telemetryWerActive);
     }
 }
 
@@ -155,6 +158,13 @@ void Optimizer::setTelemetryWerActive(bool val) {
             m_telemetryActive = anyActive;
             emit telemetryActiveChanged(m_telemetryActive);
         }
+    }
+}
+
+void Optimizer::setWindowsUpdateMode(int mode) {
+    if (m_windowsUpdateMode != mode) {
+        m_windowsUpdateMode = mode;
+        emit windowsUpdateModeChanged(m_windowsUpdateMode);
     }
 }
 
@@ -1240,6 +1250,61 @@ void Optimizer::loadSystemStates() {
     m_originalTelemetryActive = m_telemetryActive;
     emit telemetryActiveChanged(m_telemetryActive);
     emit originalTelemetryActiveChanged(m_originalTelemetryActive);
+
+    // ----------------------------------------------------
+    // Load Windows Update Mode
+    // ----------------------------------------------------
+    int updateMode = 0; // Default
+#ifdef Q_OS_WIN
+    DWORD noAutoUpdate = 0;
+    DWORD auOptions = 0;
+    HKEY hKeyAu;
+    if (RegOpenKeyExW(HKEY_LOCAL_MACHINE, L"SOFTWARE\\Policies\\Microsoft\\Windows\\WindowsUpdate\\AU", 0, KEY_READ, &hKeyAu) == ERROR_SUCCESS) {
+        DWORD size = sizeof(noAutoUpdate);
+        RegQueryValueExW(hKeyAu, L"NoAutoUpdate", NULL, NULL, (LPBYTE)&noAutoUpdate, &size);
+        size = sizeof(auOptions);
+        RegQueryValueExW(hKeyAu, L"AUOptions", NULL, NULL, (LPBYTE)&auOptions, &size);
+        RegCloseKey(hKeyAu);
+    }
+    
+    DWORD wuauservStart = 3; // default Manual
+    HKEY hKeySvc;
+    if (RegOpenKeyExW(HKEY_LOCAL_MACHINE, L"SYSTEM\\CurrentControlSet\\Services\\wuauserv", 0, KEY_READ, &hKeySvc) == ERROR_SUCCESS) {
+        DWORD size = sizeof(wuauservStart);
+        if (RegQueryValueExW(hKeySvc, L"Start", NULL, NULL, (LPBYTE)&wuauservStart, &size) != ERROR_SUCCESS) {
+            wuauservStart = 3;
+        }
+        RegCloseKey(hKeySvc);
+    }
+
+    DWORD targetReleaseVersion = 0;
+    DWORD excludeDrivers = 0;
+    HKEY hKeyWu;
+    if (RegOpenKeyExW(HKEY_LOCAL_MACHINE, L"SOFTWARE\\Policies\\Microsoft\\Windows\\WindowsUpdate", 0, KEY_READ, &hKeyWu) == ERROR_SUCCESS) {
+        DWORD size = sizeof(targetReleaseVersion);
+        RegQueryValueExW(hKeyWu, L"TargetReleaseVersion", NULL, NULL, (LPBYTE)&targetReleaseVersion, &size);
+        size = sizeof(excludeDrivers);
+        RegQueryValueExW(hKeyWu, L"ExcludeWUDriversInQualityUpdate", NULL, NULL, (LPBYTE)&excludeDrivers, &size);
+        RegCloseKey(hKeyWu);
+    }
+
+    if (noAutoUpdate == 1 || wuauservStart == 4) {
+        updateMode = 3; // Disabled
+    } else if (auOptions == 2 && wuauservStart == 3) {
+        updateMode = 2; // Manual
+    } else if (targetReleaseVersion == 1 && excludeDrivers == 1) {
+        updateMode = 1; // Security updates only
+    } else {
+        updateMode = 0; // Default
+    }
+#else
+    updateMode = 0; // Default simulation
+#endif
+
+    m_windowsUpdateMode = updateMode;
+    m_originalWindowsUpdateMode = updateMode;
+    emit windowsUpdateModeChanged(m_windowsUpdateMode);
+    emit originalWindowsUpdateModeChanged(m_originalWindowsUpdateMode);
 }
 
 void Optimizer::startSystemOptimization() {
@@ -1281,6 +1346,7 @@ void Optimizer::startSystemOptimization() {
     bool telemetryWapPushVal = m_telemetryWapPushActive;
     bool telemetryCeipVal = m_telemetryCeipActive;
     bool telemetryWerVal = m_telemetryWerActive;
+    int windowsUpdateModeVal = m_windowsUpdateMode;
 
     QVariantMap targets = m_driveStates;
     QVariantMap originalTargets = m_originalDriveStates;
@@ -1309,11 +1375,12 @@ void Optimizer::startSystemOptimization() {
     bool origTelemetryWapPush = m_originalTelemetryWapPushActive;
     bool origTelemetryCeip = m_originalTelemetryCeipActive;
     bool origTelemetryWer = m_originalTelemetryWerActive;
+    int origWindowsUpdateMode = m_originalWindowsUpdateMode;
 
     QVariantList usbDevicesVal = m_usbDevices;
     QVariantList origUsbDevicesVal = m_originalUsbDevices;
 
-    QThread* worker = QThread::create([this, searchVal, hibernationVal, overlayVal, coreIsolationVal, mouseAccelVal, gameModeVal, firewallVal, printerVal, bitlockerVal, discordOverlayVal, notificationsVal, notifGlobalVal, notifAppVal, notifSoundsVal, notifLockscreenVal, targetPowerSchemeVal, activePowerSchemeVal, defenderVal, defenderRegistryVal, defenderCmdVal, defenderServiceVal, remoteAccessVal, telemetryVal, telemetryDiagTrackVal, telemetryWapPushVal, telemetryCeipVal, telemetryWerVal, targets, originalTargets, origSearch, origHibernation, origOverlay, origCoreIsolation, origMouseAccel, origGameMode, origFirewall, origPrinter, origBitlocker, origDiscordOverlay, origNotifications, origNotifGlobal, origNotifApp, origNotifSounds, origNotifLockscreen, origDefender, origDefenderRegistry, origDefenderCmd, origDefenderService, origRemoteAccess, origTelemetry, origTelemetryDiagTrack, origTelemetryWapPush, origTelemetryCeip, origTelemetryWer, usbDevicesVal, origUsbDevicesVal]() {
+    QThread* worker = QThread::create([this, searchVal, hibernationVal, overlayVal, coreIsolationVal, mouseAccelVal, gameModeVal, firewallVal, printerVal, bitlockerVal, discordOverlayVal, notificationsVal, notifGlobalVal, notifAppVal, notifSoundsVal, notifLockscreenVal, targetPowerSchemeVal, activePowerSchemeVal, defenderVal, defenderRegistryVal, defenderCmdVal, defenderServiceVal, remoteAccessVal, telemetryVal, telemetryDiagTrackVal, telemetryWapPushVal, telemetryCeipVal, telemetryWerVal, windowsUpdateModeVal, targets, originalTargets, origSearch, origHibernation, origOverlay, origCoreIsolation, origMouseAccel, origGameMode, origFirewall, origPrinter, origBitlocker, origDiscordOverlay, origNotifications, origNotifGlobal, origNotifApp, origNotifSounds, origNotifLockscreen, origDefender, origDefenderRegistry, origDefenderCmd, origDefenderService, origRemoteAccess, origTelemetry, origTelemetryDiagTrack, origTelemetryWapPush, origTelemetryCeip, origTelemetryWer, origWindowsUpdateMode, usbDevicesVal, origUsbDevicesVal]() {
         // Step 0: Check if anything actually changed
         bool powerPlanChanged = (targetPowerSchemeVal != activePowerSchemeVal);
         bool usbChanged = false;
@@ -1333,6 +1400,8 @@ void Optimizer::startSystemOptimization() {
                                 (telemetryWapPushVal != origTelemetryWapPush) ||
                                 (telemetryCeipVal != origTelemetryCeip) ||
                                 (telemetryWerVal != origTelemetryWer);
+
+        bool windowsUpdateModeChanged = (windowsUpdateModeVal != origWindowsUpdateMode);
 
         bool anyChanges = (searchVal != origSearch) || 
                           (hibernationVal != origHibernation) || 
@@ -1355,6 +1424,7 @@ void Optimizer::startSystemOptimization() {
                           (defenderServiceVal != origDefenderService) ||
                           (remoteAccessVal != origRemoteAccess) ||
                           telemetryChanged ||
+                          windowsUpdateModeChanged ||
                           powerPlanChanged ||
                           usbChanged;
         if (!anyChanges) {
@@ -2457,6 +2527,295 @@ void Optimizer::startSystemOptimization() {
             }
         }
 
+        // Step 1.99u: Windows Update Mode Configuration (only if changed)
+        bool windowsUpdateSuccess = true;
+        if (windowsUpdateModeChanged) {
+            emit systemStepReported(tr("Configuring Windows Update mode..."), "INFO");
+            QThread::msleep(800);
+            bool ok = true;
+#ifdef Q_OS_WIN
+            SC_HANDLE hSCM = OpenSCManagerW(NULL, NULL, SC_MANAGER_ALL_ACCESS);
+            
+            if (windowsUpdateModeVal == 0) {
+                // DEFAULT
+                emit systemStepReported(tr("Setting Windows Update to Default mode..."), "INFO");
+                
+                HKEY hKeyWu;
+                if (RegOpenKeyExW(HKEY_LOCAL_MACHINE, L"SOFTWARE\\Policies\\Microsoft\\Windows\\WindowsUpdate", 0, KEY_SET_VALUE, &hKeyWu) == ERROR_SUCCESS) {
+                    RegDeleteValueW(hKeyWu, L"TargetReleaseVersion");
+                    RegDeleteValueW(hKeyWu, L"TargetReleaseVersionInfo");
+                    RegDeleteValueW(hKeyWu, L"ProductVersion");
+                    RegDeleteValueW(hKeyWu, L"ExcludeWUDriversInQualityUpdate");
+                    RegCloseKey(hKeyWu);
+                }
+                
+                HKEY hKeyAu;
+                if (RegOpenKeyExW(HKEY_LOCAL_MACHINE, L"SOFTWARE\\Policies\\Microsoft\\Windows\\WindowsUpdate\\AU", 0, KEY_SET_VALUE, &hKeyAu) == ERROR_SUCCESS) {
+                    RegDeleteValueW(hKeyAu, L"NoAutoUpdate");
+                    RegDeleteValueW(hKeyAu, L"AUOptions");
+                    RegCloseKey(hKeyAu);
+                }
+                
+                HKEY hKeyWuauserv;
+                if (RegOpenKeyExW(HKEY_LOCAL_MACHINE, L"SYSTEM\\CurrentControlSet\\Services\\wuauserv", 0, KEY_SET_VALUE, &hKeyWuauserv) == ERROR_SUCCESS) {
+                    DWORD val = 3; // Manual
+                    RegSetValueExW(hKeyWuauserv, L"Start", 0, REG_DWORD, (const BYTE*)&val, sizeof(val));
+                    RegCloseKey(hKeyWuauserv);
+                }
+                HKEY hKeyUsoSvc;
+                if (RegOpenKeyExW(HKEY_LOCAL_MACHINE, L"SYSTEM\\CurrentControlSet\\Services\\UsoSvc", 0, KEY_SET_VALUE, &hKeyUsoSvc) == ERROR_SUCCESS) {
+                    DWORD val = 2; // Automatic
+                    RegSetValueExW(hKeyUsoSvc, L"Start", 0, REG_DWORD, (const BYTE*)&val, sizeof(val));
+                    RegCloseKey(hKeyUsoSvc);
+                }
+                HKEY hKeyMedic;
+                if (RegOpenKeyExW(HKEY_LOCAL_MACHINE, L"SYSTEM\\CurrentControlSet\\Services\\WaaSMedicSvc", 0, KEY_SET_VALUE, &hKeyMedic) == ERROR_SUCCESS) {
+                    DWORD val = 3; // Manual
+                    RegSetValueExW(hKeyMedic, L"Start", 0, REG_DWORD, (const BYTE*)&val, sizeof(val));
+                    RegCloseKey(hKeyMedic);
+                }
+                
+                if (hSCM) {
+                    SC_HANDLE hSvcWu = OpenServiceW(hSCM, L"wuauserv", SERVICE_START | SERVICE_QUERY_STATUS);
+                    if (hSvcWu) {
+                        SERVICE_STATUS_PROCESS ssp;
+                        DWORD bytesNeeded = 0;
+                        if (QueryServiceStatusEx(hSvcWu, SC_STATUS_PROCESS_INFO, (LPBYTE)&ssp, sizeof(ssp), &bytesNeeded)) {
+                            if (ssp.dwCurrentState != SERVICE_RUNNING && ssp.dwCurrentState != SERVICE_START_PENDING) {
+                                StartServiceW(hSvcWu, 0, NULL);
+                            }
+                        }
+                        CloseServiceHandle(hSvcWu);
+                    }
+                    SC_HANDLE hSvcUso = OpenServiceW(hSCM, L"UsoSvc", SERVICE_START | SERVICE_QUERY_STATUS);
+                    if (hSvcUso) {
+                        SERVICE_STATUS_PROCESS ssp;
+                        DWORD bytesNeeded = 0;
+                        if (QueryServiceStatusEx(hSvcUso, SC_STATUS_PROCESS_INFO, (LPBYTE)&ssp, sizeof(ssp), &bytesNeeded)) {
+                            if (ssp.dwCurrentState != SERVICE_RUNNING && ssp.dwCurrentState != SERVICE_START_PENDING) {
+                                StartServiceW(hSvcUso, 0, NULL);
+                            }
+                        }
+                        CloseServiceHandle(hSvcUso);
+                    }
+                }
+                
+                emit systemStepReported(tr("Windows Update set to Default mode successfully (all updates enabled)."), "SUCCESS");
+                
+            } else if (windowsUpdateModeVal == 1) {
+                // SECURITY UPDATES ONLY
+                emit systemStepReported(tr("Setting Windows Update to Security Updates Only mode..."), "INFO");
+                
+                QString displayVersion = "23H2";
+                QString productVersion = "Windows 11";
+                HKEY hKeyVer;
+                if (RegOpenKeyExW(HKEY_LOCAL_MACHINE, L"SOFTWARE\\Microsoft\\Windows NT\\CurrentVersion", 0, KEY_READ, &hKeyVer) == ERROR_SUCCESS) {
+                    wchar_t buf[256];
+                    DWORD size = sizeof(buf);
+                    if (RegQueryValueExW(hKeyVer, L"DisplayVersion", NULL, NULL, (LPBYTE)buf, &size) == ERROR_SUCCESS) {
+                        displayVersion = QString::fromWCharArray(buf);
+                    } else {
+                        size = sizeof(buf);
+                        if (RegQueryValueExW(hKeyVer, L"ReleaseId", NULL, NULL, (LPBYTE)buf, &size) == ERROR_SUCCESS) {
+                            displayVersion = QString::fromWCharArray(buf);
+                        }
+                    }
+                    size = sizeof(buf);
+                    if (RegQueryValueExW(hKeyVer, L"ProductName", NULL, NULL, (LPBYTE)buf, &size) == ERROR_SUCCESS) {
+                        QString prodName = QString::fromWCharArray(buf);
+                        if (prodName.contains("Windows 11", Qt::CaseInsensitive)) {
+                            productVersion = "Windows 11";
+                        } else {
+                            productVersion = "Windows 10";
+                        }
+                    }
+                    RegCloseKey(hKeyVer);
+                }
+                
+                HKEY hKeyWu;
+                if (RegCreateKeyExW(HKEY_LOCAL_MACHINE, L"SOFTWARE\\Policies\\Microsoft\\Windows\\WindowsUpdate", 0, NULL, REG_OPTION_NON_VOLATILE, KEY_WRITE, NULL, &hKeyWu, NULL) == ERROR_SUCCESS) {
+                    DWORD one = 1;
+                    RegSetValueExW(hKeyWu, L"TargetReleaseVersion", 0, REG_DWORD, (const BYTE*)&one, sizeof(one));
+                    
+                    std::vector<wchar_t> wVer(displayVersion.length() + 1);
+                    displayVersion.toWCharArray(wVer.data());
+                    wVer[displayVersion.length()] = L'\0';
+                    RegSetValueExW(hKeyWu, L"TargetReleaseVersionInfo", 0, REG_SZ, (const BYTE*)wVer.data(), (wVer.size()) * sizeof(wchar_t));
+                    
+                    std::vector<wchar_t> wProd(productVersion.length() + 1);
+                    productVersion.toWCharArray(wProd.data());
+                    wProd[productVersion.length()] = L'\0';
+                    RegSetValueExW(hKeyWu, L"ProductVersion", 0, REG_SZ, (const BYTE*)wProd.data(), (wProd.size()) * sizeof(wchar_t));
+                    
+                    RegSetValueExW(hKeyWu, L"ExcludeWUDriversInQualityUpdate", 0, REG_DWORD, (const BYTE*)&one, sizeof(one));
+                    
+                    RegCloseKey(hKeyWu);
+                } else {
+                    ok = false;
+                }
+                
+                HKEY hKeyAu;
+                if (RegCreateKeyExW(HKEY_LOCAL_MACHINE, L"SOFTWARE\\Policies\\Microsoft\\Windows\\WindowsUpdate\\AU", 0, NULL, REG_OPTION_NON_VOLATILE, KEY_WRITE, NULL, &hKeyAu, NULL) == ERROR_SUCCESS) {
+                    DWORD zero = 0;
+                    RegSetValueExW(hKeyAu, L"NoAutoUpdate", 0, REG_DWORD, (const BYTE*)&zero, sizeof(zero));
+                    RegDeleteValueW(hKeyAu, L"AUOptions");
+                    RegCloseKey(hKeyAu);
+                }
+                
+                HKEY hKeyWuauserv;
+                if (RegOpenKeyExW(HKEY_LOCAL_MACHINE, L"SYSTEM\\CurrentControlSet\\Services\\wuauserv", 0, KEY_SET_VALUE, &hKeyWuauserv) == ERROR_SUCCESS) {
+                    DWORD val = 3; // Manual
+                    RegSetValueExW(hKeyWuauserv, L"Start", 0, REG_DWORD, (const BYTE*)&val, sizeof(val));
+                    RegCloseKey(hKeyWuauserv);
+                }
+                HKEY hKeyUsoSvc;
+                if (RegOpenKeyExW(HKEY_LOCAL_MACHINE, L"SYSTEM\\CurrentControlSet\\Services\\UsoSvc", 0, KEY_SET_VALUE, &hKeyUsoSvc) == ERROR_SUCCESS) {
+                    DWORD val = 2; // Automatic
+                    RegSetValueExW(hKeyUsoSvc, L"Start", 0, REG_DWORD, (const BYTE*)&val, sizeof(val));
+                    RegCloseKey(hKeyUsoSvc);
+                }
+                
+                if (ok) {
+                    emit systemStepReported(tr("Windows Update set to Security Updates Only mode successfully (Feature & Driver updates disabled)."), "SUCCESS");
+                } else {
+                    emit systemStepReported(tr("Failed to write Security Updates Only policy settings."), "ERROR");
+                }
+                
+            } else if (windowsUpdateModeVal == 2) {
+                // MANUAL CHECK
+                emit systemStepReported(tr("Setting Windows Update to Manual mode..."), "INFO");
+                
+                HKEY hKeyWu;
+                if (RegOpenKeyExW(HKEY_LOCAL_MACHINE, L"SOFTWARE\\Policies\\Microsoft\\Windows\\WindowsUpdate", 0, KEY_SET_VALUE, &hKeyWu) == ERROR_SUCCESS) {
+                    RegDeleteValueW(hKeyWu, L"TargetReleaseVersion");
+                    RegDeleteValueW(hKeyWu, L"TargetReleaseVersionInfo");
+                    RegDeleteValueW(hKeyWu, L"ProductVersion");
+                    RegDeleteValueW(hKeyWu, L"ExcludeWUDriversInQualityUpdate");
+                    RegCloseKey(hKeyWu);
+                }
+                
+                HKEY hKeyAu;
+                if (RegCreateKeyExW(HKEY_LOCAL_MACHINE, L"SOFTWARE\\Policies\\Microsoft\\Windows\\WindowsUpdate\\AU", 0, NULL, REG_OPTION_NON_VOLATILE, KEY_WRITE, NULL, &hKeyAu, NULL) == ERROR_SUCCESS) {
+                    DWORD zero = 0;
+                    DWORD two = 2;
+                    RegSetValueExW(hKeyAu, L"NoAutoUpdate", 0, REG_DWORD, (const BYTE*)&zero, sizeof(zero));
+                    RegSetValueExW(hKeyAu, L"AUOptions", 0, REG_DWORD, (const BYTE*)&two, sizeof(two));
+                    RegCloseKey(hKeyAu);
+                } else {
+                    ok = false;
+                }
+                
+                HKEY hKeyWuauserv;
+                if (RegOpenKeyExW(HKEY_LOCAL_MACHINE, L"SYSTEM\\CurrentControlSet\\Services\\wuauserv", 0, KEY_SET_VALUE, &hKeyWuauserv) == ERROR_SUCCESS) {
+                    DWORD val = 3; // Manual
+                    RegSetValueExW(hKeyWuauserv, L"Start", 0, REG_DWORD, (const BYTE*)&val, sizeof(val));
+                    RegCloseKey(hKeyWuauserv);
+                }
+                HKEY hKeyUsoSvc;
+                if (RegOpenKeyExW(HKEY_LOCAL_MACHINE, L"SYSTEM\\CurrentControlSet\\Services\\UsoSvc", 0, KEY_SET_VALUE, &hKeyUsoSvc) == ERROR_SUCCESS) {
+                    DWORD val = 3; // Manual
+                    RegSetValueExW(hKeyUsoSvc, L"Start", 0, REG_DWORD, (const BYTE*)&val, sizeof(val));
+                    RegCloseKey(hKeyUsoSvc);
+                }
+                
+                if (ok) {
+                    emit systemStepReported(tr("Windows Update set to Manual mode successfully (automatic background checking disabled)."), "SUCCESS");
+                } else {
+                    emit systemStepReported(tr("Failed to configure Manual update settings."), "ERROR");
+                }
+                
+            } else if (windowsUpdateModeVal == 3) {
+                // DISABLED
+                emit systemStepReported(tr("Disabling Windows Update services and policies..."), "INFO");
+                
+                HKEY hKeyAu;
+                if (RegCreateKeyExW(HKEY_LOCAL_MACHINE, L"SOFTWARE\\Policies\\Microsoft\\Windows\\WindowsUpdate\\AU", 0, NULL, REG_OPTION_NON_VOLATILE, KEY_WRITE, NULL, &hKeyAu, NULL) == ERROR_SUCCESS) {
+                    DWORD one = 1;
+                    RegSetValueExW(hKeyAu, L"NoAutoUpdate", 0, REG_DWORD, (const BYTE*)&one, sizeof(one));
+                    RegCloseKey(hKeyAu);
+                } else {
+                    ok = false;
+                }
+                
+                HKEY hKeyWuauserv;
+                if (RegOpenKeyExW(HKEY_LOCAL_MACHINE, L"SYSTEM\\CurrentControlSet\\Services\\wuauserv", 0, KEY_SET_VALUE, &hKeyWuauserv) == ERROR_SUCCESS) {
+                    DWORD val = 4; // Disabled
+                    RegSetValueExW(hKeyWuauserv, L"Start", 0, REG_DWORD, (const BYTE*)&val, sizeof(val));
+                    RegCloseKey(hKeyWuauserv);
+                }
+                HKEY hKeyUsoSvc;
+                if (RegOpenKeyExW(HKEY_LOCAL_MACHINE, L"SYSTEM\\CurrentControlSet\\Services\\UsoSvc", 0, KEY_SET_VALUE, &hKeyUsoSvc) == ERROR_SUCCESS) {
+                    DWORD val = 4; // Disabled
+                    RegSetValueExW(hKeyUsoSvc, L"Start", 0, REG_DWORD, (const BYTE*)&val, sizeof(val));
+                    RegCloseKey(hKeyUsoSvc);
+                }
+                HKEY hKeyMedic;
+                if (RegOpenKeyExW(HKEY_LOCAL_MACHINE, L"SYSTEM\\CurrentControlSet\\Services\\WaaSMedicSvc", 0, KEY_SET_VALUE, &hKeyMedic) == ERROR_SUCCESS) {
+                    DWORD val = 4; // Disabled
+                    RegSetValueExW(hKeyMedic, L"Start", 0, REG_DWORD, (const BYTE*)&val, sizeof(val));
+                    RegCloseKey(hKeyMedic);
+                }
+                
+                if (hSCM) {
+                    SC_HANDLE hSvcWu = OpenServiceW(hSCM, L"wuauserv", SERVICE_STOP | SERVICE_QUERY_STATUS);
+                    if (hSvcWu) {
+                        SERVICE_STATUS_PROCESS ssp;
+                        DWORD bytesNeeded = 0;
+                        if (QueryServiceStatusEx(hSvcWu, SC_STATUS_PROCESS_INFO, (LPBYTE)&ssp, sizeof(ssp), &bytesNeeded)) {
+                            if (ssp.dwCurrentState != SERVICE_STOPPED && ssp.dwCurrentState != SERVICE_STOP_PENDING) {
+                                SERVICE_STATUS status;
+                                ControlService(hSvcWu, SERVICE_CONTROL_STOP, &status);
+                            }
+                        }
+                        CloseServiceHandle(hSvcWu);
+                    }
+                    SC_HANDLE hSvcUso = OpenServiceW(hSCM, L"UsoSvc", SERVICE_STOP | SERVICE_QUERY_STATUS);
+                    if (hSvcUso) {
+                        SERVICE_STATUS_PROCESS ssp;
+                        DWORD bytesNeeded = 0;
+                        if (QueryServiceStatusEx(hSvcUso, SC_STATUS_PROCESS_INFO, (LPBYTE)&ssp, sizeof(ssp), &bytesNeeded)) {
+                            if (ssp.dwCurrentState != SERVICE_STOPPED && ssp.dwCurrentState != SERVICE_STOP_PENDING) {
+                                SERVICE_STATUS status;
+                                ControlService(hSvcUso, SERVICE_CONTROL_STOP, &status);
+                            }
+                        }
+                        CloseServiceHandle(hSvcUso);
+                    }
+                    SC_HANDLE hSvcMedic = OpenServiceW(hSCM, L"WaaSMedicSvc", SERVICE_STOP | SERVICE_QUERY_STATUS);
+                    if (hSvcMedic) {
+                        SERVICE_STATUS_PROCESS ssp;
+                        DWORD bytesNeeded = 0;
+                        if (QueryServiceStatusEx(hSvcMedic, SC_STATUS_PROCESS_INFO, (LPBYTE)&ssp, sizeof(ssp), &bytesNeeded)) {
+                            if (ssp.dwCurrentState != SERVICE_STOPPED && ssp.dwCurrentState != SERVICE_STOP_PENDING) {
+                                SERVICE_STATUS status;
+                                ControlService(hSvcMedic, SERVICE_CONTROL_STOP, &status);
+                            }
+                        }
+                        CloseServiceHandle(hSvcMedic);
+                    }
+                }
+                
+                if (ok) {
+                    emit systemStepReported(tr("Windows Update disabled and blocked successfully."), "SUCCESS");
+                } else {
+                    emit systemStepReported(tr("Failed to disable some Windows Update policies."), "ERROR");
+                }
+            }
+            
+            if (hSCM) {
+                CloseServiceHandle(hSCM);
+            }
+#else
+            emit systemStepReported(tr("[Simulation] Windows Update Mode set to: %1").arg(windowsUpdateModeVal), "SUCCESS");
+#endif
+            if (ok) {
+                emit systemStepReported(tr("Windows Update configuration completed."), "SUCCESS");
+            } else {
+                windowsUpdateSuccess = false;
+                emit systemStepReported(tr("Failed to apply some Windows Update settings."), "WARNING");
+            }
+        }
+
         // Steps 2+: Iterate drives in target list (only if changed)
         int driveIndex = 0;
         int totalDrives = targets.keys().size();
@@ -2500,7 +2859,7 @@ void Optimizer::startSystemOptimization() {
             QThread::msleep(100);
         }
 
-        bool overallSuccess = wSearchSuccess && hibernationSuccess && overlaySuccess && coreIsolationSuccess && mouseAccelSuccess && gameModeSuccess && firewallSuccess && printerSuccess && notificationsSuccess && powerPlanSuccess && defenderSuccess && overallDrivesSuccess && usbSuccess && remoteAccessSuccess && telemetrySuccess;
+        bool overallSuccess = wSearchSuccess && hibernationSuccess && overlaySuccess && coreIsolationSuccess && mouseAccelSuccess && gameModeSuccess && firewallSuccess && printerSuccess && notificationsSuccess && powerPlanSuccess && defenderSuccess && overallDrivesSuccess && usbSuccess && remoteAccessSuccess && telemetrySuccess && windowsUpdateSuccess;
         if (overallSuccess) {
             emit systemStepReported(tr("System optimization completed successfully!"), "SUCCESS");
             Logger::log("System optimization completed successfully!", "INFO");
@@ -2533,6 +2892,7 @@ void Optimizer::startSystemOptimization() {
         m_originalTelemetryWapPushActive = telemetryWapPushVal;
         m_originalTelemetryCeipActive = telemetryCeipVal;
         m_originalTelemetryWerActive = telemetryWerVal;
+        m_originalWindowsUpdateMode = windowsUpdateModeVal;
         m_originalDriveStates = targets;
         
         loadSystemStates();
@@ -2561,6 +2921,7 @@ void Optimizer::startSystemOptimization() {
         emit originalTelemetryWapPushActiveChanged(m_originalTelemetryWapPushActive);
         emit originalTelemetryCeipActiveChanged(m_originalTelemetryCeipActive);
         emit originalTelemetryWerActiveChanged(m_originalTelemetryWerActive);
+        emit originalWindowsUpdateModeChanged(m_originalWindowsUpdateMode);
         emit originalDriveStatesChanged(m_originalDriveStates);
 
         m_isOptimizingSystem = false;
@@ -2614,6 +2975,9 @@ void Optimizer::showPath(const QString &funcName) {
     } else if (funcName == "telemetry") {
         QProcess::startDetached("cmd.exe", QStringList() << "/c" << "start ms-settings:privacy-feedback");
         Logger::log("Opening Windows Diagnostic & Feedback settings...", "INFO");
+    } else if (funcName == "windowsupdate") {
+        QProcess::startDetached("cmd.exe", QStringList() << "/c" << "start ms-settings:windowsupdate");
+        Logger::log("Opening Windows Update settings...", "INFO");
     } else {
         // Assume drive letter like "C:" or "D:"
         QString letter = funcName.trimmed();

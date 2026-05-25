@@ -9,6 +9,8 @@ Item {
     id: root
     anchors.fill: parent
 
+    property string currentSection: "core"
+
     // Premium reactive entry transition (runs butter-smooth on every tab switch!)
     property bool isActive: opacity > 0.1
     property real yTranslation: isActive ? 0 : 15
@@ -77,6 +79,7 @@ Item {
         if (optimizerBackend.telemetryWapPushActive !== optimizerBackend.originalTelemetryWapPushActive) return true;
         if (optimizerBackend.telemetryCeipActive !== optimizerBackend.originalTelemetryCeipActive) return true;
         if (optimizerBackend.telemetryWerActive !== optimizerBackend.originalTelemetryWerActive) return true;
+        if (optimizerBackend.windowsUpdateMode !== optimizerBackend.originalWindowsUpdateMode) return true;
         if (!optimizerBackend.driveStates || !optimizerBackend.originalDriveStates) return false;
         var keys = Object.keys(optimizerBackend.driveStates);
         for (var i = 0; i < keys.length; i++) {
@@ -128,6 +131,7 @@ Item {
         if (optimizerBackend.telemetryWerActive !== optimizerBackend.originalTelemetryWerActive) return true;
         return false;
     }
+    property bool windowsUpdateChanged: optimizerBackend.windowsUpdateMode !== optimizerBackend.originalWindowsUpdateMode
 
     property bool isDiscordOpen: false
     Timer {
@@ -167,6 +171,7 @@ Item {
         if (usbPowerSavingChanged) count++;
         if (remoteAccessChanged) count++;
         if (telemetryChanged) count++;
+        if (windowsUpdateChanged) count++;
         return count;
     }
 
@@ -312,6 +317,14 @@ Item {
                 optimizerBackend.telemetryWerActive = optimizerBackend.originalTelemetryWerActive;
             }
         });
+        if (windowsUpdateChanged) list.push({
+            name: qsTr("Windows Update"),
+            icon: "qrc:/MeguPackOptimizer/src/resources/settings.svg",
+            hasSidebar: true,
+            revert: function() {
+                optimizerBackend.windowsUpdateMode = optimizerBackend.originalWindowsUpdateMode;
+            }
+        });
         return list;
     }
 
@@ -337,6 +350,7 @@ Item {
         var _dfs = optimizerBackend.defenderServiceActive;
         var _usb = usbPowerSavingChanged;
         var _ud = optimizerBackend.usbDevices;
+        var _wud = windowsUpdateChanged;
 
         return getPendingSubOptions(root.islandDetailCategory);
     }
@@ -532,6 +546,24 @@ Item {
                     }
                 });
             }
+        } else if (category === qsTr("Windows Update")) {
+            if (optimizerBackend.windowsUpdateMode !== optimizerBackend.originalWindowsUpdateMode) {
+                var originalName = qsTr("Unknown");
+                var targetName = qsTr("Unknown");
+                var modeNames = [qsTr("Default"), qsTr("Security Only"), qsTr("Manual Check"), qsTr("Disabled")];
+                if (optimizerBackend.originalWindowsUpdateMode >= 0 && optimizerBackend.originalWindowsUpdateMode < 4) {
+                    originalName = modeNames[optimizerBackend.originalWindowsUpdateMode];
+                }
+                if (optimizerBackend.windowsUpdateMode >= 0 && optimizerBackend.windowsUpdateMode < 4) {
+                    targetName = modeNames[optimizerBackend.windowsUpdateMode];
+                }
+                subList.push({
+                    name: qsTr("Update Mode") + ": " + originalName + " -> " + targetName,
+                    revert: function() {
+                        optimizerBackend.windowsUpdateMode = optimizerBackend.originalWindowsUpdateMode;
+                    }
+                });
+            }
         }
         return subList;
     }
@@ -553,10 +585,17 @@ Item {
         if (name === qsTr("USB 3.0 Power Saving")) return usbPanel;
         if (name === qsTr("Remote Access (RDP)")) return remoteAccessPanel;
         if (name === qsTr("Telemetry")) return telemetryPanel;
+        if (name === qsTr("Windows Update")) return windowsUpdatePanel;
         return null;
     }
 
     function locateFunction(categoryName) {
+        if (categoryName === qsTr("Telemetry") || categoryName === "Telemetry") {
+            root.currentSection = "telemetry";
+        } else {
+            root.currentSection = "core";
+        }
+
         var panel = getParentCard(categoryName);
         if (!panel) return;
 
@@ -629,7 +668,7 @@ Item {
             spacing: 24
 
             Text {
-                text: qsTr("SYSTEM OPTIMIZATION")
+                text: root.currentSection === "telemetry" ? qsTr("TELEMETRY SETTINGS") : qsTr("SYSTEM OPTIMIZATION")
                 color: Theme.yellowAccent
                 font.family: Theme.fontFamily
                 font.pixelSize: 11
@@ -639,6 +678,7 @@ Item {
 
             // 1. DRIVES INDEXING CATEGORY
             Column {
+                visible: root.currentSection === "core"
                 width: parent.width
                 spacing: 8
 
@@ -798,11 +838,23 @@ Item {
                     font.pixelSize: 10
                     font.bold: true
                     font.letterSpacing: 1
+                    visible: root.currentSection === "core"
+                }
+
+                Text {
+                    text: qsTr("TELEMETRY")
+                    color: Theme.textSecondary
+                    font.family: Theme.fontFamily
+                    font.pixelSize: 10
+                    font.bold: true
+                    font.letterSpacing: 1
+                    visible: root.currentSection === "telemetry"
                 }
 
                 // Xbox app Panel
                 AcrylicPanel {
                     id: xboxPanel
+                    visible: root.currentSection === "core"
                     width: parent.width
                     height: 72
 
@@ -945,9 +997,10 @@ Item {
                     }
                 }
 
-                // MPO Panel
+                // Multi-Plane Overlay (MPO) Panel
                 AcrylicPanel {
                     id: mpoPanel
+                    visible: root.currentSection === "core"
                     width: parent.width
                     height: 72
 
@@ -1079,6 +1132,7 @@ Item {
                 // Core Isolation Panel
                 AcrylicPanel {
                     id: coreIsolationPanel
+                    visible: root.currentSection === "core"
                     width: parent.width
                     height: 72
 
@@ -1184,6 +1238,7 @@ Item {
                 // Mouse Acceleration Panel
                 AcrylicPanel {
                     id: mouseAccelerationPanel
+                    visible: root.currentSection === "core"
                     width: parent.width
                     height: 72
 
@@ -1289,6 +1344,7 @@ Item {
                 // Game Mode Panel
                 AcrylicPanel {
                     id: gameModePanel
+                    visible: root.currentSection === "core"
                     width: parent.width
                     height: 72
 
@@ -1394,6 +1450,7 @@ Item {
                 // Discord Overlay Panel
                 AcrylicPanel {
                     id: discordOverlayPanel
+                    visible: root.currentSection === "core"
                     width: parent.width
                     height: root.isDiscordOpen ? 84 : 72
                     Behavior on height { NumberAnimation { duration: Theme.animNormal; easing.type: Easing.InOutQuad } }
@@ -1506,9 +1563,10 @@ Item {
                     }
                 }
 
-                // Firewall Panel
+                // Windows Defender Firewall Panel
                 AcrylicPanel {
                     id: firewallPanel
+                    visible: root.currentSection === "core"
                     width: parent.width
                     height: 72
 
@@ -1614,6 +1672,7 @@ Item {
                 // Remote Access (RDP) Panel
                 AcrylicPanel {
                     id: remoteAccessPanel
+                    visible: root.currentSection === "core"
                     width: parent.width
                     height: 72
 
@@ -1719,6 +1778,7 @@ Item {
                 // Telemetry Panel
                 AcrylicPanel {
                     id: telemetryPanel
+                    visible: root.currentSection === "telemetry"
                     width: parent.width
                     height: 72
 
@@ -1863,9 +1923,182 @@ Item {
                     }
                 }
 
+                // Windows Update Panel
+                AcrylicPanel {
+                    id: windowsUpdatePanel
+                    visible: root.currentSection === "core"
+                    width: parent.width
+                    height: 72
+
+                    Row {
+                        anchors.left: parent.left
+                        anchors.verticalCenter: parent.verticalCenter
+                        spacing: 12
+
+                        Item {
+                            width: 28
+                            height: 28
+                            anchors.verticalCenter: parent.verticalCenter
+                            Image {
+                                id: wuIconImg
+                                source: "qrc:/MeguPackOptimizer/src/resources/settings.svg"
+                                anchors.fill: parent
+                                sourceSize.width: 28
+                                sourceSize.height: 28
+                                visible: false
+                            }
+                            ColorOverlay {
+                                anchors.fill: wuIconImg
+                                source: wuIconImg
+                                color: Theme.accent
+                            }
+                        }
+
+                        Column {
+                            anchors.verticalCenter: parent.verticalCenter
+                            spacing: 2
+
+                            Row {
+                                spacing: 8
+                                Text {
+                                    text: qsTr("Windows Update")
+                                    color: Theme.textPrimary
+                                    font.family: Theme.fontFamily
+                                    font.pixelSize: 13
+                                    font.bold: true
+                                }
+                                Rectangle {
+                                    visible: root.windowsUpdateChanged
+                                    height: 16
+                                    width: selectedTextWU.contentWidth + 10
+                                    radius: 4
+                                    color: Theme.accentDim
+                                    border.color: Theme.accent
+                                    border.width: 1
+                                    anchors.verticalCenter: parent.verticalCenter
+                                    Text {
+                                        id: selectedTextWU
+                                        text: qsTr("Selected for application")
+                                        color: Theme.accent
+                                        font.family: Theme.fontFamily
+                                        font.pixelSize: 8
+                                        font.bold: true
+                                        anchors.centerIn: parent
+                                    }
+                                }
+                            }
+
+                            Text {
+                                text: qsTr("Configure system update modes: enable all, only security patches, manual check, or disable updates entirely.")
+                                color: Theme.textMuted
+                                font.family: Theme.fontFamily
+                                font.pixelSize: 10
+                            }
+                        }
+                    }
+
+                    Row {
+                        anchors.right: parent.right
+                        anchors.verticalCenter: parent.verticalCenter
+                        spacing: 16
+
+                        Text {
+                            text: qsTr("Show Path")
+                            color: wuPathMouse.containsMouse ? Theme.accentLight : Theme.accent
+                            font.family: Theme.fontFamily
+                            font.pixelSize: 11
+                            font.bold: true
+                            font.underline: true
+                            anchors.verticalCenter: parent.verticalCenter
+                            MouseArea {
+                                id: wuPathMouse
+                                anchors.fill: parent
+                                hoverEnabled: true
+                                cursorShape: Qt.PointingHandCursor
+                                onClicked: { optimizerBackend.showPath("windowsupdate"); }
+                            }
+                        }
+
+                        // Current Mode indicator pill
+                        Rectangle {
+                            height: 24
+                            width: {
+                                if (optimizerBackend.windowsUpdateMode === 0) return 80;
+                                if (optimizerBackend.windowsUpdateMode === 1) return 110;
+                                if (optimizerBackend.windowsUpdateMode === 2) return 100;
+                                if (optimizerBackend.windowsUpdateMode === 3) return 85;
+                                return 80;
+                            }
+                            radius: 12
+                            color: (optimizerBackend.windowsUpdateMode !== optimizerBackend.originalWindowsUpdateMode) ? Theme.accentDim : (Theme.currentTheme === "Белоснежная" || Theme.currentTheme === "Розовая" ? "#0F000000" : "#1A2536")
+                            border.color: (optimizerBackend.windowsUpdateMode !== optimizerBackend.originalWindowsUpdateMode) ? Theme.accent : "#2B3F5C"
+                            border.width: 1
+                            anchors.verticalCenter: parent.verticalCenter
+
+                            Text {
+                                text: {
+                                    if (optimizerBackend.windowsUpdateMode === 0) return qsTr("Default");
+                                    if (optimizerBackend.windowsUpdateMode === 1) return qsTr("Security Only");
+                                    if (optimizerBackend.windowsUpdateMode === 2) return qsTr("Manual Check");
+                                    if (optimizerBackend.windowsUpdateMode === 3) return qsTr("Disabled");
+                                    return qsTr("Default");
+                                }
+                                color: (optimizerBackend.windowsUpdateMode !== optimizerBackend.originalWindowsUpdateMode) ? Theme.accent : Theme.textSecondary
+                                font.family: Theme.fontFamily
+                                font.pixelSize: 10
+                                font.bold: true
+                                anchors.centerIn: parent
+                            }
+                        }
+
+                        Rectangle {
+                            width: 32
+                            height: 32
+                            radius: 16
+                            color: wuArrowMouseArea.containsMouse ? Theme.accentDim : "transparent"
+                            border.color: wuArrowMouseArea.containsMouse ? Theme.accent : Theme.border
+                            border.width: 1
+                            anchors.verticalCenter: parent.verticalCenter
+
+                            Behavior on color { ColorAnimation { duration: Theme.animFast } }
+                            Behavior on border.color { ColorAnimation { duration: Theme.animFast } }
+
+                            Item {
+                                width: 14
+                                height: 14
+                                anchors.centerIn: parent
+                                Image {
+                                    id: wuArrowImg
+                                    source: "qrc:/MeguPackOptimizer/src/resources/arrow.svg"
+                                    anchors.fill: parent
+                                    sourceSize.width: 14
+                                    sourceSize.height: 14
+                                    visible: false
+                                }
+                                ColorOverlay {
+                                    anchors.fill: wuArrowImg
+                                    source: wuArrowImg
+                                    color: wuArrowMouseArea.containsMouse ? Theme.accent : Theme.textSecondary
+                                }
+                            }
+
+                            MouseArea {
+                                id: wuArrowMouseArea
+                                anchors.fill: parent
+                                hoverEnabled: true
+                                cursorShape: Qt.PointingHandCursor
+                                onClicked: {
+                                    root.activeDrawer = "windowsUpdate";
+                                }
+                            }
+                        }
+                    }
+                }
+
                 // Printer Panel
                 AcrylicPanel {
                     id: printerPanel
+                    visible: root.currentSection === "core"
                     width: parent.width
                     height: 72
 
@@ -2016,6 +2249,7 @@ Item {
                 // Notifications Panel
                 AcrylicPanel {
                     id: notificationsPanel
+                    visible: root.currentSection === "core"
                     width: parent.width
                     height: 72
 
@@ -2166,6 +2400,7 @@ Item {
 
             // 3. HIBERNATION CATEGORY
             Column {
+                visible: root.currentSection === "core"
                 width: parent.width
                 spacing: 8
 
@@ -2985,6 +3220,9 @@ Item {
                             if (root.activeDrawer === "notifications") return qsTr("NOTIFICATION SETTINGS");
                             if (root.activeDrawer === "power") return qsTr("POWER PLANS");
                             if (root.activeDrawer === "defender") return qsTr("WINDOWS DEFENDER");
+                            if (root.activeDrawer === "usb") return qsTr("USB 3.0 POWER SAVING");
+                            if (root.activeDrawer === "telemetry") return qsTr("TELEMETRY SETTINGS");
+                            if (root.activeDrawer === "windowsUpdate") return qsTr("WINDOWS UPDATE");
                             return "";
                         }
                         color: Theme.textPrimary
@@ -3048,6 +3286,9 @@ Item {
                         if (root.activeDrawer === "notifications") return notificationsColumn.implicitHeight;
                         if (root.activeDrawer === "power") return powerColumn.implicitHeight;
                         if (root.activeDrawer === "defender") return defenderColumn.implicitHeight;
+                        if (root.activeDrawer === "usb") return usbColumn.implicitHeight;
+                        if (root.activeDrawer === "telemetry") return telemetryColumn.implicitHeight;
+                        if (root.activeDrawer === "windowsUpdate") return windowsUpdateColumn.implicitHeight;
                         return height;
                     }
 
@@ -4285,6 +4526,110 @@ Item {
                                 text: qsTr("Windows Error Reporting (WER)")
                                 checked: !optimizerBackend.telemetryWerActive
                                 onToggled: (isChecked) => { optimizerBackend.telemetryWerActive = !isChecked; }
+                            }
+                        }
+                    }
+
+                    // 9. Windows Update Options Content
+                    Column {
+                        id: windowsUpdateColumn
+                        width: parent.width
+                        spacing: 20
+                        visible: root.activeDrawer === "windowsUpdate"
+
+                        property var updateModesList: [
+                            { modeId: 0, nameText: qsTr("Default"), descText: qsTr("Automatic updates, notifications, drivers, and upgrades are all enabled.") },
+                            { modeId: 1, nameText: qsTr("Security Only"), descText: qsTr("Only cumulative security and quality patches will install. Driver and major version updates are blocked.") },
+                            { modeId: 2, nameText: qsTr("Manual Check"), descText: qsTr("Automatic background updates are disabled. Check and install on your own schedule.") },
+                            { modeId: 3, nameText: qsTr("Disabled"), descText: qsTr("Updates are completely blocked. Disables update services and Windows Update Medic.") }
+                        ]
+
+                        Text {
+                            text: qsTr("Configure system update modes:")
+                            color: Theme.textSecondary
+                            font.family: Theme.fontFamily
+                            font.pixelSize: 11
+                            font.bold: true
+                        }
+
+                        Column {
+                            width: parent.width
+                            spacing: 10
+
+                            Repeater {
+                                model: windowsUpdateColumn.updateModesList
+                                delegate: AcrylicPanel {
+                                    id: modePanel
+                                    width: parent.width
+                                    height: 60
+                                    
+                                    property bool isActive: optimizerBackend.windowsUpdateMode === modelData.modeId
+
+                                    border.color: isActive ? Theme.accent : (modeMouseArea.containsMouse ? Theme.borderHover : Theme.border)
+                                    color: isActive ? Theme.accentDim : (modeMouseArea.containsMouse ? Theme.buttonBgHover : Theme.buttonBg)
+
+                                    Behavior on border.color { ColorAnimation { duration: Theme.animFast } }
+                                    Behavior on color { ColorAnimation { duration: Theme.animFast } }
+
+                                    Row {
+                                        anchors.left: parent.left
+                                        anchors.verticalCenter: parent.verticalCenter
+                                        anchors.leftMargin: 12
+                                        spacing: 12
+
+                                        Item {
+                                            width: 20
+                                            height: 20
+                                            anchors.verticalCenter: parent.verticalCenter
+                                            Image {
+                                                id: modeIcon
+                                                source: "qrc:/MeguPackOptimizer/src/resources/settings.svg"
+                                                anchors.fill: parent
+                                                sourceSize.width: 20
+                                                sourceSize.height: 20
+                                                visible: false
+                                            }
+                                            ColorOverlay {
+                                                anchors.fill: modeIcon
+                                                source: modeIcon
+                                                color: modePanel.isActive ? Theme.accent : Theme.textMuted
+                                            }
+                                        }
+
+                                        Column {
+                                            anchors.verticalCenter: parent.verticalCenter
+                                            spacing: 1
+                                            width: modePanel.width - 56
+
+                                            Text {
+                                                text: modelData.nameText
+                                                color: Theme.textPrimary
+                                                font.family: Theme.fontFamily
+                                                font.pixelSize: 11
+                                                font.bold: true
+                                            }
+
+                                            Text {
+                                                text: modelData.descText
+                                                color: Theme.textMuted
+                                                font.family: Theme.fontFamily
+                                                font.pixelSize: 9
+                                                wrapMode: Text.Wrap
+                                                width: parent.width
+                                            }
+                                        }
+                                    }
+
+                                    MouseArea {
+                                        id: modeMouseArea
+                                        anchors.fill: parent
+                                        hoverEnabled: true
+                                        cursorShape: Qt.PointingHandCursor
+                                        onClicked: {
+                                            optimizerBackend.windowsUpdateMode = modelData.modeId;
+                                        }
+                                    }
+                                }
                             }
                         }
                     }

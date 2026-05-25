@@ -85,6 +85,8 @@ class Optimizer : public QObject {
     Q_PROPERTY(bool originalTelemetryCeipActive READ originalTelemetryCeipActive NOTIFY originalTelemetryCeipActiveChanged)
     Q_PROPERTY(bool telemetryWerActive READ telemetryWerActive WRITE setTelemetryWerActive NOTIFY telemetryWerActiveChanged)
     Q_PROPERTY(bool originalTelemetryWerActive READ originalTelemetryWerActive NOTIFY originalTelemetryWerActiveChanged)
+    Q_PROPERTY(int windowsUpdateMode READ windowsUpdateMode WRITE setWindowsUpdateMode NOTIFY windowsUpdateModeChanged)
+    Q_PROPERTY(int originalWindowsUpdateMode READ originalWindowsUpdateMode NOTIFY originalWindowsUpdateModeChanged)
     Q_PROPERTY(QStringList fixedDrives READ fixedDrives NOTIFY fixedDrivesChanged)
     Q_PROPERTY(QVariantMap driveStates READ driveStates WRITE setDriveStates NOTIFY driveStatesChanged)
     Q_PROPERTY(QVariantMap originalDriveStates READ originalDriveStates NOTIFY originalDriveStatesChanged)
@@ -181,6 +183,8 @@ public:
     bool originalTelemetryCeipActive() const { return m_originalTelemetryCeipActive; }
     bool telemetryWerActive() const { return m_telemetryWerActive; }
     bool originalTelemetryWerActive() const { return m_originalTelemetryWerActive; }
+    int windowsUpdateMode() const { return m_windowsUpdateMode; }
+    int originalWindowsUpdateMode() const { return m_originalWindowsUpdateMode; }
     QStringList fixedDrives() const { return m_fixedDrives; }
     QVariantMap driveStates() const { return m_driveStates; }
     QVariantMap originalDriveStates() const { return m_originalDriveStates; }
@@ -215,6 +219,7 @@ public:
     void setTelemetryWapPushActive(bool val);
     void setTelemetryCeipActive(bool val);
     void setTelemetryWerActive(bool val);
+    void setWindowsUpdateMode(int mode);
     
     Q_INVOKABLE bool isDiscordRunning();
     Q_INVOKABLE void killDiscord();
@@ -312,6 +317,8 @@ signals:
     void originalTelemetryCeipActiveChanged(bool val);
     void telemetryWerActiveChanged(bool val);
     void originalTelemetryWerActiveChanged(bool val);
+    void windowsUpdateModeChanged(int mode);
+    void originalWindowsUpdateModeChanged(int mode);
     void fixedDrivesChanged(const QStringList &val);
     void driveStatesChanged(const QVariantMap &val);
     void originalDriveStatesChanged(const QVariantMap &val);
@@ -404,6 +411,8 @@ private:
     bool m_originalTelemetryCeipActive = true;
     bool m_telemetryWerActive = true;
     bool m_originalTelemetryWerActive = true;
+    int m_windowsUpdateMode = 0;
+    int m_originalWindowsUpdateMode = 0;
     QStringList m_fixedDrives;
     QVariantMap m_driveStates;
     QVariantMap m_originalDriveStates;

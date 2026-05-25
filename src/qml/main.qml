@@ -2,6 +2,7 @@ import QtQuick
 import QtQuick.Controls
 import QtQuick.Shapes
 import MeguPackOptimizer 1.0
+import Qt5Compat.GraphicalEffects
 import "components"
 import "views"
 
@@ -131,6 +132,82 @@ ApplicationWindow {
                         font.letterSpacing: 2.5
                     }
                 }
+
+                // Circular Real-Time Logs button
+                Item {
+                    id: realTimeLogsRoundBtn
+                    width: 32
+                    height: 32
+                    anchors.verticalCenter: parent.verticalCenter
+                    opacity: !optimizerBackend.isOptimizingSystem ? 1.0 : 0.35
+                    Behavior on opacity { NumberAnimation { duration: Theme.animFast } }
+                    
+                    property bool isSelected: window.activeTab === 2
+                    
+                    Rectangle {
+                        id: roundBtnBg
+                        anchors.fill: parent
+                        radius: 16 // fully circular
+                        color: {
+                            if (realTimeLogsRoundBtn.isSelected) {
+                                return logsBtnMouse.pressed ? Qt.rgba(Theme.accent.r, Theme.accent.g, Theme.accent.b, 0.30) : 
+                                       (logsBtnMouse.containsMouse ? Qt.rgba(Theme.accent.r, Theme.accent.g, Theme.accent.b, 0.20) : 
+                                        Qt.rgba(Theme.accent.r, Theme.accent.g, Theme.accent.b, 0.12));
+                            }
+                            return logsBtnMouse.pressed ? Theme.buttonBgPressed : (logsBtnMouse.containsMouse ? Theme.buttonBgHover : "transparent");
+                        }
+                        
+                        border.color: {
+                            if (realTimeLogsRoundBtn.isSelected) {
+                                return logsBtnMouse.pressed ? Qt.rgba(Theme.accent.r, Theme.accent.g, Theme.accent.b, 0.50) : 
+                                       (logsBtnMouse.containsMouse ? Qt.rgba(Theme.accent.r, Theme.accent.g, Theme.accent.b, 0.40) : 
+                                        Qt.rgba(Theme.accent.r, Theme.accent.g, Theme.accent.b, 0.25));
+                            }
+                            return logsBtnMouse.containsMouse ? Theme.borderHover : Theme.border;
+                        }
+                        border.width: 1
+                        
+                        Behavior on color { ColorAnimation { duration: 100 } }
+                        Behavior on border.color { ColorAnimation { duration: 100 } }
+                    }
+                    
+                    Item {
+                        width: 14
+                        height: 14
+                        anchors.centerIn: parent
+                        
+                        Image {
+                            id: logsIcon
+                            source: "qrc:/MeguPackOptimizer/src/resources/terminal.svg"
+                            anchors.fill: parent
+                            sourceSize.width: 14
+                            sourceSize.height: 14
+                            visible: false
+                        }
+                        
+                        ColorOverlay {
+                            anchors.fill: logsIcon
+                            source: logsIcon
+                            color: realTimeLogsRoundBtn.isSelected ? Theme.accent : (logsBtnMouse.containsMouse ? Theme.textPrimary : Theme.textSecondary)
+                            opacity: realTimeLogsRoundBtn.isSelected ? 1.0 : (logsBtnMouse.containsMouse ? 0.95 : 0.65)
+                            
+                            Behavior on color { ColorAnimation { duration: 100 } }
+                            Behavior on opacity { NumberAnimation { duration: 100 } }
+                        }
+                    }
+                    
+                    MouseArea {
+                        id: logsBtnMouse
+                        anchors.fill: parent
+                        hoverEnabled: true
+                        cursorShape: !optimizerBackend.isOptimizingSystem ? Qt.PointingHandCursor : Qt.ArrowCursor
+                        onClicked: {
+                            if (!optimizerBackend.isOptimizingSystem) {
+                                window.activeTab = 2;
+                            }
+                        }
+                    }
+                }
             }
 
             // Navigation Tab Container (Clean capsules style)
@@ -163,8 +240,15 @@ ApplicationWindow {
                         iconSource: "qrc:/MeguPackOptimizer/src/resources/bolt.svg"
                         accented: window.activeTab === 3
                         flat: !accented
+                        hasDropdown: true
                         enabled: !optimizerBackend.isOptimizingSystem
-                        onClicked: window.activeTab = 3
+                        onClicked: {
+                            window.activeTab = 3;
+                            optimizationView.currentSection = "core";
+                        }
+                        onDropdownClicked: {
+                            optDropdown.open();
+                        }
                         anchors.verticalCenter: parent.verticalCenter
                         height: 34
                     }
@@ -177,18 +261,6 @@ ApplicationWindow {
                         flat: !accented
                         enabled: !optimizerBackend.isOptimizingSystem
                         onClicked: window.activeTab = 1
-                        anchors.verticalCenter: parent.verticalCenter
-                        height: 34
-                    }
-                    
-                    MeguButton {
-                        id: tab2
-                        text: qsTr("Real-Time Logs")
-                        iconSource: "qrc:/MeguPackOptimizer/src/resources/terminal.svg"
-                        accented: window.activeTab === 2
-                        flat: !accented
-                        enabled: !optimizerBackend.isOptimizingSystem
-                        onClicked: window.activeTab = 2
                         anchors.verticalCenter: parent.verticalCenter
                         height: 34
                     }
@@ -395,6 +467,64 @@ ApplicationWindow {
             
             if (newW >= window.minimumWidth) window.width = newW;
             if (newH >= window.minimumHeight) window.height = newH;
+        }
+    }
+
+    Popup {
+        id: optDropdown
+        x: tab3.mapToItem(window.contentItem, 0, 0).x + (tab3.width - width) / 2
+        y: tab3.mapToItem(window.contentItem, 0, 0).y + tab3.height + 6
+        width: 180
+        height: implicitHeight
+        padding: 6
+        
+        background: Rectangle {
+            color: "#F80D0E12"
+            border.color: Theme.border
+            border.width: 1
+            radius: 8
+            
+            layer.enabled: true
+            layer.effect: DropShadow {
+                transparentBorder: true
+                horizontalOffset: 0
+                verticalOffset: 4
+                radius: 12
+                color: "#aa000000"
+            }
+        }
+        
+        contentItem: Column {
+            spacing: 4
+            width: parent.width
+            
+            MeguButton {
+                width: parent.width
+                height: 30
+                text: qsTr("Telemetry")
+                iconSource: "qrc:/MeguPackOptimizer/src/resources/folder.svg"
+                accented: window.activeTab === 3 && optimizationView.currentSection === "telemetry"
+                flat: !accented
+                onClicked: {
+                    window.activeTab = 3;
+                    optimizationView.currentSection = "telemetry";
+                    optDropdown.close();
+                }
+            }
+
+            MeguButton {
+                width: parent.width
+                height: 30
+                text: qsTr("Core Optimization")
+                iconSource: "qrc:/MeguPackOptimizer/src/resources/bolt.svg"
+                accented: window.activeTab === 3 && optimizationView.currentSection === "core"
+                flat: !accented
+                onClicked: {
+                    window.activeTab = 3;
+                    optimizationView.currentSection = "core";
+                    optDropdown.close();
+                }
+            }
         }
     }
 }
