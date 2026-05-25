@@ -70,6 +70,7 @@ Item {
         if (optimizerBackend.defenderRegistryActive !== optimizerBackend.originalDefenderRegistryActive) return true;
         if (optimizerBackend.defenderCmdActive !== optimizerBackend.originalDefenderCmdActive) return true;
         if (optimizerBackend.defenderServiceActive !== optimizerBackend.originalDefenderServiceActive) return true;
+        if (optimizerBackend.usbChanged) return true;
         if (!optimizerBackend.driveStates || !optimizerBackend.originalDriveStates) return false;
         var keys = Object.keys(optimizerBackend.driveStates);
         for (var i = 0; i < keys.length; i++) {
@@ -111,6 +112,7 @@ Item {
                                    optimizerBackend.defenderRegistryActive !== optimizerBackend.originalDefenderRegistryActive ||
                                    optimizerBackend.defenderCmdActive !== optimizerBackend.originalDefenderCmdActive ||
                                    optimizerBackend.defenderServiceActive !== optimizerBackend.originalDefenderServiceActive
+    property bool usbPowerSavingChanged: optimizerBackend.usbChanged
 
     property bool isDiscordOpen: false
     Timer {
@@ -147,6 +149,7 @@ Item {
         if (bitlockerChanged) count++;
         if (discordOverlayChanged) count++;
         if (defenderChanged) count++;
+        if (usbPowerSavingChanged) count++;
         return count;
     }
 
@@ -264,6 +267,14 @@ Item {
                 optimizerBackend.defenderServiceActive = optimizerBackend.originalDefenderServiceActive;
             }
         });
+        if (usbPowerSavingChanged) list.push({
+            name: qsTr("USB 3.0 Power Saving"),
+            icon: "qrc:/MeguPackOptimizer/src/resources/bolt.svg",
+            hasSidebar: true,
+            revert: function() {
+                optimizerBackend.revertUsbDevices();
+            }
+        });
         return list;
     }
 
@@ -287,6 +298,8 @@ Item {
         var _dfr = optimizerBackend.defenderRegistryActive;
         var _dfc = optimizerBackend.defenderCmdActive;
         var _dfs = optimizerBackend.defenderServiceActive;
+        var _usb = usbPowerSavingChanged;
+        var _ud = optimizerBackend.usbDevices;
 
         return getPendingSubOptions(root.islandDetailCategory);
     }
@@ -434,6 +447,21 @@ Item {
                     }
                 });
             }
+        } else if (category === qsTr("USB 3.0 Power Saving")) {
+            for (var i = 0; i < optimizerBackend.usbDevices.length; i++) {
+                (function(idx) {
+                    var currentDev = optimizerBackend.usbDevices[idx];
+                    var originalDev = optimizerBackend.originalUsbDevices[idx];
+                    if (currentDev && originalDev && currentDev.powerSavingActive !== originalDev.powerSavingActive) {
+                        subList.push({
+                            name: currentDev.name + ": " + (originalDev.powerSavingActive ? qsTr("Enabled") : qsTr("Disabled")) + " -> " + (currentDev.powerSavingActive ? qsTr("Enabled") : qsTr("Disabled")),
+                            revert: function() {
+                                optimizerBackend.setDevicePowerSavingActive(currentDev.subkeyPath, originalDev.powerSavingActive);
+                            }
+                        });
+                    }
+                })(i);
+            }
         }
         return subList;
     }
@@ -452,6 +480,7 @@ Item {
         if (name === qsTr("Power Plan")) return powerPlanPanel;
         if (name === qsTr("BitLocker Drive Encryption")) return bitlockerPanel;
         if (name === qsTr("Windows Defender")) return defenderPanel;
+        if (name === qsTr("USB 3.0 Power Saving")) return usbPanel;
         return null;
     }
 
@@ -2396,6 +2425,139 @@ Item {
                         }
                     }
                 }
+
+                // USB 3.0 Power Saving Card
+                AcrylicPanel {
+                    id: usbPanel
+                    width: parent.width
+                    height: 72
+
+                    Row {
+                        anchors.left: parent.left
+                        anchors.verticalCenter: parent.verticalCenter
+                        spacing: 12
+
+                        Item {
+                            width: 28
+                            height: 28
+                            anchors.verticalCenter: parent.verticalCenter
+                            Image {
+                                id: usbIconImg
+                                source: "qrc:/MeguPackOptimizer/src/resources/bolt.svg"
+                                anchors.fill: parent
+                                sourceSize.width: 28
+                                sourceSize.height: 28
+                                visible: false
+                            }
+                            ColorOverlay {
+                                anchors.fill: usbIconImg
+                                source: usbIconImg
+                                color: Theme.accent
+                            }
+                        }
+
+                        Column {
+                            anchors.verticalCenter: parent.verticalCenter
+                            spacing: 2
+
+                            Row {
+                                spacing: 8
+                                Text {
+                                    text: qsTr("USB 3.0 Power Saving")
+                                    color: Theme.textPrimary
+                                    font.family: Theme.fontFamily
+                                    font.pixelSize: 13
+                                    font.bold: true
+                                }
+                                Rectangle {
+                                    visible: root.usbPowerSavingChanged
+                                    height: 16
+                                    width: selectedTextUsb.contentWidth + 10
+                                    radius: 4
+                                    color: Theme.accentDim
+                                    border.color: Theme.accent
+                                    border.width: 1
+                                    anchors.verticalCenter: parent.verticalCenter
+                                    Text {
+                                        id: selectedTextUsb
+                                        text: qsTr("Selected for application")
+                                        color: Theme.accent
+                                        font.family: Theme.fontFamily
+                                        font.pixelSize: 8
+                                        font.bold: true
+                                        anchors.centerIn: parent
+                                    }
+                                }
+                            }
+
+                            Text {
+                                text: qsTr("Prevent Windows from turning off USB 3.0 ports to save power, avoiding connection dropouts and peripheral latency.")
+                                color: Theme.textMuted
+                                font.family: Theme.fontFamily
+                                font.pixelSize: 10
+                            }
+                        }
+                    }
+
+                    Row {
+                        anchors.right: parent.right
+                        anchors.verticalCenter: parent.verticalCenter
+                        spacing: 16
+
+                        // Arrow button that slides right on hover & opens sidebar drawer for USB device list
+                        Rectangle {
+                            width: 32
+                            height: 32
+                            radius: 16
+                            color: usbArrowMouseArea.containsMouse ? Theme.accentDim : "transparent"
+                            border.color: usbArrowMouseArea.containsMouse ? Theme.accent : Theme.border
+                            border.width: 1
+                            anchors.verticalCenter: parent.verticalCenter
+
+                            Behavior on color { ColorAnimation { duration: Theme.animFast } }
+                            Behavior on border.color { ColorAnimation { duration: Theme.animFast } }
+
+                            Item {
+                                width: 14
+                                height: 14
+                                anchors.centerIn: parent
+                                x: usbArrowMouseArea.containsMouse ? (parent.width/2 - 5) : (parent.width/2 - 7)
+                                Behavior on x { NumberAnimation { duration: Theme.animNormal; easing.type: Easing.OutCubic } }
+                                Image {
+                                    id: usbArrowImg
+                                    source: "qrc:/MeguPackOptimizer/src/resources/arrow.svg"
+                                    anchors.fill: parent
+                                    sourceSize.width: 14
+                                    sourceSize.height: 14
+                                    visible: false
+                                }
+                                ColorOverlay {
+                                    anchors.fill: usbArrowImg
+                                    source: usbArrowImg
+                                    color: usbArrowMouseArea.containsMouse ? Theme.accent : Theme.textSecondary
+                                }
+                            }
+
+                            MouseArea {
+                                id: usbArrowMouseArea
+                                anchors.fill: parent
+                                hoverEnabled: true
+                                cursorShape: Qt.PointingHandCursor
+                                onClicked: {
+                                    root.activeDrawer = "usb";
+                                }
+                            }
+                        }
+
+                        MeguSwitch {
+                            checked: optimizerBackend.usbPowerSavingActive
+                            anchors.verticalCenter: parent.verticalCenter
+                            onToggled: (isChecked) => {
+                                optimizerBackend.usbPowerSavingActive = isChecked;
+                            }
+                        }
+                    }
+                }
             }
         }
     }
@@ -3714,6 +3876,47 @@ Item {
                                 checked: optimizerBackend.defenderServiceActive
                                 onToggled: (isChecked) => { optimizerBackend.defenderServiceActive = isChecked; }
                             }
+                        }
+                    }
+
+                    // 8. USB Power Saving Options Content
+                    Column {
+                        id: usbColumn
+                        width: parent.width
+                        spacing: 20
+                        visible: root.activeDrawer === "usb"
+
+                        Text {
+                            text: qsTr("Configure power saving settings for individual USB 3.0 ports.")
+                            color: Theme.textSecondary
+                            font.family: Theme.fontFamily
+                            font.pixelSize: 11
+                            font.bold: true
+                        }
+
+                        Column {
+                            width: parent.width
+                            spacing: 12
+
+                            Repeater {
+                                model: optimizerBackend.usbDevices
+                                delegate: MeguSwitch {
+                                    text: modelData.name
+                                    checked: modelData.powerSavingActive
+                                    onToggled: (isChecked) => {
+                                        optimizerBackend.setDevicePowerSavingActive(modelData.subkeyPath, isChecked);
+                                    }
+                                }
+                            }
+                        }
+
+                        // Fallback if no USB 3.0 ports found
+                        Text {
+                            text: qsTr("No USB 3.0 controllers or hubs found.")
+                            color: Theme.textMuted
+                            font.family: Theme.fontFamily
+                            font.pixelSize: 11
+                            visible: optimizerBackend.usbDevices.length === 0
                         }
                     }
                 }

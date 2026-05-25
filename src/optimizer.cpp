@@ -220,6 +220,74 @@ void Optimizer::setDriveStates(const QVariantMap &states) {
     }
 }
 
+void Optimizer::setUsbPowerSavingActive(bool val) {
+    if (m_usbPowerSavingActive != val) {
+        m_usbPowerSavingActive = val;
+        emit usbPowerSavingActiveChanged(m_usbPowerSavingActive);
+        
+        // Propagate to all sub-devices
+        for (int i = 0; i < m_usbDevices.size(); ++i) {
+            QVariantMap deviceMap = m_usbDevices[i].toMap();
+            if (deviceMap["powerSavingActive"].toBool() != val) {
+                deviceMap["powerSavingActive"] = val;
+                m_usbDevices[i] = deviceMap;
+            }
+        }
+        emit usbDevicesChanged(m_usbDevices);
+    }
+}
+
+void Optimizer::setDevicePowerSavingActive(const QString &subkeyPath, bool active) {
+    bool changed = false;
+    for (int i = 0; i < m_usbDevices.size(); ++i) {
+        QVariantMap deviceMap = m_usbDevices[i].toMap();
+        if (deviceMap["subkeyPath"].toString() == subkeyPath) {
+            if (deviceMap["powerSavingActive"].toBool() != active) {
+                deviceMap["powerSavingActive"] = active;
+                m_usbDevices[i] = deviceMap;
+                changed = true;
+            }
+            break;
+        }
+    }
+    
+    if (changed) {
+        emit usbDevicesChanged(m_usbDevices);
+        
+        // Recalculate main toggle: active if any USB device has power saving enabled
+        bool anyUsbPowerSaving = false;
+        for (const QVariant &dev : m_usbDevices) {
+            if (dev.toMap()["powerSavingActive"].toBool()) {
+                anyUsbPowerSaving = true;
+                break;
+            }
+        }
+        if (m_usbPowerSavingActive != anyUsbPowerSaving) {
+            m_usbPowerSavingActive = anyUsbPowerSaving;
+            emit usbPowerSavingActiveChanged(m_usbPowerSavingActive);
+        }
+    }
+}
+
+void Optimizer::revertUsbDevices() {
+    m_usbDevices = m_originalUsbDevices;
+    
+    // Recalculate main toggle
+    bool anyUsbPowerSaving = false;
+    for (const QVariant &dev : m_usbDevices) {
+        if (dev.toMap()["powerSavingActive"].toBool()) {
+            anyUsbPowerSaving = true;
+            break;
+        }
+    }
+    m_usbPowerSavingActive = anyUsbPowerSaving;
+    
+    emit usbDevicesChanged(m_usbDevices);
+    emit usbPowerSavingActiveChanged(m_usbPowerSavingActive);
+}
+
+
+
 void Optimizer::scanDrives() {
     QStringList drives;
     QVariantMap states;
@@ -876,6 +944,80 @@ void Optimizer::loadSystemStates() {
     emit defenderActiveChanged(m_defenderActive);
     emit originalDefenderActiveChanged(m_originalDefenderActive);
 
+    // ----------------------------------------------------
+    // Load USB 3.0 Devices and Power Saving State
+    // ----------------------------------------------------
+    QVariantList usbList;
+#ifdef Q_OS_WIN
+    HKEY hKeyClass;
+    if (RegOpenKeyExW(HKEY_LOCAL_MACHINE, L"SYSTEM\\CurrentControlSet\\Control\\Class\\{36fc9e60-c465-11cf-8056-444553540000}", 0, KEY_READ, &hKeyClass) == ERROR_SUCCESS) {
+        wchar_t subkeyName[256];
+        DWORD index = 0;
+        DWORD subkeyNameSize = 256;
+        while (RegEnumKeyExW(hKeyClass, index, subkeyName, &subkeyNameSize, NULL, NULL, NULL, NULL) == ERROR_SUCCESS) {
+            HKEY hKeySub;
+            QString subkeyPath = QString("SYSTEM\\CurrentControlSet\\Control\\Class\\{36fc9e60-c465-11cf-8056-444553540000}\\%1").arg(QString::fromWCharArray(subkeyName));
+            std::wstring wSubkeyPath = subkeyPath.toStdWString();
+            if (RegOpenKeyExW(HKEY_LOCAL_MACHINE, wSubkeyPath.c_str(), 0, KEY_READ, &hKeySub) == ERROR_SUCCESS) {
+                wchar_t driverDesc[512] = {0};
+                DWORD descSize = sizeof(driverDesc);
+                if (RegQueryValueExW(hKeySub, L"DriverDesc", NULL, NULL, (LPBYTE)driverDesc, &descSize) == ERROR_SUCCESS) {
+                    QString desc = QString::fromWCharArray(driverDesc);
+                    if (desc.contains("USB 3", Qt::CaseInsensitive) || desc.contains("Root Hub", Qt::CaseInsensitive)) {
+                        DWORD pnpCaps = 0;
+                        DWORD capsSize = sizeof(pnpCaps);
+                        bool hasCaps = (RegQueryValueExW(hKeySub, L"PnPCapabilities", NULL, NULL, (LPBYTE)&pnpCaps, &capsSize) == ERROR_SUCCESS);
+                        
+                        bool powerSaving = true; // default enabled
+                        if (hasCaps && pnpCaps == 24) {
+                            powerSaving = false;
+                        }
+                        
+                        QVariantMap deviceMap;
+                        deviceMap["name"] = desc;
+                        deviceMap["subkeyPath"] = subkeyPath;
+                        deviceMap["powerSavingActive"] = powerSaving;
+                        usbList.append(deviceMap);
+                    }
+                }
+                RegCloseKey(hKeySub);
+            }
+            subkeyNameSize = 256;
+            index++;
+        }
+        RegCloseKey(hKeyClass);
+    }
+#else
+    // Simulation fallbacks for other OS developers
+    QVariantMap dev1;
+    dev1["name"] = "Intel(R) USB 3.10 eXtensible Host Controller - 1.10 (Microsoft)";
+    dev1["subkeyPath"] = "SYSTEM\\CurrentControlSet\\Control\\Class\\{36fc9e60-c465-11cf-8056-444553540000}\\0001";
+    dev1["powerSavingActive"] = true;
+    
+    QVariantMap dev2;
+    dev2["name"] = "USB Root Hub (USB 3.0)";
+    dev2["subkeyPath"] = "SYSTEM\\CurrentControlSet\\Control\\Class\\{36fc9e60-c465-11cf-8056-444553540000}\\0002";
+    dev2["powerSavingActive"] = true;
+
+    usbList.append(dev1);
+    usbList.append(dev2);
+#endif
+
+    bool anyUsbPowerSaving = false;
+    for (const QVariant &dev : usbList) {
+        if (dev.toMap()["powerSavingActive"].toBool()) {
+            anyUsbPowerSaving = true;
+            break;
+        }
+    }
+    m_usbDevices = usbList;
+    m_originalUsbDevices = usbList;
+    m_usbPowerSavingActive = anyUsbPowerSaving;
+    m_originalUsbPowerSavingActive = anyUsbPowerSaving;
+    emit usbDevicesChanged(m_usbDevices);
+    emit usbPowerSavingActiveChanged(m_usbPowerSavingActive);
+    emit originalUsbPowerSavingActiveChanged(m_originalUsbPowerSavingActive);
+
     scanDrives();
     m_originalDriveStates = m_driveStates;
     emit originalDriveStatesChanged(m_originalDriveStates);
@@ -937,9 +1079,24 @@ void Optimizer::startSystemOptimization() {
     bool origDefenderCmd = m_originalDefenderCmdActive;
     bool origDefenderService = m_originalDefenderServiceActive;
 
-    QThread* worker = QThread::create([this, searchVal, hibernationVal, overlayVal, coreIsolationVal, mouseAccelVal, gameModeVal, firewallVal, printerVal, bitlockerVal, discordOverlayVal, notificationsVal, notifGlobalVal, notifAppVal, notifSoundsVal, notifLockscreenVal, targetPowerSchemeVal, activePowerSchemeVal, defenderVal, defenderRegistryVal, defenderCmdVal, defenderServiceVal, targets, originalTargets, origSearch, origHibernation, origOverlay, origCoreIsolation, origMouseAccel, origGameMode, origFirewall, origPrinter, origBitlocker, origDiscordOverlay, origNotifications, origNotifGlobal, origNotifApp, origNotifSounds, origNotifLockscreen, origDefender, origDefenderRegistry, origDefenderCmd, origDefenderService]() {
+    QVariantList usbDevicesVal = m_usbDevices;
+    QVariantList origUsbDevicesVal = m_originalUsbDevices;
+
+    QThread* worker = QThread::create([this, searchVal, hibernationVal, overlayVal, coreIsolationVal, mouseAccelVal, gameModeVal, firewallVal, printerVal, bitlockerVal, discordOverlayVal, notificationsVal, notifGlobalVal, notifAppVal, notifSoundsVal, notifLockscreenVal, targetPowerSchemeVal, activePowerSchemeVal, defenderVal, defenderRegistryVal, defenderCmdVal, defenderServiceVal, targets, originalTargets, origSearch, origHibernation, origOverlay, origCoreIsolation, origMouseAccel, origGameMode, origFirewall, origPrinter, origBitlocker, origDiscordOverlay, origNotifications, origNotifGlobal, origNotifApp, origNotifSounds, origNotifLockscreen, origDefender, origDefenderRegistry, origDefenderCmd, origDefenderService, usbDevicesVal, origUsbDevicesVal]() {
         // Step 0: Check if anything actually changed
         bool powerPlanChanged = (targetPowerSchemeVal != activePowerSchemeVal);
+        bool usbChanged = false;
+        if (usbDevicesVal.size() == origUsbDevicesVal.size()) {
+            for (int i = 0; i < usbDevicesVal.size(); ++i) {
+                if (usbDevicesVal[i].toMap()["powerSavingActive"].toBool() != origUsbDevicesVal[i].toMap()["powerSavingActive"].toBool()) {
+                    usbChanged = true;
+                    break;
+                }
+            }
+        } else {
+            usbChanged = true;
+        }
+
         bool anyChanges = (searchVal != origSearch) || 
                           (hibernationVal != origHibernation) || 
                           (overlayVal != origOverlay) ||
@@ -959,7 +1116,8 @@ void Optimizer::startSystemOptimization() {
                           (defenderRegistryVal != origDefenderRegistry) ||
                           (defenderCmdVal != origDefenderCmd) ||
                           (defenderServiceVal != origDefenderService) ||
-                          powerPlanChanged;
+                          powerPlanChanged ||
+                          usbChanged;
         if (!anyChanges) {
             for (const QString &driveLetter : targets.keys()) {
                 if (targets.value(driveLetter).toBool() != originalTargets.value(driveLetter).toBool()) {
@@ -1736,6 +1894,70 @@ void Optimizer::startSystemOptimization() {
 #endif
         }
 
+        // Step 1.99e: USB 3.0 Power Saving Configuration (only if changed)
+        bool usbSuccess = true;
+        if (usbChanged) {
+            emit systemStepReported(tr("Configuring USB 3.0 Power Saving..."), "INFO");
+            QThread::msleep(800);
+            
+            bool ok = true;
+#ifdef Q_OS_WIN
+            for (int i = 0; i < usbDevicesVal.size(); ++i) {
+                QVariantMap deviceMap = usbDevicesVal[i].toMap();
+                QString subkeyPath = deviceMap["subkeyPath"].toString();
+                bool targetVal = deviceMap["powerSavingActive"].toBool();
+                bool originalVal = origUsbDevicesVal[i].toMap()["powerSavingActive"].toBool();
+                
+                if (targetVal != originalVal) {
+                    emit systemStepReported(tr("Setting USB power saving for '%1' to %2...").arg(deviceMap["name"].toString()).arg(targetVal ? tr("Enabled") : tr("Disabled")), "INFO");
+                    
+                    std::wstring wSubkey = subkeyPath.toStdWString();
+                    HKEY hKeySub;
+                    if (RegOpenKeyExW(HKEY_LOCAL_MACHINE, wSubkey.c_str(), 0, KEY_SET_VALUE, &hKeySub) == ERROR_SUCCESS) {
+                        if (targetVal) {
+                            // Enable power saving (delete value)
+                            LSTATUS status = RegDeleteValueW(hKeySub, L"PnPCapabilities");
+                            if (status != ERROR_SUCCESS && status != ERROR_FILE_NOT_FOUND) {
+                                DWORD zero = 0;
+                                RegSetValueExW(hKeySub, L"PnPCapabilities", 0, REG_DWORD, (LPBYTE)&zero, sizeof(zero));
+                            }
+                            emit systemStepReported(tr("Power saving enabled for '%1'.").arg(deviceMap["name"].toString()), "SUCCESS");
+                        } else {
+                            // Disable power saving (write 24 / 0x18)
+                            DWORD pnpVal = 24;
+                            if (RegSetValueExW(hKeySub, L"PnPCapabilities", 0, REG_DWORD, (LPBYTE)&pnpVal, sizeof(pnpVal)) == ERROR_SUCCESS) {
+                                emit systemStepReported(tr("Power saving disabled for '%1'.").arg(deviceMap["name"].toString()), "SUCCESS");
+                            } else {
+                                ok = false;
+                                emit systemStepReported(tr("Failed to disable power saving for '%1'.").arg(deviceMap["name"].toString()), "ERROR");
+                            }
+                        }
+                        RegCloseKey(hKeySub);
+                    } else {
+                        ok = false;
+                        emit systemStepReported(tr("Failed to open registry key for '%1'.").arg(deviceMap["name"].toString()), "ERROR");
+                    }
+                }
+            }
+#else
+            // Simulation
+            for (int i = 0; i < usbDevicesVal.size(); ++i) {
+                QVariantMap deviceMap = usbDevicesVal[i].toMap();
+                bool targetVal = deviceMap["powerSavingActive"].toBool();
+                bool originalVal = origUsbDevicesVal[i].toMap()["powerSavingActive"].toBool();
+                if (targetVal != originalVal) {
+                    emit systemStepReported(tr("[Simulation] Set USB power saving for '%1' to %2.").arg(deviceMap["name"].toString()).arg(targetVal ? "Enabled" : "Disabled"), "SUCCESS");
+                }
+            }
+#endif
+            if (ok) {
+                emit systemStepReported(tr("USB 3.0 Power Saving configuration completed."), "SUCCESS");
+            } else {
+                usbSuccess = false;
+                emit systemStepReported(tr("Failed to apply some USB 3.0 Power Saving settings."), "WARNING");
+            }
+        }
+
         // Steps 2+: Iterate drives in target list (only if changed)
         int driveIndex = 0;
         int totalDrives = targets.keys().size();
@@ -1779,7 +2001,7 @@ void Optimizer::startSystemOptimization() {
             QThread::msleep(100);
         }
 
-        bool overallSuccess = wSearchSuccess && hibernationSuccess && overlaySuccess && coreIsolationSuccess && mouseAccelSuccess && gameModeSuccess && firewallSuccess && printerSuccess && notificationsSuccess && powerPlanSuccess && defenderSuccess && overallDrivesSuccess;
+        bool overallSuccess = wSearchSuccess && hibernationSuccess && overlaySuccess && coreIsolationSuccess && mouseAccelSuccess && gameModeSuccess && firewallSuccess && printerSuccess && notificationsSuccess && powerPlanSuccess && defenderSuccess && overallDrivesSuccess && usbSuccess;
         if (overallSuccess) {
             emit systemStepReported(tr("System optimization completed successfully!"), "SUCCESS");
             Logger::log("System optimization completed successfully!", "INFO");

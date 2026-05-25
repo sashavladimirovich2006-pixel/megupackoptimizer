@@ -52,6 +52,11 @@ class Optimizer : public QObject {
     Q_PROPERTY(bool originalDefenderCmdActive READ originalDefenderCmdActive NOTIFY originalDefenderCmdActiveChanged)
     Q_PROPERTY(bool defenderServiceActive READ defenderServiceActive WRITE setDefenderServiceActive NOTIFY defenderServiceActiveChanged)
     Q_PROPERTY(bool originalDefenderServiceActive READ originalDefenderServiceActive NOTIFY originalDefenderServiceActiveChanged)
+    Q_PROPERTY(QVariantList usbDevices READ usbDevices NOTIFY usbDevicesChanged)
+    Q_PROPERTY(QVariantList originalUsbDevices READ originalUsbDevices NOTIFY usbDevicesChanged)
+    Q_PROPERTY(bool usbPowerSavingActive READ usbPowerSavingActive WRITE setUsbPowerSavingActive NOTIFY usbPowerSavingActiveChanged)
+    Q_PROPERTY(bool originalUsbPowerSavingActive READ originalUsbPowerSavingActive NOTIFY originalUsbPowerSavingActiveChanged)
+    Q_PROPERTY(bool usbChanged READ usbChanged NOTIFY usbDevicesChanged)
     Q_PROPERTY(QStringList detectedPrinters READ detectedPrinters NOTIFY detectedPrintersChanged)
     Q_PROPERTY(bool notificationsActive READ notificationsActive WRITE setNotificationsActive NOTIFY notificationsActiveChanged)
     Q_PROPERTY(bool originalNotificationsActive READ originalNotificationsActive NOTIFY originalNotificationsActiveChanged)
@@ -123,6 +128,19 @@ public:
     bool originalDefenderCmdActive() const { return m_originalDefenderCmdActive; }
     bool defenderServiceActive() const { return m_defenderServiceActive; }
     bool originalDefenderServiceActive() const { return m_originalDefenderServiceActive; }
+    QVariantList usbDevices() const { return m_usbDevices; }
+    QVariantList originalUsbDevices() const { return m_originalUsbDevices; }
+    bool usbPowerSavingActive() const { return m_usbPowerSavingActive; }
+    bool originalUsbPowerSavingActive() const { return m_originalUsbPowerSavingActive; }
+    bool usbChanged() const {
+        if (m_usbDevices.size() != m_originalUsbDevices.size()) return true;
+        for (int i = 0; i < m_usbDevices.size(); ++i) {
+            if (m_usbDevices[i].toMap()["powerSavingActive"].toBool() != m_originalUsbDevices[i].toMap()["powerSavingActive"].toBool()) {
+                return true;
+            }
+        }
+        return false;
+    }
     QStringList detectedPrinters() const { return m_detectedPrinters; }
     bool notificationsActive() const { return m_notificationsActive; }
     bool originalNotificationsActive() const { return m_originalNotificationsActive; }
@@ -166,6 +184,7 @@ public:
     void setNotifSoundsActive(bool val);
     void setNotifLockscreenActive(bool val);
     void setDriveStates(const QVariantMap &states);
+    void setUsbPowerSavingActive(bool val);
     
     Q_INVOKABLE bool isDiscordRunning();
     Q_INVOKABLE void killDiscord();
@@ -183,6 +202,10 @@ public:
     Q_INVOKABLE void applyMpoValue(int value);
     Q_INVOKABLE void selectPowerScheme(const QString &guidStr);
     Q_INVOKABLE void activateUltimatePerformance();
+    Q_INVOKABLE void setDevicePowerSavingActive(const QString &subkeyPath, bool active);
+    Q_INVOKABLE void revertUsbDevices();
+
+
 
 signals:
     // System info signals
@@ -228,6 +251,10 @@ signals:
     void defenderServiceActiveChanged(bool val);
     void originalDefenderServiceActiveChanged(bool val);
     void detectedPrintersChanged(const QStringList &val);
+    void usbDevicesChanged(const QVariantList &val);
+    void usbPowerSavingActiveChanged(bool val);
+    void originalUsbPowerSavingActiveChanged(bool val);
+
     void notificationsActiveChanged(bool val);
     void originalNotificationsActiveChanged(bool val);
     void notifGlobalActiveChanged(bool val);
@@ -304,6 +331,10 @@ private:
     bool m_defenderServiceActive = true;
     bool m_originalDefenderServiceActive = true;
     QStringList m_detectedPrinters;
+    QVariantList m_usbDevices;
+    QVariantList m_originalUsbDevices;
+    bool m_usbPowerSavingActive = false;
+    bool m_originalUsbPowerSavingActive = false;
     bool m_notificationsActive = true;
     bool m_originalNotificationsActive = true;
     bool m_notifGlobalActive = true;
