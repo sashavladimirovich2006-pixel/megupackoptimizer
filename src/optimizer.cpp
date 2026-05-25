@@ -949,6 +949,30 @@ void Optimizer::loadSystemStates() {
     // ----------------------------------------------------
     QVariantList usbList;
 #ifdef Q_OS_WIN
+    // Query ground-truth WMI states first to get accurate active state
+    QMap<QString, bool> wmiStates;
+    QProcess wmiProc;
+    wmiProc.start("powershell.exe", QStringList() 
+        << "-NoProfile" 
+        << "-NonInteractive" 
+        << "-ExecutionPolicy" << "Bypass" 
+        << "-Command" 
+        << "Get-CimInstance -ClassName MSPower_DeviceEnable -Namespace root\\WMI | Where-Object { $_.InstanceName -like 'USB*' } | ForEach-Object { $id = $_.InstanceName; if ($id.Length -gt 2) { $id = $id.Substring(0, $id.Length - 2); $drv = (Get-ItemProperty -Path ('HKLM:\\SYSTEM\\CurrentControlSet\\Enum\\' + $id) -ErrorAction SilentlyContinue).Driver; if ($drv) { Write-Output ($drv + '=' + $_.Enable) } } }");
+    if (wmiProc.waitForFinished(8000)) {
+        QString output = QString::fromUtf8(wmiProc.readAllStandardOutput()).trimmed();
+        QStringList lines = output.split('\n', Qt::SkipEmptyParts);
+        for (const QString &line : lines) {
+            QString trimmed = line.trimmed();
+            int eqIdx = trimmed.indexOf('=');
+            if (eqIdx != -1) {
+                QString drv = trimmed.left(eqIdx).trimmed().toLower();
+                QString stateStr = trimmed.mid(eqIdx + 1).trimmed();
+                bool active = (stateStr.compare("True", Qt::CaseInsensitive) == 0);
+                wmiStates[drv] = active;
+            }
+        }
+    }
+
     HKEY hKeyClass;
     if (RegOpenKeyExW(HKEY_LOCAL_MACHINE, L"SYSTEM\\CurrentControlSet\\Control\\Class\\{36fc9e60-c465-11cf-8056-444553540000}", 0, KEY_READ, &hKeyClass) == ERROR_SUCCESS) {
         wchar_t subkeyName[256];
@@ -968,9 +992,17 @@ void Optimizer::loadSystemStates() {
                         DWORD capsSize = sizeof(pnpCaps);
                         bool hasCaps = (RegQueryValueExW(hKeySub, L"PnPCapabilities", NULL, NULL, (LPBYTE)&pnpCaps, &capsSize) == ERROR_SUCCESS);
                         
+                        int braceIdx = subkeyPath.indexOf('{');
+                        QString relativeKey = (braceIdx != -1) ? subkeyPath.mid(braceIdx) : subkeyPath;
+                        QString relKeyLower = relativeKey.toLower();
+                        
                         bool powerSaving = true; // default enabled
-                        if (hasCaps && pnpCaps == 24) {
-                            powerSaving = false;
+                        if (wmiStates.contains(relKeyLower)) {
+                            powerSaving = wmiStates[relKeyLower];
+                        } else {
+                            if (hasCaps && pnpCaps == 24) {
+                                powerSaving = false;
+                            }
                         }
                         
                         QVariantMap deviceMap;
@@ -1937,6 +1969,25 @@ void Optimizer::startSystemOptimization() {
                         ok = false;
                         emit systemStepReported(tr("Failed to open registry key for '%1'.").arg(deviceMap["name"].toString()), "ERROR");
                     }
+
+                    // WMI ground-truth update to instantly toggle Device Manager checkbox
+                    int braceIdx = subkeyPath.indexOf('{');
+                    QString relKey = (braceIdx != -1) ? subkeyPath.mid(braceIdx) : subkeyPath;
+                    QString psCmd = QString(
+                        "Get-CimInstance -ClassName MSPower_DeviceEnable -Namespace root\\WMI | "
+                        "Where-Object { "
+                        "  $id = $_.InstanceName; "
+                        "  if ($id.Length -gt 2) { "
+                        "    $id = $id.Substring(0, $id.Length - 2); "
+                        "    $drv = (Get-ItemProperty -Path ('HKLM:\\SYSTEM\\CurrentControlSet\\Enum\\' + $id) -ErrorAction SilentlyContinue).Driver; "
+                        "    $drv -eq '%1' "
+                        "  } else { $false } "
+                        "} | Set-CimInstance -Property @{Enable = [bool]%2}"
+                    ).arg(relKey).arg(targetVal ? "1" : "0");
+
+                    QProcess wmiSetProc;
+                    wmiSetProc.start("powershell.exe", QStringList() << "-NoProfile" << "-NonInteractive" << "-ExecutionPolicy" << "Bypass" << "-Command" << psCmd);
+                    wmiSetProc.waitForFinished(12000);
                 }
             }
 #else
