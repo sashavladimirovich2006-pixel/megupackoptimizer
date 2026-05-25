@@ -72,6 +72,11 @@ Item {
         if (optimizerBackend.defenderServiceActive !== optimizerBackend.originalDefenderServiceActive) return true;
         if (optimizerBackend.remoteAccessActive !== optimizerBackend.originalRemoteAccessActive) return true;
         if (optimizerBackend.usbChanged) return true;
+        if (optimizerBackend.telemetryActive !== optimizerBackend.originalTelemetryActive) return true;
+        if (optimizerBackend.telemetryDiagTrackActive !== optimizerBackend.originalTelemetryDiagTrackActive) return true;
+        if (optimizerBackend.telemetryWapPushActive !== optimizerBackend.originalTelemetryWapPushActive) return true;
+        if (optimizerBackend.telemetryCeipActive !== optimizerBackend.originalTelemetryCeipActive) return true;
+        if (optimizerBackend.telemetryWerActive !== optimizerBackend.originalTelemetryWerActive) return true;
         if (!optimizerBackend.driveStates || !optimizerBackend.originalDriveStates) return false;
         var keys = Object.keys(optimizerBackend.driveStates);
         for (var i = 0; i < keys.length; i++) {
