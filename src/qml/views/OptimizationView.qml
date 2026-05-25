@@ -2048,7 +2048,8 @@ Item {
                 AcrylicPanel {
                     id: defenderPanel
                     width: parent.width
-                    height: 72
+                    height: !optimizerBackend.defenderActive ? 84 : 72
+                    Behavior on height { NumberAnimation { duration: Theme.animNormal; easing.type: Easing.InOutQuad } }
 
                     Row {
                         anchors.left: parent.left
@@ -2113,6 +2114,15 @@ Item {
                                 color: Theme.textMuted
                                 font.family: Theme.fontFamily
                                 font.pixelSize: 10
+                            }
+
+                            Text {
+                                visible: !optimizerBackend.defenderActive
+                                text: qsTr("Note: Requires disabling Tamper Protection.")
+                                color: Theme.warning
+                                font.family: Theme.fontFamily
+                                font.pixelSize: 9
+                                font.bold: true
                             }
                         }
                     }
