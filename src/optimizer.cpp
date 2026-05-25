@@ -89,6 +89,75 @@ void Optimizer::setRemoteAccessActive(bool val) {
     }
 }
 
+void Optimizer::setTelemetryActive(bool val) {
+    if (m_telemetryActive != val) {
+        m_telemetryActive = val;
+        emit telemetryActiveChanged(m_telemetryActive);
+
+        // Propagate to sub-options for uniform toggle feel
+        setTelemetryDiagTrackActive(val);
+        setTelemetryWapPushActive(val);
+        setTelemetryCeipActive(val);
+        setTelemetryWerActive(val);
+    }
+}
+
+void Optimizer::setTelemetryDiagTrackActive(bool val) {
+    if (m_telemetryDiagTrackActive != val) {
+        m_telemetryDiagTrackActive = val;
+        emit telemetryDiagTrackActiveChanged(m_telemetryDiagTrackActive);
+
+        // Update main toggle
+        bool anyActive = m_telemetryDiagTrackActive || m_telemetryWapPushActive || m_telemetryCeipActive || m_telemetryWerActive;
+        if (m_telemetryActive != anyActive) {
+            m_telemetryActive = anyActive;
+            emit telemetryActiveChanged(m_telemetryActive);
+        }
+    }
+}
+
+void Optimizer::setTelemetryWapPushActive(bool val) {
+    if (m_telemetryWapPushActive != val) {
+        m_telemetryWapPushActive = val;
+        emit telemetryWapPushActiveChanged(m_telemetryWapPushActive);
+
+        // Update main toggle
+        bool anyActive = m_telemetryDiagTrackActive || m_telemetryWapPushActive || m_telemetryCeipActive || m_telemetryWerActive;
+        if (m_telemetryActive != anyActive) {
+            m_telemetryActive = anyActive;
+            emit telemetryActiveChanged(m_telemetryActive);
+        }
+    }
+}
+
+void Optimizer::setTelemetryCeipActive(bool val) {
+    if (m_telemetryCeipActive != val) {
+        m_telemetryCeipActive = val;
+        emit telemetryCeipActiveChanged(m_telemetryCeipActive);
+
+        // Update main toggle
+        bool anyActive = m_telemetryDiagTrackActive || m_telemetryWapPushActive || m_telemetryCeipActive || m_telemetryWerActive;
+        if (m_telemetryActive != anyActive) {
+            m_telemetryActive = anyActive;
+            emit telemetryActiveChanged(m_telemetryActive);
+        }
+    }
+}
+
+void Optimizer::setTelemetryWerActive(bool val) {
+    if (m_telemetryWerActive != val) {
+        m_telemetryWerActive = val;
+        emit telemetryWerActiveChanged(m_telemetryWerActive);
+
+        // Update main toggle
+        bool anyActive = m_telemetryDiagTrackActive || m_telemetryWapPushActive || m_telemetryCeipActive || m_telemetryWerActive;
+        if (m_telemetryActive != anyActive) {
+            m_telemetryActive = anyActive;
+            emit telemetryActiveChanged(m_telemetryActive);
+        }
+    }
+}
+
 void Optimizer::setPrinterActive(bool val) {
     if (m_printerActive != val) {
         m_printerActive = val;
@@ -1082,6 +1151,95 @@ void Optimizer::loadSystemStates() {
     scanDrives();
     m_originalDriveStates = m_driveStates;
     emit originalDriveStatesChanged(m_originalDriveStates);
+
+    // ----------------------------------------------------
+    // Load Telemetry States
+    // ----------------------------------------------------
+    bool telemetryDiagTrackActive = true;
+    bool telemetryWapPushActive = true;
+    bool telemetryCeipActive = true;
+    bool telemetryWerActive = true;
+
+#ifdef Q_OS_WIN
+    // 1. Connected User Experiences (DiagTrack) startup state
+    HKEY hKeyDiag;
+    if (RegOpenKeyExW(HKEY_LOCAL_MACHINE, L"SYSTEM\\CurrentControlSet\\Services\\DiagTrack", 0, KEY_READ, &hKeyDiag) == ERROR_SUCCESS) {
+        DWORD value = 2; // default Automatic
+        DWORD size = sizeof(value);
+        if (RegQueryValueExW(hKeyDiag, L"Start", NULL, NULL, (LPBYTE)&value, &size) == ERROR_SUCCESS) {
+            telemetryDiagTrackActive = (value != 4); // Enabled if not Disabled (4)
+        }
+        RegCloseKey(hKeyDiag);
+    }
+
+    // 2. Device Management WAP Service (dmwappushservice) startup state
+    HKEY hKeyWap;
+    if (RegOpenKeyExW(HKEY_LOCAL_MACHINE, L"SYSTEM\\CurrentControlSet\\Services\\dmwappushservice", 0, KEY_READ, &hKeyWap) == ERROR_SUCCESS) {
+        DWORD value = 3; // default Manual
+        DWORD size = sizeof(value);
+        if (RegQueryValueExW(hKeyWap, L"Start", NULL, NULL, (LPBYTE)&value, &size) == ERROR_SUCCESS) {
+            telemetryWapPushActive = (value != 4); // Enabled if not Disabled (4)
+        }
+        RegCloseKey(hKeyWap);
+    }
+
+    // 3. Customer Experience Improvement Program (CEIP) policy
+    HKEY hKeyCeip;
+    if (RegOpenKeyExW(HKEY_LOCAL_MACHINE, L"SOFTWARE\\Policies\\Microsoft\\SQMClient\\Windows", 0, KEY_READ, &hKeyCeip) == ERROR_SUCCESS) {
+        DWORD value = 1;
+        DWORD size = sizeof(value);
+        if (RegQueryValueExW(hKeyCeip, L"CEIPEnable", NULL, NULL, (LPBYTE)&value, &size) == ERROR_SUCCESS) {
+            telemetryCeipActive = (value != 0); // Active if CEIPEnable is not 0
+        }
+        RegCloseKey(hKeyCeip);
+    } else {
+        telemetryCeipActive = true; // Enabled if policy does not exist
+    }
+
+    // 4. Windows Error Reporting (WER) policy
+    HKEY hKeyWer;
+    if (RegOpenKeyExW(HKEY_LOCAL_MACHINE, L"SOFTWARE\\Policies\\Microsoft\\Windows\\Windows Error Reporting", 0, KEY_READ, &hKeyWer) == ERROR_SUCCESS) {
+        DWORD value = 0;
+        DWORD size = sizeof(value);
+        if (RegQueryValueExW(hKeyWer, L"Disabled", NULL, NULL, (LPBYTE)&value, &size) == ERROR_SUCCESS) {
+            telemetryWerActive = (value == 0); // Active if Disabled is 0 (or missing)
+        }
+        RegCloseKey(hKeyWer);
+    } else {
+        telemetryWerActive = true; // Enabled if policy does not exist
+    }
+#else
+    // Simulation fallbacks
+    telemetryDiagTrackActive = true;
+    telemetryWapPushActive = true;
+    telemetryCeipActive = true;
+    telemetryWerActive = true;
+#endif
+
+    m_telemetryDiagTrackActive = telemetryDiagTrackActive;
+    m_originalTelemetryDiagTrackActive = telemetryDiagTrackActive;
+    emit telemetryDiagTrackActiveChanged(m_telemetryDiagTrackActive);
+    emit originalTelemetryDiagTrackActiveChanged(m_originalTelemetryDiagTrackActive);
+
+    m_telemetryWapPushActive = telemetryWapPushActive;
+    m_originalTelemetryWapPushActive = telemetryWapPushActive;
+    emit telemetryWapPushActiveChanged(m_telemetryWapPushActive);
+    emit originalTelemetryWapPushActiveChanged(m_originalTelemetryWapPushActive);
+
+    m_telemetryCeipActive = telemetryCeipActive;
+    m_originalTelemetryCeipActive = telemetryCeipActive;
+    emit telemetryCeipActiveChanged(m_telemetryCeipActive);
+    emit originalTelemetryCeipActiveChanged(m_originalTelemetryCeipActive);
+
+    m_telemetryWerActive = telemetryWerActive;
+    m_originalTelemetryWerActive = telemetryWerActive;
+    emit telemetryWerActiveChanged(m_telemetryWerActive);
+    emit originalTelemetryWerActiveChanged(m_originalTelemetryWerActive);
+
+    m_telemetryActive = m_telemetryDiagTrackActive || m_telemetryWapPushActive || m_telemetryCeipActive || m_telemetryWerActive;
+    m_originalTelemetryActive = m_telemetryActive;
+    emit telemetryActiveChanged(m_telemetryActive);
+    emit originalTelemetryActiveChanged(m_originalTelemetryActive);
 }
 
 void Optimizer::startSystemOptimization() {
@@ -1118,6 +1276,11 @@ void Optimizer::startSystemOptimization() {
     bool defenderCmdVal = m_defenderCmdActive;
     bool defenderServiceVal = m_defenderServiceActive;
     bool remoteAccessVal = m_remoteAccessActive;
+    bool telemetryVal = m_telemetryActive;
+    bool telemetryDiagTrackVal = m_telemetryDiagTrackActive;
+    bool telemetryWapPushVal = m_telemetryWapPushActive;
+    bool telemetryCeipVal = m_telemetryCeipActive;
+    bool telemetryWerVal = m_telemetryWerActive;
 
     QVariantMap targets = m_driveStates;
     QVariantMap originalTargets = m_originalDriveStates;
@@ -1141,11 +1304,16 @@ void Optimizer::startSystemOptimization() {
     bool origDefenderCmd = m_originalDefenderCmdActive;
     bool origDefenderService = m_originalDefenderServiceActive;
     bool origRemoteAccess = m_originalRemoteAccessActive;
+    bool origTelemetry = m_originalTelemetryActive;
+    bool origTelemetryDiagTrack = m_originalTelemetryDiagTrackActive;
+    bool origTelemetryWapPush = m_originalTelemetryWapPushActive;
+    bool origTelemetryCeip = m_originalTelemetryCeipActive;
+    bool origTelemetryWer = m_originalTelemetryWerActive;
 
     QVariantList usbDevicesVal = m_usbDevices;
     QVariantList origUsbDevicesVal = m_originalUsbDevices;
 
-    QThread* worker = QThread::create([this, searchVal, hibernationVal, overlayVal, coreIsolationVal, mouseAccelVal, gameModeVal, firewallVal, printerVal, bitlockerVal, discordOverlayVal, notificationsVal, notifGlobalVal, notifAppVal, notifSoundsVal, notifLockscreenVal, targetPowerSchemeVal, activePowerSchemeVal, defenderVal, defenderRegistryVal, defenderCmdVal, defenderServiceVal, remoteAccessVal, targets, originalTargets, origSearch, origHibernation, origOverlay, origCoreIsolation, origMouseAccel, origGameMode, origFirewall, origPrinter, origBitlocker, origDiscordOverlay, origNotifications, origNotifGlobal, origNotifApp, origNotifSounds, origNotifLockscreen, origDefender, origDefenderRegistry, origDefenderCmd, origDefenderService, origRemoteAccess, usbDevicesVal, origUsbDevicesVal]() {
+    QThread* worker = QThread::create([this, searchVal, hibernationVal, overlayVal, coreIsolationVal, mouseAccelVal, gameModeVal, firewallVal, printerVal, bitlockerVal, discordOverlayVal, notificationsVal, notifGlobalVal, notifAppVal, notifSoundsVal, notifLockscreenVal, targetPowerSchemeVal, activePowerSchemeVal, defenderVal, defenderRegistryVal, defenderCmdVal, defenderServiceVal, remoteAccessVal, telemetryVal, telemetryDiagTrackVal, telemetryWapPushVal, telemetryCeipVal, telemetryWerVal, targets, originalTargets, origSearch, origHibernation, origOverlay, origCoreIsolation, origMouseAccel, origGameMode, origFirewall, origPrinter, origBitlocker, origDiscordOverlay, origNotifications, origNotifGlobal, origNotifApp, origNotifSounds, origNotifLockscreen, origDefender, origDefenderRegistry, origDefenderCmd, origDefenderService, origRemoteAccess, origTelemetry, origTelemetryDiagTrack, origTelemetryWapPush, origTelemetryCeip, origTelemetryWer, usbDevicesVal, origUsbDevicesVal]() {
         // Step 0: Check if anything actually changed
         bool powerPlanChanged = (targetPowerSchemeVal != activePowerSchemeVal);
         bool usbChanged = false;
@@ -1159,6 +1327,12 @@ void Optimizer::startSystemOptimization() {
         } else {
             usbChanged = true;
         }
+
+        bool telemetryChanged = (telemetryVal != origTelemetry) ||
+                                (telemetryDiagTrackVal != origTelemetryDiagTrack) ||
+                                (telemetryWapPushVal != origTelemetryWapPush) ||
+                                (telemetryCeipVal != origTelemetryCeip) ||
+                                (telemetryWerVal != origTelemetryWer);
 
         bool anyChanges = (searchVal != origSearch) || 
                           (hibernationVal != origHibernation) || 
@@ -1180,6 +1354,7 @@ void Optimizer::startSystemOptimization() {
                           (defenderCmdVal != origDefenderCmd) ||
                           (defenderServiceVal != origDefenderService) ||
                           (remoteAccessVal != origRemoteAccess) ||
+                          telemetryChanged ||
                           powerPlanChanged ||
                           usbChanged;
         if (!anyChanges) {
@@ -2088,6 +2263,200 @@ void Optimizer::startSystemOptimization() {
             }
         }
 
+        // Step 1.99g: Telemetry Configuration (only if changed)
+        bool telemetrySuccess = true;
+        if (telemetryChanged) {
+            emit systemStepReported(tr("Configuring system telemetry..."), "INFO");
+            QThread::msleep(800);
+            
+            bool ok = true;
+#ifdef Q_OS_WIN
+            // 1. DiagTrack Service (Connected User Experiences and Telemetry)
+            if (telemetryDiagTrackVal != origTelemetryDiagTrack) {
+                emit systemStepReported(tr("Processing Connected User Experiences service (DiagTrack)..."), "INFO");
+                SC_HANDLE hSCM = OpenSCManagerW(NULL, NULL, SC_MANAGER_ALL_ACCESS);
+                if (hSCM) {
+                    SC_HANDLE hService = OpenServiceW(hSCM, L"DiagTrack", SERVICE_CHANGE_CONFIG | SERVICE_STOP | SERVICE_START | SERVICE_QUERY_STATUS);
+                    if (hService) {
+                        DWORD startType = telemetryDiagTrackVal ? SERVICE_AUTO_START : SERVICE_DISABLED;
+                        if (ChangeServiceConfigW(hService, SERVICE_NO_CHANGE, startType, SERVICE_NO_CHANGE, NULL, NULL, NULL, NULL, NULL, NULL, NULL)) {
+                            emit systemStepReported(telemetryDiagTrackVal ? tr("Connected User Experiences service startup set to Automatic.") : tr("Connected User Experiences service startup set to Disabled."), "SUCCESS");
+                            
+                            SERVICE_STATUS_PROCESS ssp;
+                            DWORD bytesNeeded = 0;
+                            if (QueryServiceStatusEx(hService, SC_STATUS_PROCESS_INFO, reinterpret_cast<LPBYTE>(&ssp), sizeof(ssp), &bytesNeeded)) {
+                                if (!telemetryDiagTrackVal && ssp.dwCurrentState != SERVICE_STOPPED && ssp.dwCurrentState != SERVICE_STOP_PENDING) {
+                                    emit systemStepReported(tr("Stopping Connected User Experiences service..."), "INFO");
+                                    SERVICE_STATUS status;
+                                    ControlService(hService, SERVICE_CONTROL_STOP, &status);
+                                    for (int i = 0; i < 15; ++i) {
+                                        QThread::msleep(200);
+                                        if (QueryServiceStatusEx(hService, SC_STATUS_PROCESS_INFO, reinterpret_cast<LPBYTE>(&ssp), sizeof(ssp), &bytesNeeded)) {
+                                            if (ssp.dwCurrentState == SERVICE_STOPPED) break;
+                                        }
+                                    }
+                                    if (ssp.dwCurrentState == SERVICE_STOPPED) {
+                                        emit systemStepReported(tr("Connected User Experiences service stopped successfully."), "SUCCESS");
+                                    } else {
+                                        emit systemStepReported(tr("Connected User Experiences service stop requested."), "WARNING");
+                                    }
+                                } else if (telemetryDiagTrackVal && ssp.dwCurrentState != SERVICE_RUNNING && ssp.dwCurrentState != SERVICE_START_PENDING) {
+                                    emit systemStepReported(tr("Starting Connected User Experiences service..."), "INFO");
+                                    if (StartServiceW(hService, 0, NULL)) {
+                                        for (int i = 0; i < 15; ++i) {
+                                            QThread::msleep(200);
+                                            if (QueryServiceStatusEx(hService, SC_STATUS_PROCESS_INFO, reinterpret_cast<LPBYTE>(&ssp), sizeof(ssp), &bytesNeeded)) {
+                                                if (ssp.dwCurrentState == SERVICE_RUNNING) break;
+                                            }
+                                        }
+                                        if (ssp.dwCurrentState == SERVICE_RUNNING) {
+                                            emit systemStepReported(tr("Connected User Experiences service started successfully."), "SUCCESS");
+                                        }
+                                    }
+                                }
+                            }
+                        } else {
+                            ok = false;
+                            emit systemStepReported(tr("Failed to configure Connected User Experiences service."), "ERROR");
+                        }
+                        CloseServiceHandle(hService);
+                    } else {
+                        ok = false;
+                        emit systemStepReported(tr("Failed to open Connected User Experiences service."), "ERROR");
+                    }
+                    CloseServiceHandle(hSCM);
+                } else {
+                    ok = false;
+                    emit systemStepReported(tr("Failed to connect to SCM."), "ERROR");
+                }
+            }
+
+            // 2. dmwappushservice (Device Management WAP Service)
+            if (telemetryWapPushVal != origTelemetryWapPush) {
+                emit systemStepReported(tr("Processing Device Management WAP service (dmwappushservice)..."), "INFO");
+                SC_HANDLE hSCM = OpenSCManagerW(NULL, NULL, SC_MANAGER_ALL_ACCESS);
+                if (hSCM) {
+                    SC_HANDLE hService = OpenServiceW(hSCM, L"dmwappushservice", SERVICE_CHANGE_CONFIG | SERVICE_STOP | SERVICE_START | SERVICE_QUERY_STATUS);
+                    if (hService) {
+                        DWORD startType = telemetryWapPushVal ? SERVICE_DEMAND_START : SERVICE_DISABLED;
+                        if (ChangeServiceConfigW(hService, SERVICE_NO_CHANGE, startType, SERVICE_NO_CHANGE, NULL, NULL, NULL, NULL, NULL, NULL, NULL)) {
+                            emit systemStepReported(telemetryWapPushVal ? tr("Device Management WAP service startup set to Manual.") : tr("Device Management WAP service startup set to Disabled."), "SUCCESS");
+                            
+                            SERVICE_STATUS_PROCESS ssp;
+                            DWORD bytesNeeded = 0;
+                            if (QueryServiceStatusEx(hService, SC_STATUS_PROCESS_INFO, reinterpret_cast<LPBYTE>(&ssp), sizeof(ssp), &bytesNeeded)) {
+                                if (!telemetryWapPushVal && ssp.dwCurrentState != SERVICE_STOPPED && ssp.dwCurrentState != SERVICE_STOP_PENDING) {
+                                    emit systemStepReported(tr("Stopping Device Management WAP service..."), "INFO");
+                                    SERVICE_STATUS status;
+                                    ControlService(hService, SERVICE_CONTROL_STOP, &status);
+                                    for (int i = 0; i < 15; ++i) {
+                                        QThread::msleep(200);
+                                        if (QueryServiceStatusEx(hService, SC_STATUS_PROCESS_INFO, reinterpret_cast<LPBYTE>(&ssp), sizeof(ssp), &bytesNeeded)) {
+                                            if (ssp.dwCurrentState == SERVICE_STOPPED) break;
+                                        }
+                                    }
+                                    if (ssp.dwCurrentState == SERVICE_STOPPED) {
+                                        emit systemStepReported(tr("Device Management WAP service stopped successfully."), "SUCCESS");
+                                    } else {
+                                        emit systemStepReported(tr("Device Management WAP service stop requested."), "WARNING");
+                                    }
+                                } else if (telemetryWapPushVal && ssp.dwCurrentState != SERVICE_RUNNING && ssp.dwCurrentState != SERVICE_START_PENDING) {
+                                    emit systemStepReported(tr("Starting Device Management WAP service..."), "INFO");
+                                    if (StartServiceW(hService, 0, NULL)) {
+                                        for (int i = 0; i < 15; ++i) {
+                                            QThread::msleep(200);
+                                            if (QueryServiceStatusEx(hService, SC_STATUS_PROCESS_INFO, reinterpret_cast<LPBYTE>(&ssp), sizeof(ssp), &bytesNeeded)) {
+                                                if (ssp.dwCurrentState == SERVICE_RUNNING) break;
+                                            }
+                                        }
+                                        if (ssp.dwCurrentState == SERVICE_RUNNING) {
+                                            emit systemStepReported(tr("Device Management WAP service started successfully."), "SUCCESS");
+                                        }
+                                    }
+                                }
+                            }
+                        } else {
+                            ok = false;
+                            emit systemStepReported(tr("Failed to configure Device Management WAP service."), "ERROR");
+                        }
+                        CloseServiceHandle(hService);
+                    } else {
+                        ok = false;
+                        emit systemStepReported(tr("Failed to open Device Management WAP service."), "ERROR");
+                    }
+                    CloseServiceHandle(hSCM);
+                } else {
+                    ok = false;
+                    emit systemStepReported(tr("Failed to connect to SCM."), "ERROR");
+                }
+            }
+
+            // 3. Customer Experience Improvement Program (CEIP) policy
+            if (telemetryCeipVal != origTelemetryCeip) {
+                emit systemStepReported(tr("Configuring Customer Experience Improvement Program policy..."), "INFO");
+                HKEY hKeyCeip;
+                if (RegCreateKeyExW(HKEY_LOCAL_MACHINE, L"SOFTWARE\\Policies\\Microsoft\\SQMClient\\Windows", 0, NULL, REG_OPTION_NON_VOLATILE, KEY_WRITE, NULL, &hKeyCeip, NULL) == ERROR_SUCCESS) {
+                    if (telemetryCeipVal) {
+                        // Restore enabled state (delete value CEIPEnable)
+                        RegDeleteValueW(hKeyCeip, L"CEIPEnable");
+                        emit systemStepReported(tr("CEIP telemetry policy removed (enabled)."), "SUCCESS");
+                    } else {
+                        // Disable CEIP (write CEIPEnable = 0)
+                        DWORD zero = 0;
+                        if (RegSetValueExW(hKeyCeip, L"CEIPEnable", 0, REG_DWORD, (const BYTE*)&zero, sizeof(zero)) == ERROR_SUCCESS) {
+                            emit systemStepReported(tr("CEIP telemetry policy disabled successfully."), "SUCCESS");
+                        } else {
+                            ok = false;
+                            emit systemStepReported(tr("Failed to write CEIP telemetry policy."), "ERROR");
+                        }
+                    }
+                    RegCloseKey(hKeyCeip);
+                } else {
+                    ok = false;
+                    emit systemStepReported(tr("Failed to open CEIP registry policy key."), "ERROR");
+                }
+            }
+
+            // 4. Windows Error Reporting (WER) policy
+            if (telemetryWerVal != origTelemetryWer) {
+                emit systemStepReported(tr("Configuring Windows Error Reporting policy..."), "INFO");
+                HKEY hKeyWer;
+                if (RegCreateKeyExW(HKEY_LOCAL_MACHINE, L"SOFTWARE\\Policies\\Microsoft\\Windows\\Windows Error Reporting", 0, NULL, REG_OPTION_NON_VOLATILE, KEY_WRITE, NULL, &hKeyWer, NULL) == ERROR_SUCCESS) {
+                    if (telemetryWerVal) {
+                        // Restore enabled state (delete value Disabled)
+                        RegDeleteValueW(hKeyWer, L"Disabled");
+                        emit systemStepReported(tr("Windows Error Reporting policy removed (enabled)."), "SUCCESS");
+                    } else {
+                        // Disable WER (write Disabled = 1)
+                        DWORD one = 1;
+                        if (RegSetValueExW(hKeyWer, L"Disabled", 0, REG_DWORD, (const BYTE*)&one, sizeof(one)) == ERROR_SUCCESS) {
+                            emit systemStepReported(tr("Windows Error Reporting policy disabled successfully."), "SUCCESS");
+                        } else {
+                            ok = false;
+                            emit systemStepReported(tr("Failed to write Windows Error Reporting policy."), "ERROR");
+                        }
+                    }
+                    RegCloseKey(hKeyWer);
+                } else {
+                    ok = false;
+                    emit systemStepReported(tr("Failed to open Windows Error Reporting policy key."), "ERROR");
+                }
+            }
+#else
+            // Simulation
+            emit systemStepReported(tr("[Simulation] Connected User Experiences set to: %1").arg(telemetryDiagTrackVal ? "Enabled" : "Disabled"), "SUCCESS");
+            emit systemStepReported(tr("[Simulation] Device Management WAP Service set to: %1").arg(telemetryWapPushVal ? "Enabled" : "Disabled"), "SUCCESS");
+            emit systemStepReported(tr("[Simulation] CEIP policy set to: %1").arg(telemetryCeipVal ? "Enabled" : "Disabled"), "SUCCESS");
+            emit systemStepReported(tr("[Simulation] Windows Error Reporting policy set to: %1").arg(telemetryWerVal ? "Enabled" : "Disabled"), "SUCCESS");
+#endif
+            if (ok) {
+                emit systemStepReported(tr("Telemetry configuration completed."), "SUCCESS");
+            } else {
+                telemetrySuccess = false;
+                emit systemStepReported(tr("Failed to apply some Telemetry settings."), "WARNING");
+            }
+        }
+
         // Steps 2+: Iterate drives in target list (only if changed)
         int driveIndex = 0;
         int totalDrives = targets.keys().size();
@@ -2131,7 +2500,7 @@ void Optimizer::startSystemOptimization() {
             QThread::msleep(100);
         }
 
-        bool overallSuccess = wSearchSuccess && hibernationSuccess && overlaySuccess && coreIsolationSuccess && mouseAccelSuccess && gameModeSuccess && firewallSuccess && printerSuccess && notificationsSuccess && powerPlanSuccess && defenderSuccess && overallDrivesSuccess && usbSuccess && remoteAccessSuccess;
+        bool overallSuccess = wSearchSuccess && hibernationSuccess && overlaySuccess && coreIsolationSuccess && mouseAccelSuccess && gameModeSuccess && firewallSuccess && printerSuccess && notificationsSuccess && powerPlanSuccess && defenderSuccess && overallDrivesSuccess && usbSuccess && remoteAccessSuccess && telemetrySuccess;
         if (overallSuccess) {
             emit systemStepReported(tr("System optimization completed successfully!"), "SUCCESS");
             Logger::log("System optimization completed successfully!", "INFO");
@@ -2159,6 +2528,11 @@ void Optimizer::startSystemOptimization() {
         m_originalDefenderCmdActive = defenderCmdVal;
         m_originalDefenderServiceActive = defenderServiceVal;
         m_originalRemoteAccessActive = remoteAccessVal;
+        m_originalTelemetryActive = telemetryVal;
+        m_originalTelemetryDiagTrackActive = telemetryDiagTrackVal;
+        m_originalTelemetryWapPushActive = telemetryWapPushVal;
+        m_originalTelemetryCeipActive = telemetryCeipVal;
+        m_originalTelemetryWerActive = telemetryWerVal;
         m_originalDriveStates = targets;
         
         loadSystemStates();
@@ -2182,6 +2556,11 @@ void Optimizer::startSystemOptimization() {
         emit originalDefenderCmdActiveChanged(m_originalDefenderCmdActive);
         emit originalDefenderServiceActiveChanged(m_originalDefenderServiceActive);
         emit originalRemoteAccessActiveChanged(m_originalRemoteAccessActive);
+        emit originalTelemetryActiveChanged(m_originalTelemetryActive);
+        emit originalTelemetryDiagTrackActiveChanged(m_originalTelemetryDiagTrackActive);
+        emit originalTelemetryWapPushActiveChanged(m_originalTelemetryWapPushActive);
+        emit originalTelemetryCeipActiveChanged(m_originalTelemetryCeipActive);
+        emit originalTelemetryWerActiveChanged(m_originalTelemetryWerActive);
         emit originalDriveStatesChanged(m_originalDriveStates);
 
         m_isOptimizingSystem = false;
@@ -2232,6 +2611,9 @@ void Optimizer::showPath(const QString &funcName) {
     } else if (funcName == "remoteaccess" || funcName == "rdp") {
         QProcess::startDetached("cmd.exe", QStringList() << "/c" << "start ms-settings:remotedesktop");
         Logger::log("Opening Remote Desktop settings...", "INFO");
+    } else if (funcName == "telemetry") {
+        QProcess::startDetached("cmd.exe", QStringList() << "/c" << "start ms-settings:privacy-feedback");
+        Logger::log("Opening Windows Diagnostic & Feedback settings...", "INFO");
     } else {
         // Assume drive letter like "C:" or "D:"
         QString letter = funcName.trimmed();

@@ -115,6 +115,14 @@ Item {
                                    optimizerBackend.defenderServiceActive !== optimizerBackend.originalDefenderServiceActive
     property bool usbPowerSavingChanged: optimizerBackend.usbChanged
     property bool remoteAccessChanged: optimizerBackend.remoteAccessActive !== optimizerBackend.originalRemoteAccessActive
+    property bool telemetryChanged: {
+        if (optimizerBackend.telemetryActive !== optimizerBackend.originalTelemetryActive) return true;
+        if (optimizerBackend.telemetryDiagTrackActive !== optimizerBackend.originalTelemetryDiagTrackActive) return true;
+        if (optimizerBackend.telemetryWapPushActive !== optimizerBackend.originalTelemetryWapPushActive) return true;
+        if (optimizerBackend.telemetryCeipActive !== optimizerBackend.originalTelemetryCeipActive) return true;
+        if (optimizerBackend.telemetryWerActive !== optimizerBackend.originalTelemetryWerActive) return true;
+        return false;
+    }
 
     property bool isDiscordOpen: false
     Timer {
@@ -153,6 +161,7 @@ Item {
         if (defenderChanged) count++;
         if (usbPowerSavingChanged) count++;
         if (remoteAccessChanged) count++;
+        if (telemetryChanged) count++;
         return count;
     }
 
@@ -284,6 +293,18 @@ Item {
             hasSidebar: false,
             revert: function() {
                 optimizerBackend.remoteAccessActive = optimizerBackend.originalRemoteAccessActive;
+            }
+        });
+        if (telemetryChanged) list.push({
+            name: qsTr("Telemetry"),
+            icon: "qrc:/MeguPackOptimizer/src/resources/folder.svg",
+            hasSidebar: true,
+            revert: function() {
+                optimizerBackend.telemetryActive = optimizerBackend.originalTelemetryActive;
+                optimizerBackend.telemetryDiagTrackActive = optimizerBackend.originalTelemetryDiagTrackActive;
+                optimizerBackend.telemetryWapPushActive = optimizerBackend.originalTelemetryWapPushActive;
+                optimizerBackend.telemetryCeipActive = optimizerBackend.originalTelemetryCeipActive;
+                optimizerBackend.telemetryWerActive = optimizerBackend.originalTelemetryWerActive;
             }
         });
         return list;
@@ -473,6 +494,39 @@ Item {
                     }
                 })(i);
             }
+        } else if (category === qsTr("Telemetry")) {
+            if (optimizerBackend.telemetryDiagTrackActive !== optimizerBackend.originalTelemetryDiagTrackActive) {
+                subList.push({
+                    name: qsTr("Connected User Experiences (DiagTrack)") + ": " + (optimizerBackend.originalTelemetryDiagTrackActive ? qsTr("Enabled") : qsTr("Disabled")) + " -> " + (optimizerBackend.telemetryDiagTrackActive ? qsTr("Enabled") : qsTr("Disabled")),
+                    revert: function() {
+                        optimizerBackend.telemetryDiagTrackActive = optimizerBackend.originalTelemetryDiagTrackActive;
+                    }
+                });
+            }
+            if (optimizerBackend.telemetryWapPushActive !== optimizerBackend.originalTelemetryWapPushActive) {
+                subList.push({
+                    name: qsTr("Device Management WAP Service (dmwappushservice)") + ": " + (optimizerBackend.originalTelemetryWapPushActive ? qsTr("Enabled") : qsTr("Disabled")) + " -> " + (optimizerBackend.telemetryWapPushActive ? qsTr("Enabled") : qsTr("Disabled")),
+                    revert: function() {
+                        optimizerBackend.telemetryWapPushActive = optimizerBackend.originalTelemetryWapPushActive;
+                    }
+                });
+            }
+            if (optimizerBackend.telemetryCeipActive !== optimizerBackend.originalTelemetryCeipActive) {
+                subList.push({
+                    name: qsTr("Customer Experience Improvement Program (CEIP)") + ": " + (optimizerBackend.originalTelemetryCeipActive ? qsTr("Enabled") : qsTr("Disabled")) + " -> " + (optimizerBackend.telemetryCeipActive ? qsTr("Enabled") : qsTr("Disabled")),
+                    revert: function() {
+                        optimizerBackend.telemetryCeipActive = optimizerBackend.originalTelemetryCeipActive;
+                    }
+                });
+            }
+            if (optimizerBackend.telemetryWerActive !== optimizerBackend.originalTelemetryWerActive) {
+                subList.push({
+                    name: qsTr("Windows Error Reporting (WER)") + ": " + (optimizerBackend.originalTelemetryWerActive ? qsTr("Enabled") : qsTr("Disabled")) + " -> " + (optimizerBackend.telemetryWerActive ? qsTr("Enabled") : qsTr("Disabled")),
+                    revert: function() {
+                        optimizerBackend.telemetryWerActive = optimizerBackend.originalTelemetryWerActive;
+                    }
+                });
+            }
         }
         return subList;
     }
@@ -493,6 +547,7 @@ Item {
         if (name === qsTr("Windows Defender")) return defenderPanel;
         if (name === qsTr("USB 3.0 Power Saving")) return usbPanel;
         if (name === qsTr("Remote Access (RDP)")) return remoteAccessPanel;
+        if (name === qsTr("Telemetry")) return telemetryPanel;
         return null;
     }
 
@@ -1651,6 +1706,153 @@ Item {
                             anchors.verticalCenter: parent.verticalCenter
                             onToggled: (isChecked) => {
                                 optimizerBackend.remoteAccessActive = isChecked;
+                            }
+                        }
+                    }
+                }
+
+                // Telemetry Panel
+                AcrylicPanel {
+                    id: telemetryPanel
+                    width: parent.width
+                    height: 72
+
+                    Row {
+                        anchors.left: parent.left
+                        anchors.verticalCenter: parent.verticalCenter
+                        spacing: 12
+
+                        Item {
+                            width: 28
+                            height: 28
+                            anchors.verticalCenter: parent.verticalCenter
+                            Image {
+                                id: telemetryIconImg
+                                source: "qrc:/MeguPackOptimizer/src/resources/folder.svg"
+                                anchors.fill: parent
+                                sourceSize.width: 28
+                                sourceSize.height: 28
+                                visible: false
+                            }
+                            ColorOverlay {
+                                anchors.fill: telemetryIconImg
+                                source: telemetryIconImg
+                                color: Theme.accent
+                            }
+                        }
+
+                        Column {
+                            anchors.verticalCenter: parent.verticalCenter
+                            spacing: 2
+
+                            Row {
+                                spacing: 8
+                                Text {
+                                    text: qsTr("Telemetry")
+                                    color: Theme.textPrimary
+                                    font.family: Theme.fontFamily
+                                    font.pixelSize: 13
+                                    font.bold: true
+                                }
+                                Rectangle {
+                                    visible: root.telemetryChanged
+                                    height: 16
+                                    width: selectedTextTelemetry.contentWidth + 10
+                                    radius: 4
+                                    color: Theme.accentDim
+                                    border.color: Theme.accent
+                                    border.width: 1
+                                    anchors.verticalCenter: parent.verticalCenter
+                                    Text {
+                                        id: selectedTextTelemetry
+                                        text: qsTr("Selected for application")
+                                        color: Theme.accent
+                                        font.family: Theme.fontFamily
+                                        font.pixelSize: 8
+                                        font.bold: true
+                                        anchors.centerIn: parent
+                                    }
+                                }
+                            }
+
+                            Text {
+                                text: qsTr("Disables system diagnostic data collection, CEIP telemetry policies, error reporting, and Connected User Experiences services.")
+                                color: Theme.textMuted
+                                font.family: Theme.fontFamily
+                                font.pixelSize: 10
+                            }
+                        }
+                    }
+
+                    Row {
+                        anchors.right: parent.right
+                        anchors.verticalCenter: parent.verticalCenter
+                        spacing: 16
+
+                        Text {
+                            text: qsTr("Show Path")
+                            color: telemetryPathMouse.containsMouse ? Theme.accentLight : Theme.accent
+                            font.family: Theme.fontFamily
+                            font.pixelSize: 11
+                            font.bold: true
+                            font.underline: true
+                            anchors.verticalCenter: parent.verticalCenter
+                            MouseArea {
+                                id: telemetryPathMouse
+                                anchors.fill: parent
+                                hoverEnabled: true
+                                cursorShape: Qt.PointingHandCursor
+                                onClicked: { optimizerBackend.showPath("telemetry"); }
+                            }
+                        }
+
+                        Rectangle {
+                            width: 32
+                            height: 32
+                            radius: 16
+                            color: telemetryArrowMouseArea.containsMouse ? Theme.accentDim : "transparent"
+                            border.color: telemetryArrowMouseArea.containsMouse ? Theme.accent : Theme.border
+                            border.width: 1
+                            anchors.verticalCenter: parent.verticalCenter
+
+                            Behavior on color { ColorAnimation { duration: Theme.animFast } }
+                            Behavior on border.color { ColorAnimation { duration: Theme.animFast } }
+
+                            Item {
+                                width: 14
+                                height: 14
+                                anchors.centerIn: parent
+                                Image {
+                                    id: telemetryArrowImg
+                                    source: "qrc:/MeguPackOptimizer/src/resources/arrow.svg"
+                                    anchors.fill: parent
+                                    sourceSize.width: 14
+                                    sourceSize.height: 14
+                                    visible: false
+                                }
+                                ColorOverlay {
+                                    anchors.fill: telemetryArrowImg
+                                    source: telemetryArrowImg
+                                    color: telemetryArrowMouseArea.containsMouse ? Theme.accent : Theme.textSecondary
+                                }
+                            }
+
+                            MouseArea {
+                                id: telemetryArrowMouseArea
+                                anchors.fill: parent
+                                hoverEnabled: true
+                                cursorShape: Qt.PointingHandCursor
+                                onClicked: {
+                                    root.activeDrawer = "telemetry";
+                                }
+                            }
+                        }
+
+                        MeguSwitch {
+                            checked: !optimizerBackend.telemetryActive
+                            anchors.verticalCenter: parent.verticalCenter
+                            onToggled: (isChecked) => {
+                                optimizerBackend.telemetryActive = !isChecked;
                             }
                         }
                     }
@@ -4034,6 +4236,51 @@ Item {
                             font.family: Theme.fontFamily
                             font.pixelSize: 11
                             visible: optimizerBackend.usbDevices.length === 0
+                        }
+                    }
+
+                    // Telemetry Options Content
+                    Column {
+                        id: telemetryColumn
+                        width: parent.width
+                        spacing: 20
+                        visible: root.activeDrawer === "telemetry"
+
+                        Text {
+                            text: qsTr("Configure custom Windows telemetry and error reporting options.")
+                            color: Theme.textSecondary
+                            font.family: Theme.fontFamily
+                            font.pixelSize: 11
+                            font.bold: true
+                        }
+
+                        Column {
+                            width: parent.width
+                            spacing: 12
+
+                            MeguSwitch {
+                                text: qsTr("Connected User Experiences (DiagTrack)")
+                                checked: !optimizerBackend.telemetryDiagTrackActive
+                                onToggled: (isChecked) => { optimizerBackend.telemetryDiagTrackActive = !isChecked; }
+                            }
+
+                            MeguSwitch {
+                                text: qsTr("Device Management WAP Service (dmwappushservice)")
+                                checked: !optimizerBackend.telemetryWapPushActive
+                                onToggled: (isChecked) => { optimizerBackend.telemetryWapPushActive = !isChecked; }
+                            }
+
+                            MeguSwitch {
+                                text: qsTr("Customer Experience Improvement Program (CEIP)")
+                                checked: !optimizerBackend.telemetryCeipActive
+                                onToggled: (isChecked) => { optimizerBackend.telemetryCeipActive = !isChecked; }
+                            }
+
+                            MeguSwitch {
+                                text: qsTr("Windows Error Reporting (WER)")
+                                checked: !optimizerBackend.telemetryWerActive
+                                onToggled: (isChecked) => { optimizerBackend.telemetryWerActive = !isChecked; }
+                            }
                         }
                     }
                 }

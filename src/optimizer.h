@@ -75,6 +75,16 @@ class Optimizer : public QObject {
     Q_PROPERTY(int mpoValue READ mpoValue NOTIFY mpoValueChanged)
     Q_PROPERTY(bool remoteAccessActive READ remoteAccessActive WRITE setRemoteAccessActive NOTIFY remoteAccessActiveChanged)
     Q_PROPERTY(bool originalRemoteAccessActive READ originalRemoteAccessActive NOTIFY originalRemoteAccessActiveChanged)
+    Q_PROPERTY(bool telemetryActive READ telemetryActive WRITE setTelemetryActive NOTIFY telemetryActiveChanged)
+    Q_PROPERTY(bool originalTelemetryActive READ originalTelemetryActive NOTIFY originalTelemetryActiveChanged)
+    Q_PROPERTY(bool telemetryDiagTrackActive READ telemetryDiagTrackActive WRITE setTelemetryDiagTrackActive NOTIFY telemetryDiagTrackActiveChanged)
+    Q_PROPERTY(bool originalTelemetryDiagTrackActive READ originalTelemetryDiagTrackActive NOTIFY originalTelemetryDiagTrackActiveChanged)
+    Q_PROPERTY(bool telemetryWapPushActive READ telemetryWapPushActive WRITE setTelemetryWapPushActive NOTIFY telemetryWapPushActiveChanged)
+    Q_PROPERTY(bool originalTelemetryWapPushActive READ originalTelemetryWapPushActive NOTIFY originalTelemetryWapPushActiveChanged)
+    Q_PROPERTY(bool telemetryCeipActive READ telemetryCeipActive WRITE setTelemetryCeipActive NOTIFY telemetryCeipActiveChanged)
+    Q_PROPERTY(bool originalTelemetryCeipActive READ originalTelemetryCeipActive NOTIFY originalTelemetryCeipActiveChanged)
+    Q_PROPERTY(bool telemetryWerActive READ telemetryWerActive WRITE setTelemetryWerActive NOTIFY telemetryWerActiveChanged)
+    Q_PROPERTY(bool originalTelemetryWerActive READ originalTelemetryWerActive NOTIFY originalTelemetryWerActiveChanged)
     Q_PROPERTY(QStringList fixedDrives READ fixedDrives NOTIFY fixedDrivesChanged)
     Q_PROPERTY(QVariantMap driveStates READ driveStates WRITE setDriveStates NOTIFY driveStatesChanged)
     Q_PROPERTY(QVariantMap originalDriveStates READ originalDriveStates NOTIFY originalDriveStatesChanged)
@@ -161,6 +171,16 @@ public:
     int mpoValue() const { return m_mpoValue; }
     bool remoteAccessActive() const { return m_remoteAccessActive; }
     bool originalRemoteAccessActive() const { return m_originalRemoteAccessActive; }
+    bool telemetryActive() const { return m_telemetryActive; }
+    bool originalTelemetryActive() const { return m_originalTelemetryActive; }
+    bool telemetryDiagTrackActive() const { return m_telemetryDiagTrackActive; }
+    bool originalTelemetryDiagTrackActive() const { return m_originalTelemetryDiagTrackActive; }
+    bool telemetryWapPushActive() const { return m_telemetryWapPushActive; }
+    bool originalTelemetryWapPushActive() const { return m_originalTelemetryWapPushActive; }
+    bool telemetryCeipActive() const { return m_telemetryCeipActive; }
+    bool originalTelemetryCeipActive() const { return m_originalTelemetryCeipActive; }
+    bool telemetryWerActive() const { return m_telemetryWerActive; }
+    bool originalTelemetryWerActive() const { return m_originalTelemetryWerActive; }
     QStringList fixedDrives() const { return m_fixedDrives; }
     QVariantMap driveStates() const { return m_driveStates; }
     QVariantMap originalDriveStates() const { return m_originalDriveStates; }
@@ -190,6 +210,11 @@ public:
     void setDriveStates(const QVariantMap &states);
     void setUsbPowerSavingActive(bool val);
     void setRemoteAccessActive(bool val);
+    void setTelemetryActive(bool val);
+    void setTelemetryDiagTrackActive(bool val);
+    void setTelemetryWapPushActive(bool val);
+    void setTelemetryCeipActive(bool val);
+    void setTelemetryWerActive(bool val);
     
     Q_INVOKABLE bool isDiscordRunning();
     Q_INVOKABLE void killDiscord();
@@ -277,6 +302,16 @@ signals:
     void mpoValueChanged(int val);
     void remoteAccessActiveChanged(bool val);
     void originalRemoteAccessActiveChanged(bool val);
+    void telemetryActiveChanged(bool val);
+    void originalTelemetryActiveChanged(bool val);
+    void telemetryDiagTrackActiveChanged(bool val);
+    void originalTelemetryDiagTrackActiveChanged(bool val);
+    void telemetryWapPushActiveChanged(bool val);
+    void originalTelemetryWapPushActiveChanged(bool val);
+    void telemetryCeipActiveChanged(bool val);
+    void originalTelemetryCeipActiveChanged(bool val);
+    void telemetryWerActiveChanged(bool val);
+    void originalTelemetryWerActiveChanged(bool val);
     void fixedDrivesChanged(const QStringList &val);
     void driveStatesChanged(const QVariantMap &val);
     void originalDriveStatesChanged(const QVariantMap &val);
@@ -359,6 +394,16 @@ private:
     int m_mpoValue = 0;
     bool m_remoteAccessActive = false;
     bool m_originalRemoteAccessActive = false;
+    bool m_telemetryActive = true;
+    bool m_originalTelemetryActive = true;
+    bool m_telemetryDiagTrackActive = true;
+    bool m_originalTelemetryDiagTrackActive = true;
+    bool m_telemetryWapPushActive = true;
+    bool m_originalTelemetryWapPushActive = true;
+    bool m_telemetryCeipActive = true;
+    bool m_originalTelemetryCeipActive = true;
+    bool m_telemetryWerActive = true;
+    bool m_originalTelemetryWerActive = true;
     QStringList m_fixedDrives;
     QVariantMap m_driveStates;
     QVariantMap m_originalDriveStates;
