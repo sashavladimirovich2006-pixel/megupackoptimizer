@@ -10,6 +10,7 @@ Item {
     property bool accented: false
     property bool flat: false
     property bool hasDropdown: false
+    property bool dropdownOpen: false
     
     signal clicked()
     signal dropdownClicked()
@@ -168,6 +169,14 @@ Item {
             sourceSize.width: 8
             sourceSize.height: 8
             visible: false
+            rotation: control.dropdownOpen ? 90 : 0
+            
+            Behavior on rotation {
+                NumberAnimation {
+                    duration: 150
+                    easing.type: Easing.InOutQuad
+                }
+            }
         }
         
         ColorOverlay {

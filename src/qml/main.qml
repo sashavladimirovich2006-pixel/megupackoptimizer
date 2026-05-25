@@ -241,6 +241,7 @@ ApplicationWindow {
                         accented: window.activeTab === 3
                         flat: !accented
                         hasDropdown: true
+                        dropdownOpen: optDropdown.opened
                         enabled: !optimizerBackend.isOptimizingSystem
                         onClicked: {
                             window.activeTab = 3;
@@ -472,8 +473,9 @@ ApplicationWindow {
 
     Popup {
         id: optDropdown
-        x: tab3.mapToItem(window.contentItem, 0, 0).x + (tab3.width - width) / 2
-        y: tab3.mapToItem(window.contentItem, 0, 0).y + tab3.height + 6
+        parent: tab3
+        x: (parent.width - width) / 2
+        y: parent.height + 6
         width: 180
         height: implicitHeight
         padding: 6
