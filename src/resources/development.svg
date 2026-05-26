@@ -1,0 +1,22 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 120" fill="none">
+  <!-- Soft glowing background or outline container -->
+  <rect x="5" y="5" width="110" height="110" rx="16" fill="rgba(255, 159, 28, 0.02)" stroke="currentColor" stroke-width="1.5" stroke-dasharray="4 4" />
+  
+  <!-- Stylized premium hammer -->
+  <g transform="translate(10, -5)">
+    <!-- Handle (diagonal with a grip) -->
+    <line x1="35" y1="75" x2="65" y2="45" stroke="currentColor" stroke-width="4.5" stroke-linecap="round" />
+    <line x1="31" y1="79" x2="43" y2="67" stroke="#FF9F1C" stroke-width="5.5" stroke-linecap="round" />
+    
+    <!-- Metal Head -->
+    <path d="M60 40 L82 18 C83.5 16.5 86 16.5 87.5 18 L90 20.5 C91.5 22 91.5 24.5 90 26 L68 48 Z" fill="currentColor" />
+    <!-- Claw -->
+    <path d="M82 18 C87 18 92 23 94 28 C89 28 84 25 80 21" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" />
+    <!-- Impact head tip -->
+    <path d="M59 41 L52 48 C51 49 49 49 48 48 L46 46 C45 45 45 43 46 42 L53 35 Z" fill="currentColor" opacity="0.8" />
+  </g>
+  
+  <!-- Text "РАЗРАБОТКА" -->
+  <rect x="25" y="86" width="70" height="18" rx="4" fill="rgba(255, 159, 28, 0.1)" stroke="#FF9F1C" stroke-width="1" />
+  <text x="60" y="98.5" text-anchor="middle" fill="#FF9F1C" font-family="Segoe UI, Roboto, Helvetica, sans-serif" font-size="8.5" font-weight="900" letter-spacing="1.5">РАЗРАБОТКА</text>
+</svg>

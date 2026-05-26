@@ -586,7 +586,7 @@ Item {
         });
         if (steamFriendsSettingsChanged) list.push({
             name: qsTr("Steam Settings"),
-            icon: "qrc:/MeguPackOptimizer/src/resources/settings.svg",
+            icon: "qrc:/MeguPackOptimizer/src/resources/steam.svg",
             hasSidebar: true,
             revert: function() {
                 optimizerBackend.steamFriendsSettings = optimizerBackend.originalSteamFriendsSettings;
@@ -1548,7 +1548,7 @@ Item {
                             anchors.verticalCenter: parent.verticalCenter
 
                             Image {
-                                source: "qrc:/MeguPackOptimizer/src/resources/settings.svg"
+                                source: "qrc:/MeguPackOptimizer/src/resources/steam.svg"
                                 anchors.centerIn: parent
                                 width: 20
                                 height: 20

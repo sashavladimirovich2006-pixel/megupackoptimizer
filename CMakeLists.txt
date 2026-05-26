@@ -49,6 +49,8 @@ qt_add_qml_module(megu_pack_optimizer
         src/qml/views/OptimizationView.qml
     RESOURCES
         src/resources/settings.svg
+        src/resources/steam.svg
+        src/resources/development.svg
         src/resources/folder.svg
         src/resources/play.svg
         src/resources/bolt.svg
