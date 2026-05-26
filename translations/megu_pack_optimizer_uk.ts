@@ -75,1270 +75,1278 @@
 <context>
     <name>OptimizationView</name>
     <message>
-        <location filename="../build/MeguPackOptimizer/src/qml/views/OptimizationView.qml" line="733" />
-        <location filename="../src/qml/views/OptimizationView.qml" line="759" />
+        <location filename="../build/MeguPackOptimizer/src/qml/views/OptimizationView.qml" line="759" />
+        <location filename="../src/qml/views/OptimizationView.qml" line="900" />
         <source>SYSTEM OPTIMIZATION</source>
         <translation>СИСТЕМНА ОПТИМІЗАЦІЯ</translation>
     </message>
     <message>
-        <location filename="../build/MeguPackOptimizer/src/qml/views/OptimizationView.qml" line="199" />
-        <location filename="../build/MeguPackOptimizer/src/qml/views/OptimizationView.qml" line="401" />
-        <location filename="../build/MeguPackOptimizer/src/qml/views/OptimizationView.qml" line="628" />
-        <location filename="../build/MeguPackOptimizer/src/qml/views/OptimizationView.qml" line="1054" />
-        <location filename="../src/qml/views/OptimizationView.qml" line="205" />
-        <location filename="../src/qml/views/OptimizationView.qml" line="425" />
-        <location filename="../src/qml/views/OptimizationView.qml" line="652" />
-        <location filename="../src/qml/views/OptimizationView.qml" line="1164" />
+        <location filename="../build/MeguPackOptimizer/src/qml/views/OptimizationView.qml" line="205" />
+        <location filename="../build/MeguPackOptimizer/src/qml/views/OptimizationView.qml" line="425" />
+        <location filename="../build/MeguPackOptimizer/src/qml/views/OptimizationView.qml" line="652" />
+        <location filename="../build/MeguPackOptimizer/src/qml/views/OptimizationView.qml" line="1164" />
+        <location filename="../src/qml/views/OptimizationView.qml" line="299" />
+        <location filename="../src/qml/views/OptimizationView.qml" line="527" />
+        <location filename="../src/qml/views/OptimizationView.qml" line="793" />
+        <location filename="../src/qml/views/OptimizationView.qml" line="1305" />
         <source>File Indexing</source>
         <translation>Індексація файлів</translation>
     </message>
     <message>
-        <location filename="../build/MeguPackOptimizer/src/qml/views/OptimizationView.qml" line="1082" />
-        <location filename="../src/qml/views/OptimizationView.qml" line="1192" />
+        <location filename="../build/MeguPackOptimizer/src/qml/views/OptimizationView.qml" line="1192" />
+        <location filename="../src/qml/views/OptimizationView.qml" line="1333" />
         <source>Controls file search indexing services and drive index properties.</source>
         <translation>Керує службами індексації пошуку файлів та властивостями індексації дисків.</translation>
     </message>
     <message>
-        <location filename="../build/MeguPackOptimizer/src/qml/views/OptimizationView.qml" line="3458" />
-        <location filename="../src/qml/views/OptimizationView.qml" line="3657" />
+        <location filename="../build/MeguPackOptimizer/src/qml/views/OptimizationView.qml" line="3657" />
+        <location filename="../src/qml/views/OptimizationView.qml" line="3904" />
         <source>Optimize</source>
         <translation>Оптимізувати</translation>
     </message>
     <message>
-        <location filename="../build/MeguPackOptimizer/src/qml/views/OptimizationView.qml" line="404" />
-        <location filename="../build/MeguPackOptimizer/src/qml/views/OptimizationView.qml" line="3631" />
-        <location filename="../src/qml/views/OptimizationView.qml" line="428" />
-        <location filename="../src/qml/views/OptimizationView.qml" line="3830" />
+        <location filename="../build/MeguPackOptimizer/src/qml/views/OptimizationView.qml" line="428" />
+        <location filename="../build/MeguPackOptimizer/src/qml/views/OptimizationView.qml" line="3830" />
+        <location filename="../src/qml/views/OptimizationView.qml" line="530" />
+        <location filename="../src/qml/views/OptimizationView.qml" line="4079" />
         <source>Windows Search service</source>
         <translation>Служба Windows Search</translation>
     </message>
     <message>
-        <location filename="../build/MeguPackOptimizer/src/qml/views/OptimizationView.qml" line="1536" />
-        <location filename="../build/MeguPackOptimizer/src/qml/views/OptimizationView.qml" line="1642" />
-        <location filename="../build/MeguPackOptimizer/src/qml/views/OptimizationView.qml" line="1748" />
-        <location filename="../build/MeguPackOptimizer/src/qml/views/OptimizationView.qml" line="1864" />
-        <location filename="../build/MeguPackOptimizer/src/qml/views/OptimizationView.qml" line="1970" />
-        <location filename="../build/MeguPackOptimizer/src/qml/views/OptimizationView.qml" line="2076" />
-        <location filename="../build/MeguPackOptimizer/src/qml/views/OptimizationView.qml" line="2182" />
-        <location filename="../build/MeguPackOptimizer/src/qml/views/OptimizationView.qml" line="2330" />
-        <location filename="../build/MeguPackOptimizer/src/qml/views/OptimizationView.qml" line="2502" />
-        <location filename="../build/MeguPackOptimizer/src/qml/views/OptimizationView.qml" line="2653" />
-        <location filename="../build/MeguPackOptimizer/src/qml/views/OptimizationView.qml" line="2818" />
-        <location filename="../build/MeguPackOptimizer/src/qml/views/OptimizationView.qml" line="2933" />
-        <location filename="../build/MeguPackOptimizer/src/qml/views/OptimizationView.qml" line="3048" />
-        <location filename="../build/MeguPackOptimizer/src/qml/views/OptimizationView.qml" line="3637" />
-        <location filename="../build/MeguPackOptimizer/src/qml/views/OptimizationView.qml" line="3669" />
-        <location filename="../build/MeguPackOptimizer/src/qml/views/OptimizationView.qml" line="3703" />
-        <location filename="../src/qml/views/OptimizationView.qml" line="1646" />
-        <location filename="../src/qml/views/OptimizationView.qml" line="1752" />
-        <location filename="../src/qml/views/OptimizationView.qml" line="1858" />
-        <location filename="../src/qml/views/OptimizationView.qml" line="1974" />
-        <location filename="../src/qml/views/OptimizationView.qml" line="2080" />
-        <location filename="../src/qml/views/OptimizationView.qml" line="2275" />
-        <location filename="../src/qml/views/OptimizationView.qml" line="2381" />
-        <location filename="../src/qml/views/OptimizationView.qml" line="2529" />
-        <location filename="../src/qml/views/OptimizationView.qml" line="2701" />
-        <location filename="../src/qml/views/OptimizationView.qml" line="2852" />
-        <location filename="../src/qml/views/OptimizationView.qml" line="3017" />
-        <location filename="../src/qml/views/OptimizationView.qml" line="3132" />
-        <location filename="../src/qml/views/OptimizationView.qml" line="3247" />
-        <location filename="../src/qml/views/OptimizationView.qml" line="3836" />
-        <location filename="../src/qml/views/OptimizationView.qml" line="3868" />
-        <location filename="../src/qml/views/OptimizationView.qml" line="3902" />
+        <location filename="../build/MeguPackOptimizer/src/qml/views/OptimizationView.qml" line="1646" />
+        <location filename="../build/MeguPackOptimizer/src/qml/views/OptimizationView.qml" line="1752" />
+        <location filename="../build/MeguPackOptimizer/src/qml/views/OptimizationView.qml" line="1858" />
+        <location filename="../build/MeguPackOptimizer/src/qml/views/OptimizationView.qml" line="1974" />
+        <location filename="../build/MeguPackOptimizer/src/qml/views/OptimizationView.qml" line="2080" />
+        <location filename="../build/MeguPackOptimizer/src/qml/views/OptimizationView.qml" line="2275" />
+        <location filename="../build/MeguPackOptimizer/src/qml/views/OptimizationView.qml" line="2381" />
+        <location filename="../build/MeguPackOptimizer/src/qml/views/OptimizationView.qml" line="2529" />
+        <location filename="../build/MeguPackOptimizer/src/qml/views/OptimizationView.qml" line="2701" />
+        <location filename="../build/MeguPackOptimizer/src/qml/views/OptimizationView.qml" line="2852" />
+        <location filename="../build/MeguPackOptimizer/src/qml/views/OptimizationView.qml" line="3017" />
+        <location filename="../build/MeguPackOptimizer/src/qml/views/OptimizationView.qml" line="3132" />
+        <location filename="../build/MeguPackOptimizer/src/qml/views/OptimizationView.qml" line="3247" />
+        <location filename="../build/MeguPackOptimizer/src/qml/views/OptimizationView.qml" line="3836" />
+        <location filename="../build/MeguPackOptimizer/src/qml/views/OptimizationView.qml" line="3868" />
+        <location filename="../build/MeguPackOptimizer/src/qml/views/OptimizationView.qml" line="3902" />
+        <location filename="../src/qml/views/OptimizationView.qml" line="1893" />
+        <location filename="../src/qml/views/OptimizationView.qml" line="1999" />
+        <location filename="../src/qml/views/OptimizationView.qml" line="2105" />
+        <location filename="../src/qml/views/OptimizationView.qml" line="2221" />
+        <location filename="../src/qml/views/OptimizationView.qml" line="2327" />
+        <location filename="../src/qml/views/OptimizationView.qml" line="2522" />
+        <location filename="../src/qml/views/OptimizationView.qml" line="2628" />
+        <location filename="../src/qml/views/OptimizationView.qml" line="2776" />
+        <location filename="../src/qml/views/OptimizationView.qml" line="2948" />
+        <location filename="../src/qml/views/OptimizationView.qml" line="3099" />
+        <location filename="../src/qml/views/OptimizationView.qml" line="3264" />
+        <location filename="../src/qml/views/OptimizationView.qml" line="3379" />
+        <location filename="../src/qml/views/OptimizationView.qml" line="3494" />
+        <location filename="../src/qml/views/OptimizationView.qml" line="4085" />
+        <location filename="../src/qml/views/OptimizationView.qml" line="4117" />
+        <location filename="../src/qml/views/OptimizationView.qml" line="4151" />
         <source>Show Path</source>
         <translation>Показати шлях</translation>
     </message>
     <message>
-        <location filename="../build/MeguPackOptimizer/src/qml/views/OptimizationView.qml" line="412" />
-        <location filename="../build/MeguPackOptimizer/src/qml/views/OptimizationView.qml" line="3659" />
-        <location filename="../src/qml/views/OptimizationView.qml" line="436" />
-        <location filename="../src/qml/views/OptimizationView.qml" line="3858" />
+        <location filename="../build/MeguPackOptimizer/src/qml/views/OptimizationView.qml" line="436" />
+        <location filename="../build/MeguPackOptimizer/src/qml/views/OptimizationView.qml" line="3858" />
+        <location filename="../src/qml/views/OptimizationView.qml" line="538" />
+        <location filename="../src/qml/views/OptimizationView.qml" line="4107" />
         <source>Drive C: indexing</source>
         <translation>Індексація диска С</translation>
     </message>
     <message>
-        <location filename="../build/MeguPackOptimizer/src/qml/views/OptimizationView.qml" line="4442" />
-        <location filename="../src/qml/views/OptimizationView.qml" line="4641" />
+        <location filename="../build/MeguPackOptimizer/src/qml/views/OptimizationView.qml" line="4641" />
+        <location filename="../src/qml/views/OptimizationView.qml" line="4890" />
         <source>Detected print queues in Device Manager:</source>
         <translation>Виявлені черги друку в Диспетчері пристроїв:</translation>
     </message>
     <message>
-        <location filename="../build/MeguPackOptimizer/src/qml/views/OptimizationView.qml" line="4499" />
-        <location filename="../src/qml/views/OptimizationView.qml" line="4698" />
+        <location filename="../build/MeguPackOptimizer/src/qml/views/OptimizationView.qml" line="4698" />
+        <location filename="../src/qml/views/OptimizationView.qml" line="4947" />
         <source>No print queues detected.</source>
         <translation>Черг друку не виявлено.</translation>
     </message>
     <message>
-        <location filename="../build/MeguPackOptimizer/src/qml/views/OptimizationView.qml" line="4516" />
-        <location filename="../src/qml/views/OptimizationView.qml" line="4715" />
+        <location filename="../build/MeguPackOptimizer/src/qml/views/OptimizationView.qml" line="4715" />
+        <location filename="../src/qml/views/OptimizationView.qml" line="4964" />
         <source>Configure custom Windows notification and sound alert rules.</source>
         <translation>Налаштування кастомних правил сповіщень та звукових сигналів Windows.</translation>
     </message>
     <message>
-        <location filename="../build/MeguPackOptimizer/src/qml/views/OptimizationView.qml" line="455" />
-        <location filename="../build/MeguPackOptimizer/src/qml/views/OptimizationView.qml" line="4528" />
-        <location filename="../src/qml/views/OptimizationView.qml" line="479" />
-        <location filename="../src/qml/views/OptimizationView.qml" line="4727" />
+        <location filename="../build/MeguPackOptimizer/src/qml/views/OptimizationView.qml" line="479" />
+        <location filename="../build/MeguPackOptimizer/src/qml/views/OptimizationView.qml" line="4727" />
+        <location filename="../src/qml/views/OptimizationView.qml" line="581" />
+        <location filename="../src/qml/views/OptimizationView.qml" line="4976" />
         <source>Global Toast Notifications</source>
         <translation>Глобальні спливаючі сповіщення</translation>
     </message>
     <message>
-        <location filename="../build/MeguPackOptimizer/src/qml/views/OptimizationView.qml" line="463" />
-        <location filename="../build/MeguPackOptimizer/src/qml/views/OptimizationView.qml" line="4534" />
-        <location filename="../src/qml/views/OptimizationView.qml" line="487" />
-        <location filename="../src/qml/views/OptimizationView.qml" line="4733" />
+        <location filename="../build/MeguPackOptimizer/src/qml/views/OptimizationView.qml" line="487" />
+        <location filename="../build/MeguPackOptimizer/src/qml/views/OptimizationView.qml" line="4733" />
+        <location filename="../src/qml/views/OptimizationView.qml" line="589" />
+        <location filename="../src/qml/views/OptimizationView.qml" line="4982" />
         <source>App Notifications</source>
         <translation>Сповіщення від додатків</translation>
     </message>
     <message>
-        <location filename="../build/MeguPackOptimizer/src/qml/views/OptimizationView.qml" line="471" />
-        <location filename="../build/MeguPackOptimizer/src/qml/views/OptimizationView.qml" line="4540" />
-        <location filename="../src/qml/views/OptimizationView.qml" line="495" />
-        <location filename="../src/qml/views/OptimizationView.qml" line="4739" />
+        <location filename="../build/MeguPackOptimizer/src/qml/views/OptimizationView.qml" line="495" />
+        <location filename="../build/MeguPackOptimizer/src/qml/views/OptimizationView.qml" line="4739" />
+        <location filename="../src/qml/views/OptimizationView.qml" line="597" />
+        <location filename="../src/qml/views/OptimizationView.qml" line="4988" />
         <source>Notification Sounds</source>
         <translation>Звуки сповіщень</translation>
     </message>
     <message>
-        <location filename="../build/MeguPackOptimizer/src/qml/views/OptimizationView.qml" line="479" />
-        <location filename="../build/MeguPackOptimizer/src/qml/views/OptimizationView.qml" line="4546" />
-        <location filename="../src/qml/views/OptimizationView.qml" line="503" />
-        <location filename="../src/qml/views/OptimizationView.qml" line="4745" />
+        <location filename="../build/MeguPackOptimizer/src/qml/views/OptimizationView.qml" line="503" />
+        <location filename="../build/MeguPackOptimizer/src/qml/views/OptimizationView.qml" line="4745" />
+        <location filename="../src/qml/views/OptimizationView.qml" line="605" />
+        <location filename="../src/qml/views/OptimizationView.qml" line="4994" />
         <source>Lock Screen Notifications</source>
         <translation>Сповіщення на екрані блокування</translation>
     </message>
     <message>
-        <location filename="../build/MeguPackOptimizer/src/qml/views/OptimizationView.qml" line="4564" />
-        <location filename="../src/qml/views/OptimizationView.qml" line="4763" />
+        <location filename="../build/MeguPackOptimizer/src/qml/views/OptimizationView.qml" line="4763" />
+        <location filename="../src/qml/views/OptimizationView.qml" line="5012" />
         <source>Ultimate Performance Scheme</source>
         <translation>Схема максимальної продуктивності</translation>
     </message>
     <message>
-        <location filename="../build/MeguPackOptimizer/src/qml/views/OptimizationView.qml" line="4571" />
-        <location filename="../src/qml/views/OptimizationView.qml" line="4770" />
+        <location filename="../build/MeguPackOptimizer/src/qml/views/OptimizationView.qml" line="4770" />
+        <location filename="../src/qml/views/OptimizationView.qml" line="5019" />
         <source>Unlocks and enables the hidden Windows Ultimate Performance power scheme for zero latencies.</source>
         <translation>Розблоковує та вмикає приховану схему живлення Windows "Максимальна продуктивність" для нульових затримок.</translation>
     </message>
     <message>
-        <location filename="../build/MeguPackOptimizer/src/qml/views/OptimizationView.qml" line="4581" />
-        <location filename="../src/qml/views/OptimizationView.qml" line="4780" />
+        <location filename="../build/MeguPackOptimizer/src/qml/views/OptimizationView.qml" line="4780" />
+        <location filename="../src/qml/views/OptimizationView.qml" line="5029" />
         <source>Activate Ultimate Performance</source>
         <translation>Активувати максимальну продуктивність</translation>
     </message>
     <message>
-        <location filename="../build/MeguPackOptimizer/src/qml/views/OptimizationView.qml" line="4599" />
-        <location filename="../src/qml/views/OptimizationView.qml" line="4798" />
+        <location filename="../build/MeguPackOptimizer/src/qml/views/OptimizationView.qml" line="4798" />
+        <location filename="../src/qml/views/OptimizationView.qml" line="5047" />
         <source>Available Power Schemes:</source>
         <translation>Доступні схеми живлення:</translation>
     </message>
     <message>
-        <location filename="../build/MeguPackOptimizer/src/qml/views/OptimizationView.qml" line="5362" />
-        <location filename="../src/qml/views/OptimizationView.qml" line="5561" />
+        <location filename="../build/MeguPackOptimizer/src/qml/views/OptimizationView.qml" line="5561" />
+        <location filename="../src/qml/views/OptimizationView.qml" line="5977" />
         <source>%1 Details</source>
         <translation>Деталі %1</translation>
     </message>
     <message>
-        <location filename="../build/MeguPackOptimizer/src/qml/views/OptimizationView.qml" line="5575" />
-        <location filename="../src/qml/views/OptimizationView.qml" line="5774" />
+        <location filename="../build/MeguPackOptimizer/src/qml/views/OptimizationView.qml" line="5774" />
+        <location filename="../src/qml/views/OptimizationView.qml" line="6190" />
         <source>SYSTEM OPTIMIZATION IN PROGRESS</source>
         <translation>ВИКОНУЄТЬСЯ ОПТИМІЗАЦІЯ СИСТЕМИ</translation>
     </message>
     <message>
-        <location filename="../build/MeguPackOptimizer/src/qml/views/OptimizationView.qml" line="5575" />
-        <location filename="../src/qml/views/OptimizationView.qml" line="5774" />
+        <location filename="../build/MeguPackOptimizer/src/qml/views/OptimizationView.qml" line="5774" />
+        <location filename="../src/qml/views/OptimizationView.qml" line="6190" />
         <source>OPTIMIZATION COMPLETE</source>
         <translation>ОПТИМІЗАЦІЮ ЗАВЕРШЕНО</translation>
     </message>
     <message>
-        <location filename="../build/MeguPackOptimizer/src/qml/views/OptimizationView.qml" line="5586" />
-        <location filename="../src/qml/views/OptimizationView.qml" line="5785" />
+        <location filename="../build/MeguPackOptimizer/src/qml/views/OptimizationView.qml" line="5785" />
+        <location filename="../src/qml/views/OptimizationView.qml" line="6201" />
         <source>Applying disk indexing settings...</source>
         <translation>Застосування налаштувань індексації дисків...</translation>
     </message>
     <message>
-        <location filename="../build/MeguPackOptimizer/src/qml/views/OptimizationView.qml" line="5586" />
-        <location filename="../src/qml/views/OptimizationView.qml" line="5785" />
+        <location filename="../build/MeguPackOptimizer/src/qml/views/OptimizationView.qml" line="5785" />
+        <location filename="../src/qml/views/OptimizationView.qml" line="6201" />
         <source>Finished system modifications.</source>
         <translation>Модифікацію системи завершено.</translation>
     </message>
     <message>
-        <location filename="../build/MeguPackOptimizer/src/qml/views/OptimizationView.qml" line="849" />
-        <location filename="../build/MeguPackOptimizer/src/qml/views/OptimizationView.qml" line="5626" />
-        <location filename="../src/qml/views/OptimizationView.qml" line="875" />
-        <location filename="../src/qml/views/OptimizationView.qml" line="5825" />
+        <location filename="../build/MeguPackOptimizer/src/qml/views/OptimizationView.qml" line="875" />
+        <location filename="../build/MeguPackOptimizer/src/qml/views/OptimizationView.qml" line="5825" />
+        <location filename="../src/qml/views/OptimizationView.qml" line="1016" />
+        <location filename="../src/qml/views/OptimizationView.qml" line="6241" />
         <source>Close</source>
         <translation>Закрити</translation>
     </message>
     <message>
-        <location filename="../build/MeguPackOptimizer/src/qml/views/OptimizationView.qml" line="3835" />
-        <location filename="../build/MeguPackOptimizer/src/qml/views/OptimizationView.qml" line="3881" />
-        <location filename="../build/MeguPackOptimizer/src/qml/views/OptimizationView.qml" line="3927" />
-        <location filename="../build/MeguPackOptimizer/src/qml/views/OptimizationView.qml" line="3973" />
-        <location filename="../build/MeguPackOptimizer/src/qml/views/OptimizationView.qml" line="4019" />
-        <location filename="../src/qml/views/OptimizationView.qml" line="4034" />
-        <location filename="../src/qml/views/OptimizationView.qml" line="4080" />
-        <location filename="../src/qml/views/OptimizationView.qml" line="4126" />
-        <location filename="../src/qml/views/OptimizationView.qml" line="4172" />
-        <location filename="../src/qml/views/OptimizationView.qml" line="4218" />
+        <location filename="../build/MeguPackOptimizer/src/qml/views/OptimizationView.qml" line="4034" />
+        <location filename="../build/MeguPackOptimizer/src/qml/views/OptimizationView.qml" line="4080" />
+        <location filename="../build/MeguPackOptimizer/src/qml/views/OptimizationView.qml" line="4126" />
+        <location filename="../build/MeguPackOptimizer/src/qml/views/OptimizationView.qml" line="4172" />
+        <location filename="../build/MeguPackOptimizer/src/qml/views/OptimizationView.qml" line="4218" />
+        <location filename="../src/qml/views/OptimizationView.qml" line="4283" />
+        <location filename="../src/qml/views/OptimizationView.qml" line="4329" />
+        <location filename="../src/qml/views/OptimizationView.qml" line="4375" />
+        <location filename="../src/qml/views/OptimizationView.qml" line="4421" />
+        <location filename="../src/qml/views/OptimizationView.qml" line="4467" />
         <source>Remove</source>
         <translation>Видалити</translation>
     </message>
     <message>
-        <location filename="../build/MeguPackOptimizer/src/qml/views/OptimizationView.qml" line="1268" />
-        <location filename="../src/qml/views/OptimizationView.qml" line="1378" />
+        <location filename="../build/MeguPackOptimizer/src/qml/views/OptimizationView.qml" line="1378" />
+        <location filename="../src/qml/views/OptimizationView.qml" line="1519" />
         <source>Removed</source>
         <translation>Видалено</translation>
     </message>
     <message>
-        <location filename="../build/MeguPackOptimizer/src/qml/views/OptimizationView.qml" line="424" />
-        <location filename="../build/MeguPackOptimizer/src/qml/views/OptimizationView.qml" line="3693" />
-        <location filename="../src/qml/views/OptimizationView.qml" line="448" />
-        <location filename="../src/qml/views/OptimizationView.qml" line="3892" />
+        <location filename="../build/MeguPackOptimizer/src/qml/views/OptimizationView.qml" line="448" />
+        <location filename="../build/MeguPackOptimizer/src/qml/views/OptimizationView.qml" line="3892" />
+        <location filename="../src/qml/views/OptimizationView.qml" line="550" />
+        <location filename="../src/qml/views/OptimizationView.qml" line="4141" />
         <source>Drive %1 indexing</source>
         <translation>Індексація диска %1</translation>
     </message>
     <message>
-        <location filename="../build/MeguPackOptimizer/src/qml/views/OptimizationView.qml" line="3734" />
-        <location filename="../src/qml/views/OptimizationView.qml" line="3933" />
+        <location filename="../build/MeguPackOptimizer/src/qml/views/OptimizationView.qml" line="3933" />
+        <location filename="../src/qml/views/OptimizationView.qml" line="4182" />
         <source>Xbox Suite (Bulk Actions)</source>
         <translation>Пакет Xbox (Групові дії)</translation>
     </message>
     <message>
-        <location filename="../build/MeguPackOptimizer/src/qml/views/OptimizationView.qml" line="3741" />
-        <location filename="../src/qml/views/OptimizationView.qml" line="3940" />
+        <location filename="../build/MeguPackOptimizer/src/qml/views/OptimizationView.qml" line="3940" />
+        <location filename="../src/qml/views/OptimizationView.qml" line="4189" />
         <source>Purge or restore the entire Xbox app and telemetry suite for maximum performance.</source>
         <translation>Видалення або відновлення всього пакету Xbox та телеметрії для максимальної продуктивності.</translation>
     </message>
     <message>
-        <location filename="../build/MeguPackOptimizer/src/qml/views/OptimizationView.qml" line="3754" />
-        <location filename="../src/qml/views/OptimizationView.qml" line="3953" />
+        <location filename="../build/MeguPackOptimizer/src/qml/views/OptimizationView.qml" line="3953" />
+        <location filename="../src/qml/views/OptimizationView.qml" line="4202" />
         <source>Remove All</source>
         <translation>Видалити все</translation>
     </message>
     <message>
-        <location filename="../build/MeguPackOptimizer/src/qml/views/OptimizationView.qml" line="3767" />
-        <location filename="../src/qml/views/OptimizationView.qml" line="3966" />
+        <location filename="../build/MeguPackOptimizer/src/qml/views/OptimizationView.qml" line="3966" />
+        <location filename="../src/qml/views/OptimizationView.qml" line="4215" />
         <source>Restore All</source>
         <translation>Відновити все</translation>
     </message>
     <message>
-        <location filename="../build/MeguPackOptimizer/src/qml/views/OptimizationView.qml" line="3789" />
-        <location filename="../src/qml/views/OptimizationView.qml" line="3988" />
+        <location filename="../build/MeguPackOptimizer/src/qml/views/OptimizationView.qml" line="3988" />
+        <location filename="../src/qml/views/OptimizationView.qml" line="4237" />
         <source>Individual Packages</source>
         <translation>Окремі пакети</translation>
     </message>
     <message>
-        <location filename="../build/MeguPackOptimizer/src/qml/views/OptimizationView.qml" line="3809" />
-        <location filename="../src/qml/views/OptimizationView.qml" line="4008" />
+        <location filename="../build/MeguPackOptimizer/src/qml/views/OptimizationView.qml" line="4008" />
+        <location filename="../src/qml/views/OptimizationView.qml" line="4257" />
         <source>Xbox App</source>
         <translation>Додаток Xbox</translation>
     </message>
     <message>
-        <location filename="../build/MeguPackOptimizer/src/qml/views/OptimizationView.qml" line="3816" />
-        <location filename="../src/qml/views/OptimizationView.qml" line="4015" />
+        <location filename="../build/MeguPackOptimizer/src/qml/views/OptimizationView.qml" line="4015" />
+        <location filename="../src/qml/views/OptimizationView.qml" line="4264" />
         <source>Get-AppxPackage XboxApp | ...</source>
         <translation>Get-AppxPackage XboxApp | ...</translation>
     </message>
     <message>
-        <location filename="../build/MeguPackOptimizer/src/qml/views/OptimizationView.qml" line="3824" />
-        <location filename="../build/MeguPackOptimizer/src/qml/views/OptimizationView.qml" line="3870" />
-        <location filename="../build/MeguPackOptimizer/src/qml/views/OptimizationView.qml" line="3916" />
-        <location filename="../build/MeguPackOptimizer/src/qml/views/OptimizationView.qml" line="3962" />
-        <location filename="../build/MeguPackOptimizer/src/qml/views/OptimizationView.qml" line="4008" />
-        <location filename="../src/qml/views/OptimizationView.qml" line="4023" />
-        <location filename="../src/qml/views/OptimizationView.qml" line="4069" />
-        <location filename="../src/qml/views/OptimizationView.qml" line="4115" />
-        <location filename="../src/qml/views/OptimizationView.qml" line="4161" />
-        <location filename="../src/qml/views/OptimizationView.qml" line="4207" />
+        <location filename="../build/MeguPackOptimizer/src/qml/views/OptimizationView.qml" line="4023" />
+        <location filename="../build/MeguPackOptimizer/src/qml/views/OptimizationView.qml" line="4069" />
+        <location filename="../build/MeguPackOptimizer/src/qml/views/OptimizationView.qml" line="4115" />
+        <location filename="../build/MeguPackOptimizer/src/qml/views/OptimizationView.qml" line="4161" />
+        <location filename="../build/MeguPackOptimizer/src/qml/views/OptimizationView.qml" line="4207" />
+        <location filename="../src/qml/views/OptimizationView.qml" line="4272" />
+        <location filename="../src/qml/views/OptimizationView.qml" line="4318" />
+        <location filename="../src/qml/views/OptimizationView.qml" line="4364" />
+        <location filename="../src/qml/views/OptimizationView.qml" line="4410" />
+        <location filename="../src/qml/views/OptimizationView.qml" line="4456" />
         <source>Restore</source>
         <translation>Відновити</translation>
     </message>
     <message>
-        <location filename="../build/MeguPackOptimizer/src/qml/views/OptimizationView.qml" line="437" />
-        <location filename="../build/MeguPackOptimizer/src/qml/views/OptimizationView.qml" line="4042" />
-        <location filename="../src/qml/views/OptimizationView.qml" line="461" />
-        <location filename="../src/qml/views/OptimizationView.qml" line="4241" />
+        <location filename="../build/MeguPackOptimizer/src/qml/views/OptimizationView.qml" line="461" />
+        <location filename="../build/MeguPackOptimizer/src/qml/views/OptimizationView.qml" line="4241" />
+        <location filename="../src/qml/views/OptimizationView.qml" line="563" />
+        <location filename="../src/qml/views/OptimizationView.qml" line="4490" />
         <source>Disable Game Bar Popup</source>
         <translation>Вимкнути помилку ms-gamingoverlay</translation>
     </message>
     <message>
-        <location filename="../build/MeguPackOptimizer/src/qml/views/OptimizationView.qml" line="4049" />
-        <location filename="../src/qml/views/OptimizationView.qml" line="4248" />
+        <location filename="../build/MeguPackOptimizer/src/qml/views/OptimizationView.qml" line="4248" />
+        <location filename="../src/qml/views/OptimizationView.qml" line="4497" />
         <source>Neutralize ms-gamingoverlay triggers to stop 'You'll need a new app to open this link' errors when launching games.</source>
         <translation>Нейтралізує тригери ms-gamingoverlay, щоб зупинити помилки 'Вам знадобиться нова програма для відкриття цього посилання' під час запуску ігор.</translation>
     </message>
     <message>
-        <location filename="../build/MeguPackOptimizer/src/qml/views/OptimizationView.qml" line="1360" />
-        <location filename="../src/qml/views/OptimizationView.qml" line="1470" />
+        <location filename="../build/MeguPackOptimizer/src/qml/views/OptimizationView.qml" line="1470" />
+        <location filename="../src/qml/views/OptimizationView.qml" line="1611" />
         <source>Multi-Plane Overlay (MPO)</source>
         <translation>Multi-Plane Overlay (MPO)</translation>
     </message>
     <message>
-        <location filename="../build/MeguPackOptimizer/src/qml/views/OptimizationView.qml" line="1368" />
-        <location filename="../src/qml/views/OptimizationView.qml" line="1478" />
+        <location filename="../build/MeguPackOptimizer/src/qml/views/OptimizationView.qml" line="1478" />
+        <location filename="../src/qml/views/OptimizationView.qml" line="1619" />
         <source>Configure DWM multi-plane overlay modes to optimize latency and eliminate game stuttering.</source>
         <translation>Налаштуйте режими оверлею DWM для оптимізації затримки та усунення фризів в іграх.</translation>
     </message>
     <message>
-        <location filename="../build/MeguPackOptimizer/src/qml/views/OptimizationView.qml" line="4070" />
-        <location filename="../src/qml/views/OptimizationView.qml" line="4269" />
+        <location filename="../build/MeguPackOptimizer/src/qml/views/OptimizationView.qml" line="4269" />
+        <location filename="../src/qml/views/OptimizationView.qml" line="4518" />
         <source>Multi-Plane Overlay Value</source>
         <translation>Значення Multi-Plane Overlay</translation>
     </message>
     <message>
-        <location filename="../build/MeguPackOptimizer/src/qml/views/OptimizationView.qml" line="4419" />
-        <location filename="../src/qml/views/OptimizationView.qml" line="4618" />
+        <location filename="../build/MeguPackOptimizer/src/qml/views/OptimizationView.qml" line="4618" />
+        <location filename="../src/qml/views/OptimizationView.qml" line="4867" />
         <source>Apply</source>
         <translation>Застосувати</translation>
     </message>
     <message>
-        <location filename="../build/MeguPackOptimizer/src/qml/views/OptimizationView.qml" line="3540" />
-        <location filename="../src/qml/views/OptimizationView.qml" line="3739" />
+        <location filename="../build/MeguPackOptimizer/src/qml/views/OptimizationView.qml" line="3739" />
+        <location filename="../src/qml/views/OptimizationView.qml" line="3986" />
         <source>INDEXING OPTIONS</source>
         <translation>НАЛАШТУВАННЯ ІНДЕКСАЦІЇ</translation>
     </message>
     <message>
-        <location filename="../build/MeguPackOptimizer/src/qml/views/OptimizationView.qml" line="1010" />
-        <location filename="../src/qml/views/OptimizationView.qml" line="1120" />
+        <location filename="../build/MeguPackOptimizer/src/qml/views/OptimizationView.qml" line="1120" />
+        <location filename="../src/qml/views/OptimizationView.qml" line="1261" />
         <source>DRIVES &amp; INDEXING</source>
         <translation>ДИСКИ ТА ІНДЕКСАЦІЯ</translation>
     </message>
     <message>
-        <location filename="../build/MeguPackOptimizer/src/qml/views/OptimizationView.qml" line="826" />
-        <location filename="../build/MeguPackOptimizer/src/qml/views/OptimizationView.qml" line="1071" />
-        <location filename="../build/MeguPackOptimizer/src/qml/views/OptimizationView.qml" line="1233" />
-        <location filename="../build/MeguPackOptimizer/src/qml/views/OptimizationView.qml" line="1511" />
-        <location filename="../build/MeguPackOptimizer/src/qml/views/OptimizationView.qml" line="1617" />
-        <location filename="../build/MeguPackOptimizer/src/qml/views/OptimizationView.qml" line="1723" />
-        <location filename="../build/MeguPackOptimizer/src/qml/views/OptimizationView.qml" line="1830" />
-        <location filename="../build/MeguPackOptimizer/src/qml/views/OptimizationView.qml" line="1945" />
-        <location filename="../build/MeguPackOptimizer/src/qml/views/OptimizationView.qml" line="2051" />
-        <location filename="../build/MeguPackOptimizer/src/qml/views/OptimizationView.qml" line="2157" />
-        <location filename="../build/MeguPackOptimizer/src/qml/views/OptimizationView.qml" line="2305" />
-        <location filename="../build/MeguPackOptimizer/src/qml/views/OptimizationView.qml" line="2477" />
-        <location filename="../build/MeguPackOptimizer/src/qml/views/OptimizationView.qml" line="2628" />
-        <location filename="../build/MeguPackOptimizer/src/qml/views/OptimizationView.qml" line="2793" />
-        <location filename="../build/MeguPackOptimizer/src/qml/views/OptimizationView.qml" line="2898" />
-        <location filename="../build/MeguPackOptimizer/src/qml/views/OptimizationView.qml" line="3014" />
-        <location filename="../build/MeguPackOptimizer/src/qml/views/OptimizationView.qml" line="3172" />
-        <location filename="../build/MeguPackOptimizer/src/qml/views/OptimizationView.qml" line="3366" />
-        <location filename="../src/qml/views/OptimizationView.qml" line="852" />
-        <location filename="../src/qml/views/OptimizationView.qml" line="958" />
-        <location filename="../src/qml/views/OptimizationView.qml" line="1181" />
-        <location filename="../src/qml/views/OptimizationView.qml" line="1343" />
-        <location filename="../src/qml/views/OptimizationView.qml" line="1621" />
-        <location filename="../src/qml/views/OptimizationView.qml" line="1727" />
-        <location filename="../src/qml/views/OptimizationView.qml" line="1833" />
-        <location filename="../src/qml/views/OptimizationView.qml" line="1940" />
-        <location filename="../src/qml/views/OptimizationView.qml" line="2055" />
-        <location filename="../src/qml/views/OptimizationView.qml" line="2161" />
-        <location filename="../src/qml/views/OptimizationView.qml" line="2250" />
-        <location filename="../src/qml/views/OptimizationView.qml" line="2356" />
-        <location filename="../src/qml/views/OptimizationView.qml" line="2504" />
-        <location filename="../src/qml/views/OptimizationView.qml" line="2676" />
-        <location filename="../src/qml/views/OptimizationView.qml" line="2827" />
-        <location filename="../src/qml/views/OptimizationView.qml" line="2992" />
-        <location filename="../src/qml/views/OptimizationView.qml" line="3097" />
-        <location filename="../src/qml/views/OptimizationView.qml" line="3213" />
-        <location filename="../src/qml/views/OptimizationView.qml" line="3371" />
-        <location filename="../src/qml/views/OptimizationView.qml" line="3565" />
+        <location filename="../build/MeguPackOptimizer/src/qml/views/OptimizationView.qml" line="852" />
+        <location filename="../build/MeguPackOptimizer/src/qml/views/OptimizationView.qml" line="958" />
+        <location filename="../build/MeguPackOptimizer/src/qml/views/OptimizationView.qml" line="1181" />
+        <location filename="../build/MeguPackOptimizer/src/qml/views/OptimizationView.qml" line="1343" />
+        <location filename="../build/MeguPackOptimizer/src/qml/views/OptimizationView.qml" line="1621" />
+        <location filename="../build/MeguPackOptimizer/src/qml/views/OptimizationView.qml" line="1727" />
+        <location filename="../build/MeguPackOptimizer/src/qml/views/OptimizationView.qml" line="1833" />
+        <location filename="../build/MeguPackOptimizer/src/qml/views/OptimizationView.qml" line="1940" />
+        <location filename="../build/MeguPackOptimizer/src/qml/views/OptimizationView.qml" line="2055" />
+        <location filename="../build/MeguPackOptimizer/src/qml/views/OptimizationView.qml" line="2161" />
+        <location filename="../build/MeguPackOptimizer/src/qml/views/OptimizationView.qml" line="2250" />
+        <location filename="../build/MeguPackOptimizer/src/qml/views/OptimizationView.qml" line="2356" />
+        <location filename="../build/MeguPackOptimizer/src/qml/views/OptimizationView.qml" line="2504" />
+        <location filename="../build/MeguPackOptimizer/src/qml/views/OptimizationView.qml" line="2676" />
+        <location filename="../build/MeguPackOptimizer/src/qml/views/OptimizationView.qml" line="2827" />
+        <location filename="../build/MeguPackOptimizer/src/qml/views/OptimizationView.qml" line="2992" />
+        <location filename="../build/MeguPackOptimizer/src/qml/views/OptimizationView.qml" line="3097" />
+        <location filename="../build/MeguPackOptimizer/src/qml/views/OptimizationView.qml" line="3213" />
+        <location filename="../build/MeguPackOptimizer/src/qml/views/OptimizationView.qml" line="3371" />
+        <location filename="../build/MeguPackOptimizer/src/qml/views/OptimizationView.qml" line="3565" />
+        <location filename="../src/qml/views/OptimizationView.qml" line="993" />
+        <location filename="../src/qml/views/OptimizationView.qml" line="1099" />
+        <location filename="../src/qml/views/OptimizationView.qml" line="1322" />
+        <location filename="../src/qml/views/OptimizationView.qml" line="1484" />
+        <location filename="../src/qml/views/OptimizationView.qml" line="1762" />
+        <location filename="../src/qml/views/OptimizationView.qml" line="1868" />
+        <location filename="../src/qml/views/OptimizationView.qml" line="1974" />
+        <location filename="../src/qml/views/OptimizationView.qml" line="2080" />
+        <location filename="../src/qml/views/OptimizationView.qml" line="2187" />
+        <location filename="../src/qml/views/OptimizationView.qml" line="2302" />
+        <location filename="../src/qml/views/OptimizationView.qml" line="2408" />
+        <location filename="../src/qml/views/OptimizationView.qml" line="2497" />
+        <location filename="../src/qml/views/OptimizationView.qml" line="2603" />
+        <location filename="../src/qml/views/OptimizationView.qml" line="2751" />
+        <location filename="../src/qml/views/OptimizationView.qml" line="2923" />
+        <location filename="../src/qml/views/OptimizationView.qml" line="3074" />
+        <location filename="../src/qml/views/OptimizationView.qml" line="3239" />
+        <location filename="../src/qml/views/OptimizationView.qml" line="3344" />
+        <location filename="../src/qml/views/OptimizationView.qml" line="3460" />
+        <location filename="../src/qml/views/OptimizationView.qml" line="3618" />
+        <location filename="../src/qml/views/OptimizationView.qml" line="3812" />
         <source>Selected for application</source>
         <translation>Обрано для застосування</translation>
     </message>
     <message>
-        <location filename="../build/MeguPackOptimizer/src/qml/views/OptimizationView.qml" line="1159" />
-        <location filename="../src/qml/views/OptimizationView.qml" line="1269" />
+        <location filename="../build/MeguPackOptimizer/src/qml/views/OptimizationView.qml" line="1269" />
+        <location filename="../src/qml/views/OptimizationView.qml" line="1410" />
         <source>LATENCY &amp; MOUSE TWEAKS</source>
         <translation>ЗАТРИМКА ТА МИША</translation>
     </message>
     <message>
-        <location filename="../build/MeguPackOptimizer/src/qml/views/OptimizationView.qml" line="208" />
-        <location filename="../build/MeguPackOptimizer/src/qml/views/OptimizationView.qml" line="434" />
-        <location filename="../build/MeguPackOptimizer/src/qml/views/OptimizationView.qml" line="629" />
-        <location filename="../build/MeguPackOptimizer/src/qml/views/OptimizationView.qml" line="1216" />
-        <location filename="../src/qml/views/OptimizationView.qml" line="214" />
-        <location filename="../src/qml/views/OptimizationView.qml" line="458" />
-        <location filename="../src/qml/views/OptimizationView.qml" line="653" />
-        <location filename="../src/qml/views/OptimizationView.qml" line="1326" />
+        <location filename="../build/MeguPackOptimizer/src/qml/views/OptimizationView.qml" line="214" />
+        <location filename="../build/MeguPackOptimizer/src/qml/views/OptimizationView.qml" line="458" />
+        <location filename="../build/MeguPackOptimizer/src/qml/views/OptimizationView.qml" line="653" />
+        <location filename="../build/MeguPackOptimizer/src/qml/views/OptimizationView.qml" line="1326" />
+        <location filename="../src/qml/views/OptimizationView.qml" line="308" />
+        <location filename="../src/qml/views/OptimizationView.qml" line="560" />
+        <location filename="../src/qml/views/OptimizationView.qml" line="794" />
+        <location filename="../src/qml/views/OptimizationView.qml" line="1467" />
         <source>Xbox App &amp; Game Bar</source>
         <translation>Додаток Xbox та Game Bar</translation>
     </message>
     <message>
-        <location filename="../build/MeguPackOptimizer/src/qml/views/OptimizationView.qml" line="1244" />
-        <location filename="../src/qml/views/OptimizationView.qml" line="1354" />
+        <location filename="../build/MeguPackOptimizer/src/qml/views/OptimizationView.qml" line="1354" />
+        <location filename="../src/qml/views/OptimizationView.qml" line="1495" />
         <source>Completely remove all Xbox overlays, TCUI, and game bar apps to optimize mouse input latency.</source>
         <translation>Повне видалення оверлеїв Xbox, TCUI та ігрової панелі для оптимізації затримки введення миші.</translation>
     </message>
     <message>
-        <location filename="../build/MeguPackOptimizer/src/qml/views/OptimizationView.qml" line="1268" />
-        <location filename="../src/qml/views/OptimizationView.qml" line="1378" />
+        <location filename="../build/MeguPackOptimizer/src/qml/views/OptimizationView.qml" line="1378" />
+        <location filename="../src/qml/views/OptimizationView.qml" line="1519" />
         <source>Installed</source>
         <translation>Встановлено</translation>
     </message>
     <message>
-        <location filename="../build/MeguPackOptimizer/src/qml/views/OptimizationView.qml" line="1397" />
-        <location filename="../src/qml/views/OptimizationView.qml" line="1507" />
+        <location filename="../build/MeguPackOptimizer/src/qml/views/OptimizationView.qml" line="1507" />
+        <location filename="../src/qml/views/OptimizationView.qml" line="1648" />
         <source>Disabled (5)</source>
         <translation>Вимкнено (5)</translation>
     </message>
     <message>
-        <location filename="../build/MeguPackOptimizer/src/qml/views/OptimizationView.qml" line="1398" />
-        <location filename="../src/qml/views/OptimizationView.qml" line="1508" />
+        <location filename="../build/MeguPackOptimizer/src/qml/views/OptimizationView.qml" line="1508" />
+        <location filename="../src/qml/views/OptimizationView.qml" line="1649" />
         <source>Default (0)</source>
         <translation>За замовчуванням (0)</translation>
     </message>
     <message>
-        <location filename="../build/MeguPackOptimizer/src/qml/views/OptimizationView.qml" line="1399" />
-        <location filename="../src/qml/views/OptimizationView.qml" line="1509" />
+        <location filename="../build/MeguPackOptimizer/src/qml/views/OptimizationView.qml" line="1509" />
+        <location filename="../src/qml/views/OptimizationView.qml" line="1650" />
         <source>Mode %1</source>
         <translation>Режим %1</translation>
     </message>
     <message>
-        <location filename="../build/MeguPackOptimizer/src/qml/views/OptimizationView.qml" line="248" />
-        <location filename="../build/MeguPackOptimizer/src/qml/views/OptimizationView.qml" line="443" />
-        <location filename="../build/MeguPackOptimizer/src/qml/views/OptimizationView.qml" line="635" />
-        <location filename="../build/MeguPackOptimizer/src/qml/views/OptimizationView.qml" line="2460" />
-        <location filename="../src/qml/views/OptimizationView.qml" line="254" />
-        <location filename="../src/qml/views/OptimizationView.qml" line="467" />
-        <location filename="../src/qml/views/OptimizationView.qml" line="659" />
-        <location filename="../src/qml/views/OptimizationView.qml" line="2659" />
+        <location filename="../build/MeguPackOptimizer/src/qml/views/OptimizationView.qml" line="254" />
+        <location filename="../build/MeguPackOptimizer/src/qml/views/OptimizationView.qml" line="467" />
+        <location filename="../build/MeguPackOptimizer/src/qml/views/OptimizationView.qml" line="659" />
+        <location filename="../build/MeguPackOptimizer/src/qml/views/OptimizationView.qml" line="2659" />
+        <location filename="../src/qml/views/OptimizationView.qml" line="348" />
+        <location filename="../src/qml/views/OptimizationView.qml" line="569" />
+        <location filename="../src/qml/views/OptimizationView.qml" line="800" />
+        <location filename="../src/qml/views/OptimizationView.qml" line="2906" />
         <source>Print Spooler (Printer)</source>
         <translation>Служба друку (Принтер)</translation>
     </message>
     <message>
-        <location filename="../build/MeguPackOptimizer/src/qml/views/OptimizationView.qml" line="2488" />
-        <location filename="../src/qml/views/OptimizationView.qml" line="2687" />
+        <location filename="../build/MeguPackOptimizer/src/qml/views/OptimizationView.qml" line="2687" />
+        <location filename="../src/qml/views/OptimizationView.qml" line="2934" />
         <source>Disabling the print spooler frees memory and reduces background latency for gaming.</source>
         <translation>Вимкнення служби друку звільняє пам'ять та зменшує фонову затримку для ігор.</translation>
     </message>
     <message>
-        <location filename="../build/MeguPackOptimizer/src/qml/views/OptimizationView.qml" line="256" />
-        <location filename="../build/MeguPackOptimizer/src/qml/views/OptimizationView.qml" line="452" />
-        <location filename="../build/MeguPackOptimizer/src/qml/views/OptimizationView.qml" line="636" />
-        <location filename="../build/MeguPackOptimizer/src/qml/views/OptimizationView.qml" line="2611" />
-        <location filename="../src/qml/views/OptimizationView.qml" line="262" />
-        <location filename="../src/qml/views/OptimizationView.qml" line="476" />
-        <location filename="../src/qml/views/OptimizationView.qml" line="660" />
-        <location filename="../src/qml/views/OptimizationView.qml" line="2810" />
+        <location filename="../build/MeguPackOptimizer/src/qml/views/OptimizationView.qml" line="262" />
+        <location filename="../build/MeguPackOptimizer/src/qml/views/OptimizationView.qml" line="476" />
+        <location filename="../build/MeguPackOptimizer/src/qml/views/OptimizationView.qml" line="660" />
+        <location filename="../build/MeguPackOptimizer/src/qml/views/OptimizationView.qml" line="2810" />
+        <location filename="../src/qml/views/OptimizationView.qml" line="356" />
+        <location filename="../src/qml/views/OptimizationView.qml" line="578" />
+        <location filename="../src/qml/views/OptimizationView.qml" line="801" />
+        <location filename="../src/qml/views/OptimizationView.qml" line="3057" />
         <source>Windows Notifications</source>
         <translation>Сповіщення Windows</translation>
     </message>
     <message>
-        <location filename="../build/MeguPackOptimizer/src/qml/views/OptimizationView.qml" line="2639" />
-        <location filename="../src/qml/views/OptimizationView.qml" line="2838" />
+        <location filename="../build/MeguPackOptimizer/src/qml/views/OptimizationView.qml" line="2838" />
+        <location filename="../src/qml/views/OptimizationView.qml" line="3085" />
         <source>Disabling background notifications frees CPU interrupts and stabilizes FPS.</source>
         <translation>Вимкнення фонових сповіщень звільняє переривання процесора та стабілізує FPS.</translation>
     </message>
     <message>
-        <location filename="../build/MeguPackOptimizer/src/qml/views/OptimizationView.qml" line="2732" />
-        <location filename="../src/qml/views/OptimizationView.qml" line="2931" />
+        <location filename="../build/MeguPackOptimizer/src/qml/views/OptimizationView.qml" line="2931" />
+        <location filename="../src/qml/views/OptimizationView.qml" line="3178" />
         <source>POWER &amp; STORAGE</source>
         <translation>ЖИВЛЕННЯ ТА НАКОПИЧУВАЧІ</translation>
     </message>
     <message>
-        <location filename="../build/MeguPackOptimizer/src/qml/views/OptimizationView.qml" line="268" />
-        <location filename="../build/MeguPackOptimizer/src/qml/views/OptimizationView.qml" line="637" />
-        <location filename="../build/MeguPackOptimizer/src/qml/views/OptimizationView.qml" line="2776" />
-        <location filename="../src/qml/views/OptimizationView.qml" line="274" />
-        <location filename="../src/qml/views/OptimizationView.qml" line="661" />
-        <location filename="../src/qml/views/OptimizationView.qml" line="2975" />
+        <location filename="../build/MeguPackOptimizer/src/qml/views/OptimizationView.qml" line="274" />
+        <location filename="../build/MeguPackOptimizer/src/qml/views/OptimizationView.qml" line="661" />
+        <location filename="../build/MeguPackOptimizer/src/qml/views/OptimizationView.qml" line="2975" />
+        <location filename="../src/qml/views/OptimizationView.qml" line="368" />
+        <location filename="../src/qml/views/OptimizationView.qml" line="802" />
+        <location filename="../src/qml/views/OptimizationView.qml" line="3222" />
         <source>System Hibernation</source>
         <translation>Гібернація системи</translation>
     </message>
     <message>
-        <location filename="../build/MeguPackOptimizer/src/qml/views/OptimizationView.qml" line="2804" />
-        <location filename="../src/qml/views/OptimizationView.qml" line="3003" />
+        <location filename="../build/MeguPackOptimizer/src/qml/views/OptimizationView.qml" line="3003" />
+        <location filename="../src/qml/views/OptimizationView.qml" line="3250" />
         <source>Enable or disable Windows hibernation mode to free up disk space.</source>
         <translation>Увімкнення або вимкнення режиму гібернації Windows для звільнення місця на диску.</translation>
     </message>
     <message>
-        <location filename="../build/MeguPackOptimizer/src/qml/views/OptimizationView.qml" line="276" />
-        <location filename="../build/MeguPackOptimizer/src/qml/views/OptimizationView.qml" line="485" />
-        <location filename="../build/MeguPackOptimizer/src/qml/views/OptimizationView.qml" line="498" />
-        <location filename="../build/MeguPackOptimizer/src/qml/views/OptimizationView.qml" line="638" />
-        <location filename="../build/MeguPackOptimizer/src/qml/views/OptimizationView.qml" line="3155" />
-        <location filename="../src/qml/views/OptimizationView.qml" line="282" />
-        <location filename="../src/qml/views/OptimizationView.qml" line="509" />
-        <location filename="../src/qml/views/OptimizationView.qml" line="522" />
-        <location filename="../src/qml/views/OptimizationView.qml" line="662" />
-        <location filename="../src/qml/views/OptimizationView.qml" line="3354" />
+        <location filename="../build/MeguPackOptimizer/src/qml/views/OptimizationView.qml" line="282" />
+        <location filename="../build/MeguPackOptimizer/src/qml/views/OptimizationView.qml" line="509" />
+        <location filename="../build/MeguPackOptimizer/src/qml/views/OptimizationView.qml" line="522" />
+        <location filename="../build/MeguPackOptimizer/src/qml/views/OptimizationView.qml" line="662" />
+        <location filename="../build/MeguPackOptimizer/src/qml/views/OptimizationView.qml" line="3354" />
+        <location filename="../src/qml/views/OptimizationView.qml" line="376" />
+        <location filename="../src/qml/views/OptimizationView.qml" line="611" />
+        <location filename="../src/qml/views/OptimizationView.qml" line="624" />
+        <location filename="../src/qml/views/OptimizationView.qml" line="803" />
+        <location filename="../src/qml/views/OptimizationView.qml" line="3601" />
         <source>Power Plan</source>
         <translation>Режим живлення</translation>
     </message>
     <message>
-        <location filename="../build/MeguPackOptimizer/src/qml/views/OptimizationView.qml" line="687" />
-        <location filename="../src/qml/views/OptimizationView.qml" line="713" />
+        <location filename="../build/MeguPackOptimizer/src/qml/views/OptimizationView.qml" line="713" />
+        <location filename="../src/qml/views/OptimizationView.qml" line="854" />
         <source>%1 changes pending</source>
         <translation>%1 змін очікує</translation>
     </message>
     <message>
-        <location filename="../build/MeguPackOptimizer/src/qml/views/OptimizationView.qml" line="688" />
-        <location filename="../src/qml/views/OptimizationView.qml" line="714" />
+        <location filename="../build/MeguPackOptimizer/src/qml/views/OptimizationView.qml" line="714" />
+        <location filename="../src/qml/views/OptimizationView.qml" line="855" />
         <source>Pending Changes:</source>
         <translation>Очікують змін:</translation>
     </message>
     <message>
-        <location filename="../build/MeguPackOptimizer/src/qml/views/OptimizationView.qml" line="3183" />
-        <location filename="../src/qml/views/OptimizationView.qml" line="3382" />
+        <location filename="../build/MeguPackOptimizer/src/qml/views/OptimizationView.qml" line="3382" />
+        <location filename="../src/qml/views/OptimizationView.qml" line="3629" />
         <source>Select system power plans and unlock the hidden Ultimate Performance mode.</source>
         <translation>Вибір системних схем живлення та розблокування прихованого режиму максимальної продуктивності.</translation>
     </message>
     <message>
-        <location filename="../build/MeguPackOptimizer/src/qml/views/OptimizationView.qml" line="487" />
-        <location filename="../build/MeguPackOptimizer/src/qml/views/OptimizationView.qml" line="488" />
-        <location filename="../build/MeguPackOptimizer/src/qml/views/OptimizationView.qml" line="579" />
-        <location filename="../build/MeguPackOptimizer/src/qml/views/OptimizationView.qml" line="580" />
-        <location filename="../build/MeguPackOptimizer/src/qml/views/OptimizationView.qml" line="3244" />
-        <location filename="../src/qml/views/OptimizationView.qml" line="511" />
-        <location filename="../src/qml/views/OptimizationView.qml" line="512" />
-        <location filename="../src/qml/views/OptimizationView.qml" line="603" />
-        <location filename="../src/qml/views/OptimizationView.qml" line="604" />
-        <location filename="../src/qml/views/OptimizationView.qml" line="3443" />
+        <location filename="../build/MeguPackOptimizer/src/qml/views/OptimizationView.qml" line="511" />
+        <location filename="../build/MeguPackOptimizer/src/qml/views/OptimizationView.qml" line="512" />
+        <location filename="../build/MeguPackOptimizer/src/qml/views/OptimizationView.qml" line="603" />
+        <location filename="../build/MeguPackOptimizer/src/qml/views/OptimizationView.qml" line="604" />
+        <location filename="../build/MeguPackOptimizer/src/qml/views/OptimizationView.qml" line="3443" />
+        <location filename="../src/qml/views/OptimizationView.qml" line="613" />
+        <location filename="../src/qml/views/OptimizationView.qml" line="614" />
+        <location filename="../src/qml/views/OptimizationView.qml" line="705" />
+        <location filename="../src/qml/views/OptimizationView.qml" line="706" />
+        <location filename="../src/qml/views/OptimizationView.qml" line="3690" />
         <source>Unknown</source>
         <translation>Невідомо</translation>
     </message>
     <message>
-        <location filename="../build/MeguPackOptimizer/src/qml/views/OptimizationView.qml" line="284" />
-        <location filename="../build/MeguPackOptimizer/src/qml/views/OptimizationView.qml" line="639" />
-        <location filename="../build/MeguPackOptimizer/src/qml/views/OptimizationView.qml" line="2881" />
-        <location filename="../src/qml/views/OptimizationView.qml" line="290" />
-        <location filename="../src/qml/views/OptimizationView.qml" line="663" />
-        <location filename="../src/qml/views/OptimizationView.qml" line="3080" />
+        <location filename="../build/MeguPackOptimizer/src/qml/views/OptimizationView.qml" line="290" />
+        <location filename="../build/MeguPackOptimizer/src/qml/views/OptimizationView.qml" line="663" />
+        <location filename="../build/MeguPackOptimizer/src/qml/views/OptimizationView.qml" line="3080" />
+        <location filename="../src/qml/views/OptimizationView.qml" line="384" />
+        <location filename="../src/qml/views/OptimizationView.qml" line="804" />
+        <location filename="../src/qml/views/OptimizationView.qml" line="3327" />
         <source>BitLocker Drive Encryption</source>
         <translation>Шифрування дисків BitLocker</translation>
     </message>
     <message>
-        <location filename="../build/MeguPackOptimizer/src/qml/views/OptimizationView.qml" line="292" />
-        <location filename="../build/MeguPackOptimizer/src/qml/views/OptimizationView.qml" line="633" />
-        <location filename="../build/MeguPackOptimizer/src/qml/views/OptimizationView.qml" line="1813" />
-        <location filename="../src/qml/views/OptimizationView.qml" line="298" />
-        <location filename="../src/qml/views/OptimizationView.qml" line="657" />
-        <location filename="../src/qml/views/OptimizationView.qml" line="1923" />
+        <location filename="../build/MeguPackOptimizer/src/qml/views/OptimizationView.qml" line="298" />
+        <location filename="../build/MeguPackOptimizer/src/qml/views/OptimizationView.qml" line="657" />
+        <location filename="../build/MeguPackOptimizer/src/qml/views/OptimizationView.qml" line="1923" />
+        <location filename="../src/qml/views/OptimizationView.qml" line="392" />
+        <location filename="../src/qml/views/OptimizationView.qml" line="798" />
+        <location filename="../src/qml/views/OptimizationView.qml" line="2170" />
         <source>Discord In-Game Overlay</source>
         <translation>Ігровий оверлей Discord</translation>
     </message>
     <message>
-        <location filename="../build/MeguPackOptimizer/src/qml/views/OptimizationView.qml" line="300" />
-        <location filename="../build/MeguPackOptimizer/src/qml/views/OptimizationView.qml" line="504" />
-        <location filename="../build/MeguPackOptimizer/src/qml/views/OptimizationView.qml" line="640" />
-        <location filename="../build/MeguPackOptimizer/src/qml/views/OptimizationView.qml" line="2997" />
-        <location filename="../src/qml/views/OptimizationView.qml" line="306" />
-        <location filename="../src/qml/views/OptimizationView.qml" line="528" />
-        <location filename="../src/qml/views/OptimizationView.qml" line="664" />
-        <location filename="../src/qml/views/OptimizationView.qml" line="3196" />
+        <location filename="../build/MeguPackOptimizer/src/qml/views/OptimizationView.qml" line="306" />
+        <location filename="../build/MeguPackOptimizer/src/qml/views/OptimizationView.qml" line="528" />
+        <location filename="../build/MeguPackOptimizer/src/qml/views/OptimizationView.qml" line="664" />
+        <location filename="../build/MeguPackOptimizer/src/qml/views/OptimizationView.qml" line="3196" />
+        <location filename="../src/qml/views/OptimizationView.qml" line="400" />
+        <location filename="../src/qml/views/OptimizationView.qml" line="630" />
+        <location filename="../src/qml/views/OptimizationView.qml" line="805" />
+        <location filename="../src/qml/views/OptimizationView.qml" line="3443" />
         <source>Windows Defender</source>
         <translation>Windows Defender</translation>
     </message>
     <message>
-        <location filename="../build/MeguPackOptimizer/src/qml/views/OptimizationView.qml" line="319" />
-        <location filename="../build/MeguPackOptimizer/src/qml/views/OptimizationView.qml" line="642" />
-        <location filename="../build/MeguPackOptimizer/src/qml/views/OptimizationView.qml" line="2034" />
-        <location filename="../src/qml/views/OptimizationView.qml" line="325" />
-        <location filename="../src/qml/views/OptimizationView.qml" line="666" />
-        <location filename="../src/qml/views/OptimizationView.qml" line="2233" />
+        <location filename="../build/MeguPackOptimizer/src/qml/views/OptimizationView.qml" line="325" />
+        <location filename="../build/MeguPackOptimizer/src/qml/views/OptimizationView.qml" line="666" />
+        <location filename="../build/MeguPackOptimizer/src/qml/views/OptimizationView.qml" line="2233" />
+        <location filename="../src/qml/views/OptimizationView.qml" line="419" />
+        <location filename="../src/qml/views/OptimizationView.qml" line="807" />
+        <location filename="../src/qml/views/OptimizationView.qml" line="2480" />
         <source>Remote Access (RDP)</source>
         <translation>Віддалений доступ (RDP)</translation>
     </message>
     <message>
-        <location filename="../build/MeguPackOptimizer/src/qml/views/OptimizationView.qml" line="327" />
-        <location filename="../build/MeguPackOptimizer/src/qml/views/OptimizationView.qml" line="544" />
-        <location filename="../build/MeguPackOptimizer/src/qml/views/OptimizationView.qml" line="643" />
-        <location filename="../build/MeguPackOptimizer/src/qml/views/OptimizationView.qml" line="649" />
-        <location filename="../build/MeguPackOptimizer/src/qml/views/OptimizationView.qml" line="2140" />
-        <location filename="../src/qml/views/OptimizationView.qml" line="333" />
-        <location filename="../src/qml/views/OptimizationView.qml" line="568" />
-        <location filename="../src/qml/views/OptimizationView.qml" line="667" />
-        <location filename="../src/qml/views/OptimizationView.qml" line="675" />
-        <location filename="../src/qml/views/OptimizationView.qml" line="2339" />
+        <location filename="../build/MeguPackOptimizer/src/qml/views/OptimizationView.qml" line="333" />
+        <location filename="../build/MeguPackOptimizer/src/qml/views/OptimizationView.qml" line="568" />
+        <location filename="../build/MeguPackOptimizer/src/qml/views/OptimizationView.qml" line="667" />
+        <location filename="../build/MeguPackOptimizer/src/qml/views/OptimizationView.qml" line="675" />
+        <location filename="../build/MeguPackOptimizer/src/qml/views/OptimizationView.qml" line="2339" />
+        <location filename="../src/qml/views/OptimizationView.qml" line="427" />
+        <location filename="../src/qml/views/OptimizationView.qml" line="670" />
+        <location filename="../src/qml/views/OptimizationView.qml" line="808" />
+        <location filename="../src/qml/views/OptimizationView.qml" line="816" />
+        <location filename="../src/qml/views/OptimizationView.qml" line="2586" />
         <source>Telemetry</source>
         <translation>Телеметрія</translation>
     </message>
     <message>
-        <location filename="../build/MeguPackOptimizer/src/qml/views/OptimizationView.qml" line="339" />
-        <location filename="../build/MeguPackOptimizer/src/qml/views/OptimizationView.qml" line="577" />
-        <location filename="../build/MeguPackOptimizer/src/qml/views/OptimizationView.qml" line="644" />
-        <location filename="../build/MeguPackOptimizer/src/qml/views/OptimizationView.qml" line="2288" />
-        <location filename="../src/qml/views/OptimizationView.qml" line="345" />
-        <location filename="../src/qml/views/OptimizationView.qml" line="601" />
-        <location filename="../src/qml/views/OptimizationView.qml" line="668" />
-        <location filename="../src/qml/views/OptimizationView.qml" line="2487" />
+        <location filename="../build/MeguPackOptimizer/src/qml/views/OptimizationView.qml" line="345" />
+        <location filename="../build/MeguPackOptimizer/src/qml/views/OptimizationView.qml" line="601" />
+        <location filename="../build/MeguPackOptimizer/src/qml/views/OptimizationView.qml" line="668" />
+        <location filename="../build/MeguPackOptimizer/src/qml/views/OptimizationView.qml" line="2487" />
+        <location filename="../src/qml/views/OptimizationView.qml" line="439" />
+        <location filename="../src/qml/views/OptimizationView.qml" line="703" />
+        <location filename="../src/qml/views/OptimizationView.qml" line="809" />
+        <location filename="../src/qml/views/OptimizationView.qml" line="2734" />
         <source>Windows Update</source>
         <translation>Оновлення Windows</translation>
     </message>
     <message>
-        <location filename="../build/MeguPackOptimizer/src/qml/views/OptimizationView.qml" line="347" />
-        <location filename="../build/MeguPackOptimizer/src/qml/views/OptimizationView.qml" line="595" />
-        <location filename="../build/MeguPackOptimizer/src/qml/views/OptimizationView.qml" line="627" />
+        <location filename="../build/MeguPackOptimizer/src/qml/views/OptimizationView.qml" line="353" />
+        <location filename="../build/MeguPackOptimizer/src/qml/views/OptimizationView.qml" line="619" />
         <location filename="../build/MeguPackOptimizer/src/qml/views/OptimizationView.qml" line="651" />
-        <location filename="../src/qml/views/OptimizationView.qml" line="353" />
-        <location filename="../src/qml/views/OptimizationView.qml" line="619" />
-        <location filename="../src/qml/views/OptimizationView.qml" line="651" />
-        <location filename="../src/qml/views/OptimizationView.qml" line="677" />
+        <location filename="../build/MeguPackOptimizer/src/qml/views/OptimizationView.qml" line="677" />
+        <location filename="../src/qml/views/OptimizationView.qml" line="447" />
+        <location filename="../src/qml/views/OptimizationView.qml" line="721" />
+        <location filename="../src/qml/views/OptimizationView.qml" line="792" />
+        <location filename="../src/qml/views/OptimizationView.qml" line="818" />
         <source>Counter-Strike 2 Launch Options</source>
         <translation>Параметри запуску Counter-Strike 2</translation>
     </message>
     <message>
-        <location filename="../build/MeguPackOptimizer/src/qml/views/OptimizationView.qml" line="404" />
-        <location filename="../build/MeguPackOptimizer/src/qml/views/OptimizationView.qml" line="404" />
-        <location filename="../build/MeguPackOptimizer/src/qml/views/OptimizationView.qml" line="412" />
-        <location filename="../build/MeguPackOptimizer/src/qml/views/OptimizationView.qml" line="412" />
-        <location filename="../build/MeguPackOptimizer/src/qml/views/OptimizationView.qml" line="424" />
-        <location filename="../build/MeguPackOptimizer/src/qml/views/OptimizationView.qml" line="424" />
-        <location filename="../build/MeguPackOptimizer/src/qml/views/OptimizationView.qml" line="437" />
-        <location filename="../build/MeguPackOptimizer/src/qml/views/OptimizationView.qml" line="437" />
-        <location filename="../build/MeguPackOptimizer/src/qml/views/OptimizationView.qml" line="446" />
-        <location filename="../build/MeguPackOptimizer/src/qml/views/OptimizationView.qml" line="446" />
-        <location filename="../build/MeguPackOptimizer/src/qml/views/OptimizationView.qml" line="455" />
-        <location filename="../build/MeguPackOptimizer/src/qml/views/OptimizationView.qml" line="455" />
-        <location filename="../build/MeguPackOptimizer/src/qml/views/OptimizationView.qml" line="463" />
-        <location filename="../build/MeguPackOptimizer/src/qml/views/OptimizationView.qml" line="463" />
-        <location filename="../build/MeguPackOptimizer/src/qml/views/OptimizationView.qml" line="471" />
-        <location filename="../build/MeguPackOptimizer/src/qml/views/OptimizationView.qml" line="471" />
+        <location filename="../build/MeguPackOptimizer/src/qml/views/OptimizationView.qml" line="428" />
+        <location filename="../build/MeguPackOptimizer/src/qml/views/OptimizationView.qml" line="428" />
+        <location filename="../build/MeguPackOptimizer/src/qml/views/OptimizationView.qml" line="436" />
+        <location filename="../build/MeguPackOptimizer/src/qml/views/OptimizationView.qml" line="436" />
+        <location filename="../build/MeguPackOptimizer/src/qml/views/OptimizationView.qml" line="448" />
+        <location filename="../build/MeguPackOptimizer/src/qml/views/OptimizationView.qml" line="448" />
+        <location filename="../build/MeguPackOptimizer/src/qml/views/OptimizationView.qml" line="461" />
+        <location filename="../build/MeguPackOptimizer/src/qml/views/OptimizationView.qml" line="461" />
+        <location filename="../build/MeguPackOptimizer/src/qml/views/OptimizationView.qml" line="470" />
+        <location filename="../build/MeguPackOptimizer/src/qml/views/OptimizationView.qml" line="470" />
         <location filename="../build/MeguPackOptimizer/src/qml/views/OptimizationView.qml" line="479" />
         <location filename="../build/MeguPackOptimizer/src/qml/views/OptimizationView.qml" line="479" />
-        <location filename="../build/MeguPackOptimizer/src/qml/views/OptimizationView.qml" line="507" />
-        <location filename="../build/MeguPackOptimizer/src/qml/views/OptimizationView.qml" line="507" />
-        <location filename="../build/MeguPackOptimizer/src/qml/views/OptimizationView.qml" line="515" />
-        <location filename="../build/MeguPackOptimizer/src/qml/views/OptimizationView.qml" line="515" />
-        <location filename="../build/MeguPackOptimizer/src/qml/views/OptimizationView.qml" line="523" />
-        <location filename="../build/MeguPackOptimizer/src/qml/views/OptimizationView.qml" line="523" />
-        <location filename="../build/MeguPackOptimizer/src/qml/views/OptimizationView.qml" line="536" />
-        <location filename="../build/MeguPackOptimizer/src/qml/views/OptimizationView.qml" line="536" />
+        <location filename="../build/MeguPackOptimizer/src/qml/views/OptimizationView.qml" line="487" />
+        <location filename="../build/MeguPackOptimizer/src/qml/views/OptimizationView.qml" line="487" />
+        <location filename="../build/MeguPackOptimizer/src/qml/views/OptimizationView.qml" line="495" />
+        <location filename="../build/MeguPackOptimizer/src/qml/views/OptimizationView.qml" line="495" />
+        <location filename="../build/MeguPackOptimizer/src/qml/views/OptimizationView.qml" line="503" />
+        <location filename="../build/MeguPackOptimizer/src/qml/views/OptimizationView.qml" line="503" />
+        <location filename="../build/MeguPackOptimizer/src/qml/views/OptimizationView.qml" line="531" />
+        <location filename="../build/MeguPackOptimizer/src/qml/views/OptimizationView.qml" line="531" />
+        <location filename="../build/MeguPackOptimizer/src/qml/views/OptimizationView.qml" line="539" />
+        <location filename="../build/MeguPackOptimizer/src/qml/views/OptimizationView.qml" line="539" />
         <location filename="../build/MeguPackOptimizer/src/qml/views/OptimizationView.qml" line="547" />
         <location filename="../build/MeguPackOptimizer/src/qml/views/OptimizationView.qml" line="547" />
-        <location filename="../build/MeguPackOptimizer/src/qml/views/OptimizationView.qml" line="555" />
-        <location filename="../build/MeguPackOptimizer/src/qml/views/OptimizationView.qml" line="555" />
-        <location filename="../build/MeguPackOptimizer/src/qml/views/OptimizationView.qml" line="563" />
-        <location filename="../build/MeguPackOptimizer/src/qml/views/OptimizationView.qml" line="563" />
+        <location filename="../build/MeguPackOptimizer/src/qml/views/OptimizationView.qml" line="560" />
+        <location filename="../build/MeguPackOptimizer/src/qml/views/OptimizationView.qml" line="560" />
         <location filename="../build/MeguPackOptimizer/src/qml/views/OptimizationView.qml" line="571" />
         <location filename="../build/MeguPackOptimizer/src/qml/views/OptimizationView.qml" line="571" />
-        <location filename="../build/MeguPackOptimizer/src/qml/views/OptimizationView.qml" line="604" />
-        <location filename="../build/MeguPackOptimizer/src/qml/views/OptimizationView.qml" line="604" />
-        <location filename="../src/qml/views/OptimizationView.qml" line="428" />
-        <location filename="../src/qml/views/OptimizationView.qml" line="428" />
-        <location filename="../src/qml/views/OptimizationView.qml" line="436" />
-        <location filename="../src/qml/views/OptimizationView.qml" line="436" />
-        <location filename="../src/qml/views/OptimizationView.qml" line="448" />
-        <location filename="../src/qml/views/OptimizationView.qml" line="448" />
-        <location filename="../src/qml/views/OptimizationView.qml" line="461" />
-        <location filename="../src/qml/views/OptimizationView.qml" line="461" />
-        <location filename="../src/qml/views/OptimizationView.qml" line="470" />
-        <location filename="../src/qml/views/OptimizationView.qml" line="470" />
-        <location filename="../src/qml/views/OptimizationView.qml" line="479" />
-        <location filename="../src/qml/views/OptimizationView.qml" line="479" />
-        <location filename="../src/qml/views/OptimizationView.qml" line="487" />
-        <location filename="../src/qml/views/OptimizationView.qml" line="487" />
-        <location filename="../src/qml/views/OptimizationView.qml" line="495" />
-        <location filename="../src/qml/views/OptimizationView.qml" line="495" />
-        <location filename="../src/qml/views/OptimizationView.qml" line="503" />
-        <location filename="../src/qml/views/OptimizationView.qml" line="503" />
-        <location filename="../src/qml/views/OptimizationView.qml" line="531" />
-        <location filename="../src/qml/views/OptimizationView.qml" line="531" />
-        <location filename="../src/qml/views/OptimizationView.qml" line="539" />
-        <location filename="../src/qml/views/OptimizationView.qml" line="539" />
-        <location filename="../src/qml/views/OptimizationView.qml" line="547" />
-        <location filename="../src/qml/views/OptimizationView.qml" line="547" />
-        <location filename="../src/qml/views/OptimizationView.qml" line="560" />
-        <location filename="../src/qml/views/OptimizationView.qml" line="560" />
-        <location filename="../src/qml/views/OptimizationView.qml" line="571" />
-        <location filename="../src/qml/views/OptimizationView.qml" line="571" />
-        <location filename="../src/qml/views/OptimizationView.qml" line="579" />
-        <location filename="../src/qml/views/OptimizationView.qml" line="579" />
-        <location filename="../src/qml/views/OptimizationView.qml" line="587" />
-        <location filename="../src/qml/views/OptimizationView.qml" line="587" />
-        <location filename="../src/qml/views/OptimizationView.qml" line="595" />
-        <location filename="../src/qml/views/OptimizationView.qml" line="595" />
-        <location filename="../src/qml/views/OptimizationView.qml" line="628" />
-        <location filename="../src/qml/views/OptimizationView.qml" line="628" />
+        <location filename="../build/MeguPackOptimizer/src/qml/views/OptimizationView.qml" line="579" />
+        <location filename="../build/MeguPackOptimizer/src/qml/views/OptimizationView.qml" line="579" />
+        <location filename="../build/MeguPackOptimizer/src/qml/views/OptimizationView.qml" line="587" />
+        <location filename="../build/MeguPackOptimizer/src/qml/views/OptimizationView.qml" line="587" />
+        <location filename="../build/MeguPackOptimizer/src/qml/views/OptimizationView.qml" line="595" />
+        <location filename="../build/MeguPackOptimizer/src/qml/views/OptimizationView.qml" line="595" />
+        <location filename="../build/MeguPackOptimizer/src/qml/views/OptimizationView.qml" line="628" />
+        <location filename="../build/MeguPackOptimizer/src/qml/views/OptimizationView.qml" line="628" />
+        <location filename="../src/qml/views/OptimizationView.qml" line="530" />
+        <location filename="../src/qml/views/OptimizationView.qml" line="530" />
+        <location filename="../src/qml/views/OptimizationView.qml" line="538" />
+        <location filename="../src/qml/views/OptimizationView.qml" line="538" />
+        <location filename="../src/qml/views/OptimizationView.qml" line="550" />
+        <location filename="../src/qml/views/OptimizationView.qml" line="550" />
+        <location filename="../src/qml/views/OptimizationView.qml" line="563" />
+        <location filename="../src/qml/views/OptimizationView.qml" line="563" />
+        <location filename="../src/qml/views/OptimizationView.qml" line="572" />
+        <location filename="../src/qml/views/OptimizationView.qml" line="572" />
+        <location filename="../src/qml/views/OptimizationView.qml" line="581" />
+        <location filename="../src/qml/views/OptimizationView.qml" line="581" />
+        <location filename="../src/qml/views/OptimizationView.qml" line="589" />
+        <location filename="../src/qml/views/OptimizationView.qml" line="589" />
+        <location filename="../src/qml/views/OptimizationView.qml" line="597" />
+        <location filename="../src/qml/views/OptimizationView.qml" line="597" />
+        <location filename="../src/qml/views/OptimizationView.qml" line="605" />
+        <location filename="../src/qml/views/OptimizationView.qml" line="605" />
+        <location filename="../src/qml/views/OptimizationView.qml" line="633" />
+        <location filename="../src/qml/views/OptimizationView.qml" line="633" />
+        <location filename="../src/qml/views/OptimizationView.qml" line="641" />
+        <location filename="../src/qml/views/OptimizationView.qml" line="641" />
+        <location filename="../src/qml/views/OptimizationView.qml" line="649" />
+        <location filename="../src/qml/views/OptimizationView.qml" line="649" />
+        <location filename="../src/qml/views/OptimizationView.qml" line="662" />
+        <location filename="../src/qml/views/OptimizationView.qml" line="662" />
+        <location filename="../src/qml/views/OptimizationView.qml" line="673" />
+        <location filename="../src/qml/views/OptimizationView.qml" line="673" />
+        <location filename="../src/qml/views/OptimizationView.qml" line="681" />
+        <location filename="../src/qml/views/OptimizationView.qml" line="681" />
+        <location filename="../src/qml/views/OptimizationView.qml" line="689" />
+        <location filename="../src/qml/views/OptimizationView.qml" line="689" />
+        <location filename="../src/qml/views/OptimizationView.qml" line="697" />
+        <location filename="../src/qml/views/OptimizationView.qml" line="697" />
+        <location filename="../src/qml/views/OptimizationView.qml" line="730" />
+        <location filename="../src/qml/views/OptimizationView.qml" line="730" />
+        <location filename="../src/qml/views/OptimizationView.qml" line="777" />
+        <location filename="../src/qml/views/OptimizationView.qml" line="777" />
         <source>Enabled</source>
         <translation>Увімкнено</translation>
     </message>
     <message>
-        <location filename="../build/MeguPackOptimizer/src/qml/views/OptimizationView.qml" line="404" />
-        <location filename="../build/MeguPackOptimizer/src/qml/views/OptimizationView.qml" line="404" />
-        <location filename="../build/MeguPackOptimizer/src/qml/views/OptimizationView.qml" line="412" />
-        <location filename="../build/MeguPackOptimizer/src/qml/views/OptimizationView.qml" line="412" />
-        <location filename="../build/MeguPackOptimizer/src/qml/views/OptimizationView.qml" line="424" />
-        <location filename="../build/MeguPackOptimizer/src/qml/views/OptimizationView.qml" line="424" />
-        <location filename="../build/MeguPackOptimizer/src/qml/views/OptimizationView.qml" line="437" />
-        <location filename="../build/MeguPackOptimizer/src/qml/views/OptimizationView.qml" line="437" />
-        <location filename="../build/MeguPackOptimizer/src/qml/views/OptimizationView.qml" line="446" />
-        <location filename="../build/MeguPackOptimizer/src/qml/views/OptimizationView.qml" line="446" />
-        <location filename="../build/MeguPackOptimizer/src/qml/views/OptimizationView.qml" line="455" />
-        <location filename="../build/MeguPackOptimizer/src/qml/views/OptimizationView.qml" line="455" />
-        <location filename="../build/MeguPackOptimizer/src/qml/views/OptimizationView.qml" line="463" />
-        <location filename="../build/MeguPackOptimizer/src/qml/views/OptimizationView.qml" line="463" />
-        <location filename="../build/MeguPackOptimizer/src/qml/views/OptimizationView.qml" line="471" />
-        <location filename="../build/MeguPackOptimizer/src/qml/views/OptimizationView.qml" line="471" />
+        <location filename="../build/MeguPackOptimizer/src/qml/views/OptimizationView.qml" line="428" />
+        <location filename="../build/MeguPackOptimizer/src/qml/views/OptimizationView.qml" line="428" />
+        <location filename="../build/MeguPackOptimizer/src/qml/views/OptimizationView.qml" line="436" />
+        <location filename="../build/MeguPackOptimizer/src/qml/views/OptimizationView.qml" line="436" />
+        <location filename="../build/MeguPackOptimizer/src/qml/views/OptimizationView.qml" line="448" />
+        <location filename="../build/MeguPackOptimizer/src/qml/views/OptimizationView.qml" line="448" />
+        <location filename="../build/MeguPackOptimizer/src/qml/views/OptimizationView.qml" line="461" />
+        <location filename="../build/MeguPackOptimizer/src/qml/views/OptimizationView.qml" line="461" />
+        <location filename="../build/MeguPackOptimizer/src/qml/views/OptimizationView.qml" line="470" />
+        <location filename="../build/MeguPackOptimizer/src/qml/views/OptimizationView.qml" line="470" />
         <location filename="../build/MeguPackOptimizer/src/qml/views/OptimizationView.qml" line="479" />
         <location filename="../build/MeguPackOptimizer/src/qml/views/OptimizationView.qml" line="479" />
-        <location filename="../build/MeguPackOptimizer/src/qml/views/OptimizationView.qml" line="507" />
-        <location filename="../build/MeguPackOptimizer/src/qml/views/OptimizationView.qml" line="507" />
-        <location filename="../build/MeguPackOptimizer/src/qml/views/OptimizationView.qml" line="515" />
-        <location filename="../build/MeguPackOptimizer/src/qml/views/OptimizationView.qml" line="515" />
-        <location filename="../build/MeguPackOptimizer/src/qml/views/OptimizationView.qml" line="523" />
-        <location filename="../build/MeguPackOptimizer/src/qml/views/OptimizationView.qml" line="523" />
-        <location filename="../build/MeguPackOptimizer/src/qml/views/OptimizationView.qml" line="536" />
-        <location filename="../build/MeguPackOptimizer/src/qml/views/OptimizationView.qml" line="536" />
+        <location filename="../build/MeguPackOptimizer/src/qml/views/OptimizationView.qml" line="487" />
+        <location filename="../build/MeguPackOptimizer/src/qml/views/OptimizationView.qml" line="487" />
+        <location filename="../build/MeguPackOptimizer/src/qml/views/OptimizationView.qml" line="495" />
+        <location filename="../build/MeguPackOptimizer/src/qml/views/OptimizationView.qml" line="495" />
+        <location filename="../build/MeguPackOptimizer/src/qml/views/OptimizationView.qml" line="503" />
+        <location filename="../build/MeguPackOptimizer/src/qml/views/OptimizationView.qml" line="503" />
+        <location filename="../build/MeguPackOptimizer/src/qml/views/OptimizationView.qml" line="531" />
+        <location filename="../build/MeguPackOptimizer/src/qml/views/OptimizationView.qml" line="531" />
+        <location filename="../build/MeguPackOptimizer/src/qml/views/OptimizationView.qml" line="539" />
+        <location filename="../build/MeguPackOptimizer/src/qml/views/OptimizationView.qml" line="539" />
         <location filename="../build/MeguPackOptimizer/src/qml/views/OptimizationView.qml" line="547" />
         <location filename="../build/MeguPackOptimizer/src/qml/views/OptimizationView.qml" line="547" />
-        <location filename="../build/MeguPackOptimizer/src/qml/views/OptimizationView.qml" line="555" />
-        <location filename="../build/MeguPackOptimizer/src/qml/views/OptimizationView.qml" line="555" />
-        <location filename="../build/MeguPackOptimizer/src/qml/views/OptimizationView.qml" line="563" />
-        <location filename="../build/MeguPackOptimizer/src/qml/views/OptimizationView.qml" line="563" />
+        <location filename="../build/MeguPackOptimizer/src/qml/views/OptimizationView.qml" line="560" />
+        <location filename="../build/MeguPackOptimizer/src/qml/views/OptimizationView.qml" line="560" />
         <location filename="../build/MeguPackOptimizer/src/qml/views/OptimizationView.qml" line="571" />
         <location filename="../build/MeguPackOptimizer/src/qml/views/OptimizationView.qml" line="571" />
-        <location filename="../build/MeguPackOptimizer/src/qml/views/OptimizationView.qml" line="581" />
-        <location filename="../build/MeguPackOptimizer/src/qml/views/OptimizationView.qml" line="604" />
-        <location filename="../build/MeguPackOptimizer/src/qml/views/OptimizationView.qml" line="604" />
-        <location filename="../build/MeguPackOptimizer/src/qml/views/OptimizationView.qml" line="2367" />
-        <location filename="../build/MeguPackOptimizer/src/qml/views/OptimizationView.qml" line="2917" />
-        <location filename="../build/MeguPackOptimizer/src/qml/views/OptimizationView.qml" line="4868" />
-        <location filename="../src/qml/views/OptimizationView.qml" line="428" />
-        <location filename="../src/qml/views/OptimizationView.qml" line="428" />
-        <location filename="../src/qml/views/OptimizationView.qml" line="436" />
-        <location filename="../src/qml/views/OptimizationView.qml" line="436" />
-        <location filename="../src/qml/views/OptimizationView.qml" line="448" />
-        <location filename="../src/qml/views/OptimizationView.qml" line="448" />
-        <location filename="../src/qml/views/OptimizationView.qml" line="461" />
-        <location filename="../src/qml/views/OptimizationView.qml" line="461" />
-        <location filename="../src/qml/views/OptimizationView.qml" line="470" />
-        <location filename="../src/qml/views/OptimizationView.qml" line="470" />
-        <location filename="../src/qml/views/OptimizationView.qml" line="479" />
-        <location filename="../src/qml/views/OptimizationView.qml" line="479" />
-        <location filename="../src/qml/views/OptimizationView.qml" line="487" />
-        <location filename="../src/qml/views/OptimizationView.qml" line="487" />
-        <location filename="../src/qml/views/OptimizationView.qml" line="495" />
-        <location filename="../src/qml/views/OptimizationView.qml" line="495" />
-        <location filename="../src/qml/views/OptimizationView.qml" line="503" />
-        <location filename="../src/qml/views/OptimizationView.qml" line="503" />
-        <location filename="../src/qml/views/OptimizationView.qml" line="531" />
-        <location filename="../src/qml/views/OptimizationView.qml" line="531" />
-        <location filename="../src/qml/views/OptimizationView.qml" line="539" />
-        <location filename="../src/qml/views/OptimizationView.qml" line="539" />
-        <location filename="../src/qml/views/OptimizationView.qml" line="547" />
-        <location filename="../src/qml/views/OptimizationView.qml" line="547" />
-        <location filename="../src/qml/views/OptimizationView.qml" line="560" />
-        <location filename="../src/qml/views/OptimizationView.qml" line="560" />
-        <location filename="../src/qml/views/OptimizationView.qml" line="571" />
-        <location filename="../src/qml/views/OptimizationView.qml" line="571" />
-        <location filename="../src/qml/views/OptimizationView.qml" line="579" />
-        <location filename="../src/qml/views/OptimizationView.qml" line="579" />
-        <location filename="../src/qml/views/OptimizationView.qml" line="587" />
-        <location filename="../src/qml/views/OptimizationView.qml" line="587" />
-        <location filename="../src/qml/views/OptimizationView.qml" line="595" />
-        <location filename="../src/qml/views/OptimizationView.qml" line="595" />
+        <location filename="../build/MeguPackOptimizer/src/qml/views/OptimizationView.qml" line="579" />
+        <location filename="../build/MeguPackOptimizer/src/qml/views/OptimizationView.qml" line="579" />
+        <location filename="../build/MeguPackOptimizer/src/qml/views/OptimizationView.qml" line="587" />
+        <location filename="../build/MeguPackOptimizer/src/qml/views/OptimizationView.qml" line="587" />
+        <location filename="../build/MeguPackOptimizer/src/qml/views/OptimizationView.qml" line="595" />
+        <location filename="../build/MeguPackOptimizer/src/qml/views/OptimizationView.qml" line="595" />
+        <location filename="../build/MeguPackOptimizer/src/qml/views/OptimizationView.qml" line="605" />
+        <location filename="../build/MeguPackOptimizer/src/qml/views/OptimizationView.qml" line="628" />
+        <location filename="../build/MeguPackOptimizer/src/qml/views/OptimizationView.qml" line="628" />
+        <location filename="../build/MeguPackOptimizer/src/qml/views/OptimizationView.qml" line="2566" />
+        <location filename="../build/MeguPackOptimizer/src/qml/views/OptimizationView.qml" line="3116" />
+        <location filename="../build/MeguPackOptimizer/src/qml/views/OptimizationView.qml" line="5067" />
+        <location filename="../src/qml/views/OptimizationView.qml" line="530" />
+        <location filename="../src/qml/views/OptimizationView.qml" line="530" />
+        <location filename="../src/qml/views/OptimizationView.qml" line="538" />
+        <location filename="../src/qml/views/OptimizationView.qml" line="538" />
+        <location filename="../src/qml/views/OptimizationView.qml" line="550" />
+        <location filename="../src/qml/views/OptimizationView.qml" line="550" />
+        <location filename="../src/qml/views/OptimizationView.qml" line="563" />
+        <location filename="../src/qml/views/OptimizationView.qml" line="563" />
+        <location filename="../src/qml/views/OptimizationView.qml" line="572" />
+        <location filename="../src/qml/views/OptimizationView.qml" line="572" />
+        <location filename="../src/qml/views/OptimizationView.qml" line="581" />
+        <location filename="../src/qml/views/OptimizationView.qml" line="581" />
+        <location filename="../src/qml/views/OptimizationView.qml" line="589" />
+        <location filename="../src/qml/views/OptimizationView.qml" line="589" />
+        <location filename="../src/qml/views/OptimizationView.qml" line="597" />
+        <location filename="../src/qml/views/OptimizationView.qml" line="597" />
         <location filename="../src/qml/views/OptimizationView.qml" line="605" />
-        <location filename="../src/qml/views/OptimizationView.qml" line="628" />
-        <location filename="../src/qml/views/OptimizationView.qml" line="628" />
-        <location filename="../src/qml/views/OptimizationView.qml" line="2566" />
-        <location filename="../src/qml/views/OptimizationView.qml" line="3116" />
-        <location filename="../src/qml/views/OptimizationView.qml" line="5067" />
+        <location filename="../src/qml/views/OptimizationView.qml" line="605" />
+        <location filename="../src/qml/views/OptimizationView.qml" line="633" />
+        <location filename="../src/qml/views/OptimizationView.qml" line="633" />
+        <location filename="../src/qml/views/OptimizationView.qml" line="641" />
+        <location filename="../src/qml/views/OptimizationView.qml" line="641" />
+        <location filename="../src/qml/views/OptimizationView.qml" line="649" />
+        <location filename="../src/qml/views/OptimizationView.qml" line="649" />
+        <location filename="../src/qml/views/OptimizationView.qml" line="662" />
+        <location filename="../src/qml/views/OptimizationView.qml" line="662" />
+        <location filename="../src/qml/views/OptimizationView.qml" line="673" />
+        <location filename="../src/qml/views/OptimizationView.qml" line="673" />
+        <location filename="../src/qml/views/OptimizationView.qml" line="681" />
+        <location filename="../src/qml/views/OptimizationView.qml" line="681" />
+        <location filename="../src/qml/views/OptimizationView.qml" line="689" />
+        <location filename="../src/qml/views/OptimizationView.qml" line="689" />
+        <location filename="../src/qml/views/OptimizationView.qml" line="697" />
+        <location filename="../src/qml/views/OptimizationView.qml" line="697" />
+        <location filename="../src/qml/views/OptimizationView.qml" line="707" />
+        <location filename="../src/qml/views/OptimizationView.qml" line="730" />
+        <location filename="../src/qml/views/OptimizationView.qml" line="730" />
+        <location filename="../src/qml/views/OptimizationView.qml" line="777" />
+        <location filename="../src/qml/views/OptimizationView.qml" line="777" />
+        <location filename="../src/qml/views/OptimizationView.qml" line="2813" />
+        <location filename="../src/qml/views/OptimizationView.qml" line="3363" />
+        <location filename="../src/qml/views/OptimizationView.qml" line="5316" />
         <source>Disabled</source>
         <translation>Вимкнено</translation>
     </message>
     <message>
-        <location filename="../build/MeguPackOptimizer/src/qml/views/OptimizationView.qml" line="446" />
-        <location filename="../src/qml/views/OptimizationView.qml" line="470" />
+        <location filename="../build/MeguPackOptimizer/src/qml/views/OptimizationView.qml" line="470" />
+        <location filename="../src/qml/views/OptimizationView.qml" line="572" />
         <source>Print Spooler</source>
         <translation>Диспетчер друку</translation>
     </message>
     <message>
-        <location filename="../build/MeguPackOptimizer/src/qml/views/OptimizationView.qml" line="507" />
-        <location filename="../build/MeguPackOptimizer/src/qml/views/OptimizationView.qml" line="4752" />
-        <location filename="../src/qml/views/OptimizationView.qml" line="531" />
-        <location filename="../src/qml/views/OptimizationView.qml" line="4951" />
+        <location filename="../build/MeguPackOptimizer/src/qml/views/OptimizationView.qml" line="531" />
+        <location filename="../build/MeguPackOptimizer/src/qml/views/OptimizationView.qml" line="4951" />
+        <location filename="../src/qml/views/OptimizationView.qml" line="633" />
+        <location filename="../src/qml/views/OptimizationView.qml" line="5200" />
         <source>Registry Disablement Policies</source>
         <translation>Політики відключення в реєстрі</translation>
     </message>
     <message>
-        <location filename="../build/MeguPackOptimizer/src/qml/views/OptimizationView.qml" line="515" />
-        <location filename="../build/MeguPackOptimizer/src/qml/views/OptimizationView.qml" line="4758" />
-        <location filename="../src/qml/views/OptimizationView.qml" line="539" />
-        <location filename="../src/qml/views/OptimizationView.qml" line="4957" />
+        <location filename="../build/MeguPackOptimizer/src/qml/views/OptimizationView.qml" line="539" />
+        <location filename="../build/MeguPackOptimizer/src/qml/views/OptimizationView.qml" line="4957" />
+        <location filename="../src/qml/views/OptimizationView.qml" line="641" />
+        <location filename="../src/qml/views/OptimizationView.qml" line="5206" />
         <source>PowerShell Preference Adjustments</source>
         <translation>Параметри через PowerShell</translation>
     </message>
     <message>
-        <location filename="../build/MeguPackOptimizer/src/qml/views/OptimizationView.qml" line="523" />
-        <location filename="../build/MeguPackOptimizer/src/qml/views/OptimizationView.qml" line="4764" />
-        <location filename="../src/qml/views/OptimizationView.qml" line="547" />
-        <location filename="../src/qml/views/OptimizationView.qml" line="4963" />
+        <location filename="../build/MeguPackOptimizer/src/qml/views/OptimizationView.qml" line="547" />
+        <location filename="../build/MeguPackOptimizer/src/qml/views/OptimizationView.qml" line="4963" />
+        <location filename="../src/qml/views/OptimizationView.qml" line="649" />
+        <location filename="../src/qml/views/OptimizationView.qml" line="5212" />
         <source>Antivirus Services &amp; Drivers</source>
         <translation>Антивірусні служби та драйвери</translation>
     </message>
     <message>
-        <location filename="../build/MeguPackOptimizer/src/qml/views/OptimizationView.qml" line="547" />
-        <location filename="../build/MeguPackOptimizer/src/qml/views/OptimizationView.qml" line="4832" />
-        <location filename="../src/qml/views/OptimizationView.qml" line="571" />
-        <location filename="../src/qml/views/OptimizationView.qml" line="5031" />
+        <location filename="../build/MeguPackOptimizer/src/qml/views/OptimizationView.qml" line="571" />
+        <location filename="../build/MeguPackOptimizer/src/qml/views/OptimizationView.qml" line="5031" />
+        <location filename="../src/qml/views/OptimizationView.qml" line="673" />
+        <location filename="../src/qml/views/OptimizationView.qml" line="5280" />
         <source>Connected User Experiences (DiagTrack)</source>
         <translation>Функціональні можливості для підключених користувачів і телеметрія (DiagTrack)</translation>
     </message>
     <message>
-        <location filename="../build/MeguPackOptimizer/src/qml/views/OptimizationView.qml" line="555" />
-        <location filename="../build/MeguPackOptimizer/src/qml/views/OptimizationView.qml" line="4838" />
-        <location filename="../src/qml/views/OptimizationView.qml" line="579" />
-        <location filename="../src/qml/views/OptimizationView.qml" line="5037" />
+        <location filename="../build/MeguPackOptimizer/src/qml/views/OptimizationView.qml" line="579" />
+        <location filename="../build/MeguPackOptimizer/src/qml/views/OptimizationView.qml" line="5037" />
+        <location filename="../src/qml/views/OptimizationView.qml" line="681" />
+        <location filename="../src/qml/views/OptimizationView.qml" line="5286" />
         <source>Device Management WAP Service (dmwappushservice)</source>
         <translation>Служба WAP для керування пристроями (dmwappushservice)</translation>
     </message>
     <message>
-        <location filename="../build/MeguPackOptimizer/src/qml/views/OptimizationView.qml" line="563" />
-        <location filename="../build/MeguPackOptimizer/src/qml/views/OptimizationView.qml" line="4844" />
-        <location filename="../src/qml/views/OptimizationView.qml" line="587" />
-        <location filename="../src/qml/views/OptimizationView.qml" line="5043" />
+        <location filename="../build/MeguPackOptimizer/src/qml/views/OptimizationView.qml" line="587" />
+        <location filename="../build/MeguPackOptimizer/src/qml/views/OptimizationView.qml" line="5043" />
+        <location filename="../src/qml/views/OptimizationView.qml" line="689" />
+        <location filename="../src/qml/views/OptimizationView.qml" line="5292" />
         <source>Customer Experience Improvement Program (CEIP)</source>
         <translation>Програма покращення взаємодії з користувачем (CEIP)</translation>
     </message>
     <message>
-        <location filename="../build/MeguPackOptimizer/src/qml/views/OptimizationView.qml" line="571" />
-        <location filename="../build/MeguPackOptimizer/src/qml/views/OptimizationView.qml" line="4850" />
-        <location filename="../src/qml/views/OptimizationView.qml" line="595" />
-        <location filename="../src/qml/views/OptimizationView.qml" line="5049" />
+        <location filename="../build/MeguPackOptimizer/src/qml/views/OptimizationView.qml" line="595" />
+        <location filename="../build/MeguPackOptimizer/src/qml/views/OptimizationView.qml" line="5049" />
+        <location filename="../src/qml/views/OptimizationView.qml" line="697" />
+        <location filename="../src/qml/views/OptimizationView.qml" line="5298" />
         <source>Windows Error Reporting (WER)</source>
         <translation>Служба звітування про помилки Windows (WER)</translation>
     </message>
     <message>
-        <location filename="../build/MeguPackOptimizer/src/qml/views/OptimizationView.qml" line="581" />
-        <location filename="../build/MeguPackOptimizer/src/qml/views/OptimizationView.qml" line="2364" />
-        <location filename="../build/MeguPackOptimizer/src/qml/views/OptimizationView.qml" line="2368" />
-        <location filename="../build/MeguPackOptimizer/src/qml/views/OptimizationView.qml" line="4865" />
-        <location filename="../src/qml/views/OptimizationView.qml" line="605" />
-        <location filename="../src/qml/views/OptimizationView.qml" line="2563" />
-        <location filename="../src/qml/views/OptimizationView.qml" line="2567" />
-        <location filename="../src/qml/views/OptimizationView.qml" line="5064" />
+        <location filename="../build/MeguPackOptimizer/src/qml/views/OptimizationView.qml" line="605" />
+        <location filename="../build/MeguPackOptimizer/src/qml/views/OptimizationView.qml" line="2563" />
+        <location filename="../build/MeguPackOptimizer/src/qml/views/OptimizationView.qml" line="2567" />
+        <location filename="../build/MeguPackOptimizer/src/qml/views/OptimizationView.qml" line="5064" />
+        <location filename="../src/qml/views/OptimizationView.qml" line="707" />
+        <location filename="../src/qml/views/OptimizationView.qml" line="2810" />
+        <location filename="../src/qml/views/OptimizationView.qml" line="2814" />
+        <location filename="../src/qml/views/OptimizationView.qml" line="5313" />
         <source>Default</source>
         <translation>За замовчуванням</translation>
     </message>
     <message>
-        <location filename="../build/MeguPackOptimizer/src/qml/views/OptimizationView.qml" line="581" />
-        <location filename="../build/MeguPackOptimizer/src/qml/views/OptimizationView.qml" line="2365" />
-        <location filename="../build/MeguPackOptimizer/src/qml/views/OptimizationView.qml" line="4866" />
-        <location filename="../src/qml/views/OptimizationView.qml" line="605" />
-        <location filename="../src/qml/views/OptimizationView.qml" line="2564" />
-        <location filename="../src/qml/views/OptimizationView.qml" line="5065" />
+        <location filename="../build/MeguPackOptimizer/src/qml/views/OptimizationView.qml" line="605" />
+        <location filename="../build/MeguPackOptimizer/src/qml/views/OptimizationView.qml" line="2564" />
+        <location filename="../build/MeguPackOptimizer/src/qml/views/OptimizationView.qml" line="5065" />
+        <location filename="../src/qml/views/OptimizationView.qml" line="707" />
+        <location filename="../src/qml/views/OptimizationView.qml" line="2811" />
+        <location filename="../src/qml/views/OptimizationView.qml" line="5314" />
         <source>Security Only</source>
         <translation>Лише безпека</translation>
     </message>
     <message>
-        <location filename="../build/MeguPackOptimizer/src/qml/views/OptimizationView.qml" line="581" />
-        <location filename="../build/MeguPackOptimizer/src/qml/views/OptimizationView.qml" line="2366" />
-        <location filename="../build/MeguPackOptimizer/src/qml/views/OptimizationView.qml" line="4867" />
-        <location filename="../src/qml/views/OptimizationView.qml" line="605" />
-        <location filename="../src/qml/views/OptimizationView.qml" line="2565" />
-        <location filename="../src/qml/views/OptimizationView.qml" line="5066" />
+        <location filename="../build/MeguPackOptimizer/src/qml/views/OptimizationView.qml" line="605" />
+        <location filename="../build/MeguPackOptimizer/src/qml/views/OptimizationView.qml" line="2565" />
+        <location filename="../build/MeguPackOptimizer/src/qml/views/OptimizationView.qml" line="5066" />
+        <location filename="../src/qml/views/OptimizationView.qml" line="707" />
+        <location filename="../src/qml/views/OptimizationView.qml" line="2812" />
+        <location filename="../src/qml/views/OptimizationView.qml" line="5315" />
         <source>Manual Check</source>
         <translation>Вручну</translation>
     </message>
     <message>
-        <location filename="../build/MeguPackOptimizer/src/qml/views/OptimizationView.qml" line="589" />
-        <location filename="../src/qml/views/OptimizationView.qml" line="613" />
+        <location filename="../build/MeguPackOptimizer/src/qml/views/OptimizationView.qml" line="613" />
+        <location filename="../src/qml/views/OptimizationView.qml" line="715" />
         <source>Update Mode</source>
         <translation>Режим оновлень</translation>
     </message>
     <message>
-        <location filename="../build/MeguPackOptimizer/src/qml/views/OptimizationView.qml" line="732" />
-        <location filename="../build/MeguPackOptimizer/src/qml/views/OptimizationView.qml" line="748" />
-        <location filename="../src/qml/views/OptimizationView.qml" line="758" />
-        <location filename="../src/qml/views/OptimizationView.qml" line="774" />
+        <location filename="../build/MeguPackOptimizer/src/qml/views/OptimizationView.qml" line="758" />
+        <location filename="../build/MeguPackOptimizer/src/qml/views/OptimizationView.qml" line="774" />
+        <location filename="../src/qml/views/OptimizationView.qml" line="899" />
+        <location filename="../src/qml/views/OptimizationView.qml" line="915" />
         <source>VIDEO GAMES OPTIMIZATION</source>
         <translation>ОПТИМІЗАЦІЯ ВІДЕОІГОР</translation>
     </message>
     <message>
-        <location filename="../build/MeguPackOptimizer/src/qml/views/OptimizationView.qml" line="837" />
-        <location filename="../src/qml/views/OptimizationView.qml" line="863" />
+        <location filename="../build/MeguPackOptimizer/src/qml/views/OptimizationView.qml" line="863" />
+        <location filename="../src/qml/views/OptimizationView.qml" line="1004" />
         <source>Launch parameters and performance optimization</source>
         <translation>Параметри запуску та оптимізація продуктивності</translation>
     </message>
     <message>
-        <location filename="../build/MeguPackOptimizer/src/qml/views/OptimizationView.qml" line="849" />
-        <location filename="../src/qml/views/OptimizationView.qml" line="875" />
+        <location filename="../build/MeguPackOptimizer/src/qml/views/OptimizationView.qml" line="875" />
+        <location filename="../src/qml/views/OptimizationView.qml" line="1016" />
+        <location filename="../src/qml/views/OptimizationView.qml" line="1787" />
         <source>Open</source>
         <translation>Відкрити</translation>
     </message>
     <message>
-        <location filename="../build/MeguPackOptimizer/src/qml/views/OptimizationView.qml" line="881" />
-        <location filename="../src/qml/views/OptimizationView.qml" line="991" />
+        <location filename="../build/MeguPackOptimizer/src/qml/views/OptimizationView.qml" line="991" />
+        <location filename="../src/qml/views/OptimizationView.qml" line="1132" />
         <source>Launch Options (Click name to toggle, will apply on 'Optimize')</source>
         <translation>Параметри запуску (Клацніть для перемикання, буде застосовано після 'Оптимізувати')</translation>
     </message>
     <message>
-        <location filename="../build/MeguPackOptimizer/src/qml/views/OptimizationView.qml" line="897" />
-        <location filename="../src/qml/views/OptimizationView.qml" line="1007" />
+        <location filename="../build/MeguPackOptimizer/src/qml/views/OptimizationView.qml" line="1007" />
+        <location filename="../src/qml/views/OptimizationView.qml" line="1148" />
         <source>Allows third-party software (OBS, overlays, etc.) to hook into the game.</source>
         <translation>Дозволяє сторонньому програмному забезпеченню (OBS, оверлеї тощо) підключатися до гри.</translation>
     </message>
     <message>
-        <location filename="../build/MeguPackOptimizer/src/qml/views/OptimizationView.qml" line="898" />
-        <location filename="../src/qml/views/OptimizationView.qml" line="1008" />
+        <location filename="../build/MeguPackOptimizer/src/qml/views/OptimizationView.qml" line="1008" />
+        <location filename="../src/qml/views/OptimizationView.qml" line="1149" />
         <source>Disables NVIDIA Reflex, useful if you experience stutters with it.</source>
         <translation>Вимикає NVIDIA Reflex, корисно якщо ви спостерігаєте мікрофризи.</translation>
     </message>
     <message>
-        <location filename="../build/MeguPackOptimizer/src/qml/views/OptimizationView.qml" line="899" />
-        <location filename="../src/qml/views/OptimizationView.qml" line="1009" />
+        <location filename="../build/MeguPackOptimizer/src/qml/views/OptimizationView.qml" line="1009" />
+        <location filename="../src/qml/views/OptimizationView.qml" line="1150" />
         <source>Disables anti-aliasing for screen fonts, slightly improving text rendering performance.</source>
         <translation>Вимикає згладжування екранних шрифтів, що трохи підвищує продуктивність рендерингу тексту.</translation>
     </message>
     <message>
-        <location filename="../build/MeguPackOptimizer/src/qml/views/OptimizationView.qml" line="900" />
-        <location filename="../src/qml/views/OptimizationView.qml" line="1010" />
+        <location filename="../build/MeguPackOptimizer/src/qml/views/OptimizationView.qml" line="1010" />
+        <location filename="../src/qml/views/OptimizationView.qml" line="1151" />
         <source>Forces the game language to English.</source>
         <translation>Примусово встановлює англійську мову гри.</translation>
     </message>
     <message>
-        <location filename="../build/MeguPackOptimizer/src/qml/views/OptimizationView.qml" line="901" />
-        <location filename="../src/qml/views/OptimizationView.qml" line="1011" />
+        <location filename="../build/MeguPackOptimizer/src/qml/views/OptimizationView.qml" line="1011" />
+        <location filename="../src/qml/views/OptimizationView.qml" line="1152" />
         <source>Removes the frame rate cap for maximum FPS.</source>
         <translation>Знімає обмеження частоти кадрів для максимального FPS.</translation>
     </message>
     <message>
-        <location filename="../build/MeguPackOptimizer/src/qml/views/OptimizationView.qml" line="902" />
-        <location filename="../src/qml/views/OptimizationView.qml" line="1012" />
+        <location filename="../build/MeguPackOptimizer/src/qml/views/OptimizationView.qml" line="1012" />
+        <location filename="../src/qml/views/OptimizationView.qml" line="1153" />
         <source>Forces the monitor refresh rate to 170Hz (adjust to your monitor).</source>
         <translation>Встановлює частоту оновлення монітора на 170 Гц (налаштуйте під свій монітор).</translation>
     </message>
     <message>
-        <location filename="../build/MeguPackOptimizer/src/qml/views/OptimizationView.qml" line="903" />
-        <location filename="../src/qml/views/OptimizationView.qml" line="1013" />
+        <location filename="../build/MeguPackOptimizer/src/qml/views/OptimizationView.qml" line="1013" />
+        <location filename="../src/qml/views/OptimizationView.qml" line="1154" />
         <source>Disables joystick initialization, freeing up memory and reducing startup time.</source>
         <translation>Вимикає ініціалізацію джойстика, звільняючи пам'ять і зменшуючи час запуску.</translation>
     </message>
     <message>
-        <location filename="../build/MeguPackOptimizer/src/qml/views/OptimizationView.qml" line="904" />
-        <location filename="../src/qml/views/OptimizationView.qml" line="1014" />
+        <location filename="../build/MeguPackOptimizer/src/qml/views/OptimizationView.qml" line="1014" />
+        <location filename="../src/qml/views/OptimizationView.qml" line="1155" />
         <source>Launches the game in high CPU priority mode.</source>
         <translation>Запускає гру в режимі високого пріоритету процесора.</translation>
     </message>
     <message>
-        <location filename="../build/MeguPackOptimizer/src/qml/views/OptimizationView.qml" line="905" />
-        <location filename="../src/qml/views/OptimizationView.qml" line="1015" />
+        <location filename="../build/MeguPackOptimizer/src/qml/views/OptimizationView.qml" line="1015" />
+        <location filename="../src/qml/views/OptimizationView.qml" line="1156" />
         <source>Forces the game to start in fullscreen mode.</source>
         <translation>Примусово запускає гру в повноекранному режимі.</translation>
     </message>
     <message>
-        <location filename="../build/MeguPackOptimizer/src/qml/views/OptimizationView.qml" line="906" />
-        <location filename="../src/qml/views/OptimizationView.qml" line="1016" />
+        <location filename="../build/MeguPackOptimizer/src/qml/views/OptimizationView.qml" line="1016" />
+        <location filename="../src/qml/views/OptimizationView.qml" line="1157" />
         <source>Forces V-Sync to be disabled to minimize input lag.</source>
         <translation>Вимкнення вертикальної синхронізації (V-Sync) для мінімізації затримки введення.</translation>
     </message>
     <message>
-        <location filename="../build/MeguPackOptimizer/src/qml/views/OptimizationView.qml" line="907" />
-        <location filename="../src/qml/views/OptimizationView.qml" line="1017" />
+        <location filename="../build/MeguPackOptimizer/src/qml/views/OptimizationView.qml" line="1017" />
+        <location filename="../src/qml/views/OptimizationView.qml" line="1158" />
         <source>Disables soft blending for particles, improving performance near smoke.</source>
         <translation>Вимикає м'яке змішування часток, покращуючи продуктивність поблизу диму.</translation>
     </message>
     <message>
-        <location filename="../build/MeguPackOptimizer/src/qml/views/OptimizationView.qml" line="908" />
-        <location filename="../src/qml/views/OptimizationView.qml" line="1018" />
+        <location filename="../build/MeguPackOptimizer/src/qml/views/OptimizationView.qml" line="1018" />
+        <location filename="../src/qml/views/OptimizationView.qml" line="1159" />
         <source>Disables dynamic lighting, removing FPS drops during gunfights.</source>
         <translation>Вимикає динамічне освітлення, усуваючи просідання FPS під час перестрілок.</translation>
     </message>
     <message>
-        <location filename="../build/MeguPackOptimizer/src/qml/views/OptimizationView.qml" line="909" />
-        <location filename="../src/qml/views/OptimizationView.qml" line="1019" />
+        <location filename="../build/MeguPackOptimizer/src/qml/views/OptimizationView.qml" line="1019" />
+        <location filename="../src/qml/views/OptimizationView.qml" line="1160" />
         <source>Sets interpolation to minimum, making network hit registration faster.</source>
         <translation>Встановлює мінімальну інтерполяцію, роблячи реєстрацію попадань по мережі швидшою.</translation>
     </message>
     <message>
-        <location filename="../build/MeguPackOptimizer/src/qml/views/OptimizationView.qml" line="910" />
-        <location filename="../src/qml/views/OptimizationView.qml" line="1020" />
+        <location filename="../build/MeguPackOptimizer/src/qml/views/OptimizationView.qml" line="1020" />
+        <location filename="../src/qml/views/OptimizationView.qml" line="1161" />
         <source>Hides the server IP address in console and status to prevent DDoS.</source>
         <translation>Приховує IP-адресу сервера в консолі та статусі для запобігання DDoS-атакам.</translation>
     </message>
     <message>
-        <location filename="../build/MeguPackOptimizer/src/qml/views/OptimizationView.qml" line="911" />
-        <location filename="../src/qml/views/OptimizationView.qml" line="1021" />
+        <location filename="../build/MeguPackOptimizer/src/qml/views/OptimizationView.qml" line="1021" />
+        <location filename="../src/qml/views/OptimizationView.qml" line="1162" />
         <source>Forces multi-threaded material queue mode for multi-core processors.</source>
         <translation>Примусово вмикає багатопотоковий режим черги матеріалів для багатоядерних процесорів.</translation>
     </message>
     <message>
-        <location filename="../build/MeguPackOptimizer/src/qml/views/OptimizationView.qml" line="1169" />
-        <location filename="../src/qml/views/OptimizationView.qml" line="1279" />
+        <location filename="../build/MeguPackOptimizer/src/qml/views/OptimizationView.qml" line="1279" />
+        <location filename="../src/qml/views/OptimizationView.qml" line="1420" />
         <source>TELEMETRY</source>
         <translation>ТЕЛЕМЕТРІЯ</translation>
     </message>
     <message>
-        <location filename="../build/MeguPackOptimizer/src/qml/views/OptimizationView.qml" line="1841" />
-        <location filename="../src/qml/views/OptimizationView.qml" line="1951" />
+        <location filename="../build/MeguPackOptimizer/src/qml/views/OptimizationView.qml" line="1951" />
+        <location filename="../src/qml/views/OptimizationView.qml" line="2198" />
         <source>Disable Discord's in-game overlay DLL injection to reduce CPU overhead and eliminate graphics micro-stutters.</source>
         <translation>Відключення інжекції DLL ігрового оверлея Discord для зниження навантаження на процесор та усунення мікро-фризів.</translation>
     </message>
     <message>
-        <location filename="../build/MeguPackOptimizer/src/qml/views/OptimizationView.qml" line="1849" />
-        <location filename="../src/qml/views/OptimizationView.qml" line="1959" />
+        <location filename="../build/MeguPackOptimizer/src/qml/views/OptimizationView.qml" line="1959" />
+        <location filename="../src/qml/views/OptimizationView.qml" line="2206" />
         <source>Close Discord before optimization</source>
         <translation>Закрийте Discord перед оптимізацією</translation>
     </message>
     <message>
-        <location filename="../build/MeguPackOptimizer/src/qml/views/OptimizationView.qml" line="2062" />
-        <location filename="../src/qml/views/OptimizationView.qml" line="2261" />
+        <location filename="../build/MeguPackOptimizer/src/qml/views/OptimizationView.qml" line="2261" />
+        <location filename="../src/qml/views/OptimizationView.qml" line="2508" />
         <source>Enables or disables Remote Desktop connections (RDP) to securely connect and manage this computer from another device.</source>
         <translation>Увімкнення або вимкнення підключень до віддаленого робочого столу (RDP) для безпечного керування цим комп’ютером з іншого пристрою.</translation>
     </message>
     <message>
-        <location filename="../build/MeguPackOptimizer/src/qml/views/OptimizationView.qml" line="2168" />
-        <location filename="../src/qml/views/OptimizationView.qml" line="2367" />
+        <location filename="../build/MeguPackOptimizer/src/qml/views/OptimizationView.qml" line="2367" />
+        <location filename="../src/qml/views/OptimizationView.qml" line="2614" />
         <source>Disables system diagnostic data collection, CEIP telemetry policies, error reporting, and Connected User Experiences services.</source>
         <translation>Вимикає збір діагностичних даних системи, політики телеметрії CEIP, звітування про помилки та службу функціональних можливостей для підключених користувачів.</translation>
     </message>
     <message>
-        <location filename="../build/MeguPackOptimizer/src/qml/views/OptimizationView.qml" line="2316" />
-        <location filename="../src/qml/views/OptimizationView.qml" line="2515" />
+        <location filename="../build/MeguPackOptimizer/src/qml/views/OptimizationView.qml" line="2515" />
+        <location filename="../src/qml/views/OptimizationView.qml" line="2762" />
         <source>Configure system update modes: enable all, only security patches, manual check, or disable updates entirely.</source>
         <translation>Налаштування режимів оновлення системи: увімкнення всіх, лише виправлення безпеки, перевірка вручну або повне вимкнення оновлень.</translation>
     </message>
     <message>
-        <location filename="../build/MeguPackOptimizer/src/qml/views/OptimizationView.qml" line="2909" />
-        <location filename="../src/qml/views/OptimizationView.qml" line="3108" />
+        <location filename="../build/MeguPackOptimizer/src/qml/views/OptimizationView.qml" line="3108" />
+        <location filename="../src/qml/views/OptimizationView.qml" line="3355" />
         <source>Enable or disable the BitLocker drive encryption background manager service.</source>
         <translation>Увімкнення або вимкнення служби фонового диспетчера шифрування дисків BitLocker.</translation>
     </message>
     <message>
-        <location filename="../build/MeguPackOptimizer/src/qml/views/OptimizationView.qml" line="2916" />
-        <location filename="../src/qml/views/OptimizationView.qml" line="3115" />
+        <location filename="../build/MeguPackOptimizer/src/qml/views/OptimizationView.qml" line="3115" />
+        <location filename="../src/qml/views/OptimizationView.qml" line="3362" />
         <source>Status: Service: %1 | Encryption (C:): %2</source>
         <translation>Статус: Служба: %1 | Шифрування (C:): %2</translation>
     </message>
     <message>
-        <location filename="../build/MeguPackOptimizer/src/qml/views/OptimizationView.qml" line="2917" />
-        <location filename="../src/qml/views/OptimizationView.qml" line="3116" />
+        <location filename="../build/MeguPackOptimizer/src/qml/views/OptimizationView.qml" line="3116" />
+        <location filename="../src/qml/views/OptimizationView.qml" line="3363" />
         <source>Active</source>
         <translation>Активна</translation>
     </message>
     <message>
-        <location filename="../build/MeguPackOptimizer/src/qml/views/OptimizationView.qml" line="2918" />
-        <location filename="../src/qml/views/OptimizationView.qml" line="3117" />
+        <location filename="../build/MeguPackOptimizer/src/qml/views/OptimizationView.qml" line="3117" />
+        <location filename="../src/qml/views/OptimizationView.qml" line="3364" />
         <source>Encrypted</source>
         <translation>Зашифровано</translation>
     </message>
     <message>
-        <location filename="../build/MeguPackOptimizer/src/qml/views/OptimizationView.qml" line="2918" />
-        <location filename="../src/qml/views/OptimizationView.qml" line="3117" />
+        <location filename="../build/MeguPackOptimizer/src/qml/views/OptimizationView.qml" line="3117" />
+        <location filename="../src/qml/views/OptimizationView.qml" line="3364" />
         <source>Not Encrypted</source>
         <translation>Не зашифровано</translation>
     </message>
     <message>
-        <location filename="../build/MeguPackOptimizer/src/qml/views/OptimizationView.qml" line="3025" />
-        <location filename="../src/qml/views/OptimizationView.qml" line="3224" />
+        <location filename="../build/MeguPackOptimizer/src/qml/views/OptimizationView.qml" line="3224" />
+        <location filename="../src/qml/views/OptimizationView.qml" line="3471" />
         <source>Disable Microsoft Defender Antivirus protection, real-time scanning, and services to minimize system latency and resource consumption.</source>
         <translation>Вимкнення антивірусного захисту Microsoft Defender, сканування в реальному часі та служб для мінімізації затримок і споживання ресурсів.</translation>
     </message>
     <message>
-        <location filename="../build/MeguPackOptimizer/src/qml/views/OptimizationView.qml" line="3541" />
-        <location filename="../src/qml/views/OptimizationView.qml" line="3740" />
+        <location filename="../build/MeguPackOptimizer/src/qml/views/OptimizationView.qml" line="3740" />
+        <location filename="../src/qml/views/OptimizationView.qml" line="3987" />
         <source>XBOX APP &amp; GAME BAR</source>
         <translation>XBOX APP ТА GAME BAR</translation>
     </message>
     <message>
-        <location filename="../build/MeguPackOptimizer/src/qml/views/OptimizationView.qml" line="3542" />
-        <location filename="../src/qml/views/OptimizationView.qml" line="3741" />
+        <location filename="../build/MeguPackOptimizer/src/qml/views/OptimizationView.qml" line="3741" />
+        <location filename="../src/qml/views/OptimizationView.qml" line="3988" />
         <source>MPO LATENCY TWEAK</source>
         <translation>НАЛАШТУВАННЯ MPO</translation>
     </message>
     <message>
-        <location filename="../build/MeguPackOptimizer/src/qml/views/OptimizationView.qml" line="3543" />
-        <location filename="../src/qml/views/OptimizationView.qml" line="3742" />
+        <location filename="../build/MeguPackOptimizer/src/qml/views/OptimizationView.qml" line="3742" />
+        <location filename="../src/qml/views/OptimizationView.qml" line="3989" />
         <source>PRINTER TWEAKS</source>
         <translation>НАЛАШТУВАННЯ ПРИНТЕРІВ</translation>
     </message>
     <message>
-        <location filename="../build/MeguPackOptimizer/src/qml/views/OptimizationView.qml" line="3544" />
-        <location filename="../src/qml/views/OptimizationView.qml" line="3743" />
+        <location filename="../build/MeguPackOptimizer/src/qml/views/OptimizationView.qml" line="3743" />
+        <location filename="../src/qml/views/OptimizationView.qml" line="3990" />
         <source>NOTIFICATION SETTINGS</source>
         <translation>НАЛАШТУВАННЯ СПОВІЩЕНЬ</translation>
     </message>
     <message>
-        <location filename="../build/MeguPackOptimizer/src/qml/views/OptimizationView.qml" line="3545" />
-        <location filename="../src/qml/views/OptimizationView.qml" line="3744" />
+        <location filename="../build/MeguPackOptimizer/src/qml/views/OptimizationView.qml" line="3744" />
+        <location filename="../src/qml/views/OptimizationView.qml" line="3991" />
         <source>POWER PLANS</source>
         <translation>СХЕМИ ЖИВЛЕННЯ</translation>
     </message>
     <message>
-        <location filename="../build/MeguPackOptimizer/src/qml/views/OptimizationView.qml" line="3546" />
-        <location filename="../src/qml/views/OptimizationView.qml" line="3745" />
+        <location filename="../build/MeguPackOptimizer/src/qml/views/OptimizationView.qml" line="3745" />
+        <location filename="../src/qml/views/OptimizationView.qml" line="3992" />
         <source>WINDOWS DEFENDER</source>
         <translation>ЗАХИСНИК WINDOWS</translation>
     </message>
     <message>
-        <location filename="../build/MeguPackOptimizer/src/qml/views/OptimizationView.qml" line="3547" />
-        <location filename="../src/qml/views/OptimizationView.qml" line="3746" />
+        <location filename="../build/MeguPackOptimizer/src/qml/views/OptimizationView.qml" line="3746" />
+        <location filename="../src/qml/views/OptimizationView.qml" line="3993" />
         <source>USB 3.0 POWER SAVING</source>
         <translation>ЕНЕРГОЗБЕРЕЖЕННЯ USB 3.0</translation>
     </message>
     <message>
-        <location filename="../build/MeguPackOptimizer/src/qml/views/OptimizationView.qml" line="731" />
-        <location filename="../build/MeguPackOptimizer/src/qml/views/OptimizationView.qml" line="3548" />
-        <location filename="../src/qml/views/OptimizationView.qml" line="757" />
-        <location filename="../src/qml/views/OptimizationView.qml" line="3747" />
+        <location filename="../build/MeguPackOptimizer/src/qml/views/OptimizationView.qml" line="757" />
+        <location filename="../build/MeguPackOptimizer/src/qml/views/OptimizationView.qml" line="3747" />
+        <location filename="../src/qml/views/OptimizationView.qml" line="898" />
+        <location filename="../src/qml/views/OptimizationView.qml" line="3994" />
         <source>TELEMETRY SETTINGS</source>
         <translation>НАЛАШТУВАННЯ ТЕЛЕМЕТРІЇ</translation>
     </message>
     <message>
-        <location filename="../build/MeguPackOptimizer/src/qml/views/OptimizationView.qml" line="3549" />
-        <location filename="../src/qml/views/OptimizationView.qml" line="3748" />
+        <location filename="../build/MeguPackOptimizer/src/qml/views/OptimizationView.qml" line="3748" />
+        <location filename="../src/qml/views/OptimizationView.qml" line="3995" />
         <source>WINDOWS UPDATE</source>
         <translation>ОНОВЛЕННЯ WINDOWS</translation>
     </message>
     <message>
-        <location filename="../build/MeguPackOptimizer/src/qml/views/OptimizationView.qml" line="3855" />
-        <location filename="../src/qml/views/OptimizationView.qml" line="4054" />
+        <location filename="../build/MeguPackOptimizer/src/qml/views/OptimizationView.qml" line="4054" />
+        <location filename="../src/qml/views/OptimizationView.qml" line="4303" />
         <source>Xbox Gaming Overlay</source>
         <translation>Ігровий оверлей Xbox</translation>
     </message>
     <message>
-        <location filename="../build/MeguPackOptimizer/src/qml/views/OptimizationView.qml" line="3862" />
-        <location filename="../src/qml/views/OptimizationView.qml" line="4061" />
+        <location filename="../build/MeguPackOptimizer/src/qml/views/OptimizationView.qml" line="4061" />
+        <location filename="../src/qml/views/OptimizationView.qml" line="4310" />
         <source>Get-AppxPackage XboxGamingOverlay | ...</source>
         <translation>Get-AppxPackage XboxGamingOverlay | ...</translation>
     </message>
     <message>
-        <location filename="../build/MeguPackOptimizer/src/qml/views/OptimizationView.qml" line="3901" />
-        <location filename="../src/qml/views/OptimizationView.qml" line="4100" />
+        <location filename="../build/MeguPackOptimizer/src/qml/views/OptimizationView.qml" line="4100" />
+        <location filename="../src/qml/views/OptimizationView.qml" line="4349" />
         <source>Xbox TCUI Dialogue</source>
         <translation>Діалог Xbox TCUI</translation>
     </message>
     <message>
-        <location filename="../build/MeguPackOptimizer/src/qml/views/OptimizationView.qml" line="3908" />
-        <location filename="../src/qml/views/OptimizationView.qml" line="4107" />
+        <location filename="../build/MeguPackOptimizer/src/qml/views/OptimizationView.qml" line="4107" />
+        <location filename="../src/qml/views/OptimizationView.qml" line="4356" />
         <source>Get-AppxPackage XboxTCUI | ...</source>
         <translation>Get-AppxPackage XboxTCUI | ...</translation>
     </message>
     <message>
-        <location filename="../build/MeguPackOptimizer/src/qml/views/OptimizationView.qml" line="3947" />
-        <location filename="../src/qml/views/OptimizationView.qml" line="4146" />
+        <location filename="../build/MeguPackOptimizer/src/qml/views/OptimizationView.qml" line="4146" />
+        <location filename="../src/qml/views/OptimizationView.qml" line="4395" />
         <source>Xbox Game Speech Window</source>
         <translation>Вікно мовлення ігор Xbox</translation>
     </message>
     <message>
-        <location filename="../build/MeguPackOptimizer/src/qml/views/OptimizationView.qml" line="3954" />
-        <location filename="../src/qml/views/OptimizationView.qml" line="4153" />
+        <location filename="../build/MeguPackOptimizer/src/qml/views/OptimizationView.qml" line="4153" />
+        <location filename="../src/qml/views/OptimizationView.qml" line="4402" />
         <source>Get-AppxPackage XboxGameSpeechWindow | ...</source>
         <translation>Get-AppxPackage XboxGameSpeechWindow | ...</translation>
     </message>
     <message>
-        <location filename="../build/MeguPackOptimizer/src/qml/views/OptimizationView.qml" line="3993" />
-        <location filename="../src/qml/views/OptimizationView.qml" line="4192" />
+        <location filename="../build/MeguPackOptimizer/src/qml/views/OptimizationView.qml" line="4192" />
+        <location filename="../src/qml/views/OptimizationView.qml" line="4441" />
         <source>System Provisioned Packages</source>
         <translation>Попередньо встановлені пакети системи</translation>
     </message>
     <message>
-        <location filename="../build/MeguPackOptimizer/src/qml/views/OptimizationView.qml" line="4000" />
-        <location filename="../src/qml/views/OptimizationView.qml" line="4199" />
+        <location filename="../build/MeguPackOptimizer/src/qml/views/OptimizationView.qml" line="4199" />
+        <location filename="../src/qml/views/OptimizationView.qml" line="4448" />
         <source>Get-AppxProvisionedPackage -Online | ...</source>
         <translation>Get-AppxProvisionedPackage -Online | ...</translation>
     </message>
     <message>
-        <location filename="../build/MeguPackOptimizer/src/qml/views/OptimizationView.qml" line="4077" />
-        <location filename="../src/qml/views/OptimizationView.qml" line="4276" />
+        <location filename="../build/MeguPackOptimizer/src/qml/views/OptimizationView.qml" line="4276" />
+        <location filename="../src/qml/views/OptimizationView.qml" line="4525" />
         <source>Choose any MPO overlay flag from 0 to 5. 5 disables MPO completely to resolve driver bugs, while 0 restores Windows default.</source>
         <translation>Оберіть будь-який прапорець оверлею MPO від 0 до 5. 5 повністю вимикає MPO для вирішення помилок драйверів, а 0 відновлює значення за замовчуванням.</translation>
     </message>
     <message>
-        <location filename="../build/MeguPackOptimizer/src/qml/views/OptimizationView.qml" line="4131" />
-        <location filename="../build/MeguPackOptimizer/src/qml/views/OptimizationView.qml" line="4403" />
-        <location filename="../src/qml/views/OptimizationView.qml" line="4330" />
-        <location filename="../src/qml/views/OptimizationView.qml" line="4602" />
+        <location filename="../build/MeguPackOptimizer/src/qml/views/OptimizationView.qml" line="4330" />
+        <location filename="../build/MeguPackOptimizer/src/qml/views/OptimizationView.qml" line="4602" />
+        <location filename="../src/qml/views/OptimizationView.qml" line="4579" />
+        <location filename="../src/qml/views/OptimizationView.qml" line="4851" />
         <source>0 (Default): Dynamic overlays are fully active. Lowest latency in windowed games, but causes micro-stuttering, Chromium browser lags, or black screen flickering on modern GPU drivers.</source>
         <translation>0 (За замовчуванням): Динамічні оверлеї повністю активні. Найменша затримка в іграх у віконному режимі, але викликає мікрофризи, затримки в браузерах Chromium або мерехтіння чорного екрана на сучасних драйверах відеокарт.</translation>
     </message>
     <message>
-        <location filename="../build/MeguPackOptimizer/src/qml/views/OptimizationView.qml" line="4180" />
-        <location filename="../build/MeguPackOptimizer/src/qml/views/OptimizationView.qml" line="4404" />
-        <location filename="../src/qml/views/OptimizationView.qml" line="4379" />
-        <location filename="../src/qml/views/OptimizationView.qml" line="4603" />
+        <location filename="../build/MeguPackOptimizer/src/qml/views/OptimizationView.qml" line="4379" />
+        <location filename="../build/MeguPackOptimizer/src/qml/views/OptimizationView.qml" line="4603" />
+        <location filename="../src/qml/views/OptimizationView.qml" line="4628" />
+        <location filename="../src/qml/views/OptimizationView.qml" line="4852" />
         <source>1: Disables hardware MPO overlay promotion. Direct GPU rendering is bypassed, which can fix dual-monitor desktop stuttering.</source>
         <translation>1: Вимикає апаратне просування оверлею MPO. Прямий рендеринг GPU обходиться, що може виправити заїкання робочого столу на двох моніторах.</translation>
     </message>
     <message>
-        <location filename="../build/MeguPackOptimizer/src/qml/views/OptimizationView.qml" line="4229" />
-        <location filename="../build/MeguPackOptimizer/src/qml/views/OptimizationView.qml" line="4405" />
-        <location filename="../src/qml/views/OptimizationView.qml" line="4428" />
-        <location filename="../src/qml/views/OptimizationView.qml" line="4604" />
+        <location filename="../build/MeguPackOptimizer/src/qml/views/OptimizationView.qml" line="4428" />
+        <location filename="../build/MeguPackOptimizer/src/qml/views/OptimizationView.qml" line="4604" />
+        <location filename="../src/qml/views/OptimizationView.qml" line="4677" />
+        <location filename="../src/qml/views/OptimizationView.qml" line="4853" />
         <source>2: Disables software-emulated MPO overlays, forcing DWM to only allocate native hardware paths.</source>
         <translation>2: Вимикає програмно-емульовані оверлеї MPO, змушуючи DWM виділяти лише нативні апаратні шляхи.</translation>
     </message>
     <message>
-        <location filename="../build/MeguPackOptimizer/src/qml/views/OptimizationView.qml" line="4278" />
-        <location filename="../build/MeguPackOptimizer/src/qml/views/OptimizationView.qml" line="4406" />
-        <location filename="../src/qml/views/OptimizationView.qml" line="4477" />
-        <location filename="../src/qml/views/OptimizationView.qml" line="4605" />
+        <location filename="../build/MeguPackOptimizer/src/qml/views/OptimizationView.qml" line="4477" />
+        <location filename="../build/MeguPackOptimizer/src/qml/views/OptimizationView.qml" line="4605" />
+        <location filename="../src/qml/views/OptimizationView.qml" line="4726" />
+        <location filename="../src/qml/views/OptimizationView.qml" line="4854" />
         <source>3: Disables both hardware and software overlays. Forces legacy composition limits.</source>
         <translation>3: Вимикає як апаратні, так і програмні оверлеї. Примусово встановлює застарілі ліміти композиції.</translation>
     </message>
     <message>
-        <location filename="../build/MeguPackOptimizer/src/qml/views/OptimizationView.qml" line="4327" />
-        <location filename="../build/MeguPackOptimizer/src/qml/views/OptimizationView.qml" line="4407" />
-        <location filename="../src/qml/views/OptimizationView.qml" line="4526" />
-        <location filename="../src/qml/views/OptimizationView.qml" line="4606" />
+        <location filename="../build/MeguPackOptimizer/src/qml/views/OptimizationView.qml" line="4526" />
+        <location filename="../build/MeguPackOptimizer/src/qml/views/OptimizationView.qml" line="4606" />
+        <location filename="../src/qml/views/OptimizationView.qml" line="4775" />
+        <location filename="../src/qml/views/OptimizationView.qml" line="4855" />
         <source>4: Forces complete DWM composition. Promotes zero window structures to independent planes.</source>
         <translation>4: Примусово встановлює повну композицію DWM. Не перетворює структури вікон у незалежні площини.</translation>
     </message>
     <message>
-        <location filename="../build/MeguPackOptimizer/src/qml/views/OptimizationView.qml" line="4376" />
-        <location filename="../build/MeguPackOptimizer/src/qml/views/OptimizationView.qml" line="4408" />
-        <location filename="../src/qml/views/OptimizationView.qml" line="4575" />
-        <location filename="../src/qml/views/OptimizationView.qml" line="4607" />
+        <location filename="../build/MeguPackOptimizer/src/qml/views/OptimizationView.qml" line="4575" />
+        <location filename="../build/MeguPackOptimizer/src/qml/views/OptimizationView.qml" line="4607" />
+        <location filename="../src/qml/views/OptimizationView.qml" line="4824" />
+        <location filename="../src/qml/views/OptimizationView.qml" line="4856" />
         <source>5 (Recommended): Completely disables all MPO modes. Official NVIDIA/AMD hotfix to eliminate stuttering, browser lag, and screen flickers.</source>
         <translation>5 (Рекомендовано): Повністю вимикає всі режими MPO. Офіційний хотфікс NVIDIA/AMD для усунення заїкань, затримок у браузері та мерехтіння екрана.</translation>
     </message>
     <message>
-        <location filename="../build/MeguPackOptimizer/src/qml/views/OptimizationView.qml" line="4696" />
-        <location filename="../src/qml/views/OptimizationView.qml" line="4895" />
+        <location filename="../build/MeguPackOptimizer/src/qml/views/OptimizationView.qml" line="4895" />
+        <location filename="../src/qml/views/OptimizationView.qml" line="5144" />
         <source>Configure custom Windows Defender protection settings and services.</source>
         <translation>Налаштування користувацьких параметрів захисту та служб Windows Defender.</translation>
     </message>
     <message>
-        <location filename="../build/MeguPackOptimizer/src/qml/views/OptimizationView.qml" line="4735" />
-        <location filename="../src/qml/views/OptimizationView.qml" line="4934" />
+        <location filename="../build/MeguPackOptimizer/src/qml/views/OptimizationView.qml" line="4934" />
+        <location filename="../src/qml/views/OptimizationView.qml" line="5183" />
         <source>Disable the startup of WinDefend, Sense, WdFilter, and WdBoot services. Note: Requires disabling Tamper Protection.</source>
         <translation>Вимкнення запуску служб WinDefend, Sense, WdFilter та WdBoot. Примітка: Вимагає відключення захисту від несанкціонованого доступу (Tamper Protection).</translation>
     </message>
     <message>
-        <location filename="../build/MeguPackOptimizer/src/qml/views/OptimizationView.qml" line="4820" />
-        <location filename="../src/qml/views/OptimizationView.qml" line="5019" />
+        <location filename="../build/MeguPackOptimizer/src/qml/views/OptimizationView.qml" line="5019" />
+        <location filename="../src/qml/views/OptimizationView.qml" line="5268" />
         <source>Configure custom Windows telemetry and error reporting options.</source>
         <translation>Налаштування користувацьких параметрів телеметрії та звітування про помилки Windows.</translation>
     </message>
     <message>
-        <location filename="../build/MeguPackOptimizer/src/qml/views/OptimizationView.qml" line="4865" />
-        <location filename="../src/qml/views/OptimizationView.qml" line="5064" />
+        <location filename="../build/MeguPackOptimizer/src/qml/views/OptimizationView.qml" line="5064" />
+        <location filename="../src/qml/views/OptimizationView.qml" line="5313" />
         <source>Automatic updates, notifications, drivers, and upgrades are all enabled.</source>
         <translation>Автоматичні оновлення, сповіщення, драйвери та оновлення версій увімкнено.</translation>
     </message>
     <message>
-        <location filename="../build/MeguPackOptimizer/src/qml/views/OptimizationView.qml" line="4866" />
-        <location filename="../src/qml/views/OptimizationView.qml" line="5065" />
+        <location filename="../build/MeguPackOptimizer/src/qml/views/OptimizationView.qml" line="5065" />
+        <location filename="../src/qml/views/OptimizationView.qml" line="5314" />
         <source>Only cumulative security and quality patches will install. Driver and major version updates are blocked.</source>
         <translation>Встановлюватимуться лише накопичувальні оновлення безпеки та якості. Оновлення драйверів та версій ОС заблоковано.</translation>
     </message>
     <message>
-        <location filename="../build/MeguPackOptimizer/src/qml/views/OptimizationView.qml" line="4867" />
-        <location filename="../src/qml/views/OptimizationView.qml" line="5066" />
+        <location filename="../build/MeguPackOptimizer/src/qml/views/OptimizationView.qml" line="5066" />
+        <location filename="../src/qml/views/OptimizationView.qml" line="5315" />
         <source>Automatic background updates are disabled. Check and install on your own schedule.</source>
         <translation>Автоматичні фонові оновлення вимкнено. Перевіряйте та встановлюйте оновлення за власним розкладом.</translation>
     </message>
     <message>
-        <location filename="../build/MeguPackOptimizer/src/qml/views/OptimizationView.qml" line="4868" />
-        <location filename="../src/qml/views/OptimizationView.qml" line="5067" />
+        <location filename="../build/MeguPackOptimizer/src/qml/views/OptimizationView.qml" line="5067" />
+        <location filename="../src/qml/views/OptimizationView.qml" line="5316" />
         <source>Updates are completely blocked. Disables update services and Windows Update Medic.</source>
         <translation>Оновлення повністю заблоковано. Служби оновлення та Windows Update Medic вимкнено.</translation>
     </message>
     <message>
-        <location filename="../build/MeguPackOptimizer/src/qml/views/OptimizationView.qml" line="4872" />
-        <location filename="../src/qml/views/OptimizationView.qml" line="5071" />
+        <location filename="../build/MeguPackOptimizer/src/qml/views/OptimizationView.qml" line="5071" />
+        <location filename="../src/qml/views/OptimizationView.qml" line="5320" />
         <source>Configure system update modes:</source>
         <translation>Налаштування режимів оновлення системи:</translation>
     </message>
     <message>
-        <location filename="../build/MeguPackOptimizer/src/qml/views/OptimizationView.qml" line="5709" />
-        <location filename="../src/qml/views/OptimizationView.qml" line="5908" />
+        <location filename="../build/MeguPackOptimizer/src/qml/views/OptimizationView.qml" line="5908" />
+        <location filename="../src/qml/views/OptimizationView.qml" line="6324" />
         <source>Discord Process Detected</source>
         <translation>Виявлено процес Discord</translation>
     </message>
     <message>
-        <location filename="../build/MeguPackOptimizer/src/qml/views/OptimizationView.qml" line="5719" />
-        <location filename="../src/qml/views/OptimizationView.qml" line="5918" />
+        <location filename="../build/MeguPackOptimizer/src/qml/views/OptimizationView.qml" line="5918" />
+        <location filename="../src/qml/views/OptimizationView.qml" line="6334" />
         <source>Discord is currently running. It must be closed to safely lock/unlock overlay files.
 
 Would you like to close Discord now and proceed?</source>
@@ -1347,1095 +1355,1506 @@ Would you like to close Discord now and proceed?</source>
 Бажаєте закрити Discord зараз і продовжити?</translation>
     </message>
     <message>
-        <location filename="../build/MeguPackOptimizer/src/qml/views/OptimizationView.qml" line="5733" />
-        <location filename="../src/qml/views/OptimizationView.qml" line="5932" />
+        <location filename="../build/MeguPackOptimizer/src/qml/views/OptimizationView.qml" line="5932" />
+        <location filename="../src/qml/views/OptimizationView.qml" line="6348" />
         <source>Close &amp; Optimize</source>
         <translation>Закрити та оптимізувати</translation>
     </message>
     <message>
-        <location filename="../build/MeguPackOptimizer/src/qml/views/OptimizationView.qml" line="5746" />
-        <location filename="../src/qml/views/OptimizationView.qml" line="5945" />
+        <location filename="../build/MeguPackOptimizer/src/qml/views/OptimizationView.qml" line="5945" />
+        <location filename="../src/qml/views/OptimizationView.qml" line="6361" />
         <source>Skip Overlay</source>
         <translation>Пропустити оверлей</translation>
     </message>
     <message>
-        <location filename="../build/MeguPackOptimizer/src/qml/views/OptimizationView.qml" line="5759" />
-        <location filename="../src/qml/views/OptimizationView.qml" line="5958" />
+        <location filename="../build/MeguPackOptimizer/src/qml/views/OptimizationView.qml" line="5958" />
+        <location filename="../src/qml/views/OptimizationView.qml" line="6374" />
         <source>Cancel</source>
         <translation>Скасувати</translation>
     </message>
     <message>
-        <location filename="../build/MeguPackOptimizer/src/qml/views/OptimizationView.qml" line="216" />
-        <location filename="../build/MeguPackOptimizer/src/qml/views/OptimizationView.qml" line="630" />
-        <location filename="../build/MeguPackOptimizer/src/qml/views/OptimizationView.qml" line="1494" />
-        <location filename="../src/qml/views/OptimizationView.qml" line="222" />
-        <location filename="../src/qml/views/OptimizationView.qml" line="654" />
-        <location filename="../src/qml/views/OptimizationView.qml" line="1604" />
+        <location filename="../build/MeguPackOptimizer/src/qml/views/OptimizationView.qml" line="222" />
+        <location filename="../build/MeguPackOptimizer/src/qml/views/OptimizationView.qml" line="654" />
+        <location filename="../build/MeguPackOptimizer/src/qml/views/OptimizationView.qml" line="1604" />
+        <location filename="../src/qml/views/OptimizationView.qml" line="316" />
+        <location filename="../src/qml/views/OptimizationView.qml" line="795" />
+        <location filename="../src/qml/views/OptimizationView.qml" line="1851" />
         <source>Core Isolation</source>
         <translation>Ізоляція ядра</translation>
     </message>
     <message>
-        <location filename="../build/MeguPackOptimizer/src/qml/views/OptimizationView.qml" line="1522" />
-        <location filename="../src/qml/views/OptimizationView.qml" line="1632" />
+        <location filename="../build/MeguPackOptimizer/src/qml/views/OptimizationView.qml" line="1632" />
+        <location filename="../src/qml/views/OptimizationView.qml" line="1879" />
         <source>Disabling kernel memory integrity reduces CPU overhead and input latency.</source>
         <translation>Вимкнення цілісності пам'яті ядра знижує навантаження на процесор та затримку введення.</translation>
     </message>
     <message>
-        <location filename="../build/MeguPackOptimizer/src/qml/views/OptimizationView.qml" line="224" />
-        <location filename="../build/MeguPackOptimizer/src/qml/views/OptimizationView.qml" line="631" />
-        <location filename="../build/MeguPackOptimizer/src/qml/views/OptimizationView.qml" line="1600" />
-        <location filename="../src/qml/views/OptimizationView.qml" line="230" />
-        <location filename="../src/qml/views/OptimizationView.qml" line="655" />
-        <location filename="../src/qml/views/OptimizationView.qml" line="1710" />
+        <location filename="../build/MeguPackOptimizer/src/qml/views/OptimizationView.qml" line="230" />
+        <location filename="../build/MeguPackOptimizer/src/qml/views/OptimizationView.qml" line="655" />
+        <location filename="../build/MeguPackOptimizer/src/qml/views/OptimizationView.qml" line="1710" />
+        <location filename="../src/qml/views/OptimizationView.qml" line="324" />
+        <location filename="../src/qml/views/OptimizationView.qml" line="796" />
+        <location filename="../src/qml/views/OptimizationView.qml" line="1957" />
         <source>Mouse Acceleration</source>
         <translation>Акселерація миші</translation>
     </message>
     <message>
-        <location filename="../build/MeguPackOptimizer/src/qml/views/OptimizationView.qml" line="1628" />
-        <location filename="../src/qml/views/OptimizationView.qml" line="1738" />
+        <location filename="../build/MeguPackOptimizer/src/qml/views/OptimizationView.qml" line="1738" />
+        <location filename="../src/qml/views/OptimizationView.qml" line="1985" />
         <source>Enhance pointer precision toggle to enable or disable system mouse acceleration.</source>
         <translation>Перемикач підвищення точності покажчика для увімкнення або вимкнення системного прискорення миші.</translation>
     </message>
     <message>
-        <location filename="../build/MeguPackOptimizer/src/qml/views/OptimizationView.qml" line="232" />
-        <location filename="../build/MeguPackOptimizer/src/qml/views/OptimizationView.qml" line="632" />
-        <location filename="../build/MeguPackOptimizer/src/qml/views/OptimizationView.qml" line="1706" />
-        <location filename="../src/qml/views/OptimizationView.qml" line="238" />
-        <location filename="../src/qml/views/OptimizationView.qml" line="656" />
-        <location filename="../src/qml/views/OptimizationView.qml" line="1816" />
+        <location filename="../build/MeguPackOptimizer/src/qml/views/OptimizationView.qml" line="238" />
+        <location filename="../build/MeguPackOptimizer/src/qml/views/OptimizationView.qml" line="656" />
+        <location filename="../build/MeguPackOptimizer/src/qml/views/OptimizationView.qml" line="1816" />
+        <location filename="../src/qml/views/OptimizationView.qml" line="332" />
+        <location filename="../src/qml/views/OptimizationView.qml" line="797" />
+        <location filename="../src/qml/views/OptimizationView.qml" line="2063" />
         <source>Game Mode</source>
         <translation>Ігровий режим</translation>
     </message>
     <message>
-        <location filename="../build/MeguPackOptimizer/src/qml/views/OptimizationView.qml" line="1734" />
-        <location filename="../src/qml/views/OptimizationView.qml" line="1844" />
+        <location filename="../build/MeguPackOptimizer/src/qml/views/OptimizationView.qml" line="1844" />
+        <location filename="../src/qml/views/OptimizationView.qml" line="2091" />
         <source>Enables or disables Windows Game Mode to prioritize gaming performance and stabilize FPS.</source>
         <translation>Увімкнення або вимкнення ігрового режиму Windows для пріоритезації ігрової продуктивності та стабілізації FPS.</translation>
     </message>
     <message>
-        <location filename="../build/MeguPackOptimizer/src/qml/views/OptimizationView.qml" line="240" />
-        <location filename="../build/MeguPackOptimizer/src/qml/views/OptimizationView.qml" line="634" />
-        <location filename="../build/MeguPackOptimizer/src/qml/views/OptimizationView.qml" line="1928" />
-        <location filename="../src/qml/views/OptimizationView.qml" line="246" />
-        <location filename="../src/qml/views/OptimizationView.qml" line="658" />
-        <location filename="../src/qml/views/OptimizationView.qml" line="2038" />
+        <location filename="../build/MeguPackOptimizer/src/qml/views/OptimizationView.qml" line="246" />
+        <location filename="../build/MeguPackOptimizer/src/qml/views/OptimizationView.qml" line="658" />
+        <location filename="../build/MeguPackOptimizer/src/qml/views/OptimizationView.qml" line="2038" />
+        <location filename="../src/qml/views/OptimizationView.qml" line="340" />
+        <location filename="../src/qml/views/OptimizationView.qml" line="799" />
+        <location filename="../src/qml/views/OptimizationView.qml" line="2285" />
         <source>Windows Defender Firewall</source>
         <translation>Брандмауер Windows</translation>
     </message>
     <message>
-        <location filename="../build/MeguPackOptimizer/src/qml/views/OptimizationView.qml" line="1956" />
-        <location filename="../src/qml/views/OptimizationView.qml" line="2066" />
+        <location filename="../build/MeguPackOptimizer/src/qml/views/OptimizationView.qml" line="2066" />
+        <location filename="../src/qml/views/OptimizationView.qml" line="2313" />
         <source>Enables or disables Windows Defender Firewall to control network traffic protection.</source>
         <translation>Увімкнення або вимкнення брандмауера Windows для контролю захисту мережевого трафіку.</translation>
     </message>
     <message>
-        <location filename="../build/MeguPackOptimizer/src/qml/views/OptimizationView.qml" line="3033" />
-        <location filename="../src/qml/views/OptimizationView.qml" line="3232" />
+        <location filename="../build/MeguPackOptimizer/src/qml/views/OptimizationView.qml" line="3232" />
+        <location filename="../src/qml/views/OptimizationView.qml" line="3479" />
         <source>Note: Requires disabling Tamper Protection.</source>
         <translation>Примітка: Вимагає відключення захисту від несанкціонованого доступу (Tamper Protection).</translation>
     </message>
     <message>
-        <location filename="../build/MeguPackOptimizer/src/qml/views/OptimizationView.qml" line="311" />
-        <location filename="../build/MeguPackOptimizer/src/qml/views/OptimizationView.qml" line="529" />
-        <location filename="../build/MeguPackOptimizer/src/qml/views/OptimizationView.qml" line="641" />
-        <location filename="../build/MeguPackOptimizer/src/qml/views/OptimizationView.qml" line="3349" />
-        <location filename="../src/qml/views/OptimizationView.qml" line="317" />
-        <location filename="../src/qml/views/OptimizationView.qml" line="553" />
-        <location filename="../src/qml/views/OptimizationView.qml" line="665" />
-        <location filename="../src/qml/views/OptimizationView.qml" line="3548" />
+        <location filename="../build/MeguPackOptimizer/src/qml/views/OptimizationView.qml" line="317" />
+        <location filename="../build/MeguPackOptimizer/src/qml/views/OptimizationView.qml" line="553" />
+        <location filename="../build/MeguPackOptimizer/src/qml/views/OptimizationView.qml" line="665" />
+        <location filename="../build/MeguPackOptimizer/src/qml/views/OptimizationView.qml" line="3548" />
+        <location filename="../src/qml/views/OptimizationView.qml" line="411" />
+        <location filename="../src/qml/views/OptimizationView.qml" line="655" />
+        <location filename="../src/qml/views/OptimizationView.qml" line="806" />
+        <location filename="../src/qml/views/OptimizationView.qml" line="3795" />
         <source>USB 3.0 Power Saving</source>
         <translation>Енергозбереження USB 3.0</translation>
     </message>
     <message>
-        <location filename="../build/MeguPackOptimizer/src/qml/views/OptimizationView.qml" line="3377" />
-        <location filename="../src/qml/views/OptimizationView.qml" line="3576" />
+        <location filename="../build/MeguPackOptimizer/src/qml/views/OptimizationView.qml" line="3576" />
+        <location filename="../src/qml/views/OptimizationView.qml" line="3823" />
         <source>Prevent Windows from turning off USB 3.0 ports to save power, avoiding connection dropouts and peripheral latency.</source>
         <translation>Запобігає вимкненню портів USB 3.0 системою Windows для збереження енергії, уникаючи обривів з'єднання та затримок периферії.</translation>
     </message>
     <message>
-        <location filename="../build/MeguPackOptimizer/src/qml/views/OptimizationView.qml" line="4779" />
-        <location filename="../src/qml/views/OptimizationView.qml" line="4978" />
+        <location filename="../build/MeguPackOptimizer/src/qml/views/OptimizationView.qml" line="4978" />
+        <location filename="../src/qml/views/OptimizationView.qml" line="5227" />
         <source>Configure power saving settings for individual USB 3.0 ports.</source>
         <translation>Налаштування параметрів енергозбереження для окремих портів USB 3.0.</translation>
     </message>
     <message>
-        <location filename="../build/MeguPackOptimizer/src/qml/views/OptimizationView.qml" line="4804" />
-        <location filename="../src/qml/views/OptimizationView.qml" line="5003" />
+        <location filename="../build/MeguPackOptimizer/src/qml/views/OptimizationView.qml" line="5003" />
+        <location filename="../src/qml/views/OptimizationView.qml" line="5252" />
         <source>No USB 3.0 controllers or hubs found.</source>
         <translation>Не знайдено жодних контролерів або хабів USB 3.0.</translation>
     </message>
     <message>
-        <location filename="../src/qml/views/OptimizationView.qml" line="361" />
-        <location filename="../src/qml/views/OptimizationView.qml" line="669" />
-        <location filename="../src/qml/views/OptimizationView.qml" line="2144" />
+        <location filename="../build/MeguPackOptimizer/src/qml/views/OptimizationView.qml" line="361" />
+        <location filename="../build/MeguPackOptimizer/src/qml/views/OptimizationView.qml" line="669" />
+        <location filename="../build/MeguPackOptimizer/src/qml/views/OptimizationView.qml" line="2144" />
+        <location filename="../src/qml/views/OptimizationView.qml" line="455" />
+        <location filename="../src/qml/views/OptimizationView.qml" line="810" />
+        <location filename="../src/qml/views/OptimizationView.qml" line="2391" />
         <source>Steam Overlay</source>
         <translation>Оверлей Steam</translation>
     </message>
     <message>
-        <location filename="../src/qml/views/OptimizationView.qml" line="369" />
-        <location filename="../src/qml/views/OptimizationView.qml" line="670" />
-        <location filename="../src/qml/views/OptimizationView.qml" line="677" />
+        <location filename="../build/MeguPackOptimizer/src/qml/views/OptimizationView.qml" line="369" />
+        <location filename="../build/MeguPackOptimizer/src/qml/views/OptimizationView.qml" line="670" />
+        <location filename="../build/MeguPackOptimizer/src/qml/views/OptimizationView.qml" line="677" />
+        <location filename="../src/qml/views/OptimizationView.qml" line="463" />
+        <location filename="../src/qml/views/OptimizationView.qml" line="811" />
+        <location filename="../src/qml/views/OptimizationView.qml" line="818" />
         <source>CS2 Steam Overlay</source>
         <translation>Оверлей Steam для CS 2</translation>
     </message>
     <message>
-        <location filename="../src/qml/views/OptimizationView.qml" line="940" />
+        <location filename="../build/MeguPackOptimizer/src/qml/views/OptimizationView.qml" line="940" />
+        <location filename="../src/qml/views/OptimizationView.qml" line="1081" />
         <source>Steam Overlay for Counter-Strike 2</source>
         <translation>Оверлей Steam для Counter-Strike 2</translation>
     </message>
     <message>
-        <location filename="../src/qml/views/OptimizationView.qml" line="969" />
+        <location filename="../build/MeguPackOptimizer/src/qml/views/OptimizationView.qml" line="969" />
+        <location filename="../src/qml/views/OptimizationView.qml" line="1110" />
         <source>Toggle the Steam Overlay exclusively for Counter-Strike 2.</source>
         <translation>Увімкнення або вимкнення оверлею Steam виключно для Counter-Strike 2.</translation>
     </message>
     <message>
-        <location filename="../src/qml/views/OptimizationView.qml" line="2172" />
+        <location filename="../build/MeguPackOptimizer/src/qml/views/OptimizationView.qml" line="2172" />
+        <location filename="../src/qml/views/OptimizationView.qml" line="2419" />
         <source>Enable or disable the global Steam Overlay in games to reduce input latency and CPU overhead.</source>
         <translation>Увімкнення або вимкнення глобального оверлею Steam в іграх для зменшення затримки введення та зниження навантаження на процесор.</translation>
+    </message>
+    <message>
+        <location filename="../src/qml/views/OptimizationView.qml" line="471" />
+        <location filename="../src/qml/views/OptimizationView.qml" line="748" />
+        <location filename="../src/qml/views/OptimizationView.qml" line="791" />
+        <location filename="../src/qml/views/OptimizationView.qml" line="1745" />
+        <source>Visual Effects</source>
+        <translation>Візуальні ефекти</translation>
+    </message>
+    <message>
+        <location filename="../src/qml/views/OptimizationView.qml" line="754" />
+        <source>Animate controls inside windows</source>
+        <translation>Анімація елементів керування всередині вікон</translation>
+    </message>
+    <message>
+        <location filename="../src/qml/views/OptimizationView.qml" line="755" />
+        <source>Animate windows when minimizing/maximizing</source>
+        <translation>Анімація вікон при згортанні/розгортанні</translation>
+    </message>
+    <message>
+        <location filename="../src/qml/views/OptimizationView.qml" line="756" />
+        <location filename="../src/qml/views/OptimizationView.qml" line="5500" />
+        <source>Animations in the taskbar</source>
+        <translation>Анімація на панелі завдань</translation>
+    </message>
+    <message>
+        <location filename="../src/qml/views/OptimizationView.qml" line="757" />
+        <location filename="../src/qml/views/OptimizationView.qml" line="5505" />
+        <source>Enable Peek</source>
+        <translation>Увімкнути Peek</translation>
+    </message>
+    <message>
+        <location filename="../src/qml/views/OptimizationView.qml" line="758" />
+        <location filename="../src/qml/views/OptimizationView.qml" line="5510" />
+        <source>Fade or slide menus into view</source>
+        <translation>Ефекти згасання або ковзання при появі меню</translation>
+    </message>
+    <message>
+        <location filename="../src/qml/views/OptimizationView.qml" line="759" />
+        <location filename="../src/qml/views/OptimizationView.qml" line="5515" />
+        <source>Fade or slide ToolTips into view</source>
+        <translation>Ефекти згасання або ковзання при появі підказок</translation>
+    </message>
+    <message>
+        <location filename="../src/qml/views/OptimizationView.qml" line="760" />
+        <location filename="../src/qml/views/OptimizationView.qml" line="5520" />
+        <source>Fade out menu items after clicking</source>
+        <translation>Згасання пунктів меню після натискання</translation>
+    </message>
+    <message>
+        <location filename="../src/qml/views/OptimizationView.qml" line="761" />
+        <location filename="../src/qml/views/OptimizationView.qml" line="5525" />
+        <source>Save taskbar thumbnail previews</source>
+        <translation>Збереження ескізів панелі завдань</translation>
+    </message>
+    <message>
+        <location filename="../src/qml/views/OptimizationView.qml" line="762" />
+        <location filename="../src/qml/views/OptimizationView.qml" line="5530" />
+        <source>Show shadows under mouse pointer</source>
+        <translation>Відображення тіні під вказівником миші</translation>
+    </message>
+    <message>
+        <location filename="../src/qml/views/OptimizationView.qml" line="763" />
+        <location filename="../src/qml/views/OptimizationView.qml" line="5535" />
+        <source>Show shadows under windows</source>
+        <translation>Відображення тіні під вікнами</translation>
+    </message>
+    <message>
+        <location filename="../src/qml/views/OptimizationView.qml" line="764" />
+        <location filename="../src/qml/views/OptimizationView.qml" line="5540" />
+        <source>Show thumbnails instead of icons</source>
+        <translation>Відображення ескізів замість піктограм</translation>
+    </message>
+    <message>
+        <location filename="../src/qml/views/OptimizationView.qml" line="765" />
+        <location filename="../src/qml/views/OptimizationView.qml" line="5545" />
+        <source>Show translucent selection rectangle</source>
+        <translation>Відображення напівпрозорого прямокутника виділення</translation>
+    </message>
+    <message>
+        <location filename="../src/qml/views/OptimizationView.qml" line="766" />
+        <location filename="../src/qml/views/OptimizationView.qml" line="5550" />
+        <source>Show window contents while dragging</source>
+        <translation>Відображення вмісту вікна під час перетягування</translation>
+    </message>
+    <message>
+        <location filename="../src/qml/views/OptimizationView.qml" line="767" />
+        <location filename="../src/qml/views/OptimizationView.qml" line="5555" />
+        <source>Slide open combo boxes</source>
+        <translation>Ефекти розгортання списків, що випадають</translation>
+    </message>
+    <message>
+        <location filename="../src/qml/views/OptimizationView.qml" line="768" />
+        <location filename="../src/qml/views/OptimizationView.qml" line="5560" />
+        <source>Smooth edges of screen fonts</source>
+        <translation>Згладжування нерівностей екранних шрифтів</translation>
+    </message>
+    <message>
+        <location filename="../src/qml/views/OptimizationView.qml" line="769" />
+        <location filename="../src/qml/views/OptimizationView.qml" line="5565" />
+        <source>Smooth-scroll list boxes</source>
+        <translation>Плавне прокручування списків</translation>
+    </message>
+    <message>
+        <location filename="../src/qml/views/OptimizationView.qml" line="770" />
+        <location filename="../src/qml/views/OptimizationView.qml" line="5570" />
+        <source>Use drop shadows for icon labels on the desktop</source>
+        <translation>Тіні під підписами піктограм на робочому столі</translation>
+    </message>
+    <message>
+        <location filename="../src/qml/views/OptimizationView.qml" line="1773" />
+        <source>Optimize Windows animations, shadows, and rendering effects to improve system responsiveness.</source>
+        <translation>Оптимізуйте анімацію, тіні та ефекти рендерингу Windows для покращення чуйності системи.</translation>
+    </message>
+    <message>
+        <location filename="../src/qml/views/OptimizationView.qml" line="3996" />
+        <source>VISUAL EFFECTS</source>
+        <translation>ВІЗУАЛЬНІ ЕФЕКТИ</translation>
+    </message>
+    <message>
+        <location filename="../src/qml/views/OptimizationView.qml" line="5418" />
+        <source>Visual Effects Preset:</source>
+        <translation>Пресет візуальних ефектів:</translation>
+    </message>
+    <message>
+        <location filename="../src/qml/views/OptimizationView.qml" line="5432" />
+        <source>Let Windows choose</source>
+        <translation>За вибором Windows</translation>
+    </message>
+    <message>
+        <location filename="../src/qml/views/OptimizationView.qml" line="5433" />
+        <source>Best appearance</source>
+        <translation>Найкращий вигляд</translation>
+    </message>
+    <message>
+        <location filename="../src/qml/views/OptimizationView.qml" line="5434" />
+        <source>Best performance</source>
+        <translation>Найкраща швидкодія</translation>
+    </message>
+    <message>
+        <location filename="../src/qml/views/OptimizationView.qml" line="5435" />
+        <source>Custom</source>
+        <translation>Особливі параметри</translation>
+    </message>
+    <message>
+        <location filename="../src/qml/views/OptimizationView.qml" line="5478" />
+        <source>Individual Settings:</source>
+        <translation>Індивідуальні параметри:</translation>
+    </message>
+    <message>
+        <location filename="../src/qml/views/OptimizationView.qml" line="5490" />
+        <source>Animate controls and elements inside windows</source>
+        <translation>Анімація елементів керування та інших елементів усередині вікон</translation>
+    </message>
+    <message>
+        <location filename="../src/qml/views/OptimizationView.qml" line="5495" />
+        <source>Animate windows when minimizing and maximizing</source>
+        <translation>Анімація вікон при згортанні та розгортанні</translation>
     </message>
 </context>
 <context>
     <name>Optimizer</name>
     <message>
+        <location filename="../src/optimizer.cpp" line="1759" />
         <source>Starting system optimization...</source>
-        <translation type="vanished">Запуск оптимізації системи...</translation>
+        <translation>Запуск оптимізації системи...</translation>
     </message>
     <message>
+        <location filename="../src/optimizer.cpp" line="1923" />
         <source>No changes detected. Everything is already up to date!</source>
-        <translation type="vanished">Змін не виявлено. Все вже оновлено!</translation>
+        <translation>Змін не виявлено. Все вже оновлено!</translation>
     </message>
     <message>
+        <location filename="../src/optimizer.cpp" line="1935" />
         <source>Processing Windows Search service...</source>
-        <translation type="vanished">Обробка служби Windows Search...</translation>
+        <translation>Обробка служби Windows Search...</translation>
     </message>
     <message>
+        <location filename="../src/optimizer.cpp" line="1945" />
         <source>Windows Search startup set to Automatic.</source>
-        <translation type="vanished">Режим запуску Windows Search змінено на Автоматичний.</translation>
+        <translation>Режим запуску Windows Search змінено на Автоматичний.</translation>
     </message>
     <message>
+        <location filename="../src/optimizer.cpp" line="1945" />
         <source>Windows Search startup set to Disabled.</source>
-        <translation type="vanished">Режим запуску Windows Search змінено на Вимкнено.</translation>
+        <translation>Режим запуску Windows Search змінено на Вимкнено.</translation>
     </message>
     <message>
+        <location filename="../src/optimizer.cpp" line="1952" />
         <source>Stopping Windows Search service...</source>
-        <translation type="vanished">Зупинка служби Windows Search...</translation>
+        <translation>Зупинка служби Windows Search...</translation>
     </message>
     <message>
+        <location filename="../src/optimizer.cpp" line="1962" />
         <source>Windows Search service stopped successfully.</source>
-        <translation type="vanished">Службу Windows Search успішно зупинено.</translation>
+        <translation>Службу Windows Search успішно зупинено.</translation>
     </message>
     <message>
+        <location filename="../src/optimizer.cpp" line="1964" />
         <source>Windows Search service stop requested.</source>
-        <translation type="vanished">Запитано зупинку служби Windows Search.</translation>
+        <translation>Запитано зупинку служби Windows Search.</translation>
     </message>
     <message>
+        <location filename="../src/optimizer.cpp" line="1967" />
         <source>Starting Windows Search service...</source>
-        <translation type="vanished">Запуск служби Windows Search...</translation>
+        <translation>Запуск служби Windows Search...</translation>
     </message>
     <message>
+        <location filename="../src/optimizer.cpp" line="1976" />
         <source>Windows Search service started successfully.</source>
-        <translation type="vanished">Службу Windows Search успішно запущено.</translation>
+        <translation>Службу Windows Search успішно запущено.</translation>
     </message>
     <message>
+        <location filename="../src/optimizer.cpp" line="1978" />
         <source>Windows Search service start pending.</source>
-        <translation type="vanished">Очікується запуск служби Windows Search.</translation>
+        <translation>Очікується запуск служби Windows Search.</translation>
     </message>
     <message>
+        <location filename="../src/optimizer.cpp" line="1981" />
         <source>Failed to start Windows Search service.</source>
-        <translation type="vanished">Не вдалося запустити службу Windows Search.</translation>
+        <translation>Не вдалося запустити службу Windows Search.</translation>
     </message>
     <message>
+        <location filename="../src/optimizer.cpp" line="1987" />
         <source>Failed to change Windows Search service configuration. Error: %1</source>
-        <translation type="vanished">Не вдалося змінити конфігурацію служби Windows Search. Помилка: %1</translation>
+        <translation>Не вдалося змінити конфігурацію служби Windows Search. Помилка: %1</translation>
     </message>
     <message>
+        <location filename="../src/optimizer.cpp" line="1992" />
         <source>Failed to open Windows Search service. Error: %1</source>
-        <translation type="vanished">Не вдалося відкрити службу Windows Search. Помилка: %1</translation>
+        <translation>Не вдалося відкрити службу Windows Search. Помилка: %1</translation>
     </message>
     <message>
+        <location filename="../src/optimizer.cpp" line="1997" />
+        <location filename="../src/optimizer.cpp" line="2331" />
+        <location filename="../src/optimizer.cpp" line="2404" />
         <source>Failed to connect to SCM. Error: %1</source>
-        <translation type="vanished">Не вдалося підключитися до диспетчера служб (SCM). Помилка: %1</translation>
+        <translation>Не вдалося підключитися до диспетчера служб (SCM). Помилка: %1</translation>
     </message>
     <message>
+        <location filename="../src/optimizer.cpp" line="2000" />
         <source>[Simulation] Windows Search service state set to: %1</source>
-        <translation type="vanished">[Симуляція] Стан служби Windows Search змінено на: %1</translation>
+        <translation>[Симуляція] Стан служби Windows Search змінено на: %1</translation>
     </message>
     <message>
+        <location filename="../src/optimizer.cpp" line="2246" />
         <source>Configuring Windows Defender Firewall...</source>
-        <translation type="vanished">Налаштування брандмауера Windows...</translation>
+        <translation>Налаштування брандмауера Windows...</translation>
     </message>
     <message>
+        <location filename="../src/optimizer.cpp" line="2254" />
         <source>Windows Defender Firewall is now ENABLED.</source>
-        <translation type="vanished">Брандмауер Windows УВІМКНЕНО.</translation>
+        <translation>Брандмауер Windows УВІМКНЕНО.</translation>
     </message>
     <message>
+        <location filename="../src/optimizer.cpp" line="2254" />
         <source>Windows Defender Firewall is now DISABLED.</source>
-        <translation type="vanished">Брандмауер Windows ВИМКНЕНО.</translation>
+        <translation>Брандмауер Windows ВИМКНЕНО.</translation>
     </message>
     <message>
+        <location filename="../src/optimizer.cpp" line="2258" />
         <source>Failed to update Windows Defender Firewall state.</source>
-        <translation type="vanished">Не вдалося оновити стан брандмауера Windows.</translation>
+        <translation>Не вдалося оновити стан брандмауера Windows.</translation>
     </message>
     <message>
+        <location filename="../src/optimizer.cpp" line="2261" />
         <source>[Simulation] Windows Defender Firewall set to: %1</source>
-        <translation type="vanished">[Симуляція] Брандмауер Windows встановлено в: %1</translation>
+        <translation>[Симуляція] Брандмауер Windows встановлено в: %1</translation>
     </message>
     <message>
+        <location filename="../src/optimizer.cpp" line="2270" />
         <source>Processing Print Spooler service...</source>
-        <translation type="vanished">Обробка служби друку...</translation>
+        <translation>Обробка служби друку...</translation>
     </message>
     <message>
+        <location filename="../src/optimizer.cpp" line="2279" />
         <source>Print Spooler startup set to Automatic.</source>
-        <translation type="vanished">Запуск служби друку встановлено в Автоматично.</translation>
+        <translation>Запуск служби друку встановлено в Автоматично.</translation>
     </message>
     <message>
+        <location filename="../src/optimizer.cpp" line="2279" />
         <source>Print Spooler startup set to Disabled.</source>
-        <translation type="vanished">Запуск служби друку встановлено в Вимкнено.</translation>
+        <translation>Запуск служби друку встановлено в Вимкнено.</translation>
     </message>
     <message>
+        <location filename="../src/optimizer.cpp" line="2286" />
         <source>Stopping Print Spooler service...</source>
-        <translation type="vanished">Зупинка служби друку...</translation>
+        <translation>Зупинка служби друку...</translation>
     </message>
     <message>
+        <location filename="../src/optimizer.cpp" line="2296" />
         <source>Print Spooler service stopped successfully.</source>
-        <translation type="vanished">Службу друку зупинено успішно.</translation>
+        <translation>Службу друку зупинено успішно.</translation>
     </message>
     <message>
+        <location filename="../src/optimizer.cpp" line="2298" />
         <source>Print Spooler service stop requested.</source>
-        <translation type="vanished">Запитано зупинку служби друку.</translation>
+        <translation>Запитано зупинку служби друку.</translation>
     </message>
     <message>
+        <location filename="../src/optimizer.cpp" line="2301" />
         <source>Starting Print Spooler service...</source>
-        <translation type="vanished">Запуск служби друку...</translation>
+        <translation>Запуск служби друку...</translation>
     </message>
     <message>
+        <location filename="../src/optimizer.cpp" line="2310" />
         <source>Print Spooler service started successfully.</source>
-        <translation type="vanished">Службу друку запущено успішно.</translation>
+        <translation>Службу друку запущено успішно.</translation>
     </message>
     <message>
+        <location filename="../src/optimizer.cpp" line="2312" />
         <source>Print Spooler service start pending.</source>
-        <translation type="vanished">Запуск служби друку очікується.</translation>
+        <translation>Запуск служби друку очікується.</translation>
     </message>
     <message>
+        <location filename="../src/optimizer.cpp" line="2315" />
         <source>Failed to start Print Spooler service.</source>
-        <translation type="vanished">Не вдалося запустити службу друку.</translation>
+        <translation>Не вдалося запустити службу друку.</translation>
     </message>
     <message>
+        <location filename="../src/optimizer.cpp" line="2321" />
         <source>Failed to change Print Spooler service configuration. Error: %1</source>
-        <translation type="vanished">Не вдалося змінити конфігурацію служби друку. Помилка: %1</translation>
+        <translation>Не вдалося змінити конфігурацію служби друку. Помилка: %1</translation>
     </message>
     <message>
+        <location filename="../src/optimizer.cpp" line="2326" />
         <source>Failed to open Print Spooler service. Error: %1</source>
-        <translation type="vanished">Не вдалося відкрити службу друку. Помилка: %1</translation>
+        <translation>Не вдалося відкрити службу друку. Помилка: %1</translation>
     </message>
     <message>
+        <location filename="../src/optimizer.cpp" line="2334" />
         <source>[Simulation] Print Spooler service state set to: %1</source>
-        <translation type="vanished">[Симуляція] Стан служби друку встановлено в: %1</translation>
+        <translation>[Симуляція] Стан служби друку встановлено в: %1</translation>
     </message>
     <message>
+        <location filename="../src/optimizer.cpp" line="2343" />
         <source>Processing BitLocker service...</source>
-        <translation type="vanished">Обробка служби BitLocker...</translation>
+        <translation>Обробка служби BitLocker...</translation>
     </message>
     <message>
+        <location filename="../src/optimizer.cpp" line="2352" />
         <source>BitLocker service startup set to Manual.</source>
-        <translation type="vanished">Тип запуску служби BitLocker встановлено на Ручний.</translation>
+        <translation>Тип запуску служби BitLocker встановлено на Ручний.</translation>
     </message>
     <message>
+        <location filename="../src/optimizer.cpp" line="2352" />
         <source>BitLocker service startup set to Disabled.</source>
-        <translation type="vanished">Тип запуску служби BitLocker встановлено на Вимкнено.</translation>
+        <translation>Тип запуску служби BitLocker встановлено на Вимкнено.</translation>
     </message>
     <message>
+        <location filename="../src/optimizer.cpp" line="2359" />
         <source>Stopping BitLocker service...</source>
-        <translation type="vanished">Зупинка служби BitLocker...</translation>
+        <translation>Зупинка служби BitLocker...</translation>
     </message>
     <message>
+        <location filename="../src/optimizer.cpp" line="2369" />
         <source>BitLocker service stopped successfully.</source>
-        <translation type="vanished">Службу BitLocker успішно зупинено.</translation>
+        <translation>Службу BitLocker успішно зупинено.</translation>
     </message>
     <message>
+        <location filename="../src/optimizer.cpp" line="2371" />
         <source>BitLocker service stop requested.</source>
-        <translation type="vanished">Надіслано запит на зупинку служби BitLocker.</translation>
+        <translation>Надіслано запит на зупинку служби BitLocker.</translation>
     </message>
     <message>
+        <location filename="../src/optimizer.cpp" line="2374" />
         <source>Starting BitLocker service...</source>
-        <translation type="vanished">Запуск служби BitLocker...</translation>
+        <translation>Запуск служби BitLocker...</translation>
     </message>
     <message>
+        <location filename="../src/optimizer.cpp" line="2383" />
         <source>BitLocker service started successfully.</source>
-        <translation type="vanished">Службу BitLocker успішно запущено.</translation>
+        <translation>Службу BitLocker успішно запущено.</translation>
     </message>
     <message>
+        <location filename="../src/optimizer.cpp" line="2385" />
         <source>BitLocker service start pending.</source>
-        <translation type="vanished">Запуск служби BitLocker очікує завершення.</translation>
+        <translation>Запуск служби BitLocker очікує завершення.</translation>
     </message>
     <message>
+        <location filename="../src/optimizer.cpp" line="2388" />
         <source>Failed to start BitLocker service.</source>
-        <translation type="vanished">Не вдалося запустити службу BitLocker.</translation>
+        <translation>Не вдалося запустити службу BitLocker.</translation>
     </message>
     <message>
+        <location filename="../src/optimizer.cpp" line="2394" />
         <source>Failed to change BitLocker service configuration. Error: %1</source>
-        <translation type="vanished">Не вдалося змінити конфігурацію служби BitLocker. Помилка: %1</translation>
+        <translation>Не вдалося змінити конфігурацію служби BitLocker. Помилка: %1</translation>
     </message>
     <message>
+        <location filename="../src/optimizer.cpp" line="2399" />
         <source>Failed to open BitLocker service. Error: %1</source>
-        <translation type="vanished">Не вдалося відкрити службу BitLocker. Помилка: %1</translation>
+        <translation>Не вдалося відкрити службу BitLocker. Помилка: %1</translation>
     </message>
     <message>
+        <location filename="../src/optimizer.cpp" line="2407" />
         <source>[Simulation] BitLocker service state set to: %1</source>
-        <translation type="vanished">[Симуляція] Стан служби BitLocker встановлено в: %1</translation>
+        <translation>[Симуляція] Стан служби BitLocker встановлено в: %1</translation>
     </message>
     <message>
+        <location filename="../src/optimizer.cpp" line="2415" />
         <source>Processing Discord Overlay...</source>
-        <translation type="vanished">Обробка оверлея Discord...</translation>
+        <translation>Обробка оверлея Discord...</translation>
     </message>
     <message>
+        <location filename="../src/optimizer.cpp" line="2419" />
         <source>Closing running Discord processes to unlock files...</source>
-        <translation type="vanished">Закриття запущених процесів Discord для розблокування файлів...</translation>
+        <translation>Закриття запущених процесів Discord для розблокування файлів...</translation>
     </message>
     <message>
+        <location filename="../src/optimizer.cpp" line="2426" />
         <source>Discord Overlay successfully enabled.</source>
-        <translation type="vanished">Оверлей Discord успішно увімкнено.</translation>
+        <translation>Оверлей Discord успішно увімкнено.</translation>
     </message>
     <message>
+        <location filename="../src/optimizer.cpp" line="2428" />
         <source>Discord Overlay successfully disabled.</source>
-        <translation type="vanished">Оверлей Discord успішно вимкнено.</translation>
+        <translation>Оверлей Discord успішно вимкнено.</translation>
     </message>
     <message>
+        <location filename="../src/optimizer.cpp" line="2431" />
         <source>[Simulation] Discord Overlay set to: %1</source>
-        <translation type="vanished">[Симуляція] Стан оверлея Discord встановлено в: %1</translation>
+        <translation>[Симуляція] Стан оверлея Discord встановлено в: %1</translation>
     </message>
     <message>
+        <location filename="../src/optimizer.cpp" line="2445" />
         <source>Processing Windows notifications configuration...</source>
-        <translation type="vanished">Обробка налаштувань сповіщень Windows...</translation>
+        <translation>Обробка налаштувань сповіщень Windows...</translation>
     </message>
     <message>
+        <location filename="../src/optimizer.cpp" line="2484" />
         <source>Windows notifications updated successfully.</source>
-        <translation type="vanished">Сповіщення Windows оновлено успішно.</translation>
+        <translation>Сповіщення Windows оновлено успішно.</translation>
     </message>
     <message>
+        <location filename="../src/optimizer.cpp" line="2487" />
         <source>Failed to update Windows notifications. Error: %1</source>
-        <translation type="vanished">Не вдалося оновити сповіщення Windows. Помилка: %1</translation>
+        <translation>Не вдалося оновити сповіщення Windows. Помилка: %1</translation>
     </message>
     <message>
+        <location filename="../src/optimizer.cpp" line="2490" />
         <source>[Simulation] Windows notifications set to: %1</source>
-        <translation type="vanished">[Симуляція] Сповіщення Windows встановлено в: %1</translation>
+        <translation>[Симуляція] Сповіщення Windows встановлено в: %1</translation>
     </message>
     <message>
+        <location filename="../src/optimizer.cpp" line="2512" />
         <source>Processing Windows Defender configuration...</source>
-        <translation type="vanished">Обробка налаштувань Windows Defender...</translation>
+        <translation>Обробка налаштувань Windows Defender...</translation>
     </message>
     <message>
+        <location filename="../src/optimizer.cpp" line="2520" />
         <source>Applying Windows Defender registry policies...</source>
-        <translation type="vanished">Застосування політик реєстру Windows Defender...</translation>
+        <translation>Застосування політик реєстру Windows Defender...</translation>
     </message>
     <message>
+        <location filename="../src/optimizer.cpp" line="2546" />
         <source>Applying Windows Defender PowerShell preferences...</source>
-        <translation type="vanished">Застосування параметрів PowerShell для Windows Defender...</translation>
+        <translation>Застосування параметрів PowerShell для Windows Defender...</translation>
     </message>
     <message>
+        <location filename="../src/optimizer.cpp" line="2560" />
         <source>Configuring Windows Defender services...</source>
-        <translation type="vanished">Налаштування служб Windows Defender...</translation>
+        <translation>Налаштування служб Windows Defender...</translation>
     </message>
     <message>
+        <location filename="../src/optimizer.cpp" line="2575" />
         <source>Warning: Unable to modify service '%1'. This is typically blocked by Windows Tamper Protection. Please disable 'Tamper Protection' in Windows Security settings first.</source>
-        <translation type="vanished">Попередження: Не вдалося змінити статус служби '%1'. Зазвичай це блокується захистом від несанкціонованого доступу. Будь ласка, спочатку вимкніть 'Захист від несанкціонованого доступу' в налаштуваннях безпеки Windows.</translation>
+        <translation>Попередження: Не вдалося змінити статус служби '%1'. Зазвичай це блокується захистом від несанкціонованого доступу. Будь ласка, спочатку вимкніть 'Захист від несанкціонованого доступу' в налаштуваннях безпеки Windows.</translation>
     </message>
     <message>
+        <location filename="../src/optimizer.cpp" line="2592" />
         <source>Windows Defender optimization completed.</source>
-        <translation type="vanished">Оптимізацію Windows Defender завершено.</translation>
+        <translation>Оптимізацію Windows Defender завершено.</translation>
     </message>
     <message>
+        <location filename="../src/optimizer.cpp" line="2595" />
         <source>Failed to apply some Windows Defender settings.</source>
-        <translation type="vanished">Не вдалося застосувати деякі налаштування Windows Defender.</translation>
+        <translation>Не вдалося застосувати деякі налаштування Windows Defender.</translation>
     </message>
     <message>
+        <location filename="../src/optimizer.cpp" line="2598" />
         <source>[Simulation] Windows Defender active set to: %1</source>
-        <translation type="vanished">[Симуляція] Активність Windows Defender встановлена в: %1</translation>
+        <translation>[Симуляція] Активність Windows Defender встановлена в: %1</translation>
     </message>
     <message>
+        <location filename="../src/optimizer.cpp" line="2691" />
         <source>Configuring USB 3.0 Power Saving...</source>
-        <translation type="vanished">Налаштування енергозбереження USB 3.0...</translation>
+        <translation>Налаштування енергозбереження USB 3.0...</translation>
     </message>
     <message>
+        <location filename="../src/optimizer.cpp" line="2703" />
         <source>Setting USB power saving for '%1' to %2...</source>
-        <translation type="vanished">Встановлення енергозбереження USB для '%1' в %2...</translation>
+        <translation>Встановлення енергозбереження USB для '%1' в %2...</translation>
     </message>
     <message>
+        <location filename="../src/optimizer.cpp" line="2703" />
+        <location filename="../src/optimizer.cpp" line="2808" />
         <source>Enabled</source>
-        <translation type="vanished">Увімкнено</translation>
+        <translation>Увімкнено</translation>
     </message>
     <message>
+        <location filename="../src/optimizer.cpp" line="2703" />
+        <location filename="../src/optimizer.cpp" line="2808" />
         <source>Disabled</source>
-        <translation type="vanished">Вимкнено</translation>
+        <translation>Вимкнено</translation>
     </message>
     <message>
+        <location filename="../src/optimizer.cpp" line="2715" />
         <source>Power saving enabled for '%1'.</source>
-        <translation type="vanished">Енергозбереження увімкнено для '%1'.</translation>
+        <translation>Енергозбереження увімкнено для '%1'.</translation>
     </message>
     <message>
+        <location filename="../src/optimizer.cpp" line="2720" />
         <source>Power saving disabled for '%1'.</source>
-        <translation type="vanished">Енергозбереження вимкнено для '%1'.</translation>
+        <translation>Енергозбереження вимкнено для '%1'.</translation>
     </message>
     <message>
+        <location filename="../src/optimizer.cpp" line="2723" />
         <source>Failed to disable power saving for '%1'.</source>
-        <translation type="vanished">Не вдалося вимкнути енергозбереження для '%1'.</translation>
+        <translation>Не вдалося вимкнути енергозбереження для '%1'.</translation>
     </message>
     <message>
+        <location filename="../src/optimizer.cpp" line="2729" />
         <source>Failed to open registry key for '%1'.</source>
-        <translation type="vanished">Не вдалося відкрити ключ реєстру для '%1'.</translation>
+        <translation>Не вдалося відкрити ключ реєстру для '%1'.</translation>
     </message>
     <message>
+        <location filename="../src/optimizer.cpp" line="2759" />
         <source>[Simulation] Set USB power saving for '%1' to %2.</source>
-        <translation type="vanished">[Симуляція] Встановлення енергозбереження USB для '%1' в %2.</translation>
+        <translation>[Симуляція] Встановлення енергозбереження USB для '%1' в %2.</translation>
     </message>
     <message>
+        <location filename="../src/optimizer.cpp" line="2764" />
         <source>USB 3.0 Power Saving configuration completed.</source>
-        <translation type="vanished">Налаштування енергозбереження USB 3.0 завершено.</translation>
+        <translation>Налаштування енергозбереження USB 3.0 завершено.</translation>
     </message>
     <message>
+        <location filename="../src/optimizer.cpp" line="2767" />
         <source>Failed to apply some USB 3.0 Power Saving settings.</source>
-        <translation type="vanished">Не вдалося застосувати деякі налаштування енергозбереження USB 3.0.</translation>
+        <translation>Не вдалося застосувати деякі налаштування енергозбереження USB 3.0.</translation>
     </message>
     <message>
+        <location filename="../src/optimizer.cpp" line="2774" />
         <source>Configuring Remote Access (RDP)...</source>
-        <translation type="vanished">Налаштування віддаленого доступу (RDP)...</translation>
+        <translation>Налаштування віддаленого доступу (RDP)...</translation>
     </message>
     <message>
+        <location filename="../src/optimizer.cpp" line="2783" />
         <source>Remote Access enabled in registry.</source>
-        <translation type="vanished">Віддалений доступ увімкнено в реєстрі.</translation>
+        <translation>Віддалений доступ увімкнено в реєстрі.</translation>
     </message>
     <message>
+        <location filename="../src/optimizer.cpp" line="2783" />
         <source>Remote Access disabled in registry.</source>
-        <translation type="vanished">Віддалений доступ вимкнено в реєстрі.</translation>
+        <translation>Віддалений доступ вимкнено в реєстрі.</translation>
     </message>
     <message>
+        <location filename="../src/optimizer.cpp" line="2786" />
         <source>Failed to write Remote Access registry value.</source>
-        <translation type="vanished">Не вдалося записати значення реєстру віддаленого доступу.</translation>
+        <translation>Не вдалося записати значення реєстру віддаленого доступу.</translation>
     </message>
     <message>
+        <location filename="../src/optimizer.cpp" line="2791" />
         <source>Failed to open Terminal Server registry key.</source>
-        <translation type="vanished">Не вдалося відкрити ключ реєстру Terminal Server.</translation>
+        <translation>Не вдалося відкрити ключ реєстру Terminal Server.</translation>
     </message>
     <message>
+        <location filename="../src/optimizer.cpp" line="2802" />
         <source>Remote Desktop service and firewall rules enabled.</source>
-        <translation type="vanished">Службу віддаленого робочого столу та правила брандмауера увімкнено.</translation>
+        <translation>Службу віддаленого робочого столу та правила брандмауера увімкнено.</translation>
     </message>
     <message>
+        <location filename="../src/optimizer.cpp" line="2802" />
         <source>Remote Desktop service and firewall rules disabled.</source>
-        <translation type="vanished">Службу віддаленого робочого столу та правила брандмауера вимкнено.</translation>
+        <translation>Службу віддаленого робочого столу та правила брандмауера вимкнено.</translation>
     </message>
     <message>
+        <location filename="../src/optimizer.cpp" line="2805" />
         <source>Failed to configure Remote Desktop service / firewall.</source>
-        <translation type="vanished">Не вдалося налаштувати службу або брандмауер віддаленого робочого столу.</translation>
+        <translation>Не вдалося налаштувати службу або брандмауер віддаленого робочого столу.</translation>
     </message>
     <message>
+        <location filename="../src/optimizer.cpp" line="2808" />
         <source>[Simulation] Remote Access (RDP) set to %1.</source>
-        <translation type="vanished">[Симуляція] Віддалений доступ (RDP) встановлено в %1.</translation>
+        <translation>[Симуляція] Віддалений доступ (RDP) встановлено в %1.</translation>
     </message>
     <message>
+        <location filename="../src/optimizer.cpp" line="2811" />
         <source>Remote Access (RDP) configuration completed.</source>
-        <translation type="vanished">Налаштування віддаленого доступу (RDP) завершено.</translation>
+        <translation>Налаштування віддаленого доступу (RDP) завершено.</translation>
     </message>
     <message>
+        <location filename="../src/optimizer.cpp" line="2814" />
         <source>Failed to configure Remote Access (RDP).</source>
-        <translation type="vanished">Не вдалося налаштувати віддалений доступ (RDP).</translation>
+        <translation>Не вдалося налаштувати віддалений доступ (RDP).</translation>
     </message>
     <message>
+        <location filename="../src/optimizer.cpp" line="2821" />
         <source>Configuring system telemetry...</source>
-        <translation type="vanished">Налаштування телеметрії системи...</translation>
+        <translation>Налаштування телеметрії системи...</translation>
     </message>
     <message>
+        <location filename="../src/optimizer.cpp" line="2828" />
         <source>Processing Connected User Experiences service (DiagTrack)...</source>
-        <translation type="vanished">Обробка служби функціональних можливостей для підключених користувачів (DiagTrack)...</translation>
+        <translation>Обробка служби функціональних можливостей для підключених користувачів (DiagTrack)...</translation>
     </message>
     <message>
+        <location filename="../src/optimizer.cpp" line="2835" />
         <source>Connected User Experiences service startup set to Automatic.</source>
-        <translation type="vanished">Тип запуску служби функціональних можливостей для підключених користувачів встановлено на Автоматично.</translation>
+        <translation>Тип запуску служби функціональних можливостей для підключених користувачів встановлено на Автоматично.</translation>
     </message>
     <message>
+        <location filename="../src/optimizer.cpp" line="2835" />
         <source>Connected User Experiences service startup set to Disabled.</source>
-        <translation type="vanished">Тип запуску служби функціональних можливостей для підключених користувачів встановлено на Вимкнено.</translation>
+        <translation>Тип запуску служби функціональних можливостей для підключених користувачів встановлено на Вимкнено.</translation>
     </message>
     <message>
+        <location filename="../src/optimizer.cpp" line="2841" />
         <source>Stopping Connected User Experiences service...</source>
-        <translation type="vanished">Зупинка служби функціональних можливостей для підключених користувачів...</translation>
+        <translation>Зупинка служби функціональних можливостей для підключених користувачів...</translation>
     </message>
     <message>
+        <location filename="../src/optimizer.cpp" line="2851" />
         <source>Connected User Experiences service stopped successfully.</source>
-        <translation type="vanished">Службу функціональних можливостей для підключених користувачів успішно зупинено.</translation>
+        <translation>Службу функціональних можливостей для підключених користувачів успішно зупинено.</translation>
     </message>
     <message>
+        <location filename="../src/optimizer.cpp" line="2853" />
         <source>Connected User Experiences service stop requested.</source>
-        <translation type="vanished">Надіслано запит на зупинку служби функціональних можливостей для підключених користувачів.</translation>
+        <translation>Надіслано запит на зупинку служби функціональних можливостей для підключених користувачів.</translation>
     </message>
     <message>
+        <location filename="../src/optimizer.cpp" line="2856" />
         <source>Starting Connected User Experiences service...</source>
-        <translation type="vanished">Запуск служби функціональних можливостей для підключених користувачів...</translation>
+        <translation>Запуск служби функціональних можливостей для підключених користувачів...</translation>
     </message>
     <message>
+        <location filename="../src/optimizer.cpp" line="2865" />
         <source>Connected User Experiences service started successfully.</source>
-        <translation type="vanished">Службу функціональних можливостей для підключених користувачів успішно запущено.</translation>
+        <translation>Службу функціональних можливостей для підключених користувачів успішно запущено.</translation>
     </message>
     <message>
+        <location filename="../src/optimizer.cpp" line="2872" />
         <source>Failed to configure Connected User Experiences service.</source>
-        <translation type="vanished">Не вдалося налаштувати службу функціональних можливостей для підключених користувачів.</translation>
+        <translation>Не вдалося налаштувати службу функціональних можливостей для підключених користувачів.</translation>
     </message>
     <message>
+        <location filename="../src/optimizer.cpp" line="2877" />
         <source>Failed to open Connected User Experiences service.</source>
-        <translation type="vanished">Не вдалося відкрити службу функціональних можливостей для підключених користувачів.</translation>
+        <translation>Не вдалося відкрити службу функціональних можливостей для підключених користувачів.</translation>
     </message>
     <message>
+        <location filename="../src/optimizer.cpp" line="2882" />
+        <location filename="../src/optimizer.cpp" line="2942" />
         <source>Failed to connect to SCM.</source>
-        <translation type="vanished">Не вдалося підключитися до диспетчера служб (SCM).</translation>
+        <translation>Не вдалося підключитися до диспетчера служб (SCM).</translation>
     </message>
     <message>
+        <location filename="../src/optimizer.cpp" line="2888" />
         <source>Processing Device Management WAP service (dmwappushservice)...</source>
-        <translation type="vanished">Обробка служби WAP для керування пристроями (dmwappushservice)...</translation>
+        <translation>Обробка служби WAP для керування пристроями (dmwappushservice)...</translation>
     </message>
     <message>
+        <location filename="../src/optimizer.cpp" line="2895" />
         <source>Device Management WAP service startup set to Manual.</source>
-        <translation type="vanished">Тип запуску служби WAP для керування пристроями встановлено на Вручну.</translation>
+        <translation>Тип запуску служби WAP для керування пристроями встановлено на Вручну.</translation>
     </message>
     <message>
+        <location filename="../src/optimizer.cpp" line="2895" />
         <source>Device Management WAP service startup set to Disabled.</source>
-        <translation type="vanished">Тип запуску служби WAP для керування пристроями встановлено на Вимкнено.</translation>
+        <translation>Тип запуску служби WAP для керування пристроями встановлено на Вимкнено.</translation>
     </message>
     <message>
+        <location filename="../src/optimizer.cpp" line="2901" />
         <source>Stopping Device Management WAP service...</source>
-        <translation type="vanished">Зупинка служби WAP для керування пристроями...</translation>
+        <translation>Зупинка служби WAP для керування пристроями...</translation>
     </message>
     <message>
+        <location filename="../src/optimizer.cpp" line="2911" />
         <source>Device Management WAP service stopped successfully.</source>
-        <translation type="vanished">Службу WAP для керування пристроями успішно зупинено.</translation>
+        <translation>Службу WAP для керування пристроями успішно зупинено.</translation>
     </message>
     <message>
+        <location filename="../src/optimizer.cpp" line="2913" />
         <source>Device Management WAP service stop requested.</source>
-        <translation type="vanished">Надіслано запит на зупинку служби WAP для керування пристроями.</translation>
+        <translation>Надіслано запит на зупинку служби WAP для керування пристроями.</translation>
     </message>
     <message>
+        <location filename="../src/optimizer.cpp" line="2916" />
         <source>Starting Device Management WAP service...</source>
-        <translation type="vanished">Запуск служби WAP для керування пристроями...</translation>
+        <translation>Запуск служби WAP для керування пристроями...</translation>
     </message>
     <message>
+        <location filename="../src/optimizer.cpp" line="2925" />
         <source>Device Management WAP service started successfully.</source>
-        <translation type="vanished">Службу WAP для керування пристроями успішно запущено.</translation>
+        <translation>Службу WAP для керування пристроями успішно запущено.</translation>
     </message>
     <message>
+        <location filename="../src/optimizer.cpp" line="2932" />
         <source>Failed to configure Device Management WAP service.</source>
-        <translation type="vanished">Не вдалося налаштувати службу WAP для керування пристроями.</translation>
+        <translation>Не вдалося налаштувати службу WAP для керування пристроями.</translation>
     </message>
     <message>
+        <location filename="../src/optimizer.cpp" line="2937" />
         <source>Failed to open Device Management WAP service.</source>
-        <translation type="vanished">Не вдалося відкрити службу WAP для керування пристроями.</translation>
+        <translation>Не вдалося відкрити службу WAP для керування пристроями.</translation>
     </message>
     <message>
+        <location filename="../src/optimizer.cpp" line="2948" />
         <source>Configuring Customer Experience Improvement Program policy...</source>
-        <translation type="vanished">Налаштування політики Програми покращення взаємодії з користувачем...</translation>
+        <translation>Налаштування політики Програми покращення взаємодії з користувачем...</translation>
     </message>
     <message>
+        <location filename="../src/optimizer.cpp" line="2954" />
         <source>CEIP telemetry policy removed (enabled).</source>
-        <translation type="vanished">Політику телеметрії CEIP видалено (увімкнено).</translation>
+        <translation>Політику телеметрії CEIP видалено (увімкнено).</translation>
     </message>
     <message>
+        <location filename="../src/optimizer.cpp" line="2959" />
         <source>CEIP telemetry policy disabled successfully.</source>
-        <translation type="vanished">Політику телеметрії CEIP успішно вимкнено.</translation>
+        <translation>Політику телеметрії CEIP успішно вимкнено.</translation>
     </message>
     <message>
+        <location filename="../src/optimizer.cpp" line="2962" />
         <source>Failed to write CEIP telemetry policy.</source>
-        <translation type="vanished">Не вдалося записати політику телеметрії CEIP.</translation>
+        <translation>Не вдалося записати політику телеметрії CEIP.</translation>
     </message>
     <message>
+        <location filename="../src/optimizer.cpp" line="2968" />
         <source>Failed to open CEIP registry policy key.</source>
-        <translation type="vanished">Не вдалося відкрити ключ реєстру політики CEIP.</translation>
+        <translation>Не вдалося відкрити ключ реєстру політики CEIP.</translation>
     </message>
     <message>
+        <location filename="../src/optimizer.cpp" line="2974" />
         <source>Configuring Windows Error Reporting policy...</source>
-        <translation type="vanished">Налаштування політики звітування про помилки Windows...</translation>
+        <translation>Налаштування політики звітування про помилки Windows...</translation>
     </message>
     <message>
+        <location filename="../src/optimizer.cpp" line="2980" />
         <source>Windows Error Reporting policy removed (enabled).</source>
-        <translation type="vanished">Політику звітування про помилки Windows видалено (увімкнено).</translation>
+        <translation>Політику звітування про помилки Windows видалено (увімкнено).</translation>
     </message>
     <message>
+        <location filename="../src/optimizer.cpp" line="2985" />
         <source>Windows Error Reporting policy disabled successfully.</source>
-        <translation type="vanished">Політику звітування про помилки Windows успішно вимкнено.</translation>
+        <translation>Політику звітування про помилки Windows успішно вимкнено.</translation>
     </message>
     <message>
+        <location filename="../src/optimizer.cpp" line="2988" />
         <source>Failed to write Windows Error Reporting policy.</source>
-        <translation type="vanished">Не вдалося записати політику звітування про помилки Windows.</translation>
+        <translation>Не вдалося записати політику звітування про помилки Windows.</translation>
     </message>
     <message>
+        <location filename="../src/optimizer.cpp" line="2994" />
         <source>Failed to open Windows Error Reporting policy key.</source>
-        <translation type="vanished">Не вдалося відкрити ключ реєстру політики звітування про помилки Windows.</translation>
+        <translation>Не вдалося відкрити ключ реєстру політики звітування про помилки Windows.</translation>
     </message>
     <message>
+        <location filename="../src/optimizer.cpp" line="2999" />
         <source>[Simulation] Connected User Experiences set to: %1</source>
-        <translation type="vanished">[Симуляція] Функціональні можливості для підключених користувачів встановлено на: %1</translation>
+        <translation>[Симуляція] Функціональні можливості для підключених користувачів встановлено на: %1</translation>
     </message>
     <message>
+        <location filename="../src/optimizer.cpp" line="3000" />
         <source>[Simulation] Device Management WAP Service set to: %1</source>
-        <translation type="vanished">[Симуляція] Службу WAP для керування пристроями встановлено на: %1</translation>
+        <translation>[Симуляція] Службу WAP для керування пристроями встановлено на: %1</translation>
     </message>
     <message>
+        <location filename="../src/optimizer.cpp" line="3001" />
         <source>[Simulation] CEIP policy set to: %1</source>
-        <translation type="vanished">[Симуляція] Політику CEIP встановлено на: %1</translation>
+        <translation>[Симуляція] Політику CEIP встановлено на: %1</translation>
     </message>
     <message>
+        <location filename="../src/optimizer.cpp" line="3002" />
         <source>[Simulation] Windows Error Reporting policy set to: %1</source>
-        <translation type="vanished">[Симуляція] Політику звітування про помилки Windows встановлено на: %1</translation>
+        <translation>[Симуляція] Політику звітування про помилки Windows встановлено на: %1</translation>
     </message>
     <message>
+        <location filename="../src/optimizer.cpp" line="3005" />
         <source>Telemetry configuration completed.</source>
-        <translation type="vanished">Налаштування телеметрії завершено.</translation>
+        <translation>Налаштування телеметрії завершено.</translation>
     </message>
     <message>
+        <location filename="../src/optimizer.cpp" line="3008" />
         <source>Failed to apply some Telemetry settings.</source>
-        <translation type="vanished">Не вдалося застосувати деякі параметри телеметрії.</translation>
+        <translation>Не вдалося застосувати деякі параметри телеметрії.</translation>
     </message>
     <message>
+        <location filename="../src/optimizer.cpp" line="3015" />
         <source>Configuring Windows Update mode...</source>
-        <translation type="vanished">Налаштування режиму оновлення Windows...</translation>
+        <translation>Налаштування режиму оновлення Windows...</translation>
     </message>
     <message>
+        <location filename="../src/optimizer.cpp" line="3023" />
         <source>Setting Windows Update to Default mode...</source>
-        <translation type="vanished">Встановлення оновлення Windows у режим за замовчуванням...</translation>
+        <translation>Встановлення оновлення Windows у режим за замовчуванням...</translation>
     </message>
     <message>
+        <location filename="../src/optimizer.cpp" line="3085" />
         <source>Windows Update set to Default mode successfully (all updates enabled).</source>
-        <translation type="vanished">Оновлення Windows успішно встановлено в режим за замовчуванням (усі оновлення увімкнено).</translation>
+        <translation>Оновлення Windows успішно встановлено в режим за замовчуванням (усі оновлення увімкнено).</translation>
     </message>
     <message>
+        <location filename="../src/optimizer.cpp" line="3089" />
         <source>Setting Windows Update to Security Updates Only mode...</source>
-        <translation type="vanished">Встановлення оновлення Windows у режим «Лише безпека»...</translation>
+        <translation>Встановлення оновлення Windows у режим «Лише безпека»...</translation>
     </message>
     <message>
+        <location filename="../src/optimizer.cpp" line="3161" />
         <source>Windows Update set to Security Updates Only mode successfully (Feature &amp; Driver updates disabled).</source>
-        <translation type="vanished">Оновлення Windows успішно встановлено в режим «Лише безпека» (оновлення версій та драйверів вимкнено).</translation>
+        <translation>Оновлення Windows успішно встановлено в режим «Лише безпека» (оновлення версій та драйверів вимкнено).</translation>
     </message>
     <message>
+        <location filename="../src/optimizer.cpp" line="3163" />
         <source>Failed to write Security Updates Only policy settings.</source>
-        <translation type="vanished">Не вдалося записати параметри політики «Лише оновлення безпеки».</translation>
+        <translation>Не вдалося записати параметри політики «Лише оновлення безпеки».</translation>
     </message>
     <message>
+        <location filename="../src/optimizer.cpp" line="3168" />
         <source>Setting Windows Update to Manual mode...</source>
-        <translation type="vanished">Встановлення оновлення Windows у режим перевірки вручну...</translation>
+        <translation>Встановлення оновлення Windows у режим перевірки вручну...</translation>
     </message>
     <message>
+        <location filename="../src/optimizer.cpp" line="3204" />
         <source>Windows Update set to Manual mode successfully (automatic background checking disabled).</source>
-        <translation type="vanished">Оновлення Windows успішно встановлено в режим перевірки вручну (автоматичну фонову перевірку вимкнено).</translation>
+        <translation>Оновлення Windows успішно встановлено в режим перевірки вручну (автоматичну фонову перевірку вимкнено).</translation>
     </message>
     <message>
+        <location filename="../src/optimizer.cpp" line="3206" />
         <source>Failed to configure Manual update settings.</source>
-        <translation type="vanished">Не вдалося налаштувати параметри оновлення вручну.</translation>
+        <translation>Не вдалося налаштувати параметри оновлення вручну.</translation>
     </message>
     <message>
+        <location filename="../src/optimizer.cpp" line="3211" />
         <source>Disabling Windows Update services and policies...</source>
-        <translation type="vanished">Вимкнення служб та політик оновлення Windows...</translation>
+        <translation>Вимкнення служб та політик оновлення Windows...</translation>
     </message>
     <message>
+        <location filename="../src/optimizer.cpp" line="3281" />
         <source>Windows Update disabled and blocked successfully.</source>
-        <translation type="vanished">Оновлення Windows успішно вимкнено та заблоковано.</translation>
+        <translation>Оновлення Windows успішно вимкнено та заблоковано.</translation>
     </message>
     <message>
+        <location filename="../src/optimizer.cpp" line="3283" />
         <source>Failed to disable some Windows Update policies.</source>
-        <translation type="vanished">Не вдалося вимкнути деякі політики оновлення Windows.</translation>
+        <translation>Не вдалося вимкнути деякі політики оновлення Windows.</translation>
     </message>
     <message>
+        <location filename="../src/optimizer.cpp" line="3291" />
         <source>[Simulation] Windows Update Mode set to: %1</source>
-        <translation type="vanished">[Симуляція] Режим оновлення Windows встановлено на: %1</translation>
+        <translation>[Симуляція] Режим оновлення Windows встановлено на: %1</translation>
     </message>
     <message>
+        <location filename="../src/optimizer.cpp" line="3294" />
         <source>Windows Update configuration completed.</source>
-        <translation type="vanished">Налаштування оновлення Windows завершено.</translation>
+        <translation>Налаштування оновлення Windows завершено.</translation>
     </message>
     <message>
+        <location filename="../src/optimizer.cpp" line="3297" />
         <source>Failed to apply some Windows Update settings.</source>
-        <translation type="vanished">Не вдалося застосувати деякі параметри оновлення Windows.</translation>
+        <translation>Не вдалося застосувати деякі параметри оновлення Windows.</translation>
     </message>
     <message>
+        <location filename="../src/optimizer.cpp" line="3324" />
         <source>Drive %1 content indexing is now ENABLED.</source>
-        <translation type="vanished">Індексацію вмісту диска %1 тепер УВІМКНЕНО.</translation>
+        <translation>Індексацію вмісту диска %1 тепер УВІМКНЕНО.</translation>
     </message>
     <message>
+        <location filename="../src/optimizer.cpp" line="3324" />
         <source>Drive %1 content indexing is now DISABLED.</source>
-        <translation type="vanished">Індексацію вмісту диска %1 тепер ВИМКНЕНО.</translation>
+        <translation>Індексацію вмісту диска %1 тепер ВИМКНЕНО.</translation>
     </message>
     <message>
+        <location filename="../src/optimizer.cpp" line="3328" />
         <source>Failed to update Drive %1 file attributes. Error: %2</source>
-        <translation type="vanished">Не вдалося оновити атрибути файлів диска %1. Помилка: %2</translation>
+        <translation>Не вдалося оновити атрибути файлів диска %1. Помилка: %2</translation>
     </message>
     <message>
+        <location filename="../src/optimizer.cpp" line="3334" />
         <source>[Simulation] Drive %1 indexing set to: %2</source>
-        <translation type="vanished">[Симуляція] Індексацію диска %1 змінено на: %2</translation>
+        <translation>[Симуляція] Індексацію диска %1 змінено на: %2</translation>
     </message>
     <message>
+        <location filename="../src/optimizer.cpp" line="3347" />
         <source>Processing Counter-Strike 2 launch options...</source>
-        <translation type="vanished">Обробка параметрів запуску Counter-Strike 2...</translation>
+        <translation>Обробка параметрів запуску Counter-Strike 2...</translation>
     </message>
     <message>
-        <location filename="../src/optimizer.cpp" line="3357" />
+        <location filename="../src/optimizer.cpp" line="3428" />
         <source>Processing global Steam Overlay...</source>
         <translation>Обробка глобального оверлею Steam...</translation>
     </message>
     <message>
-        <location filename="../src/optimizer.cpp" line="3364" />
+        <location filename="../src/optimizer.cpp" line="3435" />
         <source>Global Steam Overlay successfully %1.</source>
         <translation>Глобальний оверлей Steam успішно %1.</translation>
     </message>
     <message>
-        <location filename="../src/optimizer.cpp" line="3364" />
+        <location filename="../src/optimizer.cpp" line="3435" />
         <source>enabled</source>
         <translation>увімкнено</translation>
     </message>
     <message>
-        <location filename="../src/optimizer.cpp" line="3364" />
+        <location filename="../src/optimizer.cpp" line="3435" />
         <source>disabled</source>
         <translation>вимкнено</translation>
     </message>
     <message>
-        <location filename="../src/optimizer.cpp" line="3367" />
+        <location filename="../src/optimizer.cpp" line="3438" />
         <source>Failed to update EnableOverlay registry value.</source>
         <translation>Не вдалося оновити значення EnableOverlay в реєстрі.</translation>
     </message>
     <message>
-        <location filename="../src/optimizer.cpp" line="3372" />
+        <location filename="../src/optimizer.cpp" line="3443" />
         <source>Failed to open Steam registry key for writing.</source>
         <translation>Не вдалося відкрити ключ реєстру Steam для запису.</translation>
     </message>
     <message>
-        <location filename="../src/optimizer.cpp" line="3375" />
+        <location filename="../src/optimizer.cpp" line="3446" />
         <source>[Simulation] Global Steam Overlay set to: %1</source>
         <translation>[Симуляція] Глобальний оверлей Steam встановлено в: %1</translation>
     </message>
     <message>
-        <location filename="../src/optimizer.cpp" line="3382" />
+        <location filename="../src/optimizer.cpp" line="3453" />
         <source>Processing Steam Overlay for Counter-Strike 2...</source>
         <translation>Обробка оверлею Steam для Counter-Strike 2...</translation>
     </message>
     <message>
-        <location filename="../src/optimizer.cpp" line="3408" />
+        <location filename="../src/optimizer.cpp" line="3379" />
+        <location filename="../src/optimizer.cpp" line="3479" />
         <source>Steam process detected and closed to prevent configuration overwrite.</source>
         <translation>Виявлено процес Steam. Його було закрито для запобігання перезапису конфігурації.</translation>
     </message>
     <message>
-        <location filename="../src/optimizer.cpp" line="3430" />
+        <location filename="../src/optimizer.cpp" line="3501" />
         <source>Counter-Strike 2 Steam Overlay updated for %1 profiles.</source>
         <translation>Оверлей Steam для Counter-Strike 2 оновлено для %1 профілів.</translation>
     </message>
     <message>
-        <location filename="../src/optimizer.cpp" line="3437" />
+        <location filename="../src/optimizer.cpp" line="3508" />
         <source>Steam path not found. Cannot apply overlay settings.</source>
         <translation>Шлях до Steam не знайдено. Неможливо застосувати налаштування оверлею.</translation>
     </message>
     <message>
-        <location filename="../src/optimizer.cpp" line="3440" />
+        <location filename="../src/optimizer.cpp" line="3511" />
         <source>[Simulation] Counter-Strike 2 Steam Overlay set to: %1</source>
         <translation>[Симуляція] Оверлей Steam для Counter-Strike 2 встановлено в: %1</translation>
     </message>
     <message>
+        <location filename="../src/optimizer.cpp" line="3411" />
         <source>Counter-Strike 2 launch options updated for %1 profiles.</source>
-        <translation type="vanished">Параметри запуску Counter-Strike 2 оновлено для %1 профілів.</translation>
+        <translation>Параметри запуску Counter-Strike 2 оновлено для %1 профілів.</translation>
     </message>
     <message>
-        <location filename="../src/optimizer.cpp" line="3433" />
+        <location filename="../src/optimizer.cpp" line="3414" />
+        <location filename="../src/optimizer.cpp" line="3504" />
         <source>Steam userdata directory not found.</source>
         <translation>Папку користувача Steam (userdata) не знайдено.</translation>
     </message>
     <message>
+        <location filename="../src/optimizer.cpp" line="3418" />
         <source>Steam path not found. Cannot apply launch options.</source>
-        <translation type="vanished">Шлях до Steam не знайдено. Неможливо застосувати параметри запуску.</translation>
+        <translation>Шлях до Steam не знайдено. Неможливо застосувати параметри запуску.</translation>
     </message>
     <message>
+        <location filename="../src/optimizer.cpp" line="3421" />
         <source>[Simulation] Counter-Strike 2 launch options set to: %1</source>
-        <translation type="vanished">[Симуляція] Параметри запуску Counter-Strike 2 встановлено на: %1</translation>
+        <translation>[Симуляція] Параметри запуску Counter-Strike 2 встановлено на: %1</translation>
     </message>
     <message>
+        <location filename="../src/optimizer.cpp" line="3704" />
         <source>System optimization completed successfully!</source>
-        <translation type="vanished">Оптимізацію системи успішно завершено!</translation>
+        <translation>Оптимізацію системи успішно завершено!</translation>
     </message>
     <message>
+        <location filename="../src/optimizer.cpp" line="3707" />
         <source>System optimization completed with warning/errors.</source>
-        <translation type="vanished">Оптимізацію системи завершено з попередженнями/помилками.</translation>
+        <translation>Оптимізацію системи завершено з попередженнями/помилками.</translation>
     </message>
     <message>
+        <location filename="../src/optimizer.cpp" line="3974" />
         <source>Initializing Xbox package removal...</source>
-        <translation type="vanished">Ініціалізація видалення пакетів Xbox...</translation>
+        <translation>Ініціалізація видалення пакетів Xbox...</translation>
     </message>
     <message>
+        <location filename="../src/optimizer.cpp" line="3984" />
         <source>Removing package: %1...</source>
-        <translation type="vanished">Видалення пакета: %1...</translation>
+        <translation>Видалення пакета: %1...</translation>
     </message>
     <message>
+        <location filename="../src/optimizer.cpp" line="3994" />
         <source>Package %1 removal command executed.</source>
-        <translation type="vanished">Команду видалення пакета %1 виконано.</translation>
+        <translation>Команду видалення пакета %1 виконано.</translation>
     </message>
     <message>
+        <location filename="../src/optimizer.cpp" line="3999" />
+        <location filename="../src/optimizer.cpp" line="4211" />
         <source>Purging Xbox packages for all users...</source>
-        <translation type="vanished">Очищення пакетів Xbox для всіх користувачів...</translation>
+        <translation>Очищення пакетів Xbox для всіх користувачів...</translation>
     </message>
     <message>
+        <location filename="../src/optimizer.cpp" line="4008" />
         <source>All-users Xbox packages removed.</source>
-        <translation type="vanished">Пакети Xbox для всіх користувачів видалено.</translation>
+        <translation>Пакети Xbox для всіх користувачів видалено.</translation>
     </message>
     <message>
+        <location filename="../src/optimizer.cpp" line="4012" />
         <source>Removing provisioned Xbox packages...</source>
-        <translation type="vanished">Видалення стандартних зарезервованих пакетів Xbox...</translation>
+        <translation>Видалення стандартних зарезервованих пакетів Xbox...</translation>
     </message>
     <message>
+        <location filename="../src/optimizer.cpp" line="4021" />
         <source>Provisioned Xbox packages purged successfully.</source>
-        <translation type="vanished">Зарезервовані пакети Xbox успішно очищено.</translation>
+        <translation>Зарезервовані пакети Xbox успішно очищено.</translation>
     </message>
     <message>
+        <location filename="../src/optimizer.cpp" line="4039" />
         <source>Xbox Suite has been successfully uninstalled from this PC!</source>
-        <translation type="vanished">Пакет програм Xbox успішно видалено з цього ПК!</translation>
+        <translation>Пакет програм Xbox успішно видалено з цього ПК!</translation>
     </message>
     <message>
+        <location filename="../src/optimizer.cpp" line="4040" />
         <source>TIP: Enable 'Disable Game Bar Popup' to prevent system errors in games.</source>
-        <translation type="vanished">ПОРАДА: Увімкніть 'Вимкнути помилку ms-gamingoverlay', щоб запобігти системним помилкам в іграх.</translation>
+        <translation>ПОРАДА: Увімкніть 'Вимкнути помилку ms-gamingoverlay', щоб запобігти системним помилкам в іграх.</translation>
     </message>
     <message>
+        <location filename="../src/optimizer.cpp" line="4042" />
         <source>Xbox removal complete. Some components may require a reboot to be fully cleared.</source>
-        <translation type="vanished">Видалення Xbox завершено. Для повного очищення деяких компонентів може знадобитися перезавантаження.</translation>
+        <translation>Видалення Xbox завершено. Для повного очищення деяких компонентів може знадобитися перезавантаження.</translation>
     </message>
     <message>
+        <location filename="../src/optimizer.cpp" line="4051" />
         <source>[Simulation] Removed Xbox package step %1</source>
-        <translation type="vanished">[Симуляція] Видалено пакет Xbox, крок %1</translation>
+        <translation>[Симуляція] Видалено пакет Xbox, крок %1</translation>
     </message>
     <message>
+        <location filename="../src/optimizer.cpp" line="4079" />
         <source>Initializing Xbox package restoration...</source>
-        <translation type="vanished">Ініціалізація відновлення пакетів Xbox...</translation>
+        <translation>Ініціалізація відновлення пакетів Xbox...</translation>
     </message>
     <message>
+        <location filename="../src/optimizer.cpp" line="4088" />
         <source>Re-registering Xbox packages from local store...</source>
-        <translation type="vanished">Повторна реєстрація пакетів Xbox з локального сховища...</translation>
+        <translation>Повторна реєстрація пакетів Xbox з локального сховища...</translation>
     </message>
     <message>
+        <location filename="../src/optimizer.cpp" line="4098" />
         <source>Local packages re-registered.</source>
-        <translation type="vanished">Локальні пакети успішно перереєстровано.</translation>
+        <translation>Локальні пакети успішно перереєстровано.</translation>
     </message>
     <message>
+        <location filename="../src/optimizer.cpp" line="4102" />
         <source>Re-registering provisioned Xbox packages...</source>
-        <translation type="vanished">Повторна реєстрація зарезервованих пакетів Xbox...</translation>
+        <translation>Повторна реєстрація зарезервованих пакетів Xbox...</translation>
     </message>
     <message>
+        <location filename="../src/optimizer.cpp" line="4112" />
         <source>Provisioned packages re-registered.</source>
-        <translation type="vanished">Зарезервовані пакети успішно перереєстровано.</translation>
+        <translation>Зарезервовані пакети успішно перереєстровано.</translation>
     </message>
     <message>
+        <location filename="../src/optimizer.cpp" line="4116" />
         <source>Downloading and installing Xbox App via winget...</source>
-        <translation type="vanished">Завантаження та встановлення програми Xbox через winget...</translation>
+        <translation>Завантаження та встановлення програми Xbox через winget...</translation>
     </message>
     <message>
+        <location filename="../src/optimizer.cpp" line="4125" />
         <source>Xbox App installation completed.</source>
-        <translation type="vanished">Встановлення програми Xbox завершено.</translation>
+        <translation>Встановлення програми Xbox завершено.</translation>
     </message>
     <message>
+        <location filename="../src/optimizer.cpp" line="4129" />
         <source>Downloading and installing Xbox Game Bar via winget...</source>
-        <translation type="vanished">Завантаження та встановлення Xbox Game Bar через winget...</translation>
+        <translation>Завантаження та встановлення Xbox Game Bar через winget...</translation>
     </message>
     <message>
+        <location filename="../src/optimizer.cpp" line="4138" />
         <source>Xbox Game Bar installation completed.</source>
-        <translation type="vanished">Встановлення Xbox Game Bar завершено.</translation>
+        <translation>Встановлення Xbox Game Bar завершено.</translation>
     </message>
     <message>
+        <location filename="../src/optimizer.cpp" line="4156" />
         <source>Xbox Suite has been successfully restored!</source>
-        <translation type="vanished">Пакет програм Xbox успішно відновлено!</translation>
+        <translation>Пакет програм Xbox успішно відновлено!</translation>
     </message>
     <message>
+        <location filename="../src/optimizer.cpp" line="4158" />
         <source>Xbox restoration complete. A system reboot may be needed to complete the installation.</source>
-        <translation type="vanished">Відновлення Xbox завершено. Для завершення встановлення може знадобитися перезавантаження системи.</translation>
+        <translation>Відновлення Xbox завершено. Для завершення встановлення може знадобитися перезавантаження системи.</translation>
     </message>
     <message>
+        <location filename="../src/optimizer.cpp" line="4503" />
         <source>Ultimate Performance Scheme</source>
-        <translation type="vanished">Схема максимальної продуктивності</translation>
+        <translation>Схема максимальної продуктивності</translation>
     </message>
     <message>
+        <location filename="../src/optimizer.cpp" line="2668" />
         <source>Power plan changed to: %1</source>
-        <translation type="vanished">Схему живлення змінено на: %1</translation>
+        <translation>Схему живлення змінено на: %1</translation>
     </message>
     <message>
+        <location filename="../src/optimizer.cpp" line="2672" />
+        <location filename="../src/optimizer.cpp" line="2677" />
         <source>Failed to change power scheme.</source>
-        <translation type="vanished">Не вдалося змінити схему живлення.</translation>
+        <translation>Не вдалося змінити схему живлення.</translation>
     </message>
     <message>
+        <location filename="../src/optimizer.cpp" line="2684" />
         <source>[Simulation] Power plan changed to: %1</source>
-        <translation type="vanished">[Симуляція] Схему живлення змінено на: %1</translation>
+        <translation>[Симуляція] Схему живлення змінено на: %1</translation>
     </message>
     <message>
+        <location filename="../src/optimizer.cpp" line="2618" />
         <source>Configuring Windows power settings...</source>
-        <translation type="vanished">Налаштування параметрів живлення Windows...</translation>
+        <translation>Налаштування параметрів живлення Windows...</translation>
     </message>
     <message>
+        <location filename="../src/optimizer.cpp" line="2647" />
         <source>Failed to duplicate Ultimate Performance power scheme.</source>
-        <translation type="vanished">Не вдалося дублювати схему живлення максимальної продуктивності.</translation>
+        <translation>Не вдалося дублювати схему живлення максимальної продуктивності.</translation>
     </message>
     <message>
+        <location filename="../src/optimizer.cpp" line="2053" />
         <source>Configuring Xbox gaming overlay popups...</source>
-        <translation type="vanished">Налаштування спливаючих вікон ігрового оверлею Xbox...</translation>
+        <translation>Налаштування спливаючих вікон ігрового оверлею Xbox...</translation>
     </message>
     <message>
+        <location filename="../src/optimizer.cpp" line="2013" />
         <source>Configuring system hibernation...</source>
-        <translation type="vanished">Налаштування гібернації системи...</translation>
+        <translation>Налаштування гібернації системи...</translation>
     </message>
     <message>
+        <location filename="../src/optimizer.cpp" line="2033" />
         <source>Hibernation is now ENABLED.</source>
-        <translation type="vanished">Гібернацію УВІМКНЕНО.</translation>
+        <translation>Гібернацію УВІМКНЕНО.</translation>
     </message>
     <message>
+        <location filename="../src/optimizer.cpp" line="2033" />
         <source>Hibernation is now DISABLED.</source>
-        <translation type="vanished">Гібернацію ВИМКНЕНО.</translation>
+        <translation>Гібернацію ВИМКНЕНО.</translation>
     </message>
     <message>
+        <location filename="../src/optimizer.cpp" line="2037" />
         <source>Failed to update hibernation state.</source>
-        <translation type="vanished">Не вдалося оновити стан гібернації.</translation>
+        <translation>Не вдалося оновити стан гібернації.</translation>
     </message>
     <message>
+        <location filename="../src/optimizer.cpp" line="2040" />
         <source>[Simulation] Hibernation set to: %1</source>
-        <translation type="vanished">[Симуляція] Гібернацію встановлено в: %1</translation>
+        <translation>[Симуляція] Гібернацію встановлено в: %1</translation>
     </message>
     <message>
+        <location filename="../src/optimizer.cpp" line="2125" />
         <source>Gaming overlay notifications are now ENABLED.</source>
-        <translation type="vanished">Спливаючі вікна ігрового оверлею тепер УВІМКНЕНО.</translation>
+        <translation>Спливаючі вікна ігрового оверлею тепер УВІМКНЕНО.</translation>
     </message>
     <message>
+        <location filename="../src/optimizer.cpp" line="2125" />
         <source>Gaming overlay notifications are now DISABLED.</source>
-        <translation type="vanished">Спливаючі вікна ігрового оверлею тепер ВИМКНЕНО.</translation>
+        <translation>Спливаючі вікна ігрового оверлею тепер ВИМКНЕНО.</translation>
     </message>
     <message>
+        <location filename="../src/optimizer.cpp" line="2129" />
         <source>Failed to update gaming overlay state.</source>
-        <translation type="vanished">Не вдалося оновити стан ігрового оверлею.</translation>
+        <translation>Не вдалося оновити стан ігрового оверлею.</translation>
     </message>
     <message>
+        <location filename="../src/optimizer.cpp" line="2132" />
         <source>[Simulation] Gaming overlay set to: %1</source>
-        <translation type="vanished">[Симуляція] Стан ігрового оверлею змінено на: %1</translation>
+        <translation>[Симуляція] Стан ігрового оверлею змінено на: %1</translation>
     </message>
     <message>
+        <location filename="../src/optimizer.cpp" line="2145" />
         <source>Configuring Core Isolation (Memory Integrity)...</source>
-        <translation type="vanished">Налаштування ізоляції ядра (цілісності пам'яті)...</translation>
+        <translation>Налаштування ізоляції ядра (цілісності пам'яті)...</translation>
     </message>
     <message>
+        <location filename="../src/optimizer.cpp" line="2159" />
         <source>Core Isolation is now ENABLED.</source>
-        <translation type="vanished">Ізоляцію ядра УВІМКНЕНО.</translation>
+        <translation>Ізоляцію ядра УВІМКНЕНО.</translation>
     </message>
     <message>
+        <location filename="../src/optimizer.cpp" line="2159" />
         <source>Core Isolation is now DISABLED.</source>
-        <translation type="vanished">Ізоляцію ядра ВИМКНЕНО.</translation>
+        <translation>Ізоляцію ядра ВИМКНЕНО.</translation>
     </message>
     <message>
+        <location filename="../src/optimizer.cpp" line="2163" />
         <source>Failed to update Core Isolation state. Error: %1</source>
-        <translation type="vanished">Не вдалося оновити стан ізоляції ядра. Помилка: %1</translation>
+        <translation>Не вдалося оновити стан ізоляції ядра. Помилка: %1</translation>
     </message>
     <message>
+        <location filename="../src/optimizer.cpp" line="2166" />
         <source>[Simulation] Core Isolation set to: %1</source>
-        <translation type="vanished">[Симуляція] Ізоляцію ядра встановлено в: %1</translation>
+        <translation>[Симуляція] Ізоляцію ядра встановлено в: %1</translation>
     </message>
     <message>
+        <location filename="../src/optimizer.cpp" line="2175" />
         <source>Configuring mouse acceleration...</source>
-        <translation type="vanished">Налаштування акселерації миші...</translation>
+        <translation>Налаштування акселерації миші...</translation>
     </message>
     <message>
+        <location filename="../src/optimizer.cpp" line="2195" />
         <source>Mouse acceleration is now ENABLED.</source>
-        <translation type="vanished">Акселерацію миші УВІМКНЕНО.</translation>
+        <translation>Акселерацію миші УВІМКНЕНО.</translation>
     </message>
     <message>
+        <location filename="../src/optimizer.cpp" line="2195" />
         <source>Mouse acceleration is now DISABLED.</source>
-        <translation type="vanished">Акселерацію миші ВИМКНЕНО.</translation>
+        <translation>Акселерацію миші ВИМКНЕНО.</translation>
     </message>
     <message>
+        <location filename="../src/optimizer.cpp" line="2199" />
         <source>Failed to update mouse acceleration state.</source>
-        <translation type="vanished">Не вдалося оновити стан акселерації миші.</translation>
+        <translation>Не вдалося оновити стан акселерації миші.</translation>
     </message>
     <message>
+        <location filename="../src/optimizer.cpp" line="2202" />
         <source>[Simulation] Mouse acceleration set to: %1</source>
-        <translation type="vanished">[Симуляція] Акселерацію миші встановлено в: %1</translation>
+        <translation>[Симуляція] Акселерацію миші встановлено в: %1</translation>
     </message>
     <message>
+        <location filename="../src/optimizer.cpp" line="2211" />
         <source>Configuring Windows Game Mode...</source>
-        <translation type="vanished">Налаштування ігрового режиму Windows...</translation>
+        <translation>Налаштування ігрового режиму Windows...</translation>
     </message>
     <message>
+        <location filename="../src/optimizer.cpp" line="2230" />
         <source>Windows Game Mode is now ENABLED.</source>
-        <translation type="vanished">Ігровий режим Windows УВІМКНЕНО.</translation>
+        <translation>Ігровий режим Windows УВІМКНЕНО.</translation>
     </message>
     <message>
+        <location filename="../src/optimizer.cpp" line="2230" />
         <source>Windows Game Mode is now DISABLED.</source>
-        <translation type="vanished">Ігровий режим Windows ВИМКНЕНО.</translation>
+        <translation>Ігровий режим Windows ВИМКНЕНО.</translation>
     </message>
     <message>
+        <location filename="../src/optimizer.cpp" line="2234" />
         <source>Failed to update Windows Game Mode state.</source>
-        <translation type="vanished">Не вдалося оновити стан ігрового режиму Windows.</translation>
+        <translation>Не вдалося оновити стан ігрового режиму Windows.</translation>
     </message>
     <message>
+        <location filename="../src/optimizer.cpp" line="2237" />
         <source>[Simulation] Windows Game Mode set to: %1</source>
-        <translation type="vanished">[Симуляція] Ігровий режим Windows встановлено в: %1</translation>
+        <translation>[Симуляція] Ігровий режим Windows встановлено в: %1</translation>
     </message>
     <message>
+        <location filename="../src/optimizer.cpp" line="3311" />
         <source>Processing Drive %1 indexing...</source>
-        <translation type="vanished">Обробка індексації диска %1...</translation>
+        <translation>Обробка індексації диска %1...</translation>
     </message>
     <message>
+        <location filename="../src/optimizer.cpp" line="3331" />
         <source>Drive %1 is not mounted or unavailable. Skipping.</source>
-        <translation type="vanished">Диск %1 не підключений або недоступний. Пропуск.</translation>
+        <translation>Диск %1 не підключений або недоступний. Пропуск.</translation>
     </message>
     <message>
+        <location filename="../src/optimizer.cpp" line="3518" />
+        <source>Processing Windows visual effects...</source>
+        <translation>Обробка візуальних ефектів Windows...</translation>
+    </message>
+    <message>
+        <location filename="../src/optimizer.cpp" line="3696" />
+        <source>Windows visual effects optimized successfully.</source>
+        <translation>Візуальні ефекти Windows успішно оптимізовано.</translation>
+    </message>
+    <message>
+        <location filename="../src/optimizer.cpp" line="3698" />
+        <source>[Simulation] Windows visual effects updated.</source>
+        <translation>[Симуляція] Візуальні ефекти Windows оновлено.</translation>
+    </message>
+    <message>
+        <location filename="../src/optimizer.cpp" line="4167" />
         <source>[Simulation] Restored Xbox package step %1</source>
-        <translation type="vanished">[Симуляція] Відновлено пакет Xbox, крок %1</translation>
+        <translation>[Симуляція] Відновлено пакет Xbox, крок %1</translation>
     </message>
     <message>
+        <location filename="../src/optimizer.cpp" line="4195" />
         <source>Removing Xbox component: %1...</source>
-        <translation type="vanished">Видалення компонента Xbox: %1...</translation>
+        <translation>Видалення компонента Xbox: %1...</translation>
     </message>
     <message>
+        <location filename="../src/optimizer.cpp" line="4216" />
         <source>Purging provisioned Xbox packages...</source>
-        <translation type="vanished">Повне очищення попередньо встановлених пакетів Xbox...</translation>
+        <translation>Повне очищення попередньо встановлених пакетів Xbox...</translation>
     </message>
     <message>
+        <location filename="../src/optimizer.cpp" line="4247" />
         <source>Component %1 uninstalled successfully!</source>
-        <translation type="vanished">Компонент %1 успешно видалено!</translation>
+        <translation>Компонент %1 успешно видалено!</translation>
     </message>
     <message>
+        <location filename="../src/optimizer.cpp" line="4267" />
         <source>[Simulation] Removed component %1</source>
-        <translation type="vanished">[Симуляція] Видалено компонент %1</translation>
+        <translation>[Симуляція] Видалено компонент %1</translation>
     </message>
     <message>
+        <location filename="../src/optimizer.cpp" line="4286" />
         <source>Restoring Xbox component: %1...</source>
-        <translation type="vanished">Відновлення компонента Xbox: %1...</translation>
+        <translation>Відновлення компонента Xbox: %1...</translation>
     </message>
     <message>
+        <location filename="../src/optimizer.cpp" line="4334" />
         <source>Component %1 restored successfully!</source>
-        <translation type="vanished">Компонент %1 успішно відновлено!</translation>
+        <translation>Компонент %1 успішно відновлено!</translation>
     </message>
     <message>
+        <location filename="../src/optimizer.cpp" line="4354" />
         <source>[Simulation] Restored component %1</source>
-        <translation type="vanished">[Симуляція] Відновлено компонент %1</translation>
+        <translation>[Симуляція] Відновлено компонент %1</translation>
     </message>
     <message>
+        <location filename="../src/optimizer.cpp" line="4373" />
         <source>Initializing Multi-Plane Overlay (MPO) configuration...</source>
-        <translation type="vanished">Ініціалізація налаштування Multi-Plane Overlay (MPO)...</translation>
+        <translation>Ініціалізація налаштування Multi-Plane Overlay (MPO)...</translation>
     </message>
     <message>
+        <location filename="../src/optimizer.cpp" line="4381" />
         <source>Analyzing graphics subsystem and DWM settings...</source>
-        <translation type="vanished">Аналіз графічної підсистеми та параметрів DWM...</translation>
+        <translation>Аналіз графічної підсистеми та параметрів DWM...</translation>
     </message>
     <message>
+        <location filename="../src/optimizer.cpp" line="4386" />
         <source>Applying MPO registry modifications...</source>
-        <translation type="vanished">Застосування модифікацій реєстру для MPO...</translation>
+        <translation>Застосування модифікацій реєстру для MPO...</translation>
     </message>
     <message>
+        <location filename="../src/optimizer.cpp" line="4430" />
         <source>MPO configuration updated successfully in registry!</source>
-        <translation type="vanished">Налаштування MPO успішно оновлено в реєстрі!</translation>
+        <translation>Налаштування MPO успішно оновлено в реєстрі!</translation>
     </message>
     <message>
+        <location filename="../src/optimizer.cpp" line="4431" />
+        <location filename="../src/optimizer.cpp" line="4445" />
         <source>REBOOT RECOMMENDED: Please restart your PC to apply these graphics latency changes.</source>
-        <translation type="vanished">РЕКОМЕНДОВАНО ПЕРЕЗАВАНТАЖЕННЯ: Будь ласка, перезавантажте ПК для застосування змін графічної затримки.</translation>
+        <translation>РЕКОМЕНДОВАНО ПЕРЕЗАВАНТАЖЕННЯ: Будь ласка, перезавантажте ПК для застосування змін графічної затримки.</translation>
     </message>
     <message>
+        <location filename="../src/optimizer.cpp" line="4434" />
         <source>Failed to update MPO configuration in registry. Error: %1</source>
-        <translation type="vanished">Не вдалося оновити конфігурацію MPO в реєстрі. Помилка: %1</translation>
+        <translation>Не вдалося оновити конфігурацію MPO в реєстрі. Помилка: %1</translation>
     </message>
     <message>
+        <location filename="../src/optimizer.cpp" line="4444" />
         <source>[Simulation] MPO configuration updated to: %1</source>
-        <translation type="vanished">[Симуляція] Налаштування MPO змінено на: %1</translation>
+        <translation>[Симуляція] Налаштування MPO змінено на: %1</translation>
     </message>
 </context>
 <context>

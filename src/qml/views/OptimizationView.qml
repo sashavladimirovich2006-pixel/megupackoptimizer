@@ -83,6 +83,7 @@ Item {
         if (cs2Changed) return true;
         if (optimizerBackend.steamOverlayActive !== optimizerBackend.originalSteamOverlayActive) return true;
         if (optimizerBackend.cs2OverlayActive !== optimizerBackend.originalCs2OverlayActive) return true;
+        if (visualEffectsChanged) return true;
         if (!optimizerBackend.driveStates || !optimizerBackend.originalDriveStates) return false;
         var keys = Object.keys(optimizerBackend.driveStates);
         for (var i = 0; i < keys.length; i++) {
@@ -137,6 +138,98 @@ Item {
     property bool windowsUpdateChanged: optimizerBackend.windowsUpdateMode !== optimizerBackend.originalWindowsUpdateMode
     property bool steamOverlayChanged: optimizerBackend.steamOverlayActive !== optimizerBackend.originalSteamOverlayActive
     property bool cs2OverlayChanged: optimizerBackend.cs2OverlayActive !== optimizerBackend.originalCs2OverlayActive
+    property bool visualEffectsChanged: {
+        var current = optimizerBackend.visualEffects;
+        var original = optimizerBackend.originalVisualEffects;
+        if (!current || !original) return false;
+        var keys = Object.keys(current);
+        for (var i = 0; i < keys.length; i++) {
+            var key = keys[i];
+            if (current[key] !== original[key]) return true;
+        }
+        return false;
+    }
+
+    property int visualEffectsPreset: {
+        var current = optimizerBackend.visualEffects;
+        if (!current) return 3;
+        var keys = Object.keys(current);
+        if (keys.length === 0) return 3;
+        
+        var allTrue = true;
+        var allFalse = true;
+        for (var i = 0; i < keys.length; i++) {
+            if (current[keys[i]]) {
+                allFalse = false;
+            } else {
+                allTrue = false;
+            }
+        }
+        if (allTrue) return 1;
+        if (allFalse) return 2;
+        return localVfxPresetState;
+    }
+
+    property int localVfxPresetState: 3
+
+    function setPreset(presetId) {
+        localVfxPresetState = presetId;
+        var current = optimizerBackend.visualEffects;
+        if (!current) return;
+        var newEffects = {};
+        var keys = Object.keys(current);
+        
+        if (presetId === 1) { // Best appearance
+            for (var i = 0; i < keys.length; i++) {
+                newEffects[keys[i]] = true;
+            }
+        } else if (presetId === 2) { // Best performance
+            for (var i = 0; i < keys.length; i++) {
+                newEffects[keys[i]] = false;
+            }
+        } else if (presetId === 0) { // Let Windows choose
+            var defaults = {
+                "animateControls": true,
+                "animateWindows": true,
+                "animateTaskbar": true,
+                "enablePeek": true,
+                "fadeMenus": true,
+                "fadeTooltips": true,
+                "fadeMenuSelection": true,
+                "saveThumbnails": true,
+                "shadowPointer": true,
+                "shadowWindows": true,
+                "showThumbnails": true,
+                "translucentSelection": true,
+                "dragContents": true,
+                "slideComboBoxes": true,
+                "smoothFonts": true,
+                "smoothScroll": true,
+                "dropShadowsDesktop": true
+            };
+            for (var i = 0; i < keys.length; i++) {
+                newEffects[keys[i]] = defaults[keys[i]] !== undefined ? defaults[keys[i]] : true;
+            }
+        } else {
+            return;
+        }
+        optimizerBackend.visualEffects = newEffects;
+    }
+
+    function toggleVisualEffect(key, isChecked) {
+        var current = optimizerBackend.visualEffects;
+        if (current && current[key] !== isChecked) {
+            var optMap = {};
+            var keys = Object.keys(current);
+            for (var i = 0; i < keys.length; i++) {
+                optMap[keys[i]] = current[keys[i]];
+            }
+            optMap[key] = isChecked;
+            optimizerBackend.visualEffects = optMap;
+            localVfxPresetState = 3; // Custom
+        }
+    }
+
     property bool cs2Changed: {
         var current = optimizerBackend.cs2LaunchOptions;
         var original = optimizerBackend.originalCs2LaunchOptions;
@@ -196,6 +289,7 @@ Item {
         if (cs2Changed) count++;
         if (steamOverlayChanged) count++;
         if (cs2OverlayChanged) count++;
+        if (visualEffectsChanged) count++;
         return count;
     }
 
@@ -371,6 +465,14 @@ Item {
             hasSidebar: false,
             revert: function() {
                 optimizerBackend.cs2OverlayActive = optimizerBackend.originalCs2OverlayActive;
+            }
+        });
+        if (visualEffectsChanged) list.push({
+            name: qsTr("Visual Effects"),
+            icon: "qrc:/MeguPackOptimizer/src/resources/monitor.svg",
+            hasSidebar: true,
+            revert: function() {
+                optimizerBackend.visualEffects = optimizerBackend.originalVisualEffects;
             }
         });
         return list;
@@ -643,11 +745,50 @@ Item {
                     })(keys[idx]);
                 }
             }
+        } else if (category === qsTr("Visual Effects")) {
+            var current = optimizerBackend.visualEffects;
+            var original = optimizerBackend.originalVisualEffects;
+            if (current && original) {
+                var keys = Object.keys(current);
+                var vfxLabels = {
+                    "animateControls": qsTr("Animate controls inside windows"),
+                    "animateWindows": qsTr("Animate windows when minimizing/maximizing"),
+                    "animateTaskbar": qsTr("Animations in the taskbar"),
+                    "enablePeek": qsTr("Enable Peek"),
+                    "fadeMenus": qsTr("Fade or slide menus into view"),
+                    "fadeTooltips": qsTr("Fade or slide ToolTips into view"),
+                    "fadeMenuSelection": qsTr("Fade out menu items after clicking"),
+                    "saveThumbnails": qsTr("Save taskbar thumbnail previews"),
+                    "shadowPointer": qsTr("Show shadows under mouse pointer"),
+                    "shadowWindows": qsTr("Show shadows under windows"),
+                    "showThumbnails": qsTr("Show thumbnails instead of icons"),
+                    "translucentSelection": qsTr("Show translucent selection rectangle"),
+                    "dragContents": qsTr("Show window contents while dragging"),
+                    "slideComboBoxes": qsTr("Slide open combo boxes"),
+                    "smoothFonts": qsTr("Smooth edges of screen fonts"),
+                    "smoothScroll": qsTr("Smooth-scroll list boxes"),
+                    "dropShadowsDesktop": qsTr("Use drop shadows for icon labels on the desktop")
+                };
+                for (var idx = 0; idx < keys.length; idx++) {
+                    (function(key) {
+                        if (current[key] !== original[key]) {
+                            var label = vfxLabels[key] || key;
+                            subList.push({
+                                name: label + ": " + (original[key] ? qsTr("Enabled") : qsTr("Disabled")) + " -> " + (current[key] ? qsTr("Enabled") : qsTr("Disabled")),
+                                revert: function() {
+                                    root.toggleVisualEffect(key, original[key]);
+                                }
+                            });
+                        }
+                    })(keys[idx]);
+                }
+            }
         }
         return subList;
     }
 
     function getParentCard(name) {
+        if (name === qsTr("Visual Effects")) return visualEffectsPanel;
         if (name === qsTr("Counter-Strike 2 Launch Options")) return cs2Panel;
         if (name === qsTr("File Indexing")) return indexingPanel;
         if (name === qsTr("Xbox App & Game Bar")) return xboxPanel;
@@ -1558,6 +1699,112 @@ Item {
                                 onClicked: {
                                     root.activeDrawer = "mpo";
                                 }
+                            }
+                        }
+                    }
+                }
+
+                // Visual Effects Panel
+                AcrylicPanel {
+                    id: visualEffectsPanel
+                    visible: root.currentSection === "core"
+                    width: parent.width
+                    height: 72
+
+                    Row {
+                        anchors.left: parent.left
+                        anchors.verticalCenter: parent.verticalCenter
+                        spacing: 12
+
+                        Item {
+                            width: 28
+                            height: 28
+                            anchors.verticalCenter: parent.verticalCenter
+                            Image {
+                                id: visualEffectsIconImg
+                                source: "qrc:/MeguPackOptimizer/src/resources/monitor.svg"
+                                anchors.fill: parent
+                                sourceSize.width: 28
+                                sourceSize.height: 28
+                                visible: false
+                            }
+                            ColorOverlay {
+                                anchors.fill: visualEffectsIconImg
+                                source: visualEffectsIconImg
+                                color: Theme.accent
+                            }
+                        }
+
+                        Column {
+                            anchors.verticalCenter: parent.verticalCenter
+                            spacing: 2
+
+                            Row {
+                                spacing: 8
+                                Text {
+                                    text: qsTr("Visual Effects")
+                                    color: Theme.textPrimary
+                                    font.family: Theme.fontFamily
+                                    font.pixelSize: 13
+                                    font.bold: true
+                                }
+                                Rectangle {
+                                    visible: root.visualEffectsChanged
+                                    height: 16
+                                    width: selectedTextVfx.contentWidth + 10
+                                    radius: 4
+                                    color: Theme.accentDim
+                                    border.color: Theme.accent
+                                    border.width: 1
+                                    anchors.verticalCenter: parent.verticalCenter
+                                    Text {
+                                        id: selectedTextVfx
+                                        text: qsTr("Selected for application")
+                                        color: Theme.accent
+                                        font.family: Theme.fontFamily
+                                        font.pixelSize: 8
+                                        font.bold: true
+                                        anchors.centerIn: parent
+                                    }
+                                }
+                            }
+
+                            Text {
+                                text: qsTr("Optimize Windows animations, shadows, and rendering effects to improve system responsiveness.")
+                                color: Theme.textMuted
+                                font.family: Theme.fontFamily
+                                font.pixelSize: 10
+                            }
+                        }
+                    }
+
+                    Row {
+                        anchors.right: parent.right
+                        anchors.verticalCenter: parent.verticalCenter
+                        spacing: 16
+
+                        Text {
+                            text: qsTr("Open")
+                            color: vfxPathMouse.containsMouse ? Theme.accentLight : Theme.accent
+                            font.family: Theme.fontFamily
+                            font.pixelSize: 11
+                            font.bold: true
+                            font.underline: true
+                            anchors.verticalCenter: parent.verticalCenter
+                            MouseArea {
+                                id: vfxPathMouse
+                                anchors.fill: parent
+                                hoverEnabled: true
+                                cursorShape: Qt.PointingHandCursor
+                                onClicked: { root.activeDrawer = "visualEffects"; }
+                            }
+                        }
+
+                        MeguSwitch {
+                            checked: root.visualEffectsPreset !== 2
+                            anchors.verticalCenter: parent.verticalCenter
+                            onToggled: (isChecked) => {
+                                root.setPreset(isChecked ? 1 : 2);
                             }
                         }
                     }
@@ -3746,6 +3993,7 @@ Item {
                             if (root.activeDrawer === "usb") return qsTr("USB 3.0 POWER SAVING");
                             if (root.activeDrawer === "telemetry") return qsTr("TELEMETRY SETTINGS");
                             if (root.activeDrawer === "windowsUpdate") return qsTr("WINDOWS UPDATE");
+                            if (root.activeDrawer === "visualEffects") return qsTr("VISUAL EFFECTS");
                             return "";
                         }
                         color: Theme.textPrimary
@@ -3812,6 +4060,7 @@ Item {
                         if (root.activeDrawer === "usb") return usbColumn.implicitHeight;
                         if (root.activeDrawer === "telemetry") return telemetryColumn.implicitHeight;
                         if (root.activeDrawer === "windowsUpdate") return windowsUpdateColumn.implicitHeight;
+                        if (root.activeDrawer === "visualEffects") return visualEffectsColumn.implicitHeight;
                         return height;
                     }
 
@@ -5154,6 +5403,173 @@ Item {
                                     }
                                 }
                             }
+                        }
+                    }
+                }
+
+                // 10. Visual Effects Options Content
+                Column {
+                    id: visualEffectsColumn
+                    width: parent.width
+                    spacing: 20
+                    visible: root.activeDrawer === "visualEffects"
+
+                    Text {
+                        text: qsTr("Visual Effects Preset:")
+                        color: Theme.textSecondary
+                        font.family: Theme.fontFamily
+                        font.pixelSize: 11
+                        font.bold: true
+                    }
+
+                    Flow {
+                        width: parent.width
+                        spacing: 6
+                        rowSpacing: 6
+
+                        Repeater {
+                            model: [
+                                { id: 0, text: qsTr("Let Windows choose") },
+                                { id: 1, text: qsTr("Best appearance") },
+                                { id: 2, text: qsTr("Best performance") },
+                                { id: 3, text: qsTr("Custom") }
+                            ]
+                            delegate: Rectangle {
+                                height: 28
+                                width: presetText.contentWidth + 24
+                                radius: 14
+                                color: (root.visualEffectsPreset === modelData.id) ? Theme.accentDim : (presetMouse.containsMouse ? "#0CFFFFFF" : "#05FFFFFF")
+                                border.color: (root.visualEffectsPreset === modelData.id) ? Theme.accent : Theme.border
+                                border.width: 1
+
+                                Behavior on color { ColorAnimation { duration: Theme.animFast } }
+                                Behavior on border.color { ColorAnimation { duration: Theme.animFast } }
+
+                                Text {
+                                    id: presetText
+                                    text: modelData.text
+                                    color: (root.visualEffectsPreset === modelData.id) ? Theme.accent : Theme.textSecondary
+                                    font.family: Theme.fontFamily
+                                    font.pixelSize: 11
+                                    font.bold: true
+                                    anchors.centerIn: parent
+                                }
+
+                                MouseArea {
+                                    id: presetMouse
+                                    anchors.fill: parent
+                                    hoverEnabled: true
+                                    cursorShape: Qt.PointingHandCursor
+                                    onClicked: {
+                                        root.setPreset(modelData.id);
+                                    }
+                                }
+                            }
+                        }
+                    }
+
+                    Rectangle {
+                        width: parent.width
+                        height: 1
+                        color: Theme.border
+                    }
+
+                    Text {
+                        text: qsTr("Individual Settings:")
+                        color: Theme.textSecondary
+                        font.family: Theme.fontFamily
+                        font.pixelSize: 11
+                        font.bold: true
+                    }
+
+                    Column {
+                        width: parent.width
+                        spacing: 12
+
+                        MeguSwitch {
+                            text: qsTr("Animate controls and elements inside windows")
+                            checked: optimizerBackend.visualEffects ? !!optimizerBackend.visualEffects["animateControls"] : false
+                            onToggled: (isChecked) => { root.toggleVisualEffect("animateControls", isChecked); }
+                        }
+                        MeguSwitch {
+                            text: qsTr("Animate windows when minimizing and maximizing")
+                            checked: optimizerBackend.visualEffects ? !!optimizerBackend.visualEffects["animateWindows"] : false
+                            onToggled: (isChecked) => { root.toggleVisualEffect("animateWindows", isChecked); }
+                        }
+                        MeguSwitch {
+                            text: qsTr("Animations in the taskbar")
+                            checked: optimizerBackend.visualEffects ? !!optimizerBackend.visualEffects["animateTaskbar"] : false
+                            onToggled: (isChecked) => { root.toggleVisualEffect("animateTaskbar", isChecked); }
+                        }
+                        MeguSwitch {
+                            text: qsTr("Enable Peek")
+                            checked: optimizerBackend.visualEffects ? !!optimizerBackend.visualEffects["enablePeek"] : false
+                            onToggled: (isChecked) => { root.toggleVisualEffect("enablePeek", isChecked); }
+                        }
+                        MeguSwitch {
+                            text: qsTr("Fade or slide menus into view")
+                            checked: optimizerBackend.visualEffects ? !!optimizerBackend.visualEffects["fadeMenus"] : false
+                            onToggled: (isChecked) => { root.toggleVisualEffect("fadeMenus", isChecked); }
+                        }
+                        MeguSwitch {
+                            text: qsTr("Fade or slide ToolTips into view")
+                            checked: optimizerBackend.visualEffects ? !!optimizerBackend.visualEffects["fadeTooltips"] : false
+                            onToggled: (isChecked) => { root.toggleVisualEffect("fadeTooltips", isChecked); }
+                        }
+                        MeguSwitch {
+                            text: qsTr("Fade out menu items after clicking")
+                            checked: optimizerBackend.visualEffects ? !!optimizerBackend.visualEffects["fadeMenuSelection"] : false
+                            onToggled: (isChecked) => { root.toggleVisualEffect("fadeMenuSelection", isChecked); }
+                        }
+                        MeguSwitch {
+                            text: qsTr("Save taskbar thumbnail previews")
+                            checked: optimizerBackend.visualEffects ? !!optimizerBackend.visualEffects["saveThumbnails"] : false
+                            onToggled: (isChecked) => { root.toggleVisualEffect("saveThumbnails", isChecked); }
+                        }
+                        MeguSwitch {
+                            text: qsTr("Show shadows under mouse pointer")
+                            checked: optimizerBackend.visualEffects ? !!optimizerBackend.visualEffects["shadowPointer"] : false
+                            onToggled: (isChecked) => { root.toggleVisualEffect("shadowPointer", isChecked); }
+                        }
+                        MeguSwitch {
+                            text: qsTr("Show shadows under windows")
+                            checked: optimizerBackend.visualEffects ? !!optimizerBackend.visualEffects["shadowWindows"] : false
+                            onToggled: (isChecked) => { root.toggleVisualEffect("shadowWindows", isChecked); }
+                        }
+                        MeguSwitch {
+                            text: qsTr("Show thumbnails instead of icons")
+                            checked: optimizerBackend.visualEffects ? !!optimizerBackend.visualEffects["showThumbnails"] : false
+                            onToggled: (isChecked) => { root.toggleVisualEffect("showThumbnails", isChecked); }
+                        }
+                        MeguSwitch {
+                            text: qsTr("Show translucent selection rectangle")
+                            checked: optimizerBackend.visualEffects ? !!optimizerBackend.visualEffects["translucentSelection"] : false
+                            onToggled: (isChecked) => { root.toggleVisualEffect("translucentSelection", isChecked); }
+                        }
+                        MeguSwitch {
+                            text: qsTr("Show window contents while dragging")
+                            checked: optimizerBackend.visualEffects ? !!optimizerBackend.visualEffects["dragContents"] : false
+                            onToggled: (isChecked) => { root.toggleVisualEffect("dragContents", isChecked); }
+                        }
+                        MeguSwitch {
+                            text: qsTr("Slide open combo boxes")
+                            checked: optimizerBackend.visualEffects ? !!optimizerBackend.visualEffects["slideComboBoxes"] : false
+                            onToggled: (isChecked) => { root.toggleVisualEffect("slideComboBoxes", isChecked); }
+                        }
+                        MeguSwitch {
+                            text: qsTr("Smooth edges of screen fonts")
+                            checked: optimizerBackend.visualEffects ? !!optimizerBackend.visualEffects["smoothFonts"] : false
+                            onToggled: (isChecked) => { root.toggleVisualEffect("smoothFonts", isChecked); }
+                        }
+                        MeguSwitch {
+                            text: qsTr("Smooth-scroll list boxes")
+                            checked: optimizerBackend.visualEffects ? !!optimizerBackend.visualEffects["smoothScroll"] : false
+                            onToggled: (isChecked) => { root.toggleVisualEffect("smoothScroll", isChecked); }
+                        }
+                        MeguSwitch {
+                            text: qsTr("Use drop shadows for icon labels on the desktop")
+                            checked: optimizerBackend.visualEffects ? !!optimizerBackend.visualEffects["dropShadowsDesktop"] : false
+                            onToggled: (isChecked) => { root.toggleVisualEffect("dropShadowsDesktop", isChecked); }
                         }
                     }
                 }

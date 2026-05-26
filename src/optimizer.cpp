@@ -254,6 +254,41 @@ namespace {
         file.close();
         return true;
     }
+
+    bool readVisualEffectReg(const QString &subkeyName, bool defaultVal = true) {
+#ifdef Q_OS_WIN
+        HKEY hKey;
+        QString path = "Software\\Microsoft\\Windows\\CurrentVersion\\Explorer\\VisualEffects\\" + subkeyName;
+        if (RegOpenKeyExW(HKEY_CURRENT_USER, reinterpret_cast<const wchar_t*>(path.utf16()), 0, KEY_READ, &hKey) == ERROR_SUCCESS) {
+            DWORD val = defaultVal ? 1 : 0;
+            DWORD dwSize = sizeof(val);
+            DWORD dwType = REG_DWORD;
+            if (RegQueryValueExW(hKey, L"DefaultApplied", nullptr, &dwType, reinterpret_cast<LPBYTE>(&val), &dwSize) == ERROR_SUCCESS) {
+                RegCloseKey(hKey);
+                return (val != 0);
+            }
+            RegCloseKey(hKey);
+        }
+#endif
+        return defaultVal;
+    }
+
+    bool readFontSmoothingReg() {
+#ifdef Q_OS_WIN
+        HKEY hKey;
+        if (RegOpenKeyExW(HKEY_CURRENT_USER, L"Control Panel\\Desktop", 0, KEY_READ, &hKey) == ERROR_SUCCESS) {
+            wchar_t val[16] = L"0";
+            DWORD dwSize = sizeof(val);
+            DWORD dwType = REG_SZ;
+            if (RegQueryValueExW(hKey, L"FontSmoothing", nullptr, &dwType, reinterpret_cast<LPBYTE>(val), &dwSize) == ERROR_SUCCESS) {
+                RegCloseKey(hKey);
+                return (wcscmp(val, L"2") == 0);
+            }
+            RegCloseKey(hKey);
+        }
+#endif
+        return true;
+    }
 }
 
 Optimizer::Optimizer(QObject *parent) : QObject(parent) {
@@ -417,6 +452,13 @@ void Optimizer::setCs2OverlayActive(bool val) {
     if (m_cs2OverlayActive != val) {
         m_cs2OverlayActive = val;
         emit cs2OverlayActiveChanged(m_cs2OverlayActive);
+    }
+}
+
+void Optimizer::setVisualEffects(const QVariantMap &val) {
+    if (m_visualEffects != val) {
+        m_visualEffects = val;
+        emit visualEffectsChanged(m_visualEffects);
     }
 }
 
@@ -1678,6 +1720,31 @@ void Optimizer::loadSystemStates() {
     m_originalCs2OverlayActive = cs2OverlayActive;
     emit cs2OverlayActiveChanged(m_cs2OverlayActive);
     emit originalCs2OverlayActiveChanged(m_originalCs2OverlayActive);
+
+    // Load visual effects settings
+    QVariantMap visEffects;
+    visEffects["animateControls"] = readVisualEffectReg("ControlAnimations", true);
+    visEffects["animateWindows"] = readVisualEffectReg("AnimateMinMax", true);
+    visEffects["animateTaskbar"] = readVisualEffectReg("TaskbarAnimations", true);
+    visEffects["enablePeek"] = readVisualEffectReg("DWMAeroPeekEnabled", true);
+    visEffects["fadeMenus"] = readVisualEffectReg("MenuAnimation", true);
+    visEffects["fadeTooltips"] = readVisualEffectReg("TooltipAnimation", true);
+    visEffects["fadeMenuSelection"] = readVisualEffectReg("SelectionFade", true);
+    visEffects["saveThumbnails"] = readVisualEffectReg("DWMSaveThumbnailEnabled", true);
+    visEffects["shadowPointer"] = readVisualEffectReg("CursorShadow", true);
+    visEffects["shadowWindows"] = readVisualEffectReg("DropShadow", true);
+    visEffects["showThumbnails"] = readVisualEffectReg("ThumbnailsOrIcon", true);
+    visEffects["translucentSelection"] = readVisualEffectReg("ListviewAlphaSelect", true);
+    visEffects["dragContents"] = readVisualEffectReg("DragFullWindows", true);
+    visEffects["slideComboBoxes"] = readVisualEffectReg("ComboBoxAnimation", true);
+    visEffects["smoothFonts"] = readFontSmoothingReg();
+    visEffects["smoothScroll"] = readVisualEffectReg("ListBoxSmoothScrolling", true);
+    visEffects["dropShadowsDesktop"] = readVisualEffectReg("ListviewShadow", true);
+
+    m_visualEffects = visEffects;
+    m_originalVisualEffects = visEffects;
+    emit visualEffectsChanged(m_visualEffects);
+    emit originalVisualEffectsChanged(m_originalVisualEffects);
 }
 
 void Optimizer::startSystemOptimization() {
@@ -1783,8 +1850,10 @@ void Optimizer::startSystemOptimization() {
     bool origSteamOverlayVal = m_originalSteamOverlayActive;
     bool cs2OverlayVal = m_cs2OverlayActive;
     bool origCs2OverlayVal = m_originalCs2OverlayActive;
+    QVariantMap visualEffectsVal = m_visualEffects;
+    QVariantMap origVisualEffectsVal = m_originalVisualEffects;
 
-    QThread* worker = QThread::create([this, searchVal, hibernationVal, overlayVal, coreIsolationVal, mouseAccelVal, gameModeVal, firewallVal, printerVal, bitlockerVal, discordOverlayVal, notificationsVal, notifGlobalVal, notifAppVal, notifSoundsVal, notifLockscreenVal, targetPowerSchemeVal, activePowerSchemeVal, defenderVal, defenderRegistryVal, defenderCmdVal, defenderServiceVal, remoteAccessVal, telemetryVal, telemetryDiagTrackVal, telemetryWapPushVal, telemetryCeipVal, telemetryWerVal, windowsUpdateModeVal, targets, originalTargets, origSearch, origHibernation, origOverlay, origCoreIsolation, origMouseAccel, origGameMode, origFirewall, origPrinter, origBitlocker, origDiscordOverlay, origNotifications, origNotifGlobal, origNotifApp, origNotifSounds, origNotifLockscreen, origDefender, origDefenderRegistry, origDefenderCmd, origDefenderService, origRemoteAccess, origTelemetry, origTelemetryDiagTrack, origTelemetryWapPush, origTelemetryCeip, origTelemetryWer, origWindowsUpdateMode, usbDevicesVal, origUsbDevicesVal, steamPathVal, cs2OptionsVal, origCs2OptionsVal, steamOverlayVal, origSteamOverlayVal, cs2OverlayVal, origCs2OverlayVal]() {
+    QThread* worker = QThread::create([this, searchVal, hibernationVal, overlayVal, coreIsolationVal, mouseAccelVal, gameModeVal, firewallVal, printerVal, bitlockerVal, discordOverlayVal, notificationsVal, notifGlobalVal, notifAppVal, notifSoundsVal, notifLockscreenVal, targetPowerSchemeVal, activePowerSchemeVal, defenderVal, defenderRegistryVal, defenderCmdVal, defenderServiceVal, remoteAccessVal, telemetryVal, telemetryDiagTrackVal, telemetryWapPushVal, telemetryCeipVal, telemetryWerVal, windowsUpdateModeVal, targets, originalTargets, origSearch, origHibernation, origOverlay, origCoreIsolation, origMouseAccel, origGameMode, origFirewall, origPrinter, origBitlocker, origDiscordOverlay, origNotifications, origNotifGlobal, origNotifApp, origNotifSounds, origNotifLockscreen, origDefender, origDefenderRegistry, origDefenderCmd, origDefenderService, origRemoteAccess, origTelemetry, origTelemetryDiagTrack, origTelemetryWapPush, origTelemetryCeip, origTelemetryWer, origWindowsUpdateMode, usbDevicesVal, origUsbDevicesVal, steamPathVal, cs2OptionsVal, origCs2OptionsVal, steamOverlayVal, origSteamOverlayVal, cs2OverlayVal, origCs2OverlayVal, visualEffectsVal, origVisualEffectsVal]() {
         // Step 0: Check if anything actually changed
         bool powerPlanChanged = (targetPowerSchemeVal != activePowerSchemeVal);
         bool usbChanged = false;
@@ -1810,6 +1879,7 @@ void Optimizer::startSystemOptimization() {
         bool cs2Changed = (cs2OptionsVal != origCs2OptionsVal);
         bool steamOverlayChanged = (steamOverlayVal != origSteamOverlayVal);
         bool cs2OverlayChanged = (cs2OverlayVal != origCs2OverlayVal);
+        bool visualEffectsChanged = (visualEffectsVal != origVisualEffectsVal);
 
         bool anyChanges = (searchVal != origSearch) || 
                           (hibernationVal != origHibernation) || 
@@ -1837,7 +1907,8 @@ void Optimizer::startSystemOptimization() {
                           usbChanged ||
                           cs2Changed ||
                           steamOverlayChanged ||
-                          cs2OverlayChanged;
+                          cs2OverlayChanged ||
+                          visualEffectsChanged;
         if (!anyChanges) {
             for (const QString &driveLetter : targets.keys()) {
                 if (targets.value(driveLetter).toBool() != originalTargets.value(driveLetter).toBool()) {
@@ -3441,7 +3512,194 @@ void Optimizer::startSystemOptimization() {
 #endif
         }
 
-        bool overallSuccess = wSearchSuccess && hibernationSuccess && overlaySuccess && coreIsolationSuccess && mouseAccelSuccess && gameModeSuccess && firewallSuccess && printerSuccess && notificationsSuccess && powerPlanSuccess && defenderSuccess && overallDrivesSuccess && usbSuccess && remoteAccessSuccess && telemetrySuccess && windowsUpdateSuccess && cs2Success && steamOverlaySuccess && cs2OverlaySuccess;
+        // Step 2.8: Visual Effects (only if changed)
+        bool visualEffectsSuccess = true;
+        if (visualEffectsChanged) {
+            emit systemStepReported(Optimizer::tr("Processing Windows visual effects..."), "INFO");
+            QThread::msleep(800);
+#ifdef Q_OS_WIN
+            // 1. Set VisualFXSetting registry DWORD
+            HKEY hKeyVisualEffects;
+            if (RegOpenKeyExW(HKEY_CURRENT_USER, L"Software\\Microsoft\\Windows\\CurrentVersion\\Explorer\\VisualEffects", 0, KEY_SET_VALUE, &hKeyVisualEffects) == ERROR_SUCCESS) {
+                DWORD fxSetting = 3;
+                bool allOn = true;
+                bool allOff = true;
+                for (const QString &key : visualEffectsVal.keys()) {
+                    if (visualEffectsVal.value(key).toBool()) {
+                        allOff = false;
+                    } else {
+                        allOn = false;
+                    }
+                }
+                if (allOn) fxSetting = 1;
+                else if (allOff) fxSetting = 2;
+
+                RegSetValueExW(hKeyVisualEffects, L"VisualFXSetting", 0, REG_DWORD, (const BYTE*)&fxSetting, sizeof(fxSetting));
+                RegCloseKey(hKeyVisualEffects);
+            }
+
+            // Helper lambda to write a DWORD under HKCU\Software\Microsoft\Windows\CurrentVersion\Explorer\VisualEffects\<Effect>
+            auto writeVisualEffectReg = [](const QString &subkeyName, DWORD val) {
+                HKEY hKey;
+                QString path = "Software\\Microsoft\\Windows\\CurrentVersion\\Explorer\\VisualEffects\\" + subkeyName;
+                if (RegCreateKeyExW(HKEY_CURRENT_USER, reinterpret_cast<const wchar_t*>(path.utf16()), 0, nullptr, REG_OPTION_NON_VOLATILE, KEY_WRITE, nullptr, &hKey, nullptr) == ERROR_SUCCESS) {
+                    RegSetValueExW(hKey, L"DefaultApplied", 0, REG_DWORD, (const BYTE*)&val, sizeof(val));
+                    RegCloseKey(hKey);
+                }
+            };
+
+            // Write 17 subkey values and invoke SystemParametersInfoW for real-time application
+            for (const QString &key : visualEffectsVal.keys()) {
+                bool enabled = visualEffectsVal.value(key).toBool();
+                DWORD dwVal = enabled ? 1 : 0;
+
+                if (key == "animateControls") {
+                    writeVisualEffectReg("ControlAnimations", dwVal);
+                    SystemParametersInfoW(SPI_SETCLIENTAREAANIMATION, 0, (PVOID)(INT_PTR)enabled, SPIF_UPDATEINIFILE | SPIF_SENDCHANGE);
+                } else if (key == "animateWindows") {
+                    writeVisualEffectReg("AnimateMinMax", dwVal);
+                    HKEY hKeyMet;
+                    if (RegOpenKeyExW(HKEY_CURRENT_USER, L"Control Panel\\Desktop\\WindowMetrics", 0, KEY_SET_VALUE, &hKeyMet) == ERROR_SUCCESS) {
+                        const wchar_t* szVal = enabled ? L"1" : L"0";
+                        RegSetValueExW(hKeyMet, L"MinAnimate", 0, REG_SZ, (const BYTE*)szVal, (wcslen(szVal) + 1) * sizeof(wchar_t));
+                        RegCloseKey(hKeyMet);
+                    }
+                    ANIMATIONINFO ai;
+                    ai.cbSize = sizeof(ai);
+                    ai.iMinAnimate = enabled ? 1 : 0;
+                    SystemParametersInfoW(SPI_SETANIMATION, sizeof(ai), &ai, SPIF_UPDATEINIFILE | SPIF_SENDCHANGE);
+                } else if (key == "animateTaskbar") {
+                    writeVisualEffectReg("TaskbarAnimations", dwVal);
+                    HKEY hKeyAdv;
+                    if (RegOpenKeyExW(HKEY_CURRENT_USER, L"Software\\Microsoft\\Windows\\CurrentVersion\\Explorer\\Advanced", 0, KEY_SET_VALUE, &hKeyAdv) == ERROR_SUCCESS) {
+                        RegSetValueExW(hKeyAdv, L"TaskbarAnimations", 0, REG_DWORD, (const BYTE*)&dwVal, sizeof(dwVal));
+                        RegCloseKey(hKeyAdv);
+                    }
+                } else if (key == "enablePeek") {
+                    writeVisualEffectReg("DWMAeroPeekEnabled", dwVal);
+                    HKEY hKeyDwm;
+                    if (RegOpenKeyExW(HKEY_CURRENT_USER, L"Software\\Microsoft\\Windows\\DWM", 0, KEY_SET_VALUE, &hKeyDwm) == ERROR_SUCCESS) {
+                        RegSetValueExW(hKeyDwm, L"EnableAeroPeek", 0, REG_DWORD, (const BYTE*)&dwVal, sizeof(dwVal));
+                        RegCloseKey(hKeyDwm);
+                    }
+                } else if (key == "fadeMenus") {
+                    writeVisualEffectReg("MenuAnimation", dwVal);
+                    SystemParametersInfoW(SPI_SETMENUANIMATION, 0, (PVOID)(INT_PTR)enabled, SPIF_UPDATEINIFILE | SPIF_SENDCHANGE);
+                } else if (key == "fadeTooltips") {
+                    writeVisualEffectReg("TooltipAnimation", dwVal);
+                    SystemParametersInfoW(SPI_SETTOOLTIPANIMATION, 0, (PVOID)(INT_PTR)enabled, SPIF_UPDATEINIFILE | SPIF_SENDCHANGE);
+                } else if (key == "fadeMenuSelection") {
+                    writeVisualEffectReg("SelectionFade", dwVal);
+                    SystemParametersInfoW(SPI_SETSELECTIONFADE, 0, (PVOID)(INT_PTR)enabled, SPIF_UPDATEINIFILE | SPIF_SENDCHANGE);
+                } else if (key == "saveThumbnails") {
+                    writeVisualEffectReg("DWMSaveThumbnailEnabled", dwVal);
+                    HKEY hKeyAdv;
+                    if (RegOpenKeyExW(HKEY_CURRENT_USER, L"Software\\Microsoft\\Windows\\CurrentVersion\\Explorer\\Advanced", 0, KEY_SET_VALUE, &hKeyAdv) == ERROR_SUCCESS) {
+                        RegSetValueExW(hKeyAdv, L"AlwaysHibernateThumbnails", 0, REG_DWORD, (const BYTE*)&dwVal, sizeof(dwVal));
+                        RegCloseKey(hKeyAdv);
+                    }
+                } else if (key == "shadowPointer") {
+                    writeVisualEffectReg("CursorShadow", dwVal);
+                    HKEY hKeyDesk;
+                    if (RegOpenKeyExW(HKEY_CURRENT_USER, L"Control Panel\\Desktop", 0, KEY_SET_VALUE, &hKeyDesk) == ERROR_SUCCESS) {
+                        RegSetValueExW(hKeyDesk, L"PointerShadow", 0, REG_DWORD, (const BYTE*)&dwVal, sizeof(dwVal));
+                        RegCloseKey(hKeyDesk);
+                    }
+                    SystemParametersInfoW(SPI_SETCURSORSHADOW, 0, (PVOID)(INT_PTR)enabled, SPIF_UPDATEINIFILE | SPIF_SENDCHANGE);
+                } else if (key == "shadowWindows") {
+                    writeVisualEffectReg("DropShadow", dwVal);
+                    SystemParametersInfoW(SPI_SETDROPSHADOW, 0, (PVOID)(INT_PTR)enabled, SPIF_UPDATEINIFILE | SPIF_SENDCHANGE);
+                } else if (key == "showThumbnails") {
+                    writeVisualEffectReg("ThumbnailsOrIcon", dwVal);
+                    HKEY hKeyAdv;
+                    if (RegOpenKeyExW(HKEY_CURRENT_USER, L"Software\\Microsoft\\Windows\\CurrentVersion\\Explorer\\Advanced", 0, KEY_SET_VALUE, &hKeyAdv) == ERROR_SUCCESS) {
+                        DWORD iconsOnlyVal = enabled ? 0 : 1;
+                        RegSetValueExW(hKeyAdv, L"IconsOnly", 0, REG_DWORD, (const BYTE*)&iconsOnlyVal, sizeof(iconsOnlyVal));
+                        RegCloseKey(hKeyAdv);
+                    }
+                } else if (key == "translucentSelection") {
+                    writeVisualEffectReg("ListviewAlphaSelect", dwVal);
+                    HKEY hKeyAdv;
+                    if (RegOpenKeyExW(HKEY_CURRENT_USER, L"Software\\Microsoft\\Windows\\CurrentVersion\\Explorer\\Advanced", 0, KEY_SET_VALUE, &hKeyAdv) == ERROR_SUCCESS) {
+                        RegSetValueExW(hKeyAdv, L"ListviewAlphaSelect", 0, REG_DWORD, (const BYTE*)&dwVal, sizeof(dwVal));
+                        RegCloseKey(hKeyAdv);
+                    }
+                } else if (key == "dragContents") {
+                    writeVisualEffectReg("DragFullWindows", dwVal);
+                    HKEY hKeyDesk;
+                    if (RegOpenKeyExW(HKEY_CURRENT_USER, L"Control Panel\\Desktop", 0, KEY_SET_VALUE, &hKeyDesk) == ERROR_SUCCESS) {
+                        const wchar_t* szVal = enabled ? L"1" : L"0";
+                        RegSetValueExW(hKeyDesk, L"DragFullWindows", 0, REG_SZ, (const BYTE*)szVal, (wcslen(szVal) + 1) * sizeof(wchar_t));
+                        RegCloseKey(hKeyDesk);
+                    }
+                    SystemParametersInfoW(SPI_SETDRAGFULLWINDOWS, enabled, 0, SPIF_UPDATEINIFILE | SPIF_SENDCHANGE);
+                } else if (key == "slideComboBoxes") {
+                    writeVisualEffectReg("ComboBoxAnimation", dwVal);
+                    SystemParametersInfoW(SPI_SETCOMBOBOXANIMATION, 0, (PVOID)(INT_PTR)enabled, SPIF_UPDATEINIFILE | SPIF_SENDCHANGE);
+                } else if (key == "smoothFonts") {
+                    writeVisualEffectReg("FontSmoothing", dwVal);
+                    HKEY hKeyDesk;
+                    if (RegOpenKeyExW(HKEY_CURRENT_USER, L"Control Panel\\Desktop", 0, KEY_SET_VALUE, &hKeyDesk) == ERROR_SUCCESS) {
+                        const wchar_t* szVal = enabled ? L"2" : L"0";
+                        RegSetValueExW(hKeyDesk, L"FontSmoothing", 0, REG_SZ, (const BYTE*)szVal, (wcslen(szVal) + 1) * sizeof(wchar_t));
+                        DWORD typeVal = enabled ? 2 : 0;
+                        RegSetValueExW(hKeyDesk, L"FontSmoothingType", 0, REG_DWORD, (const BYTE*)&typeVal, sizeof(typeVal));
+                        RegCloseKey(hKeyDesk);
+                    }
+                    SystemParametersInfoW(SPI_SETFONTSMOOTHING, enabled, 0, SPIF_UPDATEINIFILE | SPIF_SENDCHANGE);
+                } else if (key == "smoothScroll") {
+                    writeVisualEffectReg("ListBoxSmoothScrolling", dwVal);
+                    SystemParametersInfoW(SPI_SETLISTBOXSMOOTHSCROLLING, 0, (PVOID)(INT_PTR)enabled, SPIF_UPDATEINIFILE | SPIF_SENDCHANGE);
+                } else if (key == "dropShadowsDesktop") {
+                    writeVisualEffectReg("ListviewShadow", dwVal);
+                    HKEY hKeyAdv;
+                    if (RegOpenKeyExW(HKEY_CURRENT_USER, L"Software\\Microsoft\\Windows\\CurrentVersion\\Explorer\\Advanced", 0, KEY_SET_VALUE, &hKeyAdv) == ERROR_SUCCESS) {
+                        RegSetValueExW(hKeyAdv, L"ListviewShadow", 0, REG_DWORD, (const BYTE*)&dwVal, sizeof(dwVal));
+                        RegCloseKey(hKeyAdv);
+                    }
+                }
+            }
+
+            // 3. Update UserPreferencesMask bitmask based on individual settings
+            HKEY hKeyPref;
+            if (RegOpenKeyExW(HKEY_CURRENT_USER, L"Control Panel\\Desktop", 0, KEY_READ | KEY_WRITE, &hKeyPref) == ERROR_SUCCESS) {
+                BYTE mask[8] = {0};
+                DWORD dwSize = sizeof(mask);
+                DWORD dwType = REG_BINARY;
+                if (RegQueryValueExW(hKeyPref, L"UserPreferencesMask", nullptr, &dwType, mask, &dwSize) == ERROR_SUCCESS) {
+                    if (visualEffectsVal.value("smoothScroll").toBool()) mask[0] |= 0x08;
+                    else mask[0] &= ~0x08;
+
+                    if (visualEffectsVal.value("slideComboBoxes").toBool()) mask[0] |= 0x04;
+                    else mask[0] &= ~0x04;
+
+                    if (visualEffectsVal.value("fadeMenus").toBool()) mask[0] |= 0x02;
+                    else mask[0] &= ~0x02;
+
+                    if (visualEffectsVal.value("shadowPointer").toBool()) mask[1] |= 0x40;
+                    else mask[1] &= ~0x40;
+
+                    if (visualEffectsVal.value("fadeTooltips").toBool()) mask[1] |= 0x08;
+                    else mask[1] &= ~0x08;
+
+                    if (visualEffectsVal.value("fadeMenuSelection").toBool()) mask[1] |= 0x04;
+                    else mask[1] &= ~0x04;
+
+                    if (visualEffectsVal.value("shadowWindows").toBool()) mask[2] |= 0x04;
+                    else mask[2] &= ~0x04;
+
+                    RegSetValueExW(hKeyPref, L"UserPreferencesMask", 0, REG_BINARY, mask, sizeof(mask));
+                }
+                RegCloseKey(hKeyPref);
+            }
+
+            emit systemStepReported(Optimizer::tr("Windows visual effects optimized successfully."), "SUCCESS");
+#else
+            emit systemStepReported(Optimizer::tr("[Simulation] Windows visual effects updated."), "SUCCESS");
+#endif
+        }
+
+        bool overallSuccess = wSearchSuccess && hibernationSuccess && overlaySuccess && coreIsolationSuccess && mouseAccelSuccess && gameModeSuccess && firewallSuccess && printerSuccess && notificationsSuccess && powerPlanSuccess && defenderSuccess && overallDrivesSuccess && usbSuccess && remoteAccessSuccess && telemetrySuccess && windowsUpdateSuccess && cs2Success && steamOverlaySuccess && cs2OverlaySuccess && visualEffectsSuccess;
         if (overallSuccess) {
             emit systemStepReported(tr("System optimization completed successfully!"), "SUCCESS");
             Logger::log("System optimization completed successfully!", "INFO");
@@ -3478,6 +3736,7 @@ void Optimizer::startSystemOptimization() {
         m_originalCs2LaunchOptions = cs2OptionsVal;
         m_originalSteamOverlayActive = steamOverlayVal;
         m_originalCs2OverlayActive = cs2OverlayVal;
+        m_originalVisualEffects = visualEffectsVal;
         m_originalDriveStates = targets;
         
         loadSystemStates();
@@ -3507,6 +3766,7 @@ void Optimizer::startSystemOptimization() {
         emit originalTelemetryCeipActiveChanged(m_originalTelemetryCeipActive);
         emit originalTelemetryWerActiveChanged(m_originalTelemetryWerActive);
         emit originalWindowsUpdateModeChanged(m_originalWindowsUpdateMode);
+        emit originalVisualEffectsChanged(m_originalVisualEffects);
         emit originalDriveStatesChanged(m_originalDriveStates);
 
         m_isOptimizingSystem = false;

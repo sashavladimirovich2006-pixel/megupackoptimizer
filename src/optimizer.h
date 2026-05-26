@@ -93,6 +93,8 @@ class Optimizer : public QObject {
     Q_PROPERTY(bool originalSteamOverlayActive READ originalSteamOverlayActive NOTIFY originalSteamOverlayActiveChanged)
     Q_PROPERTY(bool cs2OverlayActive READ cs2OverlayActive WRITE setCs2OverlayActive NOTIFY cs2OverlayActiveChanged)
     Q_PROPERTY(bool originalCs2OverlayActive READ originalCs2OverlayActive NOTIFY originalCs2OverlayActiveChanged)
+    Q_PROPERTY(QVariantMap visualEffects READ visualEffects WRITE setVisualEffects NOTIFY visualEffectsChanged)
+    Q_PROPERTY(QVariantMap originalVisualEffects READ originalVisualEffects NOTIFY originalVisualEffectsChanged)
     Q_PROPERTY(QStringList fixedDrives READ fixedDrives NOTIFY fixedDrivesChanged)
     Q_PROPERTY(QVariantMap driveStates READ driveStates WRITE setDriveStates NOTIFY driveStatesChanged)
     Q_PROPERTY(QVariantMap originalDriveStates READ originalDriveStates NOTIFY originalDriveStatesChanged)
@@ -197,6 +199,8 @@ public:
     bool originalSteamOverlayActive() const { return m_originalSteamOverlayActive; }
     bool cs2OverlayActive() const { return m_cs2OverlayActive; }
     bool originalCs2OverlayActive() const { return m_originalCs2OverlayActive; }
+    QVariantMap visualEffects() const { return m_visualEffects; }
+    QVariantMap originalVisualEffects() const { return m_originalVisualEffects; }
     QStringList fixedDrives() const { return m_fixedDrives; }
     QVariantMap driveStates() const { return m_driveStates; }
     QVariantMap originalDriveStates() const { return m_originalDriveStates; }
@@ -235,6 +239,7 @@ public:
     void setCs2LaunchOptions(const QVariantMap &val);
     void setSteamOverlayActive(bool val);
     void setCs2OverlayActive(bool val);
+    void setVisualEffects(const QVariantMap &val);
     
     Q_INVOKABLE bool isDiscordRunning();
     Q_INVOKABLE void killDiscord();
@@ -340,6 +345,8 @@ signals:
     void originalSteamOverlayActiveChanged(bool val);
     void cs2OverlayActiveChanged(bool val);
     void originalCs2OverlayActiveChanged(bool val);
+    void visualEffectsChanged(const QVariantMap &val);
+    void originalVisualEffectsChanged(const QVariantMap &val);
     void fixedDrivesChanged(const QStringList &val);
     void driveStatesChanged(const QVariantMap &val);
     void originalDriveStatesChanged(const QVariantMap &val);
@@ -440,6 +447,8 @@ private:
     bool m_originalSteamOverlayActive = true;
     bool m_cs2OverlayActive = true;
     bool m_originalCs2OverlayActive = true;
+    QVariantMap m_visualEffects;
+    QVariantMap m_originalVisualEffects;
     QStringList m_fixedDrives;
     QVariantMap m_driveStates;
     QVariantMap m_originalDriveStates;
