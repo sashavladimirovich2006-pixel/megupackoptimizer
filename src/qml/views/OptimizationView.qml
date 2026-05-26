@@ -5425,7 +5425,6 @@ Item {
                     Flow {
                         width: parent.width
                         spacing: 6
-                        rowSpacing: 6
 
                         Repeater {
                             model: [
