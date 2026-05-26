@@ -4589,9 +4589,9 @@ void Optimizer::showPath(const QString &funcName) {
     } else if (funcName == "firewall") {
         QProcess::startDetached("cmd.exe", QStringList() << "/c" << "start windowsdefender://network");
         Logger::log("Opening Firewall & Network Protection settings...", "INFO");
-    } else if (funcName == "printer") {
+    } else if (funcName == "printer" || funcName == "usb") {
         QProcess::startDetached("cmd.exe", QStringList() << "/c" << "start devmgmt.msc");
-        Logger::log("Opening Device Manager...", "INFO");
+        Logger::log(QString("Opening Device Manager for %1...").arg(funcName), "INFO");
     } else if (funcName == "notifications") {
         QProcess::startDetached("cmd.exe", QStringList() << "/c" << "start ms-settings:notifications");
         Logger::log("Opening Windows Notifications Settings...", "INFO");

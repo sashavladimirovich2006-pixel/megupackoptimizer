@@ -4272,6 +4272,11 @@ Item {
                         anchors.verticalCenter: parent.verticalCenter
                         spacing: 16
 
+                        ShowPathButton {
+                            anchors.verticalCenter: parent.verticalCenter
+                            onClicked: { optimizerBackend.showPath("usb"); }
+                        }
+
                         // Arrow button that slides right on hover & opens sidebar drawer for USB device list
                         Rectangle {
                             width: 32
