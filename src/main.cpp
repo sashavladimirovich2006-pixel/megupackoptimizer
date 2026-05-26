@@ -32,12 +32,12 @@ int main(int argc, char* argv[]) {
     engine.addImportPath("qrc:/");
 
     // Translator setup
-    QTranslator translator;
-    auto loadLanguage = [&app, &engine, &translator](const QString &lang) {
-        app.removeTranslator(&translator);
+    QTranslator* translator = new QTranslator(&app);
+    auto loadLanguage = [&app, &engine, translator](const QString &lang) {
+        app.removeTranslator(translator);
         if (lang == "uk") {
-            if (translator.load(":/MeguPackOptimizer/translations/megu_pack_optimizer_uk.qm")) {
-                app.installTranslator(&translator);
+            if (translator->load(":/MeguPackOptimizer/translations/megu_pack_optimizer_uk.qm")) {
+                app.installTranslator(translator);
                 Logger::log("Ukrainian translation loaded successfully", "INFO");
             } else {
                 Logger::log("Failed to load Ukrainian translation from resource path", "WARNING");

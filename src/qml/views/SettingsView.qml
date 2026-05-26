@@ -114,7 +114,7 @@ Item {
                             }
 
                             Text {
-                                text: getTranslatedThemeName(Theme.currentTheme)
+                                text: (settingsBackend.language, getTranslatedThemeName(Theme.currentTheme))
                                 color: Theme.textPrimary
                                 font.family: Theme.fontFamily
                                 font.pixelSize: 12
@@ -178,10 +178,13 @@ Item {
                         anchors.verticalCenter: parent.verticalCenter
 
                         Repeater {
-                            model: [
-                                { "code": "en", "name": qsTr("English") },
-                                { "code": "uk", "name": qsTr("Ukrainian") }
-                            ]
+                            model: {
+                                var lang = settingsBackend.language;
+                                return [
+                                    { "code": "en", "name": qsTr("English") },
+                                    { "code": "uk", "name": qsTr("Ukrainian") }
+                                ];
+                            }
 
                             delegate: MeguButton {
                                 width: 100
@@ -303,13 +306,16 @@ Item {
                         spacing: 8
 
                         Repeater {
-                            model: [
-                                { name: "Белоснежная", desc: qsTr("Pure snow white theme"), hasSub: false },
-                                { name: "Темная", desc: qsTr("Classic deep slate dark theme"), hasSub: false },
-                                { name: "Blackout полностью черная", desc: qsTr("Absolute black OLED theme"), hasSub: false },
-                                { name: "Ргб", desc: qsTr("Glowing orange gaming theme"), hasSub: false },
-                                { name: "Розовая", desc: qsTr("Vibrant soft pink theme"), hasSub: true }
-                            ]
+                            model: {
+                                var lang = settingsBackend.language;
+                                return [
+                                    { name: "Белоснежная", desc: qsTr("Pure snow white theme"), hasSub: false },
+                                    { name: "Темная", desc: qsTr("Classic deep slate dark theme"), hasSub: false },
+                                    { name: "Blackout полностью черная", desc: qsTr("Absolute black OLED theme"), hasSub: false },
+                                    { name: "Ргб", desc: qsTr("Glowing orange gaming theme"), hasSub: false },
+                                    { name: "Розовая", desc: qsTr("Vibrant soft pink theme"), hasSub: true }
+                                ];
+                            }
 
                             delegate: Rectangle {
                                 width: parent.width
@@ -343,7 +349,7 @@ Item {
                                         width: modelData.hasSub ? parent.width - 32 : parent.width
 
                                         Text {
-                                            text: getTranslatedThemeName(modelData.name)
+                                            text: (settingsBackend.language, getTranslatedThemeName(modelData.name))
                                             color: Theme.currentTheme === modelData.name ? Theme.accent : Theme.textPrimary
                                             font.family: Theme.fontFamily
                                             font.pixelSize: 12
@@ -450,7 +456,7 @@ Item {
                             anchors.verticalCenter: parent.verticalCenter
 
                             Text {
-                                text: getTranslatedThemeName("Black pink")
+                                text: (settingsBackend.language, getTranslatedThemeName("Black pink"))
                                 color: Theme.currentTheme === "Black pink" ? Theme.accent : Theme.textPrimary
                                 font.family: Theme.fontFamily
                                 font.pixelSize: 12

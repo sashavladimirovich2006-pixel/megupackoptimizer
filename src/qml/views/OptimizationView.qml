@@ -400,6 +400,7 @@ Item {
     }
 
     property var pendingChangesList: {
+        var lang = settingsBackend.language;
         var list = [];
         if (classicContextMenuChanged) list.push({
             name: qsTr("Classic Context Menu"),
@@ -603,6 +604,7 @@ Item {
     }
 
     property var pendingSubOptionsList: {
+        var lang = settingsBackend.language;
         var _idx = indexingChanged;
         var _ntf = notificationsChanged;
         var _xbc = xboxChanged;
@@ -648,7 +650,7 @@ Item {
 
     function getPendingSubOptions(category) {
         var subList = [];
-        if (category === qsTr("File Indexing")) {
+        if (category === qsTr("File Indexing") || category === "File Indexing") {
             if (optimizerBackend.winSearchActive !== optimizerBackend.originalWinSearchActive) {
                 subList.push({
                     name: qsTr("Windows Search service") + ": " + (optimizerBackend.originalWinSearchActive ? qsTr("Enabled") : qsTr("Disabled")) + " -> " + (optimizerBackend.winSearchActive ? qsTr("Enabled") : qsTr("Disabled")),
@@ -681,7 +683,7 @@ Item {
                     }
                 })(optimizerBackend.fixedDrives[i]);
             }
-        } else if (category === qsTr("Xbox App & Game Bar")) {
+        } else if (category === qsTr("Xbox App & Game Bar") || category === "Xbox App & Game Bar") {
             if (optimizerBackend.gamingOverlayActive !== optimizerBackend.originalGamingOverlayActive) {
                 subList.push({
                     name: qsTr("Disable Game Bar Popup") + ": " + (optimizerBackend.originalGamingOverlayActive ? qsTr("Disabled") : qsTr("Enabled")) + " -> " + (optimizerBackend.gamingOverlayActive ? qsTr("Disabled") : qsTr("Enabled")),
@@ -690,7 +692,7 @@ Item {
                     }
                 });
             }
-        } else if (category === qsTr("Print Spooler (Printer)")) {
+        } else if (category === qsTr("Print Spooler (Printer)") || category === "Print Spooler (Printer)") {
             if (optimizerBackend.printerActive !== optimizerBackend.originalPrinterActive) {
                 subList.push({
                     name: qsTr("Print Spooler") + ": " + (optimizerBackend.originalPrinterActive ? qsTr("Enabled") : qsTr("Disabled")) + " -> " + (optimizerBackend.printerActive ? qsTr("Enabled") : qsTr("Disabled")),
@@ -699,7 +701,7 @@ Item {
                     }
                 });
             }
-        } else if (category === qsTr("Windows Notifications")) {
+        } else if (category === qsTr("Windows Notifications") || category === "Windows Notifications") {
             if (optimizerBackend.notifGlobalActive !== optimizerBackend.originalNotifGlobalActive) {
                 subList.push({
                     name: qsTr("Global Toast Notifications") + ": " + (optimizerBackend.originalNotifGlobalActive ? qsTr("Enabled") : qsTr("Disabled")) + " -> " + (optimizerBackend.notifGlobalActive ? qsTr("Enabled") : qsTr("Disabled")),
@@ -732,7 +734,7 @@ Item {
                     }
                 });
             }
-        } else if (category === qsTr("Power Plan")) {
+        } else if (category === qsTr("Power Plan") || category === "Power Plan") {
             if (optimizerBackend.deleteUltimateStaged) {
                 subList.push({
                     name: qsTr("Remove Ultimate Performance scheme from system"),
@@ -759,7 +761,7 @@ Item {
                     }
                 });
             }
-        } else if (category === qsTr("Windows Defender")) {
+        } else if (category === qsTr("Windows Defender") || category === "Windows Defender") {
             if (optimizerBackend.deleteDefenderStaged) {
                 subList.push({
                     name: qsTr("Completely delete Windows Defender from system"),
@@ -792,7 +794,7 @@ Item {
                     }
                 });
             }
-        } else if (category === qsTr("USB 3.0 Power Saving")) {
+        } else if (category === qsTr("USB 3.0 Power Saving") || category === "USB 3.0 Power Saving") {
             for (var i = 0; i < optimizerBackend.usbDevices.length; i++) {
                 (function(idx) {
                     var currentDev = optimizerBackend.usbDevices[idx];
@@ -807,7 +809,7 @@ Item {
                     }
                 })(i);
             }
-        } else if (category === qsTr("Telemetry")) {
+        } else if (category === qsTr("Telemetry") || category === "Telemetry") {
             if (optimizerBackend.telemetryDiagTrackActive !== optimizerBackend.originalTelemetryDiagTrackActive) {
                 subList.push({
                     name: qsTr("Connected User Experiences (DiagTrack)") + ": " + (optimizerBackend.originalTelemetryDiagTrackActive ? qsTr("Enabled") : qsTr("Disabled")) + " -> " + (optimizerBackend.telemetryDiagTrackActive ? qsTr("Enabled") : qsTr("Disabled")),
@@ -840,7 +842,7 @@ Item {
                     }
                 });
             }
-        } else if (category === qsTr("Windows Update")) {
+        } else if (category === qsTr("Windows Update") || category === "Windows Update") {
             if (optimizerBackend.windowsUpdateMode !== optimizerBackend.originalWindowsUpdateMode) {
                 var originalName = qsTr("Unknown");
                 var targetName = qsTr("Unknown");
@@ -858,7 +860,7 @@ Item {
                     }
                 });
             }
-        } else if (category === qsTr("Counter-Strike 2 Launch Options")) {
+        } else if (category === qsTr("Counter-Strike 2 Launch Options") || category === "Counter-Strike 2 Launch Options") {
             var current = optimizerBackend.cs2LaunchOptions;
             var original = optimizerBackend.originalCs2LaunchOptions;
             if (current && original) {
@@ -885,7 +887,7 @@ Item {
                     })(keys[idx]);
                 }
             }
-        } else if (category === qsTr("Steam Settings")) {
+        } else if (category === qsTr("Steam Settings") || category === "Steam Settings") {
             var current = optimizerBackend.steamFriendsSettings;
             var original = optimizerBackend.originalSteamFriendsSettings;
             if (current && original) {
@@ -956,7 +958,7 @@ Item {
                     })(keys[idx]);
                 }
             }
-        } else if (category === qsTr("Visual Effects")) {
+        } else if (category === qsTr("Visual Effects") || category === "Visual Effects") {
             var current = optimizerBackend.visualEffects;
             var original = optimizerBackend.originalVisualEffects;
             if (current && original) {
@@ -994,7 +996,7 @@ Item {
                     })(keys[idx]);
                 }
             }
-        } else if (category === qsTr("Steam Settings")) {
+        } else if (category === qsTr("Steam Settings") || category === "Steam Settings") {
             var current = optimizerBackend.steamFriendsSettings;
             var original = optimizerBackend.originalSteamFriendsSettings;
             if (current && original) {
@@ -1046,29 +1048,29 @@ Item {
     }
 
     function getParentCard(name) {
-        if (name === qsTr("Visual Effects")) return visualEffectsPanel;
-        if (name === qsTr("Counter-Strike 2 Launch Options")) return cs2Panel;
-        if (name === qsTr("File Indexing")) return indexingPanel;
-        if (name === qsTr("Xbox App & Game Bar")) return xboxPanel;
-        if (name === qsTr("Core Isolation")) return coreIsolationPanel;
-        if (name === qsTr("Mouse Acceleration")) return mouseAccelerationPanel;
-        if (name === qsTr("Game Mode")) return gameModePanel;
-        if (name === qsTr("Discord In-Game Overlay")) return discordOverlayPanel;
-        if (name === qsTr("Windows Defender Firewall")) return firewallPanel;
-        if (name === qsTr("Print Spooler (Printer)")) return printerPanel;
-        if (name === qsTr("Windows Notifications")) return notificationsPanel;
-        if (name === qsTr("System Hibernation")) return hibernationPanel;
-        if (name === qsTr("Power Plan")) return powerPlanPanel;
-        if (name === qsTr("BitLocker Drive Encryption")) return bitlockerPanel;
-        if (name === qsTr("Windows Defender")) return defenderPanel;
-        if (name === qsTr("USB 3.0 Power Saving")) return usbPanel;
-        if (name === qsTr("Remote Access (RDP)")) return remoteAccessPanel;
-        if (name === qsTr("Telemetry")) return telemetryPanel;
-        if (name === qsTr("Windows Update")) return windowsUpdatePanel;
-        if (name === qsTr("Steam Overlay")) return steamOverlayPanel;
-        if (name === qsTr("CS2 Steam Overlay")) return cs2Panel;
-        if (name === qsTr("Steam Settings")) return steamSettingsPanel;
-        if (name === qsTr("Classic Context Menu")) return classicContextMenuPanel;
+        if (name === qsTr("Visual Effects") || name === "Visual Effects") return visualEffectsPanel;
+        if (name === qsTr("Counter-Strike 2 Launch Options") || name === "Counter-Strike 2 Launch Options") return cs2Panel;
+        if (name === qsTr("File Indexing") || name === "File Indexing") return indexingPanel;
+        if (name === qsTr("Xbox App & Game Bar") || name === "Xbox App & Game Bar") return xboxPanel;
+        if (name === qsTr("Core Isolation") || name === "Core Isolation") return coreIsolationPanel;
+        if (name === qsTr("Mouse Acceleration") || name === "Mouse Acceleration") return mouseAccelerationPanel;
+        if (name === qsTr("Game Mode") || name === "Game Mode") return gameModePanel;
+        if (name === qsTr("Discord In-Game Overlay") || name === "Discord In-Game Overlay") return discordOverlayPanel;
+        if (name === qsTr("Windows Defender Firewall") || name === "Windows Defender Firewall") return firewallPanel;
+        if (name === qsTr("Print Spooler (Printer)") || name === "Print Spooler (Printer)") return printerPanel;
+        if (name === qsTr("Windows Notifications") || name === "Windows Notifications") return notificationsPanel;
+        if (name === qsTr("System Hibernation") || name === "System Hibernation") return hibernationPanel;
+        if (name === qsTr("Power Plan") || name === "Power Plan") return powerPlanPanel;
+        if (name === qsTr("BitLocker Drive Encryption") || name === "BitLocker Drive Encryption") return bitlockerPanel;
+        if (name === qsTr("Windows Defender") || name === "Windows Defender") return defenderPanel;
+        if (name === qsTr("USB 3.0 Power Saving") || name === "USB 3.0 Power Saving") return usbPanel;
+        if (name === qsTr("Remote Access (RDP)") || name === "Remote Access (RDP)") return remoteAccessPanel;
+        if (name === qsTr("Telemetry") || name === "Telemetry") return telemetryPanel;
+        if (name === qsTr("Windows Update") || name === "Windows Update") return windowsUpdatePanel;
+        if (name === qsTr("Steam Overlay") || name === "Steam Overlay") return steamOverlayPanel;
+        if (name === qsTr("CS2 Steam Overlay") || name === "CS2 Steam Overlay") return cs2Panel;
+        if (name === qsTr("Steam Settings") || name === "Steam Settings") return steamSettingsPanel;
+        if (name === qsTr("Classic Context Menu") || name === "Classic Context Menu") return classicContextMenuPanel;
         return null;
     }
 
