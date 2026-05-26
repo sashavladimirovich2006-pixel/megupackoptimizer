@@ -364,7 +364,113 @@ namespace {
         return true;
     }
 
+    QString getVdfFriendsSetting(const QString &filePath, const QString &settingKey) {
+        QFile file(filePath);
+        if (!file.open(QIODevice::ReadOnly | QIODevice::Text)) {
+            return "";
+        }
+        QString content = QString::fromUtf8(file.readAll());
+        file.close();
+
+        QRegularExpression friendsRegex("\"friends\"\\s*\\{");
+        QRegularExpressionMatch match = friendsRegex.match(content);
+        if (!match.hasMatch()) {
+            return "";
+        }
+
+        int startIdx = match.capturedEnd();
+        int count = 1;
+        int idx = startIdx;
+        int closeIdx = -1;
+        while (count > 0 && idx < content.length()) {
+            QChar ch = content.at(idx);
+            if (ch == '{') {
+                count++;
+            } else if (ch == '}') {
+                count--;
+                if (count == 0) {
+                    closeIdx = idx;
+                    break;
+                }
+            }
+            idx++;
+        }
+
+        if (closeIdx == -1) {
+            return "";
+        }
+
+        QString friendsBlock = content.mid(startIdx, closeIdx - startIdx);
+        QRegularExpression keyRegex(QString("\"%1\"\\s*\"([^\"]*)\"").arg(settingKey));
+        QRegularExpressionMatch keyMatch = keyRegex.match(friendsBlock);
+        if (keyMatch.hasMatch()) {
+            return keyMatch.captured(1);
+        }
+        return "";
+    }
+
+    bool updateVdfFriendsSetting(const QString &filePath, const QString &settingKey, const QString &value) {
+        QFile file(filePath);
+        if (!file.open(QIODevice::ReadOnly | QIODevice::Text)) {
+            return false;
+        }
+        QString content = QString::fromUtf8(file.readAll());
+        file.close();
+
+        QRegularExpression friendsRegex("\"friends\"\\s*\\{");
+        QRegularExpressionMatch match = friendsRegex.match(content);
+        if (!match.hasMatch()) {
+            return false;
+        }
+
+        int startIdx = match.capturedEnd();
+        int count = 1;
+        int idx = startIdx;
+        int closeIdx = -1;
+        while (count > 0 && idx < content.length()) {
+            QChar ch = content.at(idx);
+            if (ch == '{') {
+                count++;
+            } else if (ch == '}') {
+                count--;
+                if (count == 0) {
+                    closeIdx = idx;
+                    break;
+                }
+            }
+            idx++;
+        }
+
+        if (closeIdx == -1) {
+            return false;
+        }
+
+        QString friendsBlock = content.mid(startIdx, closeIdx - startIdx);
+        QRegularExpression keyRegex(QString("\"%1\"\\s*\"([^\"]*)\"").arg(settingKey));
+        QRegularExpressionMatch keyMatch = keyRegex.match(friendsBlock);
+
+        QString newFriendsBlock;
+        if (keyMatch.hasMatch()) {
+            int keyStart = keyMatch.capturedStart();
+            int keyEnd = keyMatch.capturedEnd();
+            newFriendsBlock = friendsBlock.left(keyStart) + QString("\"%1\"\t\t\"%2\"").arg(settingKey, value) + friendsBlock.mid(keyEnd);
+        } else {
+            QString indent = "\t\t";
+            newFriendsBlock = QString("\n%1\"%2\"\t\t\"%3\"").arg(indent, settingKey, value) + friendsBlock;
+        }
+
+        QString newContent = content.left(startIdx) + newFriendsBlock + content.mid(closeIdx);
+
+        if (!file.open(QIODevice::WriteOnly | QIODevice::Text)) {
+            return false;
+        }
+        file.write(newContent.toUtf8());
+        file.close();
+        return true;
+    }
+
 } // namespace
+
 
 bool Optimizer::getVdfFriendsSettings(const QString &filePath, const QString &accountId, QVariantMap &settings) {
     QFile file(filePath);
@@ -420,6 +526,77 @@ bool Optimizer::getVdfFriendsSettings(const QString &filePath, const QString &ac
     }
 
     settings = doc.object().toVariantMap();
+
+    // Symmetrically load correct values from global VDF blocks if they exist:
+    
+    // 1. friends settings
+    QString signIntoFriends = getVdfFriendsSetting(filePath, "SignIntoFriends");
+    if (!signIntoFriends.isEmpty()) {
+        settings["bSignInOnStart"] = (signIntoFriends != "0");
+    }
+    QString showIngame = getVdfFriendsSetting(filePath, "Notifications_ShowIngame");
+    if (!showIngame.isEmpty()) {
+        settings["bFriendJoinShowToast"] = (showIngame != "0");
+    }
+    QString playIngame = getVdfFriendsSetting(filePath, "Sounds_PlayIngame");
+    if (!playIngame.isEmpty()) {
+        settings["bFriendJoinPlaySound"] = (playIngame != "0");
+    }
+    QString showOnline = getVdfFriendsSetting(filePath, "Notifications_ShowOnline");
+    if (!showOnline.isEmpty()) {
+        settings["bFriendOnlineShowToast"] = (showOnline != "0");
+    }
+    QString playOnline = getVdfFriendsSetting(filePath, "Sounds_PlayOnline");
+    if (!playOnline.isEmpty()) {
+        settings["bFriendOnlinePlaySound"] = (playOnline != "0");
+    }
+    QString showMsg = getVdfFriendsSetting(filePath, "Notifications_ShowMessage");
+    if (!showMsg.isEmpty()) {
+        settings["bFriendMsgShowToast"] = (showMsg != "0");
+    }
+    QString playMsg = getVdfFriendsSetting(filePath, "Sounds_PlayMessage");
+    if (!playMsg.isEmpty()) {
+        settings["bFriendMsgPlaySound"] = (playMsg != "0");
+    }
+    QString showEvents = getVdfFriendsSetting(filePath, "Notifications_EventsAndAnnouncements");
+    if (!showEvents.isEmpty()) {
+        settings["bChatRoomShowToast"] = (showEvents != "0");
+    }
+    QString playEvents = getVdfFriendsSetting(filePath, "Sounds_EventsAndAnnouncements");
+    if (!playEvents.isEmpty()) {
+        settings["bChatRoomPlaySound"] = (playEvents != "0");
+    }
+    QString flashMode = getVdfFriendsSetting(filePath, "ChatFlashMode");
+    if (!flashMode.isEmpty()) {
+        settings["flashWindowOnMessage"] = (flashMode == "0") ? "never" : "always";
+    }
+
+    // 2. system settings
+    QString achToast = getVdfSystemSetting(filePath, "AchievementNotificationToast");
+    if (!achToast.isEmpty()) {
+        settings["bAchievementShowToast"] = (achToast != "0");
+    }
+    QString achSound = getVdfSystemSetting(filePath, "AchievementNotificationSound");
+    if (!achSound.isEmpty()) {
+        settings["bAchievementPlaySound"] = (achSound != "0");
+    }
+    QString ctrlToast = getVdfSystemSetting(filePath, "ControllerConnectNotificationToast");
+    if (!ctrlToast.isEmpty()) {
+        settings["bControllerShowToast"] = (ctrlToast != "0");
+    }
+    QString ctrlSound = getVdfSystemSetting(filePath, "ControllerConnectNotificationSound");
+    if (!ctrlSound.isEmpty()) {
+        settings["bControllerPlaySound"] = (ctrlSound != "0");
+    }
+    QString ctrlLowToast = getVdfSystemSetting(filePath, "ControllerLowBatteryNotificationToast");
+    if (!ctrlLowToast.isEmpty()) {
+        settings["bControllerLowShowToast"] = (ctrlLowToast != "0");
+    }
+    QString ctrlLowSound = getVdfSystemSetting(filePath, "ControllerLowBatteryNotificationSound");
+    if (!ctrlLowSound.isEmpty()) {
+        settings["bControllerLowPlaySound"] = (ctrlLowSound != "0");
+    }
+
     return true;
 }
 
@@ -486,6 +663,65 @@ bool Optimizer::updateVdfFriendsSettings(const QString &filePath, const QString 
     }
     file.write(newContent.toUtf8());
     file.close();
+
+    // Symmetrically write global VDF keys to match JSON values:
+    
+    // 1. friends settings
+    if (settings.contains("bSignInOnStart")) {
+        updateVdfFriendsSetting(filePath, "SignIntoFriends", settings.value("bSignInOnStart").toBool() ? "1" : "0");
+    }
+    if (settings.contains("bFriendJoinShowToast")) {
+        updateVdfFriendsSetting(filePath, "Notifications_ShowIngame", settings.value("bFriendJoinShowToast").toBool() ? "1" : "0");
+    }
+    if (settings.contains("bFriendJoinPlaySound")) {
+        updateVdfFriendsSetting(filePath, "Sounds_PlayIngame", settings.value("bFriendJoinPlaySound").toBool() ? "1" : "0");
+    }
+    if (settings.contains("bFriendOnlineShowToast")) {
+        updateVdfFriendsSetting(filePath, "Notifications_ShowOnline", settings.value("bFriendOnlineShowToast").toBool() ? "1" : "0");
+    }
+    if (settings.contains("bFriendOnlinePlaySound")) {
+        updateVdfFriendsSetting(filePath, "Sounds_PlayOnline", settings.value("bFriendOnlinePlaySound").toBool() ? "1" : "0");
+    }
+    if (settings.contains("bFriendMsgShowToast")) {
+        updateVdfFriendsSetting(filePath, "Notifications_ShowMessage", settings.value("bFriendMsgShowToast").toBool() ? "1" : "0");
+    }
+    if (settings.contains("bFriendMsgPlaySound")) {
+        updateVdfFriendsSetting(filePath, "Sounds_PlayMessage", settings.value("bFriendMsgPlaySound").toBool() ? "1" : "0");
+    }
+    if (settings.contains("bChatRoomShowToast")) {
+        updateVdfFriendsSetting(filePath, "Notifications_EventsAndAnnouncements", settings.value("bChatRoomShowToast").toBool() ? "1" : "0");
+    }
+    if (settings.contains("bChatRoomPlaySound")) {
+        updateVdfFriendsSetting(filePath, "Sounds_EventsAndAnnouncements", settings.value("bChatRoomPlaySound").toBool() ? "1" : "0");
+    }
+    if (settings.contains("flashWindowOnMessage")) {
+        QString flashMode = settings.value("flashWindowOnMessage").toString();
+        QString flashVal = "2"; // default always
+        if (flashMode == "never") flashVal = "0";
+        else if (flashMode == "always") flashVal = "2";
+        updateVdfFriendsSetting(filePath, "ChatFlashMode", flashVal);
+    }
+    
+    // 2. system settings
+    if (settings.contains("bAchievementShowToast")) {
+        updateVdfSystemSetting(filePath, "AchievementNotificationToast", settings.value("bAchievementShowToast").toBool() ? "1" : "0");
+    }
+    if (settings.contains("bAchievementPlaySound")) {
+        updateVdfSystemSetting(filePath, "AchievementNotificationSound", settings.value("bAchievementPlaySound").toBool() ? "1" : "0");
+    }
+    if (settings.contains("bControllerShowToast")) {
+        updateVdfSystemSetting(filePath, "ControllerConnectNotificationToast", settings.value("bControllerShowToast").toBool() ? "1" : "0");
+    }
+    if (settings.contains("bControllerPlaySound")) {
+        updateVdfSystemSetting(filePath, "ControllerConnectNotificationSound", settings.value("bControllerPlaySound").toBool() ? "1" : "0");
+    }
+    if (settings.contains("bControllerLowShowToast")) {
+        updateVdfSystemSetting(filePath, "ControllerLowBatteryNotificationToast", settings.value("bControllerLowShowToast").toBool() ? "1" : "0");
+    }
+    if (settings.contains("bControllerLowPlaySound")) {
+        updateVdfSystemSetting(filePath, "ControllerLowBatteryNotificationSound", settings.value("bControllerLowPlaySound").toBool() ? "1" : "0");
+    }
+
     return true;
 }
 
