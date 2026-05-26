@@ -95,6 +95,9 @@ class Optimizer : public QObject {
     Q_PROPERTY(bool originalCs2OverlayActive READ originalCs2OverlayActive NOTIFY originalCs2OverlayActiveChanged)
     Q_PROPERTY(QVariantMap visualEffects READ visualEffects WRITE setVisualEffects NOTIFY visualEffectsChanged)
     Q_PROPERTY(QVariantMap originalVisualEffects READ originalVisualEffects NOTIFY originalVisualEffectsChanged)
+    Q_PROPERTY(bool steamInstalled READ steamInstalled NOTIFY steamInstalledChanged)
+    Q_PROPERTY(QVariantMap steamFriendsSettings READ steamFriendsSettings WRITE setSteamFriendsSettings NOTIFY steamFriendsSettingsChanged)
+    Q_PROPERTY(QVariantMap originalSteamFriendsSettings READ originalSteamFriendsSettings NOTIFY originalSteamFriendsSettingsChanged)
     Q_PROPERTY(QStringList fixedDrives READ fixedDrives NOTIFY fixedDrivesChanged)
     Q_PROPERTY(QVariantMap driveStates READ driveStates WRITE setDriveStates NOTIFY driveStatesChanged)
     Q_PROPERTY(QVariantMap originalDriveStates READ originalDriveStates NOTIFY originalDriveStatesChanged)
@@ -201,6 +204,9 @@ public:
     bool originalCs2OverlayActive() const { return m_originalCs2OverlayActive; }
     QVariantMap visualEffects() const { return m_visualEffects; }
     QVariantMap originalVisualEffects() const { return m_originalVisualEffects; }
+    bool steamInstalled() const { return m_steamInstalled; }
+    QVariantMap steamFriendsSettings() const { return m_steamFriendsSettings; }
+    QVariantMap originalSteamFriendsSettings() const { return m_originalSteamFriendsSettings; }
     QStringList fixedDrives() const { return m_fixedDrives; }
     QVariantMap driveStates() const { return m_driveStates; }
     QVariantMap originalDriveStates() const { return m_originalDriveStates; }
@@ -240,6 +246,7 @@ public:
     void setSteamOverlayActive(bool val);
     void setCs2OverlayActive(bool val);
     void setVisualEffects(const QVariantMap &val);
+    void setSteamFriendsSettings(const QVariantMap &val);
     
     Q_INVOKABLE bool isDiscordRunning();
     Q_INVOKABLE void killDiscord();
@@ -347,6 +354,9 @@ signals:
     void originalCs2OverlayActiveChanged(bool val);
     void visualEffectsChanged(const QVariantMap &val);
     void originalVisualEffectsChanged(const QVariantMap &val);
+    void steamInstalledChanged(bool val);
+    void steamFriendsSettingsChanged(const QVariantMap &val);
+    void originalSteamFriendsSettingsChanged(const QVariantMap &val);
     void fixedDrivesChanged(const QStringList &val);
     void driveStatesChanged(const QVariantMap &val);
     void originalDriveStatesChanged(const QVariantMap &val);
@@ -452,6 +462,11 @@ private:
     QStringList m_fixedDrives;
     QVariantMap m_driveStates;
     QVariantMap m_originalDriveStates;
+    bool m_steamInstalled = false;
+    QVariantMap m_steamFriendsSettings;
+    QVariantMap m_originalSteamFriendsSettings;
+    bool getVdfFriendsSettings(const QString &filePath, const QString &accountId, QVariantMap &settings);
+    bool updateVdfFriendsSettings(const QString &filePath, const QString &accountId, const QVariantMap &settings);
     bool m_isOptimizingSystem = false;
     double m_systemProgress = 0.0;
 };

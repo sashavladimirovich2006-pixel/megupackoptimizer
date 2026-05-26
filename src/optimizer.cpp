@@ -12,6 +12,8 @@
 #include <QGuiApplication>
 #include <QProcess>
 #include <QRegularExpression>
+#include <QJsonDocument>
+#include <QJsonObject>
 
 #ifdef Q_OS_WIN
 #include <windows.h>
@@ -255,6 +257,133 @@ namespace {
         return true;
     }
 
+} // namespace
+
+bool Optimizer::getVdfFriendsSettings(const QString &filePath, const QString &accountId, QVariantMap &settings) {
+    QFile file(filePath);
+    if (!file.open(QIODevice::ReadOnly | QIODevice::Text)) {
+        return false;
+    }
+    QString content = QString::fromUtf8(file.readAll());
+    file.close();
+
+    QRegularExpression webStorageRegex("\"WebStorage\"\\s*\\{");
+    QRegularExpressionMatch match = webStorageRegex.match(content);
+    if (!match.hasMatch()) {
+        return false;
+    }
+
+    int startIdx = match.capturedEnd();
+    int count = 1;
+    int idx = startIdx;
+    int closeIdx = -1;
+    while (count > 0 && idx < content.length()) {
+        QChar ch = content.at(idx);
+        if (ch == '{') {
+            count++;
+        } else if (ch == '}') {
+            count--;
+            if (count == 0) {
+                closeIdx = idx;
+                break;
+            }
+        }
+        idx++;
+    }
+
+    if (closeIdx == -1) {
+        return false;
+    }
+
+    QString wsBlock = content.mid(startIdx, closeIdx - startIdx);
+    QRegularExpression settingsRegex(QString("\"FriendsUIWebSettings_%1\"\\s*\"([^\"]*)\"").arg(accountId));
+    QRegularExpressionMatch settingsMatch = settingsRegex.match(wsBlock);
+    if (!settingsMatch.hasMatch()) {
+        return false;
+    }
+
+    QString escapedJson = settingsMatch.captured(1);
+    QString cleanJson = escapedJson;
+    cleanJson.replace(QLatin1String("\\\""), QLatin1String("\""));
+    cleanJson.replace(QLatin1String("\\\\"), QLatin1String("\\"));
+
+    QJsonDocument doc = QJsonDocument::fromJson(cleanJson.toUtf8());
+    if (!doc.isObject()) {
+        return false;
+    }
+
+    settings = doc.object().toVariantMap();
+    return true;
+}
+
+bool Optimizer::updateVdfFriendsSettings(const QString &filePath, const QString &accountId, const QVariantMap &settings) {
+    QFile file(filePath);
+    if (!file.open(QIODevice::ReadOnly | QIODevice::Text)) {
+        return false;
+    }
+    QString content = QString::fromUtf8(file.readAll());
+    file.close();
+
+    QRegularExpression webStorageRegex("\"WebStorage\"\\s*\\{");
+    QRegularExpressionMatch match = webStorageRegex.match(content);
+    if (!match.hasMatch()) {
+        return false;
+    }
+
+    int startIdx = match.capturedEnd();
+    int count = 1;
+    int idx = startIdx;
+    int closeIdx = -1;
+    while (count > 0 && idx < content.length()) {
+        QChar ch = content.at(idx);
+        if (ch == '{') {
+            count++;
+        } else if (ch == '}') {
+            count--;
+            if (count == 0) {
+                closeIdx = idx;
+                break;
+            }
+        }
+        idx++;
+    }
+
+    if (closeIdx == -1) {
+        return false;
+    }
+
+    QString wsBlock = content.mid(startIdx, closeIdx - startIdx);
+    QJsonObject obj = QJsonObject::fromVariantMap(settings);
+    QString cleanJson = QString::fromUtf8(QJsonDocument(obj).toJson(QJsonDocument::Compact));
+    QString escapedJson = cleanJson;
+    escapedJson.replace(QLatin1String("\\"), QLatin1String("\\\\"));
+    escapedJson.replace(QLatin1String("\""), QLatin1String("\\\""));
+
+    QRegularExpression settingsRegex(QString("\"FriendsUIWebSettings_%1\"\\s*\"([^\"]*)\"").arg(accountId));
+    QRegularExpressionMatch settingsMatch = settingsRegex.match(wsBlock);
+
+    QString newWsBlock;
+    if (settingsMatch.hasMatch()) {
+        int settingsStart = settingsMatch.capturedStart();
+        int settingsEnd = settingsMatch.capturedEnd();
+        newWsBlock = wsBlock.left(settingsStart) + QString("\"FriendsUIWebSettings_%1\"\t\t\"%2\"").arg(accountId, escapedJson) + wsBlock.mid(settingsEnd);
+    } else {
+        QString indent = "\n\t\t\t";
+        newWsBlock = QString("%1\"FriendsUIWebSettings_%2\"\t\t\"%3\"").arg(indent, accountId, escapedJson) + wsBlock;
+    }
+
+    QString newContent = content.left(startIdx) + newWsBlock + content.mid(closeIdx);
+
+    if (!file.open(QIODevice::WriteOnly | QIODevice::Text)) {
+        return false;
+    }
+    file.write(newContent.toUtf8());
+    file.close();
+    return true;
+}
+
+namespace {
+
     bool readVisualEffectReg(const QString &subkeyName, bool defaultVal = true) {
 #ifdef Q_OS_WIN
         HKEY hKey;
@@ -459,6 +588,13 @@ void Optimizer::setVisualEffects(const QVariantMap &val) {
     if (m_visualEffects != val) {
         m_visualEffects = val;
         emit visualEffectsChanged(m_visualEffects);
+    }
+}
+
+void Optimizer::setSteamFriendsSettings(const QVariantMap &val) {
+    if (m_steamFriendsSettings != val) {
+        m_steamFriendsSettings = val;
+        emit steamFriendsSettingsChanged(m_steamFriendsSettings);
     }
 }
 
@@ -1671,6 +1807,55 @@ void Optimizer::loadSystemStates() {
     emit cs2LaunchOptionsChanged(m_cs2LaunchOptions);
     emit originalCs2LaunchOptionsChanged(m_originalCs2LaunchOptions);
 
+    // Detect Steam Installed and Load Friends & Chat Settings
+    m_steamInstalled = !steamPath.isEmpty() && QDir(steamPath).exists();
+    emit steamInstalledChanged(m_steamInstalled);
+
+    QVariantMap defaultFriendsSettings;
+    defaultFriendsSettings["bAppendNicknamesToNames"] = false;
+    defaultFriendsSettings["bGroupFriendsByGame"] = true;
+    defaultFriendsSettings["bHideOfflineFriendsInCustomCategories"] = false;
+    defaultFriendsSettings["bHideCategorizedFriendsInOnlineOffline"] = false;
+    defaultFriendsSettings["bIgnoreAwayStatusWhenSorting"] = false;
+    defaultFriendsSettings["bSignInOnStart"] = true;
+    defaultFriendsSettings["bEnableAnimatedAvatars"] = true;
+    defaultFriendsSettings["bCompactFriendsListAndChat"] = false;
+    defaultFriendsSettings["bCompactFavorites"] = false;
+    defaultFriendsSettings["bDockChats"] = false;
+    defaultFriendsSettings["bOpenNewWindowForNewChats"] = false;
+    defaultFriendsSettings["bDontEmbedImages"] = false;
+    defaultFriendsSettings["bRememberOpenChats"] = true;
+    defaultFriendsSettings["bDisableSpellCheck"] = false;
+    defaultFriendsSettings["bDisableRoomEffects"] = false;
+    defaultFriendsSettings["fontSize"] = QString("default");
+
+    m_steamFriendsSettings.clear();
+    if (m_steamInstalled) {
+        QString userdataPath = steamPath + "/userdata";
+        QDir userdataDir(userdataPath);
+        if (userdataDir.exists()) {
+            QStringList subdirs = userdataDir.entryList(QDir::Dirs | QDir::NoDotAndDotDot);
+            for (const QString &subdir : subdirs) {
+                QString vdfPath = userdataPath + "/" + subdir + "/config/localconfig.vdf";
+                if (QFile::exists(vdfPath)) {
+                    QVariantMap loadedSettings;
+                    if (getVdfFriendsSettings(vdfPath, subdir, loadedSettings)) {
+                        if (!loadedSettings.isEmpty()) {
+                            m_steamFriendsSettings = loadedSettings;
+                            break;
+                        }
+                    }
+                }
+            }
+        }
+    }
+    if (m_steamFriendsSettings.isEmpty()) {
+        m_steamFriendsSettings = defaultFriendsSettings;
+    }
+    m_originalSteamFriendsSettings = m_steamFriendsSettings;
+    emit steamFriendsSettingsChanged(m_steamFriendsSettings);
+    emit originalSteamFriendsSettingsChanged(m_originalSteamFriendsSettings);
+
     // Load global Steam Overlay active state (Registry)
     bool steamOverlayActive = true;
 #ifdef Q_OS_WIN
@@ -1853,7 +2038,11 @@ void Optimizer::startSystemOptimization() {
     QVariantMap visualEffectsVal = m_visualEffects;
     QVariantMap origVisualEffectsVal = m_originalVisualEffects;
 
-    QThread* worker = QThread::create([this, searchVal, hibernationVal, overlayVal, coreIsolationVal, mouseAccelVal, gameModeVal, firewallVal, printerVal, bitlockerVal, discordOverlayVal, notificationsVal, notifGlobalVal, notifAppVal, notifSoundsVal, notifLockscreenVal, targetPowerSchemeVal, activePowerSchemeVal, defenderVal, defenderRegistryVal, defenderCmdVal, defenderServiceVal, remoteAccessVal, telemetryVal, telemetryDiagTrackVal, telemetryWapPushVal, telemetryCeipVal, telemetryWerVal, windowsUpdateModeVal, targets, originalTargets, origSearch, origHibernation, origOverlay, origCoreIsolation, origMouseAccel, origGameMode, origFirewall, origPrinter, origBitlocker, origDiscordOverlay, origNotifications, origNotifGlobal, origNotifApp, origNotifSounds, origNotifLockscreen, origDefender, origDefenderRegistry, origDefenderCmd, origDefenderService, origRemoteAccess, origTelemetry, origTelemetryDiagTrack, origTelemetryWapPush, origTelemetryCeip, origTelemetryWer, origWindowsUpdateMode, usbDevicesVal, origUsbDevicesVal, steamPathVal, cs2OptionsVal, origCs2OptionsVal, steamOverlayVal, origSteamOverlayVal, cs2OverlayVal, origCs2OverlayVal, visualEffectsVal, origVisualEffectsVal]() {
+    QVariantMap steamFriendsSettingsVal = m_steamFriendsSettings;
+    QVariantMap origSteamFriendsSettingsVal = m_originalSteamFriendsSettings;
+    bool steamFriendsChanged = (m_steamFriendsSettings != m_originalSteamFriendsSettings);
+
+    QThread* worker = QThread::create([this, searchVal, hibernationVal, overlayVal, coreIsolationVal, mouseAccelVal, gameModeVal, firewallVal, printerVal, bitlockerVal, discordOverlayVal, notificationsVal, notifGlobalVal, notifAppVal, notifSoundsVal, notifLockscreenVal, targetPowerSchemeVal, activePowerSchemeVal, defenderVal, defenderRegistryVal, defenderCmdVal, defenderServiceVal, remoteAccessVal, telemetryVal, telemetryDiagTrackVal, telemetryWapPushVal, telemetryCeipVal, telemetryWerVal, windowsUpdateModeVal, targets, originalTargets, origSearch, origHibernation, origOverlay, origCoreIsolation, origMouseAccel, origGameMode, origFirewall, origPrinter, origBitlocker, origDiscordOverlay, origNotifications, origNotifGlobal, origNotifApp, origNotifSounds, origNotifLockscreen, origDefender, origDefenderRegistry, origDefenderCmd, origDefenderService, origRemoteAccess, origTelemetry, origTelemetryDiagTrack, origTelemetryWapPush, origTelemetryCeip, origTelemetryWer, origWindowsUpdateMode, usbDevicesVal, origUsbDevicesVal, steamPathVal, cs2OptionsVal, origCs2OptionsVal, steamOverlayVal, origSteamOverlayVal, cs2OverlayVal, origCs2OverlayVal, visualEffectsVal, origVisualEffectsVal, steamFriendsSettingsVal, origSteamFriendsSettingsVal, steamFriendsChanged]() {
         // Step 0: Check if anything actually changed
         bool powerPlanChanged = (targetPowerSchemeVal != activePowerSchemeVal);
         bool usbChanged = false;
@@ -3512,6 +3701,69 @@ void Optimizer::startSystemOptimization() {
 #endif
         }
 
+        // Step 2.7.5: Steam Friends & Chat Settings (only if changed)
+        bool steamFriendsSuccess = true;
+        if (steamFriendsChanged) {
+            emit systemStepReported(Optimizer::tr("Processing Steam Friends & Chat settings..."), "INFO");
+            QThread::msleep(800);
+
+#ifdef Q_OS_WIN
+            // Check and close Steam if running (to prevent overwrite on client exit)
+            bool steamRunning = false;
+            HANDLE hSnapshot = CreateToolhelp32Snapshot(TH32CS_SNAPPROCESS, 0);
+            if (hSnapshot != INVALID_HANDLE_VALUE) {
+                PROCESSENTRY32W pe32;
+                pe32.dwSize = sizeof(pe32);
+                if (Process32FirstW(hSnapshot, &pe32)) {
+                    do {
+                        if (wcscmp(pe32.szExeFile, L"steam.exe") == 0 ||
+                            wcscmp(pe32.szExeFile, L"Steam.exe") == 0) {
+                            steamRunning = true;
+                            HANDLE hProcess = OpenProcess(PROCESS_TERMINATE, FALSE, pe32.th32ProcessID);
+                            if (hProcess) {
+                                TerminateProcess(hProcess, 0);
+                                CloseHandle(hProcess);
+                            }
+                        }
+                    } while (Process32NextW(hSnapshot, &pe32));
+                }
+                CloseHandle(hSnapshot);
+            }
+            if (steamRunning) {
+                emit systemStepReported(Optimizer::tr("Steam process detected and closed to prevent configuration overwrite."), "WARNING");
+                QThread::msleep(1500);
+            }
+#endif
+
+#ifdef Q_OS_WIN
+            if (!steamPathVal.isEmpty() && QDir(steamPathVal).exists()) {
+                QString userdataPath = steamPathVal + "/userdata";
+                QDir userdataDir(userdataPath);
+                if (userdataDir.exists()) {
+                    QStringList subdirs = userdataDir.entryList(QDir::Dirs | QDir::NoDotAndDotDot);
+                    int updatedCount = 0;
+                    for (const QString &subdir : subdirs) {
+                        QString vdfPath = userdataPath + "/" + subdir + "/config/localconfig.vdf";
+                        if (QFile::exists(vdfPath)) {
+                            if (updateVdfFriendsSettings(vdfPath, subdir, steamFriendsSettingsVal)) {
+                                updatedCount++;
+                            }
+                        }
+                    }
+                    emit systemStepReported(Optimizer::tr("Steam Friends & Chat settings updated for %1 profiles.").arg(updatedCount), "SUCCESS");
+                } else {
+                    steamFriendsSuccess = false;
+                    emit systemStepReported(Optimizer::tr("Steam userdata directory not found."), "ERROR");
+                }
+            } else {
+                steamFriendsSuccess = false;
+                emit systemStepReported(Optimizer::tr("Steam path not found. Cannot apply Friends & Chat settings."), "ERROR");
+            }
+#else
+            emit systemStepReported(Optimizer::tr("[Simulation] Steam Friends & Chat settings updated successfully."), "SUCCESS");
+#endif
+        }
+
         // Step 2.8: Visual Effects (only if changed)
         bool visualEffectsSuccess = true;
         if (visualEffectsChanged) {
@@ -3699,7 +3951,7 @@ void Optimizer::startSystemOptimization() {
 #endif
         }
 
-        bool overallSuccess = wSearchSuccess && hibernationSuccess && overlaySuccess && coreIsolationSuccess && mouseAccelSuccess && gameModeSuccess && firewallSuccess && printerSuccess && notificationsSuccess && powerPlanSuccess && defenderSuccess && overallDrivesSuccess && usbSuccess && remoteAccessSuccess && telemetrySuccess && windowsUpdateSuccess && cs2Success && steamOverlaySuccess && cs2OverlaySuccess && visualEffectsSuccess;
+        bool overallSuccess = wSearchSuccess && hibernationSuccess && overlaySuccess && coreIsolationSuccess && mouseAccelSuccess && gameModeSuccess && firewallSuccess && printerSuccess && notificationsSuccess && powerPlanSuccess && defenderSuccess && overallDrivesSuccess && usbSuccess && remoteAccessSuccess && telemetrySuccess && windowsUpdateSuccess && cs2Success && steamOverlaySuccess && cs2OverlaySuccess && steamFriendsSuccess && visualEffectsSuccess;
         if (overallSuccess) {
             emit systemStepReported(tr("System optimization completed successfully!"), "SUCCESS");
             Logger::log("System optimization completed successfully!", "INFO");
@@ -3736,6 +3988,7 @@ void Optimizer::startSystemOptimization() {
         m_originalCs2LaunchOptions = cs2OptionsVal;
         m_originalSteamOverlayActive = steamOverlayVal;
         m_originalCs2OverlayActive = cs2OverlayVal;
+        m_originalSteamFriendsSettings = steamFriendsSettingsVal;
         m_originalVisualEffects = visualEffectsVal;
         m_originalDriveStates = targets;
         
