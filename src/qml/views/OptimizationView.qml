@@ -5405,7 +5405,6 @@ Item {
                             }
                         }
                     }
-                }
 
                 // 10. Visual Effects Options Content
                 Column {
@@ -5575,6 +5574,7 @@ Item {
             }
         }
     }
+}
 
     // Dynamic Island Floating Overlay
     Rectangle {
