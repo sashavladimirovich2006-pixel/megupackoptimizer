@@ -37,33 +37,22 @@ ApplicationWindow {
     header: Rectangle {
         id: header
         width: parent.width
-        height: 60
-        color: Theme.headerBg
+        height: 72
+        color: "transparent"
         border.width: 0
-
-        // Custom bottom border for header
-        Rectangle {
-            anchors.bottom: parent.bottom
-            anchors.left: parent.left
-            anchors.right: parent.right
-            height: 1
-            color: Theme.border
-        }
-
-        Behavior on color { ColorAnimation { duration: Theme.animNormal } }
 
         // Custom drag handler to move window when dragging empty areas of header
         MouseArea {
             anchors.fill: parent
-            property point clickPos: "0,0"
-            onPressed: (mouse) => {
-                clickPos = Qt.point(mouse.x, mouse.y)
-            }
             onPositionChanged: (mouse) => {
-                if (window.visibility === Window.Maximized) return;
-                var delta = Qt.point(mouse.x - clickPos.x, mouse.y - clickPos.y)
-                window.x += delta.x
-                window.y += delta.y
+                if (window.visibility === Window.Maximized) {
+                    var screenX = mouse.x
+                    var screenY = mouse.y
+                    window.showNormal()
+                    window.x = screenX - window.width / 2
+                    window.y = screenY - 20
+                }
+                window.startSystemMove()
             }
             onDoubleClicked: {
                 if (window.visibility === Window.Maximized) {
@@ -74,27 +63,58 @@ ApplicationWindow {
             }
         }
 
-        Item {
-            anchors.fill: parent
-            anchors.leftMargin: 24
-            anchors.rightMargin: 24
+        // Left Island (Brand Logo + Real-Time Logs button)
+        Rectangle {
+            id: leftIsland
+            height: 48
+            anchors.left: parent.left
+            anchors.leftMargin: 16
+            anchors.top: parent.top
+            anchors.topMargin: leftIslandHover.containsMouse ? 11 : 12
+            width: leftIslandRow.width + 24
+            color: Theme.panelBg
+            border.color: leftIslandHover.containsMouse ? Theme.borderHover : Theme.border
+            border.width: 1
+            radius: 10
 
-            // Logo & Title Brand Area (Premium Aggressive Geometric style)
+            Behavior on anchors.topMargin { NumberAnimation { duration: Theme.animFast } }
+            Behavior on border.color { ColorAnimation { duration: Theme.animFast } }
+
+            layer.enabled: true
+            layer.effect: DropShadow {
+                transparentBorder: true
+                horizontalOffset: 0
+                verticalOffset: leftIslandHover.containsMouse ? 8 : 5
+                radius: leftIslandHover.containsMouse ? 14 : 10
+                color: leftIslandHover.containsMouse ? "#C0000000" : "#80000000"
+                Behavior on verticalOffset { NumberAnimation { duration: Theme.animFast } }
+                Behavior on radius { NumberAnimation { duration: Theme.animFast } }
+                Behavior on color { ColorAnimation { duration: Theme.animFast } }
+            }
+
+            MouseArea {
+                id: leftIslandHover
+                anchors.fill: parent
+                hoverEnabled: true
+                acceptedButtons: Qt.NoButton
+                propagateComposedEvents: true
+            }
+
             Row {
-                anchors.left: parent.left
-                anchors.verticalCenter: parent.verticalCenter
-                spacing: 14
+                id: leftIslandRow
+                anchors.centerIn: parent
+                spacing: 12
 
-                // Premium new transparent minimalist M logo
+                // Premium transparent minimalist logo
                 Item {
-                    width: 40
-                    height: 40
+                    width: 32
+                    height: 32
                     anchors.verticalCenter: parent.verticalCenter
                     
                     // Soft glowing backing for the logo
                     Rectangle {
                         anchors.fill: parent
-                        radius: 8
+                        radius: 6
                         color: Theme.accent
                         opacity: 0.12
                         scale: 1.05
@@ -103,7 +123,7 @@ ApplicationWindow {
                     Image {
                         source: "qrc:/MeguPackOptimizer/src/resources/megu_logo_transparent.png"
                         anchors.fill: parent
-                        anchors.margins: 2 // elegant slight inset margin for perfect visual balance
+                        anchors.margins: 1
                         smooth: true
                         mipmap: true
                         fillMode: Image.PreserveAspectFit
@@ -112,32 +132,32 @@ ApplicationWindow {
 
                 Column {
                     anchors.verticalCenter: parent.verticalCenter
-                    spacing: 1
+                    spacing: 0
                     
                     Text {
                         text: "MEGU PACK"
                         color: Theme.textPrimary
                         font.family: Theme.fontFamily
-                        font.pixelSize: 13
+                        font.pixelSize: 11
                         font.bold: true
-                        font.letterSpacing: 1.2
+                        font.letterSpacing: 1.0
                     }
                     
                     Text {
                         text: "OPTIMIZER"
                         color: Theme.accent
                         font.family: Theme.fontFamily
-                        font.pixelSize: 9
+                        font.pixelSize: 8
                         font.bold: true
-                        font.letterSpacing: 2.5
+                        font.letterSpacing: 2.0
                     }
                 }
 
-                // Circular Real-Time Logs button
+                // Circular Real-Time Logs button inside left island
                 Item {
                     id: realTimeLogsRoundBtn
-                    width: 32
-                    height: 32
+                    width: 28
+                    height: 28
                     anchors.verticalCenter: parent.verticalCenter
                     opacity: !optimizerBackend.isOptimizingSystem ? 1.0 : 0.35
                     Behavior on opacity { NumberAnimation { duration: Theme.animFast } }
@@ -147,7 +167,7 @@ ApplicationWindow {
                     Rectangle {
                         id: roundBtnBg
                         anchors.fill: parent
-                        radius: 16 // fully circular
+                        radius: 14
                         color: {
                             if (realTimeLogsRoundBtn.isSelected) {
                                 return logsBtnMouse.pressed ? Qt.rgba(Theme.accent.r, Theme.accent.g, Theme.accent.b, 0.30) : 
@@ -172,16 +192,16 @@ ApplicationWindow {
                     }
                     
                     Item {
-                        width: 14
-                        height: 14
+                        width: 12
+                        height: 12
                         anchors.centerIn: parent
                         
                         Image {
                             id: logsIcon
                             source: "qrc:/MeguPackOptimizer/src/resources/terminal.svg"
                             anchors.fill: parent
-                            sourceSize.width: 14
-                            sourceSize.height: 14
+                            sourceSize.width: 12
+                            sourceSize.height: 12
                             visible: false
                         }
                         
@@ -209,169 +229,250 @@ ApplicationWindow {
                     }
                 }
             }
+        }
 
-            // Navigation Tab Container (Clean capsules style)
-            Item {
-                anchors.centerIn: parent
-                height: parent.height
-                width: tabsRow.width
-                
-                Row {
-                    id: tabsRow
-                    spacing: 16
-                    height: parent.height
-                    anchors.centerIn: parent
-                    
-                    MeguButton {
-                        id: tab0
-                        text: qsTr("Dashboard")
-                        iconSource: "qrc:/MeguPackOptimizer/src/resources/monitor.svg"
-                        accented: window.activeTab === 0
-                        flat: !accented
-                        enabled: !optimizerBackend.isOptimizingSystem
-                        onClicked: window.activeTab = 0
-                        anchors.verticalCenter: parent.verticalCenter
-                        height: 34
-                    }
-                    
-                    MeguButton {
-                        id: tab3
-                        text: qsTr("Optimization")
-                        iconSource: "qrc:/MeguPackOptimizer/src/resources/bolt.svg"
-                        accented: window.activeTab === 3
-                        flat: !accented
-                        hasDropdown: true
-                        dropdownOpen: optDropdown.opened
-                        enabled: !optimizerBackend.isOptimizingSystem
-                        onClicked: {
-                            window.activeTab = 3;
-                            optimizationView.currentSection = "core";
-                        }
-                        onDropdownClicked: {
-                            optDropdown.open();
-                        }
-                        anchors.verticalCenter: parent.verticalCenter
-                        height: 34
-                    }
-                    
-                    MeguButton {
-                        id: tab1
-                        text: qsTr("Settings")
-                        iconSource: "qrc:/MeguPackOptimizer/src/resources/settings.svg"
-                        accented: window.activeTab === 1
-                        flat: !accented
-                        enabled: !optimizerBackend.isOptimizingSystem
-                        onClicked: window.activeTab = 1
-                        anchors.verticalCenter: parent.verticalCenter
-                        height: 34
-                    }
-                }
+        // Center Island (Navigation Tab Container)
+        Rectangle {
+            id: centerIsland
+            height: 48
+            anchors.horizontalCenter: parent.horizontalCenter
+            anchors.top: parent.top
+            anchors.topMargin: centerIslandHover.containsMouse ? 11 : 12
+            width: tabsRow.width + 24
+            color: Theme.panelBg
+            border.color: centerIslandHover.containsMouse ? Theme.borderHover : Theme.border
+            border.width: 1
+            radius: 10
+
+            Behavior on anchors.topMargin { NumberAnimation { duration: Theme.animFast } }
+            Behavior on border.color { ColorAnimation { duration: Theme.animFast } }
+
+            layer.enabled: true
+            layer.effect: DropShadow {
+                transparentBorder: true
+                horizontalOffset: 0
+                verticalOffset: centerIslandHover.containsMouse ? 8 : 5
+                radius: centerIslandHover.containsMouse ? 14 : 10
+                color: centerIslandHover.containsMouse ? "#C0000000" : "#80000000"
+                Behavior on verticalOffset { NumberAnimation { duration: Theme.animFast } }
+                Behavior on radius { NumberAnimation { duration: Theme.animFast } }
+                Behavior on color { ColorAnimation { duration: Theme.animFast } }
             }
 
-            // Version Label
-            Text {
-                anchors.right: parent.right
-                anchors.rightMargin: 154
-                anchors.verticalCenter: parent.verticalCenter
-                text: qsTr("v1.0.0 Stable")
-                color: Theme.textMuted
-                font.family: Theme.fontFamily
-                font.pixelSize: 11
+            MouseArea {
+                id: centerIslandHover
+                anchors.fill: parent
+                hoverEnabled: true
+                acceptedButtons: Qt.NoButton
+                propagateComposedEvents: true
+            }
+
+            Row {
+                id: tabsRow
+                spacing: 12
+                height: parent.height
+                anchors.centerIn: parent
+                
+                MeguButton {
+                    id: tab0
+                    text: qsTr("Dashboard")
+                    iconSource: "qrc:/MeguPackOptimizer/src/resources/monitor.svg"
+                    accented: window.activeTab === 0
+                    flat: !accented
+                    enabled: !optimizerBackend.isOptimizingSystem
+                    onClicked: window.activeTab = 0
+                    anchors.verticalCenter: parent.verticalCenter
+                    height: 32
+                }
+                
+                MeguButton {
+                    id: tab3
+                    text: qsTr("Optimization")
+                    iconSource: "qrc:/MeguPackOptimizer/src/resources/bolt.svg"
+                    accented: window.activeTab === 3
+                    flat: !accented
+                    hasDropdown: true
+                    dropdownOpen: optDropdown.opened
+                    enabled: !optimizerBackend.isOptimizingSystem
+                    onClicked: {
+                        window.activeTab = 3;
+                        optimizationView.currentSection = "core";
+                    }
+                    onDropdownClicked: {
+                        optDropdown.open();
+                    }
+                    anchors.verticalCenter: parent.verticalCenter
+                    height: 32
+                }
+                
+                MeguButton {
+                    id: tab1
+                    text: qsTr("Settings")
+                    iconSource: "qrc:/MeguPackOptimizer/src/resources/settings.svg"
+                    accented: window.activeTab === 1
+                    flat: !accented
+                    enabled: !optimizerBackend.isOptimizingSystem
+                    onClicked: window.activeTab = 1
+                    anchors.verticalCenter: parent.verticalCenter
+                    height: 32
+                }
             }
         }
 
-        // Custom Window Control Buttons (Minimize, Maximize, Close)
-        Row {
-            id: windowControls
+        // Right Island (Version Label + Window Custom Controls)
+        Rectangle {
+            id: rightIsland
+            height: 48
             anchors.right: parent.right
+            anchors.rightMargin: 16
             anchors.top: parent.top
-            anchors.bottom: parent.bottom
-            spacing: 0
+            anchors.topMargin: rightIslandHover.containsMouse ? 11 : 12
+            width: rightInfoRow.implicitWidth + 32 + windowControls.implicitWidth
+            color: Theme.panelBg
+            border.color: rightIslandHover.containsMouse ? Theme.borderHover : Theme.border
+            border.width: 1
+            radius: 10
+            clip: true
             z: 10
-            
-            // Minimize Button
-            Rectangle {
-                width: 46
-                height: parent.height
-                color: minMouse.containsMouse ? (Theme.currentTheme === "Белоснежная" || Theme.currentTheme === "Розовая" ? "#0F000000" : "#1AFFFFFF") : "transparent"
+
+            Behavior on anchors.topMargin { NumberAnimation { duration: Theme.animFast } }
+            Behavior on border.color { ColorAnimation { duration: Theme.animFast } }
+
+            layer.enabled: true
+            layer.effect: DropShadow {
+                transparentBorder: true
+                horizontalOffset: 0
+                verticalOffset: rightIslandHover.containsMouse ? 8 : 5
+                radius: rightIslandHover.containsMouse ? 14 : 10
+                color: rightIslandHover.containsMouse ? "#C0000000" : "#80000000"
+                Behavior on verticalOffset { NumberAnimation { duration: Theme.animFast } }
+                Behavior on radius { NumberAnimation { duration: Theme.animFast } }
+                Behavior on color { ColorAnimation { duration: Theme.animFast } }
+            }
+
+            MouseArea {
+                id: rightIslandHover
+                anchors.fill: parent
+                hoverEnabled: true
+                acceptedButtons: Qt.NoButton
+                propagateComposedEvents: true
+            }
+
+            Row {
+                id: rightInfoRow
+                anchors.left: parent.left
+                anchors.leftMargin: 16
+                anchors.verticalCenter: parent.verticalCenter
+                spacing: 12
                 
-                Rectangle {
-                    width: 10
-                    height: 1.5
-                    color: Theme.textPrimary
-                    anchors.centerIn: parent
+                Text {
+                    text: qsTr("v1.0.0 Stable")
+                    color: Theme.textMuted
+                    font.family: Theme.fontFamily
+                    font.pixelSize: 11
+                    anchors.verticalCenter: parent.verticalCenter
                 }
-                
-                MouseArea {
-                    id: minMouse
-                    anchors.fill: parent
-                    hoverEnabled: true
-                    onClicked: window.showMinimized()
+
+                Rectangle {
+                    width: 1
+                    height: 16
+                    color: Theme.border
+                    anchors.verticalCenter: parent.verticalCenter
                 }
             }
-            
-            // Maximize / Restore Button
-            Rectangle {
-                width: 46
-                height: parent.height
-                color: maxMouse.containsMouse ? (Theme.currentTheme === "Белоснежная" || Theme.currentTheme === "Розовая" ? "#0F000000" : "#1AFFFFFF") : "transparent"
+
+            // Custom Window Control Buttons (Minimize, Maximize, Close)
+            Row {
+                id: windowControls
+                anchors.right: parent.right
+                anchors.top: parent.top
+                anchors.bottom: parent.bottom
+                spacing: 0
                 
+                // Minimize Button
                 Rectangle {
-                    width: 10
-                    height: 10
-                    color: "transparent"
-                    border.color: Theme.textPrimary
-                    border.width: 1.5
-                    anchors.centerIn: parent
+                    width: 38
+                    height: parent.height
+                    color: minMouse.containsMouse ? (Theme.currentTheme === "Белоснежная" || Theme.currentTheme === "Розовая" ? "#0F000000" : "#1AFFFFFF") : "transparent"
                     
                     Rectangle {
-                        visible: window.visibility === Window.Maximized
-                        width: 8
-                        height: 8
+                        width: 10
+                        height: 1.5
+                        color: Theme.textPrimary
+                        anchors.centerIn: parent
+                    }
+                    
+                    MouseArea {
+                        id: minMouse
+                        anchors.fill: parent
+                        hoverEnabled: true
+                        onClicked: window.showMinimized()
+                    }
+                }
+                
+                // Maximize / Restore Button
+                Rectangle {
+                    width: 38
+                    height: parent.height
+                    color: maxMouse.containsMouse ? (Theme.currentTheme === "Белоснежная" || Theme.currentTheme === "Розовая" ? "#0F000000" : "#1AFFFFFF") : "transparent"
+                    
+                    Rectangle {
+                        width: 10
+                        height: 10
                         color: "transparent"
                         border.color: Theme.textPrimary
                         border.width: 1.5
-                        x: 3
-                        y: -3
+                        anchors.centerIn: parent
+                        
+                        Rectangle {
+                            visible: window.visibility === Window.Maximized
+                            width: 8
+                            height: 8
+                            color: "transparent"
+                            border.color: Theme.textPrimary
+                            border.width: 1.5
+                            x: 3
+                            y: -3
+                        }
                     }
-                }
-                
-                MouseArea {
-                    id: maxMouse
-                    anchors.fill: parent
-                    hoverEnabled: true
-                    onClicked: {
-                        if (window.visibility === Window.Maximized) {
-                            window.showNormal()
-                        } else {
-                            window.showMaximized()
+                    
+                    MouseArea {
+                        id: maxMouse
+                        anchors.fill: parent
+                        hoverEnabled: true
+                        onClicked: {
+                            if (window.visibility === Window.Maximized) {
+                                window.showNormal()
+                            } else {
+                                window.showMaximized()
+                            }
                         }
                     }
                 }
-            }
-            
-            // Close Button
-            Rectangle {
-                width: 46
-                height: parent.height
-                color: closeMouse.containsMouse ? "#E81123" : "transparent"
                 
-                Image {
-                    source: "qrc:/MeguPackOptimizer/src/resources/close.svg"
-                    width: 10
-                    height: 10
-                    anchors.centerIn: parent
-                    sourceSize.width: 10
-                    sourceSize.height: 10
-                    opacity: closeMouse.containsMouse ? 1.0 : 0.8
-                    Behavior on opacity { NumberAnimation { duration: 100 } }
-                }
-                
-                MouseArea {
-                    id: closeMouse
-                    anchors.fill: parent
-                    hoverEnabled: true
-                    onClicked: window.close()
+                // Close Button
+                Rectangle {
+                    width: 42
+                    height: parent.height
+                    color: closeMouse.containsMouse ? "#E81123" : "transparent"
+                    
+                    Image {
+                        source: "qrc:/MeguPackOptimizer/src/resources/close.svg"
+                        width: 10
+                        height: 10
+                        anchors.centerIn: parent
+                        sourceSize.width: 10
+                        sourceSize.height: 10
+                        opacity: closeMouse.containsMouse ? 1.0 : 0.8
+                        Behavior on opacity { NumberAnimation { duration: 100 } }
+                    }
+                    
+                    MouseArea {
+                        id: closeMouse
+                        anchors.fill: parent
+                        hoverEnabled: true
+                        onClicked: window.close()
+                    }
                 }
             }
         }
@@ -538,6 +639,13 @@ ApplicationWindow {
                 }
             }
 
+            Rectangle {
+                width: parent.width
+                height: 1
+                color: Theme.border
+                opacity: 0.6
+            }
+
             MeguButton {
                 width: parent.width
                 height: 30
@@ -552,6 +660,13 @@ ApplicationWindow {
                 }
             }
 
+            Rectangle {
+                width: parent.width
+                height: 1
+                color: Theme.border
+                opacity: 0.6
+            }
+
             MeguButton {
                 width: parent.width
                 height: 30
@@ -562,6 +677,27 @@ ApplicationWindow {
                 onClicked: {
                     window.activeTab = 3;
                     optimizationView.currentSection = "core";
+                    optDropdown.close();
+                }
+            }
+
+            Rectangle {
+                width: parent.width
+                height: 1
+                color: Theme.border
+                opacity: 0.6
+            }
+
+            MeguButton {
+                width: parent.width
+                height: 30
+                text: qsTr("Customization")
+                iconSource: "qrc:/MeguPackOptimizer/src/resources/settings.svg"
+                accented: window.activeTab === 3 && optimizationView.currentSection === "customization"
+                flat: !accented
+                onClicked: {
+                    window.activeTab = 3;
+                    optimizationView.currentSection = "customization";
                     optDropdown.close();
                 }
             }

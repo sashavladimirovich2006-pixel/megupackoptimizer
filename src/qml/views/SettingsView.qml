@@ -39,6 +39,9 @@ Item {
         clip: true
         contentHeight: mainColumn.implicitHeight
 
+        ScrollBar.vertical: MeguScrollBar { }
+        ScrollBar.horizontal: MeguScrollBar { }
+
         // Main layout container spanning settings area
         Column {
             id: mainColumn

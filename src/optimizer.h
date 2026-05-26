@@ -18,6 +18,8 @@ class Optimizer : public QObject {
     Q_PROPERTY(QString display READ display NOTIFY displayChanged)
 
     // System Optimization properties
+    Q_PROPERTY(bool classicContextMenuActive READ classicContextMenuActive WRITE setClassicContextMenuActive NOTIFY classicContextMenuActiveChanged)
+    Q_PROPERTY(bool originalClassicContextMenuActive READ originalClassicContextMenuActive NOTIFY originalClassicContextMenuActiveChanged)
     Q_PROPERTY(bool winSearchActive READ winSearchActive WRITE setWinSearchActive NOTIFY winSearchActiveChanged)
     Q_PROPERTY(bool originalWinSearchActive READ originalWinSearchActive NOTIFY originalWinSearchActiveChanged)
     Q_PROPERTY(bool hibernationActive READ hibernationActive WRITE setHibernationActive NOTIFY hibernationActiveChanged)
@@ -31,6 +33,7 @@ class Optimizer : public QObject {
     Q_PROPERTY(bool originalGamingOverlayActive READ originalGamingOverlayActive NOTIFY originalGamingOverlayActiveChanged)
     Q_PROPERTY(bool coreIsolationActive READ coreIsolationActive WRITE setCoreIsolationActive NOTIFY coreIsolationActiveChanged)
     Q_PROPERTY(bool originalCoreIsolationActive READ originalCoreIsolationActive NOTIFY originalCoreIsolationActiveChanged)
+    Q_PROPERTY(bool bootCoreIsolationActive READ bootCoreIsolationActive CONSTANT)
     Q_PROPERTY(bool mouseAccelerationActive READ mouseAccelerationActive WRITE setMouseAccelerationActive NOTIFY mouseAccelerationActiveChanged)
     Q_PROPERTY(bool originalMouseAccelerationActive READ originalMouseAccelerationActive NOTIFY originalMouseAccelerationActiveChanged)
     Q_PROPERTY(bool gameModeActive READ gameModeActive WRITE setGameModeActive NOTIFY gameModeActiveChanged)
@@ -70,6 +73,8 @@ class Optimizer : public QObject {
     Q_PROPERTY(bool originalNotifLockscreenActive READ originalNotifLockscreenActive NOTIFY originalNotifLockscreenActiveChanged)
     Q_PROPERTY(QVariantList powerSchemes READ powerSchemes NOTIFY powerSchemesChanged)
     Q_PROPERTY(bool ultimateSchemeUnlocked READ ultimateSchemeUnlocked NOTIFY ultimateSchemeUnlockedChanged)
+    Q_PROPERTY(bool deleteUltimateStaged READ deleteUltimateStaged WRITE setDeleteUltimateStaged NOTIFY deleteUltimateStagedChanged)
+    Q_PROPERTY(bool deleteDefenderStaged READ deleteDefenderStaged WRITE setDeleteDefenderStaged NOTIFY deleteDefenderStagedChanged)
     Q_PROPERTY(QString activePowerSchemeGuid READ activePowerSchemeGuid NOTIFY activePowerSchemeGuidChanged)
     Q_PROPERTY(QString targetPowerSchemeGuid READ targetPowerSchemeGuid NOTIFY targetPowerSchemeGuidChanged)
     Q_PROPERTY(int mpoValue READ mpoValue NOTIFY mpoValueChanged)
@@ -119,6 +124,8 @@ public:
     QString display() const { return m_display; }
 
     // System Optimization getters
+    bool classicContextMenuActive() const { return m_classicContextMenuActive; }
+    bool originalClassicContextMenuActive() const { return m_originalClassicContextMenuActive; }
     bool winSearchActive() const { return m_winSearchActive; }
     bool originalWinSearchActive() const { return m_originalWinSearchActive; }
     bool hibernationActive() const { return m_hibernationActive; }
@@ -132,6 +139,7 @@ public:
     bool originalGamingOverlayActive() const { return m_originalGamingOverlayActive; }
     bool coreIsolationActive() const { return m_coreIsolationActive; }
     bool originalCoreIsolationActive() const { return m_originalCoreIsolationActive; }
+    bool bootCoreIsolationActive() const { return m_bootCoreIsolationActive; }
     bool mouseAccelerationActive() const { return m_mouseAccelerationActive; }
     bool originalMouseAccelerationActive() const { return m_originalMouseAccelerationActive; }
     bool gameModeActive() const { return m_gameModeActive; }
@@ -179,6 +187,8 @@ public:
     bool originalNotifLockscreenActive() const { return m_originalNotifLockscreenActive; }
     QVariantList powerSchemes() const { return m_powerSchemes; }
     bool ultimateSchemeUnlocked() const { return m_ultimateSchemeUnlocked; }
+    bool deleteUltimateStaged() const { return m_deleteUltimateStaged; }
+    bool deleteDefenderStaged() const { return m_deleteDefenderStaged; }
     QString activePowerSchemeGuid() const { return m_activePowerSchemeGuid; }
     QString targetPowerSchemeGuid() const { return m_targetPowerSchemeGuid; }
     int mpoValue() const { return m_mpoValue; }
@@ -214,6 +224,7 @@ public:
     double systemProgress() const { return m_systemProgress; }
 
     // Setters
+    void setClassicContextMenuActive(bool val);
     void setWinSearchActive(bool val);
     void setHibernationActive(bool val);
     void setGamingOverlayActive(bool val);
@@ -247,9 +258,13 @@ public:
     void setCs2OverlayActive(bool val);
     void setVisualEffects(const QVariantMap &val);
     void setSteamFriendsSettings(const QVariantMap &val);
+    void setDeleteUltimateStaged(bool val);
+    void setDeleteDefenderStaged(bool val);
     
     Q_INVOKABLE bool isDiscordRunning();
     Q_INVOKABLE void killDiscord();
+    Q_INVOKABLE bool isSteamRunning();
+    Q_INVOKABLE void killSteam();
 
 
     // Invokable methods for QML frontend
@@ -264,8 +279,10 @@ public:
     Q_INVOKABLE void applyMpoValue(int value);
     Q_INVOKABLE void selectPowerScheme(const QString &guidStr);
     Q_INVOKABLE void activateUltimatePerformance();
+    Q_INVOKABLE void deleteUltimatePerformance();
     Q_INVOKABLE void setDevicePowerSavingActive(const QString &subkeyPath, bool active);
     Q_INVOKABLE void revertUsbDevices();
+    Q_INVOKABLE void restartExplorer();
 
 
 
@@ -281,6 +298,8 @@ signals:
     void displayChanged(const QString &val);
 
     // System Optimization signals
+    void classicContextMenuActiveChanged(bool val);
+    void originalClassicContextMenuActiveChanged(bool val);
     void winSearchActiveChanged(bool val);
     void originalWinSearchActiveChanged(bool val);
     void hibernationActiveChanged(bool val);
@@ -329,6 +348,8 @@ signals:
     void originalNotifLockscreenActiveChanged(bool val);
     void powerSchemesChanged(const QVariantList &val);
     void ultimateSchemeUnlockedChanged(bool val);
+    void deleteUltimateStagedChanged(bool val);
+    void deleteDefenderStagedChanged(bool val);
     void activePowerSchemeGuidChanged(const QString &val);
     void targetPowerSchemeGuidChanged(const QString &val);
     void mpoValueChanged(int val);
@@ -383,6 +404,8 @@ private:
     QString m_display;
 
     // System Optimization state
+    bool m_classicContextMenuActive = false;
+    bool m_originalClassicContextMenuActive = false;
     bool m_winSearchActive = true;
     bool m_originalWinSearchActive = true;
     bool m_hibernationActive = false;
@@ -396,6 +419,7 @@ private:
     bool m_originalGamingOverlayActive = true;
     bool m_coreIsolationActive = false;
     bool m_originalCoreIsolationActive = false;
+    bool m_bootCoreIsolationActive = true;
     bool m_mouseAccelerationActive = false;
     bool m_originalMouseAccelerationActive = false;
     bool m_gameModeActive = true;
@@ -434,6 +458,8 @@ private:
     bool m_originalNotifLockscreenActive = true;
     QVariantList m_powerSchemes;
     bool m_ultimateSchemeUnlocked = false;
+    bool m_deleteUltimateStaged = false;
+    bool m_deleteDefenderStaged = false;
     QString m_activePowerSchemeGuid;
     QString m_targetPowerSchemeGuid;
     int m_mpoValue = 0;

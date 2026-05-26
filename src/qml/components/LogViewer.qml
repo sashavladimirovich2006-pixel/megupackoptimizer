@@ -90,10 +90,10 @@ AcrylicPanel {
                 anchors.margins: 8
                 clip: true
                 
-                ScrollBar.vertical: ScrollBar {
+                ScrollBar.vertical: MeguScrollBar {
                     id: vBar
-                    policy: ScrollBar.AsNeeded
                 }
+                ScrollBar.horizontal: MeguScrollBar { }
                 
                 TextArea {
                     id: logText

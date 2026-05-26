@@ -30,6 +30,9 @@ Item {
         clip: true
         contentHeight: mainLayout.implicitHeight
 
+        ScrollBar.vertical: MeguScrollBar { }
+        ScrollBar.horizontal: MeguScrollBar { }
+
         ColumnLayout {
             id: mainLayout
             width: mainScroll.width - 12

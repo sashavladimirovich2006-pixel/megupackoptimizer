@@ -14,6 +14,8 @@
 #include <QRegularExpression>
 #include <QJsonDocument>
 #include <QJsonObject>
+#include <QFile>
+#include <QTextStream>
 
 #ifdef Q_OS_WIN
 #include <windows.h>
@@ -257,6 +259,111 @@ namespace {
         return true;
     }
 
+    QString getVdfSystemSetting(const QString &filePath, const QString &settingKey) {
+        QFile file(filePath);
+        if (!file.open(QIODevice::ReadOnly | QIODevice::Text)) {
+            return "";
+        }
+        QString content = QString::fromUtf8(file.readAll());
+        file.close();
+
+        QRegularExpression systemRegex("\"system\"\\s*\\{");
+        QRegularExpressionMatch match = systemRegex.match(content);
+        if (!match.hasMatch()) {
+            return "";
+        }
+
+        int startIdx = match.capturedEnd();
+        int count = 1;
+        int idx = startIdx;
+        int closeIdx = -1;
+        while (count > 0 && idx < content.length()) {
+            QChar ch = content.at(idx);
+            if (ch == '{') {
+                count++;
+            } else if (ch == '}') {
+                count--;
+                if (count == 0) {
+                    closeIdx = idx;
+                    break;
+                }
+            }
+            idx++;
+        }
+
+        if (closeIdx == -1) {
+            return "";
+        }
+
+        QString systemBlock = content.mid(startIdx, closeIdx - startIdx);
+        QRegularExpression keyRegex(QString("\"%1\"\\s*\"([^\"]*)\"").arg(settingKey));
+        QRegularExpressionMatch keyMatch = keyRegex.match(systemBlock);
+        if (keyMatch.hasMatch()) {
+            return keyMatch.captured(1);
+        }
+        return "";
+    }
+
+    bool updateVdfSystemSetting(const QString &filePath, const QString &settingKey, const QString &value) {
+        QFile file(filePath);
+        if (!file.open(QIODevice::ReadOnly | QIODevice::Text)) {
+            return false;
+        }
+        QString content = QString::fromUtf8(file.readAll());
+        file.close();
+
+        QRegularExpression systemRegex("\"system\"\\s*\\{");
+        QRegularExpressionMatch match = systemRegex.match(content);
+        if (!match.hasMatch()) {
+            return false;
+        }
+
+        int startIdx = match.capturedEnd();
+        int count = 1;
+        int idx = startIdx;
+        int closeIdx = -1;
+        while (count > 0 && idx < content.length()) {
+            QChar ch = content.at(idx);
+            if (ch == '{') {
+                count++;
+            } else if (ch == '}') {
+                count--;
+                if (count == 0) {
+                    closeIdx = idx;
+                    break;
+                }
+            }
+            idx++;
+        }
+
+        if (closeIdx == -1) {
+            return false;
+        }
+
+        QString systemBlock = content.mid(startIdx, closeIdx - startIdx);
+        QRegularExpression keyRegex(QString("\"%1\"\\s*\"([^\"]*)\"").arg(settingKey));
+        QRegularExpressionMatch keyMatch = keyRegex.match(systemBlock);
+
+        QString newSystemBlock;
+        if (keyMatch.hasMatch()) {
+            int keyStart = keyMatch.capturedStart();
+            int keyEnd = keyMatch.capturedEnd();
+            newSystemBlock = systemBlock.left(keyStart) + QString("\"%1\"\t\t\"%2\"").arg(settingKey, value) + systemBlock.mid(keyEnd);
+        } else {
+            QString indent = "\t\t";
+            newSystemBlock = QString("\n%1\"%2\"\t\t\"%3\"").arg(indent, settingKey, value) + systemBlock;
+        }
+
+        QString newContent = content.left(startIdx) + newSystemBlock + content.mid(closeIdx);
+
+        if (!file.open(QIODevice::WriteOnly | QIODevice::Text)) {
+            return false;
+        }
+        file.write(newContent.toUtf8());
+        file.close();
+        return true;
+    }
+
 } // namespace
 
 bool Optimizer::getVdfFriendsSettings(const QString &filePath, const QString &accountId, QVariantMap &settings) {
@@ -296,7 +403,7 @@ bool Optimizer::getVdfFriendsSettings(const QString &filePath, const QString &ac
     }
 
     QString wsBlock = content.mid(startIdx, closeIdx - startIdx);
-    QRegularExpression settingsRegex(QString("\"FriendsUIWebSettings_%1\"\\s*\"([^\"]*)\"").arg(accountId));
+    QRegularExpression settingsRegex(QString("\"FriendsUIWebSettings_%1\"\\s*\"((?:[^\"\\\\]|\\\\.)*)\"").arg(accountId));
     QRegularExpressionMatch settingsMatch = settingsRegex.match(wsBlock);
     if (!settingsMatch.hasMatch()) {
         return false;
@@ -359,7 +466,7 @@ bool Optimizer::updateVdfFriendsSettings(const QString &filePath, const QString 
     escapedJson.replace(QLatin1String("\\"), QLatin1String("\\\\"));
     escapedJson.replace(QLatin1String("\""), QLatin1String("\\\""));
 
-    QRegularExpression settingsRegex(QString("\"FriendsUIWebSettings_%1\"\\s*\"([^\"]*)\"").arg(accountId));
+    QRegularExpression settingsRegex(QString("\"FriendsUIWebSettings_%1\"\\s*\"((?:[^\"\\\\]|\\\\.)*)\"").arg(accountId));
     QRegularExpressionMatch settingsMatch = settingsRegex.match(wsBlock);
 
     QString newWsBlock;
@@ -426,6 +533,13 @@ Optimizer::Optimizer(QObject *parent) : QObject(parent) {
 }
 
 Optimizer::~Optimizer() {
+}
+
+void Optimizer::setClassicContextMenuActive(bool val) {
+    if (m_classicContextMenuActive != val) {
+        m_classicContextMenuActive = val;
+        emit classicContextMenuActiveChanged(m_classicContextMenuActive);
+    }
 }
 
 void Optimizer::setWinSearchActive(bool val) {
@@ -877,6 +991,20 @@ void Optimizer::loadSystemStates() {
     emit winSearchActiveChanged(m_winSearchActive);
     emit originalWinSearchActiveChanged(m_originalWinSearchActive);
 
+    // Load Classic Context Menu state (HKCU\Software\Classes\CLSID\{86ca1aa0-34aa-4e8b-a509-50c905bae2a2}\InprocServer32)
+    bool isClassicContextMenu = false;
+#ifdef Q_OS_WIN
+    HKEY hKeyMenu;
+    if (RegOpenKeyExW(HKEY_CURRENT_USER, L"Software\\Classes\\CLSID\\{86ca1aa0-34aa-4e8b-a509-50c905bae2a2}\\InprocServer32", 0, KEY_READ, &hKeyMenu) == ERROR_SUCCESS) {
+        isClassicContextMenu = true;
+        RegCloseKey(hKeyMenu);
+    }
+#endif
+    m_classicContextMenuActive = isClassicContextMenu;
+    m_originalClassicContextMenuActive = m_classicContextMenuActive;
+    emit classicContextMenuActiveChanged(m_classicContextMenuActive);
+    emit originalClassicContextMenuActiveChanged(m_originalClassicContextMenuActive);
+
     // Query Print Spooler (Printer) startup state on startup
     bool isPrinterDisabled = false;
 #ifdef Q_OS_WIN
@@ -1076,14 +1204,14 @@ void Optimizer::loadSystemStates() {
     emit originalGamingOverlayActiveChanged(m_originalGamingOverlayActive);
 
     // Check Core Isolation (Memory Integrity) state on startup
-    bool isCoreIsolationActive = false;
+    bool isCoreIsolationActive = true; // Default to true (default Windows state)
 #ifdef Q_OS_WIN
     HKEY hKeyCI;
     if (RegOpenKeyExW(HKEY_LOCAL_MACHINE, L"SYSTEM\\CurrentControlSet\\Control\\DeviceGuard\\Scenarios\\HypervisorEnforcedCodeIntegrity", 0, KEY_READ, &hKeyCI) == ERROR_SUCCESS) {
         DWORD value = 0;
         DWORD size = sizeof(value);
         if (RegQueryValueExW(hKeyCI, L"Enabled", NULL, NULL, (LPBYTE)&value, &size) == ERROR_SUCCESS) {
-            isCoreIsolationActive = (value == 1);
+            isCoreIsolationActive = (value != 0);
         }
         RegCloseKey(hKeyCI);
     }
@@ -1092,6 +1220,7 @@ void Optimizer::loadSystemStates() {
 #endif
     m_coreIsolationActive = isCoreIsolationActive;
     m_originalCoreIsolationActive = m_coreIsolationActive;
+    m_bootCoreIsolationActive = isCoreIsolationActive;
     emit coreIsolationActiveChanged(m_coreIsolationActive);
     emit originalCoreIsolationActiveChanged(m_originalCoreIsolationActive);
 
@@ -1333,7 +1462,7 @@ void Optimizer::loadSystemStates() {
         }
 
         bool isActive = (activeErr == ERROR_SUCCESS && IsEqualGUID(schemeGuid, activeGuid));
-        bool isUltimate = IsEqualGUID(schemeGuid, ultimateGuid);
+        bool isUltimate = IsEqualGUID(schemeGuid, ultimateGuid) || name.contains("Ultimate Performance") || name.contains("Ultimate") || name.contains("Максимальная производительность");
         if (isUltimate) {
             isUltimateUnlocked = true;
         }
@@ -1371,11 +1500,13 @@ void Optimizer::loadSystemStates() {
 
     m_powerSchemes = schemesList;
     m_ultimateSchemeUnlocked = isUltimateUnlocked;
+    m_deleteUltimateStaged = false;
     m_activePowerSchemeGuid = activeSchemeGuidStr;
     m_targetPowerSchemeGuid = activeSchemeGuidStr;
 
     emit powerSchemesChanged(m_powerSchemes);
     emit ultimateSchemeUnlockedChanged(m_ultimateSchemeUnlocked);
+    emit deleteUltimateStagedChanged(m_deleteUltimateStaged);
     emit activePowerSchemeGuidChanged(m_activePowerSchemeGuid);
     emit targetPowerSchemeGuidChanged(m_targetPowerSchemeGuid);
 
@@ -1774,14 +1905,40 @@ void Optimizer::loadSystemStates() {
         QString userdataPath = steamPath + "/userdata";
         QDir userdataDir(userdataPath);
         if (userdataDir.exists()) {
-            QStringList subdirs = userdataDir.entryList(QDir::Dirs | QDir::NoDotAndDotDot);
-            for (const QString &subdir : subdirs) {
-                QString vdfPath = userdataPath + "/" + subdir + "/config/localconfig.vdf";
+#ifdef Q_OS_WIN
+            // 1. Try to query the active user from registry first
+            QString activeUserStr = "";
+            DWORD activeUser = 0;
+            HKEY hKeyActive;
+            if (RegOpenKeyExW(HKEY_CURRENT_USER, L"Software\\Valve\\Steam\\ActiveProcess", 0, KEY_READ, &hKeyActive) == ERROR_SUCCESS) {
+                DWORD dwSize = sizeof(activeUser);
+                if (RegQueryValueExW(hKeyActive, L"ActiveUser", nullptr, nullptr, reinterpret_cast<LPBYTE>(&activeUser), &dwSize) == ERROR_SUCCESS) {
+                    if (activeUser != 0) {
+                        activeUserStr = QString::number(activeUser);
+                    }
+                }
+                RegCloseKey(hKeyActive);
+            }
+            if (!activeUserStr.isEmpty()) {
+                QString vdfPath = userdataPath + "/" + activeUserStr + "/config/localconfig.vdf";
                 if (QFile::exists(vdfPath)) {
                     QString opts = getVdfLaunchOptions(vdfPath, "730");
-                    if (!opts.isEmpty() && !loadedFromProfile) {
-                        firstLaunchOptions = opts;
-                        loadedFromProfile = true;
+                    firstLaunchOptions = opts;
+                    loadedFromProfile = true;
+                }
+            }
+#endif
+            // 2. If active user detection failed or settings not loaded, fallback to subdir loop
+            if (!loadedFromProfile) {
+                QStringList subdirs = userdataDir.entryList(QDir::Dirs | QDir::NoDotAndDotDot);
+                for (const QString &subdir : subdirs) {
+                    QString vdfPath = userdataPath + "/" + subdir + "/config/localconfig.vdf";
+                    if (QFile::exists(vdfPath)) {
+                        QString opts = getVdfLaunchOptions(vdfPath, "730");
+                        if (!opts.isEmpty() && !loadedFromProfile) {
+                            firstLaunchOptions = opts;
+                            loadedFromProfile = true;
+                        }
                     }
                 }
             }
@@ -1828,46 +1985,120 @@ void Optimizer::loadSystemStates() {
     defaultFriendsSettings["bDisableSpellCheck"] = false;
     defaultFriendsSettings["bDisableRoomEffects"] = false;
     defaultFriendsSettings["fontSize"] = QString("default");
+    defaultFriendsSettings["bScaleTextAndIcons"] = true;
+    defaultFriendsSettings["bRunOnStartup"] = false;
 
     m_steamFriendsSettings.clear();
     if (m_steamInstalled) {
         QString userdataPath = steamPath + "/userdata";
         QDir userdataDir(userdataPath);
         if (userdataDir.exists()) {
-            QStringList subdirs = userdataDir.entryList(QDir::Dirs | QDir::NoDotAndDotDot);
-            for (const QString &subdir : subdirs) {
-                QString vdfPath = userdataPath + "/" + subdir + "/config/localconfig.vdf";
+            bool loaded = false;
+            // 1. Try to query the active user from registry first
+#ifdef Q_OS_WIN
+            DWORD activeUser = 0;
+            HKEY hKeyActive;
+            if (RegOpenKeyExW(HKEY_CURRENT_USER, L"Software\\Valve\\Steam\\ActiveProcess", 0, KEY_READ, &hKeyActive) == ERROR_SUCCESS) {
+                DWORD dwSize = sizeof(activeUser);
+                if (RegQueryValueExW(hKeyActive, L"ActiveUser", nullptr, nullptr, reinterpret_cast<LPBYTE>(&activeUser), &dwSize) == ERROR_SUCCESS) {
+                    // Success
+                }
+                RegCloseKey(hKeyActive);
+            }
+            if (activeUser != 0) {
+                QString activeUserStr = QString::number(activeUser);
+                QString vdfPath = userdataPath + "/" + activeUserStr + "/config/localconfig.vdf";
                 if (QFile::exists(vdfPath)) {
                     QVariantMap loadedSettings;
-                    if (getVdfFriendsSettings(vdfPath, subdir, loadedSettings)) {
-                        if (!loadedSettings.isEmpty()) {
-                            m_steamFriendsSettings = loadedSettings;
-                            break;
+                    if (getVdfFriendsSettings(vdfPath, activeUserStr, loadedSettings)) {
+                        m_steamFriendsSettings = loadedSettings;
+                        loaded = true;
+                    }
+                }
+            }
+#endif
+            // 2. If active user detection failed or settings not loaded, fallback to subdir loop
+            if (!loaded) {
+                QStringList subdirs = userdataDir.entryList(QDir::Dirs | QDir::NoDotAndDotDot);
+                for (const QString &subdir : subdirs) {
+                    QString vdfPath = userdataPath + "/" + subdir + "/config/localconfig.vdf";
+                    if (QFile::exists(vdfPath)) {
+                        QVariantMap loadedSettings;
+                        if (getVdfFriendsSettings(vdfPath, subdir, loadedSettings)) {
+                            if (!loadedSettings.isEmpty()) {
+                                m_steamFriendsSettings = loadedSettings;
+                                break;
+                            }
                         }
                     }
                 }
             }
         }
     }
-    if (m_steamFriendsSettings.isEmpty()) {
-        m_steamFriendsSettings = defaultFriendsSettings;
+
+    // Merge loaded settings with defaults to ensure missing options default to correct values (e.g. bScaleTextAndIcons = true)
+    for (auto it = defaultFriendsSettings.constBegin(); it != defaultFriendsSettings.constEnd(); ++it) {
+        if (!m_steamFriendsSettings.contains(it.key())) {
+            m_steamFriendsSettings[it.key()] = it.value();
+        }
     }
+
+#ifdef Q_OS_WIN
+    bool registryStartup = false;
+    HKEY hKeyRun;
+    if (RegOpenKeyExW(HKEY_CURRENT_USER, L"Software\\Microsoft\\Windows\\CurrentVersion\\Run", 0, KEY_READ, &hKeyRun) == ERROR_SUCCESS) {
+        if (RegQueryValueExW(hKeyRun, L"Steam", nullptr, nullptr, nullptr, nullptr) == ERROR_SUCCESS) {
+            registryStartup = true;
+        }
+        RegCloseKey(hKeyRun);
+    }
+    m_steamFriendsSettings["bRunOnStartup"] = registryStartup;
+#endif
     m_originalSteamFriendsSettings = m_steamFriendsSettings;
     emit steamFriendsSettingsChanged(m_steamFriendsSettings);
     emit originalSteamFriendsSettingsChanged(m_originalSteamFriendsSettings);
 
-    // Load global Steam Overlay active state (Registry)
+    // Load global Steam Overlay active state (VDF & Registry)
     bool steamOverlayActive = true;
 #ifdef Q_OS_WIN
-    HKEY hKeySteamOverlay;
-    if (RegOpenKeyExW(HKEY_CURRENT_USER, L"Software\\Valve\\Steam", 0, KEY_READ, &hKeySteamOverlay) == ERROR_SUCCESS) {
-        DWORD enableOverlayVal = 1;
-        DWORD dwSize = sizeof(enableOverlayVal);
-        DWORD dwType = REG_DWORD;
-        if (RegQueryValueExW(hKeySteamOverlay, L"EnableOverlay", nullptr, &dwType, reinterpret_cast<LPBYTE>(&enableOverlayVal), &dwSize) == ERROR_SUCCESS) {
-            steamOverlayActive = (enableOverlayVal != 0);
+    // 1. Try to query the active user from registry to check their VDF
+    QString activeUserStr = "";
+    DWORD activeUser = 0;
+    HKEY hKeyActive;
+    if (RegOpenKeyExW(HKEY_CURRENT_USER, L"Software\\Valve\\Steam\\ActiveProcess", 0, KEY_READ, &hKeyActive) == ERROR_SUCCESS) {
+        DWORD dwSize = sizeof(activeUser);
+        if (RegQueryValueExW(hKeyActive, L"ActiveUser", nullptr, nullptr, reinterpret_cast<LPBYTE>(&activeUser), &dwSize) == ERROR_SUCCESS) {
+            if (activeUser != 0) {
+                activeUserStr = QString::number(activeUser);
+            }
         }
-        RegCloseKey(hKeySteamOverlay);
+        RegCloseKey(hKeyActive);
+    }
+
+    bool loadedGlobalOverlayFromVdf = false;
+    if (!activeUserStr.isEmpty() && !steamPath.isEmpty() && QDir(steamPath).exists()) {
+        QString vdfPath = steamPath + "/userdata/" + activeUserStr + "/config/localconfig.vdf";
+        if (QFile::exists(vdfPath)) {
+            QString gOverlay = getVdfSystemSetting(vdfPath, "EnableGameOverlay");
+            if (!gOverlay.isEmpty()) {
+                steamOverlayActive = (gOverlay != "0");
+                loadedGlobalOverlayFromVdf = true;
+            }
+        }
+    }
+
+    // 2. If VDF is not found or key is absent, fallback to registry
+    if (!loadedGlobalOverlayFromVdf) {
+        HKEY hKeySteamOverlay;
+        if (RegOpenKeyExW(HKEY_CURRENT_USER, L"Software\\Valve\\Steam", 0, KEY_READ, &hKeySteamOverlay) == ERROR_SUCCESS) {
+            DWORD enableOverlayVal = 1;
+            DWORD dwSize = sizeof(enableOverlayVal);
+            DWORD dwType = REG_DWORD;
+            if (RegQueryValueExW(hKeySteamOverlay, L"EnableOverlay", nullptr, &dwType, reinterpret_cast<LPBYTE>(&enableOverlayVal), &dwSize) == ERROR_SUCCESS) {
+                steamOverlayActive = (enableOverlayVal != 0);
+            }
+            RegCloseKey(hKeySteamOverlay);
+        }
     }
 #endif
     m_steamOverlayActive = steamOverlayActive;
@@ -1883,14 +2114,42 @@ void Optimizer::loadSystemStates() {
         QString userdataPath = steamPath + "/userdata";
         QDir userdataDir(userdataPath);
         if (userdataDir.exists()) {
-            QStringList subdirs = userdataDir.entryList(QDir::Dirs | QDir::NoDotAndDotDot);
-            for (const QString &subdir : subdirs) {
-                QString vdfPath = userdataPath + "/" + subdir + "/config/localconfig.vdf";
+#ifdef Q_OS_WIN
+            // 1. Try to query the active user from registry first
+            QString activeUserStr = "";
+            DWORD activeUser = 0;
+            HKEY hKeyActive;
+            if (RegOpenKeyExW(HKEY_CURRENT_USER, L"Software\\Valve\\Steam\\ActiveProcess", 0, KEY_READ, &hKeyActive) == ERROR_SUCCESS) {
+                DWORD dwSize = sizeof(activeUser);
+                if (RegQueryValueExW(hKeyActive, L"ActiveUser", nullptr, nullptr, reinterpret_cast<LPBYTE>(&activeUser), &dwSize) == ERROR_SUCCESS) {
+                    if (activeUser != 0) {
+                        activeUserStr = QString::number(activeUser);
+                    }
+                }
+                RegCloseKey(hKeyActive);
+            }
+            if (!activeUserStr.isEmpty()) {
+                QString vdfPath = userdataPath + "/" + activeUserStr + "/config/localconfig.vdf";
                 if (QFile::exists(vdfPath)) {
                     QString overlayState = getVdfOverlayState(vdfPath, "730");
-                    if (!overlayState.isEmpty() && !loadedOverlayFromProfile) {
+                    if (!overlayState.isEmpty()) {
                         cs2OverlayActive = (overlayState != "2");
                         loadedOverlayFromProfile = true;
+                    }
+                }
+            }
+#endif
+            // 2. If active user detection failed, fallback to subdir loop
+            if (!loadedOverlayFromProfile) {
+                QStringList subdirs = userdataDir.entryList(QDir::Dirs | QDir::NoDotAndDotDot);
+                for (const QString &subdir : subdirs) {
+                    QString vdfPath = userdataPath + "/" + subdir + "/config/localconfig.vdf";
+                    if (QFile::exists(vdfPath)) {
+                        QString overlayState = getVdfOverlayState(vdfPath, "730");
+                        if (!overlayState.isEmpty() && !loadedOverlayFromProfile) {
+                            cs2OverlayActive = (overlayState != "2");
+                            loadedOverlayFromProfile = true;
+                        }
                     }
                 }
             }
@@ -1945,6 +2204,7 @@ void Optimizer::startSystemOptimization() {
 
     // Copy targets to worker thread scope
     bool searchVal = m_winSearchActive;
+    bool classicContextMenuVal = m_classicContextMenuActive;
     bool hibernationVal = m_hibernationActive;
     bool overlayVal = m_gamingOverlayActive;
     bool coreIsolationVal = m_coreIsolationActive;
@@ -2002,6 +2262,7 @@ void Optimizer::startSystemOptimization() {
     QVariantMap targets = m_driveStates;
     QVariantMap originalTargets = m_originalDriveStates;
     bool origSearch = m_originalWinSearchActive;
+    bool origClassicContextMenu = m_originalClassicContextMenuActive;
     bool origHibernation = m_originalHibernationActive;
     bool origOverlay = m_originalGamingOverlayActive;
     bool origCoreIsolation = m_originalCoreIsolationActive;
@@ -2041,10 +2302,12 @@ void Optimizer::startSystemOptimization() {
     QVariantMap steamFriendsSettingsVal = m_steamFriendsSettings;
     QVariantMap origSteamFriendsSettingsVal = m_originalSteamFriendsSettings;
     bool steamFriendsChanged = (m_steamFriendsSettings != m_originalSteamFriendsSettings);
+    bool deleteUltimateStagedVal = m_deleteUltimateStaged;
+    bool deleteDefenderStagedVal = m_deleteDefenderStaged;
 
-    QThread* worker = QThread::create([this, searchVal, hibernationVal, overlayVal, coreIsolationVal, mouseAccelVal, gameModeVal, firewallVal, printerVal, bitlockerVal, discordOverlayVal, notificationsVal, notifGlobalVal, notifAppVal, notifSoundsVal, notifLockscreenVal, targetPowerSchemeVal, activePowerSchemeVal, defenderVal, defenderRegistryVal, defenderCmdVal, defenderServiceVal, remoteAccessVal, telemetryVal, telemetryDiagTrackVal, telemetryWapPushVal, telemetryCeipVal, telemetryWerVal, windowsUpdateModeVal, targets, originalTargets, origSearch, origHibernation, origOverlay, origCoreIsolation, origMouseAccel, origGameMode, origFirewall, origPrinter, origBitlocker, origDiscordOverlay, origNotifications, origNotifGlobal, origNotifApp, origNotifSounds, origNotifLockscreen, origDefender, origDefenderRegistry, origDefenderCmd, origDefenderService, origRemoteAccess, origTelemetry, origTelemetryDiagTrack, origTelemetryWapPush, origTelemetryCeip, origTelemetryWer, origWindowsUpdateMode, usbDevicesVal, origUsbDevicesVal, steamPathVal, cs2OptionsVal, origCs2OptionsVal, steamOverlayVal, origSteamOverlayVal, cs2OverlayVal, origCs2OverlayVal, visualEffectsVal, origVisualEffectsVal, steamFriendsSettingsVal, origSteamFriendsSettingsVal, steamFriendsChanged]() {
+    QThread* worker = QThread::create([this, searchVal, classicContextMenuVal, hibernationVal, overlayVal, coreIsolationVal, mouseAccelVal, gameModeVal, firewallVal, printerVal, bitlockerVal, discordOverlayVal, notificationsVal, notifGlobalVal, notifAppVal, notifSoundsVal, notifLockscreenVal, targetPowerSchemeVal, activePowerSchemeVal, deleteUltimateStagedVal, deleteDefenderStagedVal, defenderVal, defenderRegistryVal, defenderCmdVal, defenderServiceVal, remoteAccessVal, telemetryVal, telemetryDiagTrackVal, telemetryWapPushVal, telemetryCeipVal, telemetryWerVal, windowsUpdateModeVal, targets, originalTargets, origSearch, origClassicContextMenu, origHibernation, origOverlay, origCoreIsolation, origMouseAccel, origGameMode, origFirewall, origPrinter, origBitlocker, origDiscordOverlay, origNotifications, origNotifGlobal, origNotifApp, origNotifSounds, origNotifLockscreen, origDefender, origDefenderRegistry, origDefenderCmd, origDefenderService, origRemoteAccess, origTelemetry, origTelemetryDiagTrack, origTelemetryWapPush, origTelemetryCeip, origTelemetryWer, origWindowsUpdateMode, usbDevicesVal, origUsbDevicesVal, steamPathVal, cs2OptionsVal, origCs2OptionsVal, steamOverlayVal, origSteamOverlayVal, cs2OverlayVal, origCs2OverlayVal, visualEffectsVal, origVisualEffectsVal, steamFriendsSettingsVal, origSteamFriendsSettingsVal, steamFriendsChanged]() {
         // Step 0: Check if anything actually changed
-        bool powerPlanChanged = (targetPowerSchemeVal != activePowerSchemeVal);
+        bool powerPlanChanged = (targetPowerSchemeVal != activePowerSchemeVal) || deleteUltimateStagedVal;
         bool usbChanged = false;
         if (usbDevicesVal.size() == origUsbDevicesVal.size()) {
             for (int i = 0; i < usbDevicesVal.size(); ++i) {
@@ -2071,6 +2334,7 @@ void Optimizer::startSystemOptimization() {
         bool visualEffectsChanged = (visualEffectsVal != origVisualEffectsVal);
 
         bool anyChanges = (searchVal != origSearch) || 
+                          (classicContextMenuVal != origClassicContextMenu) || 
                           (hibernationVal != origHibernation) || 
                           (overlayVal != origOverlay) ||
                           (coreIsolationVal != origCoreIsolation) ||
@@ -2097,7 +2361,7 @@ void Optimizer::startSystemOptimization() {
                           cs2Changed ||
                           steamOverlayChanged ||
                           cs2OverlayChanged ||
-                          visualEffectsChanged;
+                          visualEffectsChanged || deleteDefenderStagedVal;
         if (!anyChanges) {
             for (const QString &driveLetter : targets.keys()) {
                 if (targets.value(driveLetter).toBool() != originalTargets.value(driveLetter).toBool()) {
@@ -2195,6 +2459,57 @@ void Optimizer::startSystemOptimization() {
         m_systemProgress = 0.20;
         emit systemProgressChanged(m_systemProgress);
         QThread::msleep(300);
+
+        // Step 1.05: Classic Context Menu Configuration (only if changed)
+        bool classicContextMenuSuccess = true;
+        if (classicContextMenuVal != origClassicContextMenu) {
+            emit systemStepReported(tr("Processing Classic Context Menu configuration..."), "INFO");
+            QThread::msleep(800);
+#ifdef Q_OS_WIN
+            bool success = false;
+            HKEY hKeyMenu = nullptr;
+            if (classicContextMenuVal) {
+                // Enable Windows 10 style context menu
+                // We create HKCU\Software\Classes\CLSID\{86ca1aa0-34aa-4e8b-a509-50c905bae2a2}\InprocServer32
+                // and set its default value to an empty string.
+                LSTATUS status = RegCreateKeyExW(HKEY_CURRENT_USER, 
+                    L"Software\\Classes\\CLSID\\{86ca1aa0-34aa-4e8b-a509-50c905bae2a2}\\InprocServer32", 
+                    0, nullptr, REG_OPTION_NON_VOLATILE, KEY_WRITE, nullptr, &hKeyMenu, nullptr);
+                if (status == ERROR_SUCCESS) {
+                    wchar_t empty[] = L"";
+                    status = RegSetValueExW(hKeyMenu, nullptr, 0, REG_SZ, reinterpret_cast<const BYTE*>(empty), sizeof(empty));
+                    if (status == ERROR_SUCCESS) {
+                        success = true;
+                    }
+                    RegCloseKey(hKeyMenu);
+                }
+            } else {
+                // Restore Windows 11 style context menu
+                // Delete the subkey InprocServer32, and then the key {86ca1aa0-34aa-4e8b-a509-50c905bae2a2}
+                LSTATUS status = RegDeleteKeyW(HKEY_CURRENT_USER, 
+                    L"Software\\Classes\\CLSID\\{86ca1aa0-34aa-4e8b-a509-50c905bae2a2}\\InprocServer32");
+                if (status == ERROR_SUCCESS || status == ERROR_FILE_NOT_FOUND) {
+                    status = RegDeleteKeyW(HKEY_CURRENT_USER, 
+                        L"Software\\Classes\\CLSID\\{86ca1aa0-34aa-4e8b-a509-50c905bae2a2}");
+                    if (status == ERROR_SUCCESS || status == ERROR_FILE_NOT_FOUND) {
+                        success = true;
+                    }
+                }
+            }
+
+            if (success) {
+                QString logMsg = classicContextMenuVal ? tr("Classic Context Menu is now ENABLED. Please restart Windows Explorer to apply changes.") : tr("Classic Context Menu is now DISABLED. Please restart Windows Explorer to apply changes.");
+                emit systemStepReported(logMsg, "SUCCESS");
+            } else {
+                classicContextMenuSuccess = false;
+                emit systemStepReported(tr("Failed to update Classic Context Menu state."), "ERROR");
+            }
+#else
+            emit systemStepReported(tr("[Simulation] Classic Context Menu set to: %1").arg(classicContextMenuVal ? "Enabled" : "Disabled"), "SUCCESS");
+#endif
+            m_classicContextMenuActive = classicContextMenuVal;
+            emit classicContextMenuActiveChanged(m_classicContextMenuActive);
+        }
 
         // Step 1.5: Hibernation Configuration (only if changed)
         bool hibernationSuccess = true;
@@ -2336,20 +2651,36 @@ void Optimizer::startSystemOptimization() {
 #ifdef Q_OS_WIN
             bool success = false;
             HKEY hKeyCI;
-            if (RegCreateKeyExW(HKEY_LOCAL_MACHINE, L"SYSTEM\\CurrentControlSet\\Control\\DeviceGuard\\Scenarios\\HypervisorEnforcedCodeIntegrity", 0, NULL, REG_OPTION_NON_VOLATILE, KEY_WRITE, NULL, &hKeyCI, NULL) == ERROR_SUCCESS) {
-                DWORD val = coreIsolationVal ? 1 : 0;
-                if (RegSetValueExW(hKeyCI, L"Enabled", 0, REG_DWORD, (const BYTE*)&val, sizeof(val)) == ERROR_SUCCESS) {
-                    success = true;
+            if (coreIsolationVal) {
+                // If enabling, set "Enabled" to 1
+                if (RegCreateKeyExW(HKEY_LOCAL_MACHINE, L"SYSTEM\\CurrentControlSet\\Control\\DeviceGuard\\Scenarios\\HypervisorEnforcedCodeIntegrity", 0, NULL, REG_OPTION_NON_VOLATILE, KEY_WRITE, NULL, &hKeyCI, NULL) == ERROR_SUCCESS) {
+                    DWORD val = 1;
+                    if (RegSetValueExW(hKeyCI, L"Enabled", 0, REG_DWORD, (const BYTE*)&val, sizeof(val)) == ERROR_SUCCESS) {
+                        success = true;
+                    }
+                    RegCloseKey(hKeyCI);
                 }
-                RegCloseKey(hKeyCI);
+            } else {
+                // If disabling, set "Enabled" to 0
+                if (RegCreateKeyExW(HKEY_LOCAL_MACHINE, L"SYSTEM\\CurrentControlSet\\Control\\DeviceGuard\\Scenarios\\HypervisorEnforcedCodeIntegrity", 0, NULL, REG_OPTION_NON_VOLATILE, KEY_WRITE, NULL, &hKeyCI, NULL) == ERROR_SUCCESS) {
+                    DWORD val = 0;
+                    if (RegSetValueExW(hKeyCI, L"Enabled", 0, REG_DWORD, (const BYTE*)&val, sizeof(val)) == ERROR_SUCCESS) {
+                        success = true;
+                    }
+                    RegCloseKey(hKeyCI);
+                }
             }
-            
+
             if (success) {
                 QString logMsg = coreIsolationVal ? tr("Core Isolation is now ENABLED.") : tr("Core Isolation is now DISABLED.");
                 emit systemStepReported(logMsg, "SUCCESS");
+                Logger::log(logMsg, "SUCCESS");
+                emit systemStepReported(tr("Please restart your PC to apply Core Isolation changes."), "WARNING");
+                Logger::log("Please restart your PC to apply Core Isolation changes.", "WARNING");
             } else {
                 coreIsolationSuccess = false;
                 emit systemStepReported(tr("Failed to update Core Isolation state. Error: %1").arg(GetLastError()), "ERROR");
+                Logger::log(tr("Failed to update Core Isolation state. Error: %1").arg(GetLastError()), "ERROR");
             }
 #else
             emit systemStepReported(tr("[Simulation] Core Isolation set to: %1").arg(coreIsolationVal ? "Enabled" : "Disabled"), "SUCCESS");
@@ -2691,6 +3022,99 @@ void Optimizer::startSystemOptimization() {
             emit notifLockscreenActiveChanged(m_notifLockscreenActive);
         }
 
+        // Step 1.99c: Windows Defender Complete Removal (if staged)
+        if (deleteDefenderStagedVal) {
+            emit systemStepReported(tr("Processing complete removal of Windows Defender..."), "INFO");
+            QThread::msleep(800);
+#ifdef Q_OS_WIN
+            bool ok = true;
+            // 1. Open SC Manager and disable/stop all known defender and security service components
+            SC_HANDLE hSCM = OpenSCManagerW(NULL, NULL, SC_MANAGER_ALL_ACCESS);
+            if (hSCM) {
+                const wchar_t* serviceList[] = { L"WinDefend", L"Sense", L"WdFilter", L"WdBoot", L"SecurityHealthService", L"wscsvc" };
+                for (int i = 0; i < 6; ++i) {
+                    SC_HANDLE hService = OpenServiceW(hSCM, serviceList[i], SERVICE_CHANGE_CONFIG | SERVICE_STOP);
+                    if (hService) {
+                        ChangeServiceConfigW(hService, SERVICE_NO_CHANGE, SERVICE_DISABLED, SERVICE_NO_CHANGE, NULL, NULL, NULL, NULL, NULL, NULL, NULL);
+                        SERVICE_STATUS status;
+                        ControlService(hService, SERVICE_CONTROL_STOP, &status);
+                        CloseServiceHandle(hService);
+                    }
+                }
+                CloseServiceHandle(hSCM);
+            }
+            
+            // 2. Direct service disablement via Registry keys
+            const wchar_t* registryServices[] = {
+                L"SYSTEM\\CurrentControlSet\\Services\\WinDefend",
+                L"SYSTEM\\CurrentControlSet\\Services\\Sense",
+                L"SYSTEM\\CurrentControlSet\\Services\\WdFilter",
+                L"SYSTEM\\CurrentControlSet\\Services\\WdBoot",
+                L"SYSTEM\\CurrentControlSet\\Services\\SecurityHealthService",
+                L"SYSTEM\\CurrentControlSet\\Services\\wscsvc"
+            };
+            for (int i = 0; i < 6; ++i) {
+                HKEY hKey;
+                if (RegOpenKeyExW(HKEY_LOCAL_MACHINE, registryServices[i], 0, KEY_SET_VALUE, &hKey) == ERROR_SUCCESS) {
+                    DWORD startVal = 4; // Disabled
+                    RegSetValueExW(hKey, L"Start", 0, REG_DWORD, (const BYTE*)&startVal, sizeof(startVal));
+                    RegCloseKey(hKey);
+                }
+            }
+
+            // 3. Apply Group Policies to permanently block it
+            HKEY hKeyDef;
+            if (RegCreateKeyExW(HKEY_LOCAL_MACHINE, L"SOFTWARE\\Policies\\Microsoft\\Windows Defender", 0, NULL, REG_OPTION_NON_VOLATILE, KEY_WRITE, NULL, &hKeyDef, NULL) == ERROR_SUCCESS) {
+                DWORD val = 1;
+                RegSetValueExW(hKeyDef, L"DisableAntiSpyware", 0, REG_DWORD, (const BYTE*)&val, sizeof(val));
+                RegSetValueExW(hKeyDef, L"DisableAntiVirus", 0, REG_DWORD, (const BYTE*)&val, sizeof(val));
+                RegCloseKey(hKeyDef);
+            }
+            
+            HKEY hKeyRT;
+            if (RegCreateKeyExW(HKEY_LOCAL_MACHINE, L"SOFTWARE\\Policies\\Microsoft\\Windows Defender\\Real-Time Protection", 0, NULL, REG_OPTION_NON_VOLATILE, KEY_WRITE, NULL, &hKeyRT, NULL) == ERROR_SUCCESS) {
+                DWORD val = 1;
+                RegSetValueExW(hKeyRT, L"DisableBehaviorMonitoring", 0, REG_DWORD, (const BYTE*)&val, sizeof(val));
+                RegSetValueExW(hKeyRT, L"DisableOnAccessProtection", 0, REG_DWORD, (const BYTE*)&val, sizeof(val));
+                RegSetValueExW(hKeyRT, L"DisableScanOnRealtimeEnable", 0, REG_DWORD, (const BYTE*)&val, sizeof(val));
+                RegSetValueExW(hKeyRT, L"DisableRealtimeMonitoring", 0, REG_DWORD, (const BYTE*)&val, sizeof(val));
+                RegCloseKey(hKeyRT);
+            }
+
+            // 4. Disable Defender Scheduled Tasks
+            QProcess taskProc;
+            QStringList tasks = {
+                "Microsoft\\Windows\\Windows Defender\\Windows Defender Cache Maintenance",
+                "Microsoft\\Windows\\Windows Defender\\Windows Defender Cleanup",
+                "Microsoft\\Windows\\Windows Defender\\Windows Defender Scheduled Scan",
+                "Microsoft\\Windows\\Windows Defender\\Windows Defender Verification"
+            };
+            for (const QString &task : tasks) {
+                taskProc.start("schtasks", QStringList() << "/change" << "/tn" << task << "/disable");
+                taskProc.waitForFinished(2000);
+            }
+            
+            // 5. Run uninstall windows feature via PowerShell
+            QProcess psProc;
+            psProc.start("powershell.exe", QStringList() << "-NoProfile" << "-NonInteractive" << "-Command" << "Uninstall-WindowsFeature -Name Windows-Defender; Set-MpPreference -DisableRealtimeMonitoring $true");
+            psProc.waitForFinished(10000);
+            
+            emit systemStepReported(tr("Windows Defender completely deleted and disabled!"), "SUCCESS");
+#else
+            emit systemStepReported(tr("[Simulation] Windows Defender completely removed and disabled."), "SUCCESS");
+#endif
+            m_deleteDefenderStaged = false;
+            m_defenderActive = false;
+            m_defenderRegistryActive = false;
+            m_defenderCmdActive = false;
+            m_defenderServiceActive = false;
+            emit deleteDefenderStagedChanged(m_deleteDefenderStaged);
+            emit defenderActiveChanged(m_defenderActive);
+            emit defenderRegistryActiveChanged(m_defenderRegistryActive);
+            emit defenderCmdActiveChanged(m_defenderCmdActive);
+            emit defenderServiceActiveChanged(m_defenderServiceActive);
+        }
+
         // Step 1.99d: Windows Defender Configuration (only if changed)
         bool defenderSuccess = true;
         if ((defenderVal != origDefender) ||
@@ -2810,9 +3234,58 @@ void Optimizer::startSystemOptimization() {
 #ifdef Q_OS_WIN
             bool success = true;
             const QString ultimateGuidStr = "{E9A22B95-E3B0-4B87-A177-728978ED6022}";
+            QString finalTargetPowerSchemeVal = targetPowerSchemeVal;
             
-            // Check if we need to duplicate/unlock Ultimate Performance scheme
-            if (targetPowerSchemeVal == ultimateGuidStr) {
+            if (deleteUltimateStagedVal) {
+                // Set target scheme active first (so we are not deleting the currently active scheme)
+                GUID targetGuid;
+                HRESULT hr = CLSIDFromString((LPCOLESTR)finalTargetPowerSchemeVal.utf16(), &targetGuid);
+                if (SUCCEEDED(hr)) {
+                    PowerSetActiveScheme(NULL, &targetGuid);
+                }
+                
+                // Delete all custom/standard Ultimate Performance schemes
+                QStringList guidsToDelete;
+                DWORD bufferSize = sizeof(GUID);
+                DWORD index = 0;
+                GUID schemeGuid;
+                while (PowerEnumerate(NULL, NULL, NULL, ACCESS_SCHEME, index, (UCHAR*)&schemeGuid, &bufferSize) == ERROR_SUCCESS) {
+                    UCHAR friendlyName[256] = {0};
+                    DWORD friendlyNameSize = sizeof(friendlyName);
+                    PowerReadFriendlyName(NULL, &schemeGuid, NULL, NULL, friendlyName, &friendlyNameSize);
+                    QString name = QString::fromWCharArray((const wchar_t*)friendlyName);
+                    
+                    wchar_t gStr[64] = {0};
+                    StringFromGUID2(schemeGuid, gStr, 64);
+                    QString guidStrQ = QString::fromWCharArray(gStr).toUpper();
+                    
+                    bool isUltimate = (guidStrQ == ultimateGuidStr) || 
+                                      name.contains("Ultimate Performance") || 
+                                      name.contains("Ultimate") || 
+                                      name.contains("Максимальна продуктивність") || 
+                                      name.contains("Максимальная производительность");
+                    if (isUltimate) {
+                        guidsToDelete.append(guidStrQ);
+                    }
+                    index++;
+                    bufferSize = sizeof(GUID);
+                }
+                
+                for (const QString &guidStr : guidsToDelete) {
+                    QString cleanGuid = guidStr;
+                    cleanGuid.replace("{", "").replace("}", "");
+                    QProcess proc;
+                    proc.start("powercfg.exe", QStringList() << "-delete" << cleanGuid);
+                    proc.waitForFinished(4000);
+                    Logger::log(QString("Deleted custom Ultimate Performance scheme during optimization: %1").arg(guidStr), "INFO");
+                }
+                
+                m_activePowerSchemeGuid = finalTargetPowerSchemeVal;
+                emit activePowerSchemeGuidChanged(m_activePowerSchemeGuid);
+                emit systemStepReported(tr("Ultimate Performance scheme deleted from system."), "SUCCESS");
+                
+                success = false; // Skip duplicate/activation since we handled it
+            } else if (finalTargetPowerSchemeVal == ultimateGuidStr) {
                 GUID schemeGuid;
                 DWORD bufferSize = sizeof(GUID);
                 DWORD index = 0;
@@ -2828,20 +3301,69 @@ void Optimizer::startSystemOptimization() {
                 }
                 
                 if (!found) {
+                    // Try to scan for any existing custom scheme containing "Ultimate Performance" or similar in its name
+                    index = 0;
+                    bufferSize = sizeof(GUID);
+                    GUID customUltGuid;
+                    while (PowerEnumerate(NULL, NULL, NULL, ACCESS_SCHEME, index, (UCHAR*)&customUltGuid, &bufferSize) == ERROR_SUCCESS) {
+                        UCHAR friendlyName[256] = {0};
+                        DWORD friendlyNameSize = sizeof(friendlyName);
+                        PowerReadFriendlyName(NULL, &customUltGuid, NULL, NULL, friendlyName, &friendlyNameSize);
+                        QString name = QString::fromWCharArray((const wchar_t*)friendlyName);
+                        if (name.contains("Ultimate Performance") || name.contains("Ultimate") || name.contains("Максимальная производительность")) {
+                            wchar_t customUltGuidStr[64] = {0};
+                            StringFromGUID2(customUltGuid, customUltGuidStr, 64);
+                            finalTargetPowerSchemeVal = QString::fromWCharArray(customUltGuidStr).toUpper();
+                            found = true;
+                            break;
+                        }
+                        index++;
+                        bufferSize = sizeof(GUID);
+                    }
+                }
+                
+                if (!found) {
                     QProcess proc;
                     proc.start("powercfg.exe", QStringList() << "-duplicatescheme" << "e9a22b95-e3b0-4b87-a177-728978ed6022");
-                    if (!proc.waitForFinished(8000)) {
-                        success = false;
-                        powerPlanSuccess = false;
-                        emit systemStepReported(tr("Failed to duplicate Ultimate Performance power scheme."), "ERROR");
-                        Logger::log("Failed to run powercfg duplicatescheme command.", "ERROR");
+                    bool finished = proc.waitForFinished(8000);
+                    if (finished && proc.exitCode() == 0) {
+                        Logger::log("Successfully duplicated standard Ultimate Performance power scheme.", "INFO");
+                    } else {
+                        Logger::log("Ultimate Performance scheme template not supported. Falling back to duplicating High Performance...", "WARNING");
+                        
+                        QProcess fallbackProc;
+                        fallbackProc.start("powercfg.exe", QStringList() << "-duplicatescheme" << "8c5e7fda-e8bf-4a96-9a85-a6e23a8c635c");
+                        if (fallbackProc.waitForFinished(8000) && fallbackProc.exitCode() == 0) {
+                            QString output = QString::fromLocal8Bit(fallbackProc.readAllStandardOutput());
+                            QRegularExpression re("([a-fA-F0-9]{8}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{12})");
+                            QRegularExpressionMatch match = re.match(output);
+                            if (match.hasMatch()) {
+                                QString newGuidStr = match.captured(1);
+                                QProcess renameProc;
+                                renameProc.start("powercfg.exe", QStringList() << "-changename" << newGuidStr << "Ultimate Performance");
+                                renameProc.waitForFinished(3000);
+                                
+                                finalTargetPowerSchemeVal = "{" + newGuidStr.toUpper() + "}";
+                                Logger::log(QString("Created custom Ultimate Performance scheme by duplicating High Performance: %1").arg(finalTargetPowerSchemeVal), "INFO");
+                            } else {
+                                success = false;
+                                powerPlanSuccess = false;
+                                emit systemStepReported(tr("Failed to duplicate High Performance power scheme."), "ERROR");
+                                Logger::log("Failed to parse GUID from duplicatescheme output.", "ERROR");
+                            }
+                        } else {
+                            success = false;
+                            powerPlanSuccess = false;
+                            emit systemStepReported(tr("Failed to duplicate High Performance power scheme."), "ERROR");
+                            Logger::log("Failed to run duplicatescheme for High Performance.", "ERROR");
+                        }
                     }
                 }
             }
             
             if (success) {
                 GUID guid;
-                HRESULT hr = CLSIDFromString((LPCOLESTR)targetPowerSchemeVal.utf16(), &guid);
+                HRESULT hr = CLSIDFromString((LPCOLESTR)finalTargetPowerSchemeVal.utf16(), &guid);
                 if (SUCCEEDED(hr)) {
                     DWORD err = PowerSetActiveScheme(NULL, &guid);
                     if (err == ERROR_SUCCESS) {
@@ -2849,9 +3371,9 @@ void Optimizer::startSystemOptimization() {
                         DWORD friendlyNameSize = sizeof(friendlyName);
                         PowerReadFriendlyName(NULL, &guid, NULL, NULL, friendlyName, &friendlyNameSize);
                         QString name = QString::fromWCharArray((const wchar_t*)friendlyName);
-                        if (name.isEmpty()) name = targetPowerSchemeVal;
+                        if (name.isEmpty()) name = finalTargetPowerSchemeVal;
                         
-                        m_activePowerSchemeGuid = targetPowerSchemeVal;
+                        m_activePowerSchemeGuid = finalTargetPowerSchemeVal;
                         emit activePowerSchemeGuidChanged(m_activePowerSchemeGuid);
                         
                         emit systemStepReported(tr("Power plan changed to: %1").arg(name), "SUCCESS");
@@ -3544,29 +4066,11 @@ void Optimizer::startSystemOptimization() {
             }
 
 #ifdef Q_OS_WIN
-            bool steamRunning = false;
-            HANDLE hSnapshot = CreateToolhelp32Snapshot(TH32CS_SNAPPROCESS, 0);
-            if (hSnapshot != INVALID_HANDLE_VALUE) {
-                PROCESSENTRY32W pe32;
-                pe32.dwSize = sizeof(pe32);
-                if (Process32FirstW(hSnapshot, &pe32)) {
-                    do {
-                        if (wcscmp(pe32.szExeFile, L"steam.exe") == 0 || 
-                            wcscmp(pe32.szExeFile, L"Steam.exe") == 0) {
-                            steamRunning = true;
-                            HANDLE hProcess = OpenProcess(PROCESS_TERMINATE, FALSE, pe32.th32ProcessID);
-                            if (hProcess) {
-                                TerminateProcess(hProcess, 0);
-                                CloseHandle(hProcess);
-                            }
-                        }
-                    } while (Process32NextW(hSnapshot, &pe32));
-                }
-                CloseHandle(hSnapshot);
-            }
+            bool steamRunning = isSteamRunning();
             if (steamRunning) {
+                killSteam();
                 emit systemStepReported(tr("Steam process detected and closed to prevent configuration overwrite."), "WARNING");
-                QThread::msleep(1500);
+                QThread::msleep(2000);
             }
 
             if (!steamPathVal.isEmpty() && QDir(steamPathVal).exists()) {
@@ -3617,19 +4121,55 @@ void Optimizer::startSystemOptimization() {
             emit systemStepReported(Optimizer::tr("Processing global Steam Overlay..."), "INFO");
             QThread::msleep(800);
 #ifdef Q_OS_WIN
+            bool steamRunning = isSteamRunning();
+            if (steamRunning) {
+                QString steamExePath = steamPathVal + "/steam.exe";
+                if (QFile::exists(steamExePath)) {
+                    QProcess::execute(steamExePath, QStringList() << "-shutdown");
+                    for (int i = 0; i < 10; ++i) {
+                        QThread::msleep(500);
+                        if (!isSteamRunning()) break;
+                    }
+                }
+                if (isSteamRunning()) {
+                    killSteam();
+                }
+                emit systemStepReported(Optimizer::tr("Steam process detected and closed to prevent configuration overwrite."), "WARNING");
+                QThread::msleep(2000);
+            }
+
+            // 1. Write to registry for legacy compatibility
             HKEY hKeySteamOverlaySet;
             if (RegOpenKeyExW(HKEY_CURRENT_USER, L"Software\\Valve\\Steam", 0, KEY_SET_VALUE, &hKeySteamOverlaySet) == ERROR_SUCCESS) {
                 DWORD val = steamOverlayVal ? 1 : 0;
-                if (RegSetValueExW(hKeySteamOverlaySet, L"EnableOverlay", 0, REG_DWORD, (const BYTE*)&val, sizeof(val)) == ERROR_SUCCESS) {
+                RegSetValueExW(hKeySteamOverlaySet, L"EnableOverlay", 0, REG_DWORD, (const BYTE*)&val, sizeof(val));
+                RegCloseKey(hKeySteamOverlaySet);
+            }
+
+            // 2. Write to localconfig.vdf under the system block for all profiles to be thorough
+            if (!steamPathVal.isEmpty() && QDir(steamPathVal).exists()) {
+                QString userdataPath = steamPathVal + "/userdata";
+                QDir userdataDir(userdataPath);
+                if (userdataDir.exists()) {
+                    QStringList subdirs = userdataDir.entryList(QDir::Dirs | QDir::NoDotAndDotDot);
+                    int updatedCount = 0;
+                    QString overlayValStr = steamOverlayVal ? "1" : "0";
+                    for (const QString &subdir : subdirs) {
+                        QString vdfPath = userdataPath + "/" + subdir + "/config/localconfig.vdf";
+                        if (QFile::exists(vdfPath)) {
+                            if (updateVdfSystemSetting(vdfPath, "EnableGameOverlay", overlayValStr)) {
+                                updatedCount++;
+                            }
+                        }
+                    }
                     emit systemStepReported(Optimizer::tr("Global Steam Overlay successfully %1.").arg(steamOverlayVal ? Optimizer::tr("enabled") : Optimizer::tr("disabled")), "SUCCESS");
                 } else {
                     steamOverlaySuccess = false;
-                    emit systemStepReported(Optimizer::tr("Failed to update EnableOverlay registry value."), "ERROR");
+                    emit systemStepReported(Optimizer::tr("Steam userdata directory not found."), "ERROR");
                 }
-                RegCloseKey(hKeySteamOverlaySet);
             } else {
                 steamOverlaySuccess = false;
-                emit systemStepReported(Optimizer::tr("Failed to open Steam registry key for writing."), "ERROR");
+                emit systemStepReported(Optimizer::tr("Steam path not found. Cannot apply global overlay settings."), "ERROR");
             }
 #else
             emit systemStepReported(Optimizer::tr("[Simulation] Global Steam Overlay set to: %1").arg(steamOverlayVal ? "Enabled" : "Disabled"), "SUCCESS");
@@ -3644,29 +4184,21 @@ void Optimizer::startSystemOptimization() {
             
             if (!cs2Changed) {
 #ifdef Q_OS_WIN
-                bool steamRunning = false;
-                HANDLE hSnapshot = CreateToolhelp32Snapshot(TH32CS_SNAPPROCESS, 0);
-                if (hSnapshot != INVALID_HANDLE_VALUE) {
-                    PROCESSENTRY32W pe32;
-                    pe32.dwSize = sizeof(pe32);
-                    if (Process32FirstW(hSnapshot, &pe32)) {
-                        do {
-                            if (wcscmp(pe32.szExeFile, L"steam.exe") == 0 || 
-                                wcscmp(pe32.szExeFile, L"Steam.exe") == 0) {
-                                steamRunning = true;
-                                HANDLE hProcess = OpenProcess(PROCESS_TERMINATE, FALSE, pe32.th32ProcessID);
-                                if (hProcess) {
-                                    TerminateProcess(hProcess, 0);
-                                    CloseHandle(hProcess);
-                                }
-                            }
-                        } while (Process32NextW(hSnapshot, &pe32));
-                    }
-                    CloseHandle(hSnapshot);
-                }
+                bool steamRunning = isSteamRunning();
                 if (steamRunning) {
+                    QString steamExePath = steamPathVal + "/steam.exe";
+                    if (QFile::exists(steamExePath)) {
+                        QProcess::execute(steamExePath, QStringList() << "-shutdown");
+                        for (int i = 0; i < 10; ++i) {
+                            QThread::msleep(500);
+                            if (!isSteamRunning()) break;
+                        }
+                    }
+                    if (isSteamRunning()) {
+                        killSteam();
+                    }
                     emit systemStepReported(Optimizer::tr("Steam process detected and closed to prevent configuration overwrite."), "WARNING");
-                    QThread::msleep(1500);
+                    QThread::msleep(2000);
                 }
 #endif
             }
@@ -3709,34 +4241,39 @@ void Optimizer::startSystemOptimization() {
 
 #ifdef Q_OS_WIN
             // Check and close Steam if running (to prevent overwrite on client exit)
-            bool steamRunning = false;
-            HANDLE hSnapshot = CreateToolhelp32Snapshot(TH32CS_SNAPPROCESS, 0);
-            if (hSnapshot != INVALID_HANDLE_VALUE) {
-                PROCESSENTRY32W pe32;
-                pe32.dwSize = sizeof(pe32);
-                if (Process32FirstW(hSnapshot, &pe32)) {
-                    do {
-                        if (wcscmp(pe32.szExeFile, L"steam.exe") == 0 ||
-                            wcscmp(pe32.szExeFile, L"Steam.exe") == 0) {
-                            steamRunning = true;
-                            HANDLE hProcess = OpenProcess(PROCESS_TERMINATE, FALSE, pe32.th32ProcessID);
-                            if (hProcess) {
-                                TerminateProcess(hProcess, 0);
-                                CloseHandle(hProcess);
-                            }
-                        }
-                    } while (Process32NextW(hSnapshot, &pe32));
-                }
-                CloseHandle(hSnapshot);
-            }
+            bool steamRunning = isSteamRunning();
             if (steamRunning) {
+                QString steamExePath = steamPathVal + "/steam.exe";
+                if (QFile::exists(steamExePath)) {
+                    QProcess::execute(steamExePath, QStringList() << "-shutdown");
+                    for (int i = 0; i < 10; ++i) {
+                        QThread::msleep(500);
+                        if (!isSteamRunning()) break;
+                    }
+                }
+                if (isSteamRunning()) {
+                    killSteam();
+                }
                 emit systemStepReported(Optimizer::tr("Steam process detected and closed to prevent configuration overwrite."), "WARNING");
-                QThread::msleep(1500);
+                QThread::msleep(2000);
             }
 #endif
 
 #ifdef Q_OS_WIN
             if (!steamPathVal.isEmpty() && QDir(steamPathVal).exists()) {
+                // Update Startup Registry Key based on bRunOnStartup setting
+                bool targetStartup = steamFriendsSettingsVal.value("bRunOnStartup", false).toBool();
+                HKEY hKeyRun;
+                if (RegOpenKeyExW(HKEY_CURRENT_USER, L"Software\\Microsoft\\Windows\\CurrentVersion\\Run", 0, KEY_SET_VALUE, &hKeyRun) == ERROR_SUCCESS) {
+                    if (targetStartup) {
+                        QString valStr = QString("\"%1\\steam.exe\" -silent").arg(QDir::toNativeSeparators(steamPathVal));
+                        std::wstring valWStr = valStr.toStdWString();
+                        RegSetValueExW(hKeyRun, L"Steam", 0, REG_SZ, reinterpret_cast<const BYTE*>(valWStr.c_str()), (valWStr.length() + 1) * sizeof(wchar_t));
+                    } else {
+                        RegDeleteValueW(hKeyRun, L"Steam");
+                    }
+                    RegCloseKey(hKeyRun);
+                }
                 QString userdataPath = steamPathVal + "/userdata";
                 QDir userdataDir(userdataPath);
                 if (userdataDir.exists()) {
@@ -3951,7 +4488,7 @@ void Optimizer::startSystemOptimization() {
 #endif
         }
 
-        bool overallSuccess = wSearchSuccess && hibernationSuccess && overlaySuccess && coreIsolationSuccess && mouseAccelSuccess && gameModeSuccess && firewallSuccess && printerSuccess && notificationsSuccess && powerPlanSuccess && defenderSuccess && overallDrivesSuccess && usbSuccess && remoteAccessSuccess && telemetrySuccess && windowsUpdateSuccess && cs2Success && steamOverlaySuccess && cs2OverlaySuccess && steamFriendsSuccess && visualEffectsSuccess;
+        bool overallSuccess = wSearchSuccess && classicContextMenuSuccess && hibernationSuccess && overlaySuccess && coreIsolationSuccess && mouseAccelSuccess && gameModeSuccess && firewallSuccess && printerSuccess && notificationsSuccess && powerPlanSuccess && defenderSuccess && overallDrivesSuccess && usbSuccess && remoteAccessSuccess && telemetrySuccess && windowsUpdateSuccess && cs2Success && steamOverlaySuccess && cs2OverlaySuccess && steamFriendsSuccess && visualEffectsSuccess;
         if (overallSuccess) {
             emit systemStepReported(tr("System optimization completed successfully!"), "SUCCESS");
             Logger::log("System optimization completed successfully!", "INFO");
@@ -3962,6 +4499,7 @@ void Optimizer::startSystemOptimization() {
 
         m_driveStates = targets;
         m_originalWinSearchActive = searchVal;
+        m_originalClassicContextMenuActive = classicContextMenuVal;
         m_originalHibernationActive = hibernationVal;
         m_originalGamingOverlayActive = overlayVal;
         m_originalCoreIsolationActive = coreIsolationVal;
@@ -3996,6 +4534,7 @@ void Optimizer::startSystemOptimization() {
 
         emit driveStatesChanged(m_driveStates);
         emit originalWinSearchActiveChanged(m_originalWinSearchActive);
+        emit originalClassicContextMenuActiveChanged(m_originalClassicContextMenuActive);
         emit originalHibernationActiveChanged(m_originalHibernationActive);
         emit originalGamingOverlayActiveChanged(m_originalGamingOverlayActive);
         emit originalCoreIsolationActiveChanged(m_originalCoreIsolationActive);
@@ -4076,6 +4615,31 @@ void Optimizer::showPath(const QString &funcName) {
     } else if (funcName == "windowsupdate") {
         QProcess::startDetached("cmd.exe", QStringList() << "/c" << "start ms-settings:windowsupdate");
         Logger::log("Opening Windows Update settings...", "INFO");
+    } else if (funcName == "classiccontextmenu") {
+        HKEY hKey;
+        if (RegOpenKeyExW(HKEY_CURRENT_USER, L"Software\\Microsoft\\Windows\\CurrentVersion\\Applets\\Regedit", 0, KEY_SET_VALUE, &hKey) == ERROR_SUCCESS) {
+            const wchar_t* lastKey = L"Computer\\HKEY_CURRENT_USER\\Software\\Classes\\CLSID\\{86ca1aa0-34aa-4e8b-a509-50c905bae2a2}";
+            RegSetValueExW(hKey, L"LastKey", 0, REG_SZ, (const BYTE*)lastKey, (wcslen(lastKey) + 1) * sizeof(wchar_t));
+            RegCloseKey(hKey);
+        }
+        QProcess::startDetached("regedit.exe");
+        Logger::log("Opening Registry Editor for Classic Context Menu CLSID...", "INFO");
+    } else if (funcName == "visualeffects") {
+        QProcess::startDetached("SystemPropertiesPerformance.exe");
+        Logger::log("Opening Windows Visual Effects settings (Performance Options)...", "INFO");
+    } else if (funcName == "mpo") {
+#ifdef Q_OS_WIN
+        HKEY hKey;
+        if (RegOpenKeyExW(HKEY_CURRENT_USER, L"Software\\Microsoft\\Windows\\CurrentVersion\\Applets\\Regedit", 0, KEY_SET_VALUE, &hKey) == ERROR_SUCCESS) {
+            const wchar_t* lastKey = L"Computer\\HKEY_LOCAL_MACHINE\\SOFTWARE\\Microsoft\\Windows\\DWM";
+            RegSetValueExW(hKey, L"LastKey", 0, REG_SZ, (const BYTE*)lastKey, (wcslen(lastKey) + 1) * sizeof(wchar_t));
+            RegCloseKey(hKey);
+        }
+        QProcess::startDetached("regedit.exe");
+        Logger::log("Opening Registry Editor at HKLM\\SOFTWARE\\Microsoft\\Windows\\DWM...", "INFO");
+#else
+        Logger::log("[Simulation] Opening registry path for MPO...", "INFO");
+#endif
     } else {
         // Assume drive letter like "C:" or "D:"
         QString letter = funcName.trimmed();
@@ -4714,19 +5278,6 @@ void Optimizer::applyMpoValue(int value) {
 void Optimizer::selectPowerScheme(const QString &guidStr) {
     m_targetPowerSchemeGuid = guidStr.toUpper();
     emit targetPowerSchemeGuidChanged(m_targetPowerSchemeGuid);
-    
-    // Update m_powerSchemes locally to highlight the selected target scheme
-    for (int i = 0; i < m_powerSchemes.size(); ++i) {
-        QVariantMap map = m_powerSchemes[i].toMap();
-        if (map["guid"].toString().toUpper() == m_targetPowerSchemeGuid) {
-            map["isActive"] = true;
-        } else {
-            map["isActive"] = false;
-        }
-        m_powerSchemes[i] = map;
-    }
-    emit powerSchemesChanged(m_powerSchemes);
-    
     Logger::log(QString("Staged target power scheme to: %1").arg(m_targetPowerSchemeGuid), "INFO");
 }
 
@@ -4739,30 +5290,145 @@ void Optimizer::activateUltimatePerformance() {
     m_ultimateSchemeUnlocked = true;
     emit ultimateSchemeUnlockedChanged(m_ultimateSchemeUnlocked);
     
-    // De-activate other schemes and activate Ultimate Performance in m_powerSchemes
+    // Check if the Ultimate Performance scheme is already in our listed power schemes
     bool found = false;
     for (int i = 0; i < m_powerSchemes.size(); ++i) {
         QVariantMap map = m_powerSchemes[i].toMap();
         if (map["guid"].toString().toUpper() == m_targetPowerSchemeGuid) {
-            map["isActive"] = true;
             found = true;
-        } else {
-            map["isActive"] = false;
+            break;
         }
-        m_powerSchemes[i] = map;
     }
+    
     if (!found) {
         QVariantMap ultMap;
         ultMap["name"] = tr("Ultimate Performance Scheme");
         ultMap["guid"] = m_targetPowerSchemeGuid;
-        ultMap["isActive"] = true;
+        ultMap["isActive"] = false;
         ultMap["isUltimate"] = true;
         m_powerSchemes.append(ultMap);
+        emit powerSchemesChanged(m_powerSchemes);
     }
-    emit powerSchemesChanged(m_powerSchemes);
     
     Logger::log("Staged Ultimate Performance power scheme activation.", "INFO");
 }
+
+void Optimizer::setDeleteUltimateStaged(bool val) {
+    if (m_deleteUltimateStaged == val) return;
+    m_deleteUltimateStaged = val;
+    emit deleteUltimateStagedChanged(m_deleteUltimateStaged);
+    Logger::log(QString("Staged Ultimate Performance deletion state changed to: %1").arg(m_deleteUltimateStaged ? "DELETE" : "KEEP"), "INFO");
+
+    const QString standardUltimateGuidStr = "{E9A22B95-E3B0-4B87-A177-728978ED6022}";
+    if (m_deleteUltimateStaged) {
+        // If we stage deleting the Ultimate scheme, we should switch target away from it.
+        // Switch to Balanced.
+        bool isTargetUltimate = (m_targetPowerSchemeGuid == standardUltimateGuidStr);
+        if (!isTargetUltimate) {
+            for (const auto &scheme : m_powerSchemes) {
+                QVariantMap map = scheme.toMap();
+                if (map["guid"].toString().toUpper() == m_targetPowerSchemeGuid && map["isUltimate"].toBool()) {
+                    isTargetUltimate = true;
+                    break;
+                }
+            }
+        }
+        if (isTargetUltimate) {
+            m_targetPowerSchemeGuid = "{381B4222-F694-41F0-9685-FF5BB260DF2E}"; // Balanced
+            emit targetPowerSchemeGuidChanged(m_targetPowerSchemeGuid);
+        }
+    } else {
+        // If user cancels deletion staging, switch target back to Ultimate if available on system
+        QString ultGuid = standardUltimateGuidStr;
+        for (const auto &scheme : m_powerSchemes) {
+            QVariantMap map = scheme.toMap();
+            if (map["isUltimate"].toBool()) {
+                ultGuid = map["guid"].toString().toUpper();
+                break;
+            }
+        }
+        m_targetPowerSchemeGuid = ultGuid;
+        emit targetPowerSchemeGuidChanged(m_targetPowerSchemeGuid);
+    }
+}
+
+void Optimizer::setDeleteDefenderStaged(bool val) {
+    if (m_deleteDefenderStaged == val) return;
+    m_deleteDefenderStaged = val;
+    emit deleteDefenderStagedChanged(m_deleteDefenderStaged);
+    Logger::log(QString("Staged Windows Defender complete removal state changed to: %1").arg(m_deleteDefenderStaged ? "REMOVE" : "KEEP"), "INFO");
+}
+
+
+void Optimizer::deleteUltimatePerformance() {
+#ifdef Q_OS_WIN
+    // 1. Find all Ultimate Performance scheme GUIDs in m_powerSchemes
+    QStringList guidsToDelete;
+    const QString standardUltimateGuidStr = "{E9A22B95-E3B0-4B87-A177-728978ED6022}";
+    
+    // Scan m_powerSchemes
+    for (int i = 0; i < m_powerSchemes.size(); ++i) {
+        QVariantMap map = m_powerSchemes[i].toMap();
+        QString guid = map["guid"].toString().toUpper();
+        QString name = map["name"].toString();
+        bool isUltimate = (guid == standardUltimateGuidStr) || 
+                          name.contains("Ultimate Performance") || 
+                          name.contains("Ultimate") || 
+                          name.contains("Максимальная производительность");
+        if (isUltimate) {
+            guidsToDelete.append(guid);
+        }
+    }
+    
+    // 2. If any of the schemes we want to delete is currently active,
+    // we MUST switch the active scheme to Balanced first (otherwise Windows won't let us delete it!)
+    GUID activeGuid;
+    GUID *pActiveGuid = NULL;
+    DWORD activeErr = PowerGetActiveScheme(NULL, &pActiveGuid);
+    bool activeNeedsReset = false;
+    if (activeErr == ERROR_SUCCESS && pActiveGuid != NULL) {
+        activeGuid = *pActiveGuid;
+        wchar_t activeGuidStr[64] = {0};
+        StringFromGUID2(activeGuid, activeGuidStr, 64);
+        QString activeSchemeStr = QString::fromWCharArray(activeGuidStr).toUpper();
+        LocalFree(pActiveGuid);
+        
+        if (guidsToDelete.contains(activeSchemeStr)) {
+            activeNeedsReset = true;
+        }
+    }
+    
+    if (activeNeedsReset) {
+        // Set "Balanced" as active
+        const QString balancedGuidStr = "{381B4222-F694-41F0-9685-FF5BB260DF2E}";
+        GUID balancedGuid;
+        HRESULT hr = CLSIDFromString((LPCOLESTR)balancedGuidStr.utf16(), &balancedGuid);
+        if (SUCCEEDED(hr)) {
+            PowerSetActiveScheme(NULL, &balancedGuid);
+            Logger::log("Reset active power scheme to Balanced before deleting Ultimate Performance scheme.", "INFO");
+        }
+    }
+    
+    // 3. Delete each Ultimate Performance scheme using powercfg.exe -delete
+    for (const QString &guidStr : guidsToDelete) {
+        // powercfg requires GUID without curly braces
+        QString cleanGuid = guidStr;
+        cleanGuid.replace("{", "").replace("}", "");
+        
+        QProcess proc;
+        proc.start("powercfg.exe", QStringList() << "-delete" << cleanGuid);
+        proc.waitForFinished(4000);
+        Logger::log(QString("Deleted custom Ultimate Performance scheme: %1").arg(guidStr), "INFO");
+    }
+#endif
+
+    // 4. Reload all system states to update the UI list and reset properties
+    m_ultimateSchemeUnlocked = false;
+    emit ultimateSchemeUnlockedChanged(m_ultimateSchemeUnlocked);
+    
+    loadSystemStates();
+}
+
 
 bool Optimizer::isDiscordRunning() {
 #ifdef Q_OS_WIN
@@ -4812,18 +5478,76 @@ void Optimizer::killDiscord() {
 #endif
 }
 
+bool Optimizer::isSteamRunning() {
+#ifdef Q_OS_WIN
+    bool running = false;
+    HANDLE hSnapshot = CreateToolhelp32Snapshot(TH32CS_SNAPPROCESS, 0);
+    if (hSnapshot != INVALID_HANDLE_VALUE) {
+        PROCESSENTRY32W pe32;
+        pe32.dwSize = sizeof(pe32);
+        if (Process32FirstW(hSnapshot, &pe32)) {
+            do {
+                if (wcscmp(pe32.szExeFile, L"steam.exe") == 0 || 
+                    wcscmp(pe32.szExeFile, L"Steam.exe") == 0 ||
+                    wcscmp(pe32.szExeFile, L"steamwebhelper.exe") == 0 ||
+                    wcscmp(pe32.szExeFile, L"SteamWebHelper.exe") == 0) {
+                    running = true;
+                    break;
+                }
+            } while (Process32NextW(hSnapshot, &pe32));
+        }
+        CloseHandle(hSnapshot);
+    }
+    return running;
+#else
+    return false;
+#endif
+}
+
+void Optimizer::killSteam() {
+#ifdef Q_OS_WIN
+    HANDLE hSnapshot = CreateToolhelp32Snapshot(TH32CS_SNAPPROCESS, 0);
+    if (hSnapshot != INVALID_HANDLE_VALUE) {
+        PROCESSENTRY32W pe32;
+        pe32.dwSize = sizeof(pe32);
+        if (Process32FirstW(hSnapshot, &pe32)) {
+            do {
+                if (wcscmp(pe32.szExeFile, L"steam.exe") == 0 || 
+                    wcscmp(pe32.szExeFile, L"Steam.exe") == 0 ||
+                    wcscmp(pe32.szExeFile, L"steamwebhelper.exe") == 0 ||
+                    wcscmp(pe32.szExeFile, L"SteamWebHelper.exe") == 0) {
+                    HANDLE hProcess = OpenProcess(PROCESS_TERMINATE, FALSE, pe32.th32ProcessID);
+                    if (hProcess) {
+                        TerminateProcess(hProcess, 0);
+                        CloseHandle(hProcess);
+                    }
+                }
+            } while (Process32NextW(hSnapshot, &pe32));
+        }
+        CloseHandle(hSnapshot);
+    }
+    Logger::log("Closed running Steam and Steam Web Helper instances.", "INFO");
+#endif
+}
+
 bool Optimizer::checkIsDiscordOverlayActive() {
-    QString appData = QDir::homePath() + "/AppData/Roaming";
-    QStringList discordDirs = { "discord", "discordcanary", "discordptb" };
+    QStringList searchPaths;
+    searchPaths << QDir::homePath() + "/AppData/Local/Discord"
+                << QDir::homePath() + "/AppData/Local/DiscordCanary"
+                << QDir::homePath() + "/AppData/Local/DiscordPTB"
+                << QDir::homePath() + "/AppData/Local/DiscordDevelopment"
+                << QDir::homePath() + "/AppData/Roaming/discord"
+                << QDir::homePath() + "/AppData/Roaming/discordcanary"
+                << QDir::homePath() + "/AppData/Roaming/discordptb"
+                << QDir::homePath() + "/AppData/Roaming/discorddevelopment";
     
     bool foundDll = false;
     bool foundDisabled = false;
     
-    for (const QString &dirName : discordDirs) {
-        QString discordPath = appData + "/" + dirName;
-        if (!QDir(discordPath).exists()) continue;
+    for (const QString &path : searchPaths) {
+        if (!QDir(path).exists()) continue;
         
-        QDirIterator it(discordPath, QDirIterator::Subdirectories);
+        QDirIterator it(path, QDirIterator::Subdirectories);
         while (it.hasNext()) {
             QString filePath = it.next();
             QString fileName = QFileInfo(filePath).fileName();
@@ -4845,14 +5569,20 @@ bool Optimizer::checkIsDiscordOverlayActive() {
 }
 
 void Optimizer::setDiscordOverlayFilesActive(bool active) {
-    QString appData = QDir::homePath() + "/AppData/Roaming";
-    QStringList discordDirs = { "discord", "discordcanary", "discordptb" };
+    QStringList searchPaths;
+    searchPaths << QDir::homePath() + "/AppData/Local/Discord"
+                << QDir::homePath() + "/AppData/Local/DiscordCanary"
+                << QDir::homePath() + "/AppData/Local/DiscordPTB"
+                << QDir::homePath() + "/AppData/Local/DiscordDevelopment"
+                << QDir::homePath() + "/AppData/Roaming/discord"
+                << QDir::homePath() + "/AppData/Roaming/discordcanary"
+                << QDir::homePath() + "/AppData/Roaming/discordptb"
+                << QDir::homePath() + "/AppData/Roaming/discorddevelopment";
     
-    for (const QString &dirName : discordDirs) {
-        QString discordPath = appData + "/" + dirName;
-        if (!QDir(discordPath).exists()) continue;
+    for (const QString &path : searchPaths) {
+        if (!QDir(path).exists()) continue;
         
-        QDirIterator it(discordPath, QDirIterator::Subdirectories);
+        QDirIterator it(path, QDirIterator::Subdirectories);
         while (it.hasNext()) {
             QString filePath = it.next();
             QFileInfo fileInfo(filePath);
@@ -4881,4 +5611,126 @@ void Optimizer::setDiscordOverlayFilesActive(bool active) {
             }
         }
     }
+
+    // Attempt to update internal settings using Node.js if available
+    QProcess nodeCheck;
+    nodeCheck.start("node", QStringList() << "-v");
+    if (nodeCheck.waitForFinished(2000) && nodeCheck.exitCode() == 0) {
+        Logger::log("Node.js detected. Attempting to update Discord settings database...", "INFO");
+        QString tempJsPath = QDir::tempPath() + "/mpo_set_discord_overlay.js";
+        QFile jsFile(tempJsPath);
+        if (jsFile.open(QIODevice::WriteOnly | QIODevice::Text)) {
+            QTextStream out(&jsFile);
+            out << R"(
+const fs = require('fs');
+const path = require('path');
+const { execSync } = require('child_process');
+
+async function main() {
+    const activeArg = process.argv[2];
+    if (activeArg === undefined) process.exit(1);
+    const active = activeArg === 'true';
+    const appData = process.env.APPDATA;
+    if (!appData) process.exit(1);
+
+    const helperDir = path.join(appData, 'MeguPackOptimizer', 'leveldb_helper');
+    if (!fs.existsSync(helperDir)) {
+        fs.mkdirSync(helperDir, { recursive: true });
+    }
+
+    const classicLevelPath = path.join(helperDir, 'node_modules', 'classic-level');
+    if (!fs.existsSync(classicLevelPath)) {
+        try {
+            execSync('npm install classic-level --no-audit --no-fund --quiet', { cwd: helperDir, stdio: 'ignore' });
+        } catch (err) {
+            process.exit(1);
+        }
+    }
+
+    const { ClassicLevel } = require(classicLevelPath);
+    const targets = ['discord', 'discordcanary', 'discordptb', 'discorddevelopment'];
+
+    for (const target of targets) {
+        const dbPath = path.join(appData, target, 'Local Storage', 'leveldb');
+        if (!fs.existsSync(dbPath)) continue;
+
+        try {
+            const db = new ClassicLevel(dbPath, { keyEncoding: 'buffer', valueEncoding: 'buffer' });
+            await db.open();
+
+            const prefix = Buffer.from('_https://discord.com\x00\x01');
+            const prefixAlt = Buffer.from('_https://discordapp.com\x00\x01');
+            const keyName = Buffer.from('OverlayStore6');
+
+            const fullKey = Buffer.concat([prefix, keyName]);
+            const fullKeyAlt = Buffer.concat([prefixAlt, keyName]);
+
+            let targetKey = fullKey;
+            let val = null;
+
+            try {
+                val = await db.get(fullKey);
+                targetKey = fullKey;
+            } catch (e) {
+                try {
+                    val = await db.get(fullKeyAlt);
+                    targetKey = fullKeyAlt;
+                } catch (e2) {
+                    targetKey = fullKey;
+                }
+            }
+
+            let settings = { legacyEnabled: active, oopEnabled: active };
+            if (val) {
+                try {
+                    let valString = '';
+                    if (val[0] === 0x01) {
+                        valString = val.slice(1).toString('utf8');
+                    } else {
+                        valString = val.toString('utf8');
+                    }
+                    const currentSettings = JSON.parse(valString);
+                    settings.legacyEnabled = active;
+                    settings.oopEnabled = active;
+                } catch (err) {}
+            }
+
+            const newValString = JSON.stringify(settings);
+            const newValBuffer = Buffer.concat([Buffer.from([0x01]), Buffer.from(newValString, 'utf8')]);
+
+            await db.put(targetKey, newValBuffer);
+            await db.close();
+        } catch (err) {}
+    }
+}
+
+main();
+)";
+            jsFile.close();
+            
+            QProcess nodeProc;
+            QStringList args;
+            args << tempJsPath << (active ? "true" : "false");
+            nodeProc.start("node", args);
+            if (nodeProc.waitForFinished(15000)) {
+                Logger::log("Discord settings database updated.", "INFO");
+            } else {
+                Logger::log("Failed to finish updating Discord settings database (timeout).", "WARNING");
+            }
+            QFile::remove(tempJsPath);
+        }
+    } else {
+        Logger::log("Node.js not detected on system. Discord internal UI overlay toggle setting will not be updated.", "INFO");
+    }
+}
+
+
+void Optimizer::restartExplorer() {
+#ifdef Q_OS_WIN
+    QProcess proc;
+    proc.start("taskkill.exe", QStringList() << "/f" << "/im" << "explorer.exe");
+    proc.waitForFinished(3000);
+    QProcess::startDetached("explorer.exe");
+    Logger::log("Windows Explorer restarted successfully.", "INFO");
+#endif
 }

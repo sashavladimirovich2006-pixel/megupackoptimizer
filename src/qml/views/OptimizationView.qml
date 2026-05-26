@@ -52,6 +52,7 @@ Item {
 
     // Reactive computation of changes between current live states and original states
     property bool hasChanges: {
+        if (optimizerBackend.classicContextMenuActive !== optimizerBackend.originalClassicContextMenuActive) return true;
         if (optimizerBackend.winSearchActive !== optimizerBackend.originalWinSearchActive) return true;
         if (optimizerBackend.hibernationActive !== optimizerBackend.originalHibernationActive) return true;
         if (optimizerBackend.gamingOverlayActive !== optimizerBackend.originalGamingOverlayActive) return true;
@@ -68,6 +69,8 @@ Item {
         if (optimizerBackend.notifSoundsActive !== optimizerBackend.originalNotifSoundsActive) return true;
         if (optimizerBackend.notifLockscreenActive !== optimizerBackend.originalNotifLockscreenActive) return true;
         if (optimizerBackend.targetPowerSchemeGuid !== optimizerBackend.activePowerSchemeGuid) return true;
+        if (optimizerBackend.deleteUltimateStaged) return true;
+        if (optimizerBackend.deleteDefenderStaged) return true;
         if (optimizerBackend.defenderActive !== optimizerBackend.originalDefenderActive) return true;
         if (optimizerBackend.defenderRegistryActive !== optimizerBackend.originalDefenderRegistryActive) return true;
         if (optimizerBackend.defenderCmdActive !== optimizerBackend.originalDefenderCmdActive) return true;
@@ -93,6 +96,8 @@ Item {
         }
         return false;
     }
+
+    property bool classicContextMenuChanged: optimizerBackend.classicContextMenuActive !== optimizerBackend.originalClassicContextMenuActive
 
     property bool indexingChanged: {
         if (optimizerBackend.winSearchActive !== optimizerBackend.originalWinSearchActive) return true;
@@ -284,6 +289,7 @@ Item {
 
     property int pendingChangesCount: {
         var count = 0;
+        if (classicContextMenuChanged) count++;
         if (indexingChanged) count++;
         if (xboxChanged) count++;
         if (coreIsolationChanged) count++;
@@ -293,10 +299,10 @@ Item {
         if (printerChanged) count++;
         if (notificationsChanged) count++;
         if (hibernationChanged) count++;
-        if (powerPlanChanged) count++;
+        if (powerPlanChanged || optimizerBackend.deleteUltimateStaged) count++;
         if (bitlockerChanged) count++;
         if (discordOverlayChanged) count++;
-        if (defenderChanged) count++;
+        if (defenderChanged || optimizerBackend.deleteDefenderStaged) count++;
         if (usbPowerSavingChanged) count++;
         if (remoteAccessChanged) count++;
         if (telemetryChanged) count++;
@@ -309,8 +315,100 @@ Item {
         return count;
     }
 
+    property int mainChangesCount: {
+        var count = 0;
+        if (optimizerBackend.classicContextMenuActive !== optimizerBackend.originalClassicContextMenuActive) count++;
+        if (optimizerBackend.winSearchActive !== optimizerBackend.originalWinSearchActive) count++;
+        if (optimizerBackend.gamingOverlayActive !== optimizerBackend.originalGamingOverlayActive) count++;
+        if (optimizerBackend.coreIsolationActive !== optimizerBackend.originalCoreIsolationActive) count++;
+        if (optimizerBackend.mouseAccelerationActive !== optimizerBackend.originalMouseAccelerationActive) count++;
+        if (optimizerBackend.gameModeActive !== optimizerBackend.originalGameModeActive) count++;
+        if (optimizerBackend.firewallActive !== optimizerBackend.originalFirewallActive) count++;
+        if (optimizerBackend.printerActive !== optimizerBackend.originalPrinterActive) count++;
+        if (optimizerBackend.notificationsActive !== optimizerBackend.originalNotificationsActive) count++;
+        if (optimizerBackend.hibernationActive !== optimizerBackend.originalHibernationActive) count++;
+        if (optimizerBackend.bitlockerActive !== optimizerBackend.originalBitlockerActive) count++;
+        if (optimizerBackend.discordOverlayActive !== optimizerBackend.originalDiscordOverlayActive) count++;
+        if (optimizerBackend.defenderActive !== optimizerBackend.originalDefenderActive) count++;
+        if (optimizerBackend.usbPowerSavingActive !== optimizerBackend.originalUsbPowerSavingActive) count++;
+        if (optimizerBackend.remoteAccessActive !== optimizerBackend.originalRemoteAccessActive) count++;
+        if (optimizerBackend.telemetryActive !== optimizerBackend.originalTelemetryActive) count++;
+        return count;
+    }
+
+    property int sidebarChangesCount: {
+        var count = 0;
+        if (optimizerBackend.driveStates && optimizerBackend.originalDriveStates) {
+            var keys = Object.keys(optimizerBackend.driveStates);
+            for (var i = 0; i < keys.length; i++) {
+                var key = keys[i];
+                if (optimizerBackend.driveStates[key] !== optimizerBackend.originalDriveStates[key]) {
+                    count++;
+                }
+            }
+        }
+        if (optimizerBackend.defenderRegistryActive !== optimizerBackend.originalDefenderRegistryActive) count++;
+        if (optimizerBackend.defenderCmdActive !== optimizerBackend.originalDefenderCmdActive) count++;
+        if (optimizerBackend.defenderServiceActive !== optimizerBackend.originalDefenderServiceActive) count++;
+        if (optimizerBackend.usbDevices && optimizerBackend.originalUsbDevices) {
+            for (var j = 0; j < optimizerBackend.usbDevices.length; j++) {
+                var currentDev = optimizerBackend.usbDevices[j];
+                var originalDev = optimizerBackend.originalUsbDevices[j];
+                if (currentDev && originalDev && currentDev.powerSavingActive !== originalDev.powerSavingActive) {
+                    count++;
+                }
+            }
+        }
+        if (optimizerBackend.notifGlobalActive !== optimizerBackend.originalNotifGlobalActive) count++;
+        if (optimizerBackend.notifAppActive !== optimizerBackend.originalNotifAppActive) count++;
+        if (optimizerBackend.notifSoundsActive !== optimizerBackend.originalNotifSoundsActive) count++;
+        if (optimizerBackend.notifLockscreenActive !== optimizerBackend.originalNotifLockscreenActive) count++;
+        if (optimizerBackend.telemetryDiagTrackActive !== optimizerBackend.originalTelemetryDiagTrackActive) count++;
+        if (optimizerBackend.telemetryWapPushActive !== optimizerBackend.originalTelemetryWapPushActive) count++;
+        if (optimizerBackend.telemetryCeipActive !== optimizerBackend.originalTelemetryCeipActive) count++;
+        if (optimizerBackend.telemetryWerActive !== optimizerBackend.originalTelemetryWerActive) count++;
+        if (optimizerBackend.targetPowerSchemeGuid !== optimizerBackend.activePowerSchemeGuid) count++;
+        if (optimizerBackend.windowsUpdateMode !== optimizerBackend.originalWindowsUpdateMode) count++;
+        if (optimizerBackend.cs2LaunchOptions && optimizerBackend.originalCs2LaunchOptions) {
+            var cs2Keys = Object.keys(optimizerBackend.cs2LaunchOptions);
+            for (var c = 0; c < cs2Keys.length; c++) {
+                var ck = cs2Keys[c];
+                if (optimizerBackend.cs2LaunchOptions[ck] !== optimizerBackend.originalCs2LaunchOptions[ck]) {
+                    count++;
+                }
+            }
+        }
+        if (optimizerBackend.steamFriendsSettings && optimizerBackend.originalSteamFriendsSettings) {
+            var steamKeys = Object.keys(optimizerBackend.steamFriendsSettings);
+            for (var s = 0; s < steamKeys.length; s++) {
+                var sk = steamKeys[s];
+                if (optimizerBackend.steamFriendsSettings[sk] !== optimizerBackend.originalSteamFriendsSettings[sk]) {
+                    count++;
+                }
+            }
+        }
+        if (optimizerBackend.visualEffects && optimizerBackend.originalVisualEffects) {
+            var vfxKeys = Object.keys(optimizerBackend.visualEffects);
+            for (var v = 0; v < vfxKeys.length; v++) {
+                var vk = vfxKeys[v];
+                if (optimizerBackend.visualEffects[vk] !== optimizerBackend.originalVisualEffects[vk]) {
+                    count++;
+                }
+            }
+        }
+        return count;
+    }
+
     property var pendingChangesList: {
         var list = [];
+        if (classicContextMenuChanged) list.push({
+            name: qsTr("Classic Context Menu"),
+            icon: "qrc:/MeguPackOptimizer/src/resources/settings.svg",
+            hasSidebar: false,
+            revert: function() {
+                optimizerBackend.classicContextMenuActive = optimizerBackend.originalClassicContextMenuActive;
+            }
+        });
         if (indexingChanged) list.push({
             name: qsTr("File Indexing"),
             icon: "qrc:/MeguPackOptimizer/src/resources/storage.svg",
@@ -388,11 +486,12 @@ Item {
                 optimizerBackend.hibernationActive = optimizerBackend.originalHibernationActive;
             }
         });
-        if (powerPlanChanged) list.push({
+        if (powerPlanChanged || optimizerBackend.deleteUltimateStaged) list.push({
             name: qsTr("Power Plan"),
             icon: "qrc:/MeguPackOptimizer/src/resources/bolt.svg",
             hasSidebar: true,
             revert: function() {
+                optimizerBackend.deleteUltimateStaged = false;
                 optimizerBackend.selectPowerScheme(optimizerBackend.activePowerSchemeGuid);
             }
         });
@@ -412,11 +511,12 @@ Item {
                 optimizerBackend.discordOverlayActive = optimizerBackend.originalDiscordOverlayActive;
             }
         });
-        if (defenderChanged) list.push({
+        if (defenderChanged || optimizerBackend.deleteDefenderStaged) list.push({
             name: qsTr("Windows Defender"),
             icon: "qrc:/MeguPackOptimizer/src/resources/warning.svg",
             hasSidebar: true,
             revert: function() {
+                optimizerBackend.deleteDefenderStaged = false;
                 optimizerBackend.defenderActive = optimizerBackend.originalDefenderActive;
                 optimizerBackend.defenderRegistryActive = optimizerBackend.originalDefenderRegistryActive;
                 optimizerBackend.defenderCmdActive = optimizerBackend.originalDefenderCmdActive;
@@ -481,14 +581,6 @@ Item {
             hasSidebar: false,
             revert: function() {
                 optimizerBackend.cs2OverlayActive = optimizerBackend.originalCs2OverlayActive;
-            }
-        });
-        if (steamFriendsSettingsChanged) list.push({
-            name: qsTr("Steam Settings"),
-            icon: "qrc:/MeguPackOptimizer/src/resources/settings.svg",
-            hasSidebar: true,
-            revert: function() {
-                optimizerBackend.steamFriendsSettings = optimizerBackend.originalSteamFriendsSettings;
             }
         });
         if (steamFriendsSettingsChanged) list.push({
@@ -641,6 +733,14 @@ Item {
                 });
             }
         } else if (category === qsTr("Power Plan")) {
+            if (optimizerBackend.deleteUltimateStaged) {
+                subList.push({
+                    name: qsTr("Remove Ultimate Performance scheme from system"),
+                    revert: function() {
+                        optimizerBackend.deleteUltimateStaged = false;
+                    }
+                });
+            }
             if (optimizerBackend.targetPowerSchemeGuid !== optimizerBackend.activePowerSchemeGuid) {
                 var originalName = qsTr("Unknown");
                 var targetName = qsTr("Unknown");
@@ -660,6 +760,14 @@ Item {
                 });
             }
         } else if (category === qsTr("Windows Defender")) {
+            if (optimizerBackend.deleteDefenderStaged) {
+                subList.push({
+                    name: qsTr("Completely delete Windows Defender from system"),
+                    revert: function() {
+                        optimizerBackend.deleteDefenderStaged = false;
+                    }
+                });
+            }
             if (optimizerBackend.defenderRegistryActive !== optimizerBackend.originalDefenderRegistryActive) {
                 subList.push({
                     name: qsTr("Registry Disablement Policies") + ": " + (optimizerBackend.originalDefenderRegistryActive ? qsTr("Enabled") : qsTr("Disabled")) + " -> " + (optimizerBackend.defenderRegistryActive ? qsTr("Enabled") : qsTr("Disabled")),
@@ -798,7 +906,31 @@ Item {
                     "bRememberOpenChats": qsTr("Remember my open chats"),
                     "bDisableSpellCheck": qsTr("Disable spellcheck in chat message entry"),
                     "bDisableRoomEffects": qsTr("Disable animated room effects"),
-                    "fontSize": qsTr("Chat font size")
+                    "fontSize": qsTr("Chat font size"),
+                    "bScaleTextAndIcons": qsTr("Scale text and icons to match monitor settings (requires restart)"),
+                    "bRunOnStartup": qsTr("Run Steam when my computer starts"),
+                    "bAskAccountOnStart": qsTr("Ask which account to use each time Steam starts"),
+                    "bStartInBigPicture": qsTr("Start Steam in Big Picture Mode"),
+                    "bSmoothScrolling": qsTr("Enable smooth scrolling in web views (requires restart)"),
+                    "bGPUAcceleratedRendering": qsTr("Enable GPU accelerated rendering in web views (requires restart)"),
+                    "bHardwareVideoDecoding": qsTr("Enable hardware video decoding, if supported (requires restart)"),
+                    "bNotifyGameAdditions": qsTr("Notify me about additions or changes to my games, new releases, and upcoming releases"),
+                    "bPlayNotificationSounds": qsTr("Play a sound when a toast is displayed"),
+                    "bAchievementShowToast": qsTr("Achievement toast notification"),
+                    "bAchievementPlaySound": qsTr("Achievement notification sound"),
+                    "bControllerShowToast": qsTr("Controller connection toast notification"),
+                    "bControllerPlaySound": qsTr("Controller connection notification sound"),
+                    "bControllerLowShowToast": qsTr("Controller low battery toast notification"),
+                    "bControllerLowPlaySound": qsTr("Controller low battery notification sound"),
+                    "bFriendJoinShowToast": qsTr("Friend joins game toast notification"),
+                    "bFriendJoinPlaySound": qsTr("Friend joins game notification sound"),
+                    "bFriendOnlineShowToast": qsTr("Friend online toast notification"),
+                    "bFriendOnlinePlaySound": qsTr("Friend online notification sound"),
+                    "bFriendMsgShowToast": qsTr("Friend message toast notification"),
+                    "bFriendMsgPlaySound": qsTr("Friend message notification sound"),
+                    "bChatRoomShowToast": qsTr("Chat room toast notification"),
+                    "bChatRoomPlaySound": qsTr("Chat room notification sound"),
+                    "flashWindowOnMessage": qsTr("Flash window when receive chat message")
                 };
                 for (var idx = 0; idx < keys.length; idx++) {
                     (function(key) {
@@ -936,6 +1068,7 @@ Item {
         if (name === qsTr("Steam Overlay")) return steamOverlayPanel;
         if (name === qsTr("CS2 Steam Overlay")) return cs2Panel;
         if (name === qsTr("Steam Settings")) return steamSettingsPanel;
+        if (name === qsTr("Classic Context Menu")) return classicContextMenuPanel;
         return null;
     }
 
@@ -944,6 +1077,8 @@ Item {
             root.currentSection = "telemetry";
         } else if (categoryName === qsTr("Counter-Strike 2 Launch Options") || categoryName === "Counter-Strike 2 Launch Options" || categoryName === qsTr("CS2 Steam Overlay") || categoryName === "CS2 Steam Overlay" || categoryName === qsTr("Steam Settings") || categoryName === "Steam Settings") {
             root.currentSection = "games";
+        } else if (categoryName === qsTr("Classic Context Menu") || categoryName === "Classic Context Menu") {
+            root.currentSection = "customization";
         } else {
             root.currentSection = "core";
         }
@@ -1016,6 +1151,9 @@ Item {
         clip: true
         contentHeight: mainColumn.implicitHeight
 
+        ScrollBar.vertical: MeguScrollBar { }
+        ScrollBar.horizontal: MeguScrollBar { }
+
         Column {
             id: mainColumn
             width: mainScroll.width - 12
@@ -1024,6 +1162,7 @@ Item {
             Text {
                 text: root.currentSection === "telemetry" ? qsTr("TELEMETRY SETTINGS") : 
                       root.currentSection === "games" ? qsTr("VIDEO GAMES OPTIMIZATION") :
+                      root.currentSection === "customization" ? qsTr("CUSTOMIZATION SETTINGS") :
                       qsTr("SYSTEM OPTIMIZATION")
                 color: Theme.yellowAccent
                 font.family: Theme.fontFamily
@@ -1051,6 +1190,9 @@ Item {
                     id: cs2Panel
                     width: parent.width
                     height: detailsExpanded ? 76 + detailsContainer.implicitHeight + 24 : 76
+                    opacity: optimizerBackend.steamInstalled ? 1.0 : 0.5
+                    enabled: optimizerBackend.steamInstalled
+                    Behavior on opacity { NumberAnimation { duration: Theme.animNormal } }
                     
                     property bool detailsExpanded: false
 
@@ -1111,14 +1253,14 @@ Item {
                                         height: 16
                                         width: cs2SelectedText.contentWidth + 10
                                         radius: 4
-                                        color: Theme.accentDim
-                                        border.color: Theme.accent
+                                        color: Qt.rgba(Theme.success.r, Theme.success.g, Theme.success.b, 0.15)
+                                        border.color: Theme.success
                                         border.width: 1
                                         anchors.verticalCenter: parent.verticalCenter
                                         Text {
                                             id: cs2SelectedText
                                             text: qsTr("Selected for application")
-                                            color: Theme.accent
+                                            color: Theme.success
                                             font.family: Theme.fontFamily
                                             font.pixelSize: 8
                                             font.bold: true
@@ -1179,6 +1321,9 @@ Item {
                                 color: cs2OverlayMouseRow.containsMouse ? Theme.buttonBgHover : "transparent"
                                 border.color: cs2OverlayCheckedState ? Qt.rgba(Theme.accent.r, Theme.accent.g, Theme.accent.b, 0.3) : (cs2OverlayMouseRow.containsMouse ? Theme.borderHover : "transparent")
                                 border.width: 1
+                                opacity: optimizerBackend.steamInstalled ? 1.0 : 0.5
+                                enabled: optimizerBackend.steamInstalled
+                                Behavior on opacity { NumberAnimation { duration: Theme.animNormal } }
                                 
                                 property bool cs2OverlayCheckedState: optimizerBackend.cs2OverlayActive
 
@@ -1217,14 +1362,14 @@ Item {
                                                 height: 14
                                                 width: cs2OverlayStagedText.contentWidth + 8
                                                 radius: 3
-                                                color: Theme.accentDim
-                                                border.color: Theme.accent
+                                                color: Qt.rgba(Theme.success.r, Theme.success.g, Theme.success.b, 0.15)
+                                                border.color: Theme.success
                                                 border.width: 1
                                                 anchors.verticalCenter: parent.verticalCenter
                                                 Text {
                                                     id: cs2OverlayStagedText
                                                     text: qsTr("Selected for application")
-                                                    color: Theme.accent
+                                                    color: Theme.success
                                                     font.family: Theme.fontFamily
                                                     font.pixelSize: 7
                                                     font.bold: true
@@ -1381,7 +1526,9 @@ Item {
                     id: steamSettingsPanel
                     width: parent.width
                     height: 76
-                    opacity: optimizerBackend.steamInstalled ? 1.0 : 0.6
+                    opacity: optimizerBackend.steamInstalled ? 1.0 : 0.5
+                    enabled: optimizerBackend.steamInstalled
+                    Behavior on opacity { NumberAnimation { duration: Theme.animNormal } }
 
                     Row {
                         id: steamSettingsLayout
@@ -1428,14 +1575,14 @@ Item {
                                     height: 16
                                     width: steamStagedText.contentWidth + 10
                                     radius: 4
-                                    color: Theme.accentDim
-                                    border.color: Theme.accent
+                                    color: Qt.rgba(Theme.success.r, Theme.success.g, Theme.success.b, 0.15)
+                                    border.color: Theme.success
                                     border.width: 1
                                     anchors.verticalCenter: parent.verticalCenter
                                     Text {
                                         id: steamStagedText
                                         text: qsTr("Selected for application")
-                                        color: Theme.accent
+                                        color: Theme.success
                                         font.family: Theme.fontFamily
                                         font.pixelSize: 8
                                         font.bold: true
@@ -1464,6 +1611,97 @@ Item {
                             anchors.verticalCenter: parent.verticalCenter
                             onClicked: {
                                 root.activeDrawer = "steamSettings"
+                            }
+                        }
+                    }
+                }
+
+                // Steam Overlay Panel
+                AcrylicPanel {
+                    id: steamOverlayPanel
+                    width: parent.width
+                    height: 72
+                    opacity: optimizerBackend.steamInstalled ? 1.0 : 0.5
+                    Behavior on opacity { NumberAnimation { duration: Theme.animNormal } }
+
+                    Row {
+                        anchors.left: parent.left
+                        anchors.verticalCenter: parent.verticalCenter
+                        spacing: 12
+
+                        Item {
+                            width: 28
+                            height: 28
+                            anchors.verticalCenter: parent.verticalCenter
+                            Image {
+                                id: steamOverlayIconImg
+                                source: "qrc:/MeguPackOptimizer/src/resources/monitor.svg"
+                                anchors.fill: parent
+                                sourceSize.width: 28
+                                sourceSize.height: 28
+                                visible: false
+                            }
+                            ColorOverlay {
+                                anchors.fill: steamOverlayIconImg
+                                source: steamOverlayIconImg
+                                color: Theme.accent
+                            }
+                        }
+
+                        Column {
+                            anchors.verticalCenter: parent.verticalCenter
+                            spacing: 2
+
+                            Row {
+                                spacing: 8
+                                Text {
+                                    text: qsTr("Steam Overlay")
+                                    color: Theme.textPrimary
+                                    font.family: Theme.fontFamily
+                                    font.pixelSize: 13
+                                    font.bold: true
+                                }
+                                Rectangle {
+                                    visible: root.steamOverlayChanged
+                                    height: 16
+                                    width: selectedTextSteamOverlay.contentWidth + 10
+                                    radius: 4
+                                    color: Qt.rgba(Theme.success.r, Theme.success.g, Theme.success.b, 0.15)
+                                    border.color: Theme.success
+                                    border.width: 1
+                                    anchors.verticalCenter: parent.verticalCenter
+                                    Text {
+                                        id: selectedTextSteamOverlay
+                                        text: qsTr("Selected for application")
+                                        color: Theme.success
+                                        font.family: Theme.fontFamily
+                                        font.pixelSize: 8
+                                        font.bold: true
+                                        anchors.centerIn: parent
+                                    }
+                                }
+                            }
+
+                            Text {
+                                text: qsTr("Enable or disable the global Steam Overlay in games to reduce input latency and CPU overhead.")
+                                color: Theme.textMuted
+                                font.family: Theme.fontFamily
+                                font.pixelSize: 10
+                            }
+                        }
+                    }
+
+                    Row {
+                        anchors.right: parent.right
+                        anchors.verticalCenter: parent.verticalCenter
+                        spacing: 16
+
+                        MeguSwitch {
+                            checked: optimizerBackend.steamOverlayActive
+                            enabled: optimizerBackend.steamInstalled
+                            anchors.verticalCenter: parent.verticalCenter
+                            onToggled: (isChecked) => {
+                                optimizerBackend.steamOverlayActive = isChecked;
                             }
                         }
                     }
@@ -1532,14 +1770,14 @@ Item {
                                     height: 16
                                     width: selectedText1.contentWidth + 10
                                     radius: 4
-                                    color: Theme.accentDim
-                                    border.color: Theme.accent
+                                    color: Qt.rgba(Theme.success.r, Theme.success.g, Theme.success.b, 0.15)
+                                    border.color: Theme.success
                                     border.width: 1
                                     anchors.verticalCenter: parent.verticalCenter
                                     Text {
                                         id: selectedText1
                                         text: qsTr("Selected for application")
-                                        color: Theme.accent
+                                        color: Theme.success
                                         font.family: Theme.fontFamily
                                         font.pixelSize: 8
                                         font.bold: true
@@ -1694,14 +1932,14 @@ Item {
                                     height: 16
                                     width: selectedText2.contentWidth + 10
                                     radius: 4
-                                    color: Theme.accentDim
-                                    border.color: Theme.accent
+                                    color: Qt.rgba(Theme.success.r, Theme.success.g, Theme.success.b, 0.15)
+                                    border.color: Theme.success
                                     border.width: 1
                                     anchors.verticalCenter: parent.verticalCenter
                                     Text {
                                         id: selectedText2
                                         text: qsTr("Selected for application")
-                                        color: Theme.accent
+                                        color: Theme.success
                                         font.family: Theme.fontFamily
                                         font.pixelSize: 8
                                         font.bold: true
@@ -1848,6 +2086,11 @@ Item {
                         anchors.verticalCenter: parent.verticalCenter
                         spacing: 16
 
+                        ShowPathButton {
+                            anchors.verticalCenter: parent.verticalCenter
+                            onClicked: { optimizerBackend.showPath("mpo"); }
+                        }
+
                         // Current Value indicator pill
                         Rectangle {
                             height: 24
@@ -1972,14 +2215,14 @@ Item {
                                     height: 16
                                     width: selectedTextVfx.contentWidth + 10
                                     radius: 4
-                                    color: Theme.accentDim
-                                    border.color: Theme.accent
+                                    color: Qt.rgba(Theme.success.r, Theme.success.g, Theme.success.b, 0.15)
+                                    border.color: Theme.success
                                     border.width: 1
                                     anchors.verticalCenter: parent.verticalCenter
                                     Text {
                                         id: selectedTextVfx
                                         text: qsTr("Selected for application")
-                                        color: Theme.accent
+                                        color: Theme.success
                                         font.family: Theme.fontFamily
                                         font.pixelSize: 8
                                         font.bold: true
@@ -2002,21 +2245,16 @@ Item {
                         anchors.verticalCenter: parent.verticalCenter
                         spacing: 16
 
-                        Text {
-                            text: qsTr("Open")
-                            color: vfxPathMouse.containsMouse ? Theme.accentLight : Theme.accent
-                            font.family: Theme.fontFamily
-                            font.pixelSize: 11
-                            font.bold: true
-                            font.underline: true
+                        ShowPathButton {
                             anchors.verticalCenter: parent.verticalCenter
-                            MouseArea {
-                                id: vfxPathMouse
-                                anchors.fill: parent
-                                hoverEnabled: true
-                                cursorShape: Qt.PointingHandCursor
-                                onClicked: { root.activeDrawer = "visualEffects"; }
-                            }
+                            onClicked: { optimizerBackend.showPath("visualeffects"); }
+                        }
+
+                        ShowPathButton {
+                            text: qsTr("Open")
+                            iconSource: "qrc:/MeguPackOptimizer/src/resources/settings.svg"
+                            anchors.verticalCenter: parent.verticalCenter
+                            onClicked: { root.activeDrawer = "visualEffects"; }
                         }
 
                         MeguSwitch {
@@ -2034,102 +2272,154 @@ Item {
                     id: coreIsolationPanel
                     visible: root.currentSection === "core"
                     width: parent.width
-                    height: 72
+                    height: (optimizerBackend.coreIsolationActive !== optimizerBackend.bootCoreIsolationActive) ? 116 : 72
 
-                    Row {
+                    Behavior on height {
+                        NumberAnimation { duration: Theme.animNormal; easing.type: Easing.InOutQuad }
+                    }
+
+                    Column {
                         anchors.left: parent.left
-                        anchors.verticalCenter: parent.verticalCenter
+                        anchors.right: parent.right
+                        anchors.top: parent.top
+                        anchors.leftMargin: 16
+                        anchors.rightMargin: 16
+                        anchors.topMargin: 16
                         spacing: 12
 
+                        // Main Row
                         Item {
-                            width: 28
-                            height: 28
-                            anchors.verticalCenter: parent.verticalCenter
-                            Image {
-                                id: coresIconImg
-                                source: "qrc:/MeguPackOptimizer/src/resources/cores.svg"
-                                anchors.fill: parent
-                                sourceSize.width: 28
-                                sourceSize.height: 28
-                                visible: false
-                            }
-                            ColorOverlay {
-                                anchors.fill: coresIconImg
-                                source: coresIconImg
-                                color: Theme.accent
-                            }
-                        }
-
-                        Column {
-                            anchors.verticalCenter: parent.verticalCenter
-                            spacing: 2
+                            width: parent.width
+                            height: 40
 
                             Row {
-                                spacing: 8
-                                Text {
-                                    text: qsTr("Core Isolation")
-                                    color: Theme.textPrimary
-                                    font.family: Theme.fontFamily
-                                    font.pixelSize: 13
-                                    font.bold: true
-                                }
-                                Rectangle {
-                                    visible: root.coreIsolationChanged
-                                    height: 16
-                                    width: selectedText3.contentWidth + 10
-                                    radius: 4
-                                    color: Theme.accentDim
-                                    border.color: Theme.accent
-                                    border.width: 1
+                                anchors.left: parent.left
+                                anchors.verticalCenter: parent.verticalCenter
+                                spacing: 12
+
+                                Item {
+                                    width: 28
+                                    height: 28
                                     anchors.verticalCenter: parent.verticalCenter
-                                    Text {
-                                        id: selectedText3
-                                        text: qsTr("Selected for application")
+                                    Image {
+                                        id: coresIconImg
+                                        source: "qrc:/MeguPackOptimizer/src/resources/cores.svg"
+                                        anchors.fill: parent
+                                        sourceSize.width: 28
+                                        sourceSize.height: 28
+                                        visible: false
+                                    }
+                                    ColorOverlay {
+                                        anchors.fill: coresIconImg
+                                        source: coresIconImg
                                         color: Theme.accent
+                                    }
+                                }
+
+                                Column {
+                                    anchors.verticalCenter: parent.verticalCenter
+                                    spacing: 2
+
+                                    Row {
+                                        spacing: 8
+                                        Text {
+                                            text: qsTr("Core Isolation")
+                                            color: Theme.textPrimary
+                                            font.family: Theme.fontFamily
+                                            font.pixelSize: 13
+                                            font.bold: true
+                                        }
+                                        Rectangle {
+                                            visible: root.coreIsolationChanged
+                                            height: 16
+                                            width: selectedText3.contentWidth + 10
+                                            radius: 4
+                                            color: Qt.rgba(Theme.success.r, Theme.success.g, Theme.success.b, 0.15)
+                                            border.color: Theme.success
+                                            border.width: 1
+                                            anchors.verticalCenter: parent.verticalCenter
+                                            Text {
+                                                id: selectedText3
+                                                text: qsTr("Selected for application")
+                                                color: Theme.success
+                                                font.family: Theme.fontFamily
+                                                font.pixelSize: 8
+                                                font.bold: true
+                                                anchors.centerIn: parent
+                                            }
+                                        }
+                                    }
+
+                                    Text {
+                                        text: qsTr("Disabling kernel memory integrity reduces CPU overhead and input latency.")
+                                        color: Theme.textMuted
                                         font.family: Theme.fontFamily
-                                        font.pixelSize: 8
-                                        font.bold: true
-                                        anchors.centerIn: parent
+                                        font.pixelSize: 10
                                     }
                                 }
                             }
 
+                            Row {
+                                anchors.right: parent.right
+                                anchors.verticalCenter: parent.verticalCenter
+                                spacing: 16
+
+                                ShowPathButton {
+                                    anchors.verticalCenter: parent.verticalCenter
+                                    onClicked: { optimizerBackend.showPath("coreisolation"); }
+                                }
+
+                                MeguSwitch {
+                                    checked: optimizerBackend.coreIsolationActive
+                                    anchors.verticalCenter: parent.verticalCenter
+                                    onToggled: (isChecked) => {
+                                        optimizerBackend.coreIsolationActive = isChecked;
+                                    }
+                                }
+                            }
+                        }
+
+                        // Separator Line
+                        Rectangle {
+                            width: parent.width
+                            height: 1
+                            color: Theme.border
+                            opacity: 0.3
+                            visible: (optimizerBackend.coreIsolationActive !== optimizerBackend.bootCoreIsolationActive)
+                        }
+
+                        // Reboot Warning Section
+                        Row {
+                            width: parent.width
+                            visible: (optimizerBackend.coreIsolationActive !== optimizerBackend.bootCoreIsolationActive)
+                            spacing: 8
+
+                            Item {
+                                width: 16
+                                height: 16
+                                anchors.verticalCenter: parent.verticalCenter
+                                Image {
+                                    id: ciWarningIconImg
+                                    source: "qrc:/MeguPackOptimizer/src/resources/warning.svg"
+                                    anchors.fill: parent
+                                    sourceSize.width: 16
+                                    sourceSize.height: 16
+                                    visible: false
+                                }
+                                ColorOverlay {
+                                    anchors.fill: ciWarningIconImg
+                                    source: ciWarningIconImg
+                                    color: Theme.warning
+                                }
+                            }
+
                             Text {
-                                text: qsTr("Disabling kernel memory integrity reduces CPU overhead and input latency.")
-                                color: Theme.textMuted
+                                text: qsTr("Please restart your PC to apply Core Isolation changes.")
+                                color: Theme.warning
                                 font.family: Theme.fontFamily
-                                font.pixelSize: 10
-                            }
-                        }
-                    }
-
-                    Row {
-                        anchors.right: parent.right
-                        anchors.verticalCenter: parent.verticalCenter
-                        spacing: 16
-
-                        Text {
-                            text: qsTr("Show Path")
-                            color: ciPathMouse.containsMouse ? Theme.accentLight : Theme.accent
-                            font.family: Theme.fontFamily
-                            font.pixelSize: 11
-                            font.bold: true
-                            font.underline: true
-                            anchors.verticalCenter: parent.verticalCenter
-                            MouseArea {
-                                id: ciPathMouse
-                                anchors.fill: parent
-                                hoverEnabled: true
-                                cursorShape: Qt.PointingHandCursor
-                                onClicked: { optimizerBackend.showPath("coreisolation"); }
-                            }
-                        }
-
-                        MeguSwitch {
-                            checked: optimizerBackend.coreIsolationActive
-                            anchors.verticalCenter: parent.verticalCenter
-                            onToggled: (isChecked) => {
-                                optimizerBackend.coreIsolationActive = isChecked;
+                                font.pixelSize: 11
+                                font.bold: true
+                                anchors.verticalCenter: parent.verticalCenter
                             }
                         }
                     }
@@ -2184,14 +2474,14 @@ Item {
                                     height: 16
                                     width: selectedText4.contentWidth + 10
                                     radius: 4
-                                    color: Theme.accentDim
-                                    border.color: Theme.accent
+                                    color: Qt.rgba(Theme.success.r, Theme.success.g, Theme.success.b, 0.15)
+                                    border.color: Theme.success
                                     border.width: 1
                                     anchors.verticalCenter: parent.verticalCenter
                                     Text {
                                         id: selectedText4
                                         text: qsTr("Selected for application")
-                                        color: Theme.accent
+                                        color: Theme.success
                                         font.family: Theme.fontFamily
                                         font.pixelSize: 8
                                         font.bold: true
@@ -2214,21 +2504,9 @@ Item {
                         anchors.verticalCenter: parent.verticalCenter
                         spacing: 16
 
-                        Text {
-                            text: qsTr("Show Path")
-                            color: mousePathMouse.containsMouse ? Theme.accentLight : Theme.accent
-                            font.family: Theme.fontFamily
-                            font.pixelSize: 11
-                            font.bold: true
-                            font.underline: true
+                        ShowPathButton {
                             anchors.verticalCenter: parent.verticalCenter
-                            MouseArea {
-                                id: mousePathMouse
-                                anchors.fill: parent
-                                hoverEnabled: true
-                                cursorShape: Qt.PointingHandCursor
-                                onClicked: { optimizerBackend.showPath("mouseacceleration"); }
-                            }
+                            onClicked: { optimizerBackend.showPath("mouseacceleration"); }
                         }
 
                         MeguSwitch {
@@ -2290,14 +2568,14 @@ Item {
                                     height: 16
                                     width: selectedText5.contentWidth + 10
                                     radius: 4
-                                    color: Theme.accentDim
-                                    border.color: Theme.accent
+                                    color: Qt.rgba(Theme.success.r, Theme.success.g, Theme.success.b, 0.15)
+                                    border.color: Theme.success
                                     border.width: 1
                                     anchors.verticalCenter: parent.verticalCenter
                                     Text {
                                         id: selectedText5
                                         text: qsTr("Selected for application")
-                                        color: Theme.accent
+                                        color: Theme.success
                                         font.family: Theme.fontFamily
                                         font.pixelSize: 8
                                         font.bold: true
@@ -2320,21 +2598,9 @@ Item {
                         anchors.verticalCenter: parent.verticalCenter
                         spacing: 16
 
-                        Text {
-                            text: qsTr("Show Path")
-                            color: gameModePathMouse.containsMouse ? Theme.accentLight : Theme.accent
-                            font.family: Theme.fontFamily
-                            font.pixelSize: 11
-                            font.bold: true
-                            font.underline: true
+                        ShowPathButton {
                             anchors.verticalCenter: parent.verticalCenter
-                            MouseArea {
-                                id: gameModePathMouse
-                                anchors.fill: parent
-                                hoverEnabled: true
-                                cursorShape: Qt.PointingHandCursor
-                                onClicked: { optimizerBackend.showPath("gamemode"); }
-                            }
+                            onClicked: { optimizerBackend.showPath("gamemode"); }
                         }
 
                         MeguSwitch {
@@ -2397,14 +2663,14 @@ Item {
                                     height: 16
                                     width: selectedTextDiscord.contentWidth + 10
                                     radius: 4
-                                    color: Theme.accentDim
-                                    border.color: Theme.accent
+                                    color: Qt.rgba(Theme.success.r, Theme.success.g, Theme.success.b, 0.15)
+                                    border.color: Theme.success
                                     border.width: 1
                                     anchors.verticalCenter: parent.verticalCenter
                                     Text {
                                         id: selectedTextDiscord
                                         text: qsTr("Selected for application")
-                                        color: Theme.accent
+                                        color: Theme.success
                                         font.family: Theme.fontFamily
                                         font.pixelSize: 8
                                         font.bold: true
@@ -2436,21 +2702,9 @@ Item {
                         anchors.verticalCenter: parent.verticalCenter
                         spacing: 16
 
-                        Text {
-                            text: qsTr("Show Path")
-                            color: discordPathMouse.containsMouse ? Theme.accentLight : Theme.accent
-                            font.family: Theme.fontFamily
-                            font.pixelSize: 11
-                            font.bold: true
-                            font.underline: true
+                        ShowPathButton {
                             anchors.verticalCenter: parent.verticalCenter
-                            MouseArea {
-                                id: discordPathMouse
-                                anchors.fill: parent
-                                hoverEnabled: true
-                                cursorShape: Qt.PointingHandCursor
-                                onClicked: { optimizerBackend.showPath("discord"); }
-                            }
+                            onClicked: { optimizerBackend.showPath("discord"); }
                         }
 
                         MeguSwitch {
@@ -2512,14 +2766,14 @@ Item {
                                     height: 16
                                     width: selectedText6.contentWidth + 10
                                     radius: 4
-                                    color: Theme.accentDim
-                                    border.color: Theme.accent
+                                    color: Qt.rgba(Theme.success.r, Theme.success.g, Theme.success.b, 0.15)
+                                    border.color: Theme.success
                                     border.width: 1
                                     anchors.verticalCenter: parent.verticalCenter
                                     Text {
                                         id: selectedText6
                                         text: qsTr("Selected for application")
-                                        color: Theme.accent
+                                        color: Theme.success
                                         font.family: Theme.fontFamily
                                         font.pixelSize: 8
                                         font.bold: true
@@ -2542,21 +2796,9 @@ Item {
                         anchors.verticalCenter: parent.verticalCenter
                         spacing: 16
 
-                        Text {
-                            text: qsTr("Show Path")
-                            color: firewallPathMouse.containsMouse ? Theme.accentLight : Theme.accent
-                            font.family: Theme.fontFamily
-                            font.pixelSize: 11
-                            font.bold: true
-                            font.underline: true
+                        ShowPathButton {
                             anchors.verticalCenter: parent.verticalCenter
-                            MouseArea {
-                                id: firewallPathMouse
-                                anchors.fill: parent
-                                hoverEnabled: true
-                                cursorShape: Qt.PointingHandCursor
-                                onClicked: { optimizerBackend.showPath("firewall"); }
-                            }
+                            onClicked: { optimizerBackend.showPath("firewall"); }
                         }
 
                         MeguSwitch {
@@ -2569,94 +2811,6 @@ Item {
                     }
                 }
 
-                // Steam Overlay Panel
-                AcrylicPanel {
-                    id: steamOverlayPanel
-                    visible: root.currentSection === "core"
-                    width: parent.width
-                    height: 72
-
-                    Row {
-                        anchors.left: parent.left
-                        anchors.verticalCenter: parent.verticalCenter
-                        spacing: 12
-
-                        Item {
-                            width: 28
-                            height: 28
-                            anchors.verticalCenter: parent.verticalCenter
-                            Image {
-                                id: steamOverlayIconImg
-                                source: "qrc:/MeguPackOptimizer/src/resources/monitor.svg"
-                                anchors.fill: parent
-                                sourceSize.width: 28
-                                sourceSize.height: 28
-                                visible: false
-                            }
-                            ColorOverlay {
-                                anchors.fill: steamOverlayIconImg
-                                source: steamOverlayIconImg
-                                color: Theme.accent
-                            }
-                        }
-
-                        Column {
-                            anchors.verticalCenter: parent.verticalCenter
-                            spacing: 2
-
-                            Row {
-                                spacing: 8
-                                Text {
-                                    text: qsTr("Steam Overlay")
-                                    color: Theme.textPrimary
-                                    font.family: Theme.fontFamily
-                                    font.pixelSize: 13
-                                    font.bold: true
-                                }
-                                Rectangle {
-                                    visible: root.steamOverlayChanged
-                                    height: 16
-                                    width: selectedTextSteamOverlay.contentWidth + 10
-                                    radius: 4
-                                    color: Theme.accentDim
-                                    border.color: Theme.accent
-                                    border.width: 1
-                                    anchors.verticalCenter: parent.verticalCenter
-                                    Text {
-                                        id: selectedTextSteamOverlay
-                                        text: qsTr("Selected for application")
-                                        color: Theme.accent
-                                        font.family: Theme.fontFamily
-                                        font.pixelSize: 8
-                                        font.bold: true
-                                        anchors.centerIn: parent
-                                    }
-                                }
-                            }
-
-                            Text {
-                                text: qsTr("Enable or disable the global Steam Overlay in games to reduce input latency and CPU overhead.")
-                                color: Theme.textMuted
-                                font.family: Theme.fontFamily
-                                font.pixelSize: 10
-                            }
-                        }
-                    }
-
-                    Row {
-                        anchors.right: parent.right
-                        anchors.verticalCenter: parent.verticalCenter
-                        spacing: 16
-
-                        MeguSwitch {
-                            checked: optimizerBackend.steamOverlayActive
-                            anchors.verticalCenter: parent.verticalCenter
-                            onToggled: (isChecked) => {
-                                optimizerBackend.steamOverlayActive = isChecked;
-                            }
-                        }
-                    }
-                }
 
                 // Remote Access (RDP) Panel
                 AcrylicPanel {
@@ -2707,14 +2861,14 @@ Item {
                                     height: 16
                                     width: selectedTextRdp.contentWidth + 10
                                     radius: 4
-                                    color: Theme.accentDim
-                                    border.color: Theme.accent
+                                    color: Qt.rgba(Theme.success.r, Theme.success.g, Theme.success.b, 0.15)
+                                    border.color: Theme.success
                                     border.width: 1
                                     anchors.verticalCenter: parent.verticalCenter
                                     Text {
                                         id: selectedTextRdp
                                         text: qsTr("Selected for application")
-                                        color: Theme.accent
+                                        color: Theme.success
                                         font.family: Theme.fontFamily
                                         font.pixelSize: 8
                                         font.bold: true
@@ -2737,21 +2891,9 @@ Item {
                         anchors.verticalCenter: parent.verticalCenter
                         spacing: 16
 
-                        Text {
-                            text: qsTr("Show Path")
-                            color: remoteAccessPathMouse.containsMouse ? Theme.accentLight : Theme.accent
-                            font.family: Theme.fontFamily
-                            font.pixelSize: 11
-                            font.bold: true
-                            font.underline: true
+                        ShowPathButton {
                             anchors.verticalCenter: parent.verticalCenter
-                            MouseArea {
-                                id: remoteAccessPathMouse
-                                anchors.fill: parent
-                                hoverEnabled: true
-                                cursorShape: Qt.PointingHandCursor
-                                onClicked: { optimizerBackend.showPath("remoteaccess"); }
-                            }
+                            onClicked: { optimizerBackend.showPath("remoteaccess"); }
                         }
 
                         MeguSwitch {
@@ -2813,14 +2955,14 @@ Item {
                                     height: 16
                                     width: selectedTextTelemetry.contentWidth + 10
                                     radius: 4
-                                    color: Theme.accentDim
-                                    border.color: Theme.accent
+                                    color: Qt.rgba(Theme.success.r, Theme.success.g, Theme.success.b, 0.15)
+                                    border.color: Theme.success
                                     border.width: 1
                                     anchors.verticalCenter: parent.verticalCenter
                                     Text {
                                         id: selectedTextTelemetry
                                         text: qsTr("Selected for application")
-                                        color: Theme.accent
+                                        color: Theme.success
                                         font.family: Theme.fontFamily
                                         font.pixelSize: 8
                                         font.bold: true
@@ -2843,21 +2985,9 @@ Item {
                         anchors.verticalCenter: parent.verticalCenter
                         spacing: 16
 
-                        Text {
-                            text: qsTr("Show Path")
-                            color: telemetryPathMouse.containsMouse ? Theme.accentLight : Theme.accent
-                            font.family: Theme.fontFamily
-                            font.pixelSize: 11
-                            font.bold: true
-                            font.underline: true
+                        ShowPathButton {
                             anchors.verticalCenter: parent.verticalCenter
-                            MouseArea {
-                                id: telemetryPathMouse
-                                anchors.fill: parent
-                                hoverEnabled: true
-                                cursorShape: Qt.PointingHandCursor
-                                onClicked: { optimizerBackend.showPath("telemetry"); }
-                            }
+                            onClicked: { optimizerBackend.showPath("telemetry"); }
                         }
 
                         Rectangle {
@@ -2961,14 +3091,14 @@ Item {
                                     height: 16
                                     width: selectedTextWU.contentWidth + 10
                                     radius: 4
-                                    color: Theme.accentDim
-                                    border.color: Theme.accent
+                                    color: Qt.rgba(Theme.success.r, Theme.success.g, Theme.success.b, 0.15)
+                                    border.color: Theme.success
                                     border.width: 1
                                     anchors.verticalCenter: parent.verticalCenter
                                     Text {
                                         id: selectedTextWU
                                         text: qsTr("Selected for application")
-                                        color: Theme.accent
+                                        color: Theme.success
                                         font.family: Theme.fontFamily
                                         font.pixelSize: 8
                                         font.bold: true
@@ -2991,21 +3121,9 @@ Item {
                         anchors.verticalCenter: parent.verticalCenter
                         spacing: 16
 
-                        Text {
-                            text: qsTr("Show Path")
-                            color: wuPathMouse.containsMouse ? Theme.accentLight : Theme.accent
-                            font.family: Theme.fontFamily
-                            font.pixelSize: 11
-                            font.bold: true
-                            font.underline: true
+                        ShowPathButton {
                             anchors.verticalCenter: parent.verticalCenter
-                            MouseArea {
-                                id: wuPathMouse
-                                anchors.fill: parent
-                                hoverEnabled: true
-                                cursorShape: Qt.PointingHandCursor
-                                onClicked: { optimizerBackend.showPath("windowsupdate"); }
-                            }
+                            onClicked: { optimizerBackend.showPath("windowsupdate"); }
                         }
 
                         // Current Mode indicator pill
@@ -3133,14 +3251,14 @@ Item {
                                     height: 16
                                     width: selectedText7.contentWidth + 10
                                     radius: 4
-                                    color: Theme.accentDim
-                                    border.color: Theme.accent
+                                    color: Qt.rgba(Theme.success.r, Theme.success.g, Theme.success.b, 0.15)
+                                    border.color: Theme.success
                                     border.width: 1
                                     anchors.verticalCenter: parent.verticalCenter
                                     Text {
                                         id: selectedText7
                                         text: qsTr("Selected for application")
-                                        color: Theme.accent
+                                        color: Theme.success
                                         font.family: Theme.fontFamily
                                         font.pixelSize: 8
                                         font.bold: true
@@ -3163,21 +3281,9 @@ Item {
                         anchors.verticalCenter: parent.verticalCenter
                         spacing: 16
 
-                        Text {
-                            text: qsTr("Show Path")
-                            color: printerPathMouse.containsMouse ? Theme.accentLight : Theme.accent
-                            font.family: Theme.fontFamily
-                            font.pixelSize: 11
-                            font.bold: true
-                            font.underline: true
+                        ShowPathButton {
                             anchors.verticalCenter: parent.verticalCenter
-                            MouseArea {
-                                id: printerPathMouse
-                                anchors.fill: parent
-                                hoverEnabled: true
-                                cursorShape: Qt.PointingHandCursor
-                                onClicked: { optimizerBackend.showPath("printer"); }
-                            }
+                            onClicked: { optimizerBackend.showPath("printer"); }
                         }
 
                         MeguSwitch {
@@ -3284,14 +3390,14 @@ Item {
                                     height: 16
                                     width: selectedText8.contentWidth + 10
                                     radius: 4
-                                    color: Theme.accentDim
-                                    border.color: Theme.accent
+                                    color: Qt.rgba(Theme.success.r, Theme.success.g, Theme.success.b, 0.15)
+                                    border.color: Theme.success
                                     border.width: 1
                                     anchors.verticalCenter: parent.verticalCenter
                                     Text {
                                         id: selectedText8
                                         text: qsTr("Selected for application")
-                                        color: Theme.accent
+                                        color: Theme.success
                                         font.family: Theme.fontFamily
                                         font.pixelSize: 8
                                         font.bold: true
@@ -3314,21 +3420,9 @@ Item {
                         anchors.verticalCenter: parent.verticalCenter
                         spacing: 16
 
-                        Text {
-                            text: qsTr("Show Path")
-                            color: notificationsPathMouse.containsMouse ? Theme.accentLight : Theme.accent
-                            font.family: Theme.fontFamily
-                            font.pixelSize: 11
-                            font.bold: true
-                            font.underline: true
+                        ShowPathButton {
                             anchors.verticalCenter: parent.verticalCenter
-                            MouseArea {
-                                id: notificationsPathMouse
-                                anchors.fill: parent
-                                hoverEnabled: true
-                                cursorShape: Qt.PointingHandCursor
-                                onClicked: { optimizerBackend.showPath("notifications"); }
-                            }
+                            onClicked: { optimizerBackend.showPath("notifications"); }
                         }
 
                         MeguSwitch {
@@ -3380,6 +3474,168 @@ Item {
                                 cursorShape: Qt.PointingHandCursor
                                 onClicked: {
                                     root.activeDrawer = "notifications";
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+
+            // 2.5 CUSTOMIZATION CATEGORY
+            Column {
+                visible: root.currentSection === "customization"
+                width: parent.width
+                spacing: 8
+
+                Text {
+                    text: qsTr("CUSTOMIZATION")
+                    color: Theme.textSecondary
+                    font.family: Theme.fontFamily
+                    font.pixelSize: 10
+                    font.bold: true
+                    font.letterSpacing: 1
+                }
+
+                // Classic Context Menu Panel
+                AcrylicPanel {
+                    id: classicContextMenuPanel
+                    width: parent.width
+                    height: optimizerBackend.classicContextMenuActive ? 126 : 72
+
+                    Behavior on height {
+                        NumberAnimation { duration: Theme.animNormal; easing.type: Easing.InOutQuad }
+                    }
+
+                    Column {
+                        anchors.fill: parent
+                        spacing: 12
+
+                        // Main Row
+                        Item {
+                            width: parent.width
+                            height: 40
+
+                            Row {
+                                anchors.left: parent.left
+                                anchors.verticalCenter: parent.verticalCenter
+                                spacing: 12
+
+                                Item {
+                                    width: 28
+                                    height: 28
+                                    anchors.verticalCenter: parent.verticalCenter
+                                    Image {
+                                        id: classicContextMenuIconImg
+                                        source: "qrc:/MeguPackOptimizer/src/resources/settings.svg"
+                                        anchors.fill: parent
+                                        sourceSize.width: 28
+                                        sourceSize.height: 28
+                                        visible: false
+                                    }
+                                    ColorOverlay {
+                                        anchors.fill: classicContextMenuIconImg
+                                        source: classicContextMenuIconImg
+                                        color: Theme.accent
+                                    }
+                                }
+
+                                Column {
+                                    anchors.verticalCenter: parent.verticalCenter
+                                    spacing: 2
+
+                                    Row {
+                                        spacing: 8
+                                        Text {
+                                            text: qsTr("Classic Context Menu")
+                                            color: Theme.textPrimary
+                                            font.family: Theme.fontFamily
+                                            font.pixelSize: 13
+                                            font.bold: true
+                                        }
+                                        Rectangle {
+                                            visible: root.classicContextMenuChanged
+                                            height: 16
+                                            width: selectedTextClassicMenu.contentWidth + 10
+                                            radius: 4
+                                            color: Qt.rgba(Theme.success.r, Theme.success.g, Theme.success.b, 0.15)
+                                            border.color: Theme.success
+                                            border.width: 1
+                                            anchors.verticalCenter: parent.verticalCenter
+                                            Text {
+                                                id: selectedTextClassicMenu
+                                                text: qsTr("Selected for application")
+                                                color: Theme.success
+                                                font.family: Theme.fontFamily
+                                                font.pixelSize: 8
+                                                font.bold: true
+                                                anchors.centerIn: parent
+                                            }
+                                        }
+                                    }
+
+                                    Text {
+                                        text: qsTr("Disables the modern Windows 11 Fluent context menu and restores the classic Windows 10 style context menu.")
+                                        color: Theme.textMuted
+                                        font.family: Theme.fontFamily
+                                        font.pixelSize: 10
+                                    }
+                                }
+                            }
+
+                            Row {
+                                anchors.right: parent.right
+                                anchors.verticalCenter: parent.verticalCenter
+                                spacing: 16
+
+                                ShowPathButton {
+                                    anchors.verticalCenter: parent.verticalCenter
+                                    onClicked: { optimizerBackend.showPath("classiccontextmenu"); }
+                                }
+
+                                MeguSwitch {
+                                    checked: optimizerBackend.classicContextMenuActive
+                                    anchors.verticalCenter: parent.verticalCenter
+                                    onToggled: (isChecked) => {
+                                        optimizerBackend.classicContextMenuActive = isChecked;
+                                    }
+                                }
+                            }
+                        }
+
+                        // Separator Line
+                        Rectangle {
+                            width: parent.width
+                            height: 1
+                            color: Theme.border
+                            opacity: 0.3
+                            visible: optimizerBackend.classicContextMenuActive
+                        }
+
+                        // Restart Explorer Section
+                        Row {
+                            width: parent.width
+                            visible: optimizerBackend.classicContextMenuActive
+                            spacing: 12
+
+                            Text {
+                                text: qsTr("Restart Windows Explorer to apply context menu changes.")
+                                color: Theme.textSecondary
+                                font.family: Theme.fontFamily
+                                font.pixelSize: 11
+                                font.bold: true
+                                anchors.verticalCenter: parent.verticalCenter
+                                width: parent.width - restartBtn.width - 24
+                                wrapMode: Text.Wrap
+                            }
+
+                            MeguButton {
+                                id: restartBtn
+                                text: qsTr("Restart Explorer")
+                                iconSource: "qrc:/MeguPackOptimizer/src/resources/play.svg"
+                                anchors.verticalCenter: parent.verticalCenter
+                                height: 28
+                                onClicked: {
+                                    optimizerBackend.restartExplorer();
                                 }
                             }
                         }
@@ -3449,14 +3705,14 @@ Item {
                                     height: 16
                                     width: selectedText9.contentWidth + 10
                                     radius: 4
-                                    color: Theme.accentDim
-                                    border.color: Theme.accent
+                                    color: Qt.rgba(Theme.success.r, Theme.success.g, Theme.success.b, 0.15)
+                                    border.color: Theme.success
                                     border.width: 1
                                     anchors.verticalCenter: parent.verticalCenter
                                     Text {
                                         id: selectedText9
                                         text: qsTr("Selected for application")
-                                        color: Theme.accent
+                                        color: Theme.success
                                         font.family: Theme.fontFamily
                                         font.pixelSize: 8
                                         font.bold: true
@@ -3479,21 +3735,9 @@ Item {
                         anchors.verticalCenter: parent.verticalCenter
                         spacing: 16
 
-                        Text {
-                            text: qsTr("Show Path")
-                            color: hibernationPathMouse.containsMouse ? Theme.accentLight : Theme.accent
-                            font.family: Theme.fontFamily
-                            font.pixelSize: 11
-                            font.bold: true
-                            font.underline: true
+                        ShowPathButton {
                             anchors.verticalCenter: parent.verticalCenter
-                            MouseArea {
-                                id: hibernationPathMouse
-                                anchors.fill: parent
-                                hoverEnabled: true
-                                cursorShape: Qt.PointingHandCursor
-                                onClicked: { optimizerBackend.showPath("hibernation"); }
-                            }
+                            onClicked: { optimizerBackend.showPath("hibernation"); }
                         }
 
                         MeguSwitch {
@@ -3554,14 +3798,14 @@ Item {
                                     height: 16
                                     width: selectedTextBitLocker.contentWidth + 10
                                     radius: 4
-                                    color: Theme.accentDim
-                                    border.color: Theme.accent
+                                    color: Qt.rgba(Theme.success.r, Theme.success.g, Theme.success.b, 0.15)
+                                    border.color: Theme.success
                                     border.width: 1
                                     anchors.verticalCenter: parent.verticalCenter
                                     Text {
                                         id: selectedTextBitLocker
                                         text: qsTr("Selected for application")
-                                        color: Theme.accent
+                                        color: Theme.success
                                         font.family: Theme.fontFamily
                                         font.pixelSize: 8
                                         font.bold: true
@@ -3594,21 +3838,9 @@ Item {
                         anchors.verticalCenter: parent.verticalCenter
                         spacing: 16
 
-                        Text {
-                            text: qsTr("Show Path")
-                            color: bitlockerPathMouse.containsMouse ? Theme.accentLight : Theme.accent
-                            font.family: Theme.fontFamily
-                            font.pixelSize: 11
-                            font.bold: true
-                            font.underline: true
+                        ShowPathButton {
                             anchors.verticalCenter: parent.verticalCenter
-                            MouseArea {
-                                id: bitlockerPathMouse
-                                anchors.fill: parent
-                                hoverEnabled: true
-                                cursorShape: Qt.PointingHandCursor
-                                onClicked: { optimizerBackend.showPath("bitlocker"); }
-                            }
+                            onClicked: { optimizerBackend.showPath("bitlocker"); }
                         }
 
                         MeguSwitch {
@@ -3670,14 +3902,14 @@ Item {
                                     height: 16
                                     width: selectedTextDefender.contentWidth + 10
                                     radius: 4
-                                    color: Theme.accentDim
-                                    border.color: Theme.accent
+                                    color: Qt.rgba(Theme.success.r, Theme.success.g, Theme.success.b, 0.15)
+                                    border.color: Theme.success
                                     border.width: 1
                                     anchors.verticalCenter: parent.verticalCenter
                                     Text {
                                         id: selectedTextDefender
                                         text: qsTr("Selected for application")
-                                        color: Theme.accent
+                                        color: Theme.success
                                         font.family: Theme.fontFamily
                                         font.pixelSize: 8
                                         font.bold: true
@@ -3709,21 +3941,9 @@ Item {
                         anchors.verticalCenter: parent.verticalCenter
                         spacing: 16
 
-                        Text {
-                            text: qsTr("Show Path")
-                            color: defenderPathMouse.containsMouse ? Theme.accentLight : Theme.accent
-                            font.family: Theme.fontFamily
-                            font.pixelSize: 11
-                            font.bold: true
-                            font.underline: true
+                        ShowPathButton {
                             anchors.verticalCenter: parent.verticalCenter
-                            MouseArea {
-                                id: defenderPathMouse
-                                anchors.fill: parent
-                                hoverEnabled: true
-                                cursorShape: Qt.PointingHandCursor
-                                onClicked: { optimizerBackend.showPath("defender"); }
-                            }
+                            onClicked: { optimizerBackend.showPath("defender"); }
                         }
 
                         // Arrow button that slides right on hover & opens sidebar drawer for Windows Defender options
@@ -3828,14 +4048,14 @@ Item {
                                     height: 16
                                     width: selectedText10.contentWidth + 10
                                     radius: 4
-                                    color: Theme.accentDim
-                                    border.color: Theme.accent
+                                    color: Qt.rgba(Theme.success.r, Theme.success.g, Theme.success.b, 0.15)
+                                    border.color: Theme.success
                                     border.width: 1
                                     anchors.verticalCenter: parent.verticalCenter
                                     Text {
                                         id: selectedText10
                                         text: qsTr("Selected for application")
-                                        color: Theme.accent
+                                        color: Theme.success
                                         font.family: Theme.fontFamily
                                         font.pixelSize: 8
                                         font.bold: true
@@ -4022,14 +4242,14 @@ Item {
                                     height: 16
                                     width: selectedTextUsb.contentWidth + 10
                                     radius: 4
-                                    color: Theme.accentDim
-                                    border.color: Theme.accent
+                                    color: Qt.rgba(Theme.success.r, Theme.success.g, Theme.success.b, 0.15)
+                                    border.color: Theme.success
                                     border.width: 1
                                     anchors.verticalCenter: parent.verticalCenter
                                     Text {
                                         id: selectedTextUsb
                                         text: qsTr("Selected for application")
-                                        color: Theme.accent
+                                        color: Theme.success
                                         font.family: Theme.fontFamily
                                         font.pixelSize: 8
                                         font.bold: true
@@ -4269,6 +4489,10 @@ Item {
                     height: parent.height - 60
                     clip: true
                     contentWidth: width
+
+                    ScrollBar.vertical: MeguScrollBar { }
+                    ScrollBar.horizontal: MeguScrollBar { }
+
                     contentHeight: {
                         if (root.activeDrawer === "indexing") return indexingColumn.implicitHeight;
                         if (root.activeDrawer === "xbox") return xboxColumn.implicitHeight;
@@ -4281,7 +4505,7 @@ Item {
                         if (root.activeDrawer === "telemetry") return telemetryColumn.implicitHeight;
                         if (root.activeDrawer === "windowsUpdate") return windowsUpdateColumn.implicitHeight;
                         if (root.activeDrawer === "visualEffects") return visualEffectsColumn.implicitHeight;
-                        if (root.activeDrawer === "steamSettings") return steamSettingsColumn.implicitHeight;
+                        if (root.activeDrawer === "steamSettings") return steamSettingsColumn.dynamicHeight;
                         return height;
                     }
 
@@ -4302,21 +4526,9 @@ Item {
                                 onToggled: (isChecked) => { optimizerBackend.winSearchActive = isChecked; }
                                 anchors.verticalCenter: parent.verticalCenter
                             }
-                            Text {
-                                text: qsTr("Show Path")
-                                color: sidebarSearchMouse.containsMouse ? Theme.accentLight : Theme.accent
-                                font.family: Theme.fontFamily
-                                font.pixelSize: 11
-                                font.bold: true
-                                font.underline: true
+                            ShowPathButton {
                                 anchors.verticalCenter: parent.verticalCenter
-                                MouseArea {
-                                    id: sidebarSearchMouse
-                                    anchors.fill: parent
-                                    hoverEnabled: true
-                                    cursorShape: Qt.PointingHandCursor
-                                    onClicked: { optimizerBackend.showPath("Windows Search service"); }
-                                }
+                                onClicked: { optimizerBackend.showPath("Windows Search service"); }
                             }
                         }
 
@@ -4334,21 +4546,9 @@ Item {
                                 }
                                 anchors.verticalCenter: parent.verticalCenter
                             }
-                            Text {
-                                text: qsTr("Show Path")
-                                color: sidebarCMouse.containsMouse ? Theme.accentLight : Theme.accent
-                                font.family: Theme.fontFamily
-                                font.pixelSize: 11
-                                font.bold: true
-                                font.underline: true
+                            ShowPathButton {
                                 anchors.verticalCenter: parent.verticalCenter
-                                MouseArea {
-                                    id: sidebarCMouse
-                                    anchors.fill: parent
-                                    hoverEnabled: true
-                                    cursorShape: Qt.PointingHandCursor
-                                    onClicked: { optimizerBackend.showPath("C:"); }
-                                }
+                                onClicked: { optimizerBackend.showPath("C:"); }
                             }
                         }
 
@@ -4368,21 +4568,9 @@ Item {
                                     }
                                     anchors.verticalCenter: parent.verticalCenter
                                 }
-                                Text {
-                                    text: qsTr("Show Path")
-                                    color: sidebarDriveMouse.containsMouse ? Theme.accentLight : Theme.accent
-                                    font.family: Theme.fontFamily
-                                    font.pixelSize: 11
-                                    font.bold: true
-                                    font.underline: true
+                                ShowPathButton {
                                     anchors.verticalCenter: parent.verticalCenter
-                                    MouseArea {
-                                        id: sidebarDriveMouse
-                                        anchors.fill: parent
-                                        hoverEnabled: true
-                                        cursorShape: Qt.PointingHandCursor
-                                        onClicked: { optimizerBackend.showPath(modelData); }
-                                    }
+                                    onClicked: { optimizerBackend.showPath(modelData); }
                                 }
                             }
                         }
@@ -5247,14 +5435,39 @@ Item {
                         }
 
                         MeguButton {
-                            text: qsTr("Activate Ultimate Performance")
+                            text: {
+                                if (optimizerBackend.deleteUltimateStaged) {
+                                    return qsTr("Cancel Deletion");
+                                }
+                                return optimizerBackend.ultimateSchemeUnlocked ? qsTr("Delete Ultimate Performance Scheme") : qsTr("Activate Ultimate Performance");
+                            }
                             iconSource: "qrc:/MeguPackOptimizer/src/resources/bolt.svg"
-                            accented: !optimizerBackend.ultimateSchemeUnlocked
-                            enabled: !optimizerBackend.ultimateSchemeUnlocked && !optimizerBackend.isOptimizingSystem
+                            accented: !optimizerBackend.deleteUltimateStaged && !optimizerBackend.ultimateSchemeUnlocked
+                            enabled: !optimizerBackend.isOptimizingSystem
                             width: parent.width
                             height: 38
                             onClicked: {
-                                optimizerBackend.activateUltimatePerformance();
+                                if (optimizerBackend.deleteUltimateStaged) {
+                                    optimizerBackend.deleteUltimateStaged = false;
+                                    // Re-select active power scheme
+                                    optimizerBackend.selectPowerScheme(optimizerBackend.activePowerSchemeGuid);
+                                } else if (optimizerBackend.ultimateSchemeUnlocked) {
+                                    optimizerBackend.deleteUltimateStaged = true;
+                                    // Select a non-ultimate scheme as target
+                                    var targetFound = false;
+                                    for (var i = 0; i < optimizerBackend.powerSchemes.length; i++) {
+                                        if (!optimizerBackend.powerSchemes[i].isUltimate) {
+                                            optimizerBackend.selectPowerScheme(optimizerBackend.powerSchemes[i].guid);
+                                            targetFound = true;
+                                            break;
+                                        }
+                                    }
+                                    if (!targetFound) {
+                                        optimizerBackend.selectPowerScheme("{381B4222-F694-41F0-9685-FF5BB260DF2E}"); // Balanced
+                                    }
+                                } else {
+                                    optimizerBackend.activateUltimatePerformance();
+                                }
                             }
                         }
 
@@ -5285,8 +5498,8 @@ Item {
                                     height: 50
                                     
                                     // Custom active border color
-                                    border.color: modelData.isActive ? Theme.accent : (schemeMouse.containsMouse ? Theme.borderHover : Theme.border)
-                                    color: modelData.isActive ? Theme.accentDim : (schemeMouse.containsMouse ? Theme.buttonBgHover : Theme.buttonBg)
+                                    border.color: (modelData.isUltimate && optimizerBackend.deleteUltimateStaged) ? Theme.error : ((modelData.guid === optimizerBackend.targetPowerSchemeGuid) ? Theme.accent : (schemeMouse.containsMouse ? Theme.borderHover : Theme.border))
+                                    color: (modelData.isUltimate && optimizerBackend.deleteUltimateStaged) ? Qt.rgba(Theme.error.r, Theme.error.g, Theme.error.b, 0.05) : ((modelData.guid === optimizerBackend.targetPowerSchemeGuid) ? Theme.accentDim : (schemeMouse.containsMouse ? Theme.buttonBgHover : Theme.buttonBg))
 
                                     Behavior on border.color { ColorAnimation { duration: Theme.animFast } }
                                     Behavior on color { ColorAnimation { duration: Theme.animFast } }
@@ -5312,7 +5525,7 @@ Item {
                                             ColorOverlay {
                                                 anchors.fill: planIcon
                                                 source: planIcon
-                                                color: modelData.isActive ? Theme.accent : Theme.textMuted
+                                                color: (modelData.isUltimate && optimizerBackend.deleteUltimateStaged) ? Theme.error : ((modelData.guid === optimizerBackend.targetPowerSchemeGuid) ? Theme.accent : Theme.textMuted)
                                             }
                                         }
 
@@ -5320,17 +5533,42 @@ Item {
                                             anchors.verticalCenter: parent.verticalCenter
                                             spacing: 1
 
-                                            Text {
-                                                text: {
-                                                    var rawName = modelData.name;
-                                                    // Clean up trailing translations from friendly name
-                                                    return rawName.split(' (')[0];
+                                            Row {
+                                                spacing: 8
+                                                Text {
+                                                    text: {
+                                                        var rawName = modelData.name;
+                                                        // Clean up trailing translations from friendly name
+                                                        return rawName.split(' (')[0];
+                                                    }
+                                                    color: (modelData.isUltimate && optimizerBackend.deleteUltimateStaged) ? Theme.error : Theme.textPrimary
+                                                    font.family: Theme.fontFamily
+                                                    font.pixelSize: 12
+                                                    font.bold: true
+                                                    font.strikeout: modelData.isUltimate && optimizerBackend.deleteUltimateStaged
                                                 }
-                                                color: Theme.textPrimary
-                                                font.family: Theme.fontFamily
-                                                font.pixelSize: 12
-                                                font.bold: true
+
+                                                Rectangle {
+                                                    visible: modelData.isUltimate && optimizerBackend.deleteUltimateStaged
+                                                    height: 14
+                                                    width: stagedDeleteBadgeText.contentWidth + 10
+                                                    radius: 3
+                                                    color: Qt.rgba(Theme.error.r, Theme.error.g, Theme.error.b, 0.15)
+                                                    border.color: Theme.error
+                                                    border.width: 1
+                                                    anchors.verticalCenter: parent.verticalCenter
+                                                    Text {
+                                                        id: stagedDeleteBadgeText
+                                                        text: qsTr("Staged for deletion")
+                                                        color: Theme.error
+                                                        font.family: Theme.fontFamily
+                                                        font.pixelSize: 8
+                                                        font.bold: true
+                                                        anchors.centerIn: parent
+                                                    }
+                                                }
                                             }
+
                                             Text {
                                                 text: modelData.guid
                                                 color: Theme.textMuted
@@ -5346,6 +5584,9 @@ Item {
                                         hoverEnabled: true
                                         cursorShape: Qt.PointingHandCursor
                                         onClicked: {
+                                            if (modelData.isUltimate) {
+                                                optimizerBackend.deleteUltimateStaged = false;
+                                            }
                                             optimizerBackend.selectPowerScheme(modelData.guid);
                                         }
                                     }
@@ -5433,6 +5674,62 @@ Item {
                                 text: qsTr("Antivirus Services & Drivers")
                                 checked: optimizerBackend.defenderServiceActive
                                 onToggled: (isChecked) => { optimizerBackend.defenderServiceActive = isChecked; }
+                            }
+                        }
+
+                        Rectangle {
+                            width: parent.width
+                            height: 1
+                            color: Theme.border
+                        }
+
+                        Column {
+                            width: parent.width
+                            spacing: 8
+
+                            Text {
+                                text: qsTr("Complete Defender Deletion:")
+                                color: Theme.textSecondary
+                                font.family: Theme.fontFamily
+                                font.pixelSize: 11
+                                font.bold: true
+                            }
+
+                            Text {
+                                text: qsTr("Removes, unregisters, and disables all Defender services, drivers, components, and scheduled tasks just like BoosterX.")
+                                color: Theme.textMuted
+                                font.family: Theme.fontFamily
+                                font.pixelSize: 9
+                                wrapMode: Text.Wrap
+                                width: parent.width
+                            }
+                        }
+
+                        MeguButton {
+                            text: {
+                                if (optimizerBackend.deleteDefenderStaged) {
+                                    return qsTr("Cancel Deletion");
+                                }
+                                return qsTr("Completely Delete Windows Defender");
+                            }
+                            iconSource: "qrc:/MeguPackOptimizer/src/resources/warning.svg"
+                            accented: !optimizerBackend.deleteDefenderStaged
+                            enabled: !optimizerBackend.isOptimizingSystem
+                            width: parent.width
+                            height: 38
+                            onClicked: {
+                                optimizerBackend.deleteDefenderStaged = !optimizerBackend.deleteDefenderStaged;
+                                if (optimizerBackend.deleteDefenderStaged) {
+                                    optimizerBackend.defenderActive = false;
+                                    optimizerBackend.defenderRegistryActive = false;
+                                    optimizerBackend.defenderCmdActive = false;
+                                    optimizerBackend.defenderServiceActive = false;
+                                } else {
+                                    optimizerBackend.defenderActive = optimizerBackend.originalDefenderActive;
+                                    optimizerBackend.defenderRegistryActive = optimizerBackend.originalDefenderRegistryActive;
+                                    optimizerBackend.defenderCmdActive = optimizerBackend.originalDefenderCmdActive;
+                                    optimizerBackend.defenderServiceActive = optimizerBackend.originalDefenderServiceActive;
+                                }
                             }
                         }
                     }
@@ -5794,658 +6091,1721 @@ Item {
                 }
 
                 // 12. Steam Settings Drawer Content
+                // 12. Steam Settings Drawer Content
                 Column {
                     id: steamSettingsColumn
                     width: parent.width
                     spacing: 20
                     visible: root.activeDrawer === "steamSettings"
 
-                    Text {
-                        text: qsTr("Friends & Chat")
-                        color: Theme.accent
-                        font.family: Theme.fontFamily
-                        font.pixelSize: 13
-                        font.bold: true
+                    property string subPage: "main" // "main", "friends", "chat", "notifications", "interface"
+
+                    property real dynamicHeight: {
+                        if (subPage === "friends") return steamFriendsPage.implicitHeight;
+                        if (subPage === "chat") return steamChatPage.implicitHeight;
+                        if (subPage === "notifications") return steamNotificationsPage.implicitHeight;
+                        if (subPage === "interface") return steamInterfacePage.implicitHeight;
+                        return steamMainPage.implicitHeight;
                     }
 
+                    // Main Menu Page
                     Column {
+                        id: steamMainPage
                         width: parent.width
-                        spacing: 16
-
-                        // Toggle 1
-                        Rectangle {
-                            width: parent.width
-                            height: 50
-                            color: "transparent"
-                            Row {
-                                anchors.fill: parent
-                                spacing: 12
-                                MeguSwitch {
-                                    checked: optimizerBackend.steamFriendsSettings ? !!optimizerBackend.steamFriendsSettings["bAppendNicknamesToNames"] : false
-                                    anchors.verticalCenter: parent.verticalCenter
-                                    onToggled: (isChecked) => { root.toggleSteamFriendsSetting("bAppendNicknamesToNames", isChecked); }
-                                }
-                                Column {
-                                    anchors.verticalCenter: parent.verticalCenter
-                                    spacing: 2
-                                    width: parent.width - 50
-                                    Text {
-                                        text: qsTr("Append nicknames to friends' names")
-                                        color: Theme.textPrimary
-                                        font.family: Theme.fontFamily
-                                        font.pixelSize: 12
-                                        font.bold: true
-                                    }
-                                    Text {
-                                        text: qsTr("Decreases processor load during friends list updates in real-time.")
-                                        color: Theme.textSecondary
-                                        font.family: Theme.fontFamily
-                                        font.pixelSize: 10
-                                        width: parent.width
-                                        wrapMode: Text.WordWrap
-                                    }
-                                }
-                            }
-                        }
-
-                        // Toggle 2
-                        Rectangle {
-                            width: parent.width
-                            height: 50
-                            color: "transparent"
-                            Row {
-                                anchors.fill: parent
-                                spacing: 12
-                                MeguSwitch {
-                                    checked: optimizerBackend.steamFriendsSettings ? !!optimizerBackend.steamFriendsSettings["bGroupFriendsByGame"] : false
-                                    anchors.verticalCenter: parent.verticalCenter
-                                    onToggled: (isChecked) => { root.toggleSteamFriendsSetting("bGroupFriendsByGame", isChecked); }
-                                }
-                                Column {
-                                    anchors.verticalCenter: parent.verticalCenter
-                                    spacing: 2
-                                    width: parent.width - 50
-                                    Text {
-                                        text: qsTr("Group friends together by game")
-                                        color: Theme.textPrimary
-                                        font.family: Theme.fontFamily
-                                        font.pixelSize: 12
-                                        font.bold: true
-                                    }
-                                    Text {
-                                        text: qsTr("Optimizes friends list processing by disabling real-time dynamic group sorting.")
-                                        color: Theme.textSecondary
-                                        font.family: Theme.fontFamily
-                                        font.pixelSize: 10
-                                        width: parent.width
-                                        wrapMode: Text.WordWrap
-                                    }
-                                }
-                            }
-                        }
-
-                        // Toggle 3
-                        Rectangle {
-                            width: parent.width
-                            height: 50
-                            color: "transparent"
-                            Row {
-                                anchors.fill: parent
-                                spacing: 12
-                                MeguSwitch {
-                                    checked: optimizerBackend.steamFriendsSettings ? !!optimizerBackend.steamFriendsSettings["bHideOfflineFriendsInCustomCategories"] : false
-                                    anchors.verticalCenter: parent.verticalCenter
-                                    onToggled: (isChecked) => { root.toggleSteamFriendsSetting("bHideOfflineFriendsInCustomCategories", isChecked); }
-                                }
-                                Column {
-                                    anchors.verticalCenter: parent.verticalCenter
-                                    spacing: 2
-                                    width: parent.width - 50
-                                    Text {
-                                        text: qsTr("Hide offline friends in custom categories")
-                                        color: Theme.textPrimary
-                                        font.family: Theme.fontFamily
-                                        font.pixelSize: 12
-                                        font.bold: true
-                                    }
-                                    Text {
-                                        text: qsTr("Reduces Steam client memory usage by hiding inactive list items.")
-                                        color: Theme.textSecondary
-                                        font.family: Theme.fontFamily
-                                        font.pixelSize: 10
-                                        width: parent.width
-                                        wrapMode: Text.WordWrap
-                                    }
-                                }
-                            }
-                        }
-
-                        // Toggle 4
-                        Rectangle {
-                            width: parent.width
-                            height: 50
-                            color: "transparent"
-                            Row {
-                                anchors.fill: parent
-                                spacing: 12
-                                MeguSwitch {
-                                    checked: optimizerBackend.steamFriendsSettings ? !!optimizerBackend.steamFriendsSettings["bHideCategorizedFriendsInOnlineOffline"] : false
-                                    anchors.verticalCenter: parent.verticalCenter
-                                    onToggled: (isChecked) => { root.toggleSteamFriendsSetting("bHideCategorizedFriendsInOnlineOffline", isChecked); }
-                                }
-                                Column {
-                                    anchors.verticalCenter: parent.verticalCenter
-                                    spacing: 2
-                                    width: parent.width - 50
-                                    Text {
-                                        text: qsTr("Hide categorized friends in Online/Offline Friends")
-                                        color: Theme.textPrimary
-                                        font.family: Theme.fontFamily
-                                        font.pixelSize: 12
-                                        font.bold: true
-                                    }
-                                    Text {
-                                        text: qsTr("Prevents duplicate rendering of friends list interface elements.")
-                                        color: Theme.textSecondary
-                                        font.family: Theme.fontFamily
-                                        font.pixelSize: 10
-                                        width: parent.width
-                                        wrapMode: Text.WordWrap
-                                    }
-                                }
-                            }
-                        }
-
-                        // Toggle 5
-                        Rectangle {
-                            width: parent.width
-                            height: 50
-                            color: "transparent"
-                            Row {
-                                anchors.fill: parent
-                                spacing: 12
-                                MeguSwitch {
-                                    checked: optimizerBackend.steamFriendsSettings ? !!optimizerBackend.steamFriendsSettings["bIgnoreAwayStatusWhenSorting"] : false
-                                    anchors.verticalCenter: parent.verticalCenter
-                                    onToggled: (isChecked) => { root.toggleSteamFriendsSetting("bIgnoreAwayStatusWhenSorting", isChecked); }
-                                }
-                                Column {
-                                    anchors.verticalCenter: parent.verticalCenter
-                                    spacing: 2
-                                    width: parent.width - 50
-                                    Text {
-                                        text: qsTr("Ignore 'Away' status when sorting friends")
-                                        color: Theme.textPrimary
-                                        font.family: Theme.fontFamily
-                                        font.pixelSize: 12
-                                        font.bold: true
-                                    }
-                                    Text {
-                                        text: qsTr("Reduces friends list sorting calculation frequency during user status updates.")
-                                        color: Theme.textSecondary
-                                        font.family: Theme.fontFamily
-                                        font.pixelSize: 10
-                                        width: parent.width
-                                        wrapMode: Text.WordWrap
-                                    }
-                                }
-                            }
-                        }
-
-                        // Toggle 6
-                        Rectangle {
-                            width: parent.width
-                            height: 50
-                            color: "transparent"
-                            Row {
-                                anchors.fill: parent
-                                spacing: 12
-                                MeguSwitch {
-                                    checked: optimizerBackend.steamFriendsSettings ? !!optimizerBackend.steamFriendsSettings["bSignInOnStart"] : false
-                                    anchors.verticalCenter: parent.verticalCenter
-                                    onToggled: (isChecked) => { root.toggleSteamFriendsSetting("bSignInOnStart", isChecked); }
-                                }
-                                Column {
-                                    anchors.verticalCenter: parent.verticalCenter
-                                    spacing: 2
-                                    width: parent.width - 50
-                                    Text {
-                                        text: qsTr("Sign in to friends when Steam starts")
-                                        color: Theme.textPrimary
-                                        font.family: Theme.fontFamily
-                                        font.pixelSize: 12
-                                        font.bold: true
-                                    }
-                                    Text {
-                                        text: qsTr("Disabling accelerates Steam client startup and minimizes initial network/CPU overhead.")
-                                        color: Theme.textSecondary
-                                        font.family: Theme.fontFamily
-                                        font.pixelSize: 10
-                                        width: parent.width
-                                        wrapMode: Text.WordWrap
-                                    }
-                                }
-                            }
-                        }
-
-                        // Toggle 7
-                        Rectangle {
-                            width: parent.width
-                            height: 50
-                            color: "transparent"
-                            Row {
-                                anchors.fill: parent
-                                spacing: 12
-                                MeguSwitch {
-                                    checked: optimizerBackend.steamFriendsSettings ? !!optimizerBackend.steamFriendsSettings["bEnableAnimatedAvatars"] : false
-                                    anchors.verticalCenter: parent.verticalCenter
-                                    onToggled: (isChecked) => { root.toggleSteamFriendsSetting("bEnableAnimatedAvatars", isChecked); }
-                                }
-                                Column {
-                                    anchors.verticalCenter: parent.verticalCenter
-                                    spacing: 2
-                                    width: parent.width - 50
-                                    Text {
-                                        text: qsTr("Enable Animated Avatars & Animated Avatar Frames")
-                                        color: Theme.textPrimary
-                                        font.family: Theme.fontFamily
-                                        font.pixelSize: 12
-                                        font.bold: true
-                                    }
-                                    Text {
-                                        text: qsTr("Disabling completely stops animated avatars in CEF, heavily reducing GPU load and in-game input latency.")
-                                        color: Theme.textSecondary
-                                        font.family: Theme.fontFamily
-                                        font.pixelSize: 10
-                                        width: parent.width
-                                        wrapMode: Text.WordWrap
-                                    }
-                                }
-                            }
-                        }
-
-                        // Toggle 8
-                        Rectangle {
-                            width: parent.width
-                            height: 50
-                            color: "transparent"
-                            Row {
-                                anchors.fill: parent
-                                spacing: 12
-                                MeguSwitch {
-                                    checked: optimizerBackend.steamFriendsSettings ? !!optimizerBackend.steamFriendsSettings["bCompactFriendsListAndChat"] : false
-                                    anchors.verticalCenter: parent.verticalCenter
-                                    onToggled: (isChecked) => { root.toggleSteamFriendsSetting("bCompactFriendsListAndChat", isChecked); }
-                                }
-                                Column {
-                                    anchors.verticalCenter: parent.verticalCenter
-                                    spacing: 2
-                                    width: parent.width - 50
-                                    Text {
-                                        text: qsTr("Compact friends list & chat view")
-                                        color: Theme.textPrimary
-                                        font.family: Theme.fontFamily
-                                        font.pixelSize: 12
-                                        font.bold: true
-                                    }
-                                    Text {
-                                        text: qsTr("Minimizes Steam client rendering surface area to save GPU resources.")
-                                        color: Theme.textSecondary
-                                        font.family: Theme.fontFamily
-                                        font.pixelSize: 10
-                                        width: parent.width
-                                        wrapMode: Text.WordWrap
-                                    }
-                                }
-                            }
-                        }
-
-                        // Toggle 9
-                        Rectangle {
-                            width: parent.width
-                            height: 50
-                            color: "transparent"
-                            Row {
-                                anchors.fill: parent
-                                spacing: 12
-                                MeguSwitch {
-                                    checked: optimizerBackend.steamFriendsSettings ? !!optimizerBackend.steamFriendsSettings["bCompactFavorites"] : false
-                                    anchors.verticalCenter: parent.verticalCenter
-                                    onToggled: (isChecked) => { root.toggleSteamFriendsSetting("bCompactFavorites", isChecked); }
-                                }
-                                Column {
-                                    anchors.verticalCenter: parent.verticalCenter
-                                    spacing: 2
-                                    width: parent.width - 50
-                                    Text {
-                                        text: qsTr("Compact favorite friends area")
-                                        color: Theme.textPrimary
-                                        font.family: Theme.fontFamily
-                                        font.pixelSize: 12
-                                        font.bold: true
-                                    }
-                                    Text {
-                                        text: qsTr("Shrinks avatar sizes in the top section, minimizing layout computation overhead.")
-                                        color: Theme.textSecondary
-                                        font.family: Theme.fontFamily
-                                        font.pixelSize: 10
-                                        width: parent.width
-                                        wrapMode: Text.WordWrap
-                                    }
-                                }
-                            }
-                        }
-                    }
-
-                    Rectangle {
-                        width: parent.width
-                        height: 1
-                        color: Theme.border
-                    }
-
-                    Text {
-                        text: qsTr("Chat")
-                        color: Theme.accent
-                        font.family: Theme.fontFamily
-                        font.pixelSize: 13
-                        font.bold: true
-                    }
-
-                    Column {
-                        width: parent.width
-                        spacing: 16
-
-                        // Toggle 10
-                        Rectangle {
-                            width: parent.width
-                            height: 50
-                            color: "transparent"
-                            Row {
-                                anchors.fill: parent
-                                spacing: 12
-                                MeguSwitch {
-                                    checked: optimizerBackend.steamFriendsSettings ? !!optimizerBackend.steamFriendsSettings["bDockChats"] : false
-                                    anchors.verticalCenter: parent.verticalCenter
-                                    onToggled: (isChecked) => { root.toggleSteamFriendsSetting("bDockChats", isChecked); }
-                                }
-                                Column {
-                                    anchors.verticalCenter: parent.verticalCenter
-                                    spacing: 2
-                                    width: parent.width - 50
-                                    Text {
-                                        text: qsTr("Dock chats to the friends list")
-                                        color: Theme.textPrimary
-                                        font.family: Theme.fontFamily
-                                        font.pixelSize: 12
-                                        font.bold: true
-                                    }
-                                    Text {
-                                        text: qsTr("Merges chat and friends list windows, preventing creation of extra CEF rendering processes.")
-                                        color: Theme.textSecondary
-                                        font.family: Theme.fontFamily
-                                        font.pixelSize: 10
-                                        width: parent.width
-                                        wrapMode: Text.WordWrap
-                                    }
-                                }
-                            }
-                        }
-
-                        // Toggle 11
-                        Rectangle {
-                            width: parent.width
-                            height: 50
-                            color: "transparent"
-                            Row {
-                                anchors.fill: parent
-                                spacing: 12
-                                MeguSwitch {
-                                    checked: optimizerBackend.steamFriendsSettings ? !!optimizerBackend.steamFriendsSettings["bOpenNewWindowForNewChats"] : false
-                                    anchors.verticalCenter: parent.verticalCenter
-                                    onToggled: (isChecked) => { root.toggleSteamFriendsSetting("bOpenNewWindowForNewChats", isChecked); }
-                                }
-                                Column {
-                                    anchors.verticalCenter: parent.verticalCenter
-                                    spacing: 2
-                                    width: parent.width - 50
-                                    Text {
-                                        text: qsTr("Open a new window for new chats")
-                                        color: Theme.textPrimary
-                                        font.family: Theme.fontFamily
-                                        font.pixelSize: 12
-                                        font.bold: true
-                                    }
-                                    Text {
-                                        text: qsTr("Disabling prevents resource-intensive new OS windows from launching for every participant.")
-                                        color: Theme.textSecondary
-                                        font.family: Theme.fontFamily
-                                        font.pixelSize: 10
-                                        width: parent.width
-                                        wrapMode: Text.WordWrap
-                                    }
-                                }
-                            }
-                        }
-
-                        // Toggle 12
-                        Rectangle {
-                            width: parent.width
-                            height: 50
-                            color: "transparent"
-                            Row {
-                                anchors.fill: parent
-                                spacing: 12
-                                MeguSwitch {
-                                    checked: optimizerBackend.steamFriendsSettings ? !!optimizerBackend.steamFriendsSettings["bDontEmbedImages"] : false
-                                    anchors.verticalCenter: parent.verticalCenter
-                                    onToggled: (isChecked) => { root.toggleSteamFriendsSetting("bDontEmbedImages", isChecked); }
-                                }
-                                Column {
-                                    anchors.verticalCenter: parent.verticalCenter
-                                    spacing: 2
-                                    width: parent.width - 50
-                                    Text {
-                                        text: qsTr("Don't embed images and other media inline")
-                                        color: Theme.textPrimary
-                                        font.family: Theme.fontFamily
-                                        font.pixelSize: 12
-                                        font.bold: true
-                                    }
-                                    Text {
-                                        text: qsTr("Enabling stops automatic media loading and rendering, preventing sudden in-game frame drops.")
-                                        color: Theme.textSecondary
-                                        font.family: Theme.fontFamily
-                                        font.pixelSize: 10
-                                        width: parent.width
-                                        wrapMode: Text.WordWrap
-                                    }
-                                }
-                            }
-                        }
-
-                        // Toggle 13
-                        Rectangle {
-                            width: parent.width
-                            height: 50
-                            color: "transparent"
-                            Row {
-                                anchors.fill: parent
-                                spacing: 12
-                                MeguSwitch {
-                                    checked: optimizerBackend.steamFriendsSettings ? !!optimizerBackend.steamFriendsSettings["bRememberOpenChats"] : false
-                                    anchors.verticalCenter: parent.verticalCenter
-                                    onToggled: (isChecked) => { root.toggleSteamFriendsSetting("bRememberOpenChats", isChecked); }
-                                }
-                                Column {
-                                    anchors.verticalCenter: parent.verticalCenter
-                                    spacing: 2
-                                    width: parent.width - 50
-                                    Text {
-                                        text: qsTr("Remember my open chats")
-                                        color: Theme.textPrimary
-                                        font.family: Theme.fontFamily
-                                        font.pixelSize: 12
-                                        font.bold: true
-                                    }
-                                    Text {
-                                        text: qsTr("Disabling reduces disk reads/writes during Steam startup by skipping previous session restorations.")
-                                        color: Theme.textSecondary
-                                        font.family: Theme.fontFamily
-                                        font.pixelSize: 10
-                                        width: parent.width
-                                        wrapMode: Text.WordWrap
-                                    }
-                                }
-                            }
-                        }
-
-                        // Toggle 14
-                        Rectangle {
-                            width: parent.width
-                            height: 50
-                            color: "transparent"
-                            Row {
-                                anchors.fill: parent
-                                spacing: 12
-                                MeguSwitch {
-                                    checked: optimizerBackend.steamFriendsSettings ? !!optimizerBackend.steamFriendsSettings["bDisableSpellCheck"] : false
-                                    anchors.verticalCenter: parent.verticalCenter
-                                    onToggled: (isChecked) => { root.toggleSteamFriendsSetting("bDisableSpellCheck", isChecked); }
-                                }
-                                Column {
-                                    anchors.verticalCenter: parent.verticalCenter
-                                    spacing: 2
-                                    width: parent.width - 50
-                                    Text {
-                                        text: qsTr("Disable spellcheck in chat message entry")
-                                        color: Theme.textPrimary
-                                        font.family: Theme.fontFamily
-                                        font.pixelSize: 12
-                                        font.bold: true
-                                    }
-                                    Text {
-                                        text: qsTr("Disables the real-time spellcheck engine, reducing CPU usage during text typing.")
-                                        color: Theme.textSecondary
-                                        font.family: Theme.fontFamily
-                                        font.pixelSize: 10
-                                        width: parent.width
-                                        wrapMode: Text.WordWrap
-                                    }
-                                }
-                            }
-                        }
-
-                        // Toggle 15
-                        Rectangle {
-                            width: parent.width
-                            height: 50
-                            color: "transparent"
-                            Row {
-                                anchors.fill: parent
-                                spacing: 12
-                                MeguSwitch {
-                                    checked: optimizerBackend.steamFriendsSettings ? !!optimizerBackend.steamFriendsSettings["bDisableRoomEffects"] : false
-                                    anchors.verticalCenter: parent.verticalCenter
-                                    onToggled: (isChecked) => { root.toggleSteamFriendsSetting("bDisableRoomEffects", isChecked); }
-                                }
-                                Column {
-                                    anchors.verticalCenter: parent.verticalCenter
-                                    spacing: 2
-                                    width: parent.width - 50
-                                    Text {
-                                        text: qsTr("Disable animated room effects")
-                                        color: Theme.textPrimary
-                                        font.family: Theme.fontFamily
-                                        font.pixelSize: 12
-                                        font.bold: true
-                                    }
-                                    Text {
-                                        text: qsTr("Stops CPU/GPU-intensive graphical effects (emoji showers, confetti) inside chat rooms.")
-                                        color: Theme.textSecondary
-                                        font.family: Theme.fontFamily
-                                        font.pixelSize: 10
-                                        width: parent.width
-                                        wrapMode: Text.WordWrap
-                                    }
-                                }
-                            }
-                        }
-                    }
-
-                    Rectangle {
-                        width: parent.width
-                        height: 1
-                        color: Theme.border
-                    }
-
-                    // FontSize Segmented Selector
-                    Column {
-                        width: parent.width
-                        spacing: 8
+                        spacing: 12
+                        visible: steamSettingsColumn.subPage === "main"
 
                         Text {
-                            text: qsTr("Chat Font Size")
+                            text: qsTr("STEAM CONFIGURATION")
                             color: Theme.accent
                             font.family: Theme.fontFamily
                             font.pixelSize: 13
                             font.bold: true
+                            font.letterSpacing: 1.5
                         }
 
-                        Row {
+                        Rectangle {
                             width: parent.width
-                            spacing: 8
+                            height: 1
+                            color: Theme.border
+                        }
 
-                            property string currentSize: optimizerBackend.steamFriendsSettings ? optimizerBackend.steamFriendsSettings["fontSize"] || "default" : "default"
+                        // Friends & Chat Menu Option
+                        Rectangle {
+                            width: parent.width
+                            height: 48
+                            radius: Theme.radiusSmall
+                            color: friendsMouse.containsMouse ? Theme.accentDim : "transparent"
+                            border.color: friendsMouse.containsMouse ? Theme.accent : Theme.border
+                            border.width: 1
 
-                            Repeater {
-                                model: [
-                                    { id: "small", label: qsTr("Small") },
-                                    { id: "default", label: qsTr("Default") },
-                                    { id: "large", label: qsTr("Large") }
-                                ]
-                                delegate: Rectangle {
-                                    height: 32
-                                    width: (parent.width - 16) / 3
-                                    radius: 6
-                                    color: (parent.parent.currentSize === modelData.id) ? Theme.accentDim : (btnMouse.containsMouse ? "#0DFFFFFF" : "#05FFFFFF")
-                                    border.color: (parent.parent.currentSize === modelData.id) ? Theme.accent : Theme.border
-                                    border.width: 1
+                            Behavior on color { ColorAnimation { duration: Theme.animFast } }
+                            Behavior on border.color { ColorAnimation { duration: Theme.animFast } }
 
-                                    Behavior on color { ColorAnimation { duration: Theme.animFast } }
-                                    Behavior on border.color { ColorAnimation { duration: Theme.animFast } }
+                            Row {
+                                anchors.fill: parent
+                                anchors.leftMargin: 12
+                                anchors.rightMargin: 12
+                                spacing: 8
+
+                                Column {
+                                    anchors.verticalCenter: parent.verticalCenter
+                                    width: parent.width - 32
 
                                     Text {
-                                        text: modelData.label
-                                        color: (parent.parent.parent.currentSize === modelData.id) ? Theme.accent : Theme.textSecondary
+                                        text: qsTr("Friends & Chat")
+                                        color: Theme.textPrimary
                                         font.family: Theme.fontFamily
-                                        font.pixelSize: 11
+                                        font.pixelSize: 12
                                         font.bold: true
-                                        anchors.centerIn: parent
                                     }
+                                    Text {
+                                        text: qsTr("Friends list, avatars, and sign-in preferences")
+                                        color: Theme.textMuted
+                                        font.family: Theme.fontFamily
+                                        font.pixelSize: 9
+                                    }
+                                }
 
-                                    MouseArea {
-                                        id: btnMouse
-                                        anchors.fill: parent
-                                        hoverEnabled: true
-                                        cursorShape: Qt.PointingHandCursor
-                                        onClicked: {
-                                            root.toggleSteamFriendsSetting("fontSize", modelData.id);
+                                Text {
+                                    text: "→"
+                                    color: Theme.accent
+                                    font.family: Theme.fontFamily
+                                    font.pixelSize: 14
+                                    font.bold: true
+                                    anchors.verticalCenter: parent.verticalCenter
+                                }
+                            }
+
+                            MouseArea {
+                                id: friendsMouse
+                                anchors.fill: parent
+                                hoverEnabled: true
+                                cursorShape: Qt.PointingHandCursor
+                                onClicked: steamSettingsColumn.subPage = "friends"
+                            }
+                        }
+
+                        // Chat Settings Menu Option
+                        Rectangle {
+                            width: parent.width
+                            height: 48
+                            radius: Theme.radiusSmall
+                            color: chatMouse.containsMouse ? Theme.accentDim : "transparent"
+                            border.color: chatMouse.containsMouse ? Theme.accent : Theme.border
+                            border.width: 1
+
+                            Behavior on color { ColorAnimation { duration: Theme.animFast } }
+                            Behavior on border.color { ColorAnimation { duration: Theme.animFast } }
+
+                            Row {
+                                anchors.fill: parent
+                                anchors.leftMargin: 12
+                                anchors.rightMargin: 12
+                                spacing: 8
+
+                                Column {
+                                    anchors.verticalCenter: parent.verticalCenter
+                                    width: parent.width - 32
+
+                                    Text {
+                                        text: qsTr("Chat Settings")
+                                        color: Theme.textPrimary
+                                        font.family: Theme.fontFamily
+                                        font.pixelSize: 12
+                                        font.bold: true
+                                    }
+                                    Text {
+                                        text: qsTr("Media embedding, spellcheck, and text sizes")
+                                        color: Theme.textMuted
+                                        font.family: Theme.fontFamily
+                                        font.pixelSize: 9
+                                    }
+                                }
+
+                                Text {
+                                    text: "→"
+                                    color: Theme.accent
+                                    font.family: Theme.fontFamily
+                                    font.pixelSize: 14
+                                    font.bold: true
+                                    anchors.verticalCenter: parent.verticalCenter
+                                }
+                            }
+
+                            MouseArea {
+                                id: chatMouse
+                                anchors.fill: parent
+                                hoverEnabled: true
+                                cursorShape: Qt.PointingHandCursor
+                                onClicked: steamSettingsColumn.subPage = "chat"
+                            }
+                        }
+
+                        // Notifications Menu Option
+                        Rectangle {
+                            width: parent.width
+                            height: 48
+                            radius: Theme.radiusSmall
+                            color: notifMouse.containsMouse ? Theme.accentDim : "transparent"
+                            border.color: notifMouse.containsMouse ? Theme.accent : Theme.border
+                            border.width: 1
+
+                            Behavior on color { ColorAnimation { duration: Theme.animFast } }
+                            Behavior on border.color { ColorAnimation { duration: Theme.animFast } }
+
+                            Row {
+                                anchors.fill: parent
+                                anchors.leftMargin: 12
+                                anchors.rightMargin: 12
+                                spacing: 8
+
+                                Column {
+                                    anchors.verticalCenter: parent.verticalCenter
+                                    width: parent.width - 32
+
+                                    Text {
+                                        text: qsTr("Notifications")
+                                        color: Theme.textPrimary
+                                        font.family: Theme.fontFamily
+                                        font.pixelSize: 12
+                                        font.bold: true
+                                    }
+                                    Text {
+                                        text: qsTr("Client alerts, sounds, and toast rules")
+                                        color: Theme.textMuted
+                                        font.family: Theme.fontFamily
+                                        font.pixelSize: 9
+                                    }
+                                }
+
+                                Text {
+                                    text: "→"
+                                    color: Theme.accent
+                                    font.family: Theme.fontFamily
+                                    font.pixelSize: 14
+                                    font.bold: true
+                                    anchors.verticalCenter: parent.verticalCenter
+                                }
+                            }
+
+                            MouseArea {
+                                id: notifMouse
+                                anchors.fill: parent
+                                hoverEnabled: true
+                                cursorShape: Qt.PointingHandCursor
+                                onClicked: steamSettingsColumn.subPage = "notifications"
+                            }
+                        }
+
+                        // Interface Menu Option
+                        Rectangle {
+                            width: parent.width
+                            height: 48
+                            radius: Theme.radiusSmall
+                            color: interfaceMouse.containsMouse ? Theme.accentDim : "transparent"
+                            border.color: interfaceMouse.containsMouse ? Theme.accent : Theme.border
+                            border.width: 1
+
+                            Behavior on color { ColorAnimation { duration: Theme.animFast } }
+                            Behavior on border.color { ColorAnimation { duration: Theme.animFast } }
+
+                            Row {
+                                anchors.fill: parent
+                                anchors.leftMargin: 12
+                                anchors.rightMargin: 12
+                                spacing: 8
+
+                                Column {
+                                    anchors.verticalCenter: parent.verticalCenter
+                                    width: parent.width - 32
+
+                                    Text {
+                                        text: qsTr("Interface")
+                                        color: Theme.textPrimary
+                                        font.family: Theme.fontFamily
+                                        font.pixelSize: 12
+                                        font.bold: true
+                                    }
+                                    Text {
+                                        text: qsTr("Scale text, startup location, and GPU accelerated rendering")
+                                        color: Theme.textMuted
+                                        font.family: Theme.fontFamily
+                                        font.pixelSize: 9
+                                    }
+                                }
+
+                                Text {
+                                    text: "→"
+                                    color: Theme.accent
+                                    font.family: Theme.fontFamily
+                                    font.pixelSize: 14
+                                    font.bold: true
+                                    anchors.verticalCenter: parent.verticalCenter
+                                }
+                            }
+
+                            MouseArea {
+                                id: interfaceMouse
+                                anchors.fill: parent
+                                hoverEnabled: true
+                                cursorShape: Qt.PointingHandCursor
+                                onClicked: steamSettingsColumn.subPage = "interface"
+                            }
+                        }
+                    }
+
+                    // PAGE 1: Friends & Chat Sub-Page
+                    Column {
+                        id: steamFriendsPage
+                        width: parent.width
+                        spacing: 20
+                        visible: steamSettingsColumn.subPage === "friends"
+
+                        Row {
+                            spacing: 10
+                            width: parent.width
+
+                            MeguButton {
+                                text: qsTr("Back")
+                                iconSource: "qrc:/MeguPackOptimizer/src/resources/close.svg"
+                                width: 80
+                                onClicked: steamSettingsColumn.subPage = "main"
+                            }
+
+                            Text {
+                                text: qsTr("FRIENDS & CHAT")
+                                color: Theme.textPrimary
+                                font.family: Theme.fontFamily
+                                font.pixelSize: 13
+                                font.bold: true
+                                font.letterSpacing: 1.5
+                                anchors.verticalCenter: parent.verticalCenter
+                            }
+                        }
+
+                        Rectangle {
+                            width: parent.width
+                            height: 1
+                            color: Theme.border
+                        }
+
+                        Column {
+                            width: parent.width
+                            spacing: 16
+
+                            // Toggle 1
+                            Rectangle {
+                                width: parent.width
+                                height: 50
+                                color: "transparent"
+                                Row {
+                                    anchors.fill: parent
+                                    spacing: 12
+                                    MeguSwitch {
+                                        checked: optimizerBackend.steamFriendsSettings ? !!optimizerBackend.steamFriendsSettings["bAppendNicknamesToNames"] : false
+                                        anchors.verticalCenter: parent.verticalCenter
+                                        onToggled: (isChecked) => { root.toggleSteamFriendsSetting("bAppendNicknamesToNames", isChecked); }
+                                    }
+                                    Column {
+                                        anchors.verticalCenter: parent.verticalCenter
+                                        spacing: 2
+                                        width: parent.width - 50
+                                        Text {
+                                            text: qsTr("Append nicknames to friends' names")
+                                            color: Theme.textPrimary
+                                            font.family: Theme.fontFamily
+                                            font.pixelSize: 12
+                                            font.bold: true
+                                        }
+                                        Text {
+                                            text: qsTr("Decreases processor load during friends list updates in real-time.")
+                                            color: Theme.textSecondary
+                                            font.family: Theme.fontFamily
+                                            font.pixelSize: 10
+                                            width: parent.width
+                                            wrapMode: Text.WordWrap
+                                        }
+                                    }
+                                }
+                            }
+
+                            // Toggle 2
+                            Rectangle {
+                                width: parent.width
+                                height: 50
+                                color: "transparent"
+                                Row {
+                                    anchors.fill: parent
+                                    spacing: 12
+                                    MeguSwitch {
+                                        checked: optimizerBackend.steamFriendsSettings ? !!optimizerBackend.steamFriendsSettings["bGroupFriendsByGame"] : false
+                                        anchors.verticalCenter: parent.verticalCenter
+                                        onToggled: (isChecked) => { root.toggleSteamFriendsSetting("bGroupFriendsByGame", isChecked); }
+                                    }
+                                    Column {
+                                        anchors.verticalCenter: parent.verticalCenter
+                                        spacing: 2
+                                        width: parent.width - 50
+                                        Text {
+                                            text: qsTr("Group friends together by game")
+                                            color: Theme.textPrimary
+                                            font.family: Theme.fontFamily
+                                            font.pixelSize: 12
+                                            font.bold: true
+                                        }
+                                        Text {
+                                            text: qsTr("Optimizes friends list processing by disabling real-time dynamic group sorting.")
+                                            color: Theme.textSecondary
+                                            font.family: Theme.fontFamily
+                                            font.pixelSize: 10
+                                            width: parent.width
+                                            wrapMode: Text.WordWrap
+                                        }
+                                    }
+                                }
+                            }
+
+                            // Toggle 3
+                            Rectangle {
+                                width: parent.width
+                                height: 50
+                                color: "transparent"
+                                Row {
+                                    anchors.fill: parent
+                                    spacing: 12
+                                    MeguSwitch {
+                                        checked: optimizerBackend.steamFriendsSettings ? !!optimizerBackend.steamFriendsSettings["bHideOfflineFriendsInCustomCategories"] : false
+                                        anchors.verticalCenter: parent.verticalCenter
+                                        onToggled: (isChecked) => { root.toggleSteamFriendsSetting("bHideOfflineFriendsInCustomCategories", isChecked); }
+                                    }
+                                    Column {
+                                        anchors.verticalCenter: parent.verticalCenter
+                                        spacing: 2
+                                        width: parent.width - 50
+                                        Text {
+                                            text: qsTr("Hide offline friends in custom categories")
+                                            color: Theme.textPrimary
+                                            font.family: Theme.fontFamily
+                                            font.pixelSize: 12
+                                            font.bold: true
+                                        }
+                                        Text {
+                                            text: qsTr("Reduces Steam client memory usage by hiding inactive list items.")
+                                            color: Theme.textSecondary
+                                            font.family: Theme.fontFamily
+                                            font.pixelSize: 10
+                                            width: parent.width
+                                            wrapMode: Text.WordWrap
+                                        }
+                                    }
+                                }
+                            }
+
+                            // Toggle 4
+                            Rectangle {
+                                width: parent.width
+                                height: 50
+                                color: "transparent"
+                                Row {
+                                    anchors.fill: parent
+                                    spacing: 12
+                                    MeguSwitch {
+                                        checked: optimizerBackend.steamFriendsSettings ? !!optimizerBackend.steamFriendsSettings["bHideCategorizedFriendsInOnlineOffline"] : false
+                                        anchors.verticalCenter: parent.verticalCenter
+                                        onToggled: (isChecked) => { root.toggleSteamFriendsSetting("bHideCategorizedFriendsInOnlineOffline", isChecked); }
+                                    }
+                                    Column {
+                                        anchors.verticalCenter: parent.verticalCenter
+                                        spacing: 2
+                                        width: parent.width - 50
+                                        Text {
+                                            text: qsTr("Hide categorized friends in Online/Offline Friends")
+                                            color: Theme.textPrimary
+                                            font.family: Theme.fontFamily
+                                            font.pixelSize: 12
+                                            font.bold: true
+                                        }
+                                        Text {
+                                            text: qsTr("Prevents duplicate rendering of friends list interface elements.")
+                                            color: Theme.textSecondary
+                                            font.family: Theme.fontFamily
+                                            font.pixelSize: 10
+                                            width: parent.width
+                                            wrapMode: Text.WordWrap
+                                        }
+                                    }
+                                }
+                            }
+
+                            // Toggle 5
+                            Rectangle {
+                                width: parent.width
+                                height: 50
+                                color: "transparent"
+                                Row {
+                                    anchors.fill: parent
+                                    spacing: 12
+                                    MeguSwitch {
+                                        checked: optimizerBackend.steamFriendsSettings ? !!optimizerBackend.steamFriendsSettings["bIgnoreAwayStatusWhenSorting"] : false
+                                        anchors.verticalCenter: parent.verticalCenter
+                                        onToggled: (isChecked) => { root.toggleSteamFriendsSetting("bIgnoreAwayStatusWhenSorting", isChecked); }
+                                    }
+                                    Column {
+                                        anchors.verticalCenter: parent.verticalCenter
+                                        spacing: 2
+                                        width: parent.width - 50
+                                        Text {
+                                            text: qsTr("Ignore 'Away' status when sorting friends")
+                                            color: Theme.textPrimary
+                                            font.family: Theme.fontFamily
+                                            font.pixelSize: 12
+                                            font.bold: true
+                                        }
+                                        Text {
+                                            text: qsTr("Reduces friends list sorting calculation frequency during user status updates.")
+                                            color: Theme.textSecondary
+                                            font.family: Theme.fontFamily
+                                            font.pixelSize: 10
+                                            width: parent.width
+                                            wrapMode: Text.WordWrap
+                                        }
+                                    }
+                                }
+                            }
+
+                            // Toggle 6
+                            Rectangle {
+                                width: parent.width
+                                height: 50
+                                color: "transparent"
+                                Row {
+                                    anchors.fill: parent
+                                    spacing: 12
+                                    MeguSwitch {
+                                        checked: optimizerBackend.steamFriendsSettings ? !!optimizerBackend.steamFriendsSettings["bSignInOnStart"] : false
+                                        anchors.verticalCenter: parent.verticalCenter
+                                        onToggled: (isChecked) => { root.toggleSteamFriendsSetting("bSignInOnStart", isChecked); }
+                                    }
+                                    Column {
+                                        anchors.verticalCenter: parent.verticalCenter
+                                        spacing: 2
+                                        width: parent.width - 50
+                                        Text {
+                                            text: qsTr("Sign in to friends when Steam starts")
+                                            color: Theme.textPrimary
+                                            font.family: Theme.fontFamily
+                                            font.pixelSize: 12
+                                            font.bold: true
+                                        }
+                                        Text {
+                                            text: qsTr("Disabling accelerates Steam client startup and minimizes initial network/CPU overhead.")
+                                            color: Theme.textSecondary
+                                            font.family: Theme.fontFamily
+                                            font.pixelSize: 10
+                                            width: parent.width
+                                            wrapMode: Text.WordWrap
+                                        }
+                                    }
+                                }
+                            }
+
+                            // Toggle 7
+                            Rectangle {
+                                width: parent.width
+                                height: 50
+                                color: "transparent"
+                                Row {
+                                    anchors.fill: parent
+                                    spacing: 12
+                                    MeguSwitch {
+                                        checked: optimizerBackend.steamFriendsSettings ? !!optimizerBackend.steamFriendsSettings["bEnableAnimatedAvatars"] : false
+                                        anchors.verticalCenter: parent.verticalCenter
+                                        onToggled: (isChecked) => { root.toggleSteamFriendsSetting("bEnableAnimatedAvatars", isChecked); }
+                                    }
+                                    Column {
+                                        anchors.verticalCenter: parent.verticalCenter
+                                        spacing: 2
+                                        width: parent.width - 50
+                                        Text {
+                                            text: qsTr("Enable Animated Avatars & Animated Avatar Frames")
+                                            color: Theme.textPrimary
+                                            font.family: Theme.fontFamily
+                                            font.pixelSize: 12
+                                            font.bold: true
+                                        }
+                                        Text {
+                                            text: qsTr("Disabling completely stops animated avatars in CEF, heavily reducing GPU load and in-game input latency.")
+                                            color: Theme.textSecondary
+                                            font.family: Theme.fontFamily
+                                            font.pixelSize: 10
+                                            width: parent.width
+                                            wrapMode: Text.WordWrap
+                                        }
+                                    }
+                                }
+                            }
+
+                            // Toggle 8
+                            Rectangle {
+                                width: parent.width
+                                height: 50
+                                color: "transparent"
+                                Row {
+                                    anchors.fill: parent
+                                    spacing: 12
+                                    MeguSwitch {
+                                        checked: optimizerBackend.steamFriendsSettings ? !!optimizerBackend.steamFriendsSettings["bCompactFriendsListAndChat"] : false
+                                        anchors.verticalCenter: parent.verticalCenter
+                                        onToggled: (isChecked) => { root.toggleSteamFriendsSetting("bCompactFriendsListAndChat", isChecked); }
+                                    }
+                                    Column {
+                                        anchors.verticalCenter: parent.verticalCenter
+                                        spacing: 2
+                                        width: parent.width - 50
+                                        Text {
+                                            text: qsTr("Compact friends list & chat view")
+                                            color: Theme.textPrimary
+                                            font.family: Theme.fontFamily
+                                            font.pixelSize: 12
+                                            font.bold: true
+                                        }
+                                        Text {
+                                            text: qsTr("Minimizes Steam client rendering surface area to save GPU resources.")
+                                            color: Theme.textSecondary
+                                            font.family: Theme.fontFamily
+                                            font.pixelSize: 10
+                                            width: parent.width
+                                            wrapMode: Text.WordWrap
+                                        }
+                                    }
+                                }
+                            }
+
+                            // Toggle 9
+                            Rectangle {
+                                width: parent.width
+                                height: 50
+                                color: "transparent"
+                                Row {
+                                    anchors.fill: parent
+                                    spacing: 12
+                                    MeguSwitch {
+                                        checked: optimizerBackend.steamFriendsSettings ? !!optimizerBackend.steamFriendsSettings["bCompactFavorites"] : false
+                                        anchors.verticalCenter: parent.verticalCenter
+                                        onToggled: (isChecked) => { root.toggleSteamFriendsSetting("bCompactFavorites", isChecked); }
+                                    }
+                                    Column {
+                                        anchors.verticalCenter: parent.verticalCenter
+                                        spacing: 2
+                                        width: parent.width - 50
+                                        Text {
+                                            text: qsTr("Compact favorite friends area")
+                                            color: Theme.textPrimary
+                                            font.family: Theme.fontFamily
+                                            font.pixelSize: 12
+                                            font.bold: true
+                                        }
+                                        Text {
+                                            text: qsTr("Shrinks avatar sizes in the top section, minimizing layout computation overhead.")
+                                            color: Theme.textSecondary
+                                            font.family: Theme.fontFamily
+                                            font.pixelSize: 10
+                                            width: parent.width
+                                            wrapMode: Text.WordWrap
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+
+                    // PAGE 2: Chat Sub-Page
+                    Column {
+                        id: steamChatPage
+                        width: parent.width
+                        spacing: 20
+                        visible: steamSettingsColumn.subPage === "chat"
+
+                        Row {
+                            spacing: 10
+                            width: parent.width
+
+                            MeguButton {
+                                text: qsTr("Back")
+                                iconSource: "qrc:/MeguPackOptimizer/src/resources/close.svg"
+                                width: 80
+                                onClicked: steamSettingsColumn.subPage = "main"
+                            }
+
+                            Text {
+                                text: qsTr("CHAT SETTINGS")
+                                color: Theme.textPrimary
+                                font.family: Theme.fontFamily
+                                font.pixelSize: 13
+                                font.bold: true
+                                font.letterSpacing: 1.5
+                                anchors.verticalCenter: parent.verticalCenter
+                            }
+                        }
+
+                        Rectangle {
+                            width: parent.width
+                            height: 1
+                            color: Theme.border
+                        }
+
+                        Column {
+                            width: parent.width
+                            spacing: 16
+
+                            // Toggle 10
+                            Rectangle {
+                                width: parent.width
+                                height: 50
+                                color: "transparent"
+                                Row {
+                                    anchors.fill: parent
+                                    spacing: 12
+                                    MeguSwitch {
+                                        checked: optimizerBackend.steamFriendsSettings ? !!optimizerBackend.steamFriendsSettings["bDockChats"] : false
+                                        anchors.verticalCenter: parent.verticalCenter
+                                        onToggled: (isChecked) => { root.toggleSteamFriendsSetting("bDockChats", isChecked); }
+                                    }
+                                    Column {
+                                        anchors.verticalCenter: parent.verticalCenter
+                                        spacing: 2
+                                        width: parent.width - 50
+                                        Text {
+                                            text: qsTr("Dock chats to the friends list")
+                                            color: Theme.textPrimary
+                                            font.family: Theme.fontFamily
+                                            font.pixelSize: 12
+                                            font.bold: true
+                                        }
+                                        Text {
+                                            text: qsTr("Merges chat and friends list windows, preventing creation of extra CEF rendering processes.")
+                                            color: Theme.textSecondary
+                                            font.family: Theme.fontFamily
+                                            font.pixelSize: 10
+                                            width: parent.width
+                                            wrapMode: Text.WordWrap
+                                        }
+                                    }
+                                }
+                            }
+
+                            // Toggle 11
+                            Rectangle {
+                                width: parent.width
+                                height: 50
+                                color: "transparent"
+                                Row {
+                                    anchors.fill: parent
+                                    spacing: 12
+                                    MeguSwitch {
+                                        checked: optimizerBackend.steamFriendsSettings ? !!optimizerBackend.steamFriendsSettings["bOpenNewWindowForNewChats"] : false
+                                        anchors.verticalCenter: parent.verticalCenter
+                                        onToggled: (isChecked) => { root.toggleSteamFriendsSetting("bOpenNewWindowForNewChats", isChecked); }
+                                    }
+                                    Column {
+                                        anchors.verticalCenter: parent.verticalCenter
+                                        spacing: 2
+                                        width: parent.width - 50
+                                        Text {
+                                            text: qsTr("Open a new window for new chats")
+                                            color: Theme.textPrimary
+                                            font.family: Theme.fontFamily
+                                            font.pixelSize: 12
+                                            font.bold: true
+                                        }
+                                        Text {
+                                            text: qsTr("Disabling prevents resource-intensive new OS windows from launching for every participant.")
+                                            color: Theme.textSecondary
+                                            font.family: Theme.fontFamily
+                                            font.pixelSize: 10
+                                            width: parent.width
+                                            wrapMode: Text.WordWrap
+                                        }
+                                    }
+                                }
+                            }
+
+                            // Toggle 12
+                            Rectangle {
+                                width: parent.width
+                                height: 50
+                                color: "transparent"
+                                Row {
+                                    anchors.fill: parent
+                                    spacing: 12
+                                    MeguSwitch {
+                                        checked: optimizerBackend.steamFriendsSettings ? !!optimizerBackend.steamFriendsSettings["bDontEmbedImages"] : false
+                                        anchors.verticalCenter: parent.verticalCenter
+                                        onToggled: (isChecked) => { root.toggleSteamFriendsSetting("bDontEmbedImages", isChecked); }
+                                    }
+                                    Column {
+                                        anchors.verticalCenter: parent.verticalCenter
+                                        spacing: 2
+                                        width: parent.width - 50
+                                        Text {
+                                            text: qsTr("Don't embed images and other media inline")
+                                            color: Theme.textPrimary
+                                            font.family: Theme.fontFamily
+                                            font.pixelSize: 12
+                                            font.bold: true
+                                        }
+                                        Text {
+                                            text: qsTr("Enabling stops automatic media loading and rendering, preventing sudden in-game frame drops.")
+                                            color: Theme.textSecondary
+                                            font.family: Theme.fontFamily
+                                            font.pixelSize: 10
+                                            width: parent.width
+                                            wrapMode: Text.WordWrap
+                                        }
+                                    }
+                                }
+                            }
+
+                            // Toggle 13
+                            Rectangle {
+                                width: parent.width
+                                height: 50
+                                color: "transparent"
+                                Row {
+                                    anchors.fill: parent
+                                    spacing: 12
+                                    MeguSwitch {
+                                        checked: optimizerBackend.steamFriendsSettings ? !!optimizerBackend.steamFriendsSettings["bRememberOpenChats"] : false
+                                        anchors.verticalCenter: parent.verticalCenter
+                                        onToggled: (isChecked) => { root.toggleSteamFriendsSetting("bRememberOpenChats", isChecked); }
+                                    }
+                                    Column {
+                                        anchors.verticalCenter: parent.verticalCenter
+                                        spacing: 2
+                                        width: parent.width - 50
+                                        Text {
+                                            text: qsTr("Remember my open chats")
+                                            color: Theme.textPrimary
+                                            font.family: Theme.fontFamily
+                                            font.pixelSize: 12
+                                            font.bold: true
+                                        }
+                                        Text {
+                                            text: qsTr("Disabling reduces disk reads/writes during Steam startup by skipping previous session restorations.")
+                                            color: Theme.textSecondary
+                                            font.family: Theme.fontFamily
+                                            font.pixelSize: 10
+                                            width: parent.width
+                                            wrapMode: Text.WordWrap
+                                        }
+                                    }
+                                }
+                            }
+
+                            // Toggle 14
+                            Rectangle {
+                                width: parent.width
+                                height: 50
+                                color: "transparent"
+                                Row {
+                                    anchors.fill: parent
+                                    spacing: 12
+                                    MeguSwitch {
+                                        checked: optimizerBackend.steamFriendsSettings ? !!optimizerBackend.steamFriendsSettings["bDisableSpellCheck"] : false
+                                        anchors.verticalCenter: parent.verticalCenter
+                                        onToggled: (isChecked) => { root.toggleSteamFriendsSetting("bDisableSpellCheck", isChecked); }
+                                    }
+                                    Column {
+                                        anchors.verticalCenter: parent.verticalCenter
+                                        spacing: 2
+                                        width: parent.width - 50
+                                        Text {
+                                            text: qsTr("Disable spellcheck in chat message entry")
+                                            color: Theme.textPrimary
+                                            font.family: Theme.fontFamily
+                                            font.pixelSize: 12
+                                            font.bold: true
+                                        }
+                                        Text {
+                                            text: qsTr("Disables the real-time spellcheck engine, reducing CPU usage during text typing.")
+                                            color: Theme.textSecondary
+                                            font.family: Theme.fontFamily
+                                            font.pixelSize: 10
+                                            width: parent.width
+                                            wrapMode: Text.WordWrap
+                                        }
+                                    }
+                                }
+                            }
+
+                            // Toggle 15
+                            Rectangle {
+                                width: parent.width
+                                height: 50
+                                color: "transparent"
+                                Row {
+                                    anchors.fill: parent
+                                    spacing: 12
+                                    MeguSwitch {
+                                        checked: optimizerBackend.steamFriendsSettings ? !!optimizerBackend.steamFriendsSettings["bDisableRoomEffects"] : false
+                                        anchors.verticalCenter: parent.verticalCenter
+                                        onToggled: (isChecked) => { root.toggleSteamFriendsSetting("bDisableRoomEffects", isChecked); }
+                                    }
+                                    Column {
+                                        anchors.verticalCenter: parent.verticalCenter
+                                        spacing: 2
+                                        width: parent.width - 50
+                                        Text {
+                                            text: qsTr("Disable animated room effects")
+                                            color: Theme.textPrimary
+                                            font.family: Theme.fontFamily
+                                            font.pixelSize: 12
+                                            font.bold: true
+                                        }
+                                        Text {
+                                            text: qsTr("Stops CPU/GPU-intensive graphical effects (emoji showers, confetti) inside chat rooms.")
+                                            color: Theme.textSecondary
+                                            font.family: Theme.fontFamily
+                                            font.pixelSize: 10
+                                            width: parent.width
+                                            wrapMode: Text.WordWrap
                                         }
                                     }
                                 }
                             }
                         }
 
-                        Text {
-                            text: qsTr("Sets the font size of the Steam chat interface.")
-                            color: Theme.textSecondary
-                            font.family: Theme.fontFamily
-                            font.pixelSize: 10
+                        Rectangle {
                             width: parent.width
+                            height: 1
+                            color: Theme.border
+                        }
+
+                        // FontSize Segmented Selector
+                        Column {
+                            width: parent.width
+                            spacing: 8
+
+                            Text {
+                                text: qsTr("Chat Font Size")
+                                color: Theme.accent
+                                font.family: Theme.fontFamily
+                                font.pixelSize: 13
+                                font.bold: true
+                            }
+
+                            Row {
+                                width: parent.width
+                                spacing: 8
+
+                                property string currentSize: optimizerBackend.steamFriendsSettings ? optimizerBackend.steamFriendsSettings["fontSize"] || "default" : "default"
+
+                                Repeater {
+                                    model: [
+                                        { id: "small", label: qsTr("Small") },
+                                        { id: "default", label: qsTr("Default") },
+                                        { id: "large", label: qsTr("Large") }
+                                    ]
+                                    delegate: Rectangle {
+                                        height: 32
+                                        width: (parent.width - 16) / 3
+                                        radius: 6
+                                        color: (parent.parent.currentSize === modelData.id) ? Theme.accentDim : (btnMouse.containsMouse ? "#0DFFFFFF" : "#05FFFFFF")
+                                        border.color: (parent.parent.currentSize === modelData.id) ? Theme.accent : Theme.border
+                                        border.width: 1
+
+                                        Behavior on color { ColorAnimation { duration: Theme.animFast } }
+                                        Behavior on border.color { ColorAnimation { duration: Theme.animFast } }
+
+                                        Text {
+                                            text: modelData.label
+                                            color: (parent.parent.parent.currentSize === modelData.id) ? Theme.accent : Theme.textSecondary
+                                            font.family: Theme.fontFamily
+                                            font.pixelSize: 11
+                                            font.bold: true
+                                            anchors.centerIn: parent
+                                        }
+
+                                        MouseArea {
+                                            id: btnMouse
+                                            anchors.fill: parent
+                                            hoverEnabled: true
+                                            cursorShape: Qt.PointingHandCursor
+                                            onClicked: {
+                                                root.toggleSteamFriendsSetting("fontSize", modelData.id);
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+
+                            Text {
+                                text: qsTr("Sets the font size of the Steam chat interface.")
+                                color: Theme.textSecondary
+                                font.family: Theme.fontFamily
+                                font.pixelSize: 10
+                                width: parent.width
+                            }
                         }
                     }
-                }
-            }
+
+                    // PAGE 3: Notifications Sub-Page
+                    Column {
+                        id: steamNotificationsPage
+                        width: parent.width
+                        spacing: 20
+                        visible: steamSettingsColumn.subPage === "notifications"
+
+                        Row {
+                            spacing: 10
+                            width: parent.width
+
+                            MeguButton {
+                                text: qsTr("Back")
+                                iconSource: "qrc:/MeguPackOptimizer/src/resources/close.svg"
+                                width: 80
+                                onClicked: steamSettingsColumn.subPage = "main"
+                            }
+
+                            Text {
+                                text: qsTr("NOTIFICATIONS")
+                                color: Theme.textPrimary
+                                font.family: Theme.fontFamily
+                                font.pixelSize: 13
+                                font.bold: true
+                                font.letterSpacing: 1.5
+                                anchors.verticalCenter: parent.verticalCenter
+                            }
+                        }
+
+                        Rectangle {
+                            width: parent.width
+                            height: 1
+                            color: Theme.border
+                        }
+
+                        // Global Sound Toggle
+                        Rectangle {
+                            width: parent.width
+                            height: 50
+                            color: "transparent"
+                            Row {
+                                anchors.fill: parent
+                                spacing: 12
+                                MeguSwitch {
+                                    checked: optimizerBackend.steamFriendsSettings ? !!optimizerBackend.steamFriendsSettings["bPlayNotificationSounds"] : true
+                                    anchors.verticalCenter: parent.verticalCenter
+                                    onToggled: (isChecked) => { root.toggleSteamFriendsSetting("bPlayNotificationSounds", isChecked); }
+                                }
+                                Column {
+                                    anchors.verticalCenter: parent.verticalCenter
+                                    spacing: 2
+                                    width: parent.width - 50
+                                    Text {
+                                        text: qsTr("Play a sound when a toast is displayed")
+                                        color: Theme.textPrimary
+                                        font.family: Theme.fontFamily
+                                        font.pixelSize: 12
+                                        font.bold: true
+                                    }
+                                    Text {
+                                        text: qsTr("Enables or disables standard sound notifications inside the Steam client interface.")
+                                        color: Theme.textSecondary
+                                        font.family: Theme.fontFamily
+                                        font.pixelSize: 10
+                                        width: parent.width
+                                        wrapMode: Text.WordWrap
+                                    }
+                                }
+                            }
+                        }
+
+                        // Column headers
+                        Row {
+                            width: parent.width
+                            height: 20
+
+                            Text {
+                                text: qsTr("CLIENT & FRIEND EVENTS")
+                                color: Theme.accent
+                                font.family: Theme.fontFamily
+                                font.pixelSize: 10
+                                font.bold: true
+                                font.letterSpacing: 1.0
+                                width: parent.width - 120
+                                anchors.verticalCenter: parent.verticalCenter
+                            }
+
+                            Text {
+                                text: qsTr("TOAST")
+                                color: Theme.textMuted
+                                font.family: Theme.fontFamily
+                                font.pixelSize: 9
+                                font.bold: true
+                                width: 60
+                                horizontalAlignment: Text.AlignHCenter
+                                anchors.verticalCenter: parent.verticalCenter
+                            }
+
+                            Text {
+                                text: qsTr("SOUND")
+                                color: Theme.textMuted
+                                font.family: Theme.fontFamily
+                                font.pixelSize: 9
+                                font.bold: true
+                                width: 60
+                                horizontalAlignment: Text.AlignHCenter
+                                anchors.verticalCenter: parent.verticalCenter
+                            }
+                        }
+
+                        // Sub-Options Toggles
+                        Column {
+                            width: parent.width
+                            spacing: 12
+
+                            // 1. Achievements
+                            Rectangle {
+                                width: parent.width
+                                height: 40
+                                color: "transparent"
+
+                                Text {
+                                    text: qsTr("When I unlock an achievement")
+                                    color: Theme.textPrimary
+                                    font.family: Theme.fontFamily
+                                    font.pixelSize: 11
+                                    font.bold: true
+                                    anchors.left: parent.left
+                                    anchors.verticalCenter: parent.verticalCenter
+                                    width: parent.width - 120
+                                    wrapMode: Text.WordWrap
+                                }
+
+                                Row {
+                                    anchors.right: parent.right
+                                    anchors.verticalCenter: parent.verticalCenter
+                                    spacing: 20
+
+                                    MeguSwitch {
+                                        checked: optimizerBackend.steamFriendsSettings ? !!optimizerBackend.steamFriendsSettings["bAchievementShowToast"] : true
+                                        onToggled: (isChecked) => { root.toggleSteamFriendsSetting("bAchievementShowToast", isChecked); }
+                                    }
+
+                                    MeguSwitch {
+                                        checked: optimizerBackend.steamFriendsSettings ? !!optimizerBackend.steamFriendsSettings["bAchievementPlaySound"] : true
+                                        onToggled: (isChecked) => { root.toggleSteamFriendsSetting("bAchievementPlaySound", isChecked); }
+                                    }
+                                }
+                            }
+
+                            // 2. Controller Connect
+                            Rectangle {
+                                width: parent.width
+                                height: 40
+                                color: "transparent"
+
+                                Text {
+                                    text: qsTr("When I connect a controller")
+                                    color: Theme.textPrimary
+                                    font.family: Theme.fontFamily
+                                    font.pixelSize: 11
+                                    font.bold: true
+                                    anchors.left: parent.left
+                                    anchors.verticalCenter: parent.verticalCenter
+                                    width: parent.width - 120
+                                    wrapMode: Text.WordWrap
+                                }
+
+                                Row {
+                                    anchors.right: parent.right
+                                    anchors.verticalCenter: parent.verticalCenter
+                                    spacing: 20
+
+                                    MeguSwitch {
+                                        checked: optimizerBackend.steamFriendsSettings ? !!optimizerBackend.steamFriendsSettings["bControllerShowToast"] : true
+                                        onToggled: (isChecked) => { root.toggleSteamFriendsSetting("bControllerShowToast", isChecked); }
+                                    }
+
+                                    MeguSwitch {
+                                        checked: optimizerBackend.steamFriendsSettings ? !!optimizerBackend.steamFriendsSettings["bControllerPlaySound"] : false
+                                        onToggled: (isChecked) => { root.toggleSteamFriendsSetting("bControllerPlaySound", isChecked); }
+                                    }
+                                }
+                            }
+
+                            // 3. Controller Low Battery
+                            Rectangle {
+                                width: parent.width
+                                height: 40
+                                color: "transparent"
+
+                                Text {
+                                    text: qsTr("When a controller's battery is low")
+                                    color: Theme.textPrimary
+                                    font.family: Theme.fontFamily
+                                    font.pixelSize: 11
+                                    font.bold: true
+                                    anchors.left: parent.left
+                                    anchors.verticalCenter: parent.verticalCenter
+                                    width: parent.width - 120
+                                    wrapMode: Text.WordWrap
+                                }
+
+                                Row {
+                                    anchors.right: parent.right
+                                    anchors.verticalCenter: parent.verticalCenter
+                                    spacing: 20
+
+                                    MeguSwitch {
+                                        checked: optimizerBackend.steamFriendsSettings ? !!optimizerBackend.steamFriendsSettings["bControllerLowShowToast"] : true
+                                        onToggled: (isChecked) => { root.toggleSteamFriendsSetting("bControllerLowShowToast", isChecked); }
+                                    }
+
+                                    MeguSwitch {
+                                        checked: optimizerBackend.steamFriendsSettings ? !!optimizerBackend.steamFriendsSettings["bControllerLowPlaySound"] : false
+                                        onToggled: (isChecked) => { root.toggleSteamFriendsSetting("bControllerLowPlaySound", isChecked); }
+                                    }
+                                }
+                            }
+
+                            // 4. Friend Joins Game
+                            Rectangle {
+                                width: parent.width
+                                height: 40
+                                color: "transparent"
+
+                                Text {
+                                    text: qsTr("When a friend joins a game")
+                                    color: Theme.textPrimary
+                                    font.family: Theme.fontFamily
+                                    font.pixelSize: 11
+                                    font.bold: true
+                                    anchors.left: parent.left
+                                    anchors.verticalCenter: parent.verticalCenter
+                                    width: parent.width - 120
+                                    wrapMode: Text.WordWrap
+                                }
+
+                                Row {
+                                    anchors.right: parent.right
+                                    anchors.verticalCenter: parent.verticalCenter
+                                    spacing: 20
+
+                                    MeguSwitch {
+                                        checked: optimizerBackend.steamFriendsSettings ? !!optimizerBackend.steamFriendsSettings["bFriendJoinShowToast"] : true
+                                        onToggled: (isChecked) => { root.toggleSteamFriendsSetting("bFriendJoinShowToast", isChecked); }
+                                    }
+
+                                    MeguSwitch {
+                                        checked: optimizerBackend.steamFriendsSettings ? !!optimizerBackend.steamFriendsSettings["bFriendJoinPlaySound"] : false
+                                        onToggled: (isChecked) => { root.toggleSteamFriendsSetting("bFriendJoinPlaySound", isChecked); }
+                                    }
+                                }
+                            }
+
+                            // 5. Friend Comes Online
+                            Rectangle {
+                                width: parent.width
+                                height: 40
+                                color: "transparent"
+
+                                Text {
+                                    text: qsTr("When a friend comes online")
+                                    color: Theme.textPrimary
+                                    font.family: Theme.fontFamily
+                                    font.pixelSize: 11
+                                    font.bold: true
+                                    anchors.left: parent.left
+                                    anchors.verticalCenter: parent.verticalCenter
+                                    width: parent.width - 120
+                                    wrapMode: Text.WordWrap
+                                }
+
+                                Row {
+                                    anchors.right: parent.right
+                                    anchors.verticalCenter: parent.verticalCenter
+                                    spacing: 20
+
+                                    MeguSwitch {
+                                        checked: optimizerBackend.steamFriendsSettings ? !!optimizerBackend.steamFriendsSettings["bFriendOnlineShowToast"] : false
+                                        onToggled: (isChecked) => { root.toggleSteamFriendsSetting("bFriendOnlineShowToast", isChecked); }
+                                    }
+
+                                    MeguSwitch {
+                                        checked: optimizerBackend.steamFriendsSettings ? !!optimizerBackend.steamFriendsSettings["bFriendOnlinePlaySound"] : false
+                                        onToggled: (isChecked) => { root.toggleSteamFriendsSetting("bFriendOnlinePlaySound", isChecked); }
+                                    }
+                                }
+                            }
+
+                            // 6. Direct Message
+                            Rectangle {
+                                width: parent.width
+                                height: 40
+                                color: "transparent"
+
+                                Text {
+                                    text: qsTr("When I receive a direct chat message")
+                                    color: Theme.textPrimary
+                                    font.family: Theme.fontFamily
+                                    font.pixelSize: 11
+                                    font.bold: true
+                                    anchors.left: parent.left
+                                    anchors.verticalCenter: parent.verticalCenter
+                                    width: parent.width - 120
+                                    wrapMode: Text.WordWrap
+                                }
+
+                                Row {
+                                    anchors.right: parent.right
+                                    anchors.verticalCenter: parent.verticalCenter
+                                    spacing: 20
+
+                                    MeguSwitch {
+                                        checked: optimizerBackend.steamFriendsSettings ? !!optimizerBackend.steamFriendsSettings["bFriendMsgShowToast"] : true
+                                        onToggled: (isChecked) => { root.toggleSteamFriendsSetting("bFriendMsgShowToast", isChecked); }
+                                    }
+
+                                    MeguSwitch {
+                                        checked: optimizerBackend.steamFriendsSettings ? !!optimizerBackend.steamFriendsSettings["bFriendMsgPlaySound"] : true
+                                        onToggled: (isChecked) => { root.toggleSteamFriendsSetting("bFriendMsgPlaySound", isChecked); }
+                                    }
+                                }
+                            }
+
+                            // 7. Chat Room Toast
+                            Rectangle {
+                                width: parent.width
+                                height: 40
+                                color: "transparent"
+
+                                Text {
+                                    text: qsTr("When I receive a chat room notification")
+                                    color: Theme.textPrimary
+                                    font.family: Theme.fontFamily
+                                    font.pixelSize: 11
+                                    font.bold: true
+                                    anchors.left: parent.left
+                                    anchors.verticalCenter: parent.verticalCenter
+                                    width: parent.width - 120
+                                    wrapMode: Text.WordWrap
+                                }
+
+                                Row {
+                                    anchors.right: parent.right
+                                    anchors.verticalCenter: parent.verticalCenter
+                                    spacing: 20
+
+                                    MeguSwitch {
+                                        checked: optimizerBackend.steamFriendsSettings ? !!optimizerBackend.steamFriendsSettings["bChatRoomShowToast"] : true
+                                        onToggled: (isChecked) => { root.toggleSteamFriendsSetting("bChatRoomShowToast", isChecked); }
+                                    }
+
+                                    MeguSwitch {
+                                        checked: optimizerBackend.steamFriendsSettings ? !!optimizerBackend.steamFriendsSettings["bChatRoomPlaySound"] : true
+                                        onToggled: (isChecked) => { root.toggleSteamFriendsSetting("bChatRoomPlaySound", isChecked); }
+                                    }
+                                }
+                            }
+                        }
+
+                        Rectangle {
+                            width: parent.width
+                            height: 1
+                            color: Theme.border
+                        }
+
+                        // Window Flashing option
+                        Column {
+                            width: parent.width
+                            spacing: 8
+
+                            Text {
+                                text: qsTr("Flash window when receive chat message:")
+                                color: Theme.textPrimary
+                                font.family: Theme.fontFamily
+                                font.pixelSize: 12
+                                font.bold: true
+                            }
+
+                            Row {
+                                width: parent.width
+                                spacing: 8
+
+                                property string flashMode: optimizerBackend.steamFriendsSettings ? optimizerBackend.steamFriendsSettings["flashWindowOnMessage"] || "always" : "always"
+
+                                Repeater {
+                                    model: [
+                                        { id: "always", label: qsTr("Always") },
+                                        { id: "minimized", label: qsTr("Only when minimized") },
+                                        { id: "never", label: qsTr("Never") }
+                                    ]
+                                    delegate: Rectangle {
+                                        height: 32
+                                        width: (parent.width - 16) / 3
+                                        radius: 6
+                                        color: (parent.parent.flashMode === modelData.id) ? Theme.accentDim : (flashBtnMouse.containsMouse ? "#0DFFFFFF" : "#05FFFFFF")
+                                        border.color: (parent.parent.flashMode === modelData.id) ? Theme.accent : Theme.border
+                                        border.width: 1
+
+                                        Behavior on color { ColorAnimation { duration: Theme.animFast } }
+                                        Behavior on border.color { ColorAnimation { duration: Theme.animFast } }
+
+                                        Text {
+                                            text: modelData.label
+                                            color: (parent.parent.parent.flashMode === modelData.id) ? Theme.accent : Theme.textSecondary
+                                            font.family: Theme.fontFamily
+                                            font.pixelSize: 10
+                                            font.bold: true
+                                            anchors.centerIn: parent
+                                        }
+
+                                        MouseArea {
+                                            id: flashBtnMouse
+                                            anchors.fill: parent
+                                            hoverEnabled: true
+                                            cursorShape: Qt.PointingHandCursor
+                                            onClicked: {
+                                                root.toggleSteamFriendsSetting("flashWindowOnMessage", modelData.id);
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+
+                    // PAGE 4: Interface Sub-Page
+                    Column {
+                        id: steamInterfacePage
+                        width: parent.width
+                        spacing: 20
+                        visible: steamSettingsColumn.subPage === "interface"
+
+                        Row {
+                            spacing: 10
+                            width: parent.width
+
+                            MeguButton {
+                                text: qsTr("Back")
+                                iconSource: "qrc:/MeguPackOptimizer/src/resources/close.svg"
+                                width: 80
+                                onClicked: steamSettingsColumn.subPage = "main"
+                            }
+
+                            Text {
+                                text: qsTr("INTERFACE")
+                                color: Theme.textPrimary
+                                font.family: Theme.fontFamily
+                                font.pixelSize: 13
+                                font.bold: true
+                                font.letterSpacing: 1.5
+                                anchors.verticalCenter: parent.verticalCenter
+                            }
+                        }
+
+                        Rectangle {
+                            width: parent.width
+                            height: 1
+                            color: Theme.border
+                        }
+
+                        Column {
+                            width: parent.width
+                            spacing: 16
+
+                            // Toggle 1: Scale text and icons
+                            Rectangle {
+                                width: parent.width
+                                height: 50
+                                color: "transparent"
+                                Row {
+                                    anchors.fill: parent
+                                    spacing: 12
+                                    MeguSwitch {
+                                        checked: optimizerBackend.steamFriendsSettings ? !!optimizerBackend.steamFriendsSettings["bScaleTextAndIcons"] : true
+                                        anchors.verticalCenter: parent.verticalCenter
+                                        onToggled: (isChecked) => { root.toggleSteamFriendsSetting("bScaleTextAndIcons", isChecked); }
+                                    }
+                                    Column {
+                                        anchors.verticalCenter: parent.verticalCenter
+                                        spacing: 2
+                                        width: parent.width - 50
+                                        Text {
+                                            text: qsTr("Scale text and icons to match monitor settings (requires restart)")
+                                            color: Theme.textPrimary
+                                            font.family: Theme.fontFamily
+                                            font.pixelSize: 12
+                                            font.bold: true
+                                        }
+                                        Text {
+                                            text: qsTr("Scales Steam interface to monitor DPI settings automatically.")
+                                            color: Theme.textSecondary
+                                            font.family: Theme.fontFamily
+                                            font.pixelSize: 10
+                                            width: parent.width
+                                            wrapMode: Text.WordWrap
+                                        }
+                                    }
+                                }
+                            }
+
+                            // Toggle 2: Run Steam on startup
+                            Rectangle {
+                                width: parent.width
+                                height: 50
+                                color: "transparent"
+                                Row {
+                                    anchors.fill: parent
+                                    spacing: 12
+                                    MeguSwitch {
+                                        checked: optimizerBackend.steamFriendsSettings ? !!optimizerBackend.steamFriendsSettings["bRunOnStartup"] : true
+                                        anchors.verticalCenter: parent.verticalCenter
+                                        onToggled: (isChecked) => { root.toggleSteamFriendsSetting("bRunOnStartup", isChecked); }
+                                    }
+                                    Column {
+                                        anchors.verticalCenter: parent.verticalCenter
+                                        spacing: 2
+                                        width: parent.width - 50
+                                        Text {
+                                            text: qsTr("Run Steam when my computer starts")
+                                            color: Theme.textPrimary
+                                            font.family: Theme.fontFamily
+                                            font.pixelSize: 12
+                                            font.bold: true
+                                        }
+                                        Text {
+                                            text: qsTr("Launches Steam automatically during system logon.")
+                                            color: Theme.textSecondary
+                                            font.family: Theme.fontFamily
+                                            font.pixelSize: 10
+                                            width: parent.width
+                                            wrapMode: Text.WordWrap
+                                        }
+                                    }
+                                }
+                            }
+
+                            // Toggle 3: Ask which account to use
+                            Rectangle {
+                                width: parent.width
+                                height: 50
+                                color: "transparent"
+                                Row {
+                                    anchors.fill: parent
+                                    spacing: 12
+                                    MeguSwitch {
+                                        checked: optimizerBackend.steamFriendsSettings ? !!optimizerBackend.steamFriendsSettings["bAskAccountOnStart"] : false
+                                        anchors.verticalCenter: parent.verticalCenter
+                                        onToggled: (isChecked) => { root.toggleSteamFriendsSetting("bAskAccountOnStart", isChecked); }
+                                    }
+                                    Column {
+                                        anchors.verticalCenter: parent.verticalCenter
+                                        spacing: 2
+                                        width: parent.width - 50
+                                        Text {
+                                            text: qsTr("Ask which account to use each time Steam starts")
+                                            color: Theme.textPrimary
+                                            font.family: Theme.fontFamily
+                                            font.pixelSize: 12
+                                            font.bold: true
+                                        }
+                                        Text {
+                                            text: qsTr("Prompts the account selector window on every Steam login.")
+                                            color: Theme.textSecondary
+                                            font.family: Theme.fontFamily
+                                            font.pixelSize: 10
+                                            width: parent.width
+                                            wrapMode: Text.WordWrap
+                                        }
+                                    }
+                                }
+                            }
+
+                            // Toggle 4: Start in Big Picture Mode
+                            Rectangle {
+                                width: parent.width
+                                height: 50
+                                color: "transparent"
+                                Row {
+                                    anchors.fill: parent
+                                    spacing: 12
+                                    MeguSwitch {
+                                        checked: optimizerBackend.steamFriendsSettings ? !!optimizerBackend.steamFriendsSettings["bStartInBigPicture"] : false
+                                        anchors.verticalCenter: parent.verticalCenter
+                                        onToggled: (isChecked) => { root.toggleSteamFriendsSetting("bStartInBigPicture", isChecked); }
+                                    }
+                                    Column {
+                                        anchors.verticalCenter: parent.verticalCenter
+                                        spacing: 2
+                                        width: parent.width - 50
+                                        Text {
+                                            text: qsTr("Start Steam in Big Picture Mode")
+                                            color: Theme.textPrimary
+                                            font.family: Theme.fontFamily
+                                            font.pixelSize: 12
+                                            font.bold: true
+                                        }
+                                        Text {
+                                            text: qsTr("Launches Steam directly in the gamepad-friendly Big Picture Mode interface.")
+                                            color: Theme.textSecondary
+                                            font.family: Theme.fontFamily
+                                            font.pixelSize: 10
+                                            width: parent.width
+                                            wrapMode: Text.WordWrap
+                                        }
+                                    }
+                                }
+                            }
+
+                            // Toggle 5: Enable smooth scrolling
+                            Rectangle {
+                                width: parent.width
+                                height: 50
+                                color: "transparent"
+                                Row {
+                                    anchors.fill: parent
+                                    spacing: 12
+                                    MeguSwitch {
+                                        checked: optimizerBackend.steamFriendsSettings ? !!optimizerBackend.steamFriendsSettings["bSmoothScrolling"] : true
+                                        anchors.verticalCenter: parent.verticalCenter
+                                        onToggled: (isChecked) => { root.toggleSteamFriendsSetting("bSmoothScrolling", isChecked); }
+                                    }
+                                    Column {
+                                        anchors.verticalCenter: parent.verticalCenter
+                                        spacing: 2
+                                        width: parent.width - 50
+                                        Text {
+                                            text: qsTr("Enable smooth scrolling in web views (requires restart)")
+                                            color: Theme.textPrimary
+                                            font.family: Theme.fontFamily
+                                            font.pixelSize: 12
+                                            font.bold: true
+                                        }
+                                        Text {
+                                            text: qsTr("Enables kinetic smooth scrolling transitions in Store and Community pages.")
+                                            color: Theme.textSecondary
+                                            font.family: Theme.fontFamily
+                                            font.pixelSize: 10
+                                            width: parent.width
+                                            wrapMode: Text.WordWrap
+                                        }
+                                    }
+                                }
+                            }
+
+                            // Toggle 6: Enable GPU accelerated rendering
+                            Rectangle {
+                                width: parent.width
+                                height: 50
+                                color: "transparent"
+                                Row {
+                                    anchors.fill: parent
+                                    spacing: 12
+                                    MeguSwitch {
+                                        checked: optimizerBackend.steamFriendsSettings ? !!optimizerBackend.steamFriendsSettings["bGPUAcceleratedRendering"] : true
+                                        anchors.verticalCenter: parent.verticalCenter
+                                        onToggled: (isChecked) => { root.toggleSteamFriendsSetting("bGPUAcceleratedRendering", isChecked); }
+                                    }
+                                    Column {
+                                        anchors.verticalCenter: parent.verticalCenter
+                                        spacing: 2
+                                        width: parent.width - 50
+                                        Text {
+                                            text: qsTr("Enable GPU accelerated rendering in web views (requires restart)")
+                                            color: Theme.textPrimary
+                                            font.family: Theme.fontFamily
+                                            font.pixelSize: 12
+                                            font.bold: true
+                                        }
+                                        Text {
+                                            text: qsTr("Leverages graphics card processor resources to render Steam UI elements faster.")
+                                            color: Theme.textSecondary
+                                            font.family: Theme.fontFamily
+                                            font.pixelSize: 10
+                                            width: parent.width
+                                            wrapMode: Text.WordWrap
+                                        }
+                                    }
+                                }
+                            }
+
+                            // Toggle 7: Enable hardware video decoding
+                            Rectangle {
+                                width: parent.width
+                                height: 50
+                                color: "transparent"
+                                Row {
+                                    anchors.fill: parent
+                                    spacing: 12
+                                    MeguSwitch {
+                                        checked: optimizerBackend.steamFriendsSettings ? !!optimizerBackend.steamFriendsSettings["bHardwareVideoDecoding"] : true
+                                        anchors.verticalCenter: parent.verticalCenter
+                                        onToggled: (isChecked) => { root.toggleSteamFriendsSetting("bHardwareVideoDecoding", isChecked); }
+                                    }
+                                    Column {
+                                        anchors.verticalCenter: parent.verticalCenter
+                                        spacing: 2
+                                        width: parent.width - 50
+                                        Text {
+                                            text: qsTr("Enable hardware video decoding, if supported (requires restart)")
+                                            color: Theme.textPrimary
+                                            font.family: Theme.fontFamily
+                                            font.pixelSize: 12
+                                            font.bold: true
+                                        }
+                                        Text {
+                                            text: qsTr("Uses dedicated hardware video decoder units on the GPU for storefront media players.")
+                                            color: Theme.textSecondary
+                                            font.family: Theme.fontFamily
+                                            font.pixelSize: 10
+                                            width: parent.width
+                                            wrapMode: Text.WordWrap
+                                        }
+                                    }
+                                }
+                            }
+
+                            // Toggle 8: Notify me about additions
+                            Rectangle {
+                                width: parent.width
+                                height: 50
+                                color: "transparent"
+                                Row {
+                                    anchors.fill: parent
+                                    spacing: 12
+                                    MeguSwitch {
+                                        checked: optimizerBackend.steamFriendsSettings ? !!optimizerBackend.steamFriendsSettings["bNotifyGameAdditions"] : true
+                                        anchors.verticalCenter: parent.verticalCenter
+                                        onToggled: (isChecked) => { root.toggleSteamFriendsSetting("bNotifyGameAdditions", isChecked); }
+                                    }
+                                    Column {
+                                        anchors.verticalCenter: parent.verticalCenter
+                                        spacing: 2
+                                        width: parent.width - 50
+                                        Text {
+                                            text: qsTr("Notify me about additions or changes to my games, new releases, and upcoming releases")
+                                            color: Theme.textPrimary
+                                            font.family: Theme.fontFamily
+                                            font.pixelSize: 12
+                                            font.bold: true
+                                        }
+                                        Text {
+                                            text: qsTr("Enables storefront marketing and service notifications in the client.")
+                                            color: Theme.textSecondary
+                                            font.family: Theme.fontFamily
+                                            font.pixelSize: 10
+                                            width: parent.width
+                                            wrapMode: Text.WordWrap
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }            }
         }
     }
 }
@@ -6518,7 +7878,7 @@ Item {
                 }
 
                 Text {
-                    text: root.txtChangesPending.arg(root.pendingChangesCount)
+                    text: root.txtChangesPending.arg(root.mainChangesCount + " (" + root.sidebarChangesCount + ")")
                     color: Theme.textPrimary
                     font.family: Theme.fontFamily
                     font.pixelSize: 10
@@ -7046,10 +8406,35 @@ Item {
             anchors.fill: parent
         }
 
-        AcrylicPanel {
-            width: 500
-            height: 380
+        Rectangle {
+            id: modalContainer
+            width: 440
+            height: 320
             anchors.centerIn: parent
+            color: "#0F0F11" // Sleek dark charcoal panel background
+            radius: 16
+            border.color: Theme.accent // Glowing orange/amber border
+            border.width: 1.5
+
+            // Glowing border layers (soft inner/outer outline)
+            Rectangle {
+                anchors.fill: parent
+                anchors.margins: -4
+                radius: parent.radius + 4
+                color: "transparent"
+                border.color: Theme.accent
+                border.width: 1.5
+                opacity: 0.15
+            }
+            Rectangle {
+                anchors.fill: parent
+                anchors.margins: -2
+                radius: parent.radius + 2
+                color: "transparent"
+                border.color: Theme.accent
+                border.width: 1.0
+                opacity: 0.3
+            }
 
             Item {
                 anchors.fill: parent
@@ -7057,67 +8442,128 @@ Item {
 
                 Column {
                     anchors.fill: parent
-                    spacing: 16
+                    spacing: 24
 
-                    Text {
-                        text: optimizerBackend.isOptimizingSystem ? qsTr("SYSTEM OPTIMIZATION IN PROGRESS") : qsTr("OPTIMIZATION COMPLETE")
-                        color: Theme.yellowAccent
-                        font.family: Theme.fontFamily
-                        font.pixelSize: 13
-                        font.bold: true
-                        font.letterSpacing: 1.5
+                    // Header
+                    Column {
+                        width: parent.width
+                        spacing: 6
+                        
+                        Text {
+                            width: parent.width
+                            horizontalAlignment: Text.AlignHCenter
+                            text: optimizerBackend.isOptimizingSystem ? qsTr("Optimization in Progress") : qsTr("Optimization Complete")
+                            color: "#FFFFFF"
+                            font.family: Theme.fontFamily
+                            font.pixelSize: 18
+                            font.bold: true
+                        }
+
+                        Text {
+                            width: parent.width
+                            horizontalAlignment: Text.AlignHCenter
+                            text: optimizerBackend.isOptimizingSystem ? qsTr("Applying system configuration adjustments...") : qsTr("Finished system modifications.")
+                            color: Theme.textMuted
+                            font.family: Theme.fontFamily
+                            font.pixelSize: 12
+                        }
                     }
 
-                    MeguProgressBar {
+                    // Steps Checklist
+                    Column {
+                        id: stepsCol
                         width: parent.width
-                        value: optimizerBackend.systemProgress
-                        statusText: optimizerBackend.isOptimizingSystem ? qsTr("Applying disk indexing settings...") : qsTr("Finished system modifications.")
-                    }
+                        spacing: 14
+                        anchors.horizontalCenter: parent.horizontalCenter
 
-                    Rectangle {
-                        width: parent.width
-                        height: 180
-                        color: "#080C14"
-                        border.color: Theme.border
-                        border.width: 1
-                        radius: Theme.radiusSmall
-                        clip: true
+                        property int activeIndex: {
+                            if (!optimizerBackend.isOptimizingSystem) return 3; // All completed
+                            var p = optimizerBackend.systemProgress;
+                            if (p === 0.0) return 0;
+                            if (p > 0.0 && p < 0.90) return 1;
+                            return 2;
+                        }
 
-                        ListView {
-                            id: logListView
-                            anchors.fill: parent
-                            anchors.margins: 10
-                            model: stepLogModel
-                            spacing: 4
+                        readonly property var stepsList: [
+                            { text: qsTr("Analyzing optimization plan...") },
+                            { text: qsTr("Applying system configuration adjustments...") },
+                            { text: qsTr("Verifying changes and syncing state...") }
+                        ]
 
-                            delegate: Text {
-                                width: logListView.width - 20
-                                text: model.message
-                                color: {
-                                    if (model.type === "SUCCESS") return Theme.success;
-                                    if (model.type === "ERROR") return Theme.error;
-                                    if (model.type === "WARNING") return Theme.warning;
-                                    return Theme.textSecondary;
+                        Repeater {
+                            model: stepsCol.stepsList
+                            delegate: Row {
+                                spacing: 12
+                                anchors.horizontalCenter: parent.horizontalCenter
+
+                                property int stepIndex: index
+                                property bool isActive: stepIndex === stepsCol.activeIndex
+                                property bool isCompleted: stepIndex < stepsCol.activeIndex
+                                property bool isPending: stepIndex > stepsCol.activeIndex
+
+                                // Bullet circle
+                                Rectangle {
+                                    width: 8
+                                    height: 8
+                                    radius: 4
+                                    anchors.verticalCenter: parent.verticalCenter
+                                    color: isActive ? Theme.accent : (isCompleted ? Theme.success : "transparent")
+                                    border.color: (isActive || isCompleted) ? "transparent" : "#4A5568"
+                                    border.width: (isActive || isCompleted) ? 0 : 1.5
                                 }
-                                font.family: "Consolas, monospace, " + Theme.fontFamily
-                                font.pixelSize: 11
-                                wrapMode: Text.Wrap
-                            }
 
-                            onCountChanged: {
-                                Qt.callLater(logListView.positionViewAtEnd);
+                                Text {
+                                    text: modelData.text
+                                    color: isActive ? "#FFFFFF" : Theme.textMuted
+                                    font.family: Theme.fontFamily
+                                    font.pixelSize: 12
+                                    font.bold: isActive
+                                    anchors.verticalCenter: parent.verticalCenter
+                                }
                             }
                         }
                     }
 
-                    MeguButton {
-                        text: qsTr("Close")
-                        accented: true
-                        anchors.horizontalCenter: parent.horizontalCenter
-                        enabled: !optimizerBackend.isOptimizingSystem
-                        width: 100
-                        onClicked: {
-                            progressOverlay.showFinishedOverlay = false;
+                    // Spacer/Bottom area container
+                    Item {
+                        width: parent.width
+                        height: 60
+                        
+                        Column {
+                            anchors.fill: parent
+                            spacing: 12
+                            
+                            // Bottom active action status
+                            Text {
+                                width: parent.width
+                                horizontalAlignment: Text.AlignHCenter
+                                text: {
+                                    if (optimizerBackend.isOptimizingSystem) {
+                                        return stepLogModel.count > 0 ? stepLogModel.get(stepLogModel.count - 1).message : qsTr("Analyzing optimization plan...");
+                                    } else {
+                                        return qsTr("Optimization completed successfully!");
+                                    }
+                                }
+                                color: Theme.accent
+                                font.family: Theme.fontFamily
+                                font.pixelSize: 11
+                                font.bold: true
+                                font.italic: true
+                                elide: Text.ElideRight
+                            }
+
+                            // Close button
+                            MeguButton {
+                                text: qsTr("Close")
+                                accented: true
+                                anchors.horizontalCenter: parent.horizontalCenter
+                                visible: !optimizerBackend.isOptimizingSystem
+                                height: 28
+                                width: 90
+                                onClicked: {
+                                    progressOverlay.showFinishedOverlay = false;
+                                }
+                            }
                         }
                     }
                 }
