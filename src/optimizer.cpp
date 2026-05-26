@@ -2361,7 +2361,7 @@ void Optimizer::startSystemOptimization() {
                           cs2Changed ||
                           steamOverlayChanged ||
                           cs2OverlayChanged ||
-                          visualEffectsChanged || deleteDefenderStagedVal;
+                          visualEffectsChanged || deleteDefenderStagedVal || steamFriendsChanged;
         if (!anyChanges) {
             for (const QString &driveLetter : targets.keys()) {
                 if (targets.value(driveLetter).toBool() != originalTargets.value(driveLetter).toBool()) {
