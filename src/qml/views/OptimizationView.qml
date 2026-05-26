@@ -80,6 +80,9 @@ Item {
         if (optimizerBackend.telemetryCeipActive !== optimizerBackend.originalTelemetryCeipActive) return true;
         if (optimizerBackend.telemetryWerActive !== optimizerBackend.originalTelemetryWerActive) return true;
         if (optimizerBackend.windowsUpdateMode !== optimizerBackend.originalWindowsUpdateMode) return true;
+        if (cs2Changed) return true;
+        if (optimizerBackend.steamOverlayActive !== optimizerBackend.originalSteamOverlayActive) return true;
+        if (optimizerBackend.cs2OverlayActive !== optimizerBackend.originalCs2OverlayActive) return true;
         if (!optimizerBackend.driveStates || !optimizerBackend.originalDriveStates) return false;
         var keys = Object.keys(optimizerBackend.driveStates);
         for (var i = 0; i < keys.length; i++) {
@@ -132,6 +135,24 @@ Item {
         return false;
     }
     property bool windowsUpdateChanged: optimizerBackend.windowsUpdateMode !== optimizerBackend.originalWindowsUpdateMode
+    property bool steamOverlayChanged: optimizerBackend.steamOverlayActive !== optimizerBackend.originalSteamOverlayActive
+    property bool cs2OverlayChanged: optimizerBackend.cs2OverlayActive !== optimizerBackend.originalCs2OverlayActive
+    property bool cs2Changed: {
+        var current = optimizerBackend.cs2LaunchOptions;
+        var original = optimizerBackend.originalCs2LaunchOptions;
+        if (!current || !original) return false;
+        var keys = Object.keys(current);
+        for (var i = 0; i < keys.length; i++) {
+            var key = keys[i];
+            if (current[key] !== original[key]) return true;
+        }
+        var origKeys = Object.keys(original);
+        for (var j = 0; j < origKeys.length; j++) {
+            var origKey = origKeys[j];
+            if (current[origKey] !== original[origKey]) return true;
+        }
+        return false;
+    }
 
     property bool isDiscordOpen: false
     Timer {
@@ -172,6 +193,9 @@ Item {
         if (remoteAccessChanged) count++;
         if (telemetryChanged) count++;
         if (windowsUpdateChanged) count++;
+        if (cs2Changed) count++;
+        if (steamOverlayChanged) count++;
+        if (cs2OverlayChanged) count++;
         return count;
     }
 
@@ -325,6 +349,30 @@ Item {
                 optimizerBackend.windowsUpdateMode = optimizerBackend.originalWindowsUpdateMode;
             }
         });
+        if (cs2Changed) list.push({
+            name: qsTr("Counter-Strike 2 Launch Options"),
+            icon: "qrc:/MeguPackOptimizer/src/resources/play.svg",
+            hasSidebar: true,
+            revert: function() {
+                optimizerBackend.cs2LaunchOptions = optimizerBackend.originalCs2LaunchOptions;
+            }
+        });
+        if (steamOverlayChanged) list.push({
+            name: qsTr("Steam Overlay"),
+            icon: "qrc:/MeguPackOptimizer/src/resources/monitor.svg",
+            hasSidebar: false,
+            revert: function() {
+                optimizerBackend.steamOverlayActive = optimizerBackend.originalSteamOverlayActive;
+            }
+        });
+        if (cs2OverlayChanged) list.push({
+            name: qsTr("CS2 Steam Overlay"),
+            icon: "qrc:/MeguPackOptimizer/src/resources/play.svg",
+            hasSidebar: false,
+            revert: function() {
+                optimizerBackend.cs2OverlayActive = optimizerBackend.originalCs2OverlayActive;
+            }
+        });
         return list;
     }
 
@@ -351,6 +399,10 @@ Item {
         var _usb = usbPowerSavingChanged;
         var _ud = optimizerBackend.usbDevices;
         var _wud = windowsUpdateChanged;
+        var _cs2 = cs2Changed;
+        var _cs2m = optimizerBackend.cs2LaunchOptions;
+        var _so = steamOverlayChanged;
+        var _cso = cs2OverlayChanged;
 
         return getPendingSubOptions(root.islandDetailCategory);
     }
@@ -564,11 +616,39 @@ Item {
                     }
                 });
             }
+        } else if (category === qsTr("Counter-Strike 2 Launch Options")) {
+            var current = optimizerBackend.cs2LaunchOptions;
+            var original = optimizerBackend.originalCs2LaunchOptions;
+            if (current && original) {
+                var keys = Object.keys(current);
+                for (var idx = 0; idx < keys.length; idx++) {
+                    (function(key) {
+                        if (current[key] !== original[key]) {
+                            subList.push({
+                                name: key + ": " + (original[key] ? qsTr("Enabled") : qsTr("Disabled")) + " -> " + (current[key] ? qsTr("Enabled") : qsTr("Disabled")),
+                                revert: function() {
+                                    var currentNow = optimizerBackend.cs2LaunchOptions;
+                                    if (currentNow) {
+                                        var optMap = {};
+                                        var kList = Object.keys(currentNow);
+                                        for (var i = 0; i < kList.length; i++) {
+                                            optMap[kList[i]] = currentNow[kList[i]];
+                                        }
+                                        optMap[key] = original[key];
+                                        optimizerBackend.cs2LaunchOptions = optMap;
+                                    }
+                                }
+                            });
+                        }
+                    })(keys[idx]);
+                }
+            }
         }
         return subList;
     }
 
     function getParentCard(name) {
+        if (name === qsTr("Counter-Strike 2 Launch Options")) return cs2Panel;
         if (name === qsTr("File Indexing")) return indexingPanel;
         if (name === qsTr("Xbox App & Game Bar")) return xboxPanel;
         if (name === qsTr("Core Isolation")) return coreIsolationPanel;
@@ -586,35 +666,41 @@ Item {
         if (name === qsTr("Remote Access (RDP)")) return remoteAccessPanel;
         if (name === qsTr("Telemetry")) return telemetryPanel;
         if (name === qsTr("Windows Update")) return windowsUpdatePanel;
+        if (name === qsTr("Steam Overlay")) return steamOverlayPanel;
+        if (name === qsTr("CS2 Steam Overlay")) return cs2Panel;
         return null;
     }
 
     function locateFunction(categoryName) {
         if (categoryName === qsTr("Telemetry") || categoryName === "Telemetry") {
             root.currentSection = "telemetry";
+        } else if (categoryName === qsTr("Counter-Strike 2 Launch Options") || categoryName === "Counter-Strike 2 Launch Options" || categoryName === qsTr("CS2 Steam Overlay") || categoryName === "CS2 Steam Overlay") {
+            root.currentSection = "games";
         } else {
             root.currentSection = "core";
         }
 
-        var panel = getParentCard(categoryName);
-        if (!panel) return;
+        Qt.callLater(function() {
+            var panel = getParentCard(categoryName);
+            if (!panel) return;
 
-        var flick = mainScroll.contentItem;
-        if (!flick) return;
+            var flick = mainScroll.contentItem;
+            if (!flick) return;
 
-        scrollAnimation.stop();
-        var targetY = panel.mapToItem(mainColumn, 0, 0).y - (mainScroll.height - panel.height) / 2;
-        var maxScroll = flick.contentHeight - mainScroll.height;
-        if (maxScroll < 0) maxScroll = 0;
-        targetY = Math.max(0, Math.min(targetY, maxScroll));
-        
-        scrollAnimation.target = flick;
-        scrollAnimation.to = targetY;
-        scrollAnimation.start();
+            scrollAnimation.stop();
+            var targetY = panel.mapToItem(mainColumn, 0, 0).y - (mainScroll.height - panel.height) / 2;
+            var maxScroll = flick.contentHeight - mainScroll.height;
+            if (maxScroll < 0) maxScroll = 0;
+            targetY = Math.max(0, Math.min(targetY, maxScroll));
+            
+            scrollAnimation.target = flick;
+            scrollAnimation.to = targetY;
+            scrollAnimation.start();
 
-        if (typeof panel.triggerLocateFlash === "function") {
-            panel.triggerLocateFlash();
-        }
+            if (typeof panel.triggerLocateFlash === "function") {
+                panel.triggerLocateFlash();
+            }
+        });
     }
 
     NumberAnimation {
@@ -696,12 +782,11 @@ Item {
                 AcrylicPanel {
                     id: cs2Panel
                     width: parent.width
-                    height: implicitHeight
-                    implicitHeight: mainLayout.implicitHeight + (detailsExpanded ? detailsContainer.implicitHeight + 16 : 0)
+                    height: detailsExpanded ? 76 + detailsContainer.implicitHeight + 24 : 76
                     
                     property bool detailsExpanded: false
 
-                    Behavior on implicitHeight {
+                    Behavior on height {
                         NumberAnimation { duration: Theme.animNormal; easing.type: Easing.InOutQuad }
                     }
 
@@ -710,7 +795,6 @@ Item {
                         anchors.left: parent.left
                         anchors.right: parent.right
                         anchors.top: parent.top
-                        anchors.margins: 16
                         spacing: 16
 
                         // CS2 Header card row
@@ -742,14 +826,37 @@ Item {
                             Column {
                                 anchors.verticalCenter: parent.verticalCenter
                                 spacing: 2
-                                width: parent.width - 44 - 16 - 120 - 16
+                                width: parent.width - 44 - 16 - openBtn.width - 16
 
-                                Text {
-                                    text: "Counter-Strike 2"
-                                    color: Theme.textPrimary
-                                    font.family: Theme.fontFamily
-                                    font.pixelSize: 14
-                                    font.bold: true
+                                Row {
+                                    spacing: 8
+                                    Text {
+                                        text: "Counter-Strike 2"
+                                        color: Theme.textPrimary
+                                        font.family: Theme.fontFamily
+                                        font.pixelSize: 14
+                                        font.bold: true
+                                        anchors.verticalCenter: parent.verticalCenter
+                                    }
+                                    Rectangle {
+                                        visible: root.cs2Changed
+                                        height: 16
+                                        width: cs2SelectedText.contentWidth + 10
+                                        radius: 4
+                                        color: Theme.accentDim
+                                        border.color: Theme.accent
+                                        border.width: 1
+                                        anchors.verticalCenter: parent.verticalCenter
+                                        Text {
+                                            id: cs2SelectedText
+                                            text: qsTr("Selected for application")
+                                            color: Theme.accent
+                                            font.family: Theme.fontFamily
+                                            font.pixelSize: 8
+                                            font.bold: true
+                                            anchors.centerIn: parent
+                                        }
+                                    }
                                 }
 
                                 Text {
@@ -794,6 +901,90 @@ Item {
                                 width: parent.width
                                 height: 1
                                 color: Theme.border
+                            }
+
+                            // Steam Overlay for CS2 Toggle
+                            Rectangle {
+                                width: parent.width
+                                height: 52
+                                radius: 6
+                                color: cs2OverlayMouseRow.containsMouse ? Theme.buttonBgHover : "transparent"
+                                border.color: cs2OverlayCheckedState ? Qt.rgba(Theme.accent.r, Theme.accent.g, Theme.accent.b, 0.3) : (cs2OverlayMouseRow.containsMouse ? Theme.borderHover : "transparent")
+                                border.width: 1
+                                
+                                property bool cs2OverlayCheckedState: optimizerBackend.cs2OverlayActive
+
+                                Row {
+                                    anchors.fill: parent
+                                    anchors.leftMargin: 12
+                                    anchors.rightMargin: 12
+                                    spacing: 12
+
+                                    MeguSwitch {
+                                        id: cs2OverlaySwitch
+                                        checked: parent.parent.cs2OverlayCheckedState
+                                        anchors.verticalCenter: parent.verticalCenter
+                                        onToggled: (isChecked) => {
+                                            optimizerBackend.cs2OverlayActive = isChecked;
+                                        }
+                                    }
+
+                                    Column {
+                                        anchors.verticalCenter: parent.verticalCenter
+                                        spacing: 2
+                                        width: parent.width - cs2OverlaySwitch.width - 12
+
+                                        Row {
+                                            spacing: 8
+                                            Text {
+                                                text: qsTr("Steam Overlay for Counter-Strike 2")
+                                                color: parent.parent.parent.parent.cs2OverlayCheckedState ? Theme.accent : Theme.textPrimary
+                                                font.family: Theme.fontFamily
+                                                font.pixelSize: 12
+                                                font.bold: true
+                                                anchors.verticalCenter: parent.verticalCenter
+                                            }
+                                            Rectangle {
+                                                visible: optimizerBackend.cs2OverlayActive !== optimizerBackend.originalCs2OverlayActive
+                                                height: 14
+                                                width: cs2OverlayStagedText.contentWidth + 8
+                                                radius: 3
+                                                color: Theme.accentDim
+                                                border.color: Theme.accent
+                                                border.width: 1
+                                                anchors.verticalCenter: parent.verticalCenter
+                                                Text {
+                                                    id: cs2OverlayStagedText
+                                                    text: qsTr("Selected for application")
+                                                    color: Theme.accent
+                                                    font.family: Theme.fontFamily
+                                                    font.pixelSize: 7
+                                                    font.bold: true
+                                                    anchors.centerIn: parent
+                                                }
+                                            }
+                                        }
+
+                                        Text {
+                                            text: qsTr("Toggle the Steam Overlay exclusively for Counter-Strike 2.")
+                                            color: Theme.textSecondary
+                                            font.family: Theme.fontFamily
+                                            font.pixelSize: 10
+                                            elide: Text.ElideRight
+                                            width: parent.width
+                                        }
+                                    }
+                                }
+
+                                MouseArea {
+                                    id: cs2OverlayMouseRow
+                                    anchors.fill: parent
+                                    hoverEnabled: true
+                                    cursorShape: Qt.PointingHandCursor
+                                    onClicked: {
+                                        optimizerBackend.cs2OverlayActive = !optimizerBackend.cs2OverlayActive;
+                                    }
+                                }
                             }
 
                             Text {
@@ -854,10 +1045,15 @@ Item {
                                                 id: optSwitch
                                                 checked: parent.parent.checkedState
                                                 anchors.verticalCenter: parent.verticalCenter
-                                                onCheckedChanged: {
-                                                    var optMap = optimizerBackend.cs2LaunchOptions;
-                                                    if (optMap) {
-                                                        optMap[model.name] = checked;
+                                                onToggled: (isChecked) => {
+                                                    var current = optimizerBackend.cs2LaunchOptions;
+                                                    if (current && current[model.name] !== isChecked) {
+                                                        var optMap = {};
+                                                        var keys = Object.keys(current);
+                                                        for (var i = 0; i < keys.length; i++) {
+                                                            optMap[keys[i]] = current[keys[i]];
+                                                        }
+                                                        optMap[model.name] = isChecked;
                                                         optimizerBackend.cs2LaunchOptions = optMap;
                                                     }
                                                 }
@@ -893,9 +1089,14 @@ Item {
                                             hoverEnabled: true
                                             cursorShape: Qt.PointingHandCursor
                                             onClicked: {
-                                                var optMap = optimizerBackend.cs2LaunchOptions;
-                                                if (optMap) {
-                                                    var cur = optMap[model.name] === true;
+                                                var current = optimizerBackend.cs2LaunchOptions;
+                                                if (current) {
+                                                    var cur = current[model.name] === true;
+                                                    var optMap = {};
+                                                    var keys = Object.keys(current);
+                                                    for (var i = 0; i < keys.length; i++) {
+                                                        optMap[keys[i]] = current[keys[i]];
+                                                    }
                                                     optMap[model.name] = !cur;
                                                     optimizerBackend.cs2LaunchOptions = optMap;
                                                 }
@@ -1897,6 +2098,95 @@ Item {
                             anchors.verticalCenter: parent.verticalCenter
                             onToggled: (isChecked) => {
                                 optimizerBackend.firewallActive = isChecked;
+                            }
+                        }
+                    }
+                }
+
+                // Steam Overlay Panel
+                AcrylicPanel {
+                    id: steamOverlayPanel
+                    visible: root.currentSection === "core"
+                    width: parent.width
+                    height: 72
+
+                    Row {
+                        anchors.left: parent.left
+                        anchors.verticalCenter: parent.verticalCenter
+                        spacing: 12
+
+                        Item {
+                            width: 28
+                            height: 28
+                            anchors.verticalCenter: parent.verticalCenter
+                            Image {
+                                id: steamOverlayIconImg
+                                source: "qrc:/MeguPackOptimizer/src/resources/monitor.svg"
+                                anchors.fill: parent
+                                sourceSize.width: 28
+                                sourceSize.height: 28
+                                visible: false
+                            }
+                            ColorOverlay {
+                                anchors.fill: steamOverlayIconImg
+                                source: steamOverlayIconImg
+                                color: Theme.accent
+                            }
+                        }
+
+                        Column {
+                            anchors.verticalCenter: parent.verticalCenter
+                            spacing: 2
+
+                            Row {
+                                spacing: 8
+                                Text {
+                                    text: qsTr("Steam Overlay")
+                                    color: Theme.textPrimary
+                                    font.family: Theme.fontFamily
+                                    font.pixelSize: 13
+                                    font.bold: true
+                                }
+                                Rectangle {
+                                    visible: root.steamOverlayChanged
+                                    height: 16
+                                    width: selectedTextSteamOverlay.contentWidth + 10
+                                    radius: 4
+                                    color: Theme.accentDim
+                                    border.color: Theme.accent
+                                    border.width: 1
+                                    anchors.verticalCenter: parent.verticalCenter
+                                    Text {
+                                        id: selectedTextSteamOverlay
+                                        text: qsTr("Selected for application")
+                                        color: Theme.accent
+                                        font.family: Theme.fontFamily
+                                        font.pixelSize: 8
+                                        font.bold: true
+                                        anchors.centerIn: parent
+                                    }
+                                }
+                            }
+
+                            Text {
+                                text: qsTr("Enable or disable the global Steam Overlay in games to reduce input latency and CPU overhead.")
+                                color: Theme.textMuted
+                                font.family: Theme.fontFamily
+                                font.pixelSize: 10
+                            }
+                        }
+                    }
+
+                    Row {
+                        anchors.right: parent.right
+                        anchors.verticalCenter: parent.verticalCenter
+                        spacing: 16
+
+                        MeguSwitch {
+                            checked: optimizerBackend.steamOverlayActive
+                            anchors.verticalCenter: parent.verticalCenter
+                            onToggled: (isChecked) => {
+                                optimizerBackend.steamOverlayActive = isChecked;
                             }
                         }
                     }

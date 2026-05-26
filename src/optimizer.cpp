@@ -149,6 +149,111 @@ namespace {
         file.close();
         return true;
     }
+
+    QString getVdfOverlayState(const QString &filePath, const QString &appId) {
+        QFile file(filePath);
+        if (!file.open(QIODevice::ReadOnly | QIODevice::Text)) {
+            return "";
+        }
+        QString content = QString::fromUtf8(file.readAll());
+        file.close();
+
+        QRegularExpression appRegex(QString("\"%1\"\\s*\\{").arg(appId));
+        QRegularExpressionMatch match = appRegex.match(content);
+        if (!match.hasMatch()) {
+            return "";
+        }
+
+        int startIdx = match.capturedEnd();
+        int count = 1;
+        int idx = startIdx;
+        int closeIdx = -1;
+        while (count > 0 && idx < content.length()) {
+            QChar ch = content.at(idx);
+            if (ch == '{') {
+                count++;
+            } else if (ch == '}') {
+                count--;
+                if (count == 0) {
+                    closeIdx = idx;
+                    break;
+                }
+            }
+            idx++;
+        }
+
+        if (closeIdx == -1) {
+            return "";
+        }
+
+        QString appBlock = content.mid(startIdx, closeIdx - startIdx);
+        QRegularExpression overlayRegex("\"OverlayState\"\\s*\"([^\"]*)\"");
+        QRegularExpressionMatch overlayMatch = overlayRegex.match(appBlock);
+        if (overlayMatch.hasMatch()) {
+            return overlayMatch.captured(1);
+        }
+        return "";
+    }
+
+    bool updateVdfOverlayState(const QString &filePath, const QString &appId, const QString &state) {
+        QFile file(filePath);
+        if (!file.open(QIODevice::ReadOnly | QIODevice::Text)) {
+            return false;
+        }
+        QString content = QString::fromUtf8(file.readAll());
+        file.close();
+
+        QRegularExpression appRegex(QString("\"%1\"\\s*\\{").arg(appId));
+        QRegularExpressionMatch match = appRegex.match(content);
+        if (!match.hasMatch()) {
+            return false;
+        }
+
+        int startIdx = match.capturedEnd();
+        int count = 1;
+        int idx = startIdx;
+        int closeIdx = -1;
+        while (count > 0 && idx < content.length()) {
+            QChar ch = content.at(idx);
+            if (ch == '{') {
+                count++;
+            } else if (ch == '}') {
+                count--;
+                if (count == 0) {
+                    closeIdx = idx;
+                    break;
+                }
+            }
+            idx++;
+        }
+
+        if (closeIdx == -1) {
+            return false;
+        }
+
+        QString appBlock = content.mid(startIdx, closeIdx - startIdx);
+        QRegularExpression overlayRegex("\"OverlayState\"\\s*\"([^\"]*)\"");
+        QRegularExpressionMatch overlayMatch = overlayRegex.match(appBlock);
+
+        QString newAppBlock;
+        if (overlayMatch.hasMatch()) {
+            int overlayStart = overlayMatch.capturedStart();
+            int overlayEnd = overlayMatch.capturedEnd();
+            newAppBlock = appBlock.left(overlayStart) + QString("\"OverlayState\"\t\t\"%1\"").arg(state) + appBlock.mid(overlayEnd);
+        } else {
+            QString indent = "\t\t\t\t\t\t";
+            newAppBlock = QString("\n%1\"OverlayState\"\t\t\"%2\"").arg(indent, state) + appBlock;
+        }
+
+        QString newContent = content.left(startIdx) + newAppBlock + content.mid(closeIdx);
+
+        if (!file.open(QIODevice::WriteOnly | QIODevice::Text)) {
+            return false;
+        }
+        file.write(newContent.toUtf8());
+        file.close();
+        return true;
+    }
 }
 
 Optimizer::Optimizer(QObject *parent) : QObject(parent) {
@@ -298,6 +403,20 @@ void Optimizer::setCs2LaunchOptions(const QVariantMap &val) {
     if (m_cs2LaunchOptions != val) {
         m_cs2LaunchOptions = val;
         emit cs2LaunchOptionsChanged(m_cs2LaunchOptions);
+    }
+}
+
+void Optimizer::setSteamOverlayActive(bool val) {
+    if (m_steamOverlayActive != val) {
+        m_steamOverlayActive = val;
+        emit steamOverlayActiveChanged(m_steamOverlayActive);
+    }
+}
+
+void Optimizer::setCs2OverlayActive(bool val) {
+    if (m_cs2OverlayActive != val) {
+        m_cs2OverlayActive = val;
+        emit cs2OverlayActiveChanged(m_cs2OverlayActive);
     }
 }
 
@@ -1509,6 +1628,56 @@ void Optimizer::loadSystemStates() {
     m_originalCs2LaunchOptions = cs2Options;
     emit cs2LaunchOptionsChanged(m_cs2LaunchOptions);
     emit originalCs2LaunchOptionsChanged(m_originalCs2LaunchOptions);
+
+    // Load global Steam Overlay active state (Registry)
+    bool steamOverlayActive = true;
+#ifdef Q_OS_WIN
+    HKEY hKeySteamOverlay;
+    if (RegOpenKeyExW(HKEY_CURRENT_USER, L"Software\\Valve\\Steam", 0, KEY_READ, &hKeySteamOverlay) == ERROR_SUCCESS) {
+        DWORD enableOverlayVal = 1;
+        DWORD dwSize = sizeof(enableOverlayVal);
+        DWORD dwType = REG_DWORD;
+        if (RegQueryValueExW(hKeySteamOverlay, L"EnableOverlay", nullptr, &dwType, reinterpret_cast<LPBYTE>(&enableOverlayVal), &dwSize) == ERROR_SUCCESS) {
+            steamOverlayActive = (enableOverlayVal != 0);
+        }
+        RegCloseKey(hKeySteamOverlay);
+    }
+#endif
+    m_steamOverlayActive = steamOverlayActive;
+    m_originalSteamOverlayActive = steamOverlayActive;
+    emit steamOverlayActiveChanged(m_steamOverlayActive);
+    emit originalSteamOverlayActiveChanged(m_originalSteamOverlayActive);
+
+    // Load CS2-specific Steam Overlay active state (VDF)
+    bool cs2OverlayActive = true;
+    bool loadedOverlayFromProfile = false;
+
+    if (!steamPath.isEmpty() && QDir(steamPath).exists()) {
+        QString userdataPath = steamPath + "/userdata";
+        QDir userdataDir(userdataPath);
+        if (userdataDir.exists()) {
+            QStringList subdirs = userdataDir.entryList(QDir::Dirs | QDir::NoDotAndDotDot);
+            for (const QString &subdir : subdirs) {
+                QString vdfPath = userdataPath + "/" + subdir + "/config/localconfig.vdf";
+                if (QFile::exists(vdfPath)) {
+                    QString overlayState = getVdfOverlayState(vdfPath, "730");
+                    if (!overlayState.isEmpty() && !loadedOverlayFromProfile) {
+                        cs2OverlayActive = (overlayState != "2");
+                        loadedOverlayFromProfile = true;
+                    }
+                }
+            }
+        }
+    }
+
+#ifndef Q_OS_WIN
+    cs2OverlayActive = true;
+#endif
+
+    m_cs2OverlayActive = cs2OverlayActive;
+    m_originalCs2OverlayActive = cs2OverlayActive;
+    emit cs2OverlayActiveChanged(m_cs2OverlayActive);
+    emit originalCs2OverlayActiveChanged(m_originalCs2OverlayActive);
 }
 
 void Optimizer::startSystemOptimization() {
@@ -1610,7 +1779,12 @@ void Optimizer::startSystemOptimization() {
     QVariantList usbDevicesVal = m_usbDevices;
     QVariantList origUsbDevicesVal = m_originalUsbDevices;
 
-    QThread* worker = QThread::create([this, searchVal, hibernationVal, overlayVal, coreIsolationVal, mouseAccelVal, gameModeVal, firewallVal, printerVal, bitlockerVal, discordOverlayVal, notificationsVal, notifGlobalVal, notifAppVal, notifSoundsVal, notifLockscreenVal, targetPowerSchemeVal, activePowerSchemeVal, defenderVal, defenderRegistryVal, defenderCmdVal, defenderServiceVal, remoteAccessVal, telemetryVal, telemetryDiagTrackVal, telemetryWapPushVal, telemetryCeipVal, telemetryWerVal, windowsUpdateModeVal, targets, originalTargets, origSearch, origHibernation, origOverlay, origCoreIsolation, origMouseAccel, origGameMode, origFirewall, origPrinter, origBitlocker, origDiscordOverlay, origNotifications, origNotifGlobal, origNotifApp, origNotifSounds, origNotifLockscreen, origDefender, origDefenderRegistry, origDefenderCmd, origDefenderService, origRemoteAccess, origTelemetry, origTelemetryDiagTrack, origTelemetryWapPush, origTelemetryCeip, origTelemetryWer, origWindowsUpdateMode, usbDevicesVal, origUsbDevicesVal, steamPathVal, cs2OptionsVal, origCs2OptionsVal]() {
+    bool steamOverlayVal = m_steamOverlayActive;
+    bool origSteamOverlayVal = m_originalSteamOverlayActive;
+    bool cs2OverlayVal = m_cs2OverlayActive;
+    bool origCs2OverlayVal = m_originalCs2OverlayActive;
+
+    QThread* worker = QThread::create([this, searchVal, hibernationVal, overlayVal, coreIsolationVal, mouseAccelVal, gameModeVal, firewallVal, printerVal, bitlockerVal, discordOverlayVal, notificationsVal, notifGlobalVal, notifAppVal, notifSoundsVal, notifLockscreenVal, targetPowerSchemeVal, activePowerSchemeVal, defenderVal, defenderRegistryVal, defenderCmdVal, defenderServiceVal, remoteAccessVal, telemetryVal, telemetryDiagTrackVal, telemetryWapPushVal, telemetryCeipVal, telemetryWerVal, windowsUpdateModeVal, targets, originalTargets, origSearch, origHibernation, origOverlay, origCoreIsolation, origMouseAccel, origGameMode, origFirewall, origPrinter, origBitlocker, origDiscordOverlay, origNotifications, origNotifGlobal, origNotifApp, origNotifSounds, origNotifLockscreen, origDefender, origDefenderRegistry, origDefenderCmd, origDefenderService, origRemoteAccess, origTelemetry, origTelemetryDiagTrack, origTelemetryWapPush, origTelemetryCeip, origTelemetryWer, origWindowsUpdateMode, usbDevicesVal, origUsbDevicesVal, steamPathVal, cs2OptionsVal, origCs2OptionsVal, steamOverlayVal, origSteamOverlayVal, cs2OverlayVal, origCs2OverlayVal]() {
         // Step 0: Check if anything actually changed
         bool powerPlanChanged = (targetPowerSchemeVal != activePowerSchemeVal);
         bool usbChanged = false;
@@ -1634,6 +1808,8 @@ void Optimizer::startSystemOptimization() {
         bool windowsUpdateModeChanged = (windowsUpdateModeVal != origWindowsUpdateMode);
 
         bool cs2Changed = (cs2OptionsVal != origCs2OptionsVal);
+        bool steamOverlayChanged = (steamOverlayVal != origSteamOverlayVal);
+        bool cs2OverlayChanged = (cs2OverlayVal != origCs2OverlayVal);
 
         bool anyChanges = (searchVal != origSearch) || 
                           (hibernationVal != origHibernation) || 
@@ -1659,7 +1835,9 @@ void Optimizer::startSystemOptimization() {
                           windowsUpdateModeChanged ||
                           powerPlanChanged ||
                           usbChanged ||
-                          cs2Changed;
+                          cs2Changed ||
+                          steamOverlayChanged ||
+                          cs2OverlayChanged;
         if (!anyChanges) {
             for (const QString &driveLetter : targets.keys()) {
                 if (targets.value(driveLetter).toBool() != originalTargets.value(driveLetter).toBool()) {
@@ -3173,7 +3351,97 @@ void Optimizer::startSystemOptimization() {
 #endif
         }
 
-        bool overallSuccess = wSearchSuccess && hibernationSuccess && overlaySuccess && coreIsolationSuccess && mouseAccelSuccess && gameModeSuccess && firewallSuccess && printerSuccess && notificationsSuccess && powerPlanSuccess && defenderSuccess && overallDrivesSuccess && usbSuccess && remoteAccessSuccess && telemetrySuccess && windowsUpdateSuccess && cs2Success;
+        // Step 2.6: Global Steam Overlay (only if changed)
+        bool steamOverlaySuccess = true;
+        if (steamOverlayChanged) {
+            emit systemStepReported(Optimizer::tr("Processing global Steam Overlay..."), "INFO");
+            QThread::msleep(800);
+#ifdef Q_OS_WIN
+            HKEY hKeySteamOverlaySet;
+            if (RegOpenKeyExW(HKEY_CURRENT_USER, L"Software\\Valve\\Steam", 0, KEY_SET_VALUE, &hKeySteamOverlaySet) == ERROR_SUCCESS) {
+                DWORD val = steamOverlayVal ? 1 : 0;
+                if (RegSetValueExW(hKeySteamOverlaySet, L"EnableOverlay", 0, REG_DWORD, (const BYTE*)&val, sizeof(val)) == ERROR_SUCCESS) {
+                    emit systemStepReported(Optimizer::tr("Global Steam Overlay successfully %1.").arg(steamOverlayVal ? Optimizer::tr("enabled") : Optimizer::tr("disabled")), "SUCCESS");
+                } else {
+                    steamOverlaySuccess = false;
+                    emit systemStepReported(Optimizer::tr("Failed to update EnableOverlay registry value."), "ERROR");
+                }
+                RegCloseKey(hKeySteamOverlaySet);
+            } else {
+                steamOverlaySuccess = false;
+                emit systemStepReported(Optimizer::tr("Failed to open Steam registry key for writing."), "ERROR");
+            }
+#else
+            emit systemStepReported(Optimizer::tr("[Simulation] Global Steam Overlay set to: %1").arg(steamOverlayVal ? "Enabled" : "Disabled"), "SUCCESS");
+#endif
+        }
+
+        // Step 2.7: Counter-Strike 2 Steam Overlay (only if changed)
+        bool cs2OverlaySuccess = true;
+        if (cs2OverlayChanged) {
+            emit systemStepReported(Optimizer::tr("Processing Steam Overlay for Counter-Strike 2..."), "INFO");
+            QThread::msleep(800);
+            
+            if (!cs2Changed) {
+#ifdef Q_OS_WIN
+                bool steamRunning = false;
+                HANDLE hSnapshot = CreateToolhelp32Snapshot(TH32CS_SNAPPROCESS, 0);
+                if (hSnapshot != INVALID_HANDLE_VALUE) {
+                    PROCESSENTRY32W pe32;
+                    pe32.dwSize = sizeof(pe32);
+                    if (Process32FirstW(hSnapshot, &pe32)) {
+                        do {
+                            if (wcscmp(pe32.szExeFile, L"steam.exe") == 0 || 
+                                wcscmp(pe32.szExeFile, L"Steam.exe") == 0) {
+                                steamRunning = true;
+                                HANDLE hProcess = OpenProcess(PROCESS_TERMINATE, FALSE, pe32.th32ProcessID);
+                                if (hProcess) {
+                                    TerminateProcess(hProcess, 0);
+                                    CloseHandle(hProcess);
+                                }
+                            }
+                        } while (Process32NextW(hSnapshot, &pe32));
+                    }
+                    CloseHandle(hSnapshot);
+                }
+                if (steamRunning) {
+                    emit systemStepReported(Optimizer::tr("Steam process detected and closed to prevent configuration overwrite."), "WARNING");
+                    QThread::msleep(1500);
+                }
+#endif
+            }
+
+#ifdef Q_OS_WIN
+            if (!steamPathVal.isEmpty() && QDir(steamPathVal).exists()) {
+                QString userdataPath = steamPathVal + "/userdata";
+                QDir userdataDir(userdataPath);
+                if (userdataDir.exists()) {
+                    QStringList subdirs = userdataDir.entryList(QDir::Dirs | QDir::NoDotAndDotDot);
+                    int updatedCount = 0;
+                    QString overlayStateVal = cs2OverlayVal ? "1" : "2";
+                    for (const QString &subdir : subdirs) {
+                        QString vdfPath = userdataPath + "/" + subdir + "/config/localconfig.vdf";
+                        if (QFile::exists(vdfPath)) {
+                            if (updateVdfOverlayState(vdfPath, "730", overlayStateVal)) {
+                                updatedCount++;
+                            }
+                        }
+                    }
+                    emit systemStepReported(Optimizer::tr("Counter-Strike 2 Steam Overlay updated for %1 profiles.").arg(updatedCount), "SUCCESS");
+                } else {
+                    cs2OverlaySuccess = false;
+                    emit systemStepReported(Optimizer::tr("Steam userdata directory not found."), "ERROR");
+                }
+            } else {
+                cs2OverlaySuccess = false;
+                emit systemStepReported(Optimizer::tr("Steam path not found. Cannot apply overlay settings."), "ERROR");
+            }
+#else
+            emit systemStepReported(Optimizer::tr("[Simulation] Counter-Strike 2 Steam Overlay set to: %1").arg(cs2OverlayVal ? "Enabled" : "Disabled"), "SUCCESS");
+#endif
+        }
+
+        bool overallSuccess = wSearchSuccess && hibernationSuccess && overlaySuccess && coreIsolationSuccess && mouseAccelSuccess && gameModeSuccess && firewallSuccess && printerSuccess && notificationsSuccess && powerPlanSuccess && defenderSuccess && overallDrivesSuccess && usbSuccess && remoteAccessSuccess && telemetrySuccess && windowsUpdateSuccess && cs2Success && steamOverlaySuccess && cs2OverlaySuccess;
         if (overallSuccess) {
             emit systemStepReported(tr("System optimization completed successfully!"), "SUCCESS");
             Logger::log("System optimization completed successfully!", "INFO");
@@ -3208,6 +3476,8 @@ void Optimizer::startSystemOptimization() {
         m_originalTelemetryWerActive = telemetryWerVal;
         m_originalWindowsUpdateMode = windowsUpdateModeVal;
         m_originalCs2LaunchOptions = cs2OptionsVal;
+        m_originalSteamOverlayActive = steamOverlayVal;
+        m_originalCs2OverlayActive = cs2OverlayVal;
         m_originalDriveStates = targets;
         
         loadSystemStates();

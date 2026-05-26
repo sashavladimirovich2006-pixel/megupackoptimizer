@@ -86,8 +86,13 @@ class Optimizer : public QObject {
     Q_PROPERTY(bool telemetryWerActive READ telemetryWerActive WRITE setTelemetryWerActive NOTIFY telemetryWerActiveChanged)
     Q_PROPERTY(bool originalTelemetryWerActive READ originalTelemetryWerActive NOTIFY originalTelemetryWerActiveChanged)
     Q_PROPERTY(int windowsUpdateMode READ windowsUpdateMode WRITE setWindowsUpdateMode NOTIFY windowsUpdateModeChanged)
+    Q_PROPERTY(int originalWindowsUpdateMode READ originalWindowsUpdateMode NOTIFY originalWindowsUpdateModeChanged)
     Q_PROPERTY(QVariantMap cs2LaunchOptions READ cs2LaunchOptions WRITE setCs2LaunchOptions NOTIFY cs2LaunchOptionsChanged)
     Q_PROPERTY(QVariantMap originalCs2LaunchOptions READ originalCs2LaunchOptions NOTIFY originalCs2LaunchOptionsChanged)
+    Q_PROPERTY(bool steamOverlayActive READ steamOverlayActive WRITE setSteamOverlayActive NOTIFY steamOverlayActiveChanged)
+    Q_PROPERTY(bool originalSteamOverlayActive READ originalSteamOverlayActive NOTIFY originalSteamOverlayActiveChanged)
+    Q_PROPERTY(bool cs2OverlayActive READ cs2OverlayActive WRITE setCs2OverlayActive NOTIFY cs2OverlayActiveChanged)
+    Q_PROPERTY(bool originalCs2OverlayActive READ originalCs2OverlayActive NOTIFY originalCs2OverlayActiveChanged)
     Q_PROPERTY(QStringList fixedDrives READ fixedDrives NOTIFY fixedDrivesChanged)
     Q_PROPERTY(QVariantMap driveStates READ driveStates WRITE setDriveStates NOTIFY driveStatesChanged)
     Q_PROPERTY(QVariantMap originalDriveStates READ originalDriveStates NOTIFY originalDriveStatesChanged)
@@ -188,6 +193,10 @@ public:
     int originalWindowsUpdateMode() const { return m_originalWindowsUpdateMode; }
     QVariantMap cs2LaunchOptions() const { return m_cs2LaunchOptions; }
     QVariantMap originalCs2LaunchOptions() const { return m_originalCs2LaunchOptions; }
+    bool steamOverlayActive() const { return m_steamOverlayActive; }
+    bool originalSteamOverlayActive() const { return m_originalSteamOverlayActive; }
+    bool cs2OverlayActive() const { return m_cs2OverlayActive; }
+    bool originalCs2OverlayActive() const { return m_originalCs2OverlayActive; }
     QStringList fixedDrives() const { return m_fixedDrives; }
     QVariantMap driveStates() const { return m_driveStates; }
     QVariantMap originalDriveStates() const { return m_originalDriveStates; }
@@ -224,6 +233,8 @@ public:
     void setTelemetryWerActive(bool val);
     void setWindowsUpdateMode(int mode);
     void setCs2LaunchOptions(const QVariantMap &val);
+    void setSteamOverlayActive(bool val);
+    void setCs2OverlayActive(bool val);
     
     Q_INVOKABLE bool isDiscordRunning();
     Q_INVOKABLE void killDiscord();
@@ -325,6 +336,10 @@ signals:
     void originalWindowsUpdateModeChanged(int mode);
     void cs2LaunchOptionsChanged(const QVariantMap &val);
     void originalCs2LaunchOptionsChanged(const QVariantMap &val);
+    void steamOverlayActiveChanged(bool val);
+    void originalSteamOverlayActiveChanged(bool val);
+    void cs2OverlayActiveChanged(bool val);
+    void originalCs2OverlayActiveChanged(bool val);
     void fixedDrivesChanged(const QStringList &val);
     void driveStatesChanged(const QVariantMap &val);
     void originalDriveStatesChanged(const QVariantMap &val);
@@ -421,6 +436,10 @@ private:
     int m_originalWindowsUpdateMode = 0;
     QVariantMap m_cs2LaunchOptions;
     QVariantMap m_originalCs2LaunchOptions;
+    bool m_steamOverlayActive = true;
+    bool m_originalSteamOverlayActive = true;
+    bool m_cs2OverlayActive = true;
+    bool m_originalCs2OverlayActive = true;
     QStringList m_fixedDrives;
     QVariantMap m_driveStates;
     QVariantMap m_originalDriveStates;

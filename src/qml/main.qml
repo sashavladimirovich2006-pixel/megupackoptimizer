@@ -470,34 +470,28 @@ ApplicationWindow {
             if (newH >= window.minimumHeight) window.height = newH;
         }
     }
-
     Popup {
         id: optDropdown
-        parent: window.contentItem
-        x: {
-            var pt = tab3.mapToItem(window.contentItem, 0, 0);
-            return pt.x;
-        }
-        y: {
-            var pt = tab3.mapToItem(window.contentItem, 0, tab3.height);
-            return pt.y - 1;
-        }
-        width: tab3.width
+        parent: tab3
+        x: 0
+        y: parent.height - 1
+        width: parent.width
         height: implicitHeight
         padding: 6
         
         enter: Transition {
             ParallelAnimation {
                 NumberAnimation { property: "opacity"; from: 0.0; to: 1.0; duration: 150; easing.type: Easing.OutQuad }
+                NumberAnimation { property: "y"; from: tab3.height - 5; to: tab3.height - 1; duration: 150; easing.type: Easing.OutQuad }
             }
         }
         
         exit: Transition {
             ParallelAnimation {
                 NumberAnimation { property: "opacity"; from: 1.0; to: 0.0; duration: 120; easing.type: Easing.OutQuad }
+                NumberAnimation { property: "y"; to: tab3.height - 5; duration: 120; easing.type: Easing.OutQuad }
             }
-        }
-        
+        }        
         background: Rectangle {
             color: Theme.panelBg
             border.color: Theme.border
