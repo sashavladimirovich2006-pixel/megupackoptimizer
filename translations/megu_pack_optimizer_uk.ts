@@ -21,7 +21,7 @@
         <translation>Керує службами індексації пошуку файлів та властивостями індексації дисків.</translation>
     </message>
     <message>
-        <location filename="../src/qml/views/OptimizationView.qml" line="4394" />
+        <location filename="../src/qml/views/OptimizationView.qml" line="4404" />
         <source>Optimize</source>
         <translation>Оптимізувати</translation>
     </message>
@@ -56,18 +56,18 @@
         <translation>Сповіщення на екрані блокування</translation>
     </message>
     <message>
-        <location filename="../src/qml/views/OptimizationView.qml" line="5039" />
+        <location filename="../src/qml/views/OptimizationView.qml" line="5049" />
         <source>%1 Details</source>
         <translation>Деталі %1</translation>
     </message>
     <message>
-        <location filename="../src/qml/views/OptimizationView.qml" line="5294" />
+        <location filename="../src/qml/views/OptimizationView.qml" line="5304" />
         <source>Finished system modifications.</source>
         <translation>Модифікацію системи завершено.</translation>
     </message>
     <message>
         <location filename="../src/qml/views/OptimizationView.qml" line="1287" />
-        <location filename="../src/qml/views/OptimizationView.qml" line="5386" />
+        <location filename="../src/qml/views/OptimizationView.qml" line="5396" />
         <source>Close</source>
         <translation>Закрити</translation>
     </message>
@@ -97,7 +97,7 @@
         <translation>Налаштуйте режими оверлею DWM для оптимізації затримки та усунення фризів в іграх.</translation>
     </message>
     <message>
-        <location filename="../src/qml/views/OptimizationView.qml" line="4479" />
+        <location filename="../src/qml/views/OptimizationView.qml" line="4489" />
         <source>INDEXING OPTIONS</source>
         <translation>НАЛАШТУВАННЯ ІНДЕКСАЦІЇ</translation>
     </message>
@@ -127,9 +127,9 @@
         <location filename="../src/qml/views/OptimizationView.qml" line="3610" />
         <location filename="../src/qml/views/OptimizationView.qml" line="3758" />
         <location filename="../src/qml/views/OptimizationView.qml" line="3851" />
-        <location filename="../src/qml/views/OptimizationView.qml" line="3957" />
-        <location filename="../src/qml/views/OptimizationView.qml" line="4103" />
-        <location filename="../src/qml/views/OptimizationView.qml" line="4297" />
+        <location filename="../src/qml/views/OptimizationView.qml" line="3967" />
+        <location filename="../src/qml/views/OptimizationView.qml" line="4113" />
+        <location filename="../src/qml/views/OptimizationView.qml" line="4307" />
         <source>Selected for application</source>
         <translation>Обрано для застосування</translation>
     </message>
@@ -219,7 +219,7 @@
         <location filename="../src/qml/views/OptimizationView.qml" line="737" />
         <location filename="../src/qml/views/OptimizationView.qml" line="758" />
         <location filename="../src/qml/views/OptimizationView.qml" line="1063" />
-        <location filename="../src/qml/views/OptimizationView.qml" line="4086" />
+        <location filename="../src/qml/views/OptimizationView.qml" line="4096" />
         <source>Power Plan</source>
         <translation>Режим живлення</translation>
     </message>
@@ -234,7 +234,7 @@
         <translation>Очікують змін:</translation>
     </message>
     <message>
-        <location filename="../src/qml/views/OptimizationView.qml" line="4114" />
+        <location filename="../src/qml/views/OptimizationView.qml" line="4124" />
         <source>Select system power plans and unlock the hidden Ultimate Performance mode.</source>
         <translation>Вибір системних схем живлення та розблокування прихованого режиму максимальної продуктивності.</translation>
     </message>
@@ -243,7 +243,7 @@
         <location filename="../src/qml/views/OptimizationView.qml" line="748" />
         <location filename="../src/qml/views/OptimizationView.qml" line="847" />
         <location filename="../src/qml/views/OptimizationView.qml" line="848" />
-        <location filename="../src/qml/views/OptimizationView.qml" line="4175" />
+        <location filename="../src/qml/views/OptimizationView.qml" line="4185" />
         <source>Unknown</source>
         <translation>Невідомо</translation>
     </message>
@@ -273,7 +273,7 @@
         <location filename="../src/qml/views/OptimizationView.qml" line="516" />
         <location filename="../src/qml/views/OptimizationView.qml" line="764" />
         <location filename="../src/qml/views/OptimizationView.qml" line="1065" />
-        <location filename="../src/qml/views/OptimizationView.qml" line="3940" />
+        <location filename="../src/qml/views/OptimizationView.qml" line="3950" />
         <source>Windows Defender</source>
         <translation>Windows Defender</translation>
     </message>
@@ -400,7 +400,7 @@
         <location filename="../src/qml/views/OptimizationView.qml" line="1028" />
         <location filename="../src/qml/views/OptimizationView.qml" line="1029" />
         <location filename="../src/qml/views/OptimizationView.qml" line="3194" />
-        <location filename="../src/qml/views/OptimizationView.qml" line="3872" />
+        <location filename="../src/qml/views/OptimizationView.qml" line="3882" />
         <source>Disabled</source>
         <translation>Вимкнено</translation>
     </message>
@@ -762,115 +762,125 @@
         <translation>Перезапустити Провідник</translation>
     </message>
     <message>
+        <location filename="../src/qml/views/OptimizationView.qml" line="3862" />
+        <source>Enable or disable the BitLocker drive encryption background manager service.</source>
+        <translation>Увімкнення або вимкнення служби фонового диспетчера шифрування дисків BitLocker.</translation>
+    </message>
+    <message>
         <location filename="../src/qml/views/OptimizationView.qml" line="3871" />
+        <source>Before disabling BitLocker, it is recommended to first disable indexing on all drives.</source>
+        <translation>Перед вимкненням BitLocker рекомендується спочатку вимкнути індексацію всіх дисків.</translation>
+    </message>
+    <message>
+        <location filename="../src/qml/views/OptimizationView.qml" line="3881" />
         <source>Status: Service: %1 | Encryption (C:): %2</source>
         <translation>Статус: Служба: %1 | Шифрування (C:): %2</translation>
     </message>
     <message>
-        <location filename="../src/qml/views/OptimizationView.qml" line="3872" />
+        <location filename="../src/qml/views/OptimizationView.qml" line="3882" />
         <source>Active</source>
         <translation>Активна</translation>
     </message>
     <message>
-        <location filename="../src/qml/views/OptimizationView.qml" line="3873" />
+        <location filename="../src/qml/views/OptimizationView.qml" line="3883" />
         <source>Encrypted</source>
         <translation>Зашифровано</translation>
     </message>
     <message>
-        <location filename="../src/qml/views/OptimizationView.qml" line="3873" />
+        <location filename="../src/qml/views/OptimizationView.qml" line="3883" />
         <source>Not Encrypted</source>
         <translation>Не зашифровано</translation>
     </message>
     <message>
-        <location filename="../src/qml/views/OptimizationView.qml" line="3968" />
+        <location filename="../src/qml/views/OptimizationView.qml" line="3978" />
         <source>Disable Microsoft Defender Antivirus protection, real-time scanning, and services to minimize system latency and resource consumption.</source>
         <translation>Вимкнення антивірусного захисту Microsoft Defender, сканування в реальному часі та служб для мінімізації затримок і споживання ресурсів.</translation>
     </message>
     <message>
-        <location filename="../src/qml/views/OptimizationView.qml" line="4480" />
+        <location filename="../src/qml/views/OptimizationView.qml" line="4490" />
         <source>XBOX APP &amp; GAME BAR</source>
         <translation>XBOX APP ТА GAME BAR</translation>
     </message>
     <message>
-        <location filename="../src/qml/views/OptimizationView.qml" line="4481" />
+        <location filename="../src/qml/views/OptimizationView.qml" line="4491" />
         <source>MPO LATENCY TWEAK</source>
         <translation>НАЛАШТУВАННЯ MPO</translation>
     </message>
     <message>
-        <location filename="../src/qml/views/OptimizationView.qml" line="4482" />
+        <location filename="../src/qml/views/OptimizationView.qml" line="4492" />
         <source>PRINTER TWEAKS</source>
         <translation>НАЛАШТУВАННЯ ПРИНТЕРІВ</translation>
     </message>
     <message>
-        <location filename="../src/qml/views/OptimizationView.qml" line="4483" />
+        <location filename="../src/qml/views/OptimizationView.qml" line="4493" />
         <source>NOTIFICATION SETTINGS</source>
         <translation>НАЛАШТУВАННЯ СПОВІЩЕНЬ</translation>
     </message>
     <message>
-        <location filename="../src/qml/views/OptimizationView.qml" line="4484" />
+        <location filename="../src/qml/views/OptimizationView.qml" line="4494" />
         <source>POWER PLANS</source>
         <translation>СХЕМИ ЖИВЛЕННЯ</translation>
     </message>
     <message>
-        <location filename="../src/qml/views/OptimizationView.qml" line="4485" />
+        <location filename="../src/qml/views/OptimizationView.qml" line="4495" />
         <source>WINDOWS DEFENDER</source>
         <translation>ЗАХИСНИК WINDOWS</translation>
     </message>
     <message>
-        <location filename="../src/qml/views/OptimizationView.qml" line="4486" />
+        <location filename="../src/qml/views/OptimizationView.qml" line="4496" />
         <source>USB 3.0 POWER SAVING</source>
         <translation>ЕНЕРГОЗБЕРЕЖЕННЯ USB 3.0</translation>
     </message>
     <message>
         <location filename="../src/qml/views/OptimizationView.qml" line="1165" />
-        <location filename="../src/qml/views/OptimizationView.qml" line="4487" />
+        <location filename="../src/qml/views/OptimizationView.qml" line="4497" />
         <source>TELEMETRY SETTINGS</source>
         <translation>НАЛАШТУВАННЯ ТЕЛЕМЕТРІЇ</translation>
     </message>
     <message>
-        <location filename="../src/qml/views/OptimizationView.qml" line="4488" />
+        <location filename="../src/qml/views/OptimizationView.qml" line="4498" />
         <source>WINDOWS UPDATE</source>
         <translation>ОНОВЛЕННЯ WINDOWS</translation>
     </message>
     <message>
-        <location filename="../src/qml/views/OptimizationView.qml" line="5284" />
+        <location filename="../src/qml/views/OptimizationView.qml" line="5294" />
         <source>Optimization in Progress</source>
         <translation>Оптимізація триває</translation>
     </message>
     <message>
-        <location filename="../src/qml/views/OptimizationView.qml" line="5284" />
+        <location filename="../src/qml/views/OptimizationView.qml" line="5294" />
         <source>Optimization Complete</source>
         <translation>Оптимізацію завершено</translation>
     </message>
     <message>
-        <location filename="../src/qml/views/OptimizationView.qml" line="5294" />
-        <location filename="../src/qml/views/OptimizationView.qml" line="5318" />
+        <location filename="../src/qml/views/OptimizationView.qml" line="5304" />
+        <location filename="../src/qml/views/OptimizationView.qml" line="5328" />
         <source>Applying system configuration adjustments...</source>
         <translation>Застосування системних налаштувань...</translation>
     </message>
     <message>
-        <location filename="../src/qml/views/OptimizationView.qml" line="5317" />
-        <location filename="../src/qml/views/OptimizationView.qml" line="5371" />
+        <location filename="../src/qml/views/OptimizationView.qml" line="5327" />
+        <location filename="../src/qml/views/OptimizationView.qml" line="5381" />
         <source>Analyzing optimization plan...</source>
         <translation>Аналіз плану оптимізації...</translation>
     </message>
     <message>
-        <location filename="../src/qml/views/OptimizationView.qml" line="5319" />
+        <location filename="../src/qml/views/OptimizationView.qml" line="5329" />
         <source>Verifying changes and syncing state...</source>
         <translation>Перевірка змін та синхронізація стану...</translation>
     </message>
     <message>
-        <location filename="../src/qml/views/OptimizationView.qml" line="5373" />
+        <location filename="../src/qml/views/OptimizationView.qml" line="5383" />
         <source>Optimization completed successfully!</source>
         <translation>Оптимізацію успішно завершено!</translation>
     </message>
     <message>
-        <location filename="../src/qml/views/OptimizationView.qml" line="5472" />
+        <location filename="../src/qml/views/OptimizationView.qml" line="5482" />
         <source>Discord Process Detected</source>
         <translation>Виявлено процес Discord</translation>
     </message>
     <message>
-        <location filename="../src/qml/views/OptimizationView.qml" line="5482" />
+        <location filename="../src/qml/views/OptimizationView.qml" line="5492" />
         <source>Discord is currently running. It must be closed to safely lock/unlock overlay files.
 
 Would you like to close Discord now and proceed?</source>
@@ -879,17 +889,17 @@ Would you like to close Discord now and proceed?</source>
 Бажаєте закрити Discord зараз і продовжити?</translation>
     </message>
     <message>
-        <location filename="../src/qml/views/OptimizationView.qml" line="5496" />
+        <location filename="../src/qml/views/OptimizationView.qml" line="5506" />
         <source>Close &amp; Optimize</source>
         <translation>Закрити та оптимізувати</translation>
     </message>
     <message>
-        <location filename="../src/qml/views/OptimizationView.qml" line="5509" />
+        <location filename="../src/qml/views/OptimizationView.qml" line="5519" />
         <source>Skip Overlay</source>
         <translation>Пропустити оверлей</translation>
     </message>
     <message>
-        <location filename="../src/qml/views/OptimizationView.qml" line="5522" />
+        <location filename="../src/qml/views/OptimizationView.qml" line="5532" />
         <source>Cancel</source>
         <translation>Скасувати</translation>
     </message>
@@ -942,7 +952,7 @@ Would you like to close Discord now and proceed?</source>
         <translation>Увімкнення або вимкнення брандмауера Windows для контролю захисту мережевого трафіку.</translation>
     </message>
     <message>
-        <location filename="../src/qml/views/OptimizationView.qml" line="3976" />
+        <location filename="../src/qml/views/OptimizationView.qml" line="3986" />
         <source>Note: Requires disabling Tamper Protection.</source>
         <translation>Примітка: Вимагає відключення захисту від несанкціонованого доступу (Tamper Protection).</translation>
     </message>
@@ -950,12 +960,12 @@ Would you like to close Discord now and proceed?</source>
         <location filename="../src/qml/views/OptimizationView.qml" line="528" />
         <location filename="../src/qml/views/OptimizationView.qml" line="797" />
         <location filename="../src/qml/views/OptimizationView.qml" line="1066" />
-        <location filename="../src/qml/views/OptimizationView.qml" line="4280" />
+        <location filename="../src/qml/views/OptimizationView.qml" line="4290" />
         <source>USB 3.0 Power Saving</source>
         <translation>Енергозбереження USB 3.0</translation>
     </message>
     <message>
-        <location filename="../src/qml/views/OptimizationView.qml" line="4308" />
+        <location filename="../src/qml/views/OptimizationView.qml" line="4318" />
         <source>Prevent Windows from turning off USB 3.0 ports to save power, avoiding connection dropouts and peripheral latency.</source>
         <translation>Запобігає вимкненню портів USB 3.0 системою Windows для збереження енергії, уникаючи обривів з'єднання та затримок периферії.</translation>
     </message>
@@ -1087,12 +1097,7 @@ Would you like to close Discord now and proceed?</source>
         <translation>Оптимізуйте анімацію, тіні та ефекти рендерингу Windows для покращення чуйності системи.</translation>
     </message>
     <message>
-        <location filename="../src/qml/views/OptimizationView.qml" line="3862" />
-        <source>Enable or disable the BitLocker drive encryption background manager service. Before disabling BitLocker, it is recommended to first disable indexing on all drives.</source>
-        <translation>Увімкнення або вимкнення служби фонового диспетчера шифрування дисків BitLocker. Перед вимкненням BitLocker рекомендується спочатку вимкнути індексацію всіх дисків.</translation>
-    </message>
-    <message>
-        <location filename="../src/qml/views/OptimizationView.qml" line="4489" />
+        <location filename="../src/qml/views/OptimizationView.qml" line="4499" />
         <source>VISUAL EFFECTS</source>
         <translation>ВІЗУАЛЬНІ ЕФЕКТИ</translation>
     </message>
@@ -1213,7 +1218,7 @@ Would you like to close Discord now and proceed?</source>
         <translation>Клієнт Steam не виявлено в цій системі.</translation>
     </message>
     <message>
-        <location filename="../src/qml/views/OptimizationView.qml" line="4490" />
+        <location filename="../src/qml/views/OptimizationView.qml" line="4500" />
         <source>STEAM SETTINGS</source>
         <translation>НАЛАШТУВАННЯ STEAM</translation>
     </message>

@@ -3798,7 +3798,7 @@ Item {
                 AcrylicPanel {
                     id: bitlockerPanel
                     width: parent.width
-                    height: 96
+                    height: 100
 
                     Row {
                         anchors.left: parent.left
@@ -3859,10 +3859,20 @@ Item {
                             }
 
                             Text {
-                                text: qsTr("Enable or disable the BitLocker drive encryption background manager service. Before disabling BitLocker, it is recommended to first disable indexing on all drives.")
+                                text: qsTr("Enable or disable the BitLocker drive encryption background manager service.")
                                 color: Theme.textMuted
                                 font.family: Theme.fontFamily
                                 font.pixelSize: 10
+                                wrapMode: Text.Wrap
+                                width: bitlockerPanel.width - 220
+                            }
+
+                            Text {
+                                text: qsTr("Before disabling BitLocker, it is recommended to first disable indexing on all drives.")
+                                color: Theme.warning
+                                font.family: Theme.fontFamily
+                                font.pixelSize: 10
+                                font.bold: true
                                 wrapMode: Text.Wrap
                                 width: bitlockerPanel.width - 220
                             }
