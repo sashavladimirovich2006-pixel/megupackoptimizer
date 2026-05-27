@@ -2326,14 +2326,12 @@ Item {
                         anchors.left: parent.left
                         anchors.right: parent.right
                         anchors.top: parent.top
-                        anchors.leftMargin: 16
-                        anchors.rightMargin: 16
-                        anchors.topMargin: 16
                         spacing: 12
 
                         // Main Row
                         Item {
-                            width: parent.width
+                            anchors.left: parent.left
+                            anchors.right: parent.right
                             height: 40
 
                             Row {
@@ -2399,6 +2397,8 @@ Item {
                                         color: Theme.textMuted
                                         font.family: Theme.fontFamily
                                         font.pixelSize: 10
+                                        wrapMode: Text.Wrap
+                                        width: coreIsolationPanel.width - 220
                                     }
                                 }
                             }
@@ -3798,7 +3798,7 @@ Item {
                 AcrylicPanel {
                     id: bitlockerPanel
                     width: parent.width
-                    height: 80
+                    height: 96
 
                     Row {
                         anchors.left: parent.left
@@ -3859,10 +3859,12 @@ Item {
                             }
 
                             Text {
-                                text: qsTr("Enable or disable the BitLocker drive encryption background manager service.")
+                                text: qsTr("Enable or disable the BitLocker drive encryption background manager service. Before disabling BitLocker, it is recommended to first disable indexing on all drives.")
                                 color: Theme.textMuted
                                 font.family: Theme.fontFamily
                                 font.pixelSize: 10
+                                wrapMode: Text.Wrap
+                                width: bitlockerPanel.width - 220
                             }
 
                             Text {
