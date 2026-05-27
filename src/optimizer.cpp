@@ -2443,6 +2443,8 @@ void Optimizer::loadSystemStates() {
     m_originalVisualEffects = visEffects;
     emit visualEffectsChanged(m_visualEffects);
     emit originalVisualEffectsChanged(m_originalVisualEffects);
+
+    loadPagefileSettings();
 }
 
 void Optimizer::startSystemOptimization() {
@@ -2558,8 +2560,12 @@ void Optimizer::startSystemOptimization() {
     bool steamFriendsChanged = (m_steamFriendsSettings != m_originalSteamFriendsSettings);
     bool deleteUltimateStagedVal = m_deleteUltimateStaged;
     bool deleteDefenderStagedVal = m_deleteDefenderStaged;
+    int pagefileMinVal = m_pagefileMin;
+    int origPagefileMinVal = m_originalPagefileMin;
+    int pagefileMaxVal = m_pagefileMax;
+    int origPagefileMaxVal = m_originalPagefileMax;
 
-    QThread* worker = QThread::create([this, searchVal, classicContextMenuVal, hibernationVal, overlayVal, coreIsolationVal, mouseAccelVal, gameModeVal, firewallVal, printerVal, bitlockerVal, discordOverlayVal, notificationsVal, notifGlobalVal, notifAppVal, notifSoundsVal, notifLockscreenVal, targetPowerSchemeVal, activePowerSchemeVal, deleteUltimateStagedVal, deleteDefenderStagedVal, defenderVal, defenderRegistryVal, defenderCmdVal, defenderServiceVal, remoteAccessVal, telemetryVal, telemetryDiagTrackVal, telemetryWapPushVal, telemetryCeipVal, telemetryWerVal, windowsUpdateModeVal, targets, originalTargets, origSearch, origClassicContextMenu, origHibernation, origOverlay, origCoreIsolation, origMouseAccel, origGameMode, origFirewall, origPrinter, origBitlocker, origDiscordOverlay, origNotifications, origNotifGlobal, origNotifApp, origNotifSounds, origNotifLockscreen, origDefender, origDefenderRegistry, origDefenderCmd, origDefenderService, origRemoteAccess, origTelemetry, origTelemetryDiagTrack, origTelemetryWapPush, origTelemetryCeip, origTelemetryWer, origWindowsUpdateMode, usbDevicesVal, origUsbDevicesVal, steamPathVal, cs2OptionsVal, origCs2OptionsVal, steamOverlayVal, origSteamOverlayVal, cs2OverlayVal, origCs2OverlayVal, visualEffectsVal, origVisualEffectsVal, steamFriendsSettingsVal, origSteamFriendsSettingsVal, steamFriendsChanged]() {
+    QThread* worker = QThread::create([this, searchVal, classicContextMenuVal, hibernationVal, overlayVal, coreIsolationVal, mouseAccelVal, gameModeVal, firewallVal, printerVal, bitlockerVal, discordOverlayVal, notificationsVal, notifGlobalVal, notifAppVal, notifSoundsVal, notifLockscreenVal, targetPowerSchemeVal, activePowerSchemeVal, deleteUltimateStagedVal, deleteDefenderStagedVal, defenderVal, defenderRegistryVal, defenderCmdVal, defenderServiceVal, remoteAccessVal, telemetryVal, telemetryDiagTrackVal, telemetryWapPushVal, telemetryCeipVal, telemetryWerVal, windowsUpdateModeVal, targets, originalTargets, origSearch, origClassicContextMenu, origHibernation, origOverlay, origCoreIsolation, origMouseAccel, origGameMode, origFirewall, origPrinter, origBitlocker, origDiscordOverlay, origNotifications, origNotifGlobal, origNotifApp, origNotifSounds, origNotifLockscreen, origDefender, origDefenderRegistry, origDefenderCmd, origDefenderService, origRemoteAccess, origTelemetry, origTelemetryDiagTrack, origTelemetryWapPush, origTelemetryCeip, origTelemetryWer, origWindowsUpdateMode, usbDevicesVal, origUsbDevicesVal, steamPathVal, cs2OptionsVal, origCs2OptionsVal, steamOverlayVal, origSteamOverlayVal, cs2OverlayVal, origCs2OverlayVal, visualEffectsVal, origVisualEffectsVal, steamFriendsSettingsVal, origSteamFriendsSettingsVal, steamFriendsChanged, pagefileMinVal, origPagefileMinVal, pagefileMaxVal, origPagefileMaxVal]() {
         // Step 0: Check if anything actually changed
         bool powerPlanChanged = (targetPowerSchemeVal != activePowerSchemeVal) || deleteUltimateStagedVal;
         bool usbChanged = false;
@@ -2586,6 +2592,7 @@ void Optimizer::startSystemOptimization() {
         bool steamOverlayChanged = (steamOverlayVal != origSteamOverlayVal);
         bool cs2OverlayChanged = (cs2OverlayVal != origCs2OverlayVal);
         bool visualEffectsChanged = (visualEffectsVal != origVisualEffectsVal);
+        bool pagefileChanged = (pagefileMinVal != origPagefileMinVal) || (pagefileMaxVal != origPagefileMaxVal);
 
         bool anyChanges = (searchVal != origSearch) || 
                           (classicContextMenuVal != origClassicContextMenu) || 
@@ -2615,7 +2622,7 @@ void Optimizer::startSystemOptimization() {
                           cs2Changed ||
                           steamOverlayChanged ||
                           cs2OverlayChanged ||
-                          visualEffectsChanged || deleteDefenderStagedVal || steamFriendsChanged;
+                          visualEffectsChanged || deleteDefenderStagedVal || steamFriendsChanged || pagefileChanged;
         if (!anyChanges) {
             for (const QString &driveLetter : targets.keys()) {
                 if (targets.value(driveLetter).toBool() != originalTargets.value(driveLetter).toBool()) {
@@ -4742,7 +4749,34 @@ void Optimizer::startSystemOptimization() {
 #endif
         }
 
-        bool overallSuccess = wSearchSuccess && classicContextMenuSuccess && hibernationSuccess && overlaySuccess && coreIsolationSuccess && mouseAccelSuccess && gameModeSuccess && firewallSuccess && printerSuccess && notificationsSuccess && powerPlanSuccess && defenderSuccess && overallDrivesSuccess && usbSuccess && remoteAccessSuccess && telemetrySuccess && windowsUpdateSuccess && cs2Success && steamOverlaySuccess && cs2OverlaySuccess && steamFriendsSuccess && visualEffectsSuccess;
+        // Step 2.9: Virtual Memory / Page File (only if changed)
+        bool pagefileSuccess = true;
+        if (pagefileChanged) {
+            emit systemStepReported(Optimizer::tr("Processing virtual memory (pagefile)..."), "INFO");
+            QThread::msleep(800);
+#ifdef Q_OS_WIN
+            QString cmd = QString("Set-CimInstance -Query 'Select * from Win32_ComputerSystem' -Property @{AutomaticManagedPagefile=$False}; $pf = Get-CimInstance Win32_PageFileSetting -Filter \"Name='C:\\\\pagefile.sys'\"; if ($pf) { $pf.InitialSize = %1; $pf.MaximumSize = %2; $pf | Set-CimInstance } else { New-CimInstance -ClassName Win32_PageFileSetting -Property @{Name='C:\\\\pagefile.sys'; InitialSize=%1; MaximumSize=%2} }").arg(pagefileMinVal).arg(pagefileMaxVal);
+            
+            QProcess proc;
+            proc.start("powershell.exe", QStringList() << "-NoProfile" << "-NonInteractive" << "-Command" << cmd);
+            if (proc.waitForFinished(15000)) {
+                if (proc.exitCode() == 0) {
+                    emit systemStepReported(Optimizer::tr("Virtual memory limits updated successfully to Min: %1 MB, Max: %2 MB. A reboot is required to recreate the pagefile on disk.").arg(pagefileMinVal).arg(pagefileMaxVal), "SUCCESS");
+                } else {
+                    pagefileSuccess = false;
+                    QString errOut = proc.readAllStandardError();
+                    emit systemStepReported(Optimizer::tr("Failed to apply virtual memory limits. PowerShell Error: %1").arg(errOut), "ERROR");
+                }
+            } else {
+                pagefileSuccess = false;
+                emit systemStepReported(Optimizer::tr("Powershell command execution timed out while setting virtual memory limits."), "ERROR");
+            }
+#else
+            emit systemStepReported(Optimizer::tr("[Simulation] Virtual memory limits set to Min: %1 MB, Max: %2 MB.").arg(pagefileMinVal).arg(pagefileMaxVal), "SUCCESS");
+#endif
+        }
+
+        bool overallSuccess = wSearchSuccess && classicContextMenuSuccess && hibernationSuccess && overlaySuccess && coreIsolationSuccess && mouseAccelSuccess && gameModeSuccess && firewallSuccess && printerSuccess && notificationsSuccess && powerPlanSuccess && defenderSuccess && overallDrivesSuccess && usbSuccess && remoteAccessSuccess && telemetrySuccess && windowsUpdateSuccess && cs2Success && steamOverlaySuccess && cs2OverlaySuccess && steamFriendsSuccess && visualEffectsSuccess && pagefileSuccess;
         if (overallSuccess) {
             emit systemStepReported(tr("System optimization completed successfully!"), "SUCCESS");
             Logger::log("System optimization completed successfully!", "INFO");
@@ -4783,6 +4817,8 @@ void Optimizer::startSystemOptimization() {
         m_originalSteamFriendsSettings = steamFriendsSettingsVal;
         m_originalVisualEffects = visualEffectsVal;
         m_originalDriveStates = targets;
+        m_originalPagefileMin = pagefileMinVal;
+        m_originalPagefileMax = pagefileMaxVal;
         
         loadSystemStates();
 
@@ -4814,6 +4850,8 @@ void Optimizer::startSystemOptimization() {
         emit originalWindowsUpdateModeChanged(m_originalWindowsUpdateMode);
         emit originalVisualEffectsChanged(m_originalVisualEffects);
         emit originalDriveStatesChanged(m_originalDriveStates);
+        emit originalPagefileMinChanged(m_originalPagefileMin);
+        emit originalPagefileMaxChanged(m_originalPagefileMax);
 
         m_isOptimizingSystem = false;
         emit isOptimizingSystemChanged(m_isOptimizingSystem);
@@ -6377,3 +6415,74 @@ void Optimizer::scanSteamInstalledGames() {
     m_steamInstalledGames = gamesList;
     emit steamInstalledGamesChanged(m_steamInstalledGames);
 }
+
+void Optimizer::loadPagefileSettings() {
+    int pagefileMin = 4096;
+    int pagefileMax = 8192;
+    bool pagefileAuto = true;
+
+#ifdef Q_OS_WIN
+    HKEY hKey;
+    if (RegOpenKeyExW(HKEY_LOCAL_MACHINE, L"SYSTEM\\CurrentControlSet\\Control\\Session Manager\\Memory Management", 0, KEY_READ, &hKey) == ERROR_SUCCESS) {
+        wchar_t value[2048] = {0};
+        DWORD size = sizeof(value);
+        if (RegQueryValueExW(hKey, L"PagingFiles", NULL, NULL, (LPBYTE)value, &size) == ERROR_SUCCESS) {
+            QString content = QString::fromWCharArray(value);
+            if (!content.isEmpty()) {
+                QStringList parts = content.split(' ', Qt::SkipEmptyParts);
+                if (parts.size() >= 3) {
+                    bool ok1 = false, ok2 = false;
+                    int parsedMin = parts[1].toInt(&ok1);
+                    int parsedMax = parts[2].toInt(&ok2);
+                    if (ok1 && ok2 && parsedMin > 0 && parsedMax > 0) {
+                        pagefileAuto = false;
+                        pagefileMin = parsedMin;
+                        pagefileMax = parsedMax;
+                    }
+                } else if (content.contains("?")) {
+                    pagefileAuto = true;
+                } else {
+                    pagefileAuto = false;
+                }
+            }
+        }
+        RegCloseKey(hKey);
+    }
+#endif
+
+    m_pagefileMin = pagefileMin;
+    m_originalPagefileMin = pagefileMin;
+    m_pagefileMax = pagefileMax;
+    m_originalPagefileMax = pagefileMax;
+    m_pagefileAuto = pagefileAuto;
+    m_originalPagefileAuto = pagefileAuto;
+
+    emit pagefileMinChanged(m_pagefileMin);
+    emit originalPagefileMinChanged(m_originalPagefileMin);
+    emit pagefileMaxChanged(m_pagefileMax);
+    emit originalPagefileMaxChanged(m_originalPagefileMax);
+    emit pagefileAutoChanged(m_pagefileAuto);
+    emit originalPagefileAutoChanged(m_originalPagefileAuto);
+}
+
+void Optimizer::setPagefileMin(int val) {
+    if (m_pagefileMin != val) {
+        m_pagefileMin = val;
+        emit pagefileMinChanged(m_pagefileMin);
+    }
+}
+
+void Optimizer::setPagefileMax(int val) {
+    if (m_pagefileMax != val) {
+        m_pagefileMax = val;
+        emit pagefileMaxChanged(m_pagefileMax);
+    }
+}
+
+void Optimizer::setPagefileAuto(bool val) {
+    if (m_pagefileAuto != val) {
+        m_pagefileAuto = val;
+        emit pagefileAutoChanged(m_pagefileAuto);
+    }
+}
+

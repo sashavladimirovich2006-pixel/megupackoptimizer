@@ -88,6 +88,8 @@ Item {
         if (optimizerBackend.cs2OverlayActive !== optimizerBackend.originalCs2OverlayActive) return true;
         if (steamFriendsSettingsChanged) return true;
         if (visualEffectsChanged) return true;
+        if (optimizerBackend.pagefileMin !== optimizerBackend.originalPagefileMin) return true;
+        if (optimizerBackend.pagefileMax !== optimizerBackend.originalPagefileMax) return true;
         if (!optimizerBackend.driveStates || !optimizerBackend.originalDriveStates) return false;
         var keys = Object.keys(optimizerBackend.driveStates);
         for (var i = 0; i < keys.length; i++) {
@@ -97,6 +99,7 @@ Item {
         return false;
     }
 
+    property bool pagefileChanged: optimizerBackend.pagefileMin !== optimizerBackend.originalPagefileMin || optimizerBackend.pagefileMax !== optimizerBackend.originalPagefileMax
     property bool classicContextMenuChanged: optimizerBackend.classicContextMenuActive !== optimizerBackend.originalClassicContextMenuActive
 
     property bool indexingChanged: {
@@ -312,6 +315,7 @@ Item {
         if (cs2OverlayChanged) count++;
         if (steamFriendsSettingsChanged) count++;
         if (visualEffectsChanged) count++;
+        if (pagefileChanged) count++;
         return count;
     }
 
@@ -333,6 +337,7 @@ Item {
         if (optimizerBackend.usbPowerSavingActive !== optimizerBackend.originalUsbPowerSavingActive) count++;
         if (optimizerBackend.remoteAccessActive !== optimizerBackend.originalRemoteAccessActive) count++;
         if (optimizerBackend.telemetryActive !== optimizerBackend.originalTelemetryActive) count++;
+        if (pagefileChanged) count++;
         return count;
     }
 
@@ -598,6 +603,15 @@ Item {
             hasSidebar: true,
             revert: function() {
                 optimizerBackend.visualEffects = optimizerBackend.originalVisualEffects;
+            }
+        });
+        if (pagefileChanged) list.push({
+            name: qsTr("Page File"),
+            icon: "qrc:/MeguPackOptimizer/src/resources/ram.svg",
+            hasSidebar: false,
+            revert: function() {
+                optimizerBackend.pagefileMin = optimizerBackend.originalPagefileMin;
+                optimizerBackend.pagefileMax = optimizerBackend.originalPagefileMax;
             }
         });
         return list;
@@ -1043,12 +1057,30 @@ Item {
                     })(keys[idx]);
                 }
             }
+        } else if (category === qsTr("Page File") || category === "Page File") {
+            if (optimizerBackend.pagefileMin !== optimizerBackend.originalPagefileMin) {
+                subList.push({
+                    name: qsTr("Min size: %1 MB -> %2 MB").arg(optimizerBackend.originalPagefileMin).arg(optimizerBackend.pagefileMin),
+                    revert: function() {
+                        optimizerBackend.pagefileMin = optimizerBackend.originalPagefileMin;
+                    }
+                });
+            }
+            if (optimizerBackend.pagefileMax !== optimizerBackend.originalPagefileMax) {
+                subList.push({
+                    name: qsTr("Max size: %1 MB -> %2 MB").arg(optimizerBackend.originalPagefileMax).arg(optimizerBackend.pagefileMax),
+                    revert: function() {
+                        optimizerBackend.pagefileMax = optimizerBackend.originalPagefileMax;
+                    }
+                });
+            }
         }
         return subList;
     }
 
     function getParentCard(name) {
         if (name === qsTr("Visual Effects") || name === "Visual Effects") return visualEffectsPanel;
+        if (name === qsTr("Page File") || name === "Page File") return pageFilePanel;
         if (name === qsTr("Counter-Strike 2 Launch Options") || name === "Counter-Strike 2 Launch Options") return cs2Panel;
         if (name === qsTr("File Indexing") || name === "File Indexing") return indexingPanel;
         if (name === qsTr("Xbox App & Game Bar") || name === "Xbox App & Game Bar") return xboxPanel;
@@ -3789,6 +3821,228 @@ Item {
                             anchors.verticalCenter: parent.verticalCenter
                             onToggled: (isChecked) => {
                                 optimizerBackend.hibernationActive = isChecked;
+                            }
+                        }
+                    }
+                }
+
+                // Page File Card
+                AcrylicPanel {
+                    id: pageFilePanel
+                    width: parent.width
+                    height: 72
+                    visible: root.currentSection === "core"
+
+                    Row {
+                        anchors.left: parent.left
+                        anchors.verticalCenter: parent.verticalCenter
+                        spacing: 12
+
+                        Item {
+                            width: 28
+                            height: 28
+                            anchors.verticalCenter: parent.verticalCenter
+                            Image {
+                                id: ramIconImg
+                                source: "qrc:/MeguPackOptimizer/src/resources/ram.svg"
+                                anchors.fill: parent
+                                sourceSize.width: 28
+                                sourceSize.height: 28
+                                visible: false
+                            }
+                            ColorOverlay {
+                                anchors.fill: ramIconImg
+                                source: ramIconImg
+                                color: Theme.accent
+                            }
+                        }
+
+                        Column {
+                            anchors.verticalCenter: parent.verticalCenter
+                            spacing: 2
+
+                            Row {
+                                spacing: 8
+                                Text {
+                                    text: qsTr("Page File")
+                                    color: Theme.textPrimary
+                                    font.family: Theme.fontFamily
+                                    font.pixelSize: 13
+                                    font.bold: true
+                                }
+                                Rectangle {
+                                    visible: root.pagefileChanged
+                                    height: 16
+                                    width: selectedTextPagefile.contentWidth + 10
+                                    radius: 4
+                                    color: Qt.rgba(Theme.success.r, Theme.success.g, Theme.success.b, 0.15)
+                                    border.color: Theme.success
+                                    border.width: 1
+                                    anchors.verticalCenter: parent.verticalCenter
+                                    Text {
+                                        id: selectedTextPagefile
+                                        text: qsTr("Selected for application")
+                                        color: Theme.success
+                                        font.family: Theme.fontFamily
+                                        font.pixelSize: 8
+                                        font.bold: true
+                                        anchors.centerIn: parent
+                                    }
+                                }
+                            }
+
+                            Text {
+                                text: qsTr("Configure system virtual memory limits (initial/maximum size in MB).")
+                                color: Theme.textMuted
+                                font.family: Theme.fontFamily
+                                font.pixelSize: 10
+                            }
+                        }
+                    }
+
+                    Row {
+                        anchors.right: parent.right
+                        anchors.verticalCenter: parent.verticalCenter
+                        spacing: 8
+
+                        // Initial/Min size field
+                        Row {
+                            spacing: 4
+                            anchors.verticalCenter: parent.verticalCenter
+                            Text {
+                                text: qsTr("Min:")
+                                color: Theme.textSecondary
+                                font.family: Theme.fontFamily
+                                font.pixelSize: 10
+                                anchors.verticalCenter: parent.verticalCenter
+                            }
+                            Rectangle {
+                                width: 60
+                                height: 24
+                                color: Theme.panelBg
+                                radius: 4
+                                border.color: minInput.activeFocus ? Theme.accent : Qt.rgba(Theme.border.r, Theme.border.g, Theme.border.b, 0.4)
+                                border.width: 1
+
+                                TextInput {
+                                    id: minInput
+                                    anchors.fill: parent
+                                    anchors.leftMargin: 6
+                                    anchors.rightMargin: 6
+                                    verticalAlignment: TextInput.AlignVCenter
+                                    color: Theme.textPrimary
+                                    font.family: Theme.fontFamily
+                                    font.pixelSize: 10
+                                    selectByMouse: true
+                                    validator: IntValidator { bottom: 1024; top: 99999 }
+                                    
+                                    Binding on text {
+                                        value: optimizerBackend.pagefileMin.toString()
+                                    }
+
+                                    onTextChanged: {
+                                        var val = parseInt(text);
+                                        if (!isNaN(val) && val >= 1024) {
+                                            optimizerBackend.pagefileMin = val;
+                                        }
+                                    }
+                                }
+                            }
+                        }
+
+                        // Maximum/Max size field
+                        Row {
+                            spacing: 4
+                            anchors.verticalCenter: parent.verticalCenter
+                            Text {
+                                text: qsTr("Max:")
+                                color: Theme.textSecondary
+                                font.family: Theme.fontFamily
+                                font.pixelSize: 10
+                                anchors.verticalCenter: parent.verticalCenter
+                            }
+                            Rectangle {
+                                width: 60
+                                height: 24
+                                color: Theme.panelBg
+                                radius: 4
+                                border.color: maxInput.activeFocus ? Theme.accent : Qt.rgba(Theme.border.r, Theme.border.g, Theme.border.b, 0.4)
+                                border.width: 1
+
+                                TextInput {
+                                    id: maxInput
+                                    anchors.fill: parent
+                                    anchors.leftMargin: 6
+                                    anchors.rightMargin: 6
+                                    verticalAlignment: TextInput.AlignVCenter
+                                    color: Theme.textPrimary
+                                    font.family: Theme.fontFamily
+                                    font.pixelSize: 10
+                                    selectByMouse: true
+                                    validator: IntValidator { bottom: 1024; top: 99999 }
+                                    
+                                    Binding on text {
+                                        value: optimizerBackend.pagefileMax.toString()
+                                    }
+
+                                    onTextChanged: {
+                                        var val = parseInt(text);
+                                        if (!isNaN(val) && val >= 1024) {
+                                            optimizerBackend.pagefileMax = val;
+                                        }
+                                    }
+                                }
+                            }
+                        }
+
+                        // Help/Info question mark icon with hover ToolTip
+                        Item {
+                            width: 24
+                            height: 24
+                            anchors.verticalCenter: parent.verticalCenter
+
+                            Image {
+                                id: helpIconImg
+                                source: "qrc:/MeguPackOptimizer/src/resources/help.svg"
+                                anchors.fill: parent
+                                sourceSize.width: 14
+                                sourceSize.height: 14
+                                anchors.centerIn: parent
+                                visible: false
+                            }
+                            ColorOverlay {
+                                anchors.fill: helpIconImg
+                                source: helpIconImg
+                                color: helpMouseArea.containsMouse ? Theme.accentLight : Theme.textSecondary
+                            }
+                            MouseArea {
+                                id: helpMouseArea
+                                anchors.fill: parent
+                                hoverEnabled: true
+                                cursorShape: Qt.PointingHandCursor
+
+                                ToolTip {
+                                    id: helpTooltip
+                                    visible: helpMouseArea.containsMouse
+                                    delay: 100
+                                    timeout: 10000
+                                    text: qsTr("Recommended values for RAM sizes:\n• 4 GB RAM: Min = 4096, Max = 8192\n• 8 GB RAM: Min = 4096, Max = 8192\n• 16 GB RAM: Min = 4096, Max = 8192\n• 32 GB+ RAM: Min = 2048, Max = 4096")
+                                    
+                                    contentItem: Text {
+                                        text: helpTooltip.text
+                                        color: Theme.textPrimary
+                                        font.family: Theme.fontFamily
+                                        font.pixelSize: 10
+                                        lineHeight: 1.2
+                                    }
+
+                                    background: Rectangle {
+                                        color: Theme.panelBg
+                                        border.color: Theme.accent
+                                        border.width: 1
+                                        radius: 6
+                                    }
+                                }
                             }
                         }
                     }

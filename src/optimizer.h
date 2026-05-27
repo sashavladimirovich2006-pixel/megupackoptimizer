@@ -108,6 +108,12 @@ class Optimizer : public QObject {
     Q_PROPERTY(QStringList fixedDrives READ fixedDrives NOTIFY fixedDrivesChanged)
     Q_PROPERTY(QVariantMap driveStates READ driveStates WRITE setDriveStates NOTIFY driveStatesChanged)
     Q_PROPERTY(QVariantMap originalDriveStates READ originalDriveStates NOTIFY originalDriveStatesChanged)
+    Q_PROPERTY(int pagefileMin READ pagefileMin WRITE setPagefileMin NOTIFY pagefileMinChanged)
+    Q_PROPERTY(int originalPagefileMin READ originalPagefileMin NOTIFY originalPagefileMinChanged)
+    Q_PROPERTY(int pagefileMax READ pagefileMax WRITE setPagefileMax NOTIFY pagefileMaxChanged)
+    Q_PROPERTY(int originalPagefileMax READ originalPagefileMax NOTIFY originalPagefileMaxChanged)
+    Q_PROPERTY(bool pagefileAuto READ pagefileAuto WRITE setPagefileAuto NOTIFY pagefileAutoChanged)
+    Q_PROPERTY(bool originalPagefileAuto READ originalPagefileAuto NOTIFY originalPagefileAutoChanged)
     Q_PROPERTY(bool isOptimizingSystem READ isOptimizingSystem NOTIFY isOptimizingSystemChanged)
     Q_PROPERTY(double systemProgress READ systemProgress NOTIFY systemProgressChanged)
 
@@ -226,6 +232,12 @@ public:
     QVariantMap originalDriveStates() const { return m_originalDriveStates; }
     bool isOptimizingSystem() const { return m_isOptimizingSystem; }
     double systemProgress() const { return m_systemProgress; }
+    int pagefileMin() const { return m_pagefileMin; }
+    int originalPagefileMin() const { return m_originalPagefileMin; }
+    int pagefileMax() const { return m_pagefileMax; }
+    int originalPagefileMax() const { return m_originalPagefileMax; }
+    bool pagefileAuto() const { return m_pagefileAuto; }
+    bool originalPagefileAuto() const { return m_originalPagefileAuto; }
 
     // Setters
     void setClassicContextMenuActive(bool val);
@@ -264,6 +276,9 @@ public:
     void setSteamFriendsSettings(const QVariantMap &val);
     void setDeleteUltimateStaged(bool val);
     void setDeleteDefenderStaged(bool val);
+    void setPagefileMin(int val);
+    void setPagefileMax(int val);
+    void setPagefileAuto(bool val);
     
     Q_INVOKABLE bool isDiscordRunning();
     Q_INVOKABLE void killDiscord();
@@ -391,6 +406,12 @@ signals:
     void fixedDrivesChanged(const QStringList &val);
     void driveStatesChanged(const QVariantMap &val);
     void originalDriveStatesChanged(const QVariantMap &val);
+    void pagefileMinChanged(int val);
+    void originalPagefileMinChanged(int val);
+    void pagefileMaxChanged(int val);
+    void originalPagefileMaxChanged(int val);
+    void pagefileAutoChanged(bool val);
+    void originalPagefileAutoChanged(bool val);
     void isOptimizingSystemChanged(bool val);
     void systemProgressChanged(double val);
     
@@ -506,4 +527,11 @@ private:
     bool updateVdfFriendsSettings(const QString &filePath, const QString &accountId, const QVariantMap &settings);
     bool m_isOptimizingSystem = false;
     double m_systemProgress = 0.0;
+    int m_pagefileMin = 4096;
+    int m_originalPagefileMin = 4096;
+    int m_pagefileMax = 8192;
+    int m_originalPagefileMax = 8192;
+    bool m_pagefileAuto = true;
+    bool m_originalPagefileAuto = true;
+    void loadPagefileSettings();
 };
