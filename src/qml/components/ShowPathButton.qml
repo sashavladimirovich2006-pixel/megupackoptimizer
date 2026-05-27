@@ -13,6 +13,9 @@ Item {
     implicitWidth: buttonLayout.implicitWidth + 20
     implicitHeight: 24
     
+    opacity: control.enabled ? 1.0 : 0.35
+    Behavior on opacity { NumberAnimation { duration: Theme.animFast } }
+    
     Rectangle {
         id: bg
         anchors.fill: parent
@@ -66,10 +69,12 @@ Item {
     MouseArea {
         id: mouseArea
         anchors.fill: parent
-        hoverEnabled: true
-        cursorShape: Qt.PointingHandCursor
+        hoverEnabled: control.enabled
+        cursorShape: control.enabled ? Qt.PointingHandCursor : Qt.ArrowCursor
         onClicked: {
-            control.clicked();
+            if (control.enabled) {
+                control.clicked();
+            }
         }
     }
 }

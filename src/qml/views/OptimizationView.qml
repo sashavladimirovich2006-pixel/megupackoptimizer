@@ -3896,7 +3896,7 @@ Item {
 
                         ShowPathButton {
                             id: decryptButton
-                            visible: optimizerBackend.bitlockerDriveEncrypted
+                            enabled: optimizerBackend.bitlockerDriveEncrypted
                             text: qsTr("Decrypt C:")
                             iconSource: "qrc:/MeguPackOptimizer/src/resources/bolt.svg"
                             anchors.verticalCenter: parent.verticalCenter
