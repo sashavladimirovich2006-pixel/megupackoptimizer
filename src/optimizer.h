@@ -101,6 +101,8 @@ class Optimizer : public QObject {
     Q_PROPERTY(QVariantMap visualEffects READ visualEffects WRITE setVisualEffects NOTIFY visualEffectsChanged)
     Q_PROPERTY(QVariantMap originalVisualEffects READ originalVisualEffects NOTIFY originalVisualEffectsChanged)
     Q_PROPERTY(bool steamInstalled READ steamInstalled NOTIFY steamInstalledChanged)
+    Q_PROPERTY(QString steamPath READ steamPath NOTIFY steamInstalledChanged)
+    Q_PROPERTY(QVariantList steamInstalledGames READ steamInstalledGames NOTIFY steamInstalledGamesChanged)
     Q_PROPERTY(QVariantMap steamFriendsSettings READ steamFriendsSettings WRITE setSteamFriendsSettings NOTIFY steamFriendsSettingsChanged)
     Q_PROPERTY(QVariantMap originalSteamFriendsSettings READ originalSteamFriendsSettings NOTIFY originalSteamFriendsSettingsChanged)
     Q_PROPERTY(QStringList fixedDrives READ fixedDrives NOTIFY fixedDrivesChanged)
@@ -215,6 +217,8 @@ public:
     QVariantMap visualEffects() const { return m_visualEffects; }
     QVariantMap originalVisualEffects() const { return m_originalVisualEffects; }
     bool steamInstalled() const { return m_steamInstalled; }
+    QString steamPath() const;
+    QVariantList steamInstalledGames() const { return m_steamInstalledGames; }
     QVariantMap steamFriendsSettings() const { return m_steamFriendsSettings; }
     QVariantMap originalSteamFriendsSettings() const { return m_originalSteamFriendsSettings; }
     QStringList fixedDrives() const { return m_fixedDrives; }
@@ -283,10 +287,14 @@ public:
     Q_INVOKABLE void setDevicePowerSavingActive(const QString &subkeyPath, bool active);
     Q_INVOKABLE void revertUsbDevices();
     Q_INVOKABLE void restartExplorer();
+    Q_INVOKABLE void scanSteamInstalledGames();
+    Q_INVOKABLE QVariantMap getDriveInfo(const QString &path);
+    Q_INVOKABLE bool clearSteamDownloadCache();
 
 
 
 signals:
+    void steamCacheLog(const QString &message, const QString &type);
     // System info signals
     void osNameChanged(const QString &val);
     void cpuNameChanged(const QString &val);
@@ -376,6 +384,7 @@ signals:
     void visualEffectsChanged(const QVariantMap &val);
     void originalVisualEffectsChanged(const QVariantMap &val);
     void steamInstalledChanged(bool val);
+    void steamInstalledGamesChanged(const QVariantList &val);
     void steamFriendsSettingsChanged(const QVariantMap &val);
     void originalSteamFriendsSettingsChanged(const QVariantMap &val);
     void fixedDrivesChanged(const QStringList &val);
@@ -489,6 +498,7 @@ private:
     QVariantMap m_driveStates;
     QVariantMap m_originalDriveStates;
     bool m_steamInstalled = false;
+    QVariantList m_steamInstalledGames;
     QVariantMap m_steamFriendsSettings;
     QVariantMap m_originalSteamFriendsSettings;
     bool getVdfFriendsSettings(const QString &filePath, const QString &accountId, QVariantMap &settings);

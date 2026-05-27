@@ -1,22 +1,15 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 120" fill="none">
-  <!-- Soft glowing background or outline container -->
-  <rect x="5" y="5" width="110" height="110" rx="16" fill="rgba(255, 159, 28, 0.02)" stroke="currentColor" stroke-width="1.5" stroke-dasharray="4 4" />
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none">
+  <!-- Stylized Premium Solid Hammer Icon -->
+  <!-- Handle (Vibrant Orange Wood with Steel Grip) -->
+  <path d="M3.8 20.2a1.5 1.5 0 0 0 2.1 0l7.3-7.3-2.1-2.1-7.3 7.3a1.5 1.5 0 0 0 0 2.1z" fill="#FF9F1C" />
+  <path d="M3.8 20.2c-.3-.3-.3-.8 0-1.1l3.5-3.5 2.1 2.1-3.5 3.5c-.3.3-.8.3-1.1 0z" fill="#E0E0E0" />
   
-  <!-- Stylized premium hammer -->
-  <g transform="translate(10, -5)">
-    <!-- Handle (diagonal with a grip) -->
-    <line x1="35" y1="75" x2="65" y2="45" stroke="currentColor" stroke-width="4.5" stroke-linecap="round" />
-    <line x1="31" y1="79" x2="43" y2="67" stroke="#FF9F1C" stroke-width="5.5" stroke-linecap="round" />
-    
-    <!-- Metal Head -->
-    <path d="M60 40 L82 18 C83.5 16.5 86 16.5 87.5 18 L90 20.5 C91.5 22 91.5 24.5 90 26 L68 48 Z" fill="currentColor" />
-    <!-- Claw -->
-    <path d="M82 18 C87 18 92 23 94 28 C89 28 84 25 80 21" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" />
-    <!-- Impact head tip -->
-    <path d="M59 41 L52 48 C51 49 49 49 48 48 L46 46 C45 45 45 43 46 42 L53 35 Z" fill="currentColor" opacity="0.8" />
-  </g>
+  <!-- Metal Head Connection -->
+  <path d="M12.5 10.5l4-4 2.5 2.5-4 4z" fill="#B0B0B0" />
   
-  <!-- Text "РАЗРАБОТКА" -->
-  <rect x="25" y="86" width="70" height="18" rx="4" fill="rgba(255, 159, 28, 0.1)" stroke="#FF9F1C" stroke-width="1" />
-  <text x="60" y="98.5" text-anchor="middle" fill="#FF9F1C" font-family="Segoe UI, Roboto, Helvetica, sans-serif" font-size="8.5" font-weight="900" letter-spacing="1.5">РАЗРАБОТКА</text>
+  <!-- Hammer Striking Head & Claw -->
+  <path d="M16 7.5L20.5 3c.6-.6 1.6-.6 2.2 0l.8.8c.6.6.6 1.6 0 2.2L19 10.5z" fill="#E0E0E0" />
+  
+  <!-- Claw Shadow Accent -->
+  <path d="M20.5 3c1.2.2 2.2 1.2 2.2 2.2-1-.2-2-1-2.2-2.2z" fill="#909090" />
 </svg>

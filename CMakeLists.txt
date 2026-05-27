@@ -47,6 +47,18 @@ qt_add_qml_module(megu_pack_optimizer
         src/qml/views/DashboardView.qml
         src/qml/views/SettingsView.qml
         src/qml/views/OptimizationView.qml
+        src/qml/views/SteamSettingsDrawer.qml
+        src/qml/views/IndexingDrawer.qml
+        src/qml/views/XboxDrawer.qml
+        src/qml/views/MpoDrawer.qml
+        src/qml/views/PrinterDrawer.qml
+        src/qml/views/NotificationsDrawer.qml
+        src/qml/views/PowerDrawer.qml
+        src/qml/views/DefenderDrawer.qml
+        src/qml/views/UsbDrawer.qml
+        src/qml/views/TelemetryDrawer.qml
+        src/qml/views/WindowsUpdateDrawer.qml
+        src/qml/views/VisualEffectsDrawer.qml
     RESOURCES
         src/resources/settings.svg
         src/resources/steam.svg
