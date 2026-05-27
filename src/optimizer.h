@@ -276,6 +276,7 @@ public:
     Q_INVOKABLE void loadSystemStates();
     Q_INVOKABLE void startSystemOptimization();
     Q_INVOKABLE void showPath(const QString &funcName);
+    Q_INVOKABLE void decryptBitLocker();
     Q_INVOKABLE void removeXboxEntirely();
     Q_INVOKABLE void restoreXboxEntirely();
     Q_INVOKABLE void removeXboxComponent(const QString &componentName);

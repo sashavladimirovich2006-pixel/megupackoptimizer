@@ -4913,6 +4913,20 @@ void Optimizer::showPath(const QString &funcName) {
     }
 }
 
+void Optimizer::decryptBitLocker() {
+    Logger::log(tr("Initiating BitLocker decryption for C: drive..."), "INFO");
+#ifdef Q_OS_WIN
+    bool success = QProcess::startDetached("manage-bde.exe", QStringList() << "-off" << "C:");
+    if (success) {
+        Logger::log(tr("BitLocker decryption command successfully sent to Windows. Decryption is running in the background."), "SUCCESS");
+    } else {
+        Logger::log(tr("Failed to start manage-bde.exe to disable BitLocker."), "ERROR");
+    }
+#else
+    Logger::log(tr("[Simulation] BitLocker decryption triggered for C: drive."), "SUCCESS");
+#endif
+}
+
 void Optimizer::refreshSystemInfo() {
     m_osName = "Unknown OS";
     m_cpuName = "Unknown CPU";

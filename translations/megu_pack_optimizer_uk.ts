@@ -21,7 +21,7 @@
         <translation>Керує службами індексації пошуку файлів та властивостями індексації дисків.</translation>
     </message>
     <message>
-        <location filename="../src/qml/views/OptimizationView.qml" line="4404" />
+        <location filename="../src/qml/views/OptimizationView.qml" line="4415" />
         <source>Optimize</source>
         <translation>Оптимізувати</translation>
     </message>
@@ -56,18 +56,18 @@
         <translation>Сповіщення на екрані блокування</translation>
     </message>
     <message>
-        <location filename="../src/qml/views/OptimizationView.qml" line="5049" />
+        <location filename="../src/qml/views/OptimizationView.qml" line="5060" />
         <source>%1 Details</source>
         <translation>Деталі %1</translation>
     </message>
     <message>
-        <location filename="../src/qml/views/OptimizationView.qml" line="5304" />
+        <location filename="../src/qml/views/OptimizationView.qml" line="5315" />
         <source>Finished system modifications.</source>
         <translation>Модифікацію системи завершено.</translation>
     </message>
     <message>
         <location filename="../src/qml/views/OptimizationView.qml" line="1287" />
-        <location filename="../src/qml/views/OptimizationView.qml" line="5396" />
+        <location filename="../src/qml/views/OptimizationView.qml" line="5407" />
         <source>Close</source>
         <translation>Закрити</translation>
     </message>
@@ -97,7 +97,7 @@
         <translation>Налаштуйте режими оверлею DWM для оптимізації затримки та усунення фризів в іграх.</translation>
     </message>
     <message>
-        <location filename="../src/qml/views/OptimizationView.qml" line="4489" />
+        <location filename="../src/qml/views/OptimizationView.qml" line="4500" />
         <source>INDEXING OPTIONS</source>
         <translation>НАЛАШТУВАННЯ ІНДЕКСАЦІЇ</translation>
     </message>
@@ -127,9 +127,9 @@
         <location filename="../src/qml/views/OptimizationView.qml" line="3610" />
         <location filename="../src/qml/views/OptimizationView.qml" line="3758" />
         <location filename="../src/qml/views/OptimizationView.qml" line="3851" />
-        <location filename="../src/qml/views/OptimizationView.qml" line="3967" />
-        <location filename="../src/qml/views/OptimizationView.qml" line="4113" />
-        <location filename="../src/qml/views/OptimizationView.qml" line="4307" />
+        <location filename="../src/qml/views/OptimizationView.qml" line="3978" />
+        <location filename="../src/qml/views/OptimizationView.qml" line="4124" />
+        <location filename="../src/qml/views/OptimizationView.qml" line="4318" />
         <source>Selected for application</source>
         <translation>Обрано для застосування</translation>
     </message>
@@ -219,7 +219,7 @@
         <location filename="../src/qml/views/OptimizationView.qml" line="737" />
         <location filename="../src/qml/views/OptimizationView.qml" line="758" />
         <location filename="../src/qml/views/OptimizationView.qml" line="1063" />
-        <location filename="../src/qml/views/OptimizationView.qml" line="4096" />
+        <location filename="../src/qml/views/OptimizationView.qml" line="4107" />
         <source>Power Plan</source>
         <translation>Режим живлення</translation>
     </message>
@@ -234,7 +234,7 @@
         <translation>Очікують змін:</translation>
     </message>
     <message>
-        <location filename="../src/qml/views/OptimizationView.qml" line="4124" />
+        <location filename="../src/qml/views/OptimizationView.qml" line="4135" />
         <source>Select system power plans and unlock the hidden Ultimate Performance mode.</source>
         <translation>Вибір системних схем живлення та розблокування прихованого режиму максимальної продуктивності.</translation>
     </message>
@@ -243,7 +243,7 @@
         <location filename="../src/qml/views/OptimizationView.qml" line="748" />
         <location filename="../src/qml/views/OptimizationView.qml" line="847" />
         <location filename="../src/qml/views/OptimizationView.qml" line="848" />
-        <location filename="../src/qml/views/OptimizationView.qml" line="4185" />
+        <location filename="../src/qml/views/OptimizationView.qml" line="4196" />
         <source>Unknown</source>
         <translation>Невідомо</translation>
     </message>
@@ -273,7 +273,7 @@
         <location filename="../src/qml/views/OptimizationView.qml" line="516" />
         <location filename="../src/qml/views/OptimizationView.qml" line="764" />
         <location filename="../src/qml/views/OptimizationView.qml" line="1065" />
-        <location filename="../src/qml/views/OptimizationView.qml" line="3950" />
+        <location filename="../src/qml/views/OptimizationView.qml" line="3961" />
         <source>Windows Defender</source>
         <translation>Windows Defender</translation>
     </message>
@@ -792,95 +792,100 @@
         <translation>Не зашифровано</translation>
     </message>
     <message>
-        <location filename="../src/qml/views/OptimizationView.qml" line="3978" />
+        <location filename="../src/qml/views/OptimizationView.qml" line="3900" />
+        <source>Decrypt C:</source>
+        <translation>Розшифрувати C:</translation>
+    </message>
+    <message>
+        <location filename="../src/qml/views/OptimizationView.qml" line="3989" />
         <source>Disable Microsoft Defender Antivirus protection, real-time scanning, and services to minimize system latency and resource consumption.</source>
         <translation>Вимкнення антивірусного захисту Microsoft Defender, сканування в реальному часі та служб для мінімізації затримок і споживання ресурсів.</translation>
     </message>
     <message>
-        <location filename="../src/qml/views/OptimizationView.qml" line="4490" />
+        <location filename="../src/qml/views/OptimizationView.qml" line="4501" />
         <source>XBOX APP &amp; GAME BAR</source>
         <translation>XBOX APP ТА GAME BAR</translation>
     </message>
     <message>
-        <location filename="../src/qml/views/OptimizationView.qml" line="4491" />
+        <location filename="../src/qml/views/OptimizationView.qml" line="4502" />
         <source>MPO LATENCY TWEAK</source>
         <translation>НАЛАШТУВАННЯ MPO</translation>
     </message>
     <message>
-        <location filename="../src/qml/views/OptimizationView.qml" line="4492" />
+        <location filename="../src/qml/views/OptimizationView.qml" line="4503" />
         <source>PRINTER TWEAKS</source>
         <translation>НАЛАШТУВАННЯ ПРИНТЕРІВ</translation>
     </message>
     <message>
-        <location filename="../src/qml/views/OptimizationView.qml" line="4493" />
+        <location filename="../src/qml/views/OptimizationView.qml" line="4504" />
         <source>NOTIFICATION SETTINGS</source>
         <translation>НАЛАШТУВАННЯ СПОВІЩЕНЬ</translation>
     </message>
     <message>
-        <location filename="../src/qml/views/OptimizationView.qml" line="4494" />
+        <location filename="../src/qml/views/OptimizationView.qml" line="4505" />
         <source>POWER PLANS</source>
         <translation>СХЕМИ ЖИВЛЕННЯ</translation>
     </message>
     <message>
-        <location filename="../src/qml/views/OptimizationView.qml" line="4495" />
+        <location filename="../src/qml/views/OptimizationView.qml" line="4506" />
         <source>WINDOWS DEFENDER</source>
         <translation>ЗАХИСНИК WINDOWS</translation>
     </message>
     <message>
-        <location filename="../src/qml/views/OptimizationView.qml" line="4496" />
+        <location filename="../src/qml/views/OptimizationView.qml" line="4507" />
         <source>USB 3.0 POWER SAVING</source>
         <translation>ЕНЕРГОЗБЕРЕЖЕННЯ USB 3.0</translation>
     </message>
     <message>
         <location filename="../src/qml/views/OptimizationView.qml" line="1165" />
-        <location filename="../src/qml/views/OptimizationView.qml" line="4497" />
+        <location filename="../src/qml/views/OptimizationView.qml" line="4508" />
         <source>TELEMETRY SETTINGS</source>
         <translation>НАЛАШТУВАННЯ ТЕЛЕМЕТРІЇ</translation>
     </message>
     <message>
-        <location filename="../src/qml/views/OptimizationView.qml" line="4498" />
+        <location filename="../src/qml/views/OptimizationView.qml" line="4509" />
         <source>WINDOWS UPDATE</source>
         <translation>ОНОВЛЕННЯ WINDOWS</translation>
     </message>
     <message>
-        <location filename="../src/qml/views/OptimizationView.qml" line="5294" />
+        <location filename="../src/qml/views/OptimizationView.qml" line="5305" />
         <source>Optimization in Progress</source>
         <translation>Оптимізація триває</translation>
     </message>
     <message>
-        <location filename="../src/qml/views/OptimizationView.qml" line="5294" />
+        <location filename="../src/qml/views/OptimizationView.qml" line="5305" />
         <source>Optimization Complete</source>
         <translation>Оптимізацію завершено</translation>
     </message>
     <message>
-        <location filename="../src/qml/views/OptimizationView.qml" line="5304" />
-        <location filename="../src/qml/views/OptimizationView.qml" line="5328" />
+        <location filename="../src/qml/views/OptimizationView.qml" line="5315" />
+        <location filename="../src/qml/views/OptimizationView.qml" line="5339" />
         <source>Applying system configuration adjustments...</source>
         <translation>Застосування системних налаштувань...</translation>
     </message>
     <message>
-        <location filename="../src/qml/views/OptimizationView.qml" line="5327" />
-        <location filename="../src/qml/views/OptimizationView.qml" line="5381" />
+        <location filename="../src/qml/views/OptimizationView.qml" line="5338" />
+        <location filename="../src/qml/views/OptimizationView.qml" line="5392" />
         <source>Analyzing optimization plan...</source>
         <translation>Аналіз плану оптимізації...</translation>
     </message>
     <message>
-        <location filename="../src/qml/views/OptimizationView.qml" line="5329" />
+        <location filename="../src/qml/views/OptimizationView.qml" line="5340" />
         <source>Verifying changes and syncing state...</source>
         <translation>Перевірка змін та синхронізація стану...</translation>
     </message>
     <message>
-        <location filename="../src/qml/views/OptimizationView.qml" line="5383" />
+        <location filename="../src/qml/views/OptimizationView.qml" line="5394" />
         <source>Optimization completed successfully!</source>
         <translation>Оптимізацію успішно завершено!</translation>
     </message>
     <message>
-        <location filename="../src/qml/views/OptimizationView.qml" line="5482" />
+        <location filename="../src/qml/views/OptimizationView.qml" line="5493" />
         <source>Discord Process Detected</source>
         <translation>Виявлено процес Discord</translation>
     </message>
     <message>
-        <location filename="../src/qml/views/OptimizationView.qml" line="5492" />
+        <location filename="../src/qml/views/OptimizationView.qml" line="5503" />
         <source>Discord is currently running. It must be closed to safely lock/unlock overlay files.
 
 Would you like to close Discord now and proceed?</source>
@@ -889,17 +894,17 @@ Would you like to close Discord now and proceed?</source>
 Бажаєте закрити Discord зараз і продовжити?</translation>
     </message>
     <message>
-        <location filename="../src/qml/views/OptimizationView.qml" line="5506" />
+        <location filename="../src/qml/views/OptimizationView.qml" line="5517" />
         <source>Close &amp; Optimize</source>
         <translation>Закрити та оптимізувати</translation>
     </message>
     <message>
-        <location filename="../src/qml/views/OptimizationView.qml" line="5519" />
+        <location filename="../src/qml/views/OptimizationView.qml" line="5530" />
         <source>Skip Overlay</source>
         <translation>Пропустити оверлей</translation>
     </message>
     <message>
-        <location filename="../src/qml/views/OptimizationView.qml" line="5532" />
+        <location filename="../src/qml/views/OptimizationView.qml" line="5543" />
         <source>Cancel</source>
         <translation>Скасувати</translation>
     </message>
@@ -952,7 +957,7 @@ Would you like to close Discord now and proceed?</source>
         <translation>Увімкнення або вимкнення брандмауера Windows для контролю захисту мережевого трафіку.</translation>
     </message>
     <message>
-        <location filename="../src/qml/views/OptimizationView.qml" line="3986" />
+        <location filename="../src/qml/views/OptimizationView.qml" line="3997" />
         <source>Note: Requires disabling Tamper Protection.</source>
         <translation>Примітка: Вимагає відключення захисту від несанкціонованого доступу (Tamper Protection).</translation>
     </message>
@@ -960,12 +965,12 @@ Would you like to close Discord now and proceed?</source>
         <location filename="../src/qml/views/OptimizationView.qml" line="528" />
         <location filename="../src/qml/views/OptimizationView.qml" line="797" />
         <location filename="../src/qml/views/OptimizationView.qml" line="1066" />
-        <location filename="../src/qml/views/OptimizationView.qml" line="4290" />
+        <location filename="../src/qml/views/OptimizationView.qml" line="4301" />
         <source>USB 3.0 Power Saving</source>
         <translation>Енергозбереження USB 3.0</translation>
     </message>
     <message>
-        <location filename="../src/qml/views/OptimizationView.qml" line="4318" />
+        <location filename="../src/qml/views/OptimizationView.qml" line="4329" />
         <source>Prevent Windows from turning off USB 3.0 ports to save power, avoiding connection dropouts and peripheral latency.</source>
         <translation>Запобігає вимкненню портів USB 3.0 системою Windows для збереження енергії, уникаючи обривів з'єднання та затримок периферії.</translation>
     </message>
@@ -1097,7 +1102,7 @@ Would you like to close Discord now and proceed?</source>
         <translation>Оптимізуйте анімацію, тіні та ефекти рендерингу Windows для покращення чуйності системи.</translation>
     </message>
     <message>
-        <location filename="../src/qml/views/OptimizationView.qml" line="4499" />
+        <location filename="../src/qml/views/OptimizationView.qml" line="4510" />
         <source>VISUAL EFFECTS</source>
         <translation>ВІЗУАЛЬНІ ЕФЕКТИ</translation>
     </message>
@@ -1218,9 +1223,1325 @@ Would you like to close Discord now and proceed?</source>
         <translation>Клієнт Steam не виявлено в цій системі.</translation>
     </message>
     <message>
-        <location filename="../src/qml/views/OptimizationView.qml" line="4500" />
+        <location filename="../src/qml/views/OptimizationView.qml" line="4511" />
         <source>STEAM SETTINGS</source>
         <translation>НАЛАШТУВАННЯ STEAM</translation>
+    </message>
+</context>
+<context>
+    <name>Optimizer</name>
+    <message>
+        <location filename="../src/optimizer.cpp" line="2457" />
+        <source>Starting system optimization...</source>
+        <translation type="unfinished" />
+    </message>
+    <message>
+        <location filename="../src/optimizer.cpp" line="2630" />
+        <source>No changes detected. Everything is already up to date!</source>
+        <translation type="unfinished" />
+    </message>
+    <message>
+        <location filename="../src/optimizer.cpp" line="2642" />
+        <source>Processing Windows Search service...</source>
+        <translation type="unfinished" />
+    </message>
+    <message>
+        <location filename="../src/optimizer.cpp" line="2652" />
+        <source>Windows Search startup set to Automatic.</source>
+        <translation type="unfinished" />
+    </message>
+    <message>
+        <location filename="../src/optimizer.cpp" line="2652" />
+        <source>Windows Search startup set to Disabled.</source>
+        <translation type="unfinished" />
+    </message>
+    <message>
+        <location filename="../src/optimizer.cpp" line="2659" />
+        <source>Stopping Windows Search service...</source>
+        <translation type="unfinished" />
+    </message>
+    <message>
+        <location filename="../src/optimizer.cpp" line="2669" />
+        <source>Windows Search service stopped successfully.</source>
+        <translation type="unfinished" />
+    </message>
+    <message>
+        <location filename="../src/optimizer.cpp" line="2671" />
+        <source>Windows Search service stop requested.</source>
+        <translation type="unfinished" />
+    </message>
+    <message>
+        <location filename="../src/optimizer.cpp" line="2674" />
+        <source>Starting Windows Search service...</source>
+        <translation type="unfinished" />
+    </message>
+    <message>
+        <location filename="../src/optimizer.cpp" line="2683" />
+        <source>Windows Search service started successfully.</source>
+        <translation type="unfinished" />
+    </message>
+    <message>
+        <location filename="../src/optimizer.cpp" line="2685" />
+        <source>Windows Search service start pending.</source>
+        <translation type="unfinished" />
+    </message>
+    <message>
+        <location filename="../src/optimizer.cpp" line="2688" />
+        <source>Failed to start Windows Search service.</source>
+        <translation type="unfinished" />
+    </message>
+    <message>
+        <location filename="../src/optimizer.cpp" line="2694" />
+        <source>Failed to change Windows Search service configuration. Error: %1</source>
+        <translation type="unfinished" />
+    </message>
+    <message>
+        <location filename="../src/optimizer.cpp" line="2699" />
+        <source>Failed to open Windows Search service. Error: %1</source>
+        <translation type="unfinished" />
+    </message>
+    <message>
+        <location filename="../src/optimizer.cpp" line="2704" />
+        <location filename="../src/optimizer.cpp" line="3105" />
+        <location filename="../src/optimizer.cpp" line="3178" />
+        <source>Failed to connect to SCM. Error: %1</source>
+        <translation type="unfinished" />
+    </message>
+    <message>
+        <location filename="../src/optimizer.cpp" line="2707" />
+        <source>[Simulation] Windows Search service state set to: %1</source>
+        <translation type="unfinished" />
+    </message>
+    <message>
+        <location filename="../src/optimizer.cpp" line="2720" />
+        <source>Processing Classic Context Menu configuration...</source>
+        <translation type="unfinished" />
+    </message>
+    <message>
+        <location filename="../src/optimizer.cpp" line="2755" />
+        <source>Classic Context Menu is now ENABLED. Please restart Windows Explorer to apply changes.</source>
+        <translation type="unfinished" />
+    </message>
+    <message>
+        <location filename="../src/optimizer.cpp" line="2755" />
+        <source>Classic Context Menu is now DISABLED. Please restart Windows Explorer to apply changes.</source>
+        <translation type="unfinished" />
+    </message>
+    <message>
+        <location filename="../src/optimizer.cpp" line="2759" />
+        <source>Failed to update Classic Context Menu state.</source>
+        <translation type="unfinished" />
+    </message>
+    <message>
+        <location filename="../src/optimizer.cpp" line="2762" />
+        <source>[Simulation] Classic Context Menu set to: %1</source>
+        <translation type="unfinished" />
+    </message>
+    <message>
+        <location filename="../src/optimizer.cpp" line="2771" />
+        <source>Configuring system hibernation...</source>
+        <translation type="unfinished" />
+    </message>
+    <message>
+        <location filename="../src/optimizer.cpp" line="2791" />
+        <source>Hibernation is now ENABLED.</source>
+        <translation type="unfinished" />
+    </message>
+    <message>
+        <location filename="../src/optimizer.cpp" line="2791" />
+        <source>Hibernation is now DISABLED.</source>
+        <translation type="unfinished" />
+    </message>
+    <message>
+        <location filename="../src/optimizer.cpp" line="2795" />
+        <source>Failed to update hibernation state.</source>
+        <translation type="unfinished" />
+    </message>
+    <message>
+        <location filename="../src/optimizer.cpp" line="2798" />
+        <source>[Simulation] Hibernation set to: %1</source>
+        <translation type="unfinished" />
+    </message>
+    <message>
+        <location filename="../src/optimizer.cpp" line="2811" />
+        <source>Configuring Xbox gaming overlay popups...</source>
+        <translation type="unfinished" />
+    </message>
+    <message>
+        <location filename="../src/optimizer.cpp" line="2883" />
+        <source>Gaming overlay notifications are now ENABLED.</source>
+        <translation type="unfinished" />
+    </message>
+    <message>
+        <location filename="../src/optimizer.cpp" line="2883" />
+        <source>Gaming overlay notifications are now DISABLED.</source>
+        <translation type="unfinished" />
+    </message>
+    <message>
+        <location filename="../src/optimizer.cpp" line="2887" />
+        <source>Failed to update gaming overlay state.</source>
+        <translation type="unfinished" />
+    </message>
+    <message>
+        <location filename="../src/optimizer.cpp" line="2890" />
+        <source>[Simulation] Gaming overlay set to: %1</source>
+        <translation type="unfinished" />
+    </message>
+    <message>
+        <location filename="../src/optimizer.cpp" line="2903" />
+        <source>Configuring Core Isolation (Memory Integrity)...</source>
+        <translation type="unfinished" />
+    </message>
+    <message>
+        <location filename="../src/optimizer.cpp" line="2929" />
+        <source>Core Isolation is now ENABLED.</source>
+        <translation type="unfinished" />
+    </message>
+    <message>
+        <location filename="../src/optimizer.cpp" line="2929" />
+        <source>Core Isolation is now DISABLED.</source>
+        <translation type="unfinished" />
+    </message>
+    <message>
+        <location filename="../src/optimizer.cpp" line="2932" />
+        <source>Please restart your PC to apply Core Isolation changes.</source>
+        <translation type="unfinished">Будь ласка, перезавантажте комп'ютер для застосування змін ізоляції ядра.</translation>
+    </message>
+    <message>
+        <location filename="../src/optimizer.cpp" line="2936" />
+        <location filename="../src/optimizer.cpp" line="2937" />
+        <source>Failed to update Core Isolation state. Error: %1</source>
+        <translation type="unfinished" />
+    </message>
+    <message>
+        <location filename="../src/optimizer.cpp" line="2940" />
+        <source>[Simulation] Core Isolation set to: %1</source>
+        <translation type="unfinished" />
+    </message>
+    <message>
+        <location filename="../src/optimizer.cpp" line="2949" />
+        <source>Configuring mouse acceleration...</source>
+        <translation type="unfinished" />
+    </message>
+    <message>
+        <location filename="../src/optimizer.cpp" line="2969" />
+        <source>Mouse acceleration is now ENABLED.</source>
+        <translation type="unfinished" />
+    </message>
+    <message>
+        <location filename="../src/optimizer.cpp" line="2969" />
+        <source>Mouse acceleration is now DISABLED.</source>
+        <translation type="unfinished" />
+    </message>
+    <message>
+        <location filename="../src/optimizer.cpp" line="2973" />
+        <source>Failed to update mouse acceleration state.</source>
+        <translation type="unfinished" />
+    </message>
+    <message>
+        <location filename="../src/optimizer.cpp" line="2976" />
+        <source>[Simulation] Mouse acceleration set to: %1</source>
+        <translation type="unfinished" />
+    </message>
+    <message>
+        <location filename="../src/optimizer.cpp" line="2985" />
+        <source>Configuring Windows Game Mode...</source>
+        <translation type="unfinished" />
+    </message>
+    <message>
+        <location filename="../src/optimizer.cpp" line="3004" />
+        <source>Windows Game Mode is now ENABLED.</source>
+        <translation type="unfinished" />
+    </message>
+    <message>
+        <location filename="../src/optimizer.cpp" line="3004" />
+        <source>Windows Game Mode is now DISABLED.</source>
+        <translation type="unfinished" />
+    </message>
+    <message>
+        <location filename="../src/optimizer.cpp" line="3008" />
+        <source>Failed to update Windows Game Mode state.</source>
+        <translation type="unfinished" />
+    </message>
+    <message>
+        <location filename="../src/optimizer.cpp" line="3011" />
+        <source>[Simulation] Windows Game Mode set to: %1</source>
+        <translation type="unfinished" />
+    </message>
+    <message>
+        <location filename="../src/optimizer.cpp" line="3020" />
+        <source>Configuring Windows Defender Firewall...</source>
+        <translation type="unfinished" />
+    </message>
+    <message>
+        <location filename="../src/optimizer.cpp" line="3028" />
+        <source>Windows Defender Firewall is now ENABLED.</source>
+        <translation type="unfinished" />
+    </message>
+    <message>
+        <location filename="../src/optimizer.cpp" line="3028" />
+        <source>Windows Defender Firewall is now DISABLED.</source>
+        <translation type="unfinished" />
+    </message>
+    <message>
+        <location filename="../src/optimizer.cpp" line="3032" />
+        <source>Failed to update Windows Defender Firewall state.</source>
+        <translation type="unfinished" />
+    </message>
+    <message>
+        <location filename="../src/optimizer.cpp" line="3035" />
+        <source>[Simulation] Windows Defender Firewall set to: %1</source>
+        <translation type="unfinished" />
+    </message>
+    <message>
+        <location filename="../src/optimizer.cpp" line="3044" />
+        <source>Processing Print Spooler service...</source>
+        <translation type="unfinished" />
+    </message>
+    <message>
+        <location filename="../src/optimizer.cpp" line="3053" />
+        <source>Print Spooler startup set to Automatic.</source>
+        <translation type="unfinished" />
+    </message>
+    <message>
+        <location filename="../src/optimizer.cpp" line="3053" />
+        <source>Print Spooler startup set to Disabled.</source>
+        <translation type="unfinished" />
+    </message>
+    <message>
+        <location filename="../src/optimizer.cpp" line="3060" />
+        <source>Stopping Print Spooler service...</source>
+        <translation type="unfinished" />
+    </message>
+    <message>
+        <location filename="../src/optimizer.cpp" line="3070" />
+        <source>Print Spooler service stopped successfully.</source>
+        <translation type="unfinished" />
+    </message>
+    <message>
+        <location filename="../src/optimizer.cpp" line="3072" />
+        <source>Print Spooler service stop requested.</source>
+        <translation type="unfinished" />
+    </message>
+    <message>
+        <location filename="../src/optimizer.cpp" line="3075" />
+        <source>Starting Print Spooler service...</source>
+        <translation type="unfinished" />
+    </message>
+    <message>
+        <location filename="../src/optimizer.cpp" line="3084" />
+        <source>Print Spooler service started successfully.</source>
+        <translation type="unfinished" />
+    </message>
+    <message>
+        <location filename="../src/optimizer.cpp" line="3086" />
+        <source>Print Spooler service start pending.</source>
+        <translation type="unfinished" />
+    </message>
+    <message>
+        <location filename="../src/optimizer.cpp" line="3089" />
+        <source>Failed to start Print Spooler service.</source>
+        <translation type="unfinished" />
+    </message>
+    <message>
+        <location filename="../src/optimizer.cpp" line="3095" />
+        <source>Failed to change Print Spooler service configuration. Error: %1</source>
+        <translation type="unfinished" />
+    </message>
+    <message>
+        <location filename="../src/optimizer.cpp" line="3100" />
+        <source>Failed to open Print Spooler service. Error: %1</source>
+        <translation type="unfinished" />
+    </message>
+    <message>
+        <location filename="../src/optimizer.cpp" line="3108" />
+        <source>[Simulation] Print Spooler service state set to: %1</source>
+        <translation type="unfinished" />
+    </message>
+    <message>
+        <location filename="../src/optimizer.cpp" line="3117" />
+        <source>Processing BitLocker service...</source>
+        <translation type="unfinished" />
+    </message>
+    <message>
+        <location filename="../src/optimizer.cpp" line="3126" />
+        <source>BitLocker service startup set to Manual.</source>
+        <translation type="unfinished" />
+    </message>
+    <message>
+        <location filename="../src/optimizer.cpp" line="3126" />
+        <source>BitLocker service startup set to Disabled.</source>
+        <translation type="unfinished" />
+    </message>
+    <message>
+        <location filename="../src/optimizer.cpp" line="3133" />
+        <source>Stopping BitLocker service...</source>
+        <translation type="unfinished" />
+    </message>
+    <message>
+        <location filename="../src/optimizer.cpp" line="3143" />
+        <source>BitLocker service stopped successfully.</source>
+        <translation type="unfinished" />
+    </message>
+    <message>
+        <location filename="../src/optimizer.cpp" line="3145" />
+        <source>BitLocker service stop requested.</source>
+        <translation type="unfinished" />
+    </message>
+    <message>
+        <location filename="../src/optimizer.cpp" line="3148" />
+        <source>Starting BitLocker service...</source>
+        <translation type="unfinished" />
+    </message>
+    <message>
+        <location filename="../src/optimizer.cpp" line="3157" />
+        <source>BitLocker service started successfully.</source>
+        <translation type="unfinished" />
+    </message>
+    <message>
+        <location filename="../src/optimizer.cpp" line="3159" />
+        <source>BitLocker service start pending.</source>
+        <translation type="unfinished" />
+    </message>
+    <message>
+        <location filename="../src/optimizer.cpp" line="3162" />
+        <source>Failed to start BitLocker service.</source>
+        <translation type="unfinished" />
+    </message>
+    <message>
+        <location filename="../src/optimizer.cpp" line="3168" />
+        <source>Failed to change BitLocker service configuration. Error: %1</source>
+        <translation type="unfinished" />
+    </message>
+    <message>
+        <location filename="../src/optimizer.cpp" line="3173" />
+        <source>Failed to open BitLocker service. Error: %1</source>
+        <translation type="unfinished" />
+    </message>
+    <message>
+        <location filename="../src/optimizer.cpp" line="3181" />
+        <source>[Simulation] BitLocker service state set to: %1</source>
+        <translation type="unfinished" />
+    </message>
+    <message>
+        <location filename="../src/optimizer.cpp" line="3189" />
+        <source>Processing Discord Overlay...</source>
+        <translation type="unfinished" />
+    </message>
+    <message>
+        <location filename="../src/optimizer.cpp" line="3193" />
+        <source>Closing running Discord processes to unlock files...</source>
+        <translation type="unfinished" />
+    </message>
+    <message>
+        <location filename="../src/optimizer.cpp" line="3200" />
+        <source>Discord Overlay successfully enabled.</source>
+        <translation type="unfinished" />
+    </message>
+    <message>
+        <location filename="../src/optimizer.cpp" line="3202" />
+        <source>Discord Overlay successfully disabled.</source>
+        <translation type="unfinished" />
+    </message>
+    <message>
+        <location filename="../src/optimizer.cpp" line="3205" />
+        <source>[Simulation] Discord Overlay set to: %1</source>
+        <translation type="unfinished" />
+    </message>
+    <message>
+        <location filename="../src/optimizer.cpp" line="3219" />
+        <source>Processing Windows notifications configuration...</source>
+        <translation type="unfinished" />
+    </message>
+    <message>
+        <location filename="../src/optimizer.cpp" line="3258" />
+        <source>Windows notifications updated successfully.</source>
+        <translation type="unfinished" />
+    </message>
+    <message>
+        <location filename="../src/optimizer.cpp" line="3261" />
+        <source>Failed to update Windows notifications. Error: %1</source>
+        <translation type="unfinished" />
+    </message>
+    <message>
+        <location filename="../src/optimizer.cpp" line="3264" />
+        <source>[Simulation] Windows notifications set to: %1</source>
+        <translation type="unfinished" />
+    </message>
+    <message>
+        <location filename="../src/optimizer.cpp" line="3281" />
+        <source>Processing complete removal of Windows Defender...</source>
+        <translation type="unfinished" />
+    </message>
+    <message>
+        <location filename="../src/optimizer.cpp" line="3356" />
+        <source>Windows Defender completely deleted and disabled!</source>
+        <translation type="unfinished" />
+    </message>
+    <message>
+        <location filename="../src/optimizer.cpp" line="3358" />
+        <source>[Simulation] Windows Defender completely removed and disabled.</source>
+        <translation type="unfinished" />
+    </message>
+    <message>
+        <location filename="../src/optimizer.cpp" line="3379" />
+        <source>Processing Windows Defender configuration...</source>
+        <translation type="unfinished" />
+    </message>
+    <message>
+        <location filename="../src/optimizer.cpp" line="3387" />
+        <source>Applying Windows Defender registry policies...</source>
+        <translation type="unfinished" />
+    </message>
+    <message>
+        <location filename="../src/optimizer.cpp" line="3413" />
+        <source>Applying Windows Defender PowerShell preferences...</source>
+        <translation type="unfinished" />
+    </message>
+    <message>
+        <location filename="../src/optimizer.cpp" line="3427" />
+        <source>Configuring Windows Defender services...</source>
+        <translation type="unfinished" />
+    </message>
+    <message>
+        <location filename="../src/optimizer.cpp" line="3442" />
+        <source>Warning: Unable to modify service '%1'. This is typically blocked by Windows Tamper Protection. Please disable 'Tamper Protection' in Windows Security settings first.</source>
+        <translation type="unfinished" />
+    </message>
+    <message>
+        <location filename="../src/optimizer.cpp" line="3459" />
+        <source>Windows Defender optimization completed.</source>
+        <translation type="unfinished" />
+    </message>
+    <message>
+        <location filename="../src/optimizer.cpp" line="3462" />
+        <source>Failed to apply some Windows Defender settings.</source>
+        <translation type="unfinished" />
+    </message>
+    <message>
+        <location filename="../src/optimizer.cpp" line="3465" />
+        <source>[Simulation] Windows Defender active set to: %1</source>
+        <translation type="unfinished" />
+    </message>
+    <message>
+        <location filename="../src/optimizer.cpp" line="3485" />
+        <source>Configuring Windows power settings...</source>
+        <translation type="unfinished" />
+    </message>
+    <message>
+        <location filename="../src/optimizer.cpp" line="3539" />
+        <source>Ultimate Performance scheme deleted from system.</source>
+        <translation type="unfinished" />
+    </message>
+    <message>
+        <location filename="../src/optimizer.cpp" line="3605" />
+        <location filename="../src/optimizer.cpp" line="3611" />
+        <source>Failed to duplicate High Performance power scheme.</source>
+        <translation type="unfinished" />
+    </message>
+    <message>
+        <location filename="../src/optimizer.cpp" line="3633" />
+        <source>Power plan changed to: %1</source>
+        <translation type="unfinished" />
+    </message>
+    <message>
+        <location filename="../src/optimizer.cpp" line="3637" />
+        <location filename="../src/optimizer.cpp" line="3642" />
+        <source>Failed to change power scheme.</source>
+        <translation type="unfinished" />
+    </message>
+    <message>
+        <location filename="../src/optimizer.cpp" line="3649" />
+        <source>[Simulation] Power plan changed to: %1</source>
+        <translation type="unfinished" />
+    </message>
+    <message>
+        <location filename="../src/optimizer.cpp" line="3656" />
+        <source>Configuring USB 3.0 Power Saving...</source>
+        <translation type="unfinished" />
+    </message>
+    <message>
+        <location filename="../src/optimizer.cpp" line="3668" />
+        <source>Setting USB power saving for '%1' to %2...</source>
+        <translation type="unfinished" />
+    </message>
+    <message>
+        <location filename="../src/optimizer.cpp" line="3668" />
+        <location filename="../src/optimizer.cpp" line="3773" />
+        <source>Enabled</source>
+        <translation type="unfinished">Увімкнено</translation>
+    </message>
+    <message>
+        <location filename="../src/optimizer.cpp" line="3668" />
+        <location filename="../src/optimizer.cpp" line="3773" />
+        <source>Disabled</source>
+        <translation type="unfinished">Вимкнено</translation>
+    </message>
+    <message>
+        <location filename="../src/optimizer.cpp" line="3680" />
+        <source>Power saving enabled for '%1'.</source>
+        <translation type="unfinished" />
+    </message>
+    <message>
+        <location filename="../src/optimizer.cpp" line="3685" />
+        <source>Power saving disabled for '%1'.</source>
+        <translation type="unfinished" />
+    </message>
+    <message>
+        <location filename="../src/optimizer.cpp" line="3688" />
+        <source>Failed to disable power saving for '%1'.</source>
+        <translation type="unfinished" />
+    </message>
+    <message>
+        <location filename="../src/optimizer.cpp" line="3694" />
+        <source>Failed to open registry key for '%1'.</source>
+        <translation type="unfinished" />
+    </message>
+    <message>
+        <location filename="../src/optimizer.cpp" line="3724" />
+        <source>[Simulation] Set USB power saving for '%1' to %2.</source>
+        <translation type="unfinished" />
+    </message>
+    <message>
+        <location filename="../src/optimizer.cpp" line="3729" />
+        <source>USB 3.0 Power Saving configuration completed.</source>
+        <translation type="unfinished" />
+    </message>
+    <message>
+        <location filename="../src/optimizer.cpp" line="3732" />
+        <source>Failed to apply some USB 3.0 Power Saving settings.</source>
+        <translation type="unfinished" />
+    </message>
+    <message>
+        <location filename="../src/optimizer.cpp" line="3739" />
+        <source>Configuring Remote Access (RDP)...</source>
+        <translation type="unfinished" />
+    </message>
+    <message>
+        <location filename="../src/optimizer.cpp" line="3748" />
+        <source>Remote Access enabled in registry.</source>
+        <translation type="unfinished" />
+    </message>
+    <message>
+        <location filename="../src/optimizer.cpp" line="3748" />
+        <source>Remote Access disabled in registry.</source>
+        <translation type="unfinished" />
+    </message>
+    <message>
+        <location filename="../src/optimizer.cpp" line="3751" />
+        <source>Failed to write Remote Access registry value.</source>
+        <translation type="unfinished" />
+    </message>
+    <message>
+        <location filename="../src/optimizer.cpp" line="3756" />
+        <source>Failed to open Terminal Server registry key.</source>
+        <translation type="unfinished" />
+    </message>
+    <message>
+        <location filename="../src/optimizer.cpp" line="3767" />
+        <source>Remote Desktop service and firewall rules enabled.</source>
+        <translation type="unfinished" />
+    </message>
+    <message>
+        <location filename="../src/optimizer.cpp" line="3767" />
+        <source>Remote Desktop service and firewall rules disabled.</source>
+        <translation type="unfinished" />
+    </message>
+    <message>
+        <location filename="../src/optimizer.cpp" line="3770" />
+        <source>Failed to configure Remote Desktop service / firewall.</source>
+        <translation type="unfinished" />
+    </message>
+    <message>
+        <location filename="../src/optimizer.cpp" line="3773" />
+        <source>[Simulation] Remote Access (RDP) set to %1.</source>
+        <translation type="unfinished" />
+    </message>
+    <message>
+        <location filename="../src/optimizer.cpp" line="3776" />
+        <source>Remote Access (RDP) configuration completed.</source>
+        <translation type="unfinished" />
+    </message>
+    <message>
+        <location filename="../src/optimizer.cpp" line="3779" />
+        <source>Failed to configure Remote Access (RDP).</source>
+        <translation type="unfinished" />
+    </message>
+    <message>
+        <location filename="../src/optimizer.cpp" line="3786" />
+        <source>Configuring system telemetry...</source>
+        <translation type="unfinished" />
+    </message>
+    <message>
+        <location filename="../src/optimizer.cpp" line="3793" />
+        <source>Processing Connected User Experiences service (DiagTrack)...</source>
+        <translation type="unfinished" />
+    </message>
+    <message>
+        <location filename="../src/optimizer.cpp" line="3800" />
+        <source>Connected User Experiences service startup set to Automatic.</source>
+        <translation type="unfinished" />
+    </message>
+    <message>
+        <location filename="../src/optimizer.cpp" line="3800" />
+        <source>Connected User Experiences service startup set to Disabled.</source>
+        <translation type="unfinished" />
+    </message>
+    <message>
+        <location filename="../src/optimizer.cpp" line="3806" />
+        <source>Stopping Connected User Experiences service...</source>
+        <translation type="unfinished" />
+    </message>
+    <message>
+        <location filename="../src/optimizer.cpp" line="3816" />
+        <source>Connected User Experiences service stopped successfully.</source>
+        <translation type="unfinished" />
+    </message>
+    <message>
+        <location filename="../src/optimizer.cpp" line="3818" />
+        <source>Connected User Experiences service stop requested.</source>
+        <translation type="unfinished" />
+    </message>
+    <message>
+        <location filename="../src/optimizer.cpp" line="3821" />
+        <source>Starting Connected User Experiences service...</source>
+        <translation type="unfinished" />
+    </message>
+    <message>
+        <location filename="../src/optimizer.cpp" line="3830" />
+        <source>Connected User Experiences service started successfully.</source>
+        <translation type="unfinished" />
+    </message>
+    <message>
+        <location filename="../src/optimizer.cpp" line="3837" />
+        <source>Failed to configure Connected User Experiences service.</source>
+        <translation type="unfinished" />
+    </message>
+    <message>
+        <location filename="../src/optimizer.cpp" line="3842" />
+        <source>Failed to open Connected User Experiences service.</source>
+        <translation type="unfinished" />
+    </message>
+    <message>
+        <location filename="../src/optimizer.cpp" line="3847" />
+        <location filename="../src/optimizer.cpp" line="3907" />
+        <source>Failed to connect to SCM.</source>
+        <translation type="unfinished" />
+    </message>
+    <message>
+        <location filename="../src/optimizer.cpp" line="3853" />
+        <source>Processing Device Management WAP service (dmwappushservice)...</source>
+        <translation type="unfinished" />
+    </message>
+    <message>
+        <location filename="../src/optimizer.cpp" line="3860" />
+        <source>Device Management WAP service startup set to Manual.</source>
+        <translation type="unfinished" />
+    </message>
+    <message>
+        <location filename="../src/optimizer.cpp" line="3860" />
+        <source>Device Management WAP service startup set to Disabled.</source>
+        <translation type="unfinished" />
+    </message>
+    <message>
+        <location filename="../src/optimizer.cpp" line="3866" />
+        <source>Stopping Device Management WAP service...</source>
+        <translation type="unfinished" />
+    </message>
+    <message>
+        <location filename="../src/optimizer.cpp" line="3876" />
+        <source>Device Management WAP service stopped successfully.</source>
+        <translation type="unfinished" />
+    </message>
+    <message>
+        <location filename="../src/optimizer.cpp" line="3878" />
+        <source>Device Management WAP service stop requested.</source>
+        <translation type="unfinished" />
+    </message>
+    <message>
+        <location filename="../src/optimizer.cpp" line="3881" />
+        <source>Starting Device Management WAP service...</source>
+        <translation type="unfinished" />
+    </message>
+    <message>
+        <location filename="../src/optimizer.cpp" line="3890" />
+        <source>Device Management WAP service started successfully.</source>
+        <translation type="unfinished" />
+    </message>
+    <message>
+        <location filename="../src/optimizer.cpp" line="3897" />
+        <source>Failed to configure Device Management WAP service.</source>
+        <translation type="unfinished" />
+    </message>
+    <message>
+        <location filename="../src/optimizer.cpp" line="3902" />
+        <source>Failed to open Device Management WAP service.</source>
+        <translation type="unfinished" />
+    </message>
+    <message>
+        <location filename="../src/optimizer.cpp" line="3913" />
+        <source>Configuring Customer Experience Improvement Program policy...</source>
+        <translation type="unfinished" />
+    </message>
+    <message>
+        <location filename="../src/optimizer.cpp" line="3919" />
+        <source>CEIP telemetry policy removed (enabled).</source>
+        <translation type="unfinished" />
+    </message>
+    <message>
+        <location filename="../src/optimizer.cpp" line="3924" />
+        <source>CEIP telemetry policy disabled successfully.</source>
+        <translation type="unfinished" />
+    </message>
+    <message>
+        <location filename="../src/optimizer.cpp" line="3927" />
+        <source>Failed to write CEIP telemetry policy.</source>
+        <translation type="unfinished" />
+    </message>
+    <message>
+        <location filename="../src/optimizer.cpp" line="3933" />
+        <source>Failed to open CEIP registry policy key.</source>
+        <translation type="unfinished" />
+    </message>
+    <message>
+        <location filename="../src/optimizer.cpp" line="3939" />
+        <source>Configuring Windows Error Reporting policy...</source>
+        <translation type="unfinished" />
+    </message>
+    <message>
+        <location filename="../src/optimizer.cpp" line="3945" />
+        <source>Windows Error Reporting policy removed (enabled).</source>
+        <translation type="unfinished" />
+    </message>
+    <message>
+        <location filename="../src/optimizer.cpp" line="3950" />
+        <source>Windows Error Reporting policy disabled successfully.</source>
+        <translation type="unfinished" />
+    </message>
+    <message>
+        <location filename="../src/optimizer.cpp" line="3953" />
+        <source>Failed to write Windows Error Reporting policy.</source>
+        <translation type="unfinished" />
+    </message>
+    <message>
+        <location filename="../src/optimizer.cpp" line="3959" />
+        <source>Failed to open Windows Error Reporting policy key.</source>
+        <translation type="unfinished" />
+    </message>
+    <message>
+        <location filename="../src/optimizer.cpp" line="3964" />
+        <source>[Simulation] Connected User Experiences set to: %1</source>
+        <translation type="unfinished" />
+    </message>
+    <message>
+        <location filename="../src/optimizer.cpp" line="3965" />
+        <source>[Simulation] Device Management WAP Service set to: %1</source>
+        <translation type="unfinished" />
+    </message>
+    <message>
+        <location filename="../src/optimizer.cpp" line="3966" />
+        <source>[Simulation] CEIP policy set to: %1</source>
+        <translation type="unfinished" />
+    </message>
+    <message>
+        <location filename="../src/optimizer.cpp" line="3967" />
+        <source>[Simulation] Windows Error Reporting policy set to: %1</source>
+        <translation type="unfinished" />
+    </message>
+    <message>
+        <location filename="../src/optimizer.cpp" line="3970" />
+        <source>Telemetry configuration completed.</source>
+        <translation type="unfinished" />
+    </message>
+    <message>
+        <location filename="../src/optimizer.cpp" line="3973" />
+        <source>Failed to apply some Telemetry settings.</source>
+        <translation type="unfinished" />
+    </message>
+    <message>
+        <location filename="../src/optimizer.cpp" line="3980" />
+        <source>Configuring Windows Update mode...</source>
+        <translation type="unfinished" />
+    </message>
+    <message>
+        <location filename="../src/optimizer.cpp" line="3988" />
+        <source>Setting Windows Update to Default mode...</source>
+        <translation type="unfinished" />
+    </message>
+    <message>
+        <location filename="../src/optimizer.cpp" line="4050" />
+        <source>Windows Update set to Default mode successfully (all updates enabled).</source>
+        <translation type="unfinished" />
+    </message>
+    <message>
+        <location filename="../src/optimizer.cpp" line="4054" />
+        <source>Setting Windows Update to Security Updates Only mode...</source>
+        <translation type="unfinished" />
+    </message>
+    <message>
+        <location filename="../src/optimizer.cpp" line="4126" />
+        <source>Windows Update set to Security Updates Only mode successfully (Feature &amp; Driver updates disabled).</source>
+        <translation type="unfinished" />
+    </message>
+    <message>
+        <location filename="../src/optimizer.cpp" line="4128" />
+        <source>Failed to write Security Updates Only policy settings.</source>
+        <translation type="unfinished" />
+    </message>
+    <message>
+        <location filename="../src/optimizer.cpp" line="4133" />
+        <source>Setting Windows Update to Manual mode...</source>
+        <translation type="unfinished" />
+    </message>
+    <message>
+        <location filename="../src/optimizer.cpp" line="4169" />
+        <source>Windows Update set to Manual mode successfully (automatic background checking disabled).</source>
+        <translation type="unfinished" />
+    </message>
+    <message>
+        <location filename="../src/optimizer.cpp" line="4171" />
+        <source>Failed to configure Manual update settings.</source>
+        <translation type="unfinished" />
+    </message>
+    <message>
+        <location filename="../src/optimizer.cpp" line="4176" />
+        <source>Disabling Windows Update services and policies...</source>
+        <translation type="unfinished" />
+    </message>
+    <message>
+        <location filename="../src/optimizer.cpp" line="4246" />
+        <source>Windows Update disabled and blocked successfully.</source>
+        <translation type="unfinished" />
+    </message>
+    <message>
+        <location filename="../src/optimizer.cpp" line="4248" />
+        <source>Failed to disable some Windows Update policies.</source>
+        <translation type="unfinished" />
+    </message>
+    <message>
+        <location filename="../src/optimizer.cpp" line="4256" />
+        <source>[Simulation] Windows Update Mode set to: %1</source>
+        <translation type="unfinished" />
+    </message>
+    <message>
+        <location filename="../src/optimizer.cpp" line="4259" />
+        <source>Windows Update configuration completed.</source>
+        <translation type="unfinished" />
+    </message>
+    <message>
+        <location filename="../src/optimizer.cpp" line="4262" />
+        <source>Failed to apply some Windows Update settings.</source>
+        <translation type="unfinished" />
+    </message>
+    <message>
+        <location filename="../src/optimizer.cpp" line="4276" />
+        <source>Processing Drive %1 indexing...</source>
+        <translation type="unfinished" />
+    </message>
+    <message>
+        <location filename="../src/optimizer.cpp" line="4289" />
+        <source>Drive %1 content indexing is now ENABLED.</source>
+        <translation type="unfinished" />
+    </message>
+    <message>
+        <location filename="../src/optimizer.cpp" line="4289" />
+        <source>Drive %1 content indexing is now DISABLED.</source>
+        <translation type="unfinished" />
+    </message>
+    <message>
+        <location filename="../src/optimizer.cpp" line="4293" />
+        <source>Failed to update Drive %1 file attributes. Error: %2</source>
+        <translation type="unfinished" />
+    </message>
+    <message>
+        <location filename="../src/optimizer.cpp" line="4296" />
+        <source>Drive %1 is not mounted or unavailable. Skipping.</source>
+        <translation type="unfinished" />
+    </message>
+    <message>
+        <location filename="../src/optimizer.cpp" line="4299" />
+        <source>[Simulation] Drive %1 indexing set to: %2</source>
+        <translation type="unfinished" />
+    </message>
+    <message>
+        <location filename="../src/optimizer.cpp" line="4312" />
+        <source>Processing Counter-Strike 2 launch options...</source>
+        <translation type="unfinished" />
+    </message>
+    <message>
+        <location filename="../src/optimizer.cpp" line="4326" />
+        <location filename="../src/optimizer.cpp" line="4391" />
+        <location filename="../src/optimizer.cpp" line="4454" />
+        <location filename="../src/optimizer.cpp" line="4511" />
+        <source>Steam process detected and closed to prevent configuration overwrite.</source>
+        <translation type="unfinished" />
+    </message>
+    <message>
+        <location filename="../src/optimizer.cpp" line="4358" />
+        <source>Counter-Strike 2 launch options updated for %1 profiles.</source>
+        <translation type="unfinished" />
+    </message>
+    <message>
+        <location filename="../src/optimizer.cpp" line="4361" />
+        <location filename="../src/optimizer.cpp" line="4422" />
+        <location filename="../src/optimizer.cpp" line="4479" />
+        <location filename="../src/optimizer.cpp" line="4547" />
+        <source>Steam userdata directory not found.</source>
+        <translation type="unfinished" />
+    </message>
+    <message>
+        <location filename="../src/optimizer.cpp" line="4365" />
+        <source>Steam path not found. Cannot apply launch options.</source>
+        <translation type="unfinished" />
+    </message>
+    <message>
+        <location filename="../src/optimizer.cpp" line="4368" />
+        <source>[Simulation] Counter-Strike 2 launch options set to: %1</source>
+        <translation type="unfinished" />
+    </message>
+    <message>
+        <location filename="../src/optimizer.cpp" line="4375" />
+        <source>Processing global Steam Overlay...</source>
+        <translation type="unfinished" />
+    </message>
+    <message>
+        <location filename="../src/optimizer.cpp" line="4419" />
+        <source>Global Steam Overlay successfully %1.</source>
+        <translation type="unfinished" />
+    </message>
+    <message>
+        <location filename="../src/optimizer.cpp" line="4419" />
+        <source>enabled</source>
+        <translation type="unfinished" />
+    </message>
+    <message>
+        <location filename="../src/optimizer.cpp" line="4419" />
+        <source>disabled</source>
+        <translation type="unfinished" />
+    </message>
+    <message>
+        <location filename="../src/optimizer.cpp" line="4426" />
+        <source>Steam path not found. Cannot apply global overlay settings.</source>
+        <translation type="unfinished" />
+    </message>
+    <message>
+        <location filename="../src/optimizer.cpp" line="4429" />
+        <source>[Simulation] Global Steam Overlay set to: %1</source>
+        <translation type="unfinished" />
+    </message>
+    <message>
+        <location filename="../src/optimizer.cpp" line="4436" />
+        <source>Processing Steam Overlay for Counter-Strike 2...</source>
+        <translation type="unfinished" />
+    </message>
+    <message>
+        <location filename="../src/optimizer.cpp" line="4476" />
+        <source>Counter-Strike 2 Steam Overlay updated for %1 profiles.</source>
+        <translation type="unfinished" />
+    </message>
+    <message>
+        <location filename="../src/optimizer.cpp" line="4483" />
+        <source>Steam path not found. Cannot apply overlay settings.</source>
+        <translation type="unfinished" />
+    </message>
+    <message>
+        <location filename="../src/optimizer.cpp" line="4486" />
+        <source>[Simulation] Counter-Strike 2 Steam Overlay set to: %1</source>
+        <translation type="unfinished" />
+    </message>
+    <message>
+        <location filename="../src/optimizer.cpp" line="4493" />
+        <source>Processing Steam Friends &amp; Chat settings...</source>
+        <translation type="unfinished" />
+    </message>
+    <message>
+        <location filename="../src/optimizer.cpp" line="4544" />
+        <source>Steam Friends &amp; Chat settings updated for %1 profiles.</source>
+        <translation type="unfinished" />
+    </message>
+    <message>
+        <location filename="../src/optimizer.cpp" line="4551" />
+        <source>Steam path not found. Cannot apply Friends &amp; Chat settings.</source>
+        <translation type="unfinished" />
+    </message>
+    <message>
+        <location filename="../src/optimizer.cpp" line="4554" />
+        <source>[Simulation] Steam Friends &amp; Chat settings updated successfully.</source>
+        <translation type="unfinished" />
+    </message>
+    <message>
+        <location filename="../src/optimizer.cpp" line="4561" />
+        <source>Processing Windows visual effects...</source>
+        <translation type="unfinished" />
+    </message>
+    <message>
+        <location filename="../src/optimizer.cpp" line="4739" />
+        <source>Windows visual effects optimized successfully.</source>
+        <translation type="unfinished" />
+    </message>
+    <message>
+        <location filename="../src/optimizer.cpp" line="4741" />
+        <source>[Simulation] Windows visual effects updated.</source>
+        <translation type="unfinished" />
+    </message>
+    <message>
+        <location filename="../src/optimizer.cpp" line="4747" />
+        <source>System optimization completed successfully!</source>
+        <translation type="unfinished" />
+    </message>
+    <message>
+        <location filename="../src/optimizer.cpp" line="4750" />
+        <source>System optimization completed with warning/errors.</source>
+        <translation type="unfinished" />
+    </message>
+    <message>
+        <location filename="../src/optimizer.cpp" line="4917" />
+        <source>Initiating BitLocker decryption for C: drive...</source>
+        <translation>Запуск процесу розшифрування диска C:...</translation>
+    </message>
+    <message>
+        <location filename="../src/optimizer.cpp" line="4921" />
+        <source>BitLocker decryption command successfully sent to Windows. Decryption is running in the background.</source>
+        <translation>Команду дешифрування BitLocker успішно надіслано Windows. Розшифрування триває у фоновому режимі.</translation>
+    </message>
+    <message>
+        <location filename="../src/optimizer.cpp" line="4923" />
+        <source>Failed to start manage-bde.exe to disable BitLocker.</source>
+        <translation>Не вдалося запустити manage-bde.exe для вимкнення BitLocker.</translation>
+    </message>
+    <message>
+        <location filename="../src/optimizer.cpp" line="4926" />
+        <source>[Simulation] BitLocker decryption triggered for C: drive.</source>
+        <translation type="unfinished" />
+    </message>
+    <message>
+        <location filename="../src/optimizer.cpp" line="5059" />
+        <source>Initializing Xbox package removal...</source>
+        <translation type="unfinished" />
+    </message>
+    <message>
+        <location filename="../src/optimizer.cpp" line="5069" />
+        <source>Removing package: %1...</source>
+        <translation type="unfinished" />
+    </message>
+    <message>
+        <location filename="../src/optimizer.cpp" line="5079" />
+        <source>Package %1 removal command executed.</source>
+        <translation type="unfinished" />
+    </message>
+    <message>
+        <location filename="../src/optimizer.cpp" line="5084" />
+        <location filename="../src/optimizer.cpp" line="5296" />
+        <source>Purging Xbox packages for all users...</source>
+        <translation type="unfinished" />
+    </message>
+    <message>
+        <location filename="../src/optimizer.cpp" line="5093" />
+        <source>All-users Xbox packages removed.</source>
+        <translation type="unfinished" />
+    </message>
+    <message>
+        <location filename="../src/optimizer.cpp" line="5097" />
+        <source>Removing provisioned Xbox packages...</source>
+        <translation type="unfinished" />
+    </message>
+    <message>
+        <location filename="../src/optimizer.cpp" line="5106" />
+        <source>Provisioned Xbox packages purged successfully.</source>
+        <translation type="unfinished" />
+    </message>
+    <message>
+        <location filename="../src/optimizer.cpp" line="5124" />
+        <source>Xbox Suite has been successfully uninstalled from this PC!</source>
+        <translation type="unfinished" />
+    </message>
+    <message>
+        <location filename="../src/optimizer.cpp" line="5125" />
+        <source>TIP: Enable 'Disable Game Bar Popup' to prevent system errors in games.</source>
+        <translation type="unfinished" />
+    </message>
+    <message>
+        <location filename="../src/optimizer.cpp" line="5127" />
+        <source>Xbox removal complete. Some components may require a reboot to be fully cleared.</source>
+        <translation type="unfinished" />
+    </message>
+    <message>
+        <location filename="../src/optimizer.cpp" line="5136" />
+        <source>[Simulation] Removed Xbox package step %1</source>
+        <translation type="unfinished" />
+    </message>
+    <message>
+        <location filename="../src/optimizer.cpp" line="5164" />
+        <source>Initializing Xbox package restoration...</source>
+        <translation type="unfinished" />
+    </message>
+    <message>
+        <location filename="../src/optimizer.cpp" line="5173" />
+        <source>Re-registering Xbox packages from local store...</source>
+        <translation type="unfinished" />
+    </message>
+    <message>
+        <location filename="../src/optimizer.cpp" line="5183" />
+        <source>Local packages re-registered.</source>
+        <translation type="unfinished" />
+    </message>
+    <message>
+        <location filename="../src/optimizer.cpp" line="5187" />
+        <source>Re-registering provisioned Xbox packages...</source>
+        <translation type="unfinished" />
+    </message>
+    <message>
+        <location filename="../src/optimizer.cpp" line="5197" />
+        <source>Provisioned packages re-registered.</source>
+        <translation type="unfinished" />
+    </message>
+    <message>
+        <location filename="../src/optimizer.cpp" line="5201" />
+        <source>Downloading and installing Xbox App via winget...</source>
+        <translation type="unfinished" />
+    </message>
+    <message>
+        <location filename="../src/optimizer.cpp" line="5210" />
+        <source>Xbox App installation completed.</source>
+        <translation type="unfinished" />
+    </message>
+    <message>
+        <location filename="../src/optimizer.cpp" line="5214" />
+        <source>Downloading and installing Xbox Game Bar via winget...</source>
+        <translation type="unfinished" />
+    </message>
+    <message>
+        <location filename="../src/optimizer.cpp" line="5223" />
+        <source>Xbox Game Bar installation completed.</source>
+        <translation type="unfinished" />
+    </message>
+    <message>
+        <location filename="../src/optimizer.cpp" line="5241" />
+        <source>Xbox Suite has been successfully restored!</source>
+        <translation type="unfinished" />
+    </message>
+    <message>
+        <location filename="../src/optimizer.cpp" line="5243" />
+        <source>Xbox restoration complete. A system reboot may be needed to complete the installation.</source>
+        <translation type="unfinished" />
+    </message>
+    <message>
+        <location filename="../src/optimizer.cpp" line="5252" />
+        <source>[Simulation] Restored Xbox package step %1</source>
+        <translation type="unfinished" />
+    </message>
+    <message>
+        <location filename="../src/optimizer.cpp" line="5280" />
+        <source>Removing Xbox component: %1...</source>
+        <translation type="unfinished" />
+    </message>
+    <message>
+        <location filename="../src/optimizer.cpp" line="5301" />
+        <source>Purging provisioned Xbox packages...</source>
+        <translation type="unfinished" />
+    </message>
+    <message>
+        <location filename="../src/optimizer.cpp" line="5332" />
+        <source>Component %1 uninstalled successfully!</source>
+        <translation type="unfinished" />
+    </message>
+    <message>
+        <location filename="../src/optimizer.cpp" line="5352" />
+        <source>[Simulation] Removed component %1</source>
+        <translation type="unfinished" />
+    </message>
+    <message>
+        <location filename="../src/optimizer.cpp" line="5371" />
+        <source>Restoring Xbox component: %1...</source>
+        <translation type="unfinished" />
+    </message>
+    <message>
+        <location filename="../src/optimizer.cpp" line="5419" />
+        <source>Component %1 restored successfully!</source>
+        <translation type="unfinished" />
+    </message>
+    <message>
+        <location filename="../src/optimizer.cpp" line="5439" />
+        <source>[Simulation] Restored component %1</source>
+        <translation type="unfinished" />
+    </message>
+    <message>
+        <location filename="../src/optimizer.cpp" line="5458" />
+        <source>Initializing Multi-Plane Overlay (MPO) configuration...</source>
+        <translation type="unfinished" />
+    </message>
+    <message>
+        <location filename="../src/optimizer.cpp" line="5466" />
+        <source>Analyzing graphics subsystem and DWM settings...</source>
+        <translation type="unfinished" />
+    </message>
+    <message>
+        <location filename="../src/optimizer.cpp" line="5471" />
+        <source>Applying MPO registry modifications...</source>
+        <translation type="unfinished" />
+    </message>
+    <message>
+        <location filename="../src/optimizer.cpp" line="5515" />
+        <source>MPO configuration updated successfully in registry!</source>
+        <translation type="unfinished" />
+    </message>
+    <message>
+        <location filename="../src/optimizer.cpp" line="5516" />
+        <location filename="../src/optimizer.cpp" line="5530" />
+        <source>REBOOT RECOMMENDED: Please restart your PC to apply these graphics latency changes.</source>
+        <translation type="unfinished" />
+    </message>
+    <message>
+        <location filename="../src/optimizer.cpp" line="5519" />
+        <source>Failed to update MPO configuration in registry. Error: %1</source>
+        <translation type="unfinished" />
+    </message>
+    <message>
+        <location filename="../src/optimizer.cpp" line="5529" />
+        <source>[Simulation] MPO configuration updated to: %1</source>
+        <translation type="unfinished" />
+    </message>
+    <message>
+        <location filename="../src/optimizer.cpp" line="5573" />
+        <source>Ultimate Performance Scheme</source>
+        <translation type="unfinished" />
+    </message>
+    <message>
+        <location filename="../src/optimizer.cpp" line="6052" />
+        <location filename="../src/optimizer.cpp" line="6075" />
+        <location filename="../src/optimizer.cpp" line="6105" />
+        <source>Local Disk</source>
+        <translation type="unfinished" />
+    </message>
+    <message>
+        <location filename="../src/optimizer.cpp" line="6117" />
+        <source>Steam path not found. Cannot clear cache.</source>
+        <translation type="unfinished" />
+    </message>
+    <message>
+        <location filename="../src/optimizer.cpp" line="6121" />
+        <source>Closing Steam process if running...</source>
+        <translation type="unfinished" />
+    </message>
+    <message>
+        <location filename="../src/optimizer.cpp" line="6154" />
+        <source>Successfully deleted cache folder: %1</source>
+        <translation type="unfinished" />
+    </message>
+    <message>
+        <location filename="../src/optimizer.cpp" line="6156" />
+        <source>Failed to delete cache folder: %1 (Files may be locked)</source>
+        <translation type="unfinished" />
+    </message>
+    <message>
+        <location filename="../src/optimizer.cpp" line="6169" />
+        <source>Successfully deleted local browser cache: %1</source>
+        <translation type="unfinished" />
+    </message>
+    <message>
+        <location filename="../src/optimizer.cpp" line="6175" />
+        <source>Steam download cache cleared successfully! Freed %1 MB.</source>
+        <translation type="unfinished" />
     </message>
 </context>
 </TS>
