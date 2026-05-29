@@ -306,6 +306,8 @@ public:
     Q_INVOKABLE void scanSteamInstalledGames();
     Q_INVOKABLE QVariantMap getDriveInfo(const QString &path);
     Q_INVOKABLE bool clearSteamDownloadCache();
+    Q_INVOKABLE bool deleteSteamBrowserData();
+    Q_INVOKABLE void copyToClipboard(const QString &text);
 
 
 

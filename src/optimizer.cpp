@@ -11,6 +11,7 @@
 #include <QSysInfo>
 #include <QScreen>
 #include <QGuiApplication>
+#include <QClipboard>
 #include <QProcess>
 #include <QRegularExpression>
 #include <QJsonDocument>
@@ -471,7 +472,170 @@ namespace {
         return true;
     }
 
+    QString getVdfBlockSetting(const QString &filePath, const QString &blockName, const QString &settingKey) {
+        QFile file(filePath);
+        if (!file.open(QIODevice::ReadOnly | QIODevice::Text)) {
+            return "";
+        }
+        QString content = QString::fromUtf8(file.readAll());
+        file.close();
+
+        QRegularExpression blockRegex(QString("\"%1\"\\s*\\{").arg(blockName));
+        QRegularExpressionMatch match = blockRegex.match(content);
+        if (!match.hasMatch()) {
+            return "";
+        }
+
+        int startIdx = match.capturedEnd();
+        int count = 1;
+        int idx = startIdx;
+        int closeIdx = -1;
+        while (count > 0 && idx < content.length()) {
+            QChar ch = content.at(idx);
+            if (ch == '{') {
+                count++;
+            } else if (ch == '}') {
+                count--;
+                if (count == 0) {
+                    closeIdx = idx;
+                    break;
+                }
+            }
+            idx++;
+        }
+
+        if (closeIdx == -1) {
+            return "";
+        }
+
+        QString blockContent = content.mid(startIdx, closeIdx - startIdx);
+        QRegularExpression keyRegex(QString("\"%1\"\\s*\"((?:[^\"\\\\]|\\\\.)*)\"").arg(settingKey));
+        QRegularExpressionMatch keyMatch = keyRegex.match(blockContent);
+        if (keyMatch.hasMatch()) {
+            return keyMatch.captured(1);
+        }
+        return "";
+    }
+
+    bool updateVdfBlockSetting(const QString &filePath, const QString &blockName, const QString &settingKey, const QString &value) {
+        QFile file(filePath);
+        if (!file.open(QIODevice::ReadOnly | QIODevice::Text)) {
+            return false;
+        }
+        QString content = QString::fromUtf8(file.readAll());
+        file.close();
+
+        QRegularExpression blockRegex(QString("\"%1\"\\s*\\{").arg(blockName));
+        QRegularExpressionMatch match = blockRegex.match(content);
+
+        if (!match.hasMatch()) {
+            bool inserted = false;
+            if (blockName == "FriendsUI") {
+                QRegularExpression steamRegex("\"Steam\"\\s*\\{");
+                QRegularExpressionMatch steamMatch = steamRegex.match(content);
+                if (steamMatch.hasMatch()) {
+                    int insertIdx = steamMatch.capturedEnd();
+                    QString newBlock = QString("\n\t\t\t\t\"%1\"\n\t\t\t\t{\n\t\t\t\t\t\"%2\"\t\t\"%3\"\n\t\t\t\t}").arg(blockName, settingKey, value);
+                    content.insert(insertIdx, newBlock);
+                    inserted = true;
+                }
+            }
+            if (!inserted) {
+                QRegularExpression rootRegex("\"(UserLocalConfigStore|UserRoamingConfigStore|InstallConfigStore)\"\\s*\\{");
+                QRegularExpressionMatch rootMatch = rootRegex.match(content);
+                if (!rootMatch.hasMatch()) {
+                    return false;
+                }
+                int insertIdx = rootMatch.capturedEnd();
+                QString newBlock = QString("\n\t\"%1\"\n\t{\n\t\t\"%2\"\t\t\"%3\"\n\t}").arg(blockName, settingKey, value);
+                content.insert(insertIdx, newBlock);
+            }
+            if (!file.open(QIODevice::WriteOnly | QIODevice::Text)) {
+                return false;
+            }
+            file.write(content.toUtf8());
+            file.close();
+            return true;
+        }
+
+        int startIdx = match.capturedEnd();
+        int count = 1;
+        int idx = startIdx;
+        int closeIdx = -1;
+        while (count > 0 && idx < content.length()) {
+            QChar ch = content.at(idx);
+            if (ch == '{') {
+                count++;
+            } else if (ch == '}') {
+                count--;
+                if (count == 0) {
+                    closeIdx = idx;
+                    break;
+                }
+            }
+            idx++;
+        }
+
+        if (closeIdx == -1) {
+            return false;
+        }
+
+        QString blockContent = content.mid(startIdx, closeIdx - startIdx);
+        QRegularExpression keyRegex(QString("\"%1\"\\s*\"((?:[^\"\\\\]|\\\\.)*)\"").arg(settingKey));
+        QRegularExpressionMatch keyMatch = keyRegex.match(blockContent);
+
+        QString newBlockContent;
+        if (keyMatch.hasMatch()) {
+            int keyStart = keyMatch.capturedStart();
+            int keyEnd = keyMatch.capturedEnd();
+            newBlockContent = blockContent.left(keyStart) + QString("\"%1\"\t\t\"%2\"").arg(settingKey, value) + blockContent.mid(keyEnd);
+        } else {
+            QString indent = "\t\t";
+            newBlockContent = QString("\n%1\"%2\"\t\t\"%3\"").arg(indent, settingKey, value) + blockContent;
+        }
+
+        QString newContent = content.left(startIdx) + newBlockContent + content.mid(closeIdx);
+
+        if (!file.open(QIODevice::WriteOnly | QIODevice::Text)) {
+            return false;
+        }
+        file.write(newContent.toUtf8());
+        file.close();
+        return true;
+    }
+
+#ifdef Q_OS_WIN
+    bool readSteamRegistryDword(const QString &valueName, bool defaultValue) {
+        HKEY hKey;
+        if (RegOpenKeyExW(HKEY_CURRENT_USER, L"Software\\Valve\\Steam", 0, KEY_READ, &hKey) == ERROR_SUCCESS) {
+            DWORD val = defaultValue ? 1 : 0;
+            DWORD dwSize = sizeof(val);
+            DWORD dwType = REG_DWORD;
+            std::wstring wValueName = valueName.toStdWString();
+            if (RegQueryValueExW(hKey, wValueName.c_str(), nullptr, &dwType, reinterpret_cast<LPBYTE>(&val), &dwSize) == ERROR_SUCCESS) {
+                RegCloseKey(hKey);
+                return (val != 0);
+            }
+            RegCloseKey(hKey);
+        }
+        return defaultValue;
+    }
+
+    bool writeSteamRegistryDword(const QString &valueName, bool value) {
+        HKEY hKey;
+        if (RegOpenKeyExW(HKEY_CURRENT_USER, L"Software\\Valve\\Steam", 0, KEY_SET_VALUE, &hKey) == ERROR_SUCCESS) {
+            DWORD val = value ? 1 : 0;
+            std::wstring wValueName = valueName.toStdWString();
+            LONG res = RegSetValueExW(hKey, wValueName.c_str(), 0, REG_DWORD, reinterpret_cast<const BYTE*>(&val), sizeof(val));
+            RegCloseKey(hKey);
+            return (res == ERROR_SUCCESS);
+        }
+        return false;
+    }
+#endif
+
 } // namespace
+
 
 
 bool Optimizer::getVdfFriendsSettings(const QString &filePath, const QString &accountId, QVariantMap &settings) {
@@ -513,21 +677,133 @@ bool Optimizer::getVdfFriendsSettings(const QString &filePath, const QString &ac
     QString wsBlock = content.mid(startIdx, closeIdx - startIdx);
     QRegularExpression settingsRegex(QString("\"FriendsUIWebSettings_%1\"\\s*\"((?:[^\"\\\\]|\\\\.)*)\"").arg(accountId));
     QRegularExpressionMatch settingsMatch = settingsRegex.match(wsBlock);
-    if (!settingsMatch.hasMatch()) {
-        return false;
+    if (settingsMatch.hasMatch()) {
+        QString escapedJson = settingsMatch.captured(1);
+        QString cleanJson = escapedJson;
+        cleanJson.replace(QLatin1String("\\\""), QLatin1String("\""));
+        cleanJson.replace(QLatin1String("\\\\"), QLatin1String("\\"));
+
+        QJsonDocument doc = QJsonDocument::fromJson(cleanJson.toUtf8());
+        if (doc.isObject()) {
+            settings = doc.object().toVariantMap();
+        }
     }
 
-    QString escapedJson = settingsMatch.captured(1);
-    QString cleanJson = escapedJson;
-    cleanJson.replace(QLatin1String("\\\""), QLatin1String("\""));
-    cleanJson.replace(QLatin1String("\\\\"), QLatin1String("\\"));
-
-    QJsonDocument doc = QJsonDocument::fromJson(cleanJson.toUtf8());
-    if (!doc.isObject()) {
-        return false;
+    // Load bAppendNicknamesToNames from localconfig.vdf's CachedCommunityPreferences
+    QRegularExpression commRegex("\"CachedCommunityPreferences\"\\s*\"((?:[^\"\\\\]|\\\\.)*)\"");
+    QRegularExpressionMatch commMatch = commRegex.match(wsBlock);
+    if (commMatch.hasMatch()) {
+        QString commEscapedJson = commMatch.captured(1);
+        QString commCleanJson = commEscapedJson;
+        commCleanJson.replace(QLatin1String("\\\""), QLatin1String("\""));
+        commCleanJson.replace(QLatin1String("\\\\"), QLatin1String("\\"));
+        QJsonDocument commDoc = QJsonDocument::fromJson(commCleanJson.toUtf8());
+        if (commDoc.isObject()) {
+            QVariantMap commMap = commDoc.object().toVariantMap();
+            if (commMap.contains("bParenthesizeNicknames")) {
+                settings["bAppendNicknamesToNames"] = commMap["bParenthesizeNicknames"].toBool();
+            }
+        }
     }
 
-    settings = doc.object().toVariantMap();
+    // Load settings from sharedconfig.vdf -> FriendsUIJSON
+    QString sharedConfigPath = filePath;
+    sharedConfigPath.replace("/config/localconfig.vdf", "/7/remote/sharedconfig.vdf");
+    sharedConfigPath.replace("\\config\\localconfig.vdf", "\\7\\remote\\sharedconfig.vdf");
+    
+    if (QFile::exists(sharedConfigPath)) {
+        QString friendsUIJsonStr = getVdfBlockSetting(sharedConfigPath, "FriendsUI", "FriendsUIJSON");
+        if (!friendsUIJsonStr.isEmpty()) {
+            QString cleanJson = friendsUIJsonStr;
+            cleanJson.replace(QLatin1String("\\\""), QLatin1String("\""));
+            cleanJson.replace(QLatin1String("\\\\"), QLatin1String("\\"));
+            QJsonDocument sharedDoc = QJsonDocument::fromJson(cleanJson.toUtf8());
+            if (sharedDoc.isObject()) {
+                QVariantMap sharedMap = sharedDoc.object().toVariantMap();
+                
+                // Map Steam keys to our internal keys
+                if (sharedMap.contains("bAnimatedAvatars")) {
+                    settings["bEnableAnimatedAvatars"] = sharedMap["bAnimatedAvatars"].toBool();
+                }
+                if (sharedMap.contains("bCompactFriendsList")) {
+                    settings["bCompactFriendsListAndChat"] = sharedMap["bCompactFriendsList"].toBool();
+                }
+                if (sharedMap.contains("bCompactQuickAccess")) {
+                    settings["bCompactFavorites"] = sharedMap["bCompactQuickAccess"].toBool();
+                }
+                if (sharedMap.contains("bHideCategorizedFriends")) {
+                    settings["bHideCategorizedFriendsInOnlineOffline"] = sharedMap["bHideCategorizedFriends"].toBool();
+                }
+                if (sharedMap.contains("bHideOfflineFriendsInTagGroups")) {
+                    settings["bHideOfflineFriendsInCustomCategories"] = sharedMap["bHideOfflineFriendsInTagGroups"].toBool();
+                }
+                if (sharedMap.contains("bCategorizeInGameFriendsByGame")) {
+                    settings["bGroupFriendsByGame"] = sharedMap["bCategorizeInGameFriendsByGame"].toBool();
+                }
+                if (sharedMap.contains("bSignIntoFriends")) {
+                    settings["bSignInOnStart"] = sharedMap["bSignIntoFriends"].toBool();
+                }
+                if (sharedMap.contains("bAlwaysNewChatWindow")) {
+                    settings["bOpenNewWindowForNewChats"] = sharedMap["bAlwaysNewChatWindow"].toBool();
+                }
+                if (sharedMap.contains("bDisableEmbedInlining")) {
+                    settings["bDontEmbedImages"] = sharedMap["bDisableEmbedInlining"].toBool();
+                }
+                if (sharedMap.contains("bRememberOpenChats")) {
+                    settings["bRememberOpenChats"] = sharedMap["bRememberOpenChats"].toBool();
+                }
+                if (sharedMap.contains("bDisableSpellcheck")) {
+                    settings["bDisableSpellCheck"] = sharedMap["bDisableSpellcheck"].toBool();
+                }
+                if (sharedMap.contains("bDisableRoomEffects")) {
+                    settings["bDisableRoomEffects"] = sharedMap["bDisableRoomEffects"].toBool();
+                }
+                if (sharedMap.contains("bForceAlphabeticFriendSorting")) {
+                    settings["bIgnoreAwayStatusWhenSorting"] = sharedMap["bForceAlphabeticFriendSorting"].toBool();
+                }
+                if (sharedMap.contains("bSingleWindowMode")) {
+                    settings["bDockChats"] = sharedMap["bSingleWindowMode"].toBool();
+                }
+                
+                // Map notification settings from sharedMap if present
+                if (sharedMap.contains("bNotifications_ShowOnline")) {
+                    settings["bFriendOnlineShowToast"] = sharedMap["bNotifications_ShowOnline"].toBool();
+                }
+                if (sharedMap.contains("bSounds_PlayOnline")) {
+                    settings["bFriendOnlinePlaySound"] = sharedMap["bSounds_PlayOnline"].toBool();
+                }
+                if (sharedMap.contains("bNotifications_ShowIngame")) {
+                    settings["bFriendJoinShowToast"] = sharedMap["bNotifications_ShowIngame"].toBool();
+                }
+                if (sharedMap.contains("bSounds_PlayIngame")) {
+                    settings["bFriendJoinPlaySound"] = sharedMap["bSounds_PlayIngame"].toBool();
+                }
+                if (sharedMap.contains("bNotifications_ShowMessage")) {
+                    settings["bFriendMsgShowToast"] = sharedMap["bNotifications_ShowMessage"].toBool();
+                }
+                if (sharedMap.contains("bSounds_PlayMessage")) {
+                    settings["bFriendMsgPlaySound"] = sharedMap["bSounds_PlayMessage"].toBool();
+                }
+                if (sharedMap.contains("bNotifications_EventsAndAnnouncements")) {
+                    settings["bChatRoomShowToast"] = sharedMap["bNotifications_EventsAndAnnouncements"].toBool();
+                }
+                if (sharedMap.contains("bSounds_EventsAndAnnouncements")) {
+                    settings["bChatRoomPlaySound"] = sharedMap["bSounds_EventsAndAnnouncements"].toBool();
+                }
+                
+                if (sharedMap.contains("nChatFlashMode")) {
+                    settings["flashWindowOnMessage"] = (sharedMap["nChatFlashMode"].toInt() == 0) ? "never" : "always";
+                }
+                if (sharedMap.contains("nChatFontSize")) {
+                    int sizeInt = sharedMap["nChatFontSize"].toInt();
+                    if (sizeInt == 0) settings["fontSize"] = "small";
+                    else if (sizeInt == 2) settings["fontSize"] = "large";
+                    else if (sizeInt == 3) settings["fontSize"] = "extra_large";
+                    else settings["fontSize"] = "default";
+                }
+            }
+        }
+    }
 
     // Symmetrically load correct values from global VDF blocks if they exist:
     
@@ -599,6 +875,140 @@ bool Optimizer::getVdfFriendsSettings(const QString &filePath, const QString &ac
         settings["bControllerLowPlaySound"] = (ctrlLowSound != "0");
     }
 
+    // 3. accessibility settings
+    QString reduceMotion = getVdfBlockSetting(filePath, "Accessibility", "ReduceMotion");
+    if (!reduceMotion.isEmpty()) {
+        settings["bReduceMotion"] = (reduceMotion != "0");
+    }
+
+    // 4. game recording settings
+    QString recMode = getVdfBlockSetting(filePath, "GameRecording", "BackgroundRecordMode");
+    if (!recMode.isEmpty()) {
+        settings["BackgroundRecordMode"] = recMode.toInt();
+    }
+
+    // 5. voice settings (always prioritize SteamVoiceSettings_<AccountId> JSON block)
+    {
+        QRegularExpression voiceRegex(QString("\"SteamVoiceSettings_%1\"\\s*\"((?:[^\"\\\\]|\\\\.)*)\"").arg(accountId));
+        QRegularExpressionMatch voiceMatch = voiceRegex.match(wsBlock);
+        if (voiceMatch.hasMatch()) {
+            QString voiceEscapedJson = voiceMatch.captured(1);
+            QString voiceCleanJson = voiceEscapedJson;
+            voiceCleanJson.replace(QLatin1String("\\\""), QLatin1String("\""));
+            voiceCleanJson.replace(QLatin1String("\\\\"), QLatin1String("\\"));
+
+            QJsonDocument voiceDoc = QJsonDocument::fromJson(voiceCleanJson.toUtf8());
+            if (voiceDoc.isObject()) {
+                QVariantMap voiceMap = voiceDoc.object().toVariantMap();
+                if (voiceMap.contains("noiseGateLevel")) {
+                    settings["noiseGateLevel"] = voiceMap["noiseGateLevel"].toInt();
+                }
+                if (voiceMap.contains("echoCancellation")) {
+                    settings["echoCancellation"] = voiceMap["echoCancellation"].toBool();
+                }
+                if (voiceMap.contains("noiseCancellation")) {
+                    settings["noiseCancellation"] = voiceMap["noiseCancellation"].toBool();
+                }
+                if (voiceMap.contains("autoGainControl")) {
+                    settings["autoGainControl"] = voiceMap["autoGainControl"].toBool();
+                }
+            }
+        }
+    }
+
+    // 6. remote play settings (always prioritize native block)
+    {
+        QString enableStreaming = getVdfBlockSetting(filePath, "streaming_v2", "EnableStreaming");
+        if (!enableStreaming.isEmpty()) {
+            settings["EnableStreaming"] = (enableStreaming != "0");
+        }
+    }
+
+    // 7. music settings (always prioritize native block)
+    {
+        bool foundMusicSetting = false;
+        QString configVdfPath = filePath;
+        int userdataIdx = configVdfPath.indexOf("/userdata/", 0, Qt::CaseInsensitive);
+        if (userdataIdx == -1) {
+            userdataIdx = configVdfPath.indexOf("\\userdata\\", 0, Qt::CaseInsensitive);
+        }
+        if (userdataIdx != -1) {
+            configVdfPath = configVdfPath.left(userdataIdx) + "/config/config.vdf";
+            if (QFile::exists(configVdfPath)) {
+                QString soundtracksVal = getVdfBlockSetting(configVdfPath, "Music", "DownloadHighQualityAudioSoundtracks");
+                if (!soundtracksVal.isEmpty()) {
+                    settings["DownloadHighQualityAudio"] = (soundtracksVal != "0");
+                    foundMusicSetting = true;
+                }
+            }
+        }
+        if (!foundMusicSetting) {
+            QString downloadHighQualityAudio = getVdfBlockSetting(filePath, "Music", "DownloadHighQualityAudio");
+            if (!downloadHighQualityAudio.isEmpty()) {
+                settings["DownloadHighQualityAudio"] = (downloadHighQualityAudio != "0");
+            }
+        }
+    }
+
+    // 8. news settings
+    QString notifyGameAdditions = getVdfBlockSetting(filePath, "news", "NotifyAvailableGames");
+    if (!notifyGameAdditions.isEmpty()) {
+        settings["bNotifyGameAdditions"] = (notifyGameAdditions != "0");
+    }
+
+#ifdef Q_OS_WIN
+    // 9. interface settings from Registry
+    settings["bGPUAcceleratedRendering"] = readSteamRegistryDword("GPUAccelWebViewsV3", true);
+    settings["bHardwareVideoDecoding"] = readSteamRegistryDword("H264HWAccel", true);
+    settings["bSmoothScrolling"] = readSteamRegistryDword("SmoothScrollWebViews", true);
+    settings["bScaleTextAndIcons"] = readSteamRegistryDword("DPIScaling", true);
+    settings["bStartInBigPicture"] = readSteamRegistryDword("StartupMode", false);
+#endif
+
+    // 10. config.vdf loading (downloads & chooser)
+    QString configVdfPath = filePath;
+    int userdataIdx = configVdfPath.indexOf("/userdata/", 0, Qt::CaseInsensitive);
+    if (userdataIdx == -1) {
+        userdataIdx = configVdfPath.indexOf("\\userdata\\", 0, Qt::CaseInsensitive);
+    }
+    if (userdataIdx != -1) {
+        configVdfPath = configVdfPath.left(userdataIdx) + "/config/config.vdf";
+        if (QFile::exists(configVdfPath)) {
+            QString alwaysShow = getVdfBlockSetting(configVdfPath, "Auth", "AlwaysShowUserChooser");
+            if (!alwaysShow.isEmpty()) {
+                settings["bAskAccountOnStart"] = (alwaysShow != "0");
+            }
+            QString autoUpdate = getVdfBlockSetting(configVdfPath, "Steam", "AutoUpdateWindowEnabled");
+            if (!autoUpdate.isEmpty()) {
+                settings["bScheduleAutoUpdates"] = (autoUpdate != "0");
+            }
+            QString throttle = getVdfBlockSetting(configVdfPath, "Steam", "DownloadThrottleKbps");
+            if (!throttle.isEmpty()) {
+                settings["bLimitDownloadSpeed"] = (throttle.toInt() > 0);
+            }
+            QString allowDownloads = getVdfBlockSetting(configVdfPath, "Steam", "AllowDownloadsDuringGameplay");
+            if (!allowDownloads.isEmpty()) {
+                settings["bAllowDownloadsDuringGameplay"] = (allowDownloads != "0");
+            }
+            QString throttleStreaming = getVdfBlockSetting(configVdfPath, "Steam", "StreamingThrottleEnabled");
+            if (!throttleStreaming.isEmpty()) {
+                settings["bThrottleDownloadsWhileStreaming"] = (throttleStreaming != "0");
+            }
+            QString displayRates = getVdfBlockSetting(configVdfPath, "Steam", "Display download rates in bits per second");
+            if (!displayRates.isEmpty()) {
+                settings["bDisplayDownloadRatesInBitsPerSecond"] = (displayRates != "0");
+            }
+            QString networkTransfers = getVdfBlockSetting(configVdfPath, "Steam", "LocalNetworkGameTransfers");
+            if (!networkTransfers.isEmpty()) {
+                settings["bLocalNetworkGameFileTransfer"] = (networkTransfers != "0");
+            }
+            QString shaderCache = getVdfBlockSetting(configVdfPath, "Steam", "ShaderCacheEnabled");
+            if (!shaderCache.isEmpty()) {
+                settings["bEnableShaderPreCaching"] = (shaderCache != "0");
+            }
+        }
+    }
+
     return true;
 }
 
@@ -640,6 +1050,12 @@ bool Optimizer::updateVdfFriendsSettings(const QString &filePath, const QString 
 
     QString wsBlock = content.mid(startIdx, closeIdx - startIdx);
     QJsonObject obj = QJsonObject::fromVariantMap(settings);
+    obj.remove("DownloadHighQualityAudio");
+    obj.remove("EnableStreaming");
+    obj.remove("noiseGateLevel");
+    obj.remove("echoCancellation");
+    obj.remove("noiseCancellation");
+    obj.remove("autoGainControl");
     QString cleanJson = QString::fromUtf8(QJsonDocument(obj).toJson(QJsonDocument::Compact));
     QString escapedJson = cleanJson;
     escapedJson.replace(QLatin1String("\\"), QLatin1String("\\\\"));
@@ -656,6 +1072,91 @@ bool Optimizer::updateVdfFriendsSettings(const QString &filePath, const QString 
     } else {
         QString indent = "\n\t\t\t";
         newWsBlock = QString("%1\"FriendsUIWebSettings_%2\"\t\t\"%3\"").arg(indent, accountId, escapedJson) + wsBlock;
+    }
+
+    // Update SteamVoiceSettings in newWsBlock
+    QRegularExpression voiceRegex(QString("\"SteamVoiceSettings_%1\"\\s*\"((?:[^\"\\\\]|\\\\.)*)\"").arg(accountId));
+    QRegularExpressionMatch voiceMatch = voiceRegex.match(newWsBlock);
+
+    QJsonObject voiceObj;
+    if (voiceMatch.hasMatch()) {
+        QString voiceEscapedJson = voiceMatch.captured(1);
+        QString voiceCleanJson = voiceEscapedJson;
+        voiceCleanJson.replace(QLatin1String("\\\""), QLatin1String("\""));
+        voiceCleanJson.replace(QLatin1String("\\\\"), QLatin1String("\\"));
+        QJsonDocument voiceDoc = QJsonDocument::fromJson(voiceCleanJson.toUtf8());
+        if (voiceDoc.isObject()) {
+            voiceObj = voiceDoc.object();
+        }
+    } else {
+        voiceObj["inputGain"] = 1;
+        voiceObj["outputGain"] = 1;
+        voiceObj["selectedMic"] = "default";
+        voiceObj["selectedOutput"] = "default";
+        voiceObj["pttSoundsEnabled"] = true;
+        voiceObj["hasResetOpenMicHotKey"] = true;
+        voiceObj["useSteamAudioSpatialization"] = false;
+    }
+
+    if (settings.contains("noiseGateLevel")) {
+        voiceObj["noiseGateLevel"] = settings.value("noiseGateLevel").toInt();
+    }
+    if (settings.contains("echoCancellation")) {
+        voiceObj["echoCancellation"] = settings.value("echoCancellation").toBool();
+    }
+    if (settings.contains("noiseCancellation")) {
+        voiceObj["noiseCancellation"] = settings.value("noiseCancellation").toBool();
+    }
+    if (settings.contains("autoGainControl")) {
+        voiceObj["autoGainControl"] = settings.value("autoGainControl").toBool();
+    }
+
+    QString voiceCleanJson = QString::fromUtf8(QJsonDocument(voiceObj).toJson(QJsonDocument::Compact));
+    QString voiceEscapedJson = voiceCleanJson;
+    voiceEscapedJson.replace(QLatin1String("\\"), QLatin1String("\\\\"));
+    voiceEscapedJson.replace(QLatin1String("\""), QLatin1String("\\\""));
+
+    if (voiceMatch.hasMatch()) {
+        int voiceStart = voiceMatch.capturedStart();
+        int voiceEnd = voiceMatch.capturedEnd();
+        newWsBlock = newWsBlock.left(voiceStart) + QString("\"SteamVoiceSettings_%1\"\t\t\"%2\"").arg(accountId, voiceEscapedJson) + newWsBlock.mid(voiceEnd);
+    } else {
+        QString indent = "\n\t\t\t";
+        newWsBlock = QString("%1\"SteamVoiceSettings_%2\"\t\t\"%3\"").arg(indent, accountId, voiceEscapedJson) + newWsBlock;
+    }
+
+    // Update CachedCommunityPreferences in newWsBlock
+    QRegularExpression commRegex("\"CachedCommunityPreferences\"\\s*\"((?:[^\"\\\\]|\\\\.)*)\"");
+    QRegularExpressionMatch commMatch = commRegex.match(newWsBlock);
+
+    QJsonObject commObj;
+    if (commMatch.hasMatch()) {
+        QString commEscapedJson = commMatch.captured(1);
+        QString commCleanJson = commEscapedJson;
+        commCleanJson.replace(QLatin1String("\\\""), QLatin1String("\""));
+        commCleanJson.replace(QLatin1String("\\\\"), QLatin1String("\\"));
+        QJsonDocument commDoc = QJsonDocument::fromJson(commCleanJson.toUtf8());
+        if (commDoc.isObject()) {
+            commObj = commDoc.object();
+        }
+    }
+
+    if (settings.contains("bAppendNicknamesToNames")) {
+        commObj["bParenthesizeNicknames"] = settings.value("bAppendNicknamesToNames").toBool();
+    }
+
+    QString commCleanJson = QString::fromUtf8(QJsonDocument(commObj).toJson(QJsonDocument::Compact));
+    QString commEscapedJson = commCleanJson;
+    commEscapedJson.replace(QLatin1String("\\"), QLatin1String("\\\\"));
+    commEscapedJson.replace(QLatin1String("\""), QLatin1String("\\\""));
+
+    if (commMatch.hasMatch()) {
+        int commStart = commMatch.capturedStart();
+        int commEnd = commMatch.capturedEnd();
+        newWsBlock = newWsBlock.left(commStart) + QString("\"CachedCommunityPreferences\"\t\t\"%1\"").arg(commEscapedJson) + newWsBlock.mid(commEnd);
+    } else {
+        QString indent = "\n\t\t\t";
+        newWsBlock = QString("%1\"CachedCommunityPreferences\"\t\t\"%2\"").arg(indent, commEscapedJson) + newWsBlock;
     }
 
     QString newContent = content.left(startIdx) + newWsBlock + content.mid(closeIdx);
@@ -722,6 +1223,264 @@ bool Optimizer::updateVdfFriendsSettings(const QString &filePath, const QString 
     }
     if (settings.contains("bControllerLowPlaySound")) {
         updateVdfSystemSetting(filePath, "ControllerLowBatteryNotificationSound", settings.value("bControllerLowPlaySound").toBool() ? "1" : "0");
+    }
+
+    if (settings.contains("bReduceMotion")) {
+        updateVdfBlockSetting(filePath, "Accessibility", "ReduceMotion", settings.value("bReduceMotion").toBool() ? "1" : "0");
+    }
+    if (settings.contains("BackgroundRecordMode")) {
+        updateVdfBlockSetting(filePath, "GameRecording", "BackgroundRecordMode", QString::number(settings.value("BackgroundRecordMode").toInt()));
+    }
+    if (settings.contains("EnableStreaming")) {
+        updateVdfBlockSetting(filePath, "streaming_v2", "EnableStreaming", settings.value("EnableStreaming").toBool() ? "1" : "0");
+    }
+    if (settings.contains("DownloadHighQualityAudio")) {
+        // Update localconfig.vdf (filePath)
+        updateVdfBlockSetting(filePath, "Music", "DownloadHighQualityAudio", settings.value("DownloadHighQualityAudio").toBool() ? "1" : "0");
+        
+        // Update config.vdf (DownloadHighQualityAudioSoundtracks)
+        QString configVdfPath = filePath;
+        int userdataIdx = configVdfPath.indexOf("/userdata/", 0, Qt::CaseInsensitive);
+        if (userdataIdx == -1) {
+            userdataIdx = configVdfPath.indexOf("\\userdata\\", 0, Qt::CaseInsensitive);
+        }
+        if (userdataIdx != -1) {
+            configVdfPath = configVdfPath.left(userdataIdx) + "/config/config.vdf";
+            if (QFile::exists(configVdfPath)) {
+                updateVdfBlockSetting(configVdfPath, "Music", "DownloadHighQualityAudioSoundtracks", settings.value("DownloadHighQualityAudio").toBool() ? "1" : "0");
+            }
+        }
+    }
+
+    // Update FriendsUIJSON in sharedconfig.vdf
+    QString sharedConfigPath = filePath;
+    sharedConfigPath.replace("/config/localconfig.vdf", "/7/remote/sharedconfig.vdf");
+    sharedConfigPath.replace("\\config\\localconfig.vdf", "\\7\\remote\\sharedconfig.vdf");
+
+    if (QFile::exists(sharedConfigPath)) {
+        QString friendsUIJsonStr = getVdfBlockSetting(sharedConfigPath, "FriendsUI", "FriendsUIJSON");
+        QJsonObject sharedObj;
+        if (!friendsUIJsonStr.isEmpty()) {
+            QString cleanJson = friendsUIJsonStr;
+            cleanJson.replace(QLatin1String("\\\""), QLatin1String("\""));
+            cleanJson.replace(QLatin1String("\\\\"), QLatin1String("\\"));
+            QJsonDocument sharedDoc = QJsonDocument::fromJson(cleanJson.toUtf8());
+            if (sharedDoc.isObject()) {
+                sharedObj = sharedDoc.object();
+            }
+        }
+
+        // Apply our updates to sharedObj
+        if (settings.contains("bEnableAnimatedAvatars")) {
+            sharedObj["bAnimatedAvatars"] = settings.value("bEnableAnimatedAvatars").toBool();
+        }
+        if (settings.contains("bCompactFriendsListAndChat")) {
+            sharedObj["bCompactFriendsList"] = settings.value("bCompactFriendsListAndChat").toBool();
+        }
+        if (settings.contains("bCompactFavorites")) {
+            sharedObj["bCompactQuickAccess"] = settings.value("bCompactFavorites").toBool();
+        }
+        if (settings.contains("bHideCategorizedFriendsInOnlineOffline")) {
+            sharedObj["bHideCategorizedFriends"] = settings.value("bHideCategorizedFriendsInOnlineOffline").toBool();
+        }
+        if (settings.contains("bHideOfflineFriendsInCustomCategories")) {
+            sharedObj["bHideOfflineFriendsInTagGroups"] = settings.value("bHideOfflineFriendsInCustomCategories").toBool();
+        }
+        if (settings.contains("bGroupFriendsByGame")) {
+            sharedObj["bCategorizeInGameFriendsByGame"] = settings.value("bGroupFriendsByGame").toBool();
+        }
+        if (settings.contains("bSignInOnStart")) {
+            sharedObj["bSignIntoFriends"] = settings.value("bSignInOnStart").toBool();
+        }
+        if (settings.contains("bOpenNewWindowForNewChats")) {
+            sharedObj["bAlwaysNewChatWindow"] = settings.value("bOpenNewWindowForNewChats").toBool();
+        }
+        if (settings.contains("bDontEmbedImages")) {
+            sharedObj["bDisableEmbedInlining"] = settings.value("bDontEmbedImages").toBool();
+        }
+        if (settings.contains("bRememberOpenChats")) {
+            sharedObj["bRememberOpenChats"] = settings.value("bRememberOpenChats").toBool();
+        }
+        if (settings.contains("bDisableSpellCheck")) {
+            sharedObj["bDisableSpellcheck"] = settings.value("bDisableSpellCheck").toBool();
+        }
+        if (settings.contains("bDisableRoomEffects")) {
+            sharedObj["bDisableRoomEffects"] = settings.value("bDisableRoomEffects").toBool();
+        }
+        if (settings.contains("bIgnoreAwayStatusWhenSorting")) {
+            sharedObj["bForceAlphabeticFriendSorting"] = settings.value("bIgnoreAwayStatusWhenSorting").toBool();
+        }
+        if (settings.contains("bDockChats")) {
+            sharedObj["bSingleWindowMode"] = settings.value("bDockChats").toBool();
+        }
+
+        // Notifications
+        if (settings.contains("bFriendOnlineShowToast")) {
+            sharedObj["bNotifications_ShowOnline"] = settings.value("bFriendOnlineShowToast").toBool();
+        }
+        if (settings.contains("bFriendOnlinePlaySound")) {
+            sharedObj["bSounds_PlayOnline"] = settings.value("bFriendOnlinePlaySound").toBool();
+        }
+        if (settings.contains("bFriendJoinShowToast")) {
+            sharedObj["bNotifications_ShowIngame"] = settings.value("bFriendJoinShowToast").toBool();
+        }
+        if (settings.contains("bFriendJoinPlaySound")) {
+            sharedObj["bSounds_PlayIngame"] = settings.value("bFriendJoinPlaySound").toBool();
+        }
+        if (settings.contains("bFriendMsgShowToast")) {
+            sharedObj["bNotifications_ShowMessage"] = settings.value("bFriendMsgShowToast").toBool();
+        }
+        if (settings.contains("bFriendMsgPlaySound")) {
+            sharedObj["bSounds_PlayMessage"] = settings.value("bFriendMsgPlaySound").toBool();
+        }
+        if (settings.contains("bChatRoomShowToast")) {
+            sharedObj["bNotifications_EventsAndAnnouncements"] = settings.value("bChatRoomShowToast").toBool();
+        }
+        if (settings.contains("bChatRoomPlaySound")) {
+            sharedObj["bSounds_EventsAndAnnouncements"] = settings.value("bChatRoomPlaySound").toBool();
+        }
+
+        // Chat flash mode
+        if (settings.contains("flashWindowOnMessage")) {
+            QString flashMode = settings.value("flashWindowOnMessage").toString();
+            sharedObj["nChatFlashMode"] = (flashMode == "never") ? 0 : 2;
+        }
+
+        // Font size
+        if (settings.contains("fontSize")) {
+            QString fontSize = settings.value("fontSize").toString();
+            int sizeVal = 1; // default
+            if (fontSize == "small") sizeVal = 0;
+            else if (fontSize == "large") sizeVal = 2;
+            else if (fontSize == "extra_large") sizeVal = 3;
+            sharedObj["nChatFontSize"] = sizeVal;
+        }
+
+        QString cleanSharedJson = QString::fromUtf8(QJsonDocument(sharedObj).toJson(QJsonDocument::Compact));
+        QString escapedSharedJson = cleanSharedJson;
+        escapedSharedJson.replace(QLatin1String("\\"), QLatin1String("\\\\"));
+        escapedSharedJson.replace(QLatin1String("\""), QLatin1String("\\\""));
+
+        updateVdfBlockSetting(sharedConfigPath, "FriendsUI", "FriendsUIJSON", escapedSharedJson);
+    }
+
+    // 8. news settings
+    if (settings.contains("bNotifyGameAdditions")) {
+        updateVdfBlockSetting(filePath, "news", "NotifyAvailableGames", settings.value("bNotifyGameAdditions").toBool() ? "1" : "0");
+    }
+
+#ifdef Q_OS_WIN
+    // 9. interface settings to Registry
+    if (settings.contains("bGPUAcceleratedRendering")) {
+        writeSteamRegistryDword("GPUAccelWebViewsV3", settings.value("bGPUAcceleratedRendering").toBool());
+    }
+    if (settings.contains("bHardwareVideoDecoding")) {
+        writeSteamRegistryDword("H264HWAccel", settings.value("bHardwareVideoDecoding").toBool());
+    }
+    if (settings.contains("bSmoothScrolling")) {
+        writeSteamRegistryDword("SmoothScrollWebViews", settings.value("bSmoothScrolling").toBool());
+    }
+    if (settings.contains("bScaleTextAndIcons")) {
+        writeSteamRegistryDword("DPIScaling", settings.value("bScaleTextAndIcons").toBool());
+    }
+    if (settings.contains("bStartInBigPicture")) {
+        writeSteamRegistryDword("StartupMode", settings.value("bStartInBigPicture").toBool());
+    }
+#endif
+
+    // 10. config.vdf loading (downloads & chooser)
+    QString configVdfPath = filePath;
+    int userdataIdx = configVdfPath.indexOf("/userdata/", 0, Qt::CaseInsensitive);
+    if (userdataIdx == -1) {
+        userdataIdx = configVdfPath.indexOf("\\userdata\\", 0, Qt::CaseInsensitive);
+    }
+    if (userdataIdx != -1) {
+        configVdfPath = configVdfPath.left(userdataIdx) + "/config/config.vdf";
+        if (QFile::exists(configVdfPath)) {
+            if (settings.contains("bAskAccountOnStart")) {
+                updateVdfBlockSetting(configVdfPath, "Auth", "AlwaysShowUserChooser", settings.value("bAskAccountOnStart").toBool() ? "1" : "0");
+            }
+            if (settings.contains("bScheduleAutoUpdates")) {
+                updateVdfBlockSetting(configVdfPath, "Steam", "AutoUpdateWindowEnabled", settings.value("bScheduleAutoUpdates").toBool() ? "1" : "0");
+            }
+            if (settings.contains("bLimitDownloadSpeed")) {
+                updateVdfBlockSetting(configVdfPath, "Steam", "DownloadThrottleKbps", settings.value("bLimitDownloadSpeed").toBool() ? "10000" : "0");
+            }
+            if (settings.contains("bAllowDownloadsDuringGameplay")) {
+                updateVdfBlockSetting(configVdfPath, "Steam", "AllowDownloadsDuringGameplay", settings.value("bAllowDownloadsDuringGameplay").toBool() ? "1" : "0");
+            }
+            if (settings.contains("bThrottleDownloadsWhileStreaming")) {
+                updateVdfBlockSetting(configVdfPath, "Steam", "StreamingThrottleEnabled", settings.value("bThrottleDownloadsWhileStreaming").toBool() ? "1" : "0");
+            }
+            if (settings.contains("bDisplayDownloadRatesInBitsPerSecond")) {
+                updateVdfBlockSetting(configVdfPath, "Steam", "Display download rates in bits per second", settings.value("bDisplayDownloadRatesInBitsPerSecond").toBool() ? "1" : "0");
+            }
+            if (settings.contains("bLocalNetworkGameFileTransfer")) {
+                updateVdfBlockSetting(configVdfPath, "Steam", "LocalNetworkGameTransfers", settings.value("bLocalNetworkGameFileTransfer").toBool() ? "3" : "0");
+            }
+            if (settings.contains("bEnableShaderPreCaching")) {
+                updateVdfBlockSetting(configVdfPath, "Steam", "ShaderCacheEnabled", settings.value("bEnableShaderPreCaching").toBool() ? "1" : "0");
+            }
+        }
+    }
+
+    // 11. loginusers.vdf loading (chooser auto login toggle)
+    if (settings.contains("bAskAccountOnStart")) {
+        QString loginusersPath = filePath;
+        int loginUserIdx = loginusersPath.indexOf("/userdata/", 0, Qt::CaseInsensitive);
+        if (loginUserIdx == -1) {
+            loginUserIdx = loginusersPath.indexOf("\\userdata\\", 0, Qt::CaseInsensitive);
+        }
+        if (loginUserIdx != -1) {
+            loginusersPath = loginusersPath.left(loginUserIdx) + "/config/loginusers.vdf";
+            if (QFile::exists(loginusersPath)) {
+                QFile file(loginusersPath);
+                if (file.open(QIODevice::ReadOnly | QIODevice::Text)) {
+                    QString content = QString::fromUtf8(file.readAll());
+                    file.close();
+                    
+                    bool ask = settings.value("bAskAccountOnStart").toBool();
+                    if (ask) {
+                        QRegularExpression autoLoginRegex("\"AllowAutoLogin\"\\s*\"1\"");
+                        content.replace(autoLoginRegex, "\"AllowAutoLogin\"\t\t\"0\"");
+                    } else {
+                        qlonglong steamId64 = accountId.toLongLong() + 76561197960265728LL;
+                        QString userBlockHeader = QString("\"%1\"").arg(steamId64);
+                        int blockStart = content.indexOf(userBlockHeader);
+                        if (blockStart != -1) {
+                            int count = 0;
+                            int idx = blockStart;
+                            int blockClose = -1;
+                            bool foundOpen = false;
+                            while (idx < content.length()) {
+                                QChar ch = content.at(idx);
+                                if (ch == '{') {
+                                    count++;
+                                    foundOpen = true;
+                                } else if (ch == '}') {
+                                    count--;
+                                    if (foundOpen && count == 0) {
+                                        blockClose = idx;
+                                        break;
+                                    }
+                                }
+                                idx++;
+                            }
+                            if (blockClose != -1) {
+                                QString userBlock = content.mid(blockStart, blockClose - blockStart);
+                                QRegularExpression autoLoginRegex("\"AllowAutoLogin\"\\s*\"0\"");
+                                userBlock.replace(autoLoginRegex, "\"AllowAutoLogin\"\t\t\"1\"");
+                                content = content.left(blockStart) + userBlock + content.mid(blockClose);
+                            }
+                        }
+                    }
+                    if (file.open(QIODevice::WriteOnly | QIODevice::Text)) {
+                        file.write(content.toUtf8());
+                        file.close();
+                    }
+                }
+            }
+        }
     }
 
     return true;
@@ -2240,11 +2999,29 @@ void Optimizer::loadSystemStates() {
     defaultFriendsSettings["bLocalNetworkGameFileTransfer"] = true;
     defaultFriendsSettings["bEnableShaderPreCaching"] = true;
     defaultFriendsSettings["bAllowBackgroundProcessingOfVulkanShaders"] = false;
-
+    defaultFriendsSettings["bShowOverlayToolbarAsList"] = false;
+    defaultFriendsSettings["bRestoreOverlayBrowserTabs"] = true;
+    defaultFriendsSettings["bUseBigPictureOverlay"] = false;
+    defaultFriendsSettings["bScaleOverlayTextAndIcons"] = true;
+    defaultFriendsSettings["bReduceMotion"] = false;
+    defaultFriendsSettings["BackgroundRecordMode"] = 0;
+    defaultFriendsSettings["noiseGateLevel"] = 2;
+    defaultFriendsSettings["echoCancellation"] = true;
+    defaultFriendsSettings["noiseCancellation"] = true;
+    defaultFriendsSettings["autoGainControl"] = true;
+    defaultFriendsSettings["EnableStreaming"] = true;
+    defaultFriendsSettings["DownloadHighQualityAudio"] = false;
+    defaultFriendsSettings["bAskAccountOnStart"] = false;
+    defaultFriendsSettings["bStartInBigPicture"] = false;
+    defaultFriendsSettings["bSmoothScrolling"] = true;
+    defaultFriendsSettings["bGPUAcceleratedRendering"] = true;
+    defaultFriendsSettings["bHardwareVideoDecoding"] = true;
+    defaultFriendsSettings["bNotifyGameAdditions"] = true;
 
     m_steamFriendsSettings.clear();
     if (m_steamInstalled) {
         QString userdataPath = steamPath + "/userdata";
+        Logger::log("loadSystemStates: Steam is installed. Userdata path: " + userdataPath, "INFO");
         QDir userdataDir(userdataPath);
         if (userdataDir.exists()) {
             bool loaded = false;
@@ -2259,35 +3036,52 @@ void Optimizer::loadSystemStates() {
                 }
                 RegCloseKey(hKeyActive);
             }
+            Logger::log("loadSystemStates: Active user ID from registry: " + QString::number(activeUser), "INFO");
             if (activeUser != 0) {
                 QString activeUserStr = QString::number(activeUser);
                 QString vdfPath = userdataPath + "/" + activeUserStr + "/config/localconfig.vdf";
+                Logger::log("loadSystemStates: Checking active user VDF path: " + vdfPath, "INFO");
                 if (QFile::exists(vdfPath)) {
                     QVariantMap loadedSettings;
                     if (getVdfFriendsSettings(vdfPath, activeUserStr, loadedSettings)) {
                         m_steamFriendsSettings = loadedSettings;
                         loaded = true;
+                        Logger::log("loadSystemStates: Successfully loaded active user settings. DownloadHighQualityAudio: " + QString::number(loadedSettings.value("DownloadHighQualityAudio").toBool()), "INFO");
+                    } else {
+                        Logger::log("loadSystemStates: getVdfFriendsSettings returned false for active user path", "WARNING");
                     }
+                } else {
+                    Logger::log("loadSystemStates: Active user VDF file does not exist", "WARNING");
                 }
             }
 #endif
             // 2. If active user detection failed or settings not loaded, fallback to subdir loop
             if (!loaded) {
+                Logger::log("loadSystemStates: Active user settings not loaded. Trying subdir loop fallback.", "INFO");
                 QStringList subdirs = userdataDir.entryList(QDir::Dirs | QDir::NoDotAndDotDot);
                 for (const QString &subdir : subdirs) {
                     QString vdfPath = userdataPath + "/" + subdir + "/config/localconfig.vdf";
+                    Logger::log("loadSystemStates: Checking fallback subdir VDF path: " + vdfPath, "INFO");
                     if (QFile::exists(vdfPath)) {
                         QVariantMap loadedSettings;
                         if (getVdfFriendsSettings(vdfPath, subdir, loadedSettings)) {
                             if (!loadedSettings.isEmpty()) {
                                 m_steamFriendsSettings = loadedSettings;
+                                loaded = true;
+                                Logger::log("loadSystemStates: Successfully loaded fallback user settings from subdir " + subdir + ". DownloadHighQualityAudio: " + QString::number(loadedSettings.value("DownloadHighQualityAudio").toBool()), "INFO");
                                 break;
                             }
+                        } else {
+                            Logger::log("loadSystemStates: getVdfFriendsSettings returned false for fallback path", "WARNING");
                         }
                     }
                 }
             }
+        } else {
+            Logger::log("loadSystemStates: Userdata directory does not exist!", "WARNING");
         }
+    } else {
+        Logger::log("loadSystemStates: Steam is NOT installed according to path check", "WARNING");
     }
 
     // Merge loaded settings with defaults to ensure missing options default to correct values (e.g. bScaleTextAndIcons = true)
@@ -6121,10 +6915,57 @@ QVariantMap Optimizer::getDriveInfo(const QString &path) {
         result["freeSize"] = freeGB;
 
         double shadercacheGB = 0.0;
-        QString shadercachePath = QDir::cleanPath(path + "/steamapps/shadercache");
-        if (QDir(shadercachePath).exists()) {
-            qint64 bytes = getDirectorySize(shadercachePath);
-            shadercacheGB = (double)bytes / (1024.0 * 1024.0 * 1024.0);
+        QString configVdfPath = QDir::cleanPath(path + "/config/config.vdf");
+        bool parsedFromVdf = false;
+        if (QFile::exists(configVdfPath)) {
+            QFile configFile(configVdfPath);
+            if (configFile.open(QIODevice::ReadOnly | QIODevice::Text)) {
+                QString configContent = QString::fromUtf8(configFile.readAll());
+                configFile.close();
+                
+                int managerIdx = configContent.indexOf("\"ShaderCacheManager\"", 0, Qt::CaseInsensitive);
+                if (managerIdx != -1) {
+                    int startIdx = configContent.indexOf("{", managerIdx);
+                    if (startIdx != -1) {
+                        int count = 1;
+                        int idx = startIdx + 1;
+                        int closeIdx = -1;
+                        while (count > 0 && idx < configContent.length()) {
+                            QChar ch = configContent.at(idx);
+                            if (ch == '{') {
+                                count++;
+                            } else if (ch == '}') {
+                                count--;
+                                if (count == 0) {
+                                    closeIdx = idx;
+                                    break;
+                                }
+                            }
+                            idx++;
+                        }
+                        if (closeIdx != -1) {
+                            QString managerBlock = configContent.mid(startIdx, closeIdx - startIdx);
+                            QRegularExpression sizeRegex("\"ShaderCacheSize\"\\s*\"(\\d+)\"");
+                            QRegularExpressionMatchIterator it = sizeRegex.globalMatch(managerBlock);
+                            qint64 totalBytes = 0;
+                            while (it.hasNext()) {
+                                QRegularExpressionMatch match = it.next();
+                                totalBytes += match.captured(1).toLongLong();
+                            }
+                            shadercacheGB = (double)totalBytes / (1024.0 * 1024.0 * 1024.0);
+                            parsedFromVdf = true;
+                        }
+                    }
+                }
+            }
+        }
+        
+        if (!parsedFromVdf) {
+            QString shadercachePath = QDir::cleanPath(path + "/steamapps/shadercache");
+            if (QDir(shadercachePath).exists()) {
+                qint64 bytes = getDirectorySize(shadercachePath);
+                shadercacheGB = (double)bytes / (1024.0 * 1024.0 * 1024.0);
+            }
         }
         result["shadercacheSize"] = shadercacheGB;
 
@@ -6212,6 +7053,102 @@ bool Optimizer::clearSteamDownloadCache() {
     
     emit steamCacheLog(tr("Steam download cache cleared successfully! Freed %1 MB.").arg(QString::number(clearedMB, 'f', 2)), "SUCCESS");
     return true;
+}
+
+bool Optimizer::deleteSteamBrowserData() {
+    QString steam = QDir::cleanPath(steamPath());
+    if (steam.isEmpty() || !QDir(steam).exists()) {
+        emit steamCacheLog(tr("Steam path not found. Cannot clear browser data."), "ERROR");
+        return false;
+    }
+    
+    emit steamCacheLog(tr("Closing Steam process if running..."), "INFO");
+    if (isSteamRunning()) {
+        QString steamExePath = steam + "/steam.exe";
+        if (QFile::exists(steamExePath)) {
+            QProcess::execute(steamExePath, QStringList() << "-shutdown");
+            for (int i = 0; i < 10; ++i) {
+                QThread::msleep(500);
+                if (!isSteamRunning()) break;
+            }
+        }
+        if (isSteamRunning()) {
+            killSteam();
+        }
+    }
+    
+    QStringList cacheDirs = {
+        steam + "/htmlcache"
+    };
+    
+    int deletedCount = 0;
+    qint64 clearedBytes = 0;
+    
+    for (const QString &dirPath : cacheDirs) {
+        QDir dir(dirPath);
+        if (dir.exists()) {
+            qint64 size = getDirectorySize(dirPath);
+            if (dir.removeRecursively()) {
+                deletedCount++;
+                clearedBytes += size;
+                emit steamCacheLog(tr("Successfully deleted browser cache folder: %1").arg(QDir::toNativeSeparators(dirPath)), "SUCCESS");
+            } else {
+                emit steamCacheLog(tr("Failed to delete browser cache folder: %1 (Files may be locked)").arg(QDir::toNativeSeparators(dirPath)), "WARNING");
+            }
+        }
+    }
+    
+    QString localAppData = QString::fromLocal8Bit(qgetenv("LOCALAPPDATA"));
+    if (localAppData.isEmpty()) {
+        localAppData = QDir::homePath() + "/AppData/Local";
+    }
+    QString localAppCache = QDir::cleanPath(localAppData + "/Steam/htmlcache");
+    QDir localDir(localAppCache);
+    if (localDir.exists()) {
+        qint64 size = getDirectorySize(localAppCache);
+        if (localDir.removeRecursively()) {
+            deletedCount++;
+            clearedBytes += size;
+            emit steamCacheLog(tr("Successfully deleted local browser cache: %1").arg(QDir::toNativeSeparators(localAppCache)), "SUCCESS");
+        } else {
+            emit steamCacheLog(tr("Failed to delete local browser cache: %1 (Files may be locked)").arg(QDir::toNativeSeparators(localAppCache)), "WARNING");
+        }
+    }
+    
+    double clearedMB = (double)clearedBytes / (1024.0 * 1024.0);
+    emit steamCacheLog(tr("Steam web browser data cleared successfully! Freed %1 MB.").arg(QString::number(clearedMB, 'f', 2)), "SUCCESS");
+    return true;
+}
+
+void Optimizer::copyToClipboard(const QString &text) {
+    QGuiApplication::clipboard()->setText(text);
+}
+
+static QString findGameImage(const QString &steamPath, const QString &appid) {
+    QString cacheDirPath = QDir::cleanPath(steamPath + "/appcache/librarycache/" + appid);
+    QDir cacheDir(cacheDirPath);
+    if (!cacheDir.exists()) {
+        return "";
+    }
+    
+    // First check if header.jpg exists directly
+    if (QFile::exists(cacheDirPath + "/header.jpg")) {
+        return cacheDirPath + "/header.jpg";
+    }
+    
+    // Check recursively using QDirIterator
+    QDirIterator it(cacheDirPath, QStringList() << "header.jpg" << "library_600x900.jpg", QDir::Files, QDirIterator::Subdirectories);
+    QString fallback = "";
+    while (it.hasNext()) {
+        QString filePath = it.next();
+        if (filePath.endsWith("header.jpg", Qt::CaseInsensitive)) {
+            return filePath; // priority
+        }
+        if (fallback.isEmpty()) {
+            fallback = filePath;
+        }
+    }
+    return fallback;
 }
 
 void Optimizer::scanSteamInstalledGames() {
@@ -6342,6 +7279,9 @@ void Optimizer::scanSteamInstalledGames() {
                     gameMap["lastPlayed"] = lastPlayedStr;
                     gameMap["checked"] = false;
 
+                    QString imgPath = findGameImage(steam, appid);
+                    gameMap["imagePath"] = imgPath.isEmpty() ? "" : "file:///" + imgPath;
+
                     gamesList.append(gameMap);
                 }
             }
@@ -6351,6 +7291,8 @@ void Optimizer::scanSteamInstalledGames() {
     // Fallback: If no real games are found (e.g. Steam is not installed or libraries are empty on simulation),
     // let's populate with the realistic mock games from the screenshot so that the visual presentation is always perfect!
     if (gamesList.isEmpty()) {
+        QString imgPath;
+
         QVariantMap squad;
         squad["appid"] = 393380;
         squad["name"] = "Squad";
@@ -6361,6 +7303,8 @@ void Optimizer::scanSteamInstalledGames() {
         squad["workshopBytes"] = 24.83;
         squad["lastPlayed"] = "";
         squad["checked"] = false;
+        imgPath = findGameImage(steam, "393380");
+        squad["imagePath"] = imgPath.isEmpty() ? "" : "file:///" + imgPath;
         gamesList.append(squad);
 
         QVariantMap cs2;
@@ -6373,6 +7317,8 @@ void Optimizer::scanSteamInstalledGames() {
         cs2["workshopBytes"] = 0.47;
         cs2["lastPlayed"] = "LAST PLAYED DEC 29, 2025";
         cs2["checked"] = false;
+        imgPath = findGameImage(steam, "730");
+        cs2["imagePath"] = imgPath.isEmpty() ? "" : "file:///" + imgPath;
         gamesList.append(cs2);
 
         QVariantMap esports;
@@ -6385,6 +7331,11 @@ void Optimizer::scanSteamInstalledGames() {
         esports["workshopBytes"] = 0.0;
         esports["lastPlayed"] = "";
         esports["checked"] = false;
+        imgPath = findGameImage(steam, "2914120");
+        if (imgPath.isEmpty()) {
+            imgPath = findGameImage(steam, "4006000");
+        }
+        esports["imagePath"] = imgPath.isEmpty() ? "" : "file:///" + imgPath;
         gamesList.append(esports);
 
         QVariantMap blender;
@@ -6397,6 +7348,8 @@ void Optimizer::scanSteamInstalledGames() {
         blender["workshopBytes"] = 0.0;
         blender["lastPlayed"] = "LAST PLAYED NOV 25, 2025";
         blender["checked"] = false;
+        imgPath = findGameImage(steam, "365670");
+        blender["imagePath"] = imgPath.isEmpty() ? "" : "file:///" + imgPath;
         gamesList.append(blender);
 
         QVariantMap redist;
@@ -6409,6 +7362,8 @@ void Optimizer::scanSteamInstalledGames() {
         redist["workshopBytes"] = 0.0;
         redist["lastPlayed"] = "";
         redist["checked"] = false;
+        imgPath = findGameImage(steam, "228980");
+        redist["imagePath"] = imgPath.isEmpty() ? "" : "file:///" + imgPath;
         gamesList.append(redist);
     }
 

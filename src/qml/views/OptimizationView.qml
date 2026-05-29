@@ -955,7 +955,19 @@ Item {
                     "bFriendMsgPlaySound": qsTr("Friend message notification sound"),
                     "bChatRoomShowToast": qsTr("Chat room toast notification"),
                     "bChatRoomPlaySound": qsTr("Chat room notification sound"),
-                    "flashWindowOnMessage": qsTr("Flash window when receive chat message")
+                    "flashWindowOnMessage": qsTr("Flash window when receive chat message"),
+                    "bShowOverlayToolbarAsList": qsTr("Show toolbar as list view"),
+                    "bRestoreOverlayBrowserTabs": qsTr("Restore my previous browser tabs when starting a game"),
+                    "bUseBigPictureOverlay": qsTr("Use the Big Picture Overlay when using a controller"),
+                    "bScaleOverlayTextAndIcons": qsTr("Scale Steam Overlay text and icons to match monitor settings"),
+                    "bReduceMotion": qsTr("Reduce Motion"),
+                    "BackgroundRecordMode": qsTr("Game Recording Mode"),
+                    "noiseGateLevel": qsTr("Voice Transmission Threshold"),
+                    "echoCancellation": qsTr("Echo cancellation"),
+                    "noiseCancellation": qsTr("Noise cancellation"),
+                    "autoGainControl": qsTr("Automatic volume/gain control"),
+                    "EnableStreaming": qsTr("Enable Remote Play"),
+                    "DownloadHighQualityAudio": qsTr("Download high quality audio files")
                 };
                 for (var idx = 0; idx < keys.length; idx++) {
                     (function(key) {
@@ -965,6 +977,24 @@ Item {
                             var toVal = current[key];
                             if (typeof fromVal === "boolean") fromVal = fromVal ? qsTr("Enabled") : qsTr("Disabled");
                             if (typeof toVal === "boolean") toVal = toVal ? qsTr("Enabled") : qsTr("Disabled");
+                            if (key === "BackgroundRecordMode") {
+                                var modes = {
+                                    0: qsTr("Recording Off"),
+                                    1: qsTr("Record in Background"),
+                                    2: qsTr("Record Manually")
+                                };
+                                fromVal = modes[fromVal] || fromVal;
+                                toVal = modes[toVal] || toVal;
+                            }
+                            if (key === "noiseGateLevel") {
+                                var voiceModes = {
+                                    0: qsTr("Off"),
+                                    2: qsTr("Medium (Recommended)"),
+                                    3: qsTr("High")
+                                };
+                                fromVal = voiceModes[fromVal] || fromVal;
+                                toVal = voiceModes[toVal] || toVal;
+                            }
                             subList.push({
                                 name: label + ": " + fromVal + " -> " + toVal,
                                 revert: function() {
@@ -1040,7 +1070,19 @@ Item {
                     "bRememberOpenChats": qsTr("Remember my open chats"),
                     "bDisableSpellCheck": qsTr("Disable spellcheck in chat message entry"),
                     "bDisableRoomEffects": qsTr("Disable animated room effects"),
-                    "fontSize": qsTr("Chat font size")
+                    "fontSize": qsTr("Chat font size"),
+                    "bShowOverlayToolbarAsList": qsTr("Show toolbar as list view"),
+                    "bRestoreOverlayBrowserTabs": qsTr("Restore my previous browser tabs when starting a game"),
+                    "bUseBigPictureOverlay": qsTr("Use the Big Picture Overlay when using a controller"),
+                    "bScaleOverlayTextAndIcons": qsTr("Scale Steam Overlay text and icons to match monitor settings"),
+                    "bReduceMotion": qsTr("Reduce Motion"),
+                    "BackgroundRecordMode": qsTr("Game Recording Mode"),
+                    "noiseGateLevel": qsTr("Voice Transmission Threshold"),
+                    "echoCancellation": qsTr("Echo cancellation"),
+                    "noiseCancellation": qsTr("Noise cancellation"),
+                    "autoGainControl": qsTr("Automatic volume/gain control"),
+                    "EnableStreaming": qsTr("Enable Remote Play"),
+                    "DownloadHighQualityAudio": qsTr("Download high quality audio files")
                 };
                 for (var idx = 0; idx < keys.length; idx++) {
                     (function(key) {
@@ -1050,6 +1092,24 @@ Item {
                             var toVal = current[key];
                             if (typeof fromVal === "boolean") fromVal = fromVal ? qsTr("Enabled") : qsTr("Disabled");
                             if (typeof toVal === "boolean") toVal = toVal ? qsTr("Enabled") : qsTr("Disabled");
+                            if (key === "BackgroundRecordMode") {
+                                var modes = {
+                                    0: qsTr("Recording Off"),
+                                    1: qsTr("Record in Background"),
+                                    2: qsTr("Record Manually")
+                                };
+                                fromVal = modes[fromVal] || fromVal;
+                                toVal = modes[toVal] || toVal;
+                            }
+                            if (key === "noiseGateLevel") {
+                                var voiceModes = {
+                                    0: qsTr("Off"),
+                                    2: qsTr("Medium (Recommended)"),
+                                    3: qsTr("High")
+                                };
+                                fromVal = voiceModes[fromVal] || fromVal;
+                                toVal = voiceModes[toVal] || toVal;
+                            }
                             subList.push({
                                 name: label + ": " + fromVal + " -> " + toVal,
                                 revert: function() {

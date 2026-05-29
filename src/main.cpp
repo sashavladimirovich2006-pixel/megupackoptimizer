@@ -36,7 +36,11 @@ int main(int argc, char* argv[]) {
     auto loadLanguage = [&app, &engine, translator](const QString &lang) {
         app.removeTranslator(translator);
         if (lang == "uk") {
-            if (translator->load(":/MeguPackOptimizer/translations/megu_pack_optimizer_uk.qm")) {
+            bool loaded = translator->load("megu_pack_optimizer_uk", ":/MeguPackOptimizer/translations");
+            if (!loaded) {
+                loaded = translator->load(":/MeguPackOptimizer/translations/megu_pack_optimizer_uk.qm");
+            }
+            if (loaded) {
                 app.installTranslator(translator);
                 Logger::log("Ukrainian translation loaded successfully", "INFO");
             } else {
