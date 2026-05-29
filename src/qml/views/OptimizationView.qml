@@ -1194,6 +1194,14 @@ Item {
         clip: true
         contentHeight: mainColumn.implicitHeight
 
+        MouseArea {
+            anchors.fill: parent
+            z: -1
+            onClicked: {
+                root.forceActiveFocus();
+            }
+        }
+
         ScrollBar.vertical: MeguScrollBar { }
         ScrollBar.horizontal: MeguScrollBar { }
 
@@ -3955,6 +3963,13 @@ Item {
                                             optimizerBackend.pagefileMin = val;
                                         }
                                     }
+
+                                    Keys.onEscapePressed: {
+                                        root.forceActiveFocus();
+                                    }
+                                    Keys.onReturnPressed: {
+                                        root.forceActiveFocus();
+                                    }
                                 }
                             }
                         }
@@ -3999,6 +4014,13 @@ Item {
                                         if (!isNaN(val) && val >= 1024) {
                                             optimizerBackend.pagefileMax = val;
                                         }
+                                    }
+
+                                    Keys.onEscapePressed: {
+                                        root.forceActiveFocus();
+                                    }
+                                    Keys.onReturnPressed: {
+                                        root.forceActiveFocus();
                                     }
                                 }
                             }
