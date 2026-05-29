@@ -87,8 +87,10 @@ void Settings::setDeleteTempFiles(bool val) {
 }
 
 void Settings::setLanguage(const QString &val) {
+    Logger::log("Settings::setLanguage called with value: " + val + " (current is: " + m_language + ")", "DEBUG");
     if (m_language != val) {
         m_language = val;
+        Logger::log("Settings::setLanguage setting new language: " + val, "DEBUG");
         emit languageChanged(val);
         save();
     }

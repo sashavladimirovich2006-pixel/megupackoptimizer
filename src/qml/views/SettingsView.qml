@@ -178,21 +178,17 @@ Item {
                         anchors.verticalCenter: parent.verticalCenter
 
                         Repeater {
-                            model: {
-                                var lang = settingsBackend.language;
-                                return [
-                                    { "code": "en", "name": qsTr("English") },
-                                    { "code": "uk", "name": qsTr("Ukrainian") }
-                                ];
-                            }
+                            model: ["en", "uk"]
 
                             delegate: MeguButton {
                                 width: 100
                                 height: 32
-                                text: modelData.name
-                                accented: settingsBackend.language === modelData.code
+                                text: modelData === "en" ? qsTr("English") : qsTr("Ukrainian")
+                                accented: settingsBackend.language === modelData
                                 onClicked: {
-                                    settingsBackend.language = modelData.code;
+                                    console.log("[QML] Language button clicked for code:", modelData);
+                                    settingsBackend.language = modelData;
+                                    console.log("[QML] After setting, backend language is:", settingsBackend.language);
                                 }
                             }
                         }
