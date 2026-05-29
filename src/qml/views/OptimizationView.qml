@@ -8,6 +8,15 @@ import "../components"
 Item {
     id: root
     anchors.fill: parent
+    focus: true
+
+    MouseArea {
+        anchors.fill: parent
+        z: -1
+        onClicked: {
+            root.forceActiveFocus();
+        }
+    }
 
     property string currentSection: "core"
 
