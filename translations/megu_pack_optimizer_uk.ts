@@ -6,55 +6,55 @@
         <location filename="../build/MeguPackOptimizer/src/qml/views/DashboardView.qml" line="42" />
         <location filename="../src/qml/views/DashboardView.qml" line="42" />
         <source>SYSTEM SPECIFICATIONS</source>
-        <translation type="unfinished" />
+        <translation>ХАРАКТЕРИСТИКИ СИСТЕМИ</translation>
     </message>
     <message>
         <location filename="../build/MeguPackOptimizer/src/qml/views/DashboardView.qml" line="60" />
         <location filename="../src/qml/views/DashboardView.qml" line="60" />
         <source>Operating System</source>
-        <translation type="unfinished" />
+        <translation>Операційна система</translation>
     </message>
     <message>
         <location filename="../build/MeguPackOptimizer/src/qml/views/DashboardView.qml" line="68" />
         <location filename="../src/qml/views/DashboardView.qml" line="68" />
         <source>Processor (CPU)</source>
-        <translation type="unfinished" />
+        <translation>Процесор (CPU)</translation>
     </message>
     <message>
         <location filename="../build/MeguPackOptimizer/src/qml/views/DashboardView.qml" line="76" />
         <location filename="../src/qml/views/DashboardView.qml" line="76" />
         <source>Logical Cores</source>
-        <translation type="unfinished" />
+        <translation>Логічні ядра</translation>
     </message>
     <message>
         <location filename="../build/MeguPackOptimizer/src/qml/views/DashboardView.qml" line="84" />
         <location filename="../src/qml/views/DashboardView.qml" line="84" />
         <source>Memory (RAM)</source>
-        <translation type="unfinished" />
+        <translation>Оперативна пам'ять (RAM)</translation>
     </message>
     <message>
         <location filename="../build/MeguPackOptimizer/src/qml/views/DashboardView.qml" line="92" />
         <location filename="../src/qml/views/DashboardView.qml" line="92" />
         <source>Graphics Card (GPU)</source>
-        <translation type="unfinished" />
+        <translation>Відеокарта (GPU)</translation>
     </message>
     <message>
         <location filename="../build/MeguPackOptimizer/src/qml/views/DashboardView.qml" line="100" />
         <location filename="../src/qml/views/DashboardView.qml" line="100" />
         <source>Motherboard</source>
-        <translation type="unfinished" />
+        <translation>Материнська плата</translation>
     </message>
     <message>
         <location filename="../build/MeguPackOptimizer/src/qml/views/DashboardView.qml" line="108" />
         <location filename="../src/qml/views/DashboardView.qml" line="108" />
         <source>Storage (C:)</source>
-        <translation type="unfinished" />
+        <translation>Накопичувач (C:)</translation>
     </message>
     <message>
         <location filename="../build/MeguPackOptimizer/src/qml/views/DashboardView.qml" line="116" />
         <location filename="../src/qml/views/DashboardView.qml" line="116" />
         <source>Primary Display</source>
-        <translation type="unfinished" />
+        <translation>Основний дисплей</translation>
     </message>
 </context>
 <context>
@@ -75,19 +75,19 @@
         <location filename="../build/MeguPackOptimizer/src/qml/views/DefenderDrawer.qml" line="71" />
         <location filename="../src/qml/views/DefenderDrawer.qml" line="71" />
         <source>Registry Disablement Policies</source>
-        <translation type="unfinished">Політики відключення через реєстр</translation>
+        <translation>Політики відключення через реєстр</translation>
     </message>
     <message>
         <location filename="../build/MeguPackOptimizer/src/qml/views/DefenderDrawer.qml" line="77" />
         <location filename="../src/qml/views/DefenderDrawer.qml" line="77" />
         <source>PowerShell Preference Adjustments</source>
-        <translation type="unfinished">Параметри через PowerShell</translation>
+        <translation>Параметри через PowerShell</translation>
     </message>
     <message>
         <location filename="../build/MeguPackOptimizer/src/qml/views/DefenderDrawer.qml" line="83" />
         <location filename="../src/qml/views/DefenderDrawer.qml" line="83" />
         <source>Antivirus Services &amp; Drivers</source>
-        <translation type="unfinished">Антивірусні служби та драйвери</translation>
+        <translation>Антивірусні служби та драйвери</translation>
     </message>
     <message>
         <location filename="../build/MeguPackOptimizer/src/qml/views/DefenderDrawer.qml" line="100" />
@@ -120,19 +120,19 @@
         <location filename="../build/MeguPackOptimizer/src/qml/views/IndexingDrawer.qml" line="19" />
         <location filename="../src/qml/views/IndexingDrawer.qml" line="19" />
         <source>Windows Search service</source>
-        <translation type="unfinished">Служба Windows Search</translation>
+        <translation>Служба Windows Search</translation>
     </message>
     <message>
         <location filename="../build/MeguPackOptimizer/src/qml/views/IndexingDrawer.qml" line="35" />
         <location filename="../src/qml/views/IndexingDrawer.qml" line="35" />
         <source>Drive C: indexing</source>
-        <translation type="unfinished">Індексація диска С</translation>
+        <translation>Індексація диска С</translation>
     </message>
     <message>
         <location filename="../build/MeguPackOptimizer/src/qml/views/IndexingDrawer.qml" line="57" />
         <location filename="../src/qml/views/IndexingDrawer.qml" line="57" />
         <source>Drive %1 indexing</source>
-        <translation type="unfinished">Індексація диска %1</translation>
+        <translation>Індексація диска %1</translation>
     </message>
 </context>
 <context>
@@ -231,25 +231,25 @@
         <location filename="../build/MeguPackOptimizer/src/qml/views/NotificationsDrawer.qml" line="27" />
         <location filename="../src/qml/views/NotificationsDrawer.qml" line="27" />
         <source>Global Toast Notifications</source>
-        <translation type="unfinished">Глобальні спливаючі сповіщення</translation>
+        <translation>Глобальні спливаючі сповіщення</translation>
     </message>
     <message>
         <location filename="../build/MeguPackOptimizer/src/qml/views/NotificationsDrawer.qml" line="33" />
         <location filename="../src/qml/views/NotificationsDrawer.qml" line="33" />
         <source>App Notifications</source>
-        <translation type="unfinished">Сповіщення від додатків</translation>
+        <translation>Сповіщення від додатків</translation>
     </message>
     <message>
         <location filename="../build/MeguPackOptimizer/src/qml/views/NotificationsDrawer.qml" line="39" />
         <location filename="../src/qml/views/NotificationsDrawer.qml" line="39" />
         <source>Notification Sounds</source>
-        <translation type="unfinished">Звуки сповіщень</translation>
+        <translation>Звуки сповіщень</translation>
     </message>
     <message>
         <location filename="../build/MeguPackOptimizer/src/qml/views/NotificationsDrawer.qml" line="45" />
         <location filename="../src/qml/views/NotificationsDrawer.qml" line="45" />
         <source>Lock Screen Notifications</source>
-        <translation type="unfinished">Сповіщення на екрані блокування</translation>
+        <translation>Сповіщення на екрані блокування</translation>
     </message>
 </context>
 <context>
@@ -2032,6 +2032,26 @@ Would you like to close Discord now and proceed?</source>
         <source>Download high quality audio files</source>
         <translation>Завантажувати високоякісні аудіофайли</translation>
     </message>
+    <message>
+        <source>Restart Windows Explorer to apply context menu changes.</source>
+        <translation>Перезапустіть провідник Windows, щоб застосувати зміни контекстного меню.</translation>
+    </message>
+    <message>
+        <source>Restart Explorer</source>
+        <translation>Перезапустити провідник</translation>
+    </message>
+    <message>
+        <source>CUSTOMIZATION</source>
+        <translation>КАСТОМІЗАЦІЯ</translation>
+    </message>
+    <message>
+        <source>Classic Context Menu</source>
+        <translation>Класичне контекстне меню</translation>
+    </message>
+    <message>
+        <source>Disables the modern Windows 11 Fluent context menu and restores the classic Windows 10 style context menu.</source>
+        <translation>Вимкнення сучасного контекстного меню Windows 11 і відновлення класичного стилю Windows 10.</translation>
+    </message>
 </context>
 <context>
     <name>Optimizer</name>
@@ -2120,27 +2140,27 @@ Would you like to close Discord now and proceed?</source>
     <message>
         <location filename="../src/optimizer.cpp" line="2732" />
         <source>Processing Classic Context Menu configuration...</source>
-        <translation type="unfinished" />
+        <translation>Налаштування класичного контекстного меню...</translation>
     </message>
     <message>
         <location filename="../src/optimizer.cpp" line="2767" />
         <source>Classic Context Menu is now ENABLED. Please restart Windows Explorer to apply changes.</source>
-        <translation type="unfinished" />
+        <translation>Класичне контекстне меню УВІМКНЕНО. Будь ласка, перезапустіть провідник Windows, щоб застосувати зміни.</translation>
     </message>
     <message>
         <location filename="../src/optimizer.cpp" line="2767" />
         <source>Classic Context Menu is now DISABLED. Please restart Windows Explorer to apply changes.</source>
-        <translation type="unfinished" />
+        <translation>Класичне контекстне меню ВИМКНЕНО. Будь ласка, перезапустіть провідник Windows, щоб застосувати зміни.</translation>
     </message>
     <message>
         <location filename="../src/optimizer.cpp" line="2771" />
         <source>Failed to update Classic Context Menu state.</source>
-        <translation type="unfinished" />
+        <translation>Не вдалося оновити стан класичного контекстного меню.</translation>
     </message>
     <message>
         <location filename="../src/optimizer.cpp" line="2774" />
         <source>[Simulation] Classic Context Menu set to: %1</source>
-        <translation type="unfinished" />
+        <translation>[Симуляція] Класичне контекстне меню встановлено на: %1</translation>
     </message>
     <message>
         <location filename="../src/optimizer.cpp" line="2783" />
@@ -2210,7 +2230,7 @@ Would you like to close Discord now and proceed?</source>
     <message>
         <location filename="../src/optimizer.cpp" line="2944" />
         <source>Please restart your PC to apply Core Isolation changes.</source>
-        <translation type="unfinished">Будь ласка, перезавантажте комп'ютер для застосування змін ізоляції ядра.</translation>
+        <translation>Будь ласка, перезавантажте комп'ютер для застосування змін ізоляції ядра.</translation>
     </message>
     <message>
         <location filename="../src/optimizer.cpp" line="2948" />
@@ -2574,13 +2594,13 @@ Would you like to close Discord now and proceed?</source>
         <location filename="../src/optimizer.cpp" line="3680" />
         <location filename="../src/optimizer.cpp" line="3785" />
         <source>Enabled</source>
-        <translation type="unfinished">Увімкнено</translation>
+        <translation>Увімкнено</translation>
     </message>
     <message>
         <location filename="../src/optimizer.cpp" line="3680" />
         <location filename="../src/optimizer.cpp" line="3785" />
         <source>Disabled</source>
-        <translation type="unfinished">Вимкнено</translation>
+        <translation>Вимкнено</translation>
     </message>
     <message>
         <location filename="../src/optimizer.cpp" line="3692" />
@@ -3400,6 +3420,26 @@ Would you like to close Discord now and proceed?</source>
         <source>Steam web browser data cleared successfully! Freed %1 MB.</source>
         <translation>Дані веб-браузера Steam успішно очищено! Звільнено %1 МБ.</translation>
     </message>
+    <message>
+        <source>Processing Classic Context Menu configuration...</source>
+        <translation>Налаштування класичного контекстного меню...</translation>
+    </message>
+    <message>
+        <source>Classic Context Menu is now ENABLED. Please restart Windows Explorer to apply changes.</source>
+        <translation>Класичне контекстне меню УВІМКНЕНО. Будь ласка, перезапустіть провідник Windows, щоб застосувати зміни.</translation>
+    </message>
+    <message>
+        <source>Classic Context Menu is now DISABLED. Please restart Windows Explorer to apply changes.</source>
+        <translation>Класичне контекстне меню ВИМКНЕНО. Будь ласка, перезапустіть провідник Windows, щоб застосувати зміни.</translation>
+    </message>
+    <message>
+        <source>Failed to update Classic Context Menu state.</source>
+        <translation>Не вдалося оновити стан класичного контекстного меню.</translation>
+    </message>
+    <message>
+        <source>[Simulation] Classic Context Menu set to: %1</source>
+        <translation>[Симуляція] Класичне контекстне меню встановлено на: %1</translation>
+    </message>
 </context>
 <context>
     <name>PowerDrawer</name>
@@ -3467,133 +3507,133 @@ Would you like to close Discord now and proceed?</source>
         <location filename="../build/MeguPackOptimizer/src/qml/views/SettingsView.qml" line="15" />
         <location filename="../src/qml/views/SettingsView.qml" line="15" />
         <source>Snow White</source>
-        <translation type="unfinished" />
+        <translation>Білосніжна</translation>
     </message>
     <message>
         <location filename="../build/MeguPackOptimizer/src/qml/views/SettingsView.qml" line="16" />
         <location filename="../src/qml/views/SettingsView.qml" line="16" />
         <source>Dark</source>
-        <translation type="unfinished" />
+        <translation>Темна</translation>
     </message>
     <message>
         <location filename="../build/MeguPackOptimizer/src/qml/views/SettingsView.qml" line="17" />
         <location filename="../src/qml/views/SettingsView.qml" line="17" />
         <source>OLED Blackout</source>
-        <translation type="unfinished" />
+        <translation>Blackout</translation>
     </message>
     <message>
         <location filename="../build/MeguPackOptimizer/src/qml/views/SettingsView.qml" line="18" />
         <location filename="../src/qml/views/SettingsView.qml" line="18" />
         <source>RGB Gamer</source>
-        <translation type="unfinished" />
+        <translation>РГБ</translation>
     </message>
     <message>
         <location filename="../build/MeguPackOptimizer/src/qml/views/SettingsView.qml" line="19" />
         <location filename="../src/qml/views/SettingsView.qml" line="19" />
         <source>Sakura Pink</source>
-        <translation type="unfinished" />
+        <translation>Рожева</translation>
     </message>
     <message>
         <location filename="../build/MeguPackOptimizer/src/qml/views/SettingsView.qml" line="20" />
         <location filename="../src/qml/views/SettingsView.qml" line="20" />
         <source>Black Pink</source>
-        <translation type="unfinished" />
+        <translation>Black Pink</translation>
     </message>
     <message>
         <location filename="../build/MeguPackOptimizer/src/qml/views/SettingsView.qml" line="57" />
         <location filename="../src/qml/views/SettingsView.qml" line="57" />
         <source>THEME SETTINGS</source>
-        <translation type="unfinished" />
+        <translation>НАЛАШТУВАННЯ ТЕМИ</translation>
     </message>
     <message>
         <location filename="../build/MeguPackOptimizer/src/qml/views/SettingsView.qml" line="70" />
         <location filename="../src/qml/views/SettingsView.qml" line="70" />
         <source>Choose Interface Theme:</source>
-        <translation type="unfinished" />
+        <translation>Оберіть тему інтерфейсу:</translation>
     </message>
     <message>
         <location filename="../build/MeguPackOptimizer/src/qml/views/SettingsView.qml" line="152" />
         <location filename="../src/qml/views/SettingsView.qml" line="152" />
         <source>LANGUAGE SETTINGS</source>
-        <translation type="unfinished" />
+        <translation>НАЛАШТУВАННЯ МОВИ</translation>
     </message>
     <message>
         <location filename="../build/MeguPackOptimizer/src/qml/views/SettingsView.qml" line="165" />
         <location filename="../src/qml/views/SettingsView.qml" line="165" />
         <source>Choose Interface Language:</source>
-        <translation type="unfinished" />
+        <translation>Оберіть мову інтерфейсу:</translation>
     </message>
     <message>
         <location filename="../build/MeguPackOptimizer/src/qml/views/SettingsView.qml" line="184" />
         <location filename="../src/qml/views/SettingsView.qml" line="184" />
         <source>English</source>
-        <translation type="unfinished" />
+        <translation>Англійська</translation>
     </message>
     <message>
         <location filename="../build/MeguPackOptimizer/src/qml/views/SettingsView.qml" line="185" />
         <location filename="../src/qml/views/SettingsView.qml" line="185" />
         <source>Ukrainian</source>
-        <translation type="unfinished" />
+        <translation>Українська</translation>
     </message>
     <message>
         <location filename="../build/MeguPackOptimizer/src/qml/views/SettingsView.qml" line="205" />
         <location filename="../src/qml/views/SettingsView.qml" line="205" />
         <source>* Changes are automatically applied and saved to config in real-time.</source>
-        <translation type="unfinished" />
+        <translation>* Зміни застосовуються автоматично та зберігаються в реальному часі.</translation>
     </message>
     <message>
         <location filename="../build/MeguPackOptimizer/src/qml/views/SettingsView.qml" line="288" />
         <location filename="../src/qml/views/SettingsView.qml" line="288" />
         <source>THEME SELECTION</source>
-        <translation type="unfinished" />
+        <translation>ВИБІР ТЕМИ</translation>
     </message>
     <message>
         <location filename="../build/MeguPackOptimizer/src/qml/views/SettingsView.qml" line="312" />
         <location filename="../src/qml/views/SettingsView.qml" line="312" />
         <source>Pure snow white theme</source>
-        <translation type="unfinished" />
+        <translation>Чиста біла тема</translation>
     </message>
     <message>
         <location filename="../build/MeguPackOptimizer/src/qml/views/SettingsView.qml" line="313" />
         <location filename="../src/qml/views/SettingsView.qml" line="313" />
         <source>Classic deep slate dark theme</source>
-        <translation type="unfinished" />
+        <translation>Класична темна тема</translation>
     </message>
     <message>
         <location filename="../build/MeguPackOptimizer/src/qml/views/SettingsView.qml" line="314" />
         <location filename="../src/qml/views/SettingsView.qml" line="314" />
         <source>Absolute black OLED theme</source>
-        <translation type="unfinished" />
+        <translation>Абсолютно чорна тема OLED</translation>
     </message>
     <message>
         <location filename="../build/MeguPackOptimizer/src/qml/views/SettingsView.qml" line="315" />
         <location filename="../src/qml/views/SettingsView.qml" line="315" />
         <source>Glowing orange gaming theme</source>
-        <translation type="unfinished" />
+        <translation>Яскрава помаранчева ігрова тема</translation>
     </message>
     <message>
         <location filename="../build/MeguPackOptimizer/src/qml/views/SettingsView.qml" line="316" />
         <location filename="../src/qml/views/SettingsView.qml" line="316" />
         <source>Vibrant soft pink theme</source>
-        <translation type="unfinished" />
+        <translation>Ніжна рожева тема</translation>
     </message>
     <message>
         <location filename="../build/MeguPackOptimizer/src/qml/views/SettingsView.qml" line="417" />
         <location filename="../src/qml/views/SettingsView.qml" line="417" />
         <source>Back</source>
-        <translation type="unfinished" />
+        <translation>Назад</translation>
     </message>
     <message>
         <location filename="../build/MeguPackOptimizer/src/qml/views/SettingsView.qml" line="424" />
         <location filename="../src/qml/views/SettingsView.qml" line="424" />
         <source>SPECIAL THEME</source>
-        <translation type="unfinished" />
+        <translation>СПЕЦІАЛЬНА ТЕМА</translation>
     </message>
     <message>
         <location filename="../build/MeguPackOptimizer/src/qml/views/SettingsView.qml" line="466" />
         <location filename="../src/qml/views/SettingsView.qml" line="466" />
         <source>High contrast black and glowing pink accents</source>
-        <translation type="unfinished" />
+        <translation>Контрастна чорна тема з рожевими акцентами</translation>
     </message>
 </context>
 <context>
@@ -3700,13 +3740,13 @@ Would you like to close Discord now and proceed?</source>
         <location filename="../src/qml/views/SteamSettingsDrawer.qml" line="495" />
         <location filename="../src/qml/views/SteamSettingsDrawer.qml" line="3241" />
         <source>Storage</source>
-        <translation type="unfinished" />
+        <translation>Накопичувач</translation>
     </message>
     <message>
         <location filename="../build/MeguPackOptimizer/src/qml/views/SteamSettingsDrawer.qml" line="501" />
         <location filename="../src/qml/views/SteamSettingsDrawer.qml" line="502" />
         <source>Manage installed games, DLCs, and workshop content sizes</source>
-        <translation type="unfinished" />
+        <translation>Керування встановленими іграми, DLC та розмірами вмісту майстерні</translation>
     </message>
     <message>
         <location filename="../build/MeguPackOptimizer/src/qml/views/SteamSettingsDrawer.qml" line="543" />
@@ -3729,7 +3769,7 @@ Would you like to close Discord now and proceed?</source>
         <location filename="../src/qml/views/SteamSettingsDrawer.qml" line="2801" />
         <location filename="../src/qml/views/SteamSettingsDrawer.qml" line="3234" />
         <source>Back</source>
-        <translation type="unfinished" />
+        <translation>Назад</translation>
     </message>
     <message>
         <location filename="../build/MeguPackOptimizer/src/qml/views/SteamSettingsDrawer.qml" line="550" />
@@ -3741,7 +3781,7 @@ Would you like to close Discord now and proceed?</source>
         <location filename="../build/MeguPackOptimizer/src/qml/views/SteamSettingsDrawer.qml" line="588" />
         <location filename="../src/qml/views/SteamSettingsDrawer.qml" line="645" />
         <source>Append nicknames to friends' names</source>
-        <translation type="unfinished">Додавати нікнейми до імен друзів</translation>
+        <translation>Додавати нікнейми до імен друзів</translation>
     </message>
     <message>
         <location filename="../build/MeguPackOptimizer/src/qml/views/SteamSettingsDrawer.qml" line="595" />
@@ -3753,7 +3793,7 @@ Would you like to close Discord now and proceed?</source>
         <location filename="../build/MeguPackOptimizer/src/qml/views/SteamSettingsDrawer.qml" line="624" />
         <location filename="../src/qml/views/SteamSettingsDrawer.qml" line="681" />
         <source>Group friends together by game</source>
-        <translation type="unfinished">Групувати друзів за грою</translation>
+        <translation>Групувати друзів за грою</translation>
     </message>
     <message>
         <location filename="../build/MeguPackOptimizer/src/qml/views/SteamSettingsDrawer.qml" line="631" />
@@ -3765,7 +3805,7 @@ Would you like to close Discord now and proceed?</source>
         <location filename="../build/MeguPackOptimizer/src/qml/views/SteamSettingsDrawer.qml" line="660" />
         <location filename="../src/qml/views/SteamSettingsDrawer.qml" line="717" />
         <source>Hide offline friends in custom categories</source>
-        <translation type="unfinished">Приховувати офлайн-друзів у створених категоріях</translation>
+        <translation>Приховувати офлайн-друзів у створених категоріях</translation>
     </message>
     <message>
         <location filename="../build/MeguPackOptimizer/src/qml/views/SteamSettingsDrawer.qml" line="667" />
@@ -3777,7 +3817,7 @@ Would you like to close Discord now and proceed?</source>
         <location filename="../build/MeguPackOptimizer/src/qml/views/SteamSettingsDrawer.qml" line="696" />
         <location filename="../src/qml/views/SteamSettingsDrawer.qml" line="753" />
         <source>Hide categorized friends in Online/Offline Friends</source>
-        <translation type="unfinished">Приховувати категорованих друзів у загальних списках</translation>
+        <translation>Приховувати категорованих друзів у загальних списках</translation>
     </message>
     <message>
         <location filename="../build/MeguPackOptimizer/src/qml/views/SteamSettingsDrawer.qml" line="703" />
@@ -3789,7 +3829,7 @@ Would you like to close Discord now and proceed?</source>
         <location filename="../build/MeguPackOptimizer/src/qml/views/SteamSettingsDrawer.qml" line="732" />
         <location filename="../src/qml/views/SteamSettingsDrawer.qml" line="789" />
         <source>Ignore 'Away' status when sorting friends</source>
-        <translation type="unfinished">Ігнорувати статус 'Відсутній' при сортуванні друзів</translation>
+        <translation>Ігнорувати статус 'Відсутній' при сортуванні друзів</translation>
     </message>
     <message>
         <location filename="../build/MeguPackOptimizer/src/qml/views/SteamSettingsDrawer.qml" line="739" />
@@ -3801,7 +3841,7 @@ Would you like to close Discord now and proceed?</source>
         <location filename="../build/MeguPackOptimizer/src/qml/views/SteamSettingsDrawer.qml" line="768" />
         <location filename="../src/qml/views/SteamSettingsDrawer.qml" line="825" />
         <source>Sign in to friends when Steam starts</source>
-        <translation type="unfinished">Входити в мережу друзів при запуску Steam</translation>
+        <translation>Входити в мережу друзів при запуску Steam</translation>
     </message>
     <message>
         <location filename="../build/MeguPackOptimizer/src/qml/views/SteamSettingsDrawer.qml" line="775" />
@@ -3813,7 +3853,7 @@ Would you like to close Discord now and proceed?</source>
         <location filename="../build/MeguPackOptimizer/src/qml/views/SteamSettingsDrawer.qml" line="804" />
         <location filename="../src/qml/views/SteamSettingsDrawer.qml" line="861" />
         <source>Enable Animated Avatars &amp; Animated Avatar Frames</source>
-        <translation type="unfinished">Увімкнути анімовані аватари та рамки</translation>
+        <translation>Увімкнути анімовані аватари та рамки</translation>
     </message>
     <message>
         <location filename="../build/MeguPackOptimizer/src/qml/views/SteamSettingsDrawer.qml" line="811" />
@@ -3825,7 +3865,7 @@ Would you like to close Discord now and proceed?</source>
         <location filename="../build/MeguPackOptimizer/src/qml/views/SteamSettingsDrawer.qml" line="840" />
         <location filename="../src/qml/views/SteamSettingsDrawer.qml" line="897" />
         <source>Compact friends list &amp; chat view</source>
-        <translation type="unfinished">Компактний вигляд списку друзів та чату</translation>
+        <translation>Компактний вигляд списку друзів та чату</translation>
     </message>
     <message>
         <location filename="../build/MeguPackOptimizer/src/qml/views/SteamSettingsDrawer.qml" line="847" />
@@ -3837,7 +3877,7 @@ Would you like to close Discord now and proceed?</source>
         <location filename="../build/MeguPackOptimizer/src/qml/views/SteamSettingsDrawer.qml" line="876" />
         <location filename="../src/qml/views/SteamSettingsDrawer.qml" line="933" />
         <source>Compact favorite friends area</source>
-        <translation type="unfinished">Компактна область обраних друзів</translation>
+        <translation>Компактна область обраних друзів</translation>
     </message>
     <message>
         <location filename="../build/MeguPackOptimizer/src/qml/views/SteamSettingsDrawer.qml" line="883" />
@@ -3855,7 +3895,7 @@ Would you like to close Discord now and proceed?</source>
         <location filename="../build/MeguPackOptimizer/src/qml/views/SteamSettingsDrawer.qml" line="953" />
         <location filename="../src/qml/views/SteamSettingsDrawer.qml" line="1010" />
         <source>Dock chats to the friends list</source>
-        <translation type="unfinished">Прикріплювати чати до списку друзів</translation>
+        <translation>Прикріплювати чати до списку друзів</translation>
     </message>
     <message>
         <location filename="../build/MeguPackOptimizer/src/qml/views/SteamSettingsDrawer.qml" line="960" />
@@ -3867,7 +3907,7 @@ Would you like to close Discord now and proceed?</source>
         <location filename="../build/MeguPackOptimizer/src/qml/views/SteamSettingsDrawer.qml" line="989" />
         <location filename="../src/qml/views/SteamSettingsDrawer.qml" line="1046" />
         <source>Open a new window for new chats</source>
-        <translation type="unfinished">Відкривати нове вікно для нових чатів</translation>
+        <translation>Відкривати нове вікно для нових чатів</translation>
     </message>
     <message>
         <location filename="../build/MeguPackOptimizer/src/qml/views/SteamSettingsDrawer.qml" line="996" />
@@ -3879,7 +3919,7 @@ Would you like to close Discord now and proceed?</source>
         <location filename="../build/MeguPackOptimizer/src/qml/views/SteamSettingsDrawer.qml" line="1025" />
         <location filename="../src/qml/views/SteamSettingsDrawer.qml" line="1082" />
         <source>Don't embed images and other media inline</source>
-        <translation type="unfinished">Не вбудовувати зображення та інші медіафайли в повідомлення</translation>
+        <translation>Не вбудовувати зображення та інші медіафайли в повідомлення</translation>
     </message>
     <message>
         <location filename="../build/MeguPackOptimizer/src/qml/views/SteamSettingsDrawer.qml" line="1032" />
@@ -3891,7 +3931,7 @@ Would you like to close Discord now and proceed?</source>
         <location filename="../build/MeguPackOptimizer/src/qml/views/SteamSettingsDrawer.qml" line="1061" />
         <location filename="../src/qml/views/SteamSettingsDrawer.qml" line="1118" />
         <source>Remember my open chats</source>
-        <translation type="unfinished">Запам'ятовувати мої відкриті чати</translation>
+        <translation>Запам'ятовувати мої відкриті чати</translation>
     </message>
     <message>
         <location filename="../build/MeguPackOptimizer/src/qml/views/SteamSettingsDrawer.qml" line="1068" />
@@ -3903,7 +3943,7 @@ Would you like to close Discord now and proceed?</source>
         <location filename="../build/MeguPackOptimizer/src/qml/views/SteamSettingsDrawer.qml" line="1097" />
         <location filename="../src/qml/views/SteamSettingsDrawer.qml" line="1154" />
         <source>Disable spellcheck in chat message entry</source>
-        <translation type="unfinished">Вимкнути перевірку орфографії в полі введення повідомлень</translation>
+        <translation>Вимкнути перевірку орфографії в полі введення повідомлень</translation>
     </message>
     <message>
         <location filename="../build/MeguPackOptimizer/src/qml/views/SteamSettingsDrawer.qml" line="1104" />
@@ -3915,7 +3955,7 @@ Would you like to close Discord now and proceed?</source>
         <location filename="../build/MeguPackOptimizer/src/qml/views/SteamSettingsDrawer.qml" line="1133" />
         <location filename="../src/qml/views/SteamSettingsDrawer.qml" line="1190" />
         <source>Disable animated room effects</source>
-        <translation type="unfinished">Вимкнути анімовані ефекти кімнати</translation>
+        <translation>Вимкнути анімовані ефекти кімнати</translation>
     </message>
     <message>
         <location filename="../build/MeguPackOptimizer/src/qml/views/SteamSettingsDrawer.qml" line="1140" />
@@ -3939,7 +3979,7 @@ Would you like to close Discord now and proceed?</source>
         <location filename="../build/MeguPackOptimizer/src/qml/views/SteamSettingsDrawer.qml" line="1180" />
         <location filename="../src/qml/views/SteamSettingsDrawer.qml" line="1237" />
         <source>Default</source>
-        <translation type="unfinished">За замовчуванням</translation>
+        <translation>За замовчуванням</translation>
     </message>
     <message>
         <location filename="../build/MeguPackOptimizer/src/qml/views/SteamSettingsDrawer.qml" line="1181" />
@@ -3963,7 +4003,7 @@ Would you like to close Discord now and proceed?</source>
         <location filename="../build/MeguPackOptimizer/src/qml/views/SteamSettingsDrawer.qml" line="1279" />
         <location filename="../src/qml/views/SteamSettingsDrawer.qml" line="1336" />
         <source>Play a sound when a toast is displayed</source>
-        <translation type="unfinished">Відтворювати звук при появі спливаючих сповіщень</translation>
+        <translation>Відтворювати звук при появі спливаючих сповіщень</translation>
     </message>
     <message>
         <location filename="../build/MeguPackOptimizer/src/qml/views/SteamSettingsDrawer.qml" line="1286" />
@@ -4065,7 +4105,7 @@ Would you like to close Discord now and proceed?</source>
         <location filename="../build/MeguPackOptimizer/src/qml/views/SteamSettingsDrawer.qml" line="1710" />
         <location filename="../src/qml/views/SteamSettingsDrawer.qml" line="1767" />
         <source>Scale text and icons to match monitor settings (requires restart)</source>
-        <translation type="unfinished">Масштабувати текст та іконки відповідно до налаштувань монітора (потрібен перезапуск)</translation>
+        <translation>Масштабувати текст та іконки відповідно до налаштувань монітора (потрібен перезапуск)</translation>
     </message>
     <message>
         <location filename="../build/MeguPackOptimizer/src/qml/views/SteamSettingsDrawer.qml" line="1717" />
@@ -4077,7 +4117,7 @@ Would you like to close Discord now and proceed?</source>
         <location filename="../build/MeguPackOptimizer/src/qml/views/SteamSettingsDrawer.qml" line="1746" />
         <location filename="../src/qml/views/SteamSettingsDrawer.qml" line="1803" />
         <source>Run Steam when my computer starts</source>
-        <translation type="unfinished">Запускати Steam під час запуску комп'ютера</translation>
+        <translation>Запускати Steam під час запуску комп'ютера</translation>
     </message>
     <message>
         <location filename="../build/MeguPackOptimizer/src/qml/views/SteamSettingsDrawer.qml" line="1753" />
@@ -4089,7 +4129,7 @@ Would you like to close Discord now and proceed?</source>
         <location filename="../build/MeguPackOptimizer/src/qml/views/SteamSettingsDrawer.qml" line="1782" />
         <location filename="../src/qml/views/SteamSettingsDrawer.qml" line="1839" />
         <source>Ask which account to use each time Steam starts</source>
-        <translation type="unfinished">Запитувати, який акаунт використовувати під час кожного запуску Steam</translation>
+        <translation>Запитувати, який акаунт використовувати під час кожного запуску Steam</translation>
     </message>
     <message>
         <location filename="../build/MeguPackOptimizer/src/qml/views/SteamSettingsDrawer.qml" line="1789" />
@@ -4101,7 +4141,7 @@ Would you like to close Discord now and proceed?</source>
         <location filename="../build/MeguPackOptimizer/src/qml/views/SteamSettingsDrawer.qml" line="1818" />
         <location filename="../src/qml/views/SteamSettingsDrawer.qml" line="1875" />
         <source>Start Steam in Big Picture Mode</source>
-        <translation type="unfinished">Запускати Steam у режимі Big Picture</translation>
+        <translation>Запускати Steam у режимі Big Picture</translation>
     </message>
     <message>
         <location filename="../build/MeguPackOptimizer/src/qml/views/SteamSettingsDrawer.qml" line="1825" />
@@ -4113,7 +4153,7 @@ Would you like to close Discord now and proceed?</source>
         <location filename="../build/MeguPackOptimizer/src/qml/views/SteamSettingsDrawer.qml" line="1854" />
         <location filename="../src/qml/views/SteamSettingsDrawer.qml" line="1911" />
         <source>Enable smooth scrolling in web views (requires restart)</source>
-        <translation type="unfinished">Увімкнути плавне прокручування у веб-переглядах (потрібен перезапуск)</translation>
+        <translation>Увімкнути плавне прокручування у веб-переглядах (потрібен перезапуск)</translation>
     </message>
     <message>
         <location filename="../build/MeguPackOptimizer/src/qml/views/SteamSettingsDrawer.qml" line="1861" />
@@ -4125,7 +4165,7 @@ Would you like to close Discord now and proceed?</source>
         <location filename="../build/MeguPackOptimizer/src/qml/views/SteamSettingsDrawer.qml" line="1890" />
         <location filename="../src/qml/views/SteamSettingsDrawer.qml" line="1947" />
         <source>Enable GPU accelerated rendering in web views (requires restart)</source>
-        <translation type="unfinished">Увімкнути рендерення з апаратним прискоренням GPU у веб-переглядах (потрібен перезапуск)</translation>
+        <translation>Увімкнути рендерення з апаратним прискоренням GPU у веб-переглядах (потрібен перезапуск)</translation>
     </message>
     <message>
         <location filename="../build/MeguPackOptimizer/src/qml/views/SteamSettingsDrawer.qml" line="1897" />
@@ -4137,7 +4177,7 @@ Would you like to close Discord now and proceed?</source>
         <location filename="../build/MeguPackOptimizer/src/qml/views/SteamSettingsDrawer.qml" line="1926" />
         <location filename="../src/qml/views/SteamSettingsDrawer.qml" line="1983" />
         <source>Enable hardware video decoding, if supported (requires restart)</source>
-        <translation type="unfinished">Увімкнути апаратне декодування відео, якщо підтримується (потрібен перезапуск)</translation>
+        <translation>Увімкнути апаратне декодування відео, якщо підтримується (потрібен перезапуск)</translation>
     </message>
     <message>
         <location filename="../build/MeguPackOptimizer/src/qml/views/SteamSettingsDrawer.qml" line="1933" />
@@ -4149,7 +4189,7 @@ Would you like to close Discord now and proceed?</source>
         <location filename="../build/MeguPackOptimizer/src/qml/views/SteamSettingsDrawer.qml" line="1962" />
         <location filename="../src/qml/views/SteamSettingsDrawer.qml" line="2019" />
         <source>Notify me about additions or changes to my games, new releases, and upcoming releases</source>
-        <translation type="unfinished">Сповіщати мене про додавання чи зміни в моїх іграх, нові релізи та майбутні випуски</translation>
+        <translation>Сповіщати мене про додавання чи зміни в моїх іграх, нові релізи та майбутні випуски</translation>
     </message>
     <message>
         <location filename="../build/MeguPackOptimizer/src/qml/views/SteamSettingsDrawer.qml" line="1969" />
@@ -4161,127 +4201,127 @@ Would you like to close Discord now and proceed?</source>
         <location filename="../build/MeguPackOptimizer/src/qml/views/SteamSettingsDrawer.qml" line="2433" />
         <location filename="../src/qml/views/SteamSettingsDrawer.qml" line="2567" />
         <source>LIBRARY</source>
-        <translation type="unfinished" />
+        <translation>БІБЛІОТЕКА</translation>
     </message>
     <message>
         <location filename="../build/MeguPackOptimizer/src/qml/views/SteamSettingsDrawer.qml" line="2471" />
         <location filename="../src/qml/views/SteamSettingsDrawer.qml" line="2605" />
         <source>Low Bandwidth Mode</source>
-        <translation type="unfinished" />
+        <translation>Режим низької пропускної здатності</translation>
     </message>
     <message>
         <location filename="../build/MeguPackOptimizer/src/qml/views/SteamSettingsDrawer.qml" line="2478" />
         <location filename="../src/qml/views/SteamSettingsDrawer.qml" line="2612" />
         <source>Reduces bandwidth use by disabling features like auto-load of community content</source>
-        <translation type="unfinished" />
+        <translation>Зменшує використання пропускної здатності, вимикаючи такі функції, як автозавантаження вмісту спільноти</translation>
     </message>
     <message>
         <location filename="../build/MeguPackOptimizer/src/qml/views/SteamSettingsDrawer.qml" line="2507" />
         <location filename="../src/qml/views/SteamSettingsDrawer.qml" line="2641" />
         <source>Low Performance Mode</source>
-        <translation type="unfinished" />
+        <translation>Режим низької продуктивності</translation>
     </message>
     <message>
         <location filename="../build/MeguPackOptimizer/src/qml/views/SteamSettingsDrawer.qml" line="2514" />
         <location filename="../src/qml/views/SteamSettingsDrawer.qml" line="2648" />
         <source>Improves library performance by disabling certain graphical improvements and transitions</source>
-        <translation type="unfinished" />
+        <translation>Покращує продуктивність бібліотеки, вимикаючи певні графічні покращення та переходи</translation>
     </message>
     <message>
         <location filename="../build/MeguPackOptimizer/src/qml/views/SteamSettingsDrawer.qml" line="2543" />
         <location filename="../src/qml/views/SteamSettingsDrawer.qml" line="2677" />
         <source>Disable Community Content</source>
-        <translation type="unfinished" />
+        <translation>Вимкнути вміст спільноти</translation>
     </message>
     <message>
         <location filename="../build/MeguPackOptimizer/src/qml/views/SteamSettingsDrawer.qml" line="2550" />
         <location filename="../src/qml/views/SteamSettingsDrawer.qml" line="2684" />
         <source>Prevents the automatic load of community content when viewing game details</source>
-        <translation type="unfinished" />
+        <translation>Запобігає автоматичному завантаженню вмісту спільноти під час перегляду інформації про гру</translation>
     </message>
     <message>
         <location filename="../build/MeguPackOptimizer/src/qml/views/SteamSettingsDrawer.qml" line="2579" />
         <location filename="../src/qml/views/SteamSettingsDrawer.qml" line="2713" />
         <source>Show game icons in the left column</source>
-        <translation type="unfinished" />
+        <translation>Показувати іконки ігор у лівій колонці</translation>
     </message>
     <message>
         <location filename="../build/MeguPackOptimizer/src/qml/views/SteamSettingsDrawer.qml" line="2607" />
         <location filename="../src/qml/views/SteamSettingsDrawer.qml" line="2741" />
         <source>Ready to Play should include streamable games</source>
-        <translation type="unfinished" />
+        <translation>Розділ 'Готові до гри' має включати ігри для стрімінгу</translation>
     </message>
     <message>
         <location filename="../build/MeguPackOptimizer/src/qml/views/SteamSettingsDrawer.qml" line="2614" />
         <location filename="../src/qml/views/SteamSettingsDrawer.qml" line="2748" />
         <source>Should the library include streamable games that aren't installed locally in Ready to Play and also show streaming by default for those games?</source>
-        <translation type="unfinished" />
+        <translation>Чи повинна бібліотека включати ігри для стрімінгу, які не встановлені локально, в розділ 'Готові до гри', а також показувати стрімінг за замовчуванням для цих ігор?</translation>
     </message>
     <message>
         <location filename="../build/MeguPackOptimizer/src/qml/views/SteamSettingsDrawer.qml" line="2643" />
         <location filename="../src/qml/views/SteamSettingsDrawer.qml" line="2777" />
         <source>Show Steam Deck compatibility information in library</source>
-        <translation type="unfinished" />
+        <translation>Показувати інформацію про сумісність зі Steam Deck у бібліотеці</translation>
     </message>
     <message>
         <location filename="../build/MeguPackOptimizer/src/qml/views/SteamSettingsDrawer.qml" line="2674" />
         <location filename="../src/qml/views/SteamSettingsDrawer.qml" line="2808" />
         <source>Download</source>
-        <translation type="unfinished" />
+        <translation>Завантаження</translation>
     </message>
     <message>
         <location filename="../build/MeguPackOptimizer/src/qml/views/SteamSettingsDrawer.qml" line="2712" />
         <location filename="../src/qml/views/SteamSettingsDrawer.qml" line="2846" />
         <source>Limit download speed</source>
-        <translation type="unfinished" />
+        <translation>Обмежити швидкість завантаження</translation>
     </message>
     <message>
         <location filename="../build/MeguPackOptimizer/src/qml/views/SteamSettingsDrawer.qml" line="2740" />
         <location filename="../src/qml/views/SteamSettingsDrawer.qml" line="2874" />
         <source>Schedule auto-updates</source>
-        <translation type="unfinished" />
+        <translation>Планувати автооновлення</translation>
     </message>
     <message>
         <location filename="../build/MeguPackOptimizer/src/qml/views/SteamSettingsDrawer.qml" line="2768" />
         <location filename="../src/qml/views/SteamSettingsDrawer.qml" line="2902" />
         <source>Allow downloads during gameplay</source>
-        <translation type="unfinished" />
+        <translation>Дозволити завантаження під час гри</translation>
     </message>
     <message>
         <location filename="../build/MeguPackOptimizer/src/qml/views/SteamSettingsDrawer.qml" line="2775" />
         <location filename="../src/qml/views/SteamSettingsDrawer.qml" line="2909" />
         <source>Enabling this may degrade gameplay performance or lead to higher in-game ping.</source>
-        <translation type="unfinished" />
+        <translation>Увімкнення цього режиму може погіршити продуктивність гри або призвести до вищого пінгу.</translation>
     </message>
     <message>
         <location filename="../build/MeguPackOptimizer/src/qml/views/SteamSettingsDrawer.qml" line="2804" />
         <location filename="../src/qml/views/SteamSettingsDrawer.qml" line="2938" />
         <source>Throttle downloads while streaming</source>
-        <translation type="unfinished" />
+        <translation>Обмежувати завантаження під час трансляції</translation>
     </message>
     <message>
         <location filename="../build/MeguPackOptimizer/src/qml/views/SteamSettingsDrawer.qml" line="2811" />
         <location filename="../src/qml/views/SteamSettingsDrawer.qml" line="2945" />
         <source>Throttles downloading bandwidth when streaming a game with Remote Play.</source>
-        <translation type="unfinished" />
+        <translation>Обмежує швидкість завантаження під час стрімінгу гри через Remote Play.</translation>
     </message>
     <message>
         <location filename="../build/MeguPackOptimizer/src/qml/views/SteamSettingsDrawer.qml" line="2840" />
         <location filename="../src/qml/views/SteamSettingsDrawer.qml" line="2974" />
         <source>Display download rates in bits per second</source>
-        <translation type="unfinished" />
+        <translation>Відображати швидкість завантаження в бітах за секунду</translation>
     </message>
     <message>
         <location filename="../build/MeguPackOptimizer/src/qml/views/SteamSettingsDrawer.qml" line="2868" />
         <location filename="../src/qml/views/SteamSettingsDrawer.qml" line="3002" />
         <source>Game File Transfer over Local Network</source>
-        <translation type="unfinished" />
+        <translation>Передача файлів гри через локальну мережу</translation>
     </message>
     <message>
         <location filename="../build/MeguPackOptimizer/src/qml/views/SteamSettingsDrawer.qml" line="2875" />
         <location filename="../src/qml/views/SteamSettingsDrawer.qml" line="3009" />
         <source>Allows transfers of game files from other PCs on the local network.</source>
-        <translation type="unfinished" />
+        <translation>Дозволяє передавати файли ігор з інших ПК у локальній мережі.</translation>
     </message>
     <message>
         <location filename="../build/MeguPackOptimizer/src/qml/views/SteamSettingsDrawer.qml" line="2901" />
@@ -4289,43 +4329,43 @@ Would you like to close Discord now and proceed?</source>
         <location filename="../src/qml/views/SteamSettingsDrawer.qml" line="3035" />
         <location filename="../src/qml/views/SteamSettingsDrawer.qml" line="3752" />
         <source>Clear Download Cache</source>
-        <translation type="unfinished" />
+        <translation>Очистити кеш завантажень</translation>
     </message>
     <message>
         <location filename="../build/MeguPackOptimizer/src/qml/views/SteamSettingsDrawer.qml" line="2908" />
         <location filename="../src/qml/views/SteamSettingsDrawer.qml" line="3042" />
         <source>Clearing download cache might resolve issues with downloading or starting games.</source>
-        <translation type="unfinished" />
+        <translation>Очищення кешу завантажень може вирішити проблеми з завантаженням або запуском ігор.</translation>
     </message>
     <message>
         <location filename="../build/MeguPackOptimizer/src/qml/views/SteamSettingsDrawer.qml" line="2918" />
         <location filename="../src/qml/views/SteamSettingsDrawer.qml" line="3052" />
         <source>Clear Cache</source>
-        <translation type="unfinished" />
+        <translation>Очистити кеш</translation>
     </message>
     <message>
         <location filename="../build/MeguPackOptimizer/src/qml/views/SteamSettingsDrawer.qml" line="2941" />
         <location filename="../src/qml/views/SteamSettingsDrawer.qml" line="3075" />
         <source>Shader Pre-Caching</source>
-        <translation type="unfinished" />
+        <translation>Попереднє кешування шейдерів</translation>
     </message>
     <message>
         <location filename="../build/MeguPackOptimizer/src/qml/views/SteamSettingsDrawer.qml" line="2949" />
         <location filename="../src/qml/views/SteamSettingsDrawer.qml" line="3083" />
         <source>Shader Pre-Caching allows Steam to download pre-compiled Vulkan and OpenGL shaders tailored to your hardware. This reduces game load times and mitigates in-game stuttering.</source>
-        <translation type="unfinished" />
+        <translation>Попереднє кешування шейдерів дозволяє Steam завантажувати попередньо компильовані шейдери Vulkan та OpenGL, адаптовані під ваше обладнання. Це зменшує час завантаження ігор та усува фризи.</translation>
     </message>
     <message>
         <location filename="../build/MeguPackOptimizer/src/qml/views/SteamSettingsDrawer.qml" line="2980" />
         <location filename="../src/qml/views/SteamSettingsDrawer.qml" line="3114" />
         <source>Enable Shader Pre-caching</source>
-        <translation type="unfinished" />
+        <translation>Увімкнути попереднє кешування шейдерів</translation>
     </message>
     <message>
         <location filename="../build/MeguPackOptimizer/src/qml/views/SteamSettingsDrawer.qml" line="3008" />
         <location filename="../src/qml/views/SteamSettingsDrawer.qml" line="3142" />
         <source>Allow background processing of Vulkan shaders</source>
-        <translation type="unfinished" />
+        <translation>Дозволити фонову обробку шейдерів Vulkan</translation>
     </message>
     <message>
         <location filename="../build/MeguPackOptimizer/src/qml/views/SteamSettingsDrawer.qml" line="3150" />
@@ -4337,7 +4377,7 @@ Would you like to close Discord now and proceed?</source>
         <location filename="../build/MeguPackOptimizer/src/qml/views/SteamSettingsDrawer.qml" line="3236" />
         <location filename="../src/qml/views/SteamSettingsDrawer.qml" line="3370" />
         <source>GAMES</source>
-        <translation type="unfinished" />
+        <translation>ІГРИ</translation>
     </message>
     <message>
         <location filename="../build/MeguPackOptimizer/src/qml/views/SteamSettingsDrawer.qml" line="3252" />
@@ -4349,7 +4389,7 @@ Would you like to close Discord now and proceed?</source>
         <location filename="../src/qml/views/SteamSettingsDrawer.qml" line="3392" />
         <location filename="../src/qml/views/SteamSettingsDrawer.qml" line="3395" />
         <source>DLC</source>
-        <translation type="unfinished" />
+        <translation>DLC</translation>
     </message>
     <message>
         <location filename="../build/MeguPackOptimizer/src/qml/views/SteamSettingsDrawer.qml" line="3279" />
@@ -4359,7 +4399,7 @@ Would you like to close Discord now and proceed?</source>
         <location filename="../src/qml/views/SteamSettingsDrawer.qml" line="3415" />
         <location filename="../src/qml/views/SteamSettingsDrawer.qml" line="3417" />
         <source>WORKSHOP</source>
-        <translation type="unfinished" />
+        <translation>МАЙСТЕРНЯ</translation>
     </message>
     <message>
         <location filename="../build/MeguPackOptimizer/src/qml/views/SteamSettingsDrawer.qml" line="3301" />
@@ -4371,43 +4411,43 @@ Would you like to close Discord now and proceed?</source>
         <location filename="../src/qml/views/SteamSettingsDrawer.qml" line="3441" />
         <location filename="../src/qml/views/SteamSettingsDrawer.qml" line="3444" />
         <source>SHADERS</source>
-        <translation type="unfinished" />
+        <translation>ШЕЙДЕРИ</translation>
     </message>
     <message>
         <location filename="../build/MeguPackOptimizer/src/qml/views/SteamSettingsDrawer.qml" line="3325" />
         <location filename="../src/qml/views/SteamSettingsDrawer.qml" line="3459" />
         <source>NON-STEAM</source>
-        <translation type="unfinished" />
+        <translation>ІНШІ ФАЙЛИ</translation>
     </message>
     <message>
         <location filename="../build/MeguPackOptimizer/src/qml/views/SteamSettingsDrawer.qml" line="3338" />
         <location filename="../src/qml/views/SteamSettingsDrawer.qml" line="3472" />
         <source>FREE</source>
-        <translation type="unfinished" />
+        <translation>ВІЛЬНО</translation>
     </message>
     <message>
         <location filename="../build/MeguPackOptimizer/src/qml/views/SteamSettingsDrawer.qml" line="3360" />
         <location filename="../src/qml/views/SteamSettingsDrawer.qml" line="3494" />
         <source>Items %1</source>
-        <translation type="unfinished" />
+        <translation>Елементів: %1</translation>
     </message>
     <message>
         <location filename="../build/MeguPackOptimizer/src/qml/views/SteamSettingsDrawer.qml" line="3370" />
         <location filename="../src/qml/views/SteamSettingsDrawer.qml" line="3504" />
         <source>Size on Disk ↕</source>
-        <translation type="unfinished" />
+        <translation>Розмір на диску ↕</translation>
     </message>
     <message>
         <location filename="../build/MeguPackOptimizer/src/qml/views/SteamSettingsDrawer.qml" line="3511" />
         <location filename="../src/qml/views/SteamSettingsDrawer.qml" line="3645" />
         <source>Uninstall Selected</source>
-        <translation type="unfinished" />
+        <translation>Видалити вибране</translation>
     </message>
     <message>
         <location filename="../build/MeguPackOptimizer/src/qml/views/SteamSettingsDrawer.qml" line="3535" />
         <location filename="../src/qml/views/SteamSettingsDrawer.qml" line="3669" />
         <source>Requested Steam to uninstall: %1</source>
-        <translation type="unfinished" />
+        <translation>Надіслано запит у Steam на видалення: %1</translation>
     </message>
     <message>
         <location filename="../build/MeguPackOptimizer/src/qml/views/SteamSettingsDrawer.qml" line="3628" />
@@ -4429,7 +4469,7 @@ Would you like to close Discord now and proceed?</source>
         <location filename="../src/qml/views/SteamSettingsDrawer.qml" line="3788" />
         <location filename="../src/qml/views/SteamSettingsDrawer.qml" line="3909" />
         <source>Cancel</source>
-        <translation type="unfinished">Скасувати</translation>
+        <translation>Скасувати</translation>
     </message>
     <message>
         <location filename="../build/MeguPackOptimizer/src/qml/views/SteamSettingsDrawer.qml" line="270" />
@@ -4775,25 +4815,25 @@ Would you like to close Discord now and proceed?</source>
         <location filename="../build/MeguPackOptimizer/src/qml/views/TelemetryDrawer.qml" line="27" />
         <location filename="../src/qml/views/TelemetryDrawer.qml" line="27" />
         <source>Connected User Experiences (DiagTrack)</source>
-        <translation type="unfinished">Функціональні можливості для підключених користувачів і телеметрія (DiagTrack)</translation>
+        <translation>Функціональні можливості для підключених користувачів і телеметрія (DiagTrack)</translation>
     </message>
     <message>
         <location filename="../build/MeguPackOptimizer/src/qml/views/TelemetryDrawer.qml" line="33" />
         <location filename="../src/qml/views/TelemetryDrawer.qml" line="33" />
         <source>Device Management WAP Service (dmwappushservice)</source>
-        <translation type="unfinished">Служба WAP для керування пристроями (dmwappushservice)</translation>
+        <translation>Служба WAP для керування пристроями (dmwappushservice)</translation>
     </message>
     <message>
         <location filename="../build/MeguPackOptimizer/src/qml/views/TelemetryDrawer.qml" line="39" />
         <location filename="../src/qml/views/TelemetryDrawer.qml" line="39" />
         <source>Customer Experience Improvement Program (CEIP)</source>
-        <translation type="unfinished">Програма покращення взаємодії з користувачем (CEIP)</translation>
+        <translation>Програма покращення взаємодії з користувачем (CEIP)</translation>
     </message>
     <message>
         <location filename="../build/MeguPackOptimizer/src/qml/views/TelemetryDrawer.qml" line="45" />
         <location filename="../src/qml/views/TelemetryDrawer.qml" line="45" />
         <source>Windows Error Reporting (WER)</source>
-        <translation type="unfinished">Служба звітування про помилки Windows (WER)</translation>
+        <translation>Служба звітування про помилки Windows (WER)</translation>
     </message>
 </context>
 <context>
@@ -4865,91 +4905,91 @@ Would you like to close Discord now and proceed?</source>
         <location filename="../build/MeguPackOptimizer/src/qml/views/VisualEffectsDrawer.qml" line="96" />
         <location filename="../src/qml/views/VisualEffectsDrawer.qml" line="96" />
         <source>Animations in the taskbar</source>
-        <translation type="unfinished">Анімація на панелі завдань</translation>
+        <translation>Анімація на панелі завдань</translation>
     </message>
     <message>
         <location filename="../build/MeguPackOptimizer/src/qml/views/VisualEffectsDrawer.qml" line="101" />
         <location filename="../src/qml/views/VisualEffectsDrawer.qml" line="101" />
         <source>Enable Peek</source>
-        <translation type="unfinished">Увімкнути Peek</translation>
+        <translation>Увімкнути Peek</translation>
     </message>
     <message>
         <location filename="../build/MeguPackOptimizer/src/qml/views/VisualEffectsDrawer.qml" line="106" />
         <location filename="../src/qml/views/VisualEffectsDrawer.qml" line="106" />
         <source>Fade or slide menus into view</source>
-        <translation type="unfinished">Ефекти згасання або ковзання при появі меню</translation>
+        <translation>Ефекти згасання або ковзання при появі меню</translation>
     </message>
     <message>
         <location filename="../build/MeguPackOptimizer/src/qml/views/VisualEffectsDrawer.qml" line="111" />
         <location filename="../src/qml/views/VisualEffectsDrawer.qml" line="111" />
         <source>Fade or slide ToolTips into view</source>
-        <translation type="unfinished">Ефекти згасання або ковзання при появі підказок</translation>
+        <translation>Ефекти згасання або ковзання при появі підказок</translation>
     </message>
     <message>
         <location filename="../build/MeguPackOptimizer/src/qml/views/VisualEffectsDrawer.qml" line="116" />
         <location filename="../src/qml/views/VisualEffectsDrawer.qml" line="116" />
         <source>Fade out menu items after clicking</source>
-        <translation type="unfinished">Згасання пунктів меню після натискання</translation>
+        <translation>Згасання пунктів меню після натискання</translation>
     </message>
     <message>
         <location filename="../build/MeguPackOptimizer/src/qml/views/VisualEffectsDrawer.qml" line="121" />
         <location filename="../src/qml/views/VisualEffectsDrawer.qml" line="121" />
         <source>Save taskbar thumbnail previews</source>
-        <translation type="unfinished">Збереження ескізів панелі завдань</translation>
+        <translation>Збереження ескізів панелі завдань</translation>
     </message>
     <message>
         <location filename="../build/MeguPackOptimizer/src/qml/views/VisualEffectsDrawer.qml" line="126" />
         <location filename="../src/qml/views/VisualEffectsDrawer.qml" line="126" />
         <source>Show shadows under mouse pointer</source>
-        <translation type="unfinished">Відображення тіні під вказівником миші</translation>
+        <translation>Відображення тіні під вказівником миші</translation>
     </message>
     <message>
         <location filename="../build/MeguPackOptimizer/src/qml/views/VisualEffectsDrawer.qml" line="131" />
         <location filename="../src/qml/views/VisualEffectsDrawer.qml" line="131" />
         <source>Show shadows under windows</source>
-        <translation type="unfinished">Відображення тіні під вікнами</translation>
+        <translation>Відображення тіні під вікнами</translation>
     </message>
     <message>
         <location filename="../build/MeguPackOptimizer/src/qml/views/VisualEffectsDrawer.qml" line="136" />
         <location filename="../src/qml/views/VisualEffectsDrawer.qml" line="136" />
         <source>Show thumbnails instead of icons</source>
-        <translation type="unfinished">Відображення ескізів замість піктограм</translation>
+        <translation>Відображення ескізів замість піктограм</translation>
     </message>
     <message>
         <location filename="../build/MeguPackOptimizer/src/qml/views/VisualEffectsDrawer.qml" line="141" />
         <location filename="../src/qml/views/VisualEffectsDrawer.qml" line="141" />
         <source>Show translucent selection rectangle</source>
-        <translation type="unfinished">Відображення напівпрозорого прямокутника виділення</translation>
+        <translation>Відображення напівпрозорого прямокутника виділення</translation>
     </message>
     <message>
         <location filename="../build/MeguPackOptimizer/src/qml/views/VisualEffectsDrawer.qml" line="146" />
         <location filename="../src/qml/views/VisualEffectsDrawer.qml" line="146" />
         <source>Show window contents while dragging</source>
-        <translation type="unfinished">Відображення вмісту вікна під час перетягування</translation>
+        <translation>Відображення вмісту вікна під час перетягування</translation>
     </message>
     <message>
         <location filename="../build/MeguPackOptimizer/src/qml/views/VisualEffectsDrawer.qml" line="151" />
         <location filename="../src/qml/views/VisualEffectsDrawer.qml" line="151" />
         <source>Slide open combo boxes</source>
-        <translation type="unfinished">Ефекти розгортання списків, що випадають</translation>
+        <translation>Ефекти розгортання списків, що випадають</translation>
     </message>
     <message>
         <location filename="../build/MeguPackOptimizer/src/qml/views/VisualEffectsDrawer.qml" line="156" />
         <location filename="../src/qml/views/VisualEffectsDrawer.qml" line="156" />
         <source>Smooth edges of screen fonts</source>
-        <translation type="unfinished">Згладжування нерівностей екранних шрифтів</translation>
+        <translation>Згладжування нерівностей екранних шрифтів</translation>
     </message>
     <message>
         <location filename="../build/MeguPackOptimizer/src/qml/views/VisualEffectsDrawer.qml" line="161" />
         <location filename="../src/qml/views/VisualEffectsDrawer.qml" line="161" />
         <source>Smooth-scroll list boxes</source>
-        <translation type="unfinished">Плавне прокручування списків</translation>
+        <translation>Плавне прокручування списків</translation>
     </message>
     <message>
         <location filename="../build/MeguPackOptimizer/src/qml/views/VisualEffectsDrawer.qml" line="166" />
         <location filename="../src/qml/views/VisualEffectsDrawer.qml" line="166" />
         <source>Use drop shadows for icon labels on the desktop</source>
-        <translation type="unfinished">Тіні під підписами піктограм на робочому столі</translation>
+        <translation>Тіні під підписами піктограм на робочому столі</translation>
     </message>
 </context>
 <context>
@@ -4958,7 +4998,7 @@ Would you like to close Discord now and proceed?</source>
         <location filename="../build/MeguPackOptimizer/src/qml/views/WindowsUpdateDrawer.qml" line="15" />
         <location filename="../src/qml/views/WindowsUpdateDrawer.qml" line="15" />
         <source>Default</source>
-        <translation type="unfinished">За замовчуванням</translation>
+        <translation>За замовчуванням</translation>
     </message>
     <message>
         <location filename="../build/MeguPackOptimizer/src/qml/views/WindowsUpdateDrawer.qml" line="15" />
@@ -4970,7 +5010,7 @@ Would you like to close Discord now and proceed?</source>
         <location filename="../build/MeguPackOptimizer/src/qml/views/WindowsUpdateDrawer.qml" line="16" />
         <location filename="../src/qml/views/WindowsUpdateDrawer.qml" line="16" />
         <source>Security Only</source>
-        <translation type="unfinished">Лише безпека</translation>
+        <translation>Лише безпека</translation>
     </message>
     <message>
         <location filename="../build/MeguPackOptimizer/src/qml/views/WindowsUpdateDrawer.qml" line="16" />
@@ -4982,7 +5022,7 @@ Would you like to close Discord now and proceed?</source>
         <location filename="../build/MeguPackOptimizer/src/qml/views/WindowsUpdateDrawer.qml" line="17" />
         <location filename="../src/qml/views/WindowsUpdateDrawer.qml" line="17" />
         <source>Manual Check</source>
-        <translation type="unfinished">Вручну</translation>
+        <translation>Вручну</translation>
     </message>
     <message>
         <location filename="../build/MeguPackOptimizer/src/qml/views/WindowsUpdateDrawer.qml" line="17" />
@@ -4994,7 +5034,7 @@ Would you like to close Discord now and proceed?</source>
         <location filename="../build/MeguPackOptimizer/src/qml/views/WindowsUpdateDrawer.qml" line="18" />
         <location filename="../src/qml/views/WindowsUpdateDrawer.qml" line="18" />
         <source>Disabled</source>
-        <translation type="unfinished">Вимкнено</translation>
+        <translation>Вимкнено</translation>
     </message>
     <message>
         <location filename="../build/MeguPackOptimizer/src/qml/views/WindowsUpdateDrawer.qml" line="18" />
@@ -5133,7 +5173,7 @@ Would you like to close Discord now and proceed?</source>
         <location filename="../build/MeguPackOptimizer/src/qml/views/XboxDrawer.qml" line="327" />
         <location filename="../src/qml/views/XboxDrawer.qml" line="327" />
         <source>Disable Game Bar Popup</source>
-        <translation type="unfinished">Вимкнути помилку ms-gamingoverlay</translation>
+        <translation>Вимкнути помилку ms-gamingoverlay</translation>
     </message>
     <message>
         <location filename="../build/MeguPackOptimizer/src/qml/views/XboxDrawer.qml" line="334" />
@@ -5150,7 +5190,7 @@ Would you like to close Discord now and proceed?</source>
         <location filename="../src/qml/main.qml" line="19" />
         <location filename="../src/qml/main.qml" line="278" />
         <source>Dashboard</source>
-        <translation type="unfinished" />
+        <translation>Панель керування</translation>
     </message>
     <message>
         <location filename="../build/MeguPackOptimizer/src/qml/main.qml" line="20" />
@@ -5158,7 +5198,7 @@ Would you like to close Discord now and proceed?</source>
         <location filename="../src/qml/main.qml" line="20" />
         <location filename="../src/qml/main.qml" line="290" />
         <source>Optimization</source>
-        <translation type="unfinished" />
+        <translation>Оптимізація</translation>
     </message>
     <message>
         <location filename="../build/MeguPackOptimizer/src/qml/main.qml" line="21" />
@@ -5166,43 +5206,47 @@ Would you like to close Discord now and proceed?</source>
         <location filename="../src/qml/main.qml" line="21" />
         <location filename="../src/qml/main.qml" line="310" />
         <source>Settings</source>
-        <translation type="unfinished" />
+        <translation>Налаштування</translation>
     </message>
     <message>
         <location filename="../build/MeguPackOptimizer/src/qml/main.qml" line="22" />
         <location filename="../src/qml/main.qml" line="22" />
         <source>Real-Time Logs</source>
-        <translation type="unfinished" />
+        <translation>Логи в реальному часі</translation>
     </message>
     <message>
         <location filename="../build/MeguPackOptimizer/src/qml/main.qml" line="369" />
         <location filename="../src/qml/main.qml" line="369" />
         <source>v1.0.0 Stable</source>
-        <translation type="unfinished" />
+        <translation>v1.0.0 Стабільна</translation>
     </message>
     <message>
         <location filename="../build/MeguPackOptimizer/src/qml/main.qml" line="631" />
         <location filename="../src/qml/main.qml" line="631" />
         <source>Video Games</source>
-        <translation type="unfinished" />
+        <translation>Відеоігри</translation>
     </message>
     <message>
         <location filename="../build/MeguPackOptimizer/src/qml/main.qml" line="652" />
         <location filename="../src/qml/main.qml" line="652" />
         <source>Telemetry</source>
-        <translation type="unfinished">Телеметрія</translation>
+        <translation>Телеметрія</translation>
     </message>
     <message>
         <location filename="../build/MeguPackOptimizer/src/qml/main.qml" line="673" />
         <location filename="../src/qml/main.qml" line="673" />
         <source>Core Optimization</source>
-        <translation type="unfinished" />
+        <translation>Основна оптимізація</translation>
     </message>
     <message>
         <location filename="../build/MeguPackOptimizer/src/qml/main.qml" line="694" />
         <location filename="../src/qml/main.qml" line="694" />
         <source>Customization</source>
-        <translation type="unfinished" />
+        <translation>Кастомізація</translation>
+    </message>
+    <message>
+        <source>Customization</source>
+        <translation>Кастомізація</translation>
     </message>
 </context>
 </TS>

@@ -1739,37 +1739,48 @@ Item {
                 AcrylicPanel {
                     id: steamOverlayPanel
                     width: parent.width
-                    height: 72
+                    height: 76
                     opacity: optimizerBackend.steamInstalled ? 1.0 : 0.5
+                    enabled: optimizerBackend.steamInstalled
                     Behavior on opacity { NumberAnimation { duration: Theme.animNormal } }
 
                     Row {
-                        anchors.left: parent.left
-                        anchors.verticalCenter: parent.verticalCenter
-                        spacing: 12
+                        id: steamOverlayLayout
+                        width: parent.width - 24
+                        anchors.centerIn: parent
+                        spacing: 16
 
-                        Item {
-                            width: 28
-                            height: 28
+                        Rectangle {
+                            width: 44
+                            height: 44
+                            radius: 8
+                            color: optimizerBackend.steamInstalled ? Theme.accentDim : Theme.buttonBg
+                            border.color: optimizerBackend.steamInstalled ? Theme.accent : Theme.border
+                            border.width: 1
                             anchors.verticalCenter: parent.verticalCenter
+
                             Image {
                                 id: steamOverlayIconImg
                                 source: "qrc:/MeguPackOptimizer/src/resources/monitor.svg"
-                                anchors.fill: parent
-                                sourceSize.width: 28
-                                sourceSize.height: 28
+                                anchors.centerIn: parent
+                                width: 20
+                                height: 20
+                                sourceSize.width: 20
+                                sourceSize.height: 20
                                 visible: false
                             }
+
                             ColorOverlay {
                                 anchors.fill: steamOverlayIconImg
                                 source: steamOverlayIconImg
-                                color: Theme.accent
+                                color: optimizerBackend.steamInstalled ? Theme.accent : Theme.textSecondary
                             }
                         }
 
                         Column {
                             anchors.verticalCenter: parent.verticalCenter
                             spacing: 2
+                            width: parent.width - 44 - 16 - steamOverlaySwitch.width - 16
 
                             Row {
                                 spacing: 8
@@ -1777,8 +1788,9 @@ Item {
                                     text: qsTr("Steam Overlay")
                                     color: Theme.textPrimary
                                     font.family: Theme.fontFamily
-                                    font.pixelSize: 13
+                                    font.pixelSize: 14
                                     font.bold: true
+                                    anchors.verticalCenter: parent.verticalCenter
                                 }
                                 Rectangle {
                                     visible: root.steamOverlayChanged
@@ -1803,19 +1815,16 @@ Item {
 
                             Text {
                                 text: qsTr("Enable or disable the global Steam Overlay in games to reduce input latency and CPU overhead.")
-                                color: Theme.textMuted
+                                color: Theme.textSecondary
                                 font.family: Theme.fontFamily
-                                font.pixelSize: 10
+                                font.pixelSize: 11
+                                width: parent.width
+                                elide: Text.ElideRight
                             }
                         }
-                    }
-
-                    Row {
-                        anchors.right: parent.right
-                        anchors.verticalCenter: parent.verticalCenter
-                        spacing: 16
 
                         MeguSwitch {
+                            id: steamOverlaySwitch
                             checked: optimizerBackend.steamOverlayActive
                             enabled: optimizerBackend.steamInstalled
                             anchors.verticalCenter: parent.verticalCenter
