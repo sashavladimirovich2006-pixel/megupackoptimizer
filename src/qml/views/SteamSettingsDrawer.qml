@@ -11,23 +11,7 @@ Item {
     height: dynamicHeight
 
     property string subPage: "main" // "main", "friends", "chat", "notifications", "ingame", "interface", "library", "download", "storage", "toolbarPrefs", "accessibility", "gamerecording", "voice", "remoteplay", "music"
-    property bool steamIsRunning: false
-
-    Timer {
-        id: steamRunningPollTimer
-        interval: 1000
-        running: steamSettingsDrawer.visible
-        repeat: true
-        triggeredOnStart: true
-        onTriggered: {
-            var wasRunning = steamIsRunning;
-            var isRunning = optimizerBackend.isSteamRunning();
-            steamIsRunning = isRunning;
-            if (isRunning && !wasRunning) {
-                optimizerBackend.loadSystemStates();
-            }
-        }
-    }
+    property bool steamIsRunning: window.steamIsRunning
 
     Component.onCompleted: {
         optimizerBackend.scanSteamInstalledGames();

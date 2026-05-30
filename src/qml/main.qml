@@ -32,6 +32,22 @@ ApplicationWindow {
     }
 
     property int activeTab: 1
+    property bool steamIsRunning: false
+
+    Timer {
+        id: globalSteamRunningTimer
+        interval: 1000
+        running: true
+        repeat: true
+        triggeredOnStart: true
+        onTriggered: {
+            var isRunning = optimizerBackend.isSteamRunning();
+            if (isRunning !== steamIsRunning) {
+                steamIsRunning = isRunning;
+                optimizerBackend.loadSystemStates();
+            }
+        }
+    }
 
     // Top Header Control Bar
     header: Rectangle {
