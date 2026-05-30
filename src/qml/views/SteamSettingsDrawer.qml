@@ -20,7 +20,12 @@ Item {
         repeat: true
         triggeredOnStart: true
         onTriggered: {
-            steamIsRunning = optimizerBackend.isSteamRunning();
+            var wasRunning = steamIsRunning;
+            var isRunning = optimizerBackend.isSteamRunning();
+            steamIsRunning = isRunning;
+            if (isRunning && !wasRunning) {
+                optimizerBackend.loadSystemStates();
+            }
         }
     }
 
