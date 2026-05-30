@@ -11,6 +11,18 @@ Item {
     height: dynamicHeight
 
     property string subPage: "main" // "main", "friends", "chat", "notifications", "ingame", "interface", "library", "download", "storage", "toolbarPrefs", "accessibility", "gamerecording", "voice", "remoteplay", "music"
+    property bool steamIsRunning: false
+
+    Timer {
+        id: steamRunningPollTimer
+        interval: 1000
+        running: steamSettingsDrawer.visible
+        repeat: true
+        triggeredOnStart: true
+        onTriggered: {
+            steamIsRunning = optimizerBackend.isSteamRunning();
+        }
+    }
 
     Component.onCompleted: {
         optimizerBackend.scanSteamInstalledGames();
@@ -81,7 +93,85 @@ Item {
             color: Theme.border
         }
 
-        // Friends & Chat Menu Option
+        // Steam Not Running Warning Card
+        Rectangle {
+            width: parent.width
+            height: warningColumn.implicitHeight + 24
+            radius: Theme.radiusNormal
+            color: Qt.rgba(Theme.accent.r, Theme.accent.g, Theme.accent.b, 0.05)
+            border.color: Theme.accent
+            border.width: 1
+            visible: !steamIsRunning
+
+            Column {
+                id: warningColumn
+                anchors.fill: parent
+                anchors.margins: 12
+                spacing: 12
+
+                Row {
+                    spacing: 12
+                    width: parent.width
+
+                    Rectangle {
+                        width: 32
+                        height: 32
+                        radius: 6
+                        color: Qt.rgba(Theme.accent.r, Theme.accent.g, Theme.accent.b, 0.15)
+                        anchors.verticalCenter: parent.verticalCenter
+                        Text {
+                            text: "⚠️"
+                            font.pixelSize: 16
+                            anchors.centerIn: parent
+                        }
+                    }
+
+                    Column {
+                        spacing: 2
+                        width: parent.width - 32 - 12 - 16
+                        anchors.verticalCenter: parent.verticalCenter
+
+                        Text {
+                            text: qsTr("Steam is not running")
+                            color: Theme.textPrimary
+                            font.family: Theme.fontFamily
+                            font.pixelSize: 13
+                            font.bold: true
+                        }
+
+                        Text {
+                            text: qsTr("To configure and optimize Steam, please launch the Steam client first.")
+                            color: Theme.textSecondary
+                            font.family: Theme.fontFamily
+                            font.pixelSize: 10
+                            width: parent.width
+                            wrapMode: Text.Wrap
+                        }
+                    }
+                }
+
+                MeguButton {
+                    text: qsTr("Launch Steam")
+                    accented: true
+                    anchors.horizontalCenter: parent.horizontalCenter
+                    width: 140
+                    height: 28
+                    onClicked: {
+                        optimizerBackend.launchSteam();
+                        steamIsRunning = true;
+                    }
+                }
+            }
+        }
+
+        Column {
+            width: parent.width
+            spacing: 12
+            enabled: steamIsRunning
+            opacity: steamIsRunning ? 1.0 : 0.4
+            Behavior on opacity { NumberAnimation { duration: Theme.animNormal } }
+
+            // Friends & Chat Menu Option
         Rectangle {
             width: parent.width
             height: 48
@@ -810,6 +900,7 @@ Item {
                 cursorShape: Qt.PointingHandCursor
                 onClicked: steamSettingsDrawer.subPage = "music"
             }
+        }
         }
     }
 

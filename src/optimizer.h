@@ -284,6 +284,8 @@ public:
     Q_INVOKABLE void killDiscord();
     Q_INVOKABLE bool isSteamRunning();
     Q_INVOKABLE void killSteam();
+    Q_INVOKABLE void launchSteam();
+
 
 
     // Invokable methods for QML frontend

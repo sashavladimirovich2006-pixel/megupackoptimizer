@@ -7039,6 +7039,24 @@ void Optimizer::killSteam() {
 #endif
 }
 
+void Optimizer::launchSteam() {
+#ifdef Q_OS_WIN
+    QString path = steamPath();
+    if (!path.isEmpty()) {
+        QString exePath = path + "\\steam.exe";
+        if (QFile::exists(exePath)) {
+            QProcess::startDetached(exePath);
+            Logger::log("Launched Steam process successfully.", "INFO");
+        } else {
+            Logger::log("Steam executable not found at path: " + exePath, "WARNING");
+        }
+    } else {
+        Logger::log("Steam path registry lookup returned empty.", "WARNING");
+    }
+#endif
+}
+
+
 bool Optimizer::checkIsDiscordOverlayActive() {
     QStringList searchPaths;
     searchPaths << QDir::homePath() + "/AppData/Local/Discord"
