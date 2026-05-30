@@ -1690,40 +1690,6 @@ Item {
                                     anchors.verticalCenter: parent.verticalCenter
                                 }
                                 Rectangle {
-                                    id: devBadge
-                                    height: 18
-                                    width: devLayout.width + 12
-                                    radius: 4
-                                    color: Qt.rgba(Theme.accent.r, Theme.accent.g, Theme.accent.b, 0.1)
-                                    border.color: Theme.accent
-                                    border.width: 1
-                                    anchors.verticalCenter: parent.verticalCenter
-
-                                    Row {
-                                        id: devLayout
-                                        anchors.centerIn: parent
-                                        spacing: 5
-
-                                        Image {
-                                            source: "qrc:/MeguPackOptimizer/src/resources/development.svg"
-                                            width: 12
-                                            height: 12
-                                            sourceSize.width: 12
-                                            sourceSize.height: 12
-                                            anchors.verticalCenter: parent.verticalCenter
-                                        }
-
-                                        Text {
-                                            text: qsTr("Разработка")
-                                            color: Theme.accent
-                                            font.family: Theme.fontFamily
-                                            font.pixelSize: 9
-                                            font.bold: true
-                                            anchors.verticalCenter: parent.verticalCenter
-                                        }
-                                    }
-                                }
-                                Rectangle {
                                     visible: root.steamFriendsSettingsChanged
                                     height: 16
                                     width: steamStagedText.contentWidth + 10
