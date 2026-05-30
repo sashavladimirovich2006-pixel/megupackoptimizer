@@ -873,20 +873,35 @@ bool Optimizer::getVdfFriendsSettings(const QString &filePath, const QString &ac
         }
     }
 
-    // Load bAppendNicknamesToNames from localconfig.vdf's CachedCommunityPreferences (WebStorage)
-    QString commEscapedJson = getVdfBlockSetting(filePath, "WebStorage", "CachedCommunityPreferences");
-    if (!commEscapedJson.isEmpty()) {
-        QString commCleanJson = commEscapedJson;
-        commCleanJson.replace(QLatin1String("\\\""), QLatin1String("\""));
-        commCleanJson.replace(QLatin1String("\\\\"), QLatin1String("\\"));
-        QJsonDocument commDoc = QJsonDocument::fromJson(commCleanJson.toUtf8());
-        if (commDoc.isObject()) {
-            QVariantMap commMap = commDoc.object().toVariantMap();
-            if (commMap.contains("bParenthesizeNicknames")) {
-                settings["bAppendNicknamesToNames"] = commMap["bParenthesizeNicknames"].toBool();
+    // Load bAppendNicknamesToNames from localconfig.vdf's CachedCommunityPreferences (Check both friends and WebStorage blocks)
+    bool bAppend = false;
+    QString commFriends = getVdfFriendsSetting(filePath, "CachedCommunityPreferences");
+    if (!commFriends.isEmpty()) {
+        QString clean = commFriends;
+        clean.replace(QLatin1String("\\\""), QLatin1String("\""));
+        clean.replace(QLatin1String("\\\\"), QLatin1String("\\"));
+        QJsonDocument doc = QJsonDocument::fromJson(clean.toUtf8());
+        if (doc.isObject()) {
+            QVariantMap m = doc.object().toVariantMap();
+            if (m.contains("bParenthesizeNicknames")) {
+                bAppend = m["bParenthesizeNicknames"].toBool();
             }
         }
     }
+    QString commWS = getVdfBlockSetting(filePath, "WebStorage", "CachedCommunityPreferences");
+    if (!commWS.isEmpty()) {
+        QString clean = commWS;
+        clean.replace(QLatin1String("\\\""), QLatin1String("\""));
+        clean.replace(QLatin1String("\\\\"), QLatin1String("\\"));
+        QJsonDocument doc = QJsonDocument::fromJson(clean.toUtf8());
+        if (doc.isObject()) {
+            QVariantMap m = doc.object().toVariantMap();
+            if (m.contains("bParenthesizeNicknames")) {
+                bAppend = m["bParenthesizeNicknames"].toBool();
+            }
+        }
+    }
+    settings["bAppendNicknamesToNames"] = bAppend;
 
     // Load settings from sharedconfig.vdf -> FriendsUIJSON
     QString sharedConfigPath = filePath;
@@ -1379,23 +1394,45 @@ bool Optimizer::updateVdfFriendsSettings(const QString &filePath, const QString 
     }
     
     if (settings.contains("bAppendNicknamesToNames")) {
-        QString commEscapedJson = getVdfBlockSetting(filePath, "WebStorage", "CachedCommunityPreferences");
-        QJsonObject commObj;
-        if (!commEscapedJson.isEmpty()) {
-            QString commCleanJson = commEscapedJson;
-            commCleanJson.replace(QLatin1String("\\\""), QLatin1String("\""));
-            commCleanJson.replace(QLatin1String("\\\\"), QLatin1String("\\"));
-            QJsonDocument commDoc = QJsonDocument::fromJson(commCleanJson.toUtf8());
-            if (commDoc.isObject()) {
-                commObj = commDoc.object();
+        bool val = settings.value("bAppendNicknamesToNames").toBool();
+        
+        // A. Update friends block
+        QString commFriendsJson = getVdfFriendsSetting(filePath, "CachedCommunityPreferences");
+        QJsonObject commFriendsObj;
+        if (!commFriendsJson.isEmpty()) {
+            QString clean = commFriendsJson;
+            clean.replace(QLatin1String("\\\""), QLatin1String("\""));
+            clean.replace(QLatin1String("\\\\"), QLatin1String("\\"));
+            QJsonDocument doc = QJsonDocument::fromJson(clean.toUtf8());
+            if (doc.isObject()) {
+                commFriendsObj = doc.object();
             }
         }
-        commObj["bParenthesizeNicknames"] = settings.value("bAppendNicknamesToNames").toBool();
-        QString commCleanJson = QString::fromUtf8(QJsonDocument(commObj).toJson(QJsonDocument::Compact));
-        QString commNewEscapedJson = commCleanJson;
-        commNewEscapedJson.replace(QLatin1String("\\"), QLatin1String("\\\\"));
-        commNewEscapedJson.replace(QLatin1String("\""), QLatin1String("\\\""));
-        updateVdfBlockSetting(filePath, "WebStorage", "CachedCommunityPreferences", commNewEscapedJson);
+        commFriendsObj["bParenthesizeNicknames"] = val;
+        QString cleanFriends = QString::fromUtf8(QJsonDocument(commFriendsObj).toJson(QJsonDocument::Compact));
+        QString escapedFriends = cleanFriends;
+        escapedFriends.replace(QLatin1String("\\"), QLatin1String("\\\\"));
+        escapedFriends.replace(QLatin1String("\""), QLatin1String("\\\""));
+        updateVdfFriendsSetting(filePath, "CachedCommunityPreferences", escapedFriends);
+
+        // B. Update WebStorage block
+        QString commWSJson = getVdfBlockSetting(filePath, "WebStorage", "CachedCommunityPreferences");
+        QJsonObject commWSObj;
+        if (!commWSJson.isEmpty()) {
+            QString clean = commWSJson;
+            clean.replace(QLatin1String("\\\""), QLatin1String("\""));
+            clean.replace(QLatin1String("\\\\"), QLatin1String("\\"));
+            QJsonDocument doc = QJsonDocument::fromJson(clean.toUtf8());
+            if (doc.isObject()) {
+                commWSObj = doc.object();
+            }
+        }
+        commWSObj["bParenthesizeNicknames"] = val;
+        QString cleanWS = QString::fromUtf8(QJsonDocument(commWSObj).toJson(QJsonDocument::Compact));
+        QString escapedWS = cleanWS;
+        escapedWS.replace(QLatin1String("\\"), QLatin1String("\\\\"));
+        escapedWS.replace(QLatin1String("\""), QLatin1String("\\\""));
+        updateVdfBlockSetting(filePath, "WebStorage", "CachedCommunityPreferences", escapedWS);
     }
     
     // 2. system settings
