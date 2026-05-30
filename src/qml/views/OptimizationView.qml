@@ -1168,7 +1168,6 @@ Item {
         if (name === qsTr("Remote Access (RDP)") || name === "Remote Access (RDP)") return remoteAccessPanel;
         if (name === qsTr("Telemetry") || name === "Telemetry") return telemetryPanel;
         if (name === qsTr("Windows Update") || name === "Windows Update") return windowsUpdatePanel;
-        if (name === qsTr("Steam Overlay") || name === "Steam Overlay") return steamOverlayPanel;
         if (name === qsTr("CS2 Steam Overlay") || name === "CS2 Steam Overlay") return cs2Panel;
         if (name === qsTr("Steam Settings") || name === "Steam Settings") return steamSettingsPanel;
         if (name === qsTr("Classic Context Menu") || name === "Classic Context Menu") return classicContextMenuPanel;
@@ -1737,106 +1736,6 @@ Item {
                     }
                 }
 
-                // Steam Overlay Panel
-                AcrylicPanel {
-                    id: steamOverlayPanel
-                    width: parent.width
-                    height: 76
-                    opacity: optimizerBackend.steamInstalled ? 1.0 : 0.5
-                    enabled: optimizerBackend.steamInstalled
-                    Behavior on opacity { NumberAnimation { duration: Theme.animNormal } }
-
-                    Row {
-                        id: steamOverlayLayout
-                        width: parent.width - 24
-                        anchors.centerIn: parent
-                        spacing: 16
-
-                        Rectangle {
-                            width: 44
-                            height: 44
-                            radius: 8
-                            color: optimizerBackend.steamInstalled ? Theme.accentDim : Theme.buttonBg
-                            border.color: optimizerBackend.steamInstalled ? Theme.accent : Theme.border
-                            border.width: 1
-                            anchors.verticalCenter: parent.verticalCenter
-
-                            Image {
-                                id: steamOverlayIconImg
-                                source: "qrc:/MeguPackOptimizer/src/resources/monitor.svg"
-                                anchors.centerIn: parent
-                                width: 20
-                                height: 20
-                                sourceSize.width: 20
-                                sourceSize.height: 20
-                                visible: false
-                            }
-
-                            ColorOverlay {
-                                anchors.fill: steamOverlayIconImg
-                                source: steamOverlayIconImg
-                                color: optimizerBackend.steamInstalled ? Theme.accent : Theme.textSecondary
-                            }
-                        }
-
-                        Column {
-                            anchors.verticalCenter: parent.verticalCenter
-                            spacing: 2
-                            width: parent.width - 44 - 16 - steamOverlaySwitch.width - 16
-
-                            Row {
-                                spacing: 8
-                                Text {
-                                    text: qsTr("Steam Overlay")
-                                    color: Theme.textPrimary
-                                    font.family: Theme.fontFamily
-                                    font.pixelSize: 14
-                                    font.bold: true
-                                    anchors.verticalCenter: parent.verticalCenter
-                                }
-                                Rectangle {
-                                    visible: root.steamOverlayChanged
-                                    height: 16
-                                    width: selectedTextSteamOverlay.contentWidth + 10
-                                    radius: 4
-                                    color: Qt.rgba(Theme.success.r, Theme.success.g, Theme.success.b, 0.15)
-                                    border.color: Theme.success
-                                    border.width: 1
-                                    anchors.verticalCenter: parent.verticalCenter
-                                    Text {
-                                        id: selectedTextSteamOverlay
-                                        text: qsTr("Selected for application")
-                                        color: Theme.success
-                                        font.family: Theme.fontFamily
-                                        font.pixelSize: 8
-                                        font.bold: true
-                                        anchors.centerIn: parent
-                                    }
-                                }
-                            }
-
-                            Text {
-                                text: qsTr("Enable or disable the global Steam Overlay in games to reduce input latency and CPU overhead.")
-                                color: Theme.textSecondary
-                                font.family: Theme.fontFamily
-                                font.pixelSize: 11
-                                width: parent.width
-                                elide: Text.ElideRight
-                            }
-                        }
-
-                        MeguSwitch {
-                            id: steamOverlaySwitch
-                            steamStyle: true
-                            checked: optimizerBackend.steamOverlayActive
-                            enabled: optimizerBackend.steamInstalled
-                            anchors.verticalCenter: parent.verticalCenter
-                            onToggled: (isChecked) => {
-                                optimizerBackend.steamOverlayActive = isChecked;
-                            }
-                        }
-                    }
-                }
             }
 
             // 1. DRIVES INDEXING CATEGORY
