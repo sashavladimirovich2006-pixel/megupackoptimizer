@@ -873,8 +873,8 @@ bool Optimizer::getVdfFriendsSettings(const QString &filePath, const QString &ac
         }
     }
 
-    // Load bAppendNicknamesToNames from localconfig.vdf's CachedCommunityPreferences
-    QString commEscapedJson = getVdfFriendsSetting(filePath, "CachedCommunityPreferences");
+    // Load bAppendNicknamesToNames from localconfig.vdf's CachedCommunityPreferences (WebStorage)
+    QString commEscapedJson = getVdfBlockSetting(filePath, "WebStorage", "CachedCommunityPreferences");
     if (!commEscapedJson.isEmpty()) {
         QString commCleanJson = commEscapedJson;
         commCleanJson.replace(QLatin1String("\\\""), QLatin1String("\""));
@@ -1379,7 +1379,7 @@ bool Optimizer::updateVdfFriendsSettings(const QString &filePath, const QString 
     }
     
     if (settings.contains("bAppendNicknamesToNames")) {
-        QString commEscapedJson = getVdfFriendsSetting(filePath, "CachedCommunityPreferences");
+        QString commEscapedJson = getVdfBlockSetting(filePath, "WebStorage", "CachedCommunityPreferences");
         QJsonObject commObj;
         if (!commEscapedJson.isEmpty()) {
             QString commCleanJson = commEscapedJson;
@@ -1395,7 +1395,7 @@ bool Optimizer::updateVdfFriendsSettings(const QString &filePath, const QString 
         QString commNewEscapedJson = commCleanJson;
         commNewEscapedJson.replace(QLatin1String("\\"), QLatin1String("\\\\"));
         commNewEscapedJson.replace(QLatin1String("\""), QLatin1String("\\\""));
-        updateVdfFriendsSetting(filePath, "CachedCommunityPreferences", commNewEscapedJson);
+        updateVdfBlockSetting(filePath, "WebStorage", "CachedCommunityPreferences", commNewEscapedJson);
     }
     
     // 2. system settings
