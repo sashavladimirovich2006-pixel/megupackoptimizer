@@ -1446,6 +1446,7 @@ Item {
 
                                     MeguSwitch {
                                         id: cs2OverlaySwitch
+                                        steamStyle: true
                                         checked: parent.parent.cs2OverlayCheckedState
                                         anchors.verticalCenter: parent.verticalCenter
                                         onToggled: (isChecked) => {
@@ -1567,6 +1568,7 @@ Item {
 
                                             MeguSwitch {
                                                 id: optSwitch
+                                                steamStyle: true
                                                 checked: parent.parent.checkedState
                                                 anchors.verticalCenter: parent.verticalCenter
                                                 onToggled: (isChecked) => {
@@ -1825,6 +1827,7 @@ Item {
 
                         MeguSwitch {
                             id: steamOverlaySwitch
+                            steamStyle: true
                             checked: optimizerBackend.steamOverlayActive
                             enabled: optimizerBackend.steamInstalled
                             anchors.verticalCenter: parent.verticalCenter

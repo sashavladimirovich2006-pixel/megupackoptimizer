@@ -39,13 +39,13 @@ Item {
     }
 
     property color sidebarBg: {
-        if (currentTheme === "Белоснежная") return "#F2F3F4F6"; // 95% opacity
-        if (currentTheme === "Темная") return "#F50A0B0E"; // Sleek solid dark gray sidebar
-        if (currentTheme === "Blackout полностью черная") return "#F5000000"; 
-        if (currentTheme === "Ргб") return "#F5020204"; 
-        if (currentTheme === "Розовая") return "#F2F4D0D5"; // Translucent warm rose-grey sidebar
-        if (currentTheme === "Black pink") return "#F50A090D"; 
-        return "#F50A0B0E";
+        if (currentTheme === "Белоснежная") return "#FFF3F4F6"; // 100% opacity
+        if (currentTheme === "Темная") return "#FF0A0B0E"; // Sleek solid dark gray sidebar
+        if (currentTheme === "Blackout полностью черная") return "#FF000000"; 
+        if (currentTheme === "Ргб") return "#FF020204"; 
+        if (currentTheme === "Розовая") return "#FFF4D0D5"; // Translucent warm rose-grey sidebar
+        if (currentTheme === "Black pink") return "#FF0A090D"; 
+        return "#FF0A0B0E";
     }
 
     property color panelBg: {

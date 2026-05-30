@@ -826,7 +826,9 @@ Item {
 
             MeguButton {
                 text: qsTr("Back")
-                iconSource: "qrc:/MeguPackOptimizer/src/resources/close.svg"
+                iconRotation: 180
+
+                iconSource: "qrc:/MeguPackOptimizer/src/resources/arrow.svg"
                 width: 80
                 onClicked: steamSettingsDrawer.subPage = "main"
             }
@@ -855,20 +857,14 @@ Item {
             // Toggle 1
             Rectangle {
                 width: parent.width
-                height: 50
+                height: Math.max(50, steamToggleCol_0.implicitHeight + 12)
                 color: "transparent"
-                Row {
-                    anchors.fill: parent
-                    spacing: 12
-                    MeguSwitch {
-                        checked: optimizerBackend.steamFriendsSettings ? !!optimizerBackend.steamFriendsSettings["bAppendNicknamesToNames"] : false
-                        anchors.verticalCenter: parent.verticalCenter
-                        onToggled: (isChecked) => { root.toggleSteamFriendsSetting("bAppendNicknamesToNames", isChecked); }
-                    }
-                    Column {
+                    Column { id: steamToggleCol_0;
                         anchors.verticalCenter: parent.verticalCenter
                         spacing: 2
-                        width: parent.width - 50
+                        anchors.left: parent.left
+                        anchors.right: steamToggleSwitch_0.left
+                        anchors.rightMargin: 12
                         Text {
                             text: qsTr("Append nicknames to friends' names")
                             color: Theme.textPrimary
@@ -885,26 +881,28 @@ Item {
                             wrapMode: Text.WordWrap
                         }
                     }
-                }
+                    MeguSwitch {
+                    id: steamToggleSwitch_0
+                    anchors.right: parent.right
+
+                        steamStyle: true
+                        checked: optimizerBackend.steamFriendsSettings ? !!optimizerBackend.steamFriendsSettings["bAppendNicknamesToNames"] : false
+                        anchors.verticalCenter: parent.verticalCenter
+                        onToggled: (isChecked) => { root.toggleSteamFriendsSetting("bAppendNicknamesToNames", isChecked); }
+                    }
             }
 
             // Toggle 2
             Rectangle {
                 width: parent.width
-                height: 50
+                height: Math.max(50, steamToggleCol_1.implicitHeight + 12)
                 color: "transparent"
-                Row {
-                    anchors.fill: parent
-                    spacing: 12
-                    MeguSwitch {
-                        checked: optimizerBackend.steamFriendsSettings ? !!optimizerBackend.steamFriendsSettings["bGroupFriendsByGame"] : false
-                        anchors.verticalCenter: parent.verticalCenter
-                        onToggled: (isChecked) => { root.toggleSteamFriendsSetting("bGroupFriendsByGame", isChecked); }
-                    }
-                    Column {
+                    Column { id: steamToggleCol_1;
                         anchors.verticalCenter: parent.verticalCenter
                         spacing: 2
-                        width: parent.width - 50
+                        anchors.left: parent.left
+                        anchors.right: steamToggleSwitch_1.left
+                        anchors.rightMargin: 12
                         Text {
                             text: qsTr("Group friends together by game")
                             color: Theme.textPrimary
@@ -921,26 +919,28 @@ Item {
                             wrapMode: Text.WordWrap
                         }
                     }
-                }
+                    MeguSwitch {
+                    id: steamToggleSwitch_1
+                    anchors.right: parent.right
+
+                        steamStyle: true
+                        checked: optimizerBackend.steamFriendsSettings ? !!optimizerBackend.steamFriendsSettings["bGroupFriendsByGame"] : false
+                        anchors.verticalCenter: parent.verticalCenter
+                        onToggled: (isChecked) => { root.toggleSteamFriendsSetting("bGroupFriendsByGame", isChecked); }
+                    }
             }
 
             // Toggle 3
             Rectangle {
                 width: parent.width
-                height: 50
+                height: Math.max(50, steamToggleCol_2.implicitHeight + 12)
                 color: "transparent"
-                Row {
-                    anchors.fill: parent
-                    spacing: 12
-                    MeguSwitch {
-                        checked: optimizerBackend.steamFriendsSettings ? !!optimizerBackend.steamFriendsSettings["bHideOfflineFriendsInCustomCategories"] : false
-                        anchors.verticalCenter: parent.verticalCenter
-                        onToggled: (isChecked) => { root.toggleSteamFriendsSetting("bHideOfflineFriendsInCustomCategories", isChecked); }
-                    }
-                    Column {
+                    Column { id: steamToggleCol_2;
                         anchors.verticalCenter: parent.verticalCenter
                         spacing: 2
-                        width: parent.width - 50
+                        anchors.left: parent.left
+                        anchors.right: steamToggleSwitch_2.left
+                        anchors.rightMargin: 12
                         Text {
                             text: qsTr("Hide offline friends in custom categories")
                             color: Theme.textPrimary
@@ -957,26 +957,28 @@ Item {
                             wrapMode: Text.WordWrap
                         }
                     }
-                }
+                    MeguSwitch {
+                    id: steamToggleSwitch_2
+                    anchors.right: parent.right
+
+                        steamStyle: true
+                        checked: optimizerBackend.steamFriendsSettings ? !!optimizerBackend.steamFriendsSettings["bHideOfflineFriendsInCustomCategories"] : false
+                        anchors.verticalCenter: parent.verticalCenter
+                        onToggled: (isChecked) => { root.toggleSteamFriendsSetting("bHideOfflineFriendsInCustomCategories", isChecked); }
+                    }
             }
 
             // Toggle 4
             Rectangle {
                 width: parent.width
-                height: 50
+                height: Math.max(50, steamToggleCol_3.implicitHeight + 12)
                 color: "transparent"
-                Row {
-                    anchors.fill: parent
-                    spacing: 12
-                    MeguSwitch {
-                        checked: optimizerBackend.steamFriendsSettings ? !!optimizerBackend.steamFriendsSettings["bHideCategorizedFriendsInOnlineOffline"] : false
-                        anchors.verticalCenter: parent.verticalCenter
-                        onToggled: (isChecked) => { root.toggleSteamFriendsSetting("bHideCategorizedFriendsInOnlineOffline", isChecked); }
-                    }
-                    Column {
+                    Column { id: steamToggleCol_3;
                         anchors.verticalCenter: parent.verticalCenter
                         spacing: 2
-                        width: parent.width - 50
+                        anchors.left: parent.left
+                        anchors.right: steamToggleSwitch_3.left
+                        anchors.rightMargin: 12
                         Text {
                             text: qsTr("Hide categorized friends in Online/Offline Friends")
                             color: Theme.textPrimary
@@ -993,26 +995,28 @@ Item {
                             wrapMode: Text.WordWrap
                         }
                     }
-                }
+                    MeguSwitch {
+                    id: steamToggleSwitch_3
+                    anchors.right: parent.right
+
+                        steamStyle: true
+                        checked: optimizerBackend.steamFriendsSettings ? !!optimizerBackend.steamFriendsSettings["bHideCategorizedFriendsInOnlineOffline"] : false
+                        anchors.verticalCenter: parent.verticalCenter
+                        onToggled: (isChecked) => { root.toggleSteamFriendsSetting("bHideCategorizedFriendsInOnlineOffline", isChecked); }
+                    }
             }
 
             // Toggle 5
             Rectangle {
                 width: parent.width
-                height: 50
+                height: Math.max(50, steamToggleCol_4.implicitHeight + 12)
                 color: "transparent"
-                Row {
-                    anchors.fill: parent
-                    spacing: 12
-                    MeguSwitch {
-                        checked: optimizerBackend.steamFriendsSettings ? !!optimizerBackend.steamFriendsSettings["bIgnoreAwayStatusWhenSorting"] : false
-                        anchors.verticalCenter: parent.verticalCenter
-                        onToggled: (isChecked) => { root.toggleSteamFriendsSetting("bIgnoreAwayStatusWhenSorting", isChecked); }
-                    }
-                    Column {
+                    Column { id: steamToggleCol_4;
                         anchors.verticalCenter: parent.verticalCenter
                         spacing: 2
-                        width: parent.width - 50
+                        anchors.left: parent.left
+                        anchors.right: steamToggleSwitch_4.left
+                        anchors.rightMargin: 12
                         Text {
                             text: qsTr("Ignore 'Away' status when sorting friends")
                             color: Theme.textPrimary
@@ -1029,26 +1033,28 @@ Item {
                             wrapMode: Text.WordWrap
                         }
                     }
-                }
+                    MeguSwitch {
+                    id: steamToggleSwitch_4
+                    anchors.right: parent.right
+
+                        steamStyle: true
+                        checked: optimizerBackend.steamFriendsSettings ? !!optimizerBackend.steamFriendsSettings["bIgnoreAwayStatusWhenSorting"] : false
+                        anchors.verticalCenter: parent.verticalCenter
+                        onToggled: (isChecked) => { root.toggleSteamFriendsSetting("bIgnoreAwayStatusWhenSorting", isChecked); }
+                    }
             }
 
             // Toggle 6
             Rectangle {
                 width: parent.width
-                height: 50
+                height: Math.max(50, steamToggleCol_5.implicitHeight + 12)
                 color: "transparent"
-                Row {
-                    anchors.fill: parent
-                    spacing: 12
-                    MeguSwitch {
-                        checked: optimizerBackend.steamFriendsSettings ? !!optimizerBackend.steamFriendsSettings["bSignInOnStart"] : false
-                        anchors.verticalCenter: parent.verticalCenter
-                        onToggled: (isChecked) => { root.toggleSteamFriendsSetting("bSignInOnStart", isChecked); }
-                    }
-                    Column {
+                    Column { id: steamToggleCol_5;
                         anchors.verticalCenter: parent.verticalCenter
                         spacing: 2
-                        width: parent.width - 50
+                        anchors.left: parent.left
+                        anchors.right: steamToggleSwitch_5.left
+                        anchors.rightMargin: 12
                         Text {
                             text: qsTr("Sign in to friends when Steam starts")
                             color: Theme.textPrimary
@@ -1065,26 +1071,28 @@ Item {
                             wrapMode: Text.WordWrap
                         }
                     }
-                }
+                    MeguSwitch {
+                    id: steamToggleSwitch_5
+                    anchors.right: parent.right
+
+                        steamStyle: true
+                        checked: optimizerBackend.steamFriendsSettings ? !!optimizerBackend.steamFriendsSettings["bSignInOnStart"] : false
+                        anchors.verticalCenter: parent.verticalCenter
+                        onToggled: (isChecked) => { root.toggleSteamFriendsSetting("bSignInOnStart", isChecked); }
+                    }
             }
 
             // Toggle 7
             Rectangle {
                 width: parent.width
-                height: 50
+                height: Math.max(50, steamToggleCol_6.implicitHeight + 12)
                 color: "transparent"
-                Row {
-                    anchors.fill: parent
-                    spacing: 12
-                    MeguSwitch {
-                        checked: optimizerBackend.steamFriendsSettings ? !!optimizerBackend.steamFriendsSettings["bEnableAnimatedAvatars"] : false
-                        anchors.verticalCenter: parent.verticalCenter
-                        onToggled: (isChecked) => { root.toggleSteamFriendsSetting("bEnableAnimatedAvatars", isChecked); }
-                    }
-                    Column {
+                    Column { id: steamToggleCol_6;
                         anchors.verticalCenter: parent.verticalCenter
                         spacing: 2
-                        width: parent.width - 50
+                        anchors.left: parent.left
+                        anchors.right: steamToggleSwitch_6.left
+                        anchors.rightMargin: 12
                         Text {
                             text: qsTr("Enable Animated Avatars & Animated Avatar Frames")
                             color: Theme.textPrimary
@@ -1101,26 +1109,28 @@ Item {
                             wrapMode: Text.WordWrap
                         }
                     }
-                }
+                    MeguSwitch {
+                    id: steamToggleSwitch_6
+                    anchors.right: parent.right
+
+                        steamStyle: true
+                        checked: optimizerBackend.steamFriendsSettings ? !!optimizerBackend.steamFriendsSettings["bEnableAnimatedAvatars"] : false
+                        anchors.verticalCenter: parent.verticalCenter
+                        onToggled: (isChecked) => { root.toggleSteamFriendsSetting("bEnableAnimatedAvatars", isChecked); }
+                    }
             }
 
             // Toggle 8
             Rectangle {
                 width: parent.width
-                height: 50
+                height: Math.max(50, steamToggleCol_7.implicitHeight + 12)
                 color: "transparent"
-                Row {
-                    anchors.fill: parent
-                    spacing: 12
-                    MeguSwitch {
-                        checked: optimizerBackend.steamFriendsSettings ? !!optimizerBackend.steamFriendsSettings["bCompactFriendsListAndChat"] : false
-                        anchors.verticalCenter: parent.verticalCenter
-                        onToggled: (isChecked) => { root.toggleSteamFriendsSetting("bCompactFriendsListAndChat", isChecked); }
-                    }
-                    Column {
+                    Column { id: steamToggleCol_7;
                         anchors.verticalCenter: parent.verticalCenter
                         spacing: 2
-                        width: parent.width - 50
+                        anchors.left: parent.left
+                        anchors.right: steamToggleSwitch_7.left
+                        anchors.rightMargin: 12
                         Text {
                             text: qsTr("Compact friends list & chat view")
                             color: Theme.textPrimary
@@ -1137,26 +1147,28 @@ Item {
                             wrapMode: Text.WordWrap
                         }
                     }
-                }
+                    MeguSwitch {
+                    id: steamToggleSwitch_7
+                    anchors.right: parent.right
+
+                        steamStyle: true
+                        checked: optimizerBackend.steamFriendsSettings ? !!optimizerBackend.steamFriendsSettings["bCompactFriendsListAndChat"] : false
+                        anchors.verticalCenter: parent.verticalCenter
+                        onToggled: (isChecked) => { root.toggleSteamFriendsSetting("bCompactFriendsListAndChat", isChecked); }
+                    }
             }
 
             // Toggle 9
             Rectangle {
                 width: parent.width
-                height: 50
+                height: Math.max(50, steamToggleCol_8.implicitHeight + 12)
                 color: "transparent"
-                Row {
-                    anchors.fill: parent
-                    spacing: 12
-                    MeguSwitch {
-                        checked: optimizerBackend.steamFriendsSettings ? !!optimizerBackend.steamFriendsSettings["bCompactFavorites"] : false
-                        anchors.verticalCenter: parent.verticalCenter
-                        onToggled: (isChecked) => { root.toggleSteamFriendsSetting("bCompactFavorites", isChecked); }
-                    }
-                    Column {
+                    Column { id: steamToggleCol_8;
                         anchors.verticalCenter: parent.verticalCenter
                         spacing: 2
-                        width: parent.width - 50
+                        anchors.left: parent.left
+                        anchors.right: steamToggleSwitch_8.left
+                        anchors.rightMargin: 12
                         Text {
                             text: qsTr("Compact favorite friends area")
                             color: Theme.textPrimary
@@ -1173,7 +1185,15 @@ Item {
                             wrapMode: Text.WordWrap
                         }
                     }
-                }
+                    MeguSwitch {
+                    id: steamToggleSwitch_8
+                    anchors.right: parent.right
+
+                        steamStyle: true
+                        checked: optimizerBackend.steamFriendsSettings ? !!optimizerBackend.steamFriendsSettings["bCompactFavorites"] : false
+                        anchors.verticalCenter: parent.verticalCenter
+                        onToggled: (isChecked) => { root.toggleSteamFriendsSetting("bCompactFavorites", isChecked); }
+                    }
             }
         }
     }
@@ -1191,7 +1211,9 @@ Item {
 
             MeguButton {
                 text: qsTr("Back")
-                iconSource: "qrc:/MeguPackOptimizer/src/resources/close.svg"
+                iconRotation: 180
+
+                iconSource: "qrc:/MeguPackOptimizer/src/resources/arrow.svg"
                 width: 80
                 onClicked: steamSettingsDrawer.subPage = "main"
             }
@@ -1220,20 +1242,14 @@ Item {
             // Toggle 10
             Rectangle {
                 width: parent.width
-                height: 50
+                height: Math.max(50, steamToggleCol_9.implicitHeight + 12)
                 color: "transparent"
-                Row {
-                    anchors.fill: parent
-                    spacing: 12
-                    MeguSwitch {
-                        checked: optimizerBackend.steamFriendsSettings ? !!optimizerBackend.steamFriendsSettings["bDockChats"] : false
-                        anchors.verticalCenter: parent.verticalCenter
-                        onToggled: (isChecked) => { root.toggleSteamFriendsSetting("bDockChats", isChecked); }
-                    }
-                    Column {
+                    Column { id: steamToggleCol_9;
                         anchors.verticalCenter: parent.verticalCenter
                         spacing: 2
-                        width: parent.width - 50
+                        anchors.left: parent.left
+                        anchors.right: steamToggleSwitch_9.left
+                        anchors.rightMargin: 12
                         Text {
                             text: qsTr("Dock chats to the friends list")
                             color: Theme.textPrimary
@@ -1250,26 +1266,28 @@ Item {
                             wrapMode: Text.WordWrap
                         }
                     }
-                }
+                    MeguSwitch {
+                    id: steamToggleSwitch_9
+                    anchors.right: parent.right
+
+                        steamStyle: true
+                        checked: optimizerBackend.steamFriendsSettings ? !!optimizerBackend.steamFriendsSettings["bDockChats"] : false
+                        anchors.verticalCenter: parent.verticalCenter
+                        onToggled: (isChecked) => { root.toggleSteamFriendsSetting("bDockChats", isChecked); }
+                    }
             }
 
             // Toggle 11
             Rectangle {
                 width: parent.width
-                height: 50
+                height: Math.max(50, steamToggleCol_10.implicitHeight + 12)
                 color: "transparent"
-                Row {
-                    anchors.fill: parent
-                    spacing: 12
-                    MeguSwitch {
-                        checked: optimizerBackend.steamFriendsSettings ? !!optimizerBackend.steamFriendsSettings["bOpenNewWindowForNewChats"] : false
-                        anchors.verticalCenter: parent.verticalCenter
-                        onToggled: (isChecked) => { root.toggleSteamFriendsSetting("bOpenNewWindowForNewChats", isChecked); }
-                    }
-                    Column {
+                    Column { id: steamToggleCol_10;
                         anchors.verticalCenter: parent.verticalCenter
                         spacing: 2
-                        width: parent.width - 50
+                        anchors.left: parent.left
+                        anchors.right: steamToggleSwitch_10.left
+                        anchors.rightMargin: 12
                         Text {
                             text: qsTr("Open a new window for new chats")
                             color: Theme.textPrimary
@@ -1286,26 +1304,28 @@ Item {
                             wrapMode: Text.WordWrap
                         }
                     }
-                }
+                    MeguSwitch {
+                    id: steamToggleSwitch_10
+                    anchors.right: parent.right
+
+                        steamStyle: true
+                        checked: optimizerBackend.steamFriendsSettings ? !!optimizerBackend.steamFriendsSettings["bOpenNewWindowForNewChats"] : false
+                        anchors.verticalCenter: parent.verticalCenter
+                        onToggled: (isChecked) => { root.toggleSteamFriendsSetting("bOpenNewWindowForNewChats", isChecked); }
+                    }
             }
 
             // Toggle 12
             Rectangle {
                 width: parent.width
-                height: 50
+                height: Math.max(50, steamToggleCol_11.implicitHeight + 12)
                 color: "transparent"
-                Row {
-                    anchors.fill: parent
-                    spacing: 12
-                    MeguSwitch {
-                        checked: optimizerBackend.steamFriendsSettings ? !!optimizerBackend.steamFriendsSettings["bDontEmbedImages"] : false
-                        anchors.verticalCenter: parent.verticalCenter
-                        onToggled: (isChecked) => { root.toggleSteamFriendsSetting("bDontEmbedImages", isChecked); }
-                    }
-                    Column {
+                    Column { id: steamToggleCol_11;
                         anchors.verticalCenter: parent.verticalCenter
                         spacing: 2
-                        width: parent.width - 50
+                        anchors.left: parent.left
+                        anchors.right: steamToggleSwitch_11.left
+                        anchors.rightMargin: 12
                         Text {
                             text: qsTr("Don't embed images and other media inline")
                             color: Theme.textPrimary
@@ -1322,26 +1342,28 @@ Item {
                             wrapMode: Text.WordWrap
                         }
                     }
-                }
+                    MeguSwitch {
+                    id: steamToggleSwitch_11
+                    anchors.right: parent.right
+
+                        steamStyle: true
+                        checked: optimizerBackend.steamFriendsSettings ? !!optimizerBackend.steamFriendsSettings["bDontEmbedImages"] : false
+                        anchors.verticalCenter: parent.verticalCenter
+                        onToggled: (isChecked) => { root.toggleSteamFriendsSetting("bDontEmbedImages", isChecked); }
+                    }
             }
 
             // Toggle 13
             Rectangle {
                 width: parent.width
-                height: 50
+                height: Math.max(50, steamToggleCol_12.implicitHeight + 12)
                 color: "transparent"
-                Row {
-                    anchors.fill: parent
-                    spacing: 12
-                    MeguSwitch {
-                        checked: optimizerBackend.steamFriendsSettings ? !!optimizerBackend.steamFriendsSettings["bRememberOpenChats"] : false
-                        anchors.verticalCenter: parent.verticalCenter
-                        onToggled: (isChecked) => { root.toggleSteamFriendsSetting("bRememberOpenChats", isChecked); }
-                    }
-                    Column {
+                    Column { id: steamToggleCol_12;
                         anchors.verticalCenter: parent.verticalCenter
                         spacing: 2
-                        width: parent.width - 50
+                        anchors.left: parent.left
+                        anchors.right: steamToggleSwitch_12.left
+                        anchors.rightMargin: 12
                         Text {
                             text: qsTr("Remember my open chats")
                             color: Theme.textPrimary
@@ -1358,26 +1380,28 @@ Item {
                             wrapMode: Text.WordWrap
                         }
                     }
-                }
+                    MeguSwitch {
+                    id: steamToggleSwitch_12
+                    anchors.right: parent.right
+
+                        steamStyle: true
+                        checked: optimizerBackend.steamFriendsSettings ? !!optimizerBackend.steamFriendsSettings["bRememberOpenChats"] : false
+                        anchors.verticalCenter: parent.verticalCenter
+                        onToggled: (isChecked) => { root.toggleSteamFriendsSetting("bRememberOpenChats", isChecked); }
+                    }
             }
 
             // Toggle 14
             Rectangle {
                 width: parent.width
-                height: 50
+                height: Math.max(50, steamToggleCol_13.implicitHeight + 12)
                 color: "transparent"
-                Row {
-                    anchors.fill: parent
-                    spacing: 12
-                    MeguSwitch {
-                        checked: optimizerBackend.steamFriendsSettings ? !!optimizerBackend.steamFriendsSettings["bDisableSpellCheck"] : false
-                        anchors.verticalCenter: parent.verticalCenter
-                        onToggled: (isChecked) => { root.toggleSteamFriendsSetting("bDisableSpellCheck", isChecked); }
-                    }
-                    Column {
+                    Column { id: steamToggleCol_13;
                         anchors.verticalCenter: parent.verticalCenter
                         spacing: 2
-                        width: parent.width - 50
+                        anchors.left: parent.left
+                        anchors.right: steamToggleSwitch_13.left
+                        anchors.rightMargin: 12
                         Text {
                             text: qsTr("Disable spellcheck in chat message entry")
                             color: Theme.textPrimary
@@ -1394,26 +1418,28 @@ Item {
                             wrapMode: Text.WordWrap
                         }
                     }
-                }
+                    MeguSwitch {
+                    id: steamToggleSwitch_13
+                    anchors.right: parent.right
+
+                        steamStyle: true
+                        checked: optimizerBackend.steamFriendsSettings ? !!optimizerBackend.steamFriendsSettings["bDisableSpellCheck"] : false
+                        anchors.verticalCenter: parent.verticalCenter
+                        onToggled: (isChecked) => { root.toggleSteamFriendsSetting("bDisableSpellCheck", isChecked); }
+                    }
             }
 
             // Toggle 15
             Rectangle {
                 width: parent.width
-                height: 50
+                height: Math.max(50, steamToggleCol_14.implicitHeight + 12)
                 color: "transparent"
-                Row {
-                    anchors.fill: parent
-                    spacing: 12
-                    MeguSwitch {
-                        checked: optimizerBackend.steamFriendsSettings ? !!optimizerBackend.steamFriendsSettings["bDisableRoomEffects"] : false
-                        anchors.verticalCenter: parent.verticalCenter
-                        onToggled: (isChecked) => { root.toggleSteamFriendsSetting("bDisableRoomEffects", isChecked); }
-                    }
-                    Column {
+                    Column { id: steamToggleCol_14;
                         anchors.verticalCenter: parent.verticalCenter
                         spacing: 2
-                        width: parent.width - 50
+                        anchors.left: parent.left
+                        anchors.right: steamToggleSwitch_14.left
+                        anchors.rightMargin: 12
                         Text {
                             text: qsTr("Disable animated room effects")
                             color: Theme.textPrimary
@@ -1430,7 +1456,15 @@ Item {
                             wrapMode: Text.WordWrap
                         }
                     }
-                }
+                    MeguSwitch {
+                    id: steamToggleSwitch_14
+                    anchors.right: parent.right
+
+                        steamStyle: true
+                        checked: optimizerBackend.steamFriendsSettings ? !!optimizerBackend.steamFriendsSettings["bDisableRoomEffects"] : false
+                        anchors.verticalCenter: parent.verticalCenter
+                        onToggled: (isChecked) => { root.toggleSteamFriendsSetting("bDisableRoomEffects", isChecked); }
+                    }
             }
         }
 
@@ -1454,6 +1488,7 @@ Item {
             }
 
             Row {
+                id: fontSizeRow
                 width: parent.width
                 spacing: 8
 
@@ -1472,8 +1507,8 @@ Item {
                         height: 32
                         width: (parent.width - 16) / 3
                         radius: 6
-                        color: (parent.parent.currentSize === modelData.id) ? Theme.accentDim : (btnMouse.containsMouse ? "#0DFFFFFF" : "#05FFFFFF")
-                        border.color: (parent.parent.currentSize === modelData.id) ? Theme.accent : Theme.border
+                        color: (fontSizeRow.currentSize === modelData.id) ? Theme.accentDim : (btnMouse.containsMouse ? "#0DFFFFFF" : "#05FFFFFF")
+                        border.color: (fontSizeRow.currentSize === modelData.id) ? Theme.accent : Theme.border
                         border.width: 1
 
                         Behavior on color { ColorAnimation { duration: Theme.animFast } }
@@ -1481,7 +1516,7 @@ Item {
 
                         Text {
                             text: modelData.label
-                            color: (parent.parent.parent.currentSize === modelData.id) ? Theme.accent : Theme.textSecondary
+                            color: (fontSizeRow.currentSize === modelData.id) ? Theme.accent : Theme.textSecondary
                             font.family: Theme.fontFamily
                             font.pixelSize: 11
                             font.bold: true
@@ -1524,7 +1559,9 @@ Item {
 
             MeguButton {
                 text: qsTr("Back")
-                iconSource: "qrc:/MeguPackOptimizer/src/resources/close.svg"
+                iconRotation: 180
+
+                iconSource: "qrc:/MeguPackOptimizer/src/resources/arrow.svg"
                 width: 80
                 onClicked: steamSettingsDrawer.subPage = "main"
             }
@@ -1549,20 +1586,14 @@ Item {
         // Global Sound Toggle
         Rectangle {
             width: parent.width
-            height: 50
+                height: Math.max(50, steamToggleCol_15.implicitHeight + 12)
             color: "transparent"
-            Row {
-                anchors.fill: parent
-                spacing: 12
-                MeguSwitch {
-                    checked: optimizerBackend.steamFriendsSettings ? !!optimizerBackend.steamFriendsSettings["bPlayNotificationSounds"] : true
-                    anchors.verticalCenter: parent.verticalCenter
-                    onToggled: (isChecked) => { root.toggleSteamFriendsSetting("bPlayNotificationSounds", isChecked); }
-                }
-                Column {
+                Column { id: steamToggleCol_15;
                     anchors.verticalCenter: parent.verticalCenter
                     spacing: 2
-                    width: parent.width - 50
+                        anchors.left: parent.left
+                        anchors.right: steamToggleSwitch_15.left
+                        anchors.rightMargin: 12
                     Text {
                         text: qsTr("Play a sound when a toast is displayed")
                         color: Theme.textPrimary
@@ -1579,7 +1610,15 @@ Item {
                         wrapMode: Text.WordWrap
                     }
                 }
-            }
+                MeguSwitch {
+                    id: steamToggleSwitch_15
+                    anchors.right: parent.right
+
+                    steamStyle: true
+                    checked: optimizerBackend.steamFriendsSettings ? !!optimizerBackend.steamFriendsSettings["bPlayNotificationSounds"] : true
+                    anchors.verticalCenter: parent.verticalCenter
+                    onToggled: (isChecked) => { root.toggleSteamFriendsSetting("bPlayNotificationSounds", isChecked); }
+                }
         }
 
         // Column headers
@@ -1650,12 +1689,18 @@ Item {
                     spacing: 20
 
                     MeguSwitch {
+
+
+                        steamStyle: true
                         checked: optimizerBackend.steamFriendsSettings ? !!optimizerBackend.steamFriendsSettings["bAchievementShowToast"] : true
                         onToggled: (isChecked) => { root.toggleSteamFriendsSetting("bAchievementShowToast", isChecked); }
                     }
 
                     MeguSwitch {
-                        checked: optimizerBackend.steamFriendsSettings ? !!optimizerBackend.steamFriendsSettings["bAchievementPlaySound"] : true
+                        id: achSoundSwitch
+                        steamStyle: true
+                        enabled: optimizerBackend.steamFriendsSettings ? !!optimizerBackend.steamFriendsSettings["bPlayNotificationSounds"] : true
+                        checked: achSoundSwitch.enabled && (optimizerBackend.steamFriendsSettings ? !!optimizerBackend.steamFriendsSettings["bAchievementPlaySound"] : true)
                         onToggled: (isChecked) => { root.toggleSteamFriendsSetting("bAchievementPlaySound", isChecked); }
                     }
                 }
@@ -1685,12 +1730,18 @@ Item {
                     spacing: 20
 
                     MeguSwitch {
+
+
+                        steamStyle: true
                         checked: optimizerBackend.steamFriendsSettings ? !!optimizerBackend.steamFriendsSettings["bControllerShowToast"] : true
                         onToggled: (isChecked) => { root.toggleSteamFriendsSetting("bControllerShowToast", isChecked); }
                     }
 
                     MeguSwitch {
-                        checked: optimizerBackend.steamFriendsSettings ? !!optimizerBackend.steamFriendsSettings["bControllerPlaySound"] : false
+                        id: ctrlSoundSwitch
+                        steamStyle: true
+                        enabled: optimizerBackend.steamFriendsSettings ? !!optimizerBackend.steamFriendsSettings["bPlayNotificationSounds"] : true
+                        checked: ctrlSoundSwitch.enabled && (optimizerBackend.steamFriendsSettings ? !!optimizerBackend.steamFriendsSettings["bControllerPlaySound"] : false)
                         onToggled: (isChecked) => { root.toggleSteamFriendsSetting("bControllerPlaySound", isChecked); }
                     }
                 }
@@ -1720,12 +1771,18 @@ Item {
                     spacing: 20
 
                     MeguSwitch {
+
+
+                        steamStyle: true
                         checked: optimizerBackend.steamFriendsSettings ? !!optimizerBackend.steamFriendsSettings["bControllerLowShowToast"] : true
                         onToggled: (isChecked) => { root.toggleSteamFriendsSetting("bControllerLowShowToast", isChecked); }
                     }
 
                     MeguSwitch {
-                        checked: optimizerBackend.steamFriendsSettings ? !!optimizerBackend.steamFriendsSettings["bControllerLowPlaySound"] : false
+                        id: ctrlLowSoundSwitch
+                        steamStyle: true
+                        enabled: optimizerBackend.steamFriendsSettings ? !!optimizerBackend.steamFriendsSettings["bPlayNotificationSounds"] : true
+                        checked: ctrlLowSoundSwitch.enabled && (optimizerBackend.steamFriendsSettings ? !!optimizerBackend.steamFriendsSettings["bControllerLowPlaySound"] : false)
                         onToggled: (isChecked) => { root.toggleSteamFriendsSetting("bControllerLowPlaySound", isChecked); }
                     }
                 }
@@ -1755,12 +1812,18 @@ Item {
                     spacing: 20
 
                     MeguSwitch {
+
+
+                        steamStyle: true
                         checked: optimizerBackend.steamFriendsSettings ? !!optimizerBackend.steamFriendsSettings["bFriendJoinShowToast"] : true
                         onToggled: (isChecked) => { root.toggleSteamFriendsSetting("bFriendJoinShowToast", isChecked); }
                     }
 
                     MeguSwitch {
-                        checked: optimizerBackend.steamFriendsSettings ? !!optimizerBackend.steamFriendsSettings["bFriendJoinPlaySound"] : false
+                        id: friendJoinSoundSwitch
+                        steamStyle: true
+                        enabled: optimizerBackend.steamFriendsSettings ? !!optimizerBackend.steamFriendsSettings["bPlayNotificationSounds"] : true
+                        checked: friendJoinSoundSwitch.enabled && (optimizerBackend.steamFriendsSettings ? !!optimizerBackend.steamFriendsSettings["bFriendJoinPlaySound"] : false)
                         onToggled: (isChecked) => { root.toggleSteamFriendsSetting("bFriendJoinPlaySound", isChecked); }
                     }
                 }
@@ -1790,12 +1853,18 @@ Item {
                     spacing: 20
 
                     MeguSwitch {
+
+
+                        steamStyle: true
                         checked: optimizerBackend.steamFriendsSettings ? !!optimizerBackend.steamFriendsSettings["bFriendOnlineShowToast"] : false
                         onToggled: (isChecked) => { root.toggleSteamFriendsSetting("bFriendOnlineShowToast", isChecked); }
                     }
 
                     MeguSwitch {
-                        checked: optimizerBackend.steamFriendsSettings ? !!optimizerBackend.steamFriendsSettings["bFriendOnlinePlaySound"] : false
+                        id: friendOnlineSoundSwitch
+                        steamStyle: true
+                        enabled: optimizerBackend.steamFriendsSettings ? !!optimizerBackend.steamFriendsSettings["bPlayNotificationSounds"] : true
+                        checked: friendOnlineSoundSwitch.enabled && (optimizerBackend.steamFriendsSettings ? !!optimizerBackend.steamFriendsSettings["bFriendOnlinePlaySound"] : false)
                         onToggled: (isChecked) => { root.toggleSteamFriendsSetting("bFriendOnlinePlaySound", isChecked); }
                     }
                 }
@@ -1825,12 +1894,18 @@ Item {
                     spacing: 20
 
                     MeguSwitch {
+
+
+                        steamStyle: true
                         checked: optimizerBackend.steamFriendsSettings ? !!optimizerBackend.steamFriendsSettings["bFriendMsgShowToast"] : true
                         onToggled: (isChecked) => { root.toggleSteamFriendsSetting("bFriendMsgShowToast", isChecked); }
                     }
 
                     MeguSwitch {
-                        checked: optimizerBackend.steamFriendsSettings ? !!optimizerBackend.steamFriendsSettings["bFriendMsgPlaySound"] : true
+                        id: friendMsgSoundSwitch
+                        steamStyle: true
+                        enabled: optimizerBackend.steamFriendsSettings ? !!optimizerBackend.steamFriendsSettings["bPlayNotificationSounds"] : true
+                        checked: friendMsgSoundSwitch.enabled && (optimizerBackend.steamFriendsSettings ? !!optimizerBackend.steamFriendsSettings["bFriendMsgPlaySound"] : true)
                         onToggled: (isChecked) => { root.toggleSteamFriendsSetting("bFriendMsgPlaySound", isChecked); }
                     }
                 }
@@ -1860,12 +1935,18 @@ Item {
                     spacing: 20
 
                     MeguSwitch {
+
+
+                        steamStyle: true
                         checked: optimizerBackend.steamFriendsSettings ? !!optimizerBackend.steamFriendsSettings["bChatRoomShowToast"] : true
                         onToggled: (isChecked) => { root.toggleSteamFriendsSetting("bChatRoomShowToast", isChecked); }
                     }
 
                     MeguSwitch {
-                        checked: optimizerBackend.steamFriendsSettings ? !!optimizerBackend.steamFriendsSettings["bChatRoomPlaySound"] : true
+                        id: chatRoomSoundSwitch
+                        steamStyle: true
+                        enabled: optimizerBackend.steamFriendsSettings ? !!optimizerBackend.steamFriendsSettings["bPlayNotificationSounds"] : true
+                        checked: chatRoomSoundSwitch.enabled && (optimizerBackend.steamFriendsSettings ? !!optimizerBackend.steamFriendsSettings["bChatRoomPlaySound"] : true)
                         onToggled: (isChecked) => { root.toggleSteamFriendsSetting("bChatRoomPlaySound", isChecked); }
                     }
                 }
@@ -1892,6 +1973,7 @@ Item {
             }
 
             Row {
+                id: flashModeRow
                 width: parent.width
                 spacing: 8
 
@@ -1910,8 +1992,8 @@ Item {
                         height: 32
                         width: (parent.width - 16) / 3
                         radius: 6
-                        color: (parent.parent.flashMode === modelData.id) ? Theme.accentDim : (flashBtnMouse.containsMouse ? "#0DFFFFFF" : "#05FFFFFF")
-                        border.color: (parent.parent.flashMode === modelData.id) ? Theme.accent : Theme.border
+                        color: (flashModeRow.flashMode === modelData.id) ? Theme.accentDim : (flashBtnMouse.containsMouse ? "#0DFFFFFF" : "#05FFFFFF")
+                        border.color: (flashModeRow.flashMode === modelData.id) ? Theme.accent : Theme.border
                         border.width: 1
 
                         Behavior on color { ColorAnimation { duration: Theme.animFast } }
@@ -1919,7 +2001,7 @@ Item {
 
                         Text {
                             text: modelData.label
-                            color: (parent.parent.parent.flashMode === modelData.id) ? Theme.accent : Theme.textSecondary
+                            color: (flashModeRow.flashMode === modelData.id) ? Theme.accent : Theme.textSecondary
                             font.family: Theme.fontFamily
                             font.pixelSize: 10
                             font.bold: true
@@ -1954,7 +2036,9 @@ Item {
 
             MeguButton {
                 text: qsTr("Back")
-                iconSource: "qrc:/MeguPackOptimizer/src/resources/close.svg"
+                iconRotation: 180
+
+                iconSource: "qrc:/MeguPackOptimizer/src/resources/arrow.svg"
                 width: 80
                 onClicked: steamSettingsDrawer.subPage = "main"
             }
@@ -1983,20 +2067,14 @@ Item {
             // Toggle 1: Scale text and icons
             Rectangle {
                 width: parent.width
-                height: 50
+                height: Math.max(50, steamToggleCol_16.implicitHeight + 12)
                 color: "transparent"
-                Row {
-                    anchors.fill: parent
-                    spacing: 12
-                    MeguSwitch {
-                        checked: optimizerBackend.steamFriendsSettings ? !!optimizerBackend.steamFriendsSettings["bScaleTextAndIcons"] : true
-                        anchors.verticalCenter: parent.verticalCenter
-                        onToggled: (isChecked) => { root.toggleSteamFriendsSetting("bScaleTextAndIcons", isChecked); }
-                    }
-                    Column {
+                    Column { id: steamToggleCol_16;
                         anchors.verticalCenter: parent.verticalCenter
                         spacing: 2
-                        width: parent.width - 50
+                        anchors.left: parent.left
+                        anchors.right: steamToggleSwitch_16.left
+                        anchors.rightMargin: 12
                         Text {
                             text: qsTr("Scale text and icons to match monitor settings (requires restart)")
                             color: Theme.textPrimary
@@ -2013,26 +2091,28 @@ Item {
                             wrapMode: Text.WordWrap
                         }
                     }
-                }
+                    MeguSwitch {
+                    id: steamToggleSwitch_16
+                    anchors.right: parent.right
+
+                        steamStyle: true
+                        checked: optimizerBackend.steamFriendsSettings ? !!optimizerBackend.steamFriendsSettings["bScaleTextAndIcons"] : true
+                        anchors.verticalCenter: parent.verticalCenter
+                        onToggled: (isChecked) => { root.toggleSteamFriendsSetting("bScaleTextAndIcons", isChecked); }
+                    }
             }
 
             // Toggle 2: Run Steam on startup
             Rectangle {
                 width: parent.width
-                height: 50
+                height: Math.max(50, steamToggleCol_17.implicitHeight + 12)
                 color: "transparent"
-                Row {
-                    anchors.fill: parent
-                    spacing: 12
-                    MeguSwitch {
-                        checked: optimizerBackend.steamFriendsSettings ? !!optimizerBackend.steamFriendsSettings["bRunOnStartup"] : true
-                        anchors.verticalCenter: parent.verticalCenter
-                        onToggled: (isChecked) => { root.toggleSteamFriendsSetting("bRunOnStartup", isChecked); }
-                    }
-                    Column {
+                    Column { id: steamToggleCol_17;
                         anchors.verticalCenter: parent.verticalCenter
                         spacing: 2
-                        width: parent.width - 50
+                        anchors.left: parent.left
+                        anchors.right: steamToggleSwitch_17.left
+                        anchors.rightMargin: 12
                         Text {
                             text: qsTr("Run Steam when my computer starts")
                             color: Theme.textPrimary
@@ -2049,26 +2129,28 @@ Item {
                             wrapMode: Text.WordWrap
                         }
                     }
-                }
+                    MeguSwitch {
+                    id: steamToggleSwitch_17
+                    anchors.right: parent.right
+
+                        steamStyle: true
+                        checked: optimizerBackend.steamFriendsSettings ? !!optimizerBackend.steamFriendsSettings["bRunOnStartup"] : true
+                        anchors.verticalCenter: parent.verticalCenter
+                        onToggled: (isChecked) => { root.toggleSteamFriendsSetting("bRunOnStartup", isChecked); }
+                    }
             }
 
             // Toggle 3: Ask which account to use
             Rectangle {
                 width: parent.width
-                height: 50
+                height: Math.max(50, steamToggleCol_18.implicitHeight + 12)
                 color: "transparent"
-                Row {
-                    anchors.fill: parent
-                    spacing: 12
-                    MeguSwitch {
-                        checked: optimizerBackend.steamFriendsSettings ? !!optimizerBackend.steamFriendsSettings["bAskAccountOnStart"] : false
-                        anchors.verticalCenter: parent.verticalCenter
-                        onToggled: (isChecked) => { root.toggleSteamFriendsSetting("bAskAccountOnStart", isChecked); }
-                    }
-                    Column {
+                    Column { id: steamToggleCol_18;
                         anchors.verticalCenter: parent.verticalCenter
                         spacing: 2
-                        width: parent.width - 50
+                        anchors.left: parent.left
+                        anchors.right: steamToggleSwitch_18.left
+                        anchors.rightMargin: 12
                         Text {
                             text: qsTr("Ask which account to use each time Steam starts")
                             color: Theme.textPrimary
@@ -2085,26 +2167,28 @@ Item {
                             wrapMode: Text.WordWrap
                         }
                     }
-                }
+                    MeguSwitch {
+                    id: steamToggleSwitch_18
+                    anchors.right: parent.right
+
+                        steamStyle: true
+                        checked: optimizerBackend.steamFriendsSettings ? !!optimizerBackend.steamFriendsSettings["bAskAccountOnStart"] : false
+                        anchors.verticalCenter: parent.verticalCenter
+                        onToggled: (isChecked) => { root.toggleSteamFriendsSetting("bAskAccountOnStart", isChecked); }
+                    }
             }
 
             // Toggle 4: Start in Big Picture Mode
             Rectangle {
                 width: parent.width
-                height: 50
+                height: Math.max(50, steamToggleCol_19.implicitHeight + 12)
                 color: "transparent"
-                Row {
-                    anchors.fill: parent
-                    spacing: 12
-                    MeguSwitch {
-                        checked: optimizerBackend.steamFriendsSettings ? !!optimizerBackend.steamFriendsSettings["bStartInBigPicture"] : false
-                        anchors.verticalCenter: parent.verticalCenter
-                        onToggled: (isChecked) => { root.toggleSteamFriendsSetting("bStartInBigPicture", isChecked); }
-                    }
-                    Column {
+                    Column { id: steamToggleCol_19;
                         anchors.verticalCenter: parent.verticalCenter
                         spacing: 2
-                        width: parent.width - 50
+                        anchors.left: parent.left
+                        anchors.right: steamToggleSwitch_19.left
+                        anchors.rightMargin: 12
                         Text {
                             text: qsTr("Start Steam in Big Picture Mode")
                             color: Theme.textPrimary
@@ -2121,26 +2205,28 @@ Item {
                             wrapMode: Text.WordWrap
                         }
                     }
-                }
+                    MeguSwitch {
+                    id: steamToggleSwitch_19
+                    anchors.right: parent.right
+
+                        steamStyle: true
+                        checked: optimizerBackend.steamFriendsSettings ? !!optimizerBackend.steamFriendsSettings["bStartInBigPicture"] : false
+                        anchors.verticalCenter: parent.verticalCenter
+                        onToggled: (isChecked) => { root.toggleSteamFriendsSetting("bStartInBigPicture", isChecked); }
+                    }
             }
 
             // Toggle 5: Enable smooth scrolling
             Rectangle {
                 width: parent.width
-                height: 50
+                height: Math.max(50, steamToggleCol_20.implicitHeight + 12)
                 color: "transparent"
-                Row {
-                    anchors.fill: parent
-                    spacing: 12
-                    MeguSwitch {
-                        checked: optimizerBackend.steamFriendsSettings ? !!optimizerBackend.steamFriendsSettings["bSmoothScrolling"] : true
-                        anchors.verticalCenter: parent.verticalCenter
-                        onToggled: (isChecked) => { root.toggleSteamFriendsSetting("bSmoothScrolling", isChecked); }
-                    }
-                    Column {
+                    Column { id: steamToggleCol_20;
                         anchors.verticalCenter: parent.verticalCenter
                         spacing: 2
-                        width: parent.width - 50
+                        anchors.left: parent.left
+                        anchors.right: steamToggleSwitch_20.left
+                        anchors.rightMargin: 12
                         Text {
                             text: qsTr("Enable smooth scrolling in web views (requires restart)")
                             color: Theme.textPrimary
@@ -2157,26 +2243,28 @@ Item {
                             wrapMode: Text.WordWrap
                         }
                     }
-                }
+                    MeguSwitch {
+                    id: steamToggleSwitch_20
+                    anchors.right: parent.right
+
+                        steamStyle: true
+                        checked: optimizerBackend.steamFriendsSettings ? !!optimizerBackend.steamFriendsSettings["bSmoothScrolling"] : true
+                        anchors.verticalCenter: parent.verticalCenter
+                        onToggled: (isChecked) => { root.toggleSteamFriendsSetting("bSmoothScrolling", isChecked); }
+                    }
             }
 
             // Toggle 6: Enable GPU accelerated rendering
             Rectangle {
                 width: parent.width
-                height: 50
+                height: Math.max(50, steamToggleCol_21.implicitHeight + 12)
                 color: "transparent"
-                Row {
-                    anchors.fill: parent
-                    spacing: 12
-                    MeguSwitch {
-                        checked: optimizerBackend.steamFriendsSettings ? !!optimizerBackend.steamFriendsSettings["bGPUAcceleratedRendering"] : true
-                        anchors.verticalCenter: parent.verticalCenter
-                        onToggled: (isChecked) => { root.toggleSteamFriendsSetting("bGPUAcceleratedRendering", isChecked); }
-                    }
-                    Column {
+                    Column { id: steamToggleCol_21;
                         anchors.verticalCenter: parent.verticalCenter
                         spacing: 2
-                        width: parent.width - 50
+                        anchors.left: parent.left
+                        anchors.right: steamToggleSwitch_21.left
+                        anchors.rightMargin: 12
                         Text {
                             text: qsTr("Enable GPU accelerated rendering in web views (requires restart)")
                             color: Theme.textPrimary
@@ -2193,26 +2281,28 @@ Item {
                             wrapMode: Text.WordWrap
                         }
                     }
-                }
+                    MeguSwitch {
+                    id: steamToggleSwitch_21
+                    anchors.right: parent.right
+
+                        steamStyle: true
+                        checked: optimizerBackend.steamFriendsSettings ? !!optimizerBackend.steamFriendsSettings["bGPUAcceleratedRendering"] : true
+                        anchors.verticalCenter: parent.verticalCenter
+                        onToggled: (isChecked) => { root.toggleSteamFriendsSetting("bGPUAcceleratedRendering", isChecked); }
+                    }
             }
 
             // Toggle 7: Enable hardware video decoding
             Rectangle {
                 width: parent.width
-                height: 50
+                height: Math.max(50, steamToggleCol_22.implicitHeight + 12)
                 color: "transparent"
-                Row {
-                    anchors.fill: parent
-                    spacing: 12
-                    MeguSwitch {
-                        checked: optimizerBackend.steamFriendsSettings ? !!optimizerBackend.steamFriendsSettings["bHardwareVideoDecoding"] : true
-                        anchors.verticalCenter: parent.verticalCenter
-                        onToggled: (isChecked) => { root.toggleSteamFriendsSetting("bHardwareVideoDecoding", isChecked); }
-                    }
-                    Column {
+                    Column { id: steamToggleCol_22;
                         anchors.verticalCenter: parent.verticalCenter
                         spacing: 2
-                        width: parent.width - 50
+                        anchors.left: parent.left
+                        anchors.right: steamToggleSwitch_22.left
+                        anchors.rightMargin: 12
                         Text {
                             text: qsTr("Enable hardware video decoding, if supported (requires restart)")
                             color: Theme.textPrimary
@@ -2229,26 +2319,28 @@ Item {
                             wrapMode: Text.WordWrap
                         }
                     }
-                }
+                    MeguSwitch {
+                    id: steamToggleSwitch_22
+                    anchors.right: parent.right
+
+                        steamStyle: true
+                        checked: optimizerBackend.steamFriendsSettings ? !!optimizerBackend.steamFriendsSettings["bHardwareVideoDecoding"] : true
+                        anchors.verticalCenter: parent.verticalCenter
+                        onToggled: (isChecked) => { root.toggleSteamFriendsSetting("bHardwareVideoDecoding", isChecked); }
+                    }
             }
 
             // Toggle 8: Notify me about additions
             Rectangle {
                 width: parent.width
-                height: 50
+                height: Math.max(50, steamToggleCol_23.implicitHeight + 12)
                 color: "transparent"
-                Row {
-                    anchors.fill: parent
-                    spacing: 12
-                    MeguSwitch {
-                        checked: optimizerBackend.steamFriendsSettings ? !!optimizerBackend.steamFriendsSettings["bNotifyGameAdditions"] : true
-                        anchors.verticalCenter: parent.verticalCenter
-                        onToggled: (isChecked) => { root.toggleSteamFriendsSetting("bNotifyGameAdditions", isChecked); }
-                    }
-                    Column {
+                    Column { id: steamToggleCol_23;
                         anchors.verticalCenter: parent.verticalCenter
                         spacing: 2
-                        width: parent.width - 50
+                        anchors.left: parent.left
+                        anchors.right: steamToggleSwitch_23.left
+                        anchors.rightMargin: 12
                         Text {
                             text: qsTr("Notify me about additions or changes to my games, new releases, and upcoming releases")
                             color: Theme.textPrimary
@@ -2265,7 +2357,15 @@ Item {
                             wrapMode: Text.WordWrap
                         }
                     }
-                }
+                    MeguSwitch {
+                    id: steamToggleSwitch_23
+                    anchors.right: parent.right
+
+                        steamStyle: true
+                        checked: optimizerBackend.steamFriendsSettings ? !!optimizerBackend.steamFriendsSettings["bNotifyGameAdditions"] : true
+                        anchors.verticalCenter: parent.verticalCenter
+                        onToggled: (isChecked) => { root.toggleSteamFriendsSetting("bNotifyGameAdditions", isChecked); }
+                    }
             }
         }
     }
@@ -2283,7 +2383,9 @@ Item {
 
             MeguButton {
                 text: qsTr("Back")
-                iconSource: "qrc:/MeguPackOptimizer/src/resources/close.svg"
+                iconRotation: 180
+
+                iconSource: "qrc:/MeguPackOptimizer/src/resources/arrow.svg"
                 width: 80
                 onClicked: steamSettingsDrawer.subPage = "main"
             }
@@ -2321,20 +2423,14 @@ Item {
             // Toggle 1: Enable the Steam Overlay while in-game
             Rectangle {
                 width: parent.width
-                height: 50
+                height: Math.max(50, steamToggleCol_24.implicitHeight + 12)
                 color: "transparent"
-                Row {
-                    anchors.fill: parent
-                    spacing: 12
-                    MeguSwitch {
-                        checked: optimizerBackend.steamOverlayActive
-                        anchors.verticalCenter: parent.verticalCenter
-                        onToggled: (isChecked) => { optimizerBackend.steamOverlayActive = isChecked; }
-                    }
-                    Column {
+                    Column { id: steamToggleCol_24;
                         anchors.verticalCenter: parent.verticalCenter
                         spacing: 2
-                        width: parent.width - 50
+                        anchors.left: parent.left
+                        anchors.right: steamToggleSwitch_24.left
+                        anchors.rightMargin: 12
                         Text {
                             text: qsTr("Enable the Steam Overlay while in-game")
                             color: Theme.textPrimary
@@ -2351,26 +2447,28 @@ Item {
                             wrapMode: Text.WordWrap
                         }
                     }
-                }
+                    MeguSwitch {
+                    id: steamToggleSwitch_24
+                    anchors.right: parent.right
+
+                        steamStyle: true
+                        checked: optimizerBackend.steamOverlayActive
+                        anchors.verticalCenter: parent.verticalCenter
+                        onToggled: (isChecked) => { optimizerBackend.steamOverlayActive = isChecked; }
+                    }
             }
 
             // Toggle 2: Show toolbar as list view
             Rectangle {
                 width: parent.width
-                height: 50
+                height: Math.max(50, steamToggleCol_25.implicitHeight + 12)
                 color: "transparent"
-                Row {
-                    anchors.fill: parent
-                    spacing: 12
-                    MeguSwitch {
-                        checked: optimizerBackend.steamFriendsSettings ? !!optimizerBackend.steamFriendsSettings["bShowOverlayToolbarAsList"] : false
-                        anchors.verticalCenter: parent.verticalCenter
-                        onToggled: (isChecked) => { root.toggleSteamFriendsSetting("bShowOverlayToolbarAsList", isChecked); }
-                    }
-                    Column {
+                    Column { id: steamToggleCol_25;
                         anchors.verticalCenter: parent.verticalCenter
                         spacing: 2
-                        width: parent.width - 50
+                        anchors.left: parent.left
+                        anchors.right: steamToggleSwitch_25.left
+                        anchors.rightMargin: 12
                         Text {
                             text: qsTr("Show toolbar as list view")
                             color: Theme.textPrimary
@@ -2387,26 +2485,28 @@ Item {
                             wrapMode: Text.WordWrap
                         }
                     }
-                }
+                    MeguSwitch {
+                    id: steamToggleSwitch_25
+                    anchors.right: parent.right
+
+                        steamStyle: true
+                        checked: optimizerBackend.steamFriendsSettings ? !!optimizerBackend.steamFriendsSettings["bShowOverlayToolbarAsList"] : false
+                        anchors.verticalCenter: parent.verticalCenter
+                        onToggled: (isChecked) => { root.toggleSteamFriendsSetting("bShowOverlayToolbarAsList", isChecked); }
+                    }
             }
 
             // Toggle 3: Restore my previous browser tabs when starting a game
             Rectangle {
                 width: parent.width
-                height: 50
+                height: Math.max(50, steamToggleCol_26.implicitHeight + 12)
                 color: "transparent"
-                Row {
-                    anchors.fill: parent
-                    spacing: 12
-                    MeguSwitch {
-                        checked: optimizerBackend.steamFriendsSettings ? !!optimizerBackend.steamFriendsSettings["bRestoreOverlayBrowserTabs"] : true
-                        anchors.verticalCenter: parent.verticalCenter
-                        onToggled: (isChecked) => { root.toggleSteamFriendsSetting("bRestoreOverlayBrowserTabs", isChecked); }
-                    }
-                    Column {
+                    Column { id: steamToggleCol_26;
                         anchors.verticalCenter: parent.verticalCenter
                         spacing: 2
-                        width: parent.width - 50
+                        anchors.left: parent.left
+                        anchors.right: steamToggleSwitch_26.left
+                        anchors.rightMargin: 12
                         Text {
                             text: qsTr("Restore my previous browser tabs when starting a game")
                             color: Theme.textPrimary
@@ -2423,26 +2523,28 @@ Item {
                             wrapMode: Text.WordWrap
                         }
                     }
-                }
+                    MeguSwitch {
+                    id: steamToggleSwitch_26
+                    anchors.right: parent.right
+
+                        steamStyle: true
+                        checked: optimizerBackend.steamFriendsSettings ? !!optimizerBackend.steamFriendsSettings["bRestoreOverlayBrowserTabs"] : true
+                        anchors.verticalCenter: parent.verticalCenter
+                        onToggled: (isChecked) => { root.toggleSteamFriendsSetting("bRestoreOverlayBrowserTabs", isChecked); }
+                    }
             }
 
             // Toggle 4: Use the Big Picture Overlay when using a controller
             Rectangle {
                 width: parent.width
-                height: 50
+                height: Math.max(50, steamToggleCol_27.implicitHeight + 12)
                 color: "transparent"
-                Row {
-                    anchors.fill: parent
-                    spacing: 12
-                    MeguSwitch {
-                        checked: optimizerBackend.steamFriendsSettings ? !!optimizerBackend.steamFriendsSettings["bUseBigPictureOverlay"] : false
-                        anchors.verticalCenter: parent.verticalCenter
-                        onToggled: (isChecked) => { root.toggleSteamFriendsSetting("bUseBigPictureOverlay", isChecked); }
-                    }
-                    Column {
+                    Column { id: steamToggleCol_27;
                         anchors.verticalCenter: parent.verticalCenter
                         spacing: 2
-                        width: parent.width - 50
+                        anchors.left: parent.left
+                        anchors.right: steamToggleSwitch_27.left
+                        anchors.rightMargin: 12
                         Text {
                             text: qsTr("Use the Big Picture Overlay when using a controller")
                             color: Theme.textPrimary
@@ -2459,26 +2561,28 @@ Item {
                             wrapMode: Text.WordWrap
                         }
                     }
-                }
+                    MeguSwitch {
+                    id: steamToggleSwitch_27
+                    anchors.right: parent.right
+
+                        steamStyle: true
+                        checked: optimizerBackend.steamFriendsSettings ? !!optimizerBackend.steamFriendsSettings["bUseBigPictureOverlay"] : false
+                        anchors.verticalCenter: parent.verticalCenter
+                        onToggled: (isChecked) => { root.toggleSteamFriendsSetting("bUseBigPictureOverlay", isChecked); }
+                    }
             }
 
             // Toggle 5: Scale Steam Overlay text and icons to match monitor settings
             Rectangle {
                 width: parent.width
-                height: 50
+                height: Math.max(50, steamToggleCol_28.implicitHeight + 12)
                 color: "transparent"
-                Row {
-                    anchors.fill: parent
-                    spacing: 12
-                    MeguSwitch {
-                        checked: optimizerBackend.steamFriendsSettings ? !!optimizerBackend.steamFriendsSettings["bScaleOverlayTextAndIcons"] : true
-                        anchors.verticalCenter: parent.verticalCenter
-                        onToggled: (isChecked) => { root.toggleSteamFriendsSetting("bScaleOverlayTextAndIcons", isChecked); }
-                    }
-                    Column {
+                    Column { id: steamToggleCol_28;
                         anchors.verticalCenter: parent.verticalCenter
                         spacing: 2
-                        width: parent.width - 50
+                        anchors.left: parent.left
+                        anchors.right: steamToggleSwitch_28.left
+                        anchors.rightMargin: 12
                         Text {
                             text: qsTr("Scale Steam Overlay text and icons to match monitor settings")
                             color: Theme.textPrimary
@@ -2495,7 +2599,15 @@ Item {
                             wrapMode: Text.WordWrap
                         }
                     }
-                }
+                    MeguSwitch {
+                    id: steamToggleSwitch_28
+                    anchors.right: parent.right
+
+                        steamStyle: true
+                        checked: optimizerBackend.steamFriendsSettings ? !!optimizerBackend.steamFriendsSettings["bScaleOverlayTextAndIcons"] : true
+                        anchors.verticalCenter: parent.verticalCenter
+                        onToggled: (isChecked) => { root.toggleSteamFriendsSetting("bScaleOverlayTextAndIcons", isChecked); }
+                    }
             }
 
             Rectangle {
@@ -2507,12 +2619,12 @@ Item {
             // Action 1: Delete Web Browser Data
             Rectangle {
                 width: parent.width
-                height: 50
+                height: Math.max(50, steamToggleCol_29.implicitHeight + 12)
                 color: "transparent"
                 Row {
                     anchors.fill: parent
                     spacing: 12
-                    Column {
+                    Column { id: steamToggleCol_29;
                         anchors.verticalCenter: parent.verticalCenter
                         spacing: 2
                         width: parent.width - 110
@@ -2547,12 +2659,12 @@ Item {
             // Action 2: Toolbar Preferences
             Rectangle {
                 width: parent.width
-                height: 50
+                height: Math.max(50, steamToggleCol_30.implicitHeight + 12)
                 color: "transparent"
                 Row {
                     anchors.fill: parent
                     spacing: 12
-                    Column {
+                    Column { id: steamToggleCol_30;
                         anchors.verticalCenter: parent.verticalCenter
                         spacing: 2
                         width: parent.width - 160
@@ -2599,7 +2711,9 @@ Item {
 
             MeguButton {
                 text: qsTr("Back")
-                iconSource: "qrc:/MeguPackOptimizer/src/resources/close.svg"
+                iconRotation: 180
+
+                iconSource: "qrc:/MeguPackOptimizer/src/resources/arrow.svg"
                 width: 80
                 onClicked: steamSettingsDrawer.subPage = "ingame"
             }
@@ -2642,6 +2756,8 @@ Item {
                     anchors.fill: parent
                     spacing: 12
                     MeguSwitch {
+
+                        steamStyle: true
                         checked: true
                         anchors.verticalCenter: parent.verticalCenter
                         enabled: false
@@ -2664,6 +2780,8 @@ Item {
                     anchors.fill: parent
                     spacing: 12
                     MeguSwitch {
+
+                        steamStyle: true
                         checked: true
                         anchors.verticalCenter: parent.verticalCenter
                         enabled: false
@@ -2686,6 +2804,8 @@ Item {
                     anchors.fill: parent
                     spacing: 12
                     MeguSwitch {
+
+                        steamStyle: true
                         checked: false
                         anchors.verticalCenter: parent.verticalCenter
                         enabled: false
@@ -2715,7 +2835,9 @@ Item {
 
             MeguButton {
                 text: qsTr("Back")
-                iconSource: "qrc:/MeguPackOptimizer/src/resources/close.svg"
+                iconRotation: 180
+
+                iconSource: "qrc:/MeguPackOptimizer/src/resources/arrow.svg"
                 width: 80
                 onClicked: steamSettingsDrawer.subPage = "main"
             }
@@ -2744,20 +2866,14 @@ Item {
             // Toggle 1: Reduce Motion
             Rectangle {
                 width: parent.width
-                height: 50
+                height: Math.max(50, steamToggleCol_31.implicitHeight + 12)
                 color: "transparent"
-                Row {
-                    anchors.fill: parent
-                    spacing: 12
-                    MeguSwitch {
-                        checked: optimizerBackend.steamFriendsSettings ? !!optimizerBackend.steamFriendsSettings["bReduceMotion"] : false
-                        anchors.verticalCenter: parent.verticalCenter
-                        onToggled: (isChecked) => { root.toggleSteamFriendsSetting("bReduceMotion", isChecked); }
-                    }
-                    Column {
+                    Column { id: steamToggleCol_31;
                         anchors.verticalCenter: parent.verticalCenter
                         spacing: 2
-                        width: parent.width - 50
+                        anchors.left: parent.left
+                        anchors.right: steamToggleSwitch_31.left
+                        anchors.rightMargin: 12
                         Text {
                             text: qsTr("Reduce Motion")
                             color: Theme.textPrimary
@@ -2774,7 +2890,15 @@ Item {
                             wrapMode: Text.WordWrap
                         }
                     }
-                }
+                    MeguSwitch {
+                    id: steamToggleSwitch_31
+                    anchors.right: parent.right
+
+                        steamStyle: true
+                        checked: optimizerBackend.steamFriendsSettings ? !!optimizerBackend.steamFriendsSettings["bReduceMotion"] : false
+                        anchors.verticalCenter: parent.verticalCenter
+                        onToggled: (isChecked) => { root.toggleSteamFriendsSetting("bReduceMotion", isChecked); }
+                    }
             }
         }
     }
@@ -2794,7 +2918,9 @@ Item {
 
             MeguButton {
                 text: qsTr("Back")
-                iconSource: "qrc:/MeguPackOptimizer/src/resources/close.svg"
+                iconRotation: 180
+
+                iconSource: "qrc:/MeguPackOptimizer/src/resources/arrow.svg"
                 width: 80
                 onClicked: steamSettingsDrawer.subPage = "main"
             }
@@ -3056,7 +3182,9 @@ Item {
 
             MeguButton {
                 text: qsTr("Back")
-                iconSource: "qrc:/MeguPackOptimizer/src/resources/close.svg"
+                iconRotation: 180
+
+                iconSource: "qrc:/MeguPackOptimizer/src/resources/arrow.svg"
                 width: 80
                 onClicked: steamSettingsDrawer.subPage = "main"
             }
@@ -3160,20 +3288,14 @@ Item {
             // Switch 1: Echo cancellation
             Rectangle {
                 width: parent.width
-                height: 50
+                height: Math.max(50, steamToggleCol_32.implicitHeight + 12)
                 color: "transparent"
-                Row {
-                    anchors.fill: parent
-                    spacing: 12
-                    MeguSwitch {
-                        checked: optimizerBackend.steamFriendsSettings ? !!optimizerBackend.steamFriendsSettings["echoCancellation"] : true
-                        anchors.verticalCenter: parent.verticalCenter
-                        onToggled: (isChecked) => { root.toggleSteamFriendsSetting("echoCancellation", isChecked); }
-                    }
-                    Column {
+                    Column { id: steamToggleCol_32;
                         anchors.verticalCenter: parent.verticalCenter
                         spacing: 2
-                        width: parent.width - 50
+                        anchors.left: parent.left
+                        anchors.right: steamToggleSwitch_32.left
+                        anchors.rightMargin: 12
                         Text {
                             text: qsTr("Echo cancellation")
                             color: Theme.textPrimary
@@ -3190,26 +3312,28 @@ Item {
                             wrapMode: Text.WordWrap
                         }
                     }
-                }
+                    MeguSwitch {
+                    id: steamToggleSwitch_32
+                    anchors.right: parent.right
+
+                        steamStyle: true
+                        checked: optimizerBackend.steamFriendsSettings ? !!optimizerBackend.steamFriendsSettings["echoCancellation"] : true
+                        anchors.verticalCenter: parent.verticalCenter
+                        onToggled: (isChecked) => { root.toggleSteamFriendsSetting("echoCancellation", isChecked); }
+                    }
             }
 
             // Switch 2: Noise cancellation
             Rectangle {
                 width: parent.width
-                height: 50
+                height: Math.max(50, steamToggleCol_33.implicitHeight + 12)
                 color: "transparent"
-                Row {
-                    anchors.fill: parent
-                    spacing: 12
-                    MeguSwitch {
-                        checked: optimizerBackend.steamFriendsSettings ? !!optimizerBackend.steamFriendsSettings["noiseCancellation"] : true
-                        anchors.verticalCenter: parent.verticalCenter
-                        onToggled: (isChecked) => { root.toggleSteamFriendsSetting("noiseCancellation", isChecked); }
-                    }
-                    Column {
+                    Column { id: steamToggleCol_33;
                         anchors.verticalCenter: parent.verticalCenter
                         spacing: 2
-                        width: parent.width - 50
+                        anchors.left: parent.left
+                        anchors.right: steamToggleSwitch_33.left
+                        anchors.rightMargin: 12
                         Text {
                             text: qsTr("Noise cancellation")
                             color: Theme.textPrimary
@@ -3226,26 +3350,28 @@ Item {
                             wrapMode: Text.WordWrap
                         }
                     }
-                }
+                    MeguSwitch {
+                    id: steamToggleSwitch_33
+                    anchors.right: parent.right
+
+                        steamStyle: true
+                        checked: optimizerBackend.steamFriendsSettings ? !!optimizerBackend.steamFriendsSettings["noiseCancellation"] : true
+                        anchors.verticalCenter: parent.verticalCenter
+                        onToggled: (isChecked) => { root.toggleSteamFriendsSetting("noiseCancellation", isChecked); }
+                    }
             }
 
             // Switch 3: Automatic volume/gain control
             Rectangle {
                 width: parent.width
-                height: 50
+                height: Math.max(50, steamToggleCol_34.implicitHeight + 12)
                 color: "transparent"
-                Row {
-                    anchors.fill: parent
-                    spacing: 12
-                    MeguSwitch {
-                        checked: optimizerBackend.steamFriendsSettings ? !!optimizerBackend.steamFriendsSettings["autoGainControl"] : true
-                        anchors.verticalCenter: parent.verticalCenter
-                        onToggled: (isChecked) => { root.toggleSteamFriendsSetting("autoGainControl", isChecked); }
-                    }
-                    Column {
+                    Column { id: steamToggleCol_34;
                         anchors.verticalCenter: parent.verticalCenter
                         spacing: 2
-                        width: parent.width - 50
+                        anchors.left: parent.left
+                        anchors.right: steamToggleSwitch_34.left
+                        anchors.rightMargin: 12
                         Text {
                             text: qsTr("Automatic volume/gain control")
                             color: Theme.textPrimary
@@ -3262,7 +3388,15 @@ Item {
                             wrapMode: Text.WordWrap
                         }
                     }
-                }
+                    MeguSwitch {
+                    id: steamToggleSwitch_34
+                    anchors.right: parent.right
+
+                        steamStyle: true
+                        checked: optimizerBackend.steamFriendsSettings ? !!optimizerBackend.steamFriendsSettings["autoGainControl"] : true
+                        anchors.verticalCenter: parent.verticalCenter
+                        onToggled: (isChecked) => { root.toggleSteamFriendsSetting("autoGainControl", isChecked); }
+                    }
             }
 
         }
@@ -3281,7 +3415,9 @@ Item {
 
             MeguButton {
                 text: qsTr("Back")
-                iconSource: "qrc:/MeguPackOptimizer/src/resources/close.svg"
+                iconRotation: 180
+
+                iconSource: "qrc:/MeguPackOptimizer/src/resources/arrow.svg"
                 width: 80
                 onClicked: steamSettingsDrawer.subPage = "main"
             }
@@ -3316,6 +3452,8 @@ Item {
                     anchors.fill: parent
                     spacing: 12
                     MeguSwitch {
+
+                        steamStyle: true
                         checked: optimizerBackend.steamFriendsSettings ? !!optimizerBackend.steamFriendsSettings["EnableStreaming"] : true
                         anchors.verticalCenter: parent.verticalCenter
                         onToggled: (isChecked) => { root.toggleSteamFriendsSetting("EnableStreaming", isChecked); }
@@ -3358,7 +3496,9 @@ Item {
 
             MeguButton {
                 text: qsTr("Back")
-                iconSource: "qrc:/MeguPackOptimizer/src/resources/close.svg"
+                iconRotation: 180
+
+                iconSource: "qrc:/MeguPackOptimizer/src/resources/arrow.svg"
                 width: 80
                 onClicked: steamSettingsDrawer.subPage = "main"
             }
@@ -3393,6 +3533,8 @@ Item {
                     anchors.fill: parent
                     spacing: 12
                     MeguSwitch {
+
+                        steamStyle: true
                         checked: optimizerBackend.steamFriendsSettings ? !!optimizerBackend.steamFriendsSettings["DownloadHighQualityAudio"] : false
                         anchors.verticalCenter: parent.verticalCenter
                         onToggled: (isChecked) => { root.toggleSteamFriendsSetting("DownloadHighQualityAudio", isChecked); }
@@ -3435,7 +3577,9 @@ Item {
 
             MeguButton {
                 text: qsTr("Back")
-                iconSource: "qrc:/MeguPackOptimizer/src/resources/close.svg"
+                iconRotation: 180
+
+                iconSource: "qrc:/MeguPackOptimizer/src/resources/arrow.svg"
                 width: 80
                 onClicked: steamSettingsDrawer.subPage = "main"
             }
@@ -3464,20 +3608,14 @@ Item {
             // Toggle 1: Low Bandwidth Mode
             Rectangle {
                 width: parent.width
-                height: 50
+                height: Math.max(50, steamToggleCol_35.implicitHeight + 12)
                 color: "transparent"
-                Row {
-                    anchors.fill: parent
-                    spacing: 12
-                    MeguSwitch {
-                        checked: optimizerBackend.steamFriendsSettings ? !!optimizerBackend.steamFriendsSettings["bLibraryLowBandwidthMode"] : false
-                        anchors.verticalCenter: parent.verticalCenter
-                        onToggled: (isChecked) => { root.toggleSteamFriendsSetting("bLibraryLowBandwidthMode", isChecked); }
-                    }
-                    Column {
+                    Column { id: steamToggleCol_35;
                         anchors.verticalCenter: parent.verticalCenter
                         spacing: 2
-                        width: parent.width - 50
+                        anchors.left: parent.left
+                        anchors.right: steamToggleSwitch_35.left
+                        anchors.rightMargin: 12
                         Text {
                             text: qsTr("Low Bandwidth Mode")
                             color: Theme.textPrimary
@@ -3494,26 +3632,28 @@ Item {
                             wrapMode: Text.WordWrap
                         }
                     }
-                }
+                    MeguSwitch {
+                    id: steamToggleSwitch_35
+                    anchors.right: parent.right
+
+                        steamStyle: true
+                        checked: optimizerBackend.steamFriendsSettings ? !!optimizerBackend.steamFriendsSettings["library_low_bandwidth_mode"] : false
+                        anchors.verticalCenter: parent.verticalCenter
+                        onToggled: (isChecked) => { root.toggleSteamFriendsSetting("library_low_bandwidth_mode", isChecked); }
+                    }
             }
 
             // Toggle 2: Low Performance Mode
             Rectangle {
                 width: parent.width
-                height: 50
+                height: Math.max(50, steamToggleCol_36.implicitHeight + 12)
                 color: "transparent"
-                Row {
-                    anchors.fill: parent
-                    spacing: 12
-                    MeguSwitch {
-                        checked: optimizerBackend.steamFriendsSettings ? !!optimizerBackend.steamFriendsSettings["bLibraryLowPerformanceMode"] : false
-                        anchors.verticalCenter: parent.verticalCenter
-                        onToggled: (isChecked) => { root.toggleSteamFriendsSetting("bLibraryLowPerformanceMode", isChecked); }
-                    }
-                    Column {
+                    Column { id: steamToggleCol_36;
                         anchors.verticalCenter: parent.verticalCenter
                         spacing: 2
-                        width: parent.width - 50
+                        anchors.left: parent.left
+                        anchors.right: steamToggleSwitch_36.left
+                        anchors.rightMargin: 12
                         Text {
                             text: qsTr("Low Performance Mode")
                             color: Theme.textPrimary
@@ -3530,26 +3670,28 @@ Item {
                             wrapMode: Text.WordWrap
                         }
                     }
-                }
+                    MeguSwitch {
+                    id: steamToggleSwitch_36
+                    anchors.right: parent.right
+
+                        steamStyle: true
+                        checked: optimizerBackend.steamFriendsSettings ? !!optimizerBackend.steamFriendsSettings["library_low_perf_mode"] : false
+                        anchors.verticalCenter: parent.verticalCenter
+                        onToggled: (isChecked) => { root.toggleSteamFriendsSetting("library_low_perf_mode", isChecked); }
+                    }
             }
 
             // Toggle 3: Disable Community Content
             Rectangle {
                 width: parent.width
-                height: 50
+                height: Math.max(50, steamToggleCol_37.implicitHeight + 12)
                 color: "transparent"
-                Row {
-                    anchors.fill: parent
-                    spacing: 12
-                    MeguSwitch {
-                        checked: optimizerBackend.steamFriendsSettings ? !!optimizerBackend.steamFriendsSettings["bLibraryDisableCommunityContent"] : false
-                        anchors.verticalCenter: parent.verticalCenter
-                        onToggled: (isChecked) => { root.toggleSteamFriendsSetting("bLibraryDisableCommunityContent", isChecked); }
-                    }
-                    Column {
+                    Column { id: steamToggleCol_37;
                         anchors.verticalCenter: parent.verticalCenter
                         spacing: 2
-                        width: parent.width - 50
+                        anchors.left: parent.left
+                        anchors.right: steamToggleSwitch_37.left
+                        anchors.rightMargin: 12
                         Text {
                             text: qsTr("Disable Community Content")
                             color: Theme.textPrimary
@@ -3566,26 +3708,28 @@ Item {
                             wrapMode: Text.WordWrap
                         }
                     }
-                }
+                    MeguSwitch {
+                    id: steamToggleSwitch_37
+                    anchors.right: parent.right
+
+                        steamStyle: true
+                        checked: optimizerBackend.steamFriendsSettings ? !!optimizerBackend.steamFriendsSettings["library_disable_community_content"] : false
+                        anchors.verticalCenter: parent.verticalCenter
+                        onToggled: (isChecked) => { root.toggleSteamFriendsSetting("library_disable_community_content", isChecked); }
+                    }
             }
 
             // Toggle 4: Show game icons in the left column
             Rectangle {
                 width: parent.width
-                height: 50
+                height: Math.max(50, steamToggleCol_38.implicitHeight + 12)
                 color: "transparent"
-                Row {
-                    anchors.fill: parent
-                    spacing: 12
-                    MeguSwitch {
-                        checked: optimizerBackend.steamFriendsSettings ? (optimizerBackend.steamFriendsSettings["bLibraryDisplayGameIconsInSidebar"] !== false) : true
-                        anchors.verticalCenter: parent.verticalCenter
-                        onToggled: (isChecked) => { root.toggleSteamFriendsSetting("bLibraryDisplayGameIconsInSidebar", isChecked); }
-                    }
-                    Column {
+                    Column { id: steamToggleCol_38;
                         anchors.verticalCenter: parent.verticalCenter
                         spacing: 2
-                        width: parent.width - 50
+                        anchors.left: parent.left
+                        anchors.right: steamToggleSwitch_38.left
+                        anchors.rightMargin: 12
                         Text {
                             text: qsTr("Show game icons in the left column")
                             color: Theme.textPrimary
@@ -3594,26 +3738,28 @@ Item {
                             font.bold: true
                         }
                     }
-                }
+                    MeguSwitch {
+                    id: steamToggleSwitch_38
+                    anchors.right: parent.right
+
+                        steamStyle: true
+                        checked: optimizerBackend.steamFriendsSettings ? (optimizerBackend.steamFriendsSettings["library_display_icon_in_game_list"] !== false) : true
+                        anchors.verticalCenter: parent.verticalCenter
+                        onToggled: (isChecked) => { root.toggleSteamFriendsSetting("library_display_icon_in_game_list", isChecked); }
+                    }
             }
 
             // Toggle 5: Ready to Play should include streamable games
             Rectangle {
                 width: parent.width
-                height: 50
+                height: Math.max(50, steamToggleCol_39.implicitHeight + 12)
                 color: "transparent"
-                Row {
-                    anchors.fill: parent
-                    spacing: 12
-                    MeguSwitch {
-                        checked: optimizerBackend.steamFriendsSettings ? (optimizerBackend.steamFriendsSettings["bLibraryReadyToPlayIncludesStreaming"] !== false) : true
-                        anchors.verticalCenter: parent.verticalCenter
-                        onToggled: (isChecked) => { root.toggleSteamFriendsSetting("bLibraryReadyToPlayIncludesStreaming", isChecked); }
-                    }
-                    Column {
+                    Column { id: steamToggleCol_39;
                         anchors.verticalCenter: parent.verticalCenter
                         spacing: 2
-                        width: parent.width - 50
+                        anchors.left: parent.left
+                        anchors.right: steamToggleSwitch_39.left
+                        anchors.rightMargin: 12
                         Text {
                             text: qsTr("Ready to Play should include streamable games")
                             color: Theme.textPrimary
@@ -3630,26 +3776,28 @@ Item {
                             wrapMode: Text.WordWrap
                         }
                     }
-                }
+                    MeguSwitch {
+                    id: steamToggleSwitch_39
+                    anchors.right: parent.right
+
+                        steamStyle: true
+                        checked: optimizerBackend.steamFriendsSettings ? (optimizerBackend.steamFriendsSettings["ready_to_play_includes_streaming"] !== false) : true
+                        anchors.verticalCenter: parent.verticalCenter
+                        onToggled: (isChecked) => { root.toggleSteamFriendsSetting("ready_to_play_includes_streaming", isChecked); }
+                    }
             }
 
             // Toggle 6: Show Steam Deck compatibility information in library
             Rectangle {
                 width: parent.width
-                height: 50
+                height: Math.max(50, steamToggleCol_40.implicitHeight + 12)
                 color: "transparent"
-                Row {
-                    anchors.fill: parent
-                    spacing: 12
-                    MeguSwitch {
-                        checked: optimizerBackend.steamFriendsSettings ? !!optimizerBackend.steamFriendsSettings["bLibraryShowSteamDeckCompatibility"] : false
-                        anchors.verticalCenter: parent.verticalCenter
-                        onToggled: (isChecked) => { root.toggleSteamFriendsSetting("bLibraryShowSteamDeckCompatibility", isChecked); }
-                    }
-                    Column {
+                    Column { id: steamToggleCol_40;
                         anchors.verticalCenter: parent.verticalCenter
                         spacing: 2
-                        width: parent.width - 50
+                        anchors.left: parent.left
+                        anchors.right: steamToggleSwitch_40.left
+                        anchors.rightMargin: 12
                         Text {
                             text: qsTr("Show Steam Deck compatibility information in library")
                             color: Theme.textPrimary
@@ -3658,7 +3806,15 @@ Item {
                             font.bold: true
                         }
                     }
-                }
+                    MeguSwitch {
+                    id: steamToggleSwitch_40
+                    anchors.right: parent.right
+
+                        steamStyle: true
+                        checked: optimizerBackend.steamFriendsSettings ? !!optimizerBackend.steamFriendsSettings["show_steam_deck_info"] : false
+                        anchors.verticalCenter: parent.verticalCenter
+                        onToggled: (isChecked) => { root.toggleSteamFriendsSetting("show_steam_deck_info", isChecked); }
+                    }
             }
         }
     }
@@ -3676,7 +3832,9 @@ Item {
 
             MeguButton {
                 text: qsTr("Back")
-                iconSource: "qrc:/MeguPackOptimizer/src/resources/close.svg"
+                iconRotation: 180
+
+                iconSource: "qrc:/MeguPackOptimizer/src/resources/arrow.svg"
                 width: 80
                 onClicked: steamSettingsDrawer.subPage = "main"
             }
@@ -3705,20 +3863,14 @@ Item {
             // Toggle 1: Limit download speed
             Rectangle {
                 width: parent.width
-                height: 50
+                height: Math.max(50, steamToggleCol_41.implicitHeight + 12)
                 color: "transparent"
-                Row {
-                    anchors.fill: parent
-                    spacing: 12
-                    MeguSwitch {
-                        checked: optimizerBackend.steamFriendsSettings ? !!optimizerBackend.steamFriendsSettings["bLimitDownloadSpeed"] : false
-                        anchors.verticalCenter: parent.verticalCenter
-                        onToggled: (isChecked) => { root.toggleSteamFriendsSetting("bLimitDownloadSpeed", isChecked); }
-                    }
-                    Column {
+                    Column { id: steamToggleCol_41;
                         anchors.verticalCenter: parent.verticalCenter
                         spacing: 2
-                        width: parent.width - 50
+                        anchors.left: parent.left
+                        anchors.right: steamToggleSwitch_41.left
+                        anchors.rightMargin: 12
                         Text {
                             text: qsTr("Limit download speed")
                             color: Theme.textPrimary
@@ -3727,26 +3879,28 @@ Item {
                             font.bold: true
                         }
                     }
-                }
+                    MeguSwitch {
+                    id: steamToggleSwitch_41
+                    anchors.right: parent.right
+
+                        steamStyle: true
+                        checked: optimizerBackend.steamFriendsSettings ? !!optimizerBackend.steamFriendsSettings["bLimitDownloadSpeed"] : false
+                        anchors.verticalCenter: parent.verticalCenter
+                        onToggled: (isChecked) => { root.toggleSteamFriendsSetting("bLimitDownloadSpeed", isChecked); }
+                    }
             }
 
             // Toggle 2: Schedule auto-updates
             Rectangle {
                 width: parent.width
-                height: 50
+                height: Math.max(50, steamToggleCol_42.implicitHeight + 12)
                 color: "transparent"
-                Row {
-                    anchors.fill: parent
-                    spacing: 12
-                    MeguSwitch {
-                        checked: optimizerBackend.steamFriendsSettings ? !!optimizerBackend.steamFriendsSettings["bScheduleAutoUpdates"] : false
-                        anchors.verticalCenter: parent.verticalCenter
-                        onToggled: (isChecked) => { root.toggleSteamFriendsSetting("bScheduleAutoUpdates", isChecked); }
-                    }
-                    Column {
+                    Column { id: steamToggleCol_42;
                         anchors.verticalCenter: parent.verticalCenter
                         spacing: 2
-                        width: parent.width - 50
+                        anchors.left: parent.left
+                        anchors.right: steamToggleSwitch_42.left
+                        anchors.rightMargin: 12
                         Text {
                             text: qsTr("Schedule auto-updates")
                             color: Theme.textPrimary
@@ -3755,26 +3909,28 @@ Item {
                             font.bold: true
                         }
                     }
-                }
+                    MeguSwitch {
+                    id: steamToggleSwitch_42
+                    anchors.right: parent.right
+
+                        steamStyle: true
+                        checked: optimizerBackend.steamFriendsSettings ? !!optimizerBackend.steamFriendsSettings["bScheduleAutoUpdates"] : false
+                        anchors.verticalCenter: parent.verticalCenter
+                        onToggled: (isChecked) => { root.toggleSteamFriendsSetting("bScheduleAutoUpdates", isChecked); }
+                    }
             }
 
             // Toggle 3: Allow downloads during gameplay
             Rectangle {
                 width: parent.width
-                height: 50
+                height: Math.max(50, steamToggleCol_43.implicitHeight + 12)
                 color: "transparent"
-                Row {
-                    anchors.fill: parent
-                    spacing: 12
-                    MeguSwitch {
-                        checked: optimizerBackend.steamFriendsSettings ? !!optimizerBackend.steamFriendsSettings["bAllowDownloadsDuringGameplay"] : false
-                        anchors.verticalCenter: parent.verticalCenter
-                        onToggled: (isChecked) => { root.toggleSteamFriendsSetting("bAllowDownloadsDuringGameplay", isChecked); }
-                    }
-                    Column {
+                    Column { id: steamToggleCol_43;
                         anchors.verticalCenter: parent.verticalCenter
                         spacing: 2
-                        width: parent.width - 50
+                        anchors.left: parent.left
+                        anchors.right: steamToggleSwitch_43.left
+                        anchors.rightMargin: 12
                         Text {
                             text: qsTr("Allow downloads during gameplay")
                             color: Theme.textPrimary
@@ -3791,26 +3947,28 @@ Item {
                             wrapMode: Text.WordWrap
                         }
                     }
-                }
+                    MeguSwitch {
+                    id: steamToggleSwitch_43
+                    anchors.right: parent.right
+
+                        steamStyle: true
+                        checked: optimizerBackend.steamFriendsSettings ? !!optimizerBackend.steamFriendsSettings["bAllowDownloadsDuringGameplay"] : false
+                        anchors.verticalCenter: parent.verticalCenter
+                        onToggled: (isChecked) => { root.toggleSteamFriendsSetting("bAllowDownloadsDuringGameplay", isChecked); }
+                    }
             }
 
             // Toggle 4: Throttle downloads while streaming
             Rectangle {
                 width: parent.width
-                height: 50
+                height: Math.max(50, steamToggleCol_44.implicitHeight + 12)
                 color: "transparent"
-                Row {
-                    anchors.fill: parent
-                    spacing: 12
-                    MeguSwitch {
-                        checked: optimizerBackend.steamFriendsSettings ? (optimizerBackend.steamFriendsSettings["bThrottleDownloadsWhileStreaming"] !== false) : true
-                        anchors.verticalCenter: parent.verticalCenter
-                        onToggled: (isChecked) => { root.toggleSteamFriendsSetting("bThrottleDownloadsWhileStreaming", isChecked); }
-                    }
-                    Column {
+                    Column { id: steamToggleCol_44;
                         anchors.verticalCenter: parent.verticalCenter
                         spacing: 2
-                        width: parent.width - 50
+                        anchors.left: parent.left
+                        anchors.right: steamToggleSwitch_44.left
+                        anchors.rightMargin: 12
                         Text {
                             text: qsTr("Throttle downloads while streaming")
                             color: Theme.textPrimary
@@ -3827,26 +3985,28 @@ Item {
                             wrapMode: Text.WordWrap
                         }
                     }
-                }
+                    MeguSwitch {
+                    id: steamToggleSwitch_44
+                    anchors.right: parent.right
+
+                        steamStyle: true
+                        checked: optimizerBackend.steamFriendsSettings ? (optimizerBackend.steamFriendsSettings["bThrottleDownloadsWhileStreaming"] !== false) : true
+                        anchors.verticalCenter: parent.verticalCenter
+                        onToggled: (isChecked) => { root.toggleSteamFriendsSetting("bThrottleDownloadsWhileStreaming", isChecked); }
+                    }
             }
 
             // Toggle 5: Display download rates in bits per second
             Rectangle {
                 width: parent.width
-                height: 50
+                height: Math.max(50, steamToggleCol_45.implicitHeight + 12)
                 color: "transparent"
-                Row {
-                    anchors.fill: parent
-                    spacing: 12
-                    MeguSwitch {
-                        checked: optimizerBackend.steamFriendsSettings ? (optimizerBackend.steamFriendsSettings["bDisplayDownloadRatesInBitsPerSecond"] !== false) : true
-                        anchors.verticalCenter: parent.verticalCenter
-                        onToggled: (isChecked) => { root.toggleSteamFriendsSetting("bDisplayDownloadRatesInBitsPerSecond", isChecked); }
-                    }
-                    Column {
+                    Column { id: steamToggleCol_45;
                         anchors.verticalCenter: parent.verticalCenter
                         spacing: 2
-                        width: parent.width - 50
+                        anchors.left: parent.left
+                        anchors.right: steamToggleSwitch_45.left
+                        anchors.rightMargin: 12
                         Text {
                             text: qsTr("Display download rates in bits per second")
                             color: Theme.textPrimary
@@ -3855,26 +4015,28 @@ Item {
                             font.bold: true
                         }
                     }
-                }
+                    MeguSwitch {
+                    id: steamToggleSwitch_45
+                    anchors.right: parent.right
+
+                        steamStyle: true
+                        checked: optimizerBackend.steamFriendsSettings ? (optimizerBackend.steamFriendsSettings["bDisplayDownloadRatesInBitsPerSecond"] !== false) : true
+                        anchors.verticalCenter: parent.verticalCenter
+                        onToggled: (isChecked) => { root.toggleSteamFriendsSetting("bDisplayDownloadRatesInBitsPerSecond", isChecked); }
+                    }
             }
 
             // Toggle 6: Game File Transfer over Local Network
             Rectangle {
                 width: parent.width
-                height: 50
+                height: Math.max(50, steamToggleCol_46.implicitHeight + 12)
                 color: "transparent"
-                Row {
-                    anchors.fill: parent
-                    spacing: 12
-                    MeguSwitch {
-                        checked: optimizerBackend.steamFriendsSettings ? (optimizerBackend.steamFriendsSettings["bLocalNetworkGameFileTransfer"] !== false) : true
-                        anchors.verticalCenter: parent.verticalCenter
-                        onToggled: (isChecked) => { root.toggleSteamFriendsSetting("bLocalNetworkGameFileTransfer", isChecked); }
-                    }
-                    Column {
+                    Column { id: steamToggleCol_46;
                         anchors.verticalCenter: parent.verticalCenter
                         spacing: 2
-                        width: parent.width - 50
+                        anchors.left: parent.left
+                        anchors.right: steamToggleSwitch_46.left
+                        anchors.rightMargin: 12
                         Text {
                             text: qsTr("Game File Transfer over Local Network")
                             color: Theme.textPrimary
@@ -3891,19 +4053,27 @@ Item {
                             wrapMode: Text.WordWrap
                         }
                     }
-                }
+                    MeguSwitch {
+                    id: steamToggleSwitch_46
+                    anchors.right: parent.right
+
+                        steamStyle: true
+                        checked: optimizerBackend.steamFriendsSettings ? (optimizerBackend.steamFriendsSettings["bLocalNetworkGameFileTransfer"] !== false) : true
+                        anchors.verticalCenter: parent.verticalCenter
+                        onToggled: (isChecked) => { root.toggleSteamFriendsSetting("bLocalNetworkGameFileTransfer", isChecked); }
+                    }
             }
 
             // Clear Download Cache
             Rectangle {
                 width: parent.width
-                height: 50
+                height: Math.max(50, steamToggleCol_47.implicitHeight + 12)
                 color: "transparent"
                 Row {
                     anchors.fill: parent
                     spacing: 12
 
-                    Column {
+                    Column { id: steamToggleCol_47;
                         anchors.verticalCenter: parent.verticalCenter
                         spacing: 2
                         width: parent.width - 120
@@ -3973,20 +4143,14 @@ Item {
             // Toggle 7: Enable Shader Pre-caching
             Rectangle {
                 width: parent.width
-                height: 50
+                height: Math.max(50, steamToggleCol_48.implicitHeight + 12)
                 color: "transparent"
-                Row {
-                    anchors.fill: parent
-                    spacing: 12
-                    MeguSwitch {
-                        checked: optimizerBackend.steamFriendsSettings ? (optimizerBackend.steamFriendsSettings["bEnableShaderPreCaching"] !== false) : true
-                        anchors.verticalCenter: parent.verticalCenter
-                        onToggled: (isChecked) => { root.toggleSteamFriendsSetting("bEnableShaderPreCaching", isChecked); }
-                    }
-                    Column {
+                    Column { id: steamToggleCol_48;
                         anchors.verticalCenter: parent.verticalCenter
                         spacing: 2
-                        width: parent.width - 50
+                        anchors.left: parent.left
+                        anchors.right: steamToggleSwitch_48.left
+                        anchors.rightMargin: 12
                         Text {
                             text: qsTr("Enable Shader Pre-caching")
                             color: Theme.textPrimary
@@ -3995,26 +4159,28 @@ Item {
                             font.bold: true
                         }
                     }
-                }
+                    MeguSwitch {
+                    id: steamToggleSwitch_48
+                    anchors.right: parent.right
+
+                        steamStyle: true
+                        checked: optimizerBackend.steamFriendsSettings ? (optimizerBackend.steamFriendsSettings["bEnableShaderPreCaching"] !== false) : true
+                        anchors.verticalCenter: parent.verticalCenter
+                        onToggled: (isChecked) => { root.toggleSteamFriendsSetting("bEnableShaderPreCaching", isChecked); }
+                    }
             }
 
             // Toggle 8: Allow background processing of Vulkan shaders
             Rectangle {
                 width: parent.width
-                height: 50
+                height: Math.max(50, steamToggleCol_49.implicitHeight + 12)
                 color: "transparent"
-                Row {
-                    anchors.fill: parent
-                    spacing: 12
-                    MeguSwitch {
-                        checked: optimizerBackend.steamFriendsSettings ? !!optimizerBackend.steamFriendsSettings["bAllowBackgroundProcessingOfVulkanShaders"] : false
-                        anchors.verticalCenter: parent.verticalCenter
-                        onToggled: (isChecked) => { root.toggleSteamFriendsSetting("bAllowBackgroundProcessingOfVulkanShaders", isChecked); }
-                    }
-                    Column {
+                    Column { id: steamToggleCol_49;
                         anchors.verticalCenter: parent.verticalCenter
                         spacing: 2
-                        width: parent.width - 50
+                        anchors.left: parent.left
+                        anchors.right: steamToggleSwitch_49.left
+                        anchors.rightMargin: 12
                         Text {
                             text: qsTr("Allow background processing of Vulkan shaders")
                             color: Theme.textPrimary
@@ -4023,7 +4189,15 @@ Item {
                             font.bold: true
                         }
                     }
-                }
+                    MeguSwitch {
+                    id: steamToggleSwitch_49
+                    anchors.right: parent.right
+
+                        steamStyle: true
+                        checked: optimizerBackend.steamFriendsSettings ? !!optimizerBackend.steamFriendsSettings["bAllowBackgroundProcessingOfVulkanShaders"] : false
+                        anchors.verticalCenter: parent.verticalCenter
+                        onToggled: (isChecked) => { root.toggleSteamFriendsSetting("bAllowBackgroundProcessingOfVulkanShaders", isChecked); }
+                    }
             }
         }
     }
@@ -4109,7 +4283,9 @@ Item {
 
             MeguButton {
                 text: qsTr("Back")
-                iconSource: "qrc:/MeguPackOptimizer/src/resources/close.svg"
+                iconRotation: 180
+
+                iconSource: "qrc:/MeguPackOptimizer/src/resources/arrow.svg"
                 width: 80
                 onClicked: steamSettingsDrawer.subPage = "main"
             }

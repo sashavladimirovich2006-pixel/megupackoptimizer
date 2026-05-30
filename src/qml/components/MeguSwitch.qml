@@ -7,6 +7,7 @@ Item {
     property string text: ""
     property bool checked: false
     property bool indeterminate: false
+    property bool steamStyle: false
     
     signal toggled(bool isChecked)
     
@@ -30,12 +31,20 @@ Item {
             anchors.verticalCenter: parent.verticalCenter
             
             color: {
+                if (control.steamStyle) {
+                    return "#10161f";
+                }
                 if (control.checked) return Theme.accent;
                 if (control.indeterminate) return Theme.accentDim;
                 return (Theme.currentTheme === "Белоснежная" || Theme.currentTheme === "Розовая") ? Theme.buttonBg : "#121A26";
             }
-            border.color: (control.checked || control.indeterminate) ? Theme.accent : (mouseArea.containsMouse ? Theme.borderHover : Theme.border)
-            border.width: 1
+            border.color: {
+                if (control.steamStyle) {
+                    return control.checked ? Theme.accent : (mouseArea.containsMouse ? Theme.borderHover : "#3c485c");
+                }
+                return (control.checked || control.indeterminate) ? Theme.accent : (mouseArea.containsMouse ? Theme.borderHover : Theme.border);
+            }
+            border.width: (control.steamStyle && control.checked) ? 2 : 1
             
             Behavior on color { ColorAnimation { duration: Theme.animFast } }
             Behavior on border.color { ColorAnimation { duration: Theme.animFast } }
@@ -47,7 +56,7 @@ Item {
                 color: "transparent"
                 border.color: Theme.accent
                 border.width: 1.5
-                opacity: ((control.checked || control.indeterminate) && mouseArea.containsMouse && control.enabled) ? 0.4 : 0.0
+                opacity: (!control.steamStyle && (control.checked || control.indeterminate) && mouseArea.containsMouse && control.enabled) ? 0.4 : 0.0
                 Behavior on opacity { NumberAnimation { duration: Theme.animFast } }
             }
             
@@ -57,7 +66,14 @@ Item {
                 width: 16
                 height: 16
                 radius: 8
-                color: (control.checked || control.indeterminate) ? Theme.textInverse : Theme.textPrimary
+                color: {
+                    if (control.steamStyle) {
+                        return control.checked ? "#FFFFFF" : "#4b5a6c";
+                    }
+                    return (control.checked || control.indeterminate) ? Theme.textInverse : Theme.textPrimary;
+                }
+                border.color: "transparent"
+                border.width: 0
                 anchors.verticalCenter: parent.verticalCenter
                 
                 // Satisfying scale change when hovered or pressed

@@ -3660,79 +3660,79 @@ Would you like to close Discord now and proceed?</source>
         <location filename="../build/MeguPackOptimizer/src/qml/views/SteamSettingsDrawer.qml" line="65" />
         <location filename="../src/qml/views/SteamSettingsDrawer.qml" line="66" />
         <source>STEAM CONFIGURATION</source>
-        <translation type="unfinished" />
+        <translation>КОНФІГУРАЦІЯ STEAM</translation>
     </message>
     <message>
         <location filename="../build/MeguPackOptimizer/src/qml/views/SteamSettingsDrawer.qml" line="102" />
         <location filename="../src/qml/views/SteamSettingsDrawer.qml" line="103" />
         <source>Friends &amp; Chat</source>
-        <translation type="unfinished" />
+        <translation>Друзі та чат</translation>
     </message>
     <message>
         <location filename="../build/MeguPackOptimizer/src/qml/views/SteamSettingsDrawer.qml" line="109" />
         <location filename="../src/qml/views/SteamSettingsDrawer.qml" line="110" />
         <source>Friends list, avatars, and sign-in preferences</source>
-        <translation type="unfinished" />
+        <translation>Список друзів, аватари та налаштування входу</translation>
     </message>
     <message>
         <location filename="../build/MeguPackOptimizer/src/qml/views/SteamSettingsDrawer.qml" line="158" />
         <location filename="../src/qml/views/SteamSettingsDrawer.qml" line="159" />
         <source>Chat Settings</source>
-        <translation type="unfinished" />
+        <translation>Налаштування чату</translation>
     </message>
     <message>
         <location filename="../build/MeguPackOptimizer/src/qml/views/SteamSettingsDrawer.qml" line="165" />
         <location filename="../src/qml/views/SteamSettingsDrawer.qml" line="166" />
         <source>Media embedding, spellcheck, and text sizes</source>
-        <translation type="unfinished" />
+        <translation>Вбудовування медіа, перевірка орфографії та розміри тексту</translation>
     </message>
     <message>
         <location filename="../build/MeguPackOptimizer/src/qml/views/SteamSettingsDrawer.qml" line="214" />
         <location filename="../src/qml/views/SteamSettingsDrawer.qml" line="215" />
         <source>Notifications</source>
-        <translation type="unfinished" />
+        <translation>Сповіщення</translation>
     </message>
     <message>
         <location filename="../build/MeguPackOptimizer/src/qml/views/SteamSettingsDrawer.qml" line="221" />
         <location filename="../src/qml/views/SteamSettingsDrawer.qml" line="222" />
         <source>Client alerts, sounds, and toast rules</source>
-        <translation type="unfinished" />
+        <translation>Попередження клієнта, звуки та правила спливаючих сповіщень</translation>
     </message>
     <message>
         <location filename="../build/MeguPackOptimizer/src/qml/views/SteamSettingsDrawer.qml" line="326" />
         <location filename="../src/qml/views/SteamSettingsDrawer.qml" line="327" />
         <source>Interface</source>
-        <translation type="unfinished" />
+        <translation>Інтерфейс</translation>
     </message>
     <message>
         <location filename="../build/MeguPackOptimizer/src/qml/views/SteamSettingsDrawer.qml" line="333" />
         <location filename="../src/qml/views/SteamSettingsDrawer.qml" line="334" />
         <source>Scale text, startup location, and GPU accelerated rendering</source>
-        <translation type="unfinished" />
+        <translation>Масштабування тексту, розташування при запуску та прискорення GPU</translation>
     </message>
     <message>
         <location filename="../build/MeguPackOptimizer/src/qml/views/SteamSettingsDrawer.qml" line="382" />
         <location filename="../src/qml/views/SteamSettingsDrawer.qml" line="383" />
         <source>Library</source>
-        <translation type="unfinished" />
+        <translation>Бібліотека</translation>
     </message>
     <message>
         <location filename="../build/MeguPackOptimizer/src/qml/views/SteamSettingsDrawer.qml" line="389" />
         <location filename="../src/qml/views/SteamSettingsDrawer.qml" line="390" />
         <source>Bandwidth, performance, and community options</source>
-        <translation type="unfinished" />
+        <translation>Пропускна здатність, продуктивність та параметри спільноти</translation>
     </message>
     <message>
         <location filename="../build/MeguPackOptimizer/src/qml/views/SteamSettingsDrawer.qml" line="438" />
         <location filename="../src/qml/views/SteamSettingsDrawer.qml" line="439" />
         <source>Downloads</source>
-        <translation type="unfinished" />
+        <translation>Завантаження</translation>
     </message>
     <message>
         <location filename="../build/MeguPackOptimizer/src/qml/views/SteamSettingsDrawer.qml" line="445" />
         <location filename="../src/qml/views/SteamSettingsDrawer.qml" line="446" />
         <source>Speed limits, gameplay download rules, and shader pre-caching</source>
-        <translation type="unfinished" />
+        <translation>Обмеження швидкості, правила завантаження під час гри та кешування шейдерів</translation>
     </message>
     <message>
         <location filename="../build/MeguPackOptimizer/src/qml/views/SteamSettingsDrawer.qml" line="494" />
@@ -3775,7 +3775,7 @@ Would you like to close Discord now and proceed?</source>
         <location filename="../build/MeguPackOptimizer/src/qml/views/SteamSettingsDrawer.qml" line="550" />
         <location filename="../src/qml/views/SteamSettingsDrawer.qml" line="607" />
         <source>FRIENDS &amp; CHAT</source>
-        <translation type="unfinished" />
+        <translation>ДРУЗІ ТА ЧАТ</translation>
     </message>
     <message>
         <location filename="../build/MeguPackOptimizer/src/qml/views/SteamSettingsDrawer.qml" line="588" />
@@ -3787,7 +3787,7 @@ Would you like to close Discord now and proceed?</source>
         <location filename="../build/MeguPackOptimizer/src/qml/views/SteamSettingsDrawer.qml" line="595" />
         <location filename="../src/qml/views/SteamSettingsDrawer.qml" line="652" />
         <source>Decreases processor load during friends list updates in real-time.</source>
-        <translation type="unfinished" />
+        <translation>Зменшує навантаження на процесор під час оновлення списку друзів у реальному часі.</translation>
     </message>
     <message>
         <location filename="../build/MeguPackOptimizer/src/qml/views/SteamSettingsDrawer.qml" line="624" />
@@ -3799,7 +3799,7 @@ Would you like to close Discord now and proceed?</source>
         <location filename="../build/MeguPackOptimizer/src/qml/views/SteamSettingsDrawer.qml" line="631" />
         <location filename="../src/qml/views/SteamSettingsDrawer.qml" line="688" />
         <source>Optimizes friends list processing by disabling real-time dynamic group sorting.</source>
-        <translation type="unfinished" />
+        <translation>Оптимізує обробку списку друзів шляхом вимкнення динамічного сортування груп у реальному часі.</translation>
     </message>
     <message>
         <location filename="../build/MeguPackOptimizer/src/qml/views/SteamSettingsDrawer.qml" line="660" />
@@ -3811,7 +3811,7 @@ Would you like to close Discord now and proceed?</source>
         <location filename="../build/MeguPackOptimizer/src/qml/views/SteamSettingsDrawer.qml" line="667" />
         <location filename="../src/qml/views/SteamSettingsDrawer.qml" line="724" />
         <source>Reduces Steam client memory usage by hiding inactive list items.</source>
-        <translation type="unfinished" />
+        <translation>Зменшує використання пам'яті клієнтом Steam шляхом приховування неактивних елементів списку.</translation>
     </message>
     <message>
         <location filename="../build/MeguPackOptimizer/src/qml/views/SteamSettingsDrawer.qml" line="696" />
@@ -3823,7 +3823,7 @@ Would you like to close Discord now and proceed?</source>
         <location filename="../build/MeguPackOptimizer/src/qml/views/SteamSettingsDrawer.qml" line="703" />
         <location filename="../src/qml/views/SteamSettingsDrawer.qml" line="760" />
         <source>Prevents duplicate rendering of friends list interface elements.</source>
-        <translation type="unfinished" />
+        <translation>Запобігає подвійному рендерингу елементів інтерфейсу списку друзів.</translation>
     </message>
     <message>
         <location filename="../build/MeguPackOptimizer/src/qml/views/SteamSettingsDrawer.qml" line="732" />
@@ -3835,7 +3835,7 @@ Would you like to close Discord now and proceed?</source>
         <location filename="../build/MeguPackOptimizer/src/qml/views/SteamSettingsDrawer.qml" line="739" />
         <location filename="../src/qml/views/SteamSettingsDrawer.qml" line="796" />
         <source>Reduces friends list sorting calculation frequency during user status updates.</source>
-        <translation type="unfinished" />
+        <translation>Зменшує частоту обчислень сортування списку друзів під час оновлення статусів користувачів.</translation>
     </message>
     <message>
         <location filename="../build/MeguPackOptimizer/src/qml/views/SteamSettingsDrawer.qml" line="768" />
@@ -3847,7 +3847,7 @@ Would you like to close Discord now and proceed?</source>
         <location filename="../build/MeguPackOptimizer/src/qml/views/SteamSettingsDrawer.qml" line="775" />
         <location filename="../src/qml/views/SteamSettingsDrawer.qml" line="832" />
         <source>Disabling accelerates Steam client startup and minimizes initial network/CPU overhead.</source>
-        <translation type="unfinished" />
+        <translation>Вимкнення прискорює запуск клієнта Steam та мінімізує початкове навантаження на мережу та процесор.</translation>
     </message>
     <message>
         <location filename="../build/MeguPackOptimizer/src/qml/views/SteamSettingsDrawer.qml" line="804" />
@@ -3859,7 +3859,7 @@ Would you like to close Discord now and proceed?</source>
         <location filename="../build/MeguPackOptimizer/src/qml/views/SteamSettingsDrawer.qml" line="811" />
         <location filename="../src/qml/views/SteamSettingsDrawer.qml" line="868" />
         <source>Disabling completely stops animated avatars in CEF, heavily reducing GPU load and in-game input latency.</source>
-        <translation type="unfinished" />
+        <translation>Вимкнення повністю зупиняє анімовані аватари в CEF, значно знижуючи навантаження на GPU та затримку введення в іграх.</translation>
     </message>
     <message>
         <location filename="../build/MeguPackOptimizer/src/qml/views/SteamSettingsDrawer.qml" line="840" />
@@ -3871,7 +3871,7 @@ Would you like to close Discord now and proceed?</source>
         <location filename="../build/MeguPackOptimizer/src/qml/views/SteamSettingsDrawer.qml" line="847" />
         <location filename="../src/qml/views/SteamSettingsDrawer.qml" line="904" />
         <source>Minimizes Steam client rendering surface area to save GPU resources.</source>
-        <translation type="unfinished" />
+        <translation>Мінімізує площу рендерингу клієнта Steam для економії ресурсів GPU.</translation>
     </message>
     <message>
         <location filename="../build/MeguPackOptimizer/src/qml/views/SteamSettingsDrawer.qml" line="876" />
@@ -3883,13 +3883,13 @@ Would you like to close Discord now and proceed?</source>
         <location filename="../build/MeguPackOptimizer/src/qml/views/SteamSettingsDrawer.qml" line="883" />
         <location filename="../src/qml/views/SteamSettingsDrawer.qml" line="940" />
         <source>Shrinks avatar sizes in the top section, minimizing layout computation overhead.</source>
-        <translation type="unfinished" />
+        <translation>Зменшує розміри аватарів у верхній секції, мінімізуючи навантаження на розрахунок макета.</translation>
     </message>
     <message>
         <location filename="../build/MeguPackOptimizer/src/qml/views/SteamSettingsDrawer.qml" line="915" />
         <location filename="../src/qml/views/SteamSettingsDrawer.qml" line="972" />
         <source>CHAT SETTINGS</source>
-        <translation type="unfinished" />
+        <translation>НАЛАШТУВАННЯ ЧАТУ</translation>
     </message>
     <message>
         <location filename="../build/MeguPackOptimizer/src/qml/views/SteamSettingsDrawer.qml" line="953" />
@@ -3901,7 +3901,7 @@ Would you like to close Discord now and proceed?</source>
         <location filename="../build/MeguPackOptimizer/src/qml/views/SteamSettingsDrawer.qml" line="960" />
         <location filename="../src/qml/views/SteamSettingsDrawer.qml" line="1017" />
         <source>Merges chat and friends list windows, preventing creation of extra CEF rendering processes.</source>
-        <translation type="unfinished" />
+        <translation>Об'єднує вікна чату та списку друзів, запобігаючи створенню додаткових процесів рендерингу CEF.</translation>
     </message>
     <message>
         <location filename="../build/MeguPackOptimizer/src/qml/views/SteamSettingsDrawer.qml" line="989" />
@@ -3913,7 +3913,7 @@ Would you like to close Discord now and proceed?</source>
         <location filename="../build/MeguPackOptimizer/src/qml/views/SteamSettingsDrawer.qml" line="996" />
         <location filename="../src/qml/views/SteamSettingsDrawer.qml" line="1053" />
         <source>Disabling prevents resource-intensive new OS windows from launching for every participant.</source>
-        <translation type="unfinished" />
+        <translation>Вимкнення запобігає відкриттю нових ресурсомістких вікон ОС для кожного учасника.</translation>
     </message>
     <message>
         <location filename="../build/MeguPackOptimizer/src/qml/views/SteamSettingsDrawer.qml" line="1025" />
@@ -3925,7 +3925,7 @@ Would you like to close Discord now and proceed?</source>
         <location filename="../build/MeguPackOptimizer/src/qml/views/SteamSettingsDrawer.qml" line="1032" />
         <location filename="../src/qml/views/SteamSettingsDrawer.qml" line="1089" />
         <source>Enabling stops automatic media loading and rendering, preventing sudden in-game frame drops.</source>
-        <translation type="unfinished" />
+        <translation>Увімкнення зупиняє автоматичне завантаження та рендеринг медіа, запобігаючи раптовим просіданням FPS в іграх.</translation>
     </message>
     <message>
         <location filename="../build/MeguPackOptimizer/src/qml/views/SteamSettingsDrawer.qml" line="1061" />
@@ -3937,7 +3937,7 @@ Would you like to close Discord now and proceed?</source>
         <location filename="../build/MeguPackOptimizer/src/qml/views/SteamSettingsDrawer.qml" line="1068" />
         <location filename="../src/qml/views/SteamSettingsDrawer.qml" line="1125" />
         <source>Disabling reduces disk reads/writes during Steam startup by skipping previous session restorations.</source>
-        <translation type="unfinished" />
+        <translation>Вимкнення зменшує операції читання/запису на диску під час запуску Steam шляхом пропуску відновлення попередніх сесій.</translation>
     </message>
     <message>
         <location filename="../build/MeguPackOptimizer/src/qml/views/SteamSettingsDrawer.qml" line="1097" />
@@ -3949,7 +3949,7 @@ Would you like to close Discord now and proceed?</source>
         <location filename="../build/MeguPackOptimizer/src/qml/views/SteamSettingsDrawer.qml" line="1104" />
         <location filename="../src/qml/views/SteamSettingsDrawer.qml" line="1161" />
         <source>Disables the real-time spellcheck engine, reducing CPU usage during text typing.</source>
-        <translation type="unfinished" />
+        <translation>Вимикає рушій перевірки орфографії в реальному часі, зменшуючи використання процесора при введенні тексту.</translation>
     </message>
     <message>
         <location filename="../build/MeguPackOptimizer/src/qml/views/SteamSettingsDrawer.qml" line="1133" />
@@ -3961,19 +3961,19 @@ Would you like to close Discord now and proceed?</source>
         <location filename="../build/MeguPackOptimizer/src/qml/views/SteamSettingsDrawer.qml" line="1140" />
         <location filename="../src/qml/views/SteamSettingsDrawer.qml" line="1197" />
         <source>Stops CPU/GPU-intensive graphical effects (emoji showers, confetti) inside chat rooms.</source>
-        <translation type="unfinished" />
+        <translation>Зупиняє інтенсивні графічні ефекти для процесора/відеокарти (зливи емодзі, конфеті) в чат-кімнатах.</translation>
     </message>
     <message>
         <location filename="../build/MeguPackOptimizer/src/qml/views/SteamSettingsDrawer.qml" line="1164" />
         <location filename="../src/qml/views/SteamSettingsDrawer.qml" line="1221" />
         <source>Chat Font Size</source>
-        <translation type="unfinished" />
+        <translation>Розмір шрифту чату</translation>
     </message>
     <message>
         <location filename="../build/MeguPackOptimizer/src/qml/views/SteamSettingsDrawer.qml" line="1179" />
         <location filename="../src/qml/views/SteamSettingsDrawer.qml" line="1236" />
         <source>Small</source>
-        <translation type="unfinished" />
+        <translation>Малий</translation>
     </message>
     <message>
         <location filename="../build/MeguPackOptimizer/src/qml/views/SteamSettingsDrawer.qml" line="1180" />
@@ -3985,19 +3985,19 @@ Would you like to close Discord now and proceed?</source>
         <location filename="../build/MeguPackOptimizer/src/qml/views/SteamSettingsDrawer.qml" line="1181" />
         <location filename="../src/qml/views/SteamSettingsDrawer.qml" line="1238" />
         <source>Large</source>
-        <translation type="unfinished" />
+        <translation>Великий</translation>
     </message>
     <message>
         <location filename="../build/MeguPackOptimizer/src/qml/views/SteamSettingsDrawer.qml" line="1217" />
         <location filename="../src/qml/views/SteamSettingsDrawer.qml" line="1274" />
         <source>Sets the font size of the Steam chat interface.</source>
-        <translation type="unfinished" />
+        <translation>Встановлює розмір шрифту інтерфейсу чату Steam.</translation>
     </message>
     <message>
         <location filename="../build/MeguPackOptimizer/src/qml/views/SteamSettingsDrawer.qml" line="1245" />
         <location filename="../src/qml/views/SteamSettingsDrawer.qml" line="1302" />
         <source>NOTIFICATIONS</source>
-        <translation type="unfinished" />
+        <translation>СПОВІЩЕННЯ</translation>
     </message>
     <message>
         <location filename="../build/MeguPackOptimizer/src/qml/views/SteamSettingsDrawer.qml" line="1279" />
@@ -4009,97 +4009,97 @@ Would you like to close Discord now and proceed?</source>
         <location filename="../build/MeguPackOptimizer/src/qml/views/SteamSettingsDrawer.qml" line="1286" />
         <location filename="../src/qml/views/SteamSettingsDrawer.qml" line="1343" />
         <source>Enables or disables standard sound notifications inside the Steam client interface.</source>
-        <translation type="unfinished" />
+        <translation>Увімкнення або вимкнення стандартних звукових сповіщень в інтерфейсі клієнта Steam.</translation>
     </message>
     <message>
         <location filename="../build/MeguPackOptimizer/src/qml/views/SteamSettingsDrawer.qml" line="1303" />
         <location filename="../src/qml/views/SteamSettingsDrawer.qml" line="1360" />
         <source>CLIENT &amp; FRIEND EVENTS</source>
-        <translation type="unfinished" />
+        <translation>ПОДІЇ КЛІЄНТА ТА ДРУЗІВ</translation>
     </message>
     <message>
         <location filename="../build/MeguPackOptimizer/src/qml/views/SteamSettingsDrawer.qml" line="1314" />
         <location filename="../src/qml/views/SteamSettingsDrawer.qml" line="1371" />
         <source>TOAST</source>
-        <translation type="unfinished" />
+        <translation>СПОВІЩЕННЯ</translation>
     </message>
     <message>
         <location filename="../build/MeguPackOptimizer/src/qml/views/SteamSettingsDrawer.qml" line="1325" />
         <location filename="../src/qml/views/SteamSettingsDrawer.qml" line="1382" />
         <source>SOUND</source>
-        <translation type="unfinished" />
+        <translation>ЗВУК</translation>
     </message>
     <message>
         <location filename="../build/MeguPackOptimizer/src/qml/views/SteamSettingsDrawer.qml" line="1348" />
         <location filename="../src/qml/views/SteamSettingsDrawer.qml" line="1405" />
         <source>When I unlock an achievement</source>
-        <translation type="unfinished" />
+        <translation>Коли я розблоковую досягнення</translation>
     </message>
     <message>
         <location filename="../build/MeguPackOptimizer/src/qml/views/SteamSettingsDrawer.qml" line="1383" />
         <location filename="../src/qml/views/SteamSettingsDrawer.qml" line="1440" />
         <source>When I connect a controller</source>
-        <translation type="unfinished" />
+        <translation>Коли я підключаю контролер</translation>
     </message>
     <message>
         <location filename="../build/MeguPackOptimizer/src/qml/views/SteamSettingsDrawer.qml" line="1418" />
         <location filename="../src/qml/views/SteamSettingsDrawer.qml" line="1475" />
         <source>When a controller's battery is low</source>
-        <translation type="unfinished" />
+        <translation>Коли батарея контролера розряджена</translation>
     </message>
     <message>
         <location filename="../build/MeguPackOptimizer/src/qml/views/SteamSettingsDrawer.qml" line="1453" />
         <location filename="../src/qml/views/SteamSettingsDrawer.qml" line="1510" />
         <source>When a friend joins a game</source>
-        <translation type="unfinished" />
+        <translation>Коли друг приєднується до гри</translation>
     </message>
     <message>
         <location filename="../build/MeguPackOptimizer/src/qml/views/SteamSettingsDrawer.qml" line="1488" />
         <location filename="../src/qml/views/SteamSettingsDrawer.qml" line="1545" />
         <source>When a friend comes online</source>
-        <translation type="unfinished" />
+        <translation>Коли друг входить в мережу</translation>
     </message>
     <message>
         <location filename="../build/MeguPackOptimizer/src/qml/views/SteamSettingsDrawer.qml" line="1523" />
         <location filename="../src/qml/views/SteamSettingsDrawer.qml" line="1580" />
         <source>When I receive a direct chat message</source>
-        <translation type="unfinished" />
+        <translation>Коли я отримую пряме повідомлення в чаті</translation>
     </message>
     <message>
         <location filename="../build/MeguPackOptimizer/src/qml/views/SteamSettingsDrawer.qml" line="1558" />
         <location filename="../src/qml/views/SteamSettingsDrawer.qml" line="1615" />
         <source>When I receive a chat room notification</source>
-        <translation type="unfinished" />
+        <translation>Коли я отримую сповіщення чат-кімнати</translation>
     </message>
     <message>
         <location filename="../build/MeguPackOptimizer/src/qml/views/SteamSettingsDrawer.qml" line="1599" />
         <location filename="../src/qml/views/SteamSettingsDrawer.qml" line="1656" />
         <source>Flash window when receive chat message:</source>
-        <translation type="unfinished" />
+        <translation>Миготіння вікна при отриманні повідомлення в чаті:</translation>
     </message>
     <message>
         <location filename="../build/MeguPackOptimizer/src/qml/views/SteamSettingsDrawer.qml" line="1614" />
         <location filename="../src/qml/views/SteamSettingsDrawer.qml" line="1671" />
         <source>Always</source>
-        <translation type="unfinished" />
+        <translation>Завжди</translation>
     </message>
     <message>
         <location filename="../build/MeguPackOptimizer/src/qml/views/SteamSettingsDrawer.qml" line="1615" />
         <location filename="../src/qml/views/SteamSettingsDrawer.qml" line="1672" />
         <source>Only when minimized</source>
-        <translation type="unfinished" />
+        <translation>Тільки коли згорнуто</translation>
     </message>
     <message>
         <location filename="../build/MeguPackOptimizer/src/qml/views/SteamSettingsDrawer.qml" line="1616" />
         <location filename="../src/qml/views/SteamSettingsDrawer.qml" line="1673" />
         <source>Never</source>
-        <translation type="unfinished" />
+        <translation>Ніколи</translation>
     </message>
     <message>
         <location filename="../build/MeguPackOptimizer/src/qml/views/SteamSettingsDrawer.qml" line="1672" />
         <location filename="../src/qml/views/SteamSettingsDrawer.qml" line="1729" />
         <source>INTERFACE</source>
-        <translation type="unfinished" />
+        <translation>ІНТЕРФЕЙС</translation>
     </message>
     <message>
         <location filename="../build/MeguPackOptimizer/src/qml/views/SteamSettingsDrawer.qml" line="1710" />
@@ -4111,7 +4111,7 @@ Would you like to close Discord now and proceed?</source>
         <location filename="../build/MeguPackOptimizer/src/qml/views/SteamSettingsDrawer.qml" line="1717" />
         <location filename="../src/qml/views/SteamSettingsDrawer.qml" line="1774" />
         <source>Scales Steam interface to monitor DPI settings automatically.</source>
-        <translation type="unfinished" />
+        <translation>Автоматично масштабує інтерфейс Steam відповідно до налаштувань DPI монітора.</translation>
     </message>
     <message>
         <location filename="../build/MeguPackOptimizer/src/qml/views/SteamSettingsDrawer.qml" line="1746" />
@@ -4123,7 +4123,7 @@ Would you like to close Discord now and proceed?</source>
         <location filename="../build/MeguPackOptimizer/src/qml/views/SteamSettingsDrawer.qml" line="1753" />
         <location filename="../src/qml/views/SteamSettingsDrawer.qml" line="1810" />
         <source>Launches Steam automatically during system logon.</source>
-        <translation type="unfinished" />
+        <translation>Автоматично запускає Steam під час входу в систему.</translation>
     </message>
     <message>
         <location filename="../build/MeguPackOptimizer/src/qml/views/SteamSettingsDrawer.qml" line="1782" />
@@ -4135,7 +4135,7 @@ Would you like to close Discord now and proceed?</source>
         <location filename="../build/MeguPackOptimizer/src/qml/views/SteamSettingsDrawer.qml" line="1789" />
         <location filename="../src/qml/views/SteamSettingsDrawer.qml" line="1846" />
         <source>Prompts the account selector window on every Steam login.</source>
-        <translation type="unfinished" />
+        <translation>Показує вікно вибору акаунта при кожному вході в Steam.</translation>
     </message>
     <message>
         <location filename="../build/MeguPackOptimizer/src/qml/views/SteamSettingsDrawer.qml" line="1818" />
@@ -4147,7 +4147,7 @@ Would you like to close Discord now and proceed?</source>
         <location filename="../build/MeguPackOptimizer/src/qml/views/SteamSettingsDrawer.qml" line="1825" />
         <location filename="../src/qml/views/SteamSettingsDrawer.qml" line="1882" />
         <source>Launches Steam directly in the gamepad-friendly Big Picture Mode interface.</source>
-        <translation type="unfinished" />
+        <translation>Запускає Steam безпосередньо в інтерфейсі Big Picture, зручному для геймпадів.</translation>
     </message>
     <message>
         <location filename="../build/MeguPackOptimizer/src/qml/views/SteamSettingsDrawer.qml" line="1854" />
@@ -4159,7 +4159,7 @@ Would you like to close Discord now and proceed?</source>
         <location filename="../build/MeguPackOptimizer/src/qml/views/SteamSettingsDrawer.qml" line="1861" />
         <location filename="../src/qml/views/SteamSettingsDrawer.qml" line="1918" />
         <source>Enables kinetic smooth scrolling transitions in Store and Community pages.</source>
-        <translation type="unfinished" />
+        <translation>Увімкнення кінетичного плавного прокручування на сторінках магазину та спільноти.</translation>
     </message>
     <message>
         <location filename="../build/MeguPackOptimizer/src/qml/views/SteamSettingsDrawer.qml" line="1890" />
@@ -4171,7 +4171,7 @@ Would you like to close Discord now and proceed?</source>
         <location filename="../build/MeguPackOptimizer/src/qml/views/SteamSettingsDrawer.qml" line="1897" />
         <location filename="../src/qml/views/SteamSettingsDrawer.qml" line="1954" />
         <source>Leverages graphics card processor resources to render Steam UI elements faster.</source>
-        <translation type="unfinished" />
+        <translation>Використовує ресурси відеокарти для швидшого рендерингу елементів інтерфейсу Steam.</translation>
     </message>
     <message>
         <location filename="../build/MeguPackOptimizer/src/qml/views/SteamSettingsDrawer.qml" line="1926" />
@@ -4183,7 +4183,7 @@ Would you like to close Discord now and proceed?</source>
         <location filename="../build/MeguPackOptimizer/src/qml/views/SteamSettingsDrawer.qml" line="1933" />
         <location filename="../src/qml/views/SteamSettingsDrawer.qml" line="1990" />
         <source>Uses dedicated hardware video decoder units on the GPU for storefront media players.</source>
-        <translation type="unfinished" />
+        <translation>Використовує виділені апаратні декодери на GPU для медіаплеєрів магазину.</translation>
     </message>
     <message>
         <location filename="../build/MeguPackOptimizer/src/qml/views/SteamSettingsDrawer.qml" line="1962" />
@@ -4195,7 +4195,7 @@ Would you like to close Discord now and proceed?</source>
         <location filename="../build/MeguPackOptimizer/src/qml/views/SteamSettingsDrawer.qml" line="1969" />
         <location filename="../src/qml/views/SteamSettingsDrawer.qml" line="2026" />
         <source>Enables storefront marketing and service notifications in the client.</source>
-        <translation type="unfinished" />
+        <translation>Увімкнення маркетингових та сервісних сповіщень магазину в клієнті.</translation>
     </message>
     <message>
         <location filename="../build/MeguPackOptimizer/src/qml/views/SteamSettingsDrawer.qml" line="2433" />
@@ -4371,7 +4371,7 @@ Would you like to close Discord now and proceed?</source>
         <location filename="../build/MeguPackOptimizer/src/qml/views/SteamSettingsDrawer.qml" line="3150" />
         <location filename="../src/qml/views/SteamSettingsDrawer.qml" line="3284" />
         <source>Local Disk</source>
-        <translation type="unfinished" />
+        <translation>Локальний диск</translation>
     </message>
     <message>
         <location filename="../build/MeguPackOptimizer/src/qml/views/SteamSettingsDrawer.qml" line="3236" />
@@ -4453,7 +4453,7 @@ Would you like to close Discord now and proceed?</source>
         <location filename="../build/MeguPackOptimizer/src/qml/views/SteamSettingsDrawer.qml" line="3628" />
         <location filename="../src/qml/views/SteamSettingsDrawer.qml" line="3762" />
         <source>This will clear your local download cache and restart Steam. You will need to login to Steam again. Do you wish to continue?</source>
-        <translation type="unfinished" />
+        <translation>Це очистить ваш локальний кеш завантажень і перезапустить Steam. Вам потрібно буде знову увійти в Steam. Бажаєте продовжити?</translation>
     </message>
     <message>
         <location filename="../build/MeguPackOptimizer/src/qml/views/SteamSettingsDrawer.qml" line="3643" />
@@ -4461,7 +4461,7 @@ Would you like to close Discord now and proceed?</source>
         <location filename="../src/qml/views/SteamSettingsDrawer.qml" line="3777" />
         <location filename="../src/qml/views/SteamSettingsDrawer.qml" line="3898" />
         <source>Confirm</source>
-        <translation type="unfinished" />
+        <translation>Підтвердити</translation>
     </message>
     <message>
         <location filename="../build/MeguPackOptimizer/src/qml/views/SteamSettingsDrawer.qml" line="3654" />

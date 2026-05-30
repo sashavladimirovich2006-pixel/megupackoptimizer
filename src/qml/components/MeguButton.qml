@@ -11,6 +11,7 @@ Item {
     property bool flat: false
     property bool hasDropdown: false
     property bool dropdownOpen: false
+    property real iconRotation: 0
     
     signal clicked()
     signal dropdownClicked()
@@ -105,6 +106,7 @@ Item {
                 height: 14
                 visible: control.iconSource !== ""
                 anchors.verticalCenter: parent.verticalCenter
+                rotation: control.iconRotation
                 
                 Image {
                     id: btnIcon
