@@ -818,6 +818,69 @@ namespace {
     }
 #endif
 
+    quint64 decodeVarint(const QByteArray &data, int &idx) {
+        quint64 val = 0;
+        int shift = 0;
+        while (idx < data.length()) {
+            quint8 b = data.at(idx);
+            idx++;
+            val |= (quint64(b & 0x7f) << shift);
+            shift += 7;
+            if (!(b & 0x80)) {
+                break;
+            }
+        }
+        return val;
+    }
+
+    QByteArray encodeVarint(quint64 val) {
+        QByteArray out;
+        while (true) {
+            quint8 b = val & 0x7f;
+            val >>= 7;
+            if (val > 0) {
+                out.append(b | 0x80);
+            } else {
+                out.append(b);
+                break;
+            }
+        }
+        return out;
+    }
+
+    QString updateCommunityPreferencesHex(const QString &oldHex, bool val) {
+        QByteArray data = QByteArray::fromHex(oldHex.toUtf8());
+        QMap<int, quint64> fields;
+        int idx = 0;
+        while (idx < data.length()) {
+            quint64 key = decodeVarint(data, idx);
+            int fieldNumber = key >> 3;
+            int wireType = key & 7;
+            if (wireType == 0) {
+                quint64 value = decodeVarint(data, idx);
+                fields[fieldNumber] = value;
+            } else {
+                fields[3] = QDateTime::currentSecsSinceEpoch() + 3600;
+                fields[4] = val ? 1 : 0;
+                fields[5] = 1;
+                fields[6] = 1;
+                fields[7] = 0;
+                break;
+            }
+        }
+
+        fields[3] = QDateTime::currentSecsSinceEpoch() + 3600;
+        fields[4] = val ? 1 : 0;
+
+        QByteArray out;
+        for (auto it = fields.constBegin(); it != fields.constEnd(); ++it) {
+            quint64 key = (it.key() << 3) | 0;
+            out.append(encodeVarint(key));
+            out.append(encodeVarint(it.value()));
+        }
+        return QString::fromUtf8(out.toHex());
+    }
+
 } // namespace
 
 
@@ -1397,6 +1460,7 @@ bool Optimizer::updateVdfFriendsSettings(const QString &filePath, const QString 
         bool val = settings.value("bAppendNicknamesToNames").toBool();
         
         // A. Update friends block
+        // 1. Update CachedCommunityPreferences JSON
         QString commFriendsJson = getVdfFriendsSetting(filePath, "CachedCommunityPreferences");
         QJsonObject commFriendsObj;
         if (!commFriendsJson.isEmpty()) {
@@ -1414,6 +1478,11 @@ bool Optimizer::updateVdfFriendsSettings(const QString &filePath, const QString 
         escapedFriends.replace(QLatin1String("\\"), QLatin1String("\\\\"));
         escapedFriends.replace(QLatin1String("\""), QLatin1String("\\\""));
         updateVdfFriendsSetting(filePath, "CachedCommunityPreferences", escapedFriends);
+
+        // 2. Update communitypreferences binary hex (protobuf representation)
+        QString oldHex = getVdfFriendsSetting(filePath, "communitypreferences");
+        QString newHex = updateCommunityPreferencesHex(oldHex, val);
+        updateVdfFriendsSetting(filePath, "communitypreferences", newHex);
 
         // B. Update WebStorage block
         QString commWSJson = getVdfBlockSetting(filePath, "WebStorage", "CachedCommunityPreferences");
