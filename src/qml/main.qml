@@ -35,6 +35,12 @@ ApplicationWindow {
     property bool steamIsRunning: false
     property string steamActiveUserId: ""
 
+    onVisibilityChanged: {
+        if (visibility !== Window.Maximized) {
+            headerDragArea.isRestoring = false;
+        }
+    }
+
     Timer {
         id: globalSteamRunningTimer
         interval: 1000
@@ -62,22 +68,36 @@ ApplicationWindow {
 
         // Custom drag handler to move window when dragging empty areas of header
         MouseArea {
+            id: headerDragArea
             anchors.fill: parent
+            
+            property bool isRestoring: false
+            
             onPositionChanged: (mouse) => {
                 if (window.visibility === Window.Maximized) {
-                    var screenX = mouse.x
-                    var screenY = mouse.y
-                    window.showNormal()
-                    window.x = screenX - window.width / 2
-                    window.y = screenY - 20
+                    if (isRestoring) return;
+                    isRestoring = true;
+                    
+                    var screenX = mouse.x;
+                    var screenY = mouse.y;
+                    
+                    window.showNormal();
+                    window.x = screenX - window.width / 2;
+                    window.y = screenY - 20;
+                    
+                    Qt.callLater(() => {
+                        window.startSystemMove();
+                        isRestoring = false;
+                    });
+                } else if (!isRestoring) {
+                    window.startSystemMove();
                 }
-                window.startSystemMove()
             }
             onDoubleClicked: {
                 if (window.visibility === Window.Maximized) {
-                    window.showNormal()
+                    window.showNormal();
                 } else {
-                    window.showMaximized()
+                    window.showMaximized();
                 }
             }
         }
