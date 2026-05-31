@@ -1466,207 +1466,286 @@ Item {
                                 color: Theme.border
                             }
 
-                            // Steam Overlay for CS2 Toggle
+                            // Steam Not Running Warning Card for CS2
                             Rectangle {
                                 width: parent.width
-                                height: 52
-                                radius: 6
-                                color: cs2OverlayMouseRow.containsMouse ? Theme.buttonBgHover : "transparent"
-                                border.color: cs2OverlayCheckedState ? Qt.rgba(Theme.accent.r, Theme.accent.g, Theme.accent.b, 0.3) : (cs2OverlayMouseRow.containsMouse ? Theme.borderHover : "transparent")
+                                height: warningColumn.implicitHeight + 24
+                                radius: Theme.radiusNormal
+                                color: Qt.rgba(Theme.accent.r, Theme.accent.g, Theme.accent.b, 0.05)
+                                border.color: Theme.accent
                                 border.width: 1
-                                opacity: optimizerBackend.steamInstalled ? 1.0 : 0.5
-                                enabled: optimizerBackend.steamInstalled
-                                Behavior on opacity { NumberAnimation { duration: Theme.animNormal } }
-                                
-                                property bool cs2OverlayCheckedState: optimizerBackend.cs2OverlayActive
+                                visible: !window.steamIsRunning
 
-                                Row {
+                                Column {
+                                    id: warningColumn
                                     anchors.fill: parent
-                                    anchors.leftMargin: 12
-                                    anchors.rightMargin: 12
+                                    anchors.margins: 12
                                     spacing: 12
 
-                                    MeguSwitch {
-                                        id: cs2OverlaySwitch
-                                        steamStyle: true
-                                        checked: parent.parent.cs2OverlayCheckedState
-                                        anchors.verticalCenter: parent.verticalCenter
-                                        onToggled: (isChecked) => {
-                                            optimizerBackend.cs2OverlayActive = isChecked;
-                                        }
-                                    }
+                                    Row {
+                                        spacing: 12
+                                        width: parent.width
 
-                                    Column {
-                                        anchors.verticalCenter: parent.verticalCenter
-                                        spacing: 2
-                                        width: parent.width - cs2OverlaySwitch.width - 12
-
-                                        Row {
-                                            spacing: 8
+                                        Rectangle {
+                                            width: 32
+                                            height: 32
+                                            radius: 6
+                                            color: Qt.rgba(Theme.accent.r, Theme.accent.g, Theme.accent.b, 0.15)
+                                            anchors.verticalCenter: parent.verticalCenter
                                             Text {
-                                                text: qsTr("Steam Overlay for Counter-Strike 2")
-                                                color: parent.parent.parent.parent.cs2OverlayCheckedState ? Theme.accent : Theme.textPrimary
+                                                text: "⚠️"
+                                                font.pixelSize: 16
+                                                anchors.centerIn: parent
+                                            }
+                                        }
+
+                                        Column {
+                                            spacing: 2
+                                            width: parent.width - 32 - 12 - 16
+                                            anchors.verticalCenter: parent.verticalCenter
+
+                                            Text {
+                                                text: qsTr("Steam is not running")
+                                                color: Theme.textPrimary
                                                 font.family: Theme.fontFamily
-                                                font.pixelSize: 12
+                                                font.pixelSize: 13
                                                 font.bold: true
-                                                anchors.verticalCenter: parent.verticalCenter
                                             }
-                                            Rectangle {
-                                                visible: optimizerBackend.cs2OverlayActive !== optimizerBackend.originalCs2OverlayActive
-                                                height: 14
-                                                width: cs2OverlayStagedText.contentWidth + 8
-                                                radius: 3
-                                                color: Qt.rgba(Theme.success.r, Theme.success.g, Theme.success.b, 0.15)
-                                                border.color: Theme.success
-                                                border.width: 1
-                                                anchors.verticalCenter: parent.verticalCenter
-                                                Text {
-                                                    id: cs2OverlayStagedText
-                                                    text: qsTr("Selected for application")
-                                                    color: Theme.success
-                                                    font.family: Theme.fontFamily
-                                                    font.pixelSize: 7
-                                                    font.bold: true
-                                                    anchors.centerIn: parent
-                                                }
-                                            }
-                                        }
 
-                                        Text {
-                                            text: qsTr("Toggle the Steam Overlay exclusively for Counter-Strike 2.")
-                                            color: Theme.textSecondary
-                                            font.family: Theme.fontFamily
-                                            font.pixelSize: 10
-                                            elide: Text.ElideRight
-                                            width: parent.width
+                                            Text {
+                                                text: qsTr("To configure and optimize Counter-Strike 2, please launch the Steam client first.")
+                                                color: Theme.textSecondary
+                                                font.family: Theme.fontFamily
+                                                font.pixelSize: 10
+                                                width: parent.width
+                                                wrapMode: Text.Wrap
+                                            }
                                         }
                                     }
-                                }
 
-                                MouseArea {
-                                    id: cs2OverlayMouseRow
-                                    anchors.fill: parent
-                                    hoverEnabled: true
-                                    cursorShape: Qt.PointingHandCursor
-                                    onClicked: {
-                                        optimizerBackend.cs2OverlayActive = !optimizerBackend.cs2OverlayActive;
+                                    MeguButton {
+                                        text: qsTr("Launch Steam")
+                                        accented: true
+                                        anchors.horizontalCenter: parent.horizontalCenter
+                                        width: 140
+                                        height: 28
+                                        onClicked: {
+                                            optimizerBackend.launchSteam();
+                                            window.steamIsRunning = true;
+                                        }
                                     }
                                 }
                             }
 
-                            Text {
-                                text: qsTr("Launch Options (Click name to toggle, will apply on 'Optimize')")
-                                color: Theme.yellowAccent
-                                font.family: Theme.fontFamily
-                                font.pixelSize: 11
-                                font.bold: true
-                            }
-
-                            // Repeater of launch options
                             Column {
                                 width: parent.width
-                                spacing: 8
-                                
-                                Repeater {
-                                    model: ListModel {
-                                        id: launchOptionsModel
-                                        Component.onCompleted: {
-                                            append({ name: "-allow_third_party_software", desc: qsTr("Allows third-party software (OBS, overlays, etc.) to hook into the game.") })
-                                            append({ name: "-noreflex", desc: qsTr("Disables NVIDIA Reflex, useful if you experience stutters with it.") })
-                                            append({ name: "-noaafonts", desc: qsTr("Disables anti-aliasing for screen fonts, slightly improving text rendering performance.") })
-                                            append({ name: "-language English", desc: qsTr("Forces the game language to English.") })
-                                            append({ name: "+fps_max 0", desc: qsTr("Removes the frame rate cap for maximum FPS.") })
-                                            append({ name: "-freq 170", desc: qsTr("Forces the monitor refresh rate to 170Hz (adjust to your monitor).") })
-                                            append({ name: "-nojoy", desc: qsTr("Disables joystick initialization, freeing up memory and reducing startup time.") })
-                                            append({ name: "-high", desc: qsTr("Launches the game in high CPU priority mode.") })
-                                            append({ name: "-fullscreen", desc: qsTr("Forces the game to start in fullscreen mode.") })
-                                            append({ name: "-forcenovsync", desc: qsTr("Forces V-Sync to be disabled to minimize input lag.") })
-                                            append({ name: "-softparticlesdefaultoff", desc: qsTr("Disables soft blending for particles, improving performance near smoke.") })
-                                            append({ name: "+r_dynamic 0", desc: qsTr("Disables dynamic lighting, removing FPS drops during gunfights.") })
-                                            append({ name: "+cl_interp 0", desc: qsTr("Sets interpolation to minimum, making network hit registration faster.") })
-                                            append({ name: "+cl_hideserverip", desc: qsTr("Hides the server IP address in console and status to prevent DDoS.") })
-                                            append({ name: "+mat_queue_mode 2", desc: qsTr("Forces multi-threaded material queue mode for multi-core processors.") })
+                                spacing: 12
+                                enabled: window.steamIsRunning
+                                opacity: window.steamIsRunning ? 1.0 : 0.4
+                                Behavior on opacity { NumberAnimation { duration: Theme.animNormal } }
+
+                                // Steam Overlay for CS2 Toggle
+                                Rectangle {
+                                    width: parent.width
+                                    height: 52
+                                    radius: 6
+                                    color: cs2OverlayMouseRow.containsMouse ? Theme.buttonBgHover : "transparent"
+                                    border.color: cs2OverlayCheckedState ? Qt.rgba(Theme.accent.r, Theme.accent.g, Theme.accent.b, 0.3) : (cs2OverlayMouseRow.containsMouse ? Theme.borderHover : "transparent")
+                                    border.width: 1
+                                    opacity: optimizerBackend.steamInstalled ? 1.0 : 0.5
+                                    enabled: optimizerBackend.steamInstalled
+                                    Behavior on opacity { NumberAnimation { duration: Theme.animNormal } }
+                                    
+                                    property bool cs2OverlayCheckedState: optimizerBackend.cs2OverlayActive
+
+                                    Row {
+                                        anchors.fill: parent
+                                        anchors.leftMargin: 12
+                                        anchors.rightMargin: 12
+                                        spacing: 12
+
+                                        MeguSwitch {
+                                            id: cs2OverlaySwitch
+                                            steamStyle: true
+                                            checked: parent.parent.cs2OverlayCheckedState
+                                            anchors.verticalCenter: parent.verticalCenter
+                                            onToggled: (isChecked) => {
+                                                optimizerBackend.cs2OverlayActive = isChecked;
+                                            }
+                                        }
+
+                                        Column {
+                                            anchors.verticalCenter: parent.verticalCenter
+                                            spacing: 2
+                                            width: parent.width - cs2OverlaySwitch.width - 12
+
+                                            Row {
+                                                spacing: 8
+                                                Text {
+                                                    text: qsTr("Steam Overlay for Counter-Strike 2")
+                                                    color: parent.parent.parent.parent.cs2OverlayCheckedState ? Theme.accent : Theme.textPrimary
+                                                    font.family: Theme.fontFamily
+                                                    font.pixelSize: 12
+                                                    font.bold: true
+                                                    anchors.verticalCenter: parent.verticalCenter
+                                                }
+                                                Rectangle {
+                                                    visible: optimizerBackend.cs2OverlayActive !== optimizerBackend.originalCs2OverlayActive
+                                                    height: 14
+                                                    width: cs2OverlayStagedText.contentWidth + 8
+                                                    radius: 3
+                                                    color: Qt.rgba(Theme.success.r, Theme.success.g, Theme.success.b, 0.15)
+                                                    border.color: Theme.success
+                                                    border.width: 1
+                                                    anchors.verticalCenter: parent.verticalCenter
+                                                    Text {
+                                                        id: cs2OverlayStagedText
+                                                        text: qsTr("Selected for application")
+                                                        color: Theme.success
+                                                        font.family: Theme.fontFamily
+                                                        font.pixelSize: 7
+                                                        font.bold: true
+                                                        anchors.centerIn: parent
+                                                    }
+                                                }
+                                            }
+
+                                            Text {
+                                                text: qsTr("Toggle the Steam Overlay exclusively for Counter-Strike 2.")
+                                                color: Theme.textSecondary
+                                                font.family: Theme.fontFamily
+                                                font.pixelSize: 10
+                                                elide: Text.ElideRight
+                                                width: parent.width
+                                            }
                                         }
                                     }
 
-                                    delegate: Rectangle {
-                                        width: parent.width
-                                        height: 52
-                                        radius: 6
-                                        color: mouseRow.containsMouse ? Theme.buttonBgHover : "transparent"
-                                        border.color: checkedState ? Qt.rgba(Theme.accent.r, Theme.accent.g, Theme.accent.b, 0.3) : (mouseRow.containsMouse ? Theme.borderHover : "transparent")
-                                        border.width: 1
-                                        
-                                        property bool checkedState: {
-                                            var optMap = optimizerBackend.cs2LaunchOptions;
-                                            return optMap && optMap[model.name] === true;
+                                    MouseArea {
+                                        id: cs2OverlayMouseRow
+                                        anchors.fill: parent
+                                        hoverEnabled: true
+                                        cursorShape: Qt.PointingHandCursor
+                                        onClicked: {
+                                            optimizerBackend.cs2OverlayActive = !optimizerBackend.cs2OverlayActive;
+                                        }
+                                    }
+                                }
+
+                                Text {
+                                    text: qsTr("Launch Options (Click name to toggle, will apply on 'Optimize')")
+                                    color: Theme.yellowAccent
+                                    font.family: Theme.fontFamily
+                                    font.pixelSize: 11
+                                    font.bold: true
+                                }
+
+                                // Repeater of launch options
+                                Column {
+                                    width: parent.width
+                                    spacing: 8
+                                    
+                                    Repeater {
+                                        model: ListModel {
+                                            id: launchOptionsModel
+                                            Component.onCompleted: {
+                                                append({ name: "-allow_third_party_software", desc: qsTr("Allows third-party software (OBS, overlays, etc.) to hook into the game.") })
+                                                append({ name: "-noreflex", desc: qsTr("Disables NVIDIA Reflex, useful if you experience stutters with it.") })
+                                                append({ name: "-noaafonts", desc: qsTr("Disables anti-aliasing for screen fonts, slightly improving text rendering performance.") })
+                                                append({ name: "-language English", desc: qsTr("Forces the game language to English.") })
+                                                append({ name: "+fps_max 0", desc: qsTr("Removes the frame rate cap for maximum FPS.") })
+                                                append({ name: "-freq 170", desc: qsTr("Forces the monitor refresh rate to 170Hz (adjust to your monitor).") })
+                                                append({ name: "-nojoy", desc: qsTr("Disables joystick initialization, freeing up memory and reducing startup time.") })
+                                                append({ name: "-high", desc: qsTr("Launches the game in high CPU priority mode.") })
+                                                append({ name: "-fullscreen", desc: qsTr("Forces the game to start in fullscreen mode.") })
+                                                append({ name: "-forcenovsync", desc: qsTr("Forces V-Sync to be disabled to minimize input lag.") })
+                                                append({ name: "-softparticlesdefaultoff", desc: qsTr("Disables soft blending for particles, improving performance near smoke.") })
+                                                append({ name: "+r_dynamic 0", desc: qsTr("Disables dynamic lighting, removing FPS drops during gunfights.") })
+                                                append({ name: "+cl_interp 0", desc: qsTr("Sets interpolation to minimum, making network hit registration faster.") })
+                                                append({ name: "+cl_hideserverip", desc: qsTr("Hides the server IP address in console and status to prevent DDoS.") })
+                                                append({ name: "+mat_queue_mode 2", desc: qsTr("Forces multi-threaded material queue mode for multi-core processors.") })
+                                            }
                                         }
 
-                                        Row {
-                                            anchors.fill: parent
-                                            anchors.leftMargin: 12
-                                            anchors.rightMargin: 12
-                                            spacing: 12
+                                        delegate: Rectangle {
+                                            width: parent.width
+                                            height: 52
+                                            radius: 6
+                                            color: mouseRow.containsMouse ? Theme.buttonBgHover : "transparent"
+                                            border.color: checkedState ? Qt.rgba(Theme.accent.r, Theme.accent.g, Theme.accent.b, 0.3) : (mouseRow.containsMouse ? Theme.borderHover : "transparent")
+                                            border.width: 1
+                                            
+                                            property bool checkedState: {
+                                                var optMap = optimizerBackend.cs2LaunchOptions;
+                                                return optMap && optMap[model.name] === true;
+                                            }
 
-                                            MeguSwitch {
-                                                id: optSwitch
-                                                steamStyle: true
-                                                checked: parent.parent.checkedState
-                                                anchors.verticalCenter: parent.verticalCenter
-                                                onToggled: (isChecked) => {
+                                            Row {
+                                                anchors.fill: parent
+                                                anchors.leftMargin: 12
+                                                anchors.rightMargin: 12
+                                                spacing: 12
+
+                                                MeguSwitch {
+                                                    id: optSwitch
+                                                    steamStyle: true
+                                                    checked: parent.parent.checkedState
+                                                    anchors.verticalCenter: parent.verticalCenter
+                                                    onToggled: (isChecked) => {
+                                                        var current = optimizerBackend.cs2LaunchOptions;
+                                                        if (current && current[model.name] !== isChecked) {
+                                                            var optMap = {};
+                                                            var keys = Object.keys(current);
+                                                            for (var i = 0; i < keys.length; i++) {
+                                                                optMap[keys[i]] = current[keys[i]];
+                                                            }
+                                                            optMap[model.name] = isChecked;
+                                                            optimizerBackend.cs2LaunchOptions = optMap;
+                                                        }
+                                                    }
+                                                }
+
+                                                Column {
+                                                    anchors.verticalCenter: parent.verticalCenter
+                                                    spacing: 2
+                                                    width: parent.width - optSwitch.width - 12
+
+                                                    Text {
+                                                        text: model.name
+                                                        color: parent.parent.parent.checkedState ? Theme.accent : Theme.textPrimary
+                                                        font.family: Theme.fontFamily
+                                                        font.pixelSize: 12
+                                                        font.bold: true
+                                                    }
+
+                                                    Text {
+                                                        text: model.desc
+                                                        color: Theme.textSecondary
+                                                        font.family: Theme.fontFamily
+                                                        font.pixelSize: 10
+                                                        elide: Text.ElideRight
+                                                        width: parent.width
+                                                    }
+                                                }
+                                            }
+
+                                            MouseArea {
+                                                id: mouseRow
+                                                anchors.fill: parent
+                                                hoverEnabled: true
+                                                cursorShape: Qt.PointingHandCursor
+                                                onClicked: {
                                                     var current = optimizerBackend.cs2LaunchOptions;
-                                                    if (current && current[model.name] !== isChecked) {
+                                                    if (current) {
+                                                        var cur = current[model.name] === true;
                                                         var optMap = {};
                                                         var keys = Object.keys(current);
                                                         for (var i = 0; i < keys.length; i++) {
                                                             optMap[keys[i]] = current[keys[i]];
                                                         }
-                                                        optMap[model.name] = isChecked;
+                                                        optMap[model.name] = !cur;
                                                         optimizerBackend.cs2LaunchOptions = optMap;
                                                     }
-                                                }
-                                            }
-
-                                            Column {
-                                                anchors.verticalCenter: parent.verticalCenter
-                                                spacing: 2
-                                                width: parent.width - optSwitch.width - 12
-
-                                                Text {
-                                                    text: model.name
-                                                    color: parent.parent.parent.checkedState ? Theme.accent : Theme.textPrimary
-                                                    font.family: Theme.fontFamily
-                                                    font.pixelSize: 12
-                                                    font.bold: true
-                                                }
-
-                                                Text {
-                                                    text: model.desc
-                                                    color: Theme.textSecondary
-                                                    font.family: Theme.fontFamily
-                                                    font.pixelSize: 10
-                                                    elide: Text.ElideRight
-                                                    width: parent.width
-                                                }
-                                            }
-                                        }
-
-                                        MouseArea {
-                                            id: mouseRow
-                                            anchors.fill: parent
-                                            hoverEnabled: true
-                                            cursorShape: Qt.PointingHandCursor
-                                            onClicked: {
-                                                var current = optimizerBackend.cs2LaunchOptions;
-                                                if (current) {
-                                                    var cur = current[model.name] === true;
-                                                    var optMap = {};
-                                                    var keys = Object.keys(current);
-                                                    for (var i = 0; i < keys.length; i++) {
-                                                        optMap[keys[i]] = current[keys[i]];
-                                                    }
-                                                    optMap[model.name] = !cur;
-                                                    optimizerBackend.cs2LaunchOptions = optMap;
                                                 }
                                             }
                                         }
