@@ -934,44 +934,6 @@ Item {
             width: parent.width
             spacing: 16
 
-            // Toggle 1
-            Rectangle {
-                width: parent.width
-                height: Math.max(50, steamToggleCol_0.implicitHeight + 12)
-                color: "transparent"
-                    Column { id: steamToggleCol_0;
-                        anchors.verticalCenter: parent.verticalCenter
-                        spacing: 2
-                        anchors.left: parent.left
-                        anchors.right: steamToggleSwitch_0.left
-                        anchors.rightMargin: 12
-                        Text {
-                            text: qsTr("Append nicknames to friends' names")
-                            color: Theme.textPrimary
-                            font.family: Theme.fontFamily
-                            font.pixelSize: 12
-                            font.bold: true
-                        }
-                        Text {
-                            text: qsTr("Decreases processor load during friends list updates in real-time.")
-                            color: Theme.textSecondary
-                            font.family: Theme.fontFamily
-                            font.pixelSize: 10
-                            width: parent.width
-                            wrapMode: Text.WordWrap
-                        }
-                    }
-                    MeguSwitch {
-                    id: steamToggleSwitch_0
-                    anchors.right: parent.right
-
-                        steamStyle: true
-                        checked: optimizerBackend.steamFriendsSettings ? !!optimizerBackend.steamFriendsSettings["bAppendNicknamesToNames"] : false
-                        anchors.verticalCenter: parent.verticalCenter
-                        onToggled: (isChecked) => { root.toggleSteamFriendsSetting("bAppendNicknamesToNames", isChecked); }
-                    }
-            }
-
             // Toggle 2
             Rectangle {
                 width: parent.width
@@ -2516,44 +2478,6 @@ Item {
                     }
             }
 
-            // Toggle 2: Show toolbar as list view
-            Rectangle {
-                width: parent.width
-                height: Math.max(50, steamToggleCol_25.implicitHeight + 12)
-                color: "transparent"
-                    Column { id: steamToggleCol_25;
-                        anchors.verticalCenter: parent.verticalCenter
-                        spacing: 2
-                        anchors.left: parent.left
-                        anchors.right: steamToggleSwitch_25.left
-                        anchors.rightMargin: 12
-                        Text {
-                            text: qsTr("Show toolbar as list view")
-                            color: Theme.textPrimary
-                            font.family: Theme.fontFamily
-                            font.pixelSize: 12
-                            font.bold: true
-                        }
-                        Text {
-                            text: qsTr("Displays overlay buttons in a list instead of icons.")
-                            color: Theme.textSecondary
-                            font.family: Theme.fontFamily
-                            font.pixelSize: 10
-                            width: parent.width
-                            wrapMode: Text.WordWrap
-                        }
-                    }
-                    MeguSwitch {
-                    id: steamToggleSwitch_25
-                    anchors.right: parent.right
-
-                        steamStyle: true
-                        checked: optimizerBackend.steamFriendsSettings ? !!optimizerBackend.steamFriendsSettings["bShowOverlayToolbarAsList"] : false
-                        anchors.verticalCenter: parent.verticalCenter
-                        onToggled: (isChecked) => { root.toggleSteamFriendsSetting("bShowOverlayToolbarAsList", isChecked); }
-                    }
-            }
-
             // Toggle 3: Restore my previous browser tabs when starting a game
             Rectangle {
                 width: parent.width
@@ -2589,44 +2513,6 @@ Item {
                         checked: optimizerBackend.steamFriendsSettings ? !!optimizerBackend.steamFriendsSettings["bRestoreOverlayBrowserTabs"] : true
                         anchors.verticalCenter: parent.verticalCenter
                         onToggled: (isChecked) => { root.toggleSteamFriendsSetting("bRestoreOverlayBrowserTabs", isChecked); }
-                    }
-            }
-
-            // Toggle 4: Use the Big Picture Overlay when using a controller
-            Rectangle {
-                width: parent.width
-                height: Math.max(50, steamToggleCol_27.implicitHeight + 12)
-                color: "transparent"
-                    Column { id: steamToggleCol_27;
-                        anchors.verticalCenter: parent.verticalCenter
-                        spacing: 2
-                        anchors.left: parent.left
-                        anchors.right: steamToggleSwitch_27.left
-                        anchors.rightMargin: 12
-                        Text {
-                            text: qsTr("Use the Big Picture Overlay when using a controller")
-                            color: Theme.textPrimary
-                            font.family: Theme.fontFamily
-                            font.pixelSize: 12
-                            font.bold: true
-                        }
-                        Text {
-                            text: qsTr("Optimizes the overlay UI for controller and gamepad navigation.")
-                            color: Theme.textSecondary
-                            font.family: Theme.fontFamily
-                            font.pixelSize: 10
-                            width: parent.width
-                            wrapMode: Text.WordWrap
-                        }
-                    }
-                    MeguSwitch {
-                    id: steamToggleSwitch_27
-                    anchors.right: parent.right
-
-                        steamStyle: true
-                        checked: optimizerBackend.steamFriendsSettings ? !!optimizerBackend.steamFriendsSettings["bUseBigPictureOverlay"] : false
-                        anchors.verticalCenter: parent.verticalCenter
-                        onToggled: (isChecked) => { root.toggleSteamFriendsSetting("bUseBigPictureOverlay", isChecked); }
                     }
             }
 
