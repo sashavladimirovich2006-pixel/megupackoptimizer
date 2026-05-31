@@ -5160,81 +5160,104 @@ Item {
                         return height;
                     }
 
-                    // 1. Indexing Options Content
-                                        IndexingDrawer {
+                    IndexingDrawer {
                         id: indexingDrawer
                         visible: root.activeDrawer === "indexing"
+                        width: visible ? parent.width : 800
+                        height: visible ? implicitHeight : 0
                     }
 
                     // 2. Xbox Options Content
-                                        XboxDrawer {
+                    XboxDrawer {
                         id: xboxDrawer
                         visible: root.activeDrawer === "xbox"
+                        width: visible ? parent.width : 800
+                        height: visible ? implicitHeight : 0
                     }
 
                     // 3. MPO Options Content
-                                        MpoDrawer {
+                    MpoDrawer {
                         id: mpoDrawer
                         visible: root.activeDrawer === "mpo"
+                        width: visible ? parent.width : 800
+                        height: visible ? implicitHeight : 0
                     }
 
                     // 4. Printer Options Content
-                                        PrinterDrawer {
+                    PrinterDrawer {
                         id: printerDrawer
                         visible: root.activeDrawer === "printer"
+                        width: visible ? parent.width : 800
+                        height: visible ? implicitHeight : 0
                     }
 
                     // 5. Notifications Options Content
-                                        NotificationsDrawer {
+                    NotificationsDrawer {
                         id: notificationsDrawer
                         visible: root.activeDrawer === "notifications"
+                        width: visible ? parent.width : 800
+                        height: visible ? implicitHeight : 0
                     }
 
                     // 6. Power Plan Options Content
-                                        PowerDrawer {
+                    PowerDrawer {
                         id: powerDrawer
                         visible: root.activeDrawer === "power"
+                        width: visible ? parent.width : 800
+                        height: visible ? implicitHeight : 0
                     }
 
                     // 7. Windows Defender Options Content
-                                        DefenderDrawer {
+                    DefenderDrawer {
                         id: defenderDrawer
                         visible: root.activeDrawer === "defender"
+                        width: visible ? parent.width : 800
+                        height: visible ? implicitHeight : 0
                     }
 
                     // 8. USB Power Saving Options Content
-                                        UsbDrawer {
+                    UsbDrawer {
                         id: usbDrawer
                         visible: root.activeDrawer === "usb"
+                        width: visible ? parent.width : 800
+                        height: visible ? implicitHeight : 0
                     }
 
                     // Telemetry Options Content
-                                        TelemetryDrawer {
+                    TelemetryDrawer {
                         id: telemetryDrawer
                         visible: root.activeDrawer === "telemetry"
+                        width: visible ? parent.width : 800
+                        height: visible ? implicitHeight : 0
                     }
 
                     // 9. Windows Update Options Content
-                                        WindowsUpdateDrawer {
+                    WindowsUpdateDrawer {
                         id: windowsUpdateDrawer
                         visible: root.activeDrawer === "windowsUpdate"
+                        width: visible ? parent.width : 800
+                        height: visible ? implicitHeight : 0
                     }
 
-                // 10. Visual Effects Options Content
-                                    VisualEffectsDrawer {
+                    // 10. Visual Effects Options Content
+                    VisualEffectsDrawer {
                         id: visualEffectsDrawer
                         visible: root.activeDrawer === "visualEffects"
+                        width: visible ? parent.width : 800
+                        height: visible ? implicitHeight : 0
                     }
 
-                // 12. Steam Settings Drawer Content
-                // 12. Steam Settings Drawer Content
-                SteamSettingsDrawer {
-                    id: steamSettingsDrawer
-                    visible: root.activeDrawer === "steamSettings"
-                }            }
+                    // 12. Steam Settings Drawer Content
+                    SteamSettingsDrawer {
+                        id: steamSettingsDrawer
+                        visible: root.activeDrawer === "steamSettings"
+                        width: visible ? parent.width : 800
+                        height: visible ? dynamicHeight : 0
+                    }
+                }
+            }
         }
     }
-}
 
     // Dynamic Island Floating Overlay
     Rectangle {

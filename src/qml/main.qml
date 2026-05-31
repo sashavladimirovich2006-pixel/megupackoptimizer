@@ -525,7 +525,10 @@ ApplicationWindow {
 
         DashboardView {
             id: dashboardView
-            anchors.fill: parent
+            x: 0
+            y: 0
+            width: visible ? parent.width : 800
+            height: visible ? parent.height : 560
             opacity: window.activeTab === 0 ? 1.0 : 0.0
             visible: opacity > 0.0
             enabled: opacity === 1.0
@@ -540,7 +543,10 @@ ApplicationWindow {
 
         SettingsView {
             id: settingsView
-            anchors.fill: parent
+            x: 0
+            y: 0
+            width: visible ? parent.width : 800
+            height: visible ? parent.height : 560
             opacity: window.activeTab === 1 ? 1.0 : 0.0
             visible: opacity > 0.0
             enabled: opacity === 1.0
@@ -555,7 +561,10 @@ ApplicationWindow {
 
         OptimizationView {
             id: optimizationView
-            anchors.fill: parent
+            x: 0
+            y: 0
+            width: visible ? parent.width : 800
+            height: visible ? parent.height : 560
             opacity: window.activeTab === 3 ? 1.0 : 0.0
             visible: opacity > 0.0
             enabled: opacity === 1.0
@@ -570,8 +579,10 @@ ApplicationWindow {
 
         LogViewer {
             id: logsView
-            anchors.fill: parent
-            anchors.margins: 20
+            x: 20
+            y: 20
+            width: visible ? (parent.width - 40) : 760
+            height: visible ? (parent.height - 40) : 520
             opacity: window.activeTab === 2 ? 1.0 : 0.0
             visible: opacity > 0.0
             enabled: opacity === 1.0
