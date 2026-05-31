@@ -2863,45 +2863,7 @@ Item {
                 }
             }
 
-            // Action 2: Toolbar Preferences
-            Rectangle {
-                width: parent.width
-                height: Math.max(50, steamToggleCol_30.implicitHeight + 12)
-                color: "transparent"
-                Row {
-                    anchors.fill: parent
-                    spacing: 12
-                    Column { id: steamToggleCol_30;
-                        anchors.verticalCenter: parent.verticalCenter
-                        spacing: 2
-                        width: parent.width - 160
-                        Text {
-                            text: qsTr("Toolbar Preferences")
-                            color: Theme.textPrimary
-                            font.family: Theme.fontFamily
-                            font.pixelSize: 12
-                            font.bold: true
-                        }
-                        Text {
-                            text: qsTr("Configure which buttons are displayed in the overlay toolbar.")
-                            color: Theme.textSecondary
-                            font.family: Theme.fontFamily
-                            font.pixelSize: 10
-                            width: parent.width
-                            wrapMode: Text.WordWrap
-                        }
-                    }
-                    MeguButton {
-                        text: qsTr("Toolbar Preferences")
-                        width: 140
-                        height: 30
-                        anchors.verticalCenter: parent.verticalCenter
-                        onClicked: {
-                            steamSettingsDrawer.subPage = "toolbarPrefs"
-                        }
-                    }
-                }
-            }
+
         }
     }
 
