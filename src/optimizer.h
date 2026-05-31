@@ -296,6 +296,7 @@ public:
     Q_INVOKABLE bool isDiscordRunning();
     Q_INVOKABLE void killDiscord();
     Q_INVOKABLE bool isSteamRunning();
+    Q_INVOKABLE QString getSteamActiveUserId();
     Q_INVOKABLE void killSteam();
     Q_INVOKABLE void launchSteam();
 

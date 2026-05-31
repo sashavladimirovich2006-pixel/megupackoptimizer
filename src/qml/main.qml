@@ -33,6 +33,7 @@ ApplicationWindow {
 
     property int activeTab: 1
     property bool steamIsRunning: false
+    property string steamActiveUserId: ""
 
     Timer {
         id: globalSteamRunningTimer
@@ -42,8 +43,10 @@ ApplicationWindow {
         triggeredOnStart: true
         onTriggered: {
             var isRunning = optimizerBackend.isSteamRunning();
-            if (isRunning !== steamIsRunning) {
+            var activeUser = optimizerBackend.getSteamActiveUserId();
+            if (isRunning !== steamIsRunning || activeUser !== steamActiveUserId) {
                 steamIsRunning = isRunning;
+                steamActiveUserId = activeUser;
                 optimizerBackend.loadSystemStates();
             }
         }

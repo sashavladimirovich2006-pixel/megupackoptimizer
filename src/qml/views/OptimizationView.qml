@@ -1474,7 +1474,7 @@ Item {
                                 color: Qt.rgba(Theme.accent.r, Theme.accent.g, Theme.accent.b, 0.05)
                                 border.color: Theme.accent
                                 border.width: 1
-                                visible: !window.steamIsRunning
+                                visible: !window.steamIsRunning || window.steamActiveUserId === ""
 
                                 Column {
                                     id: warningColumn
@@ -1505,7 +1505,7 @@ Item {
                                             anchors.verticalCenter: parent.verticalCenter
 
                                             Text {
-                                                text: qsTr("Steam is not running")
+                                                text: !window.steamIsRunning ? qsTr("Steam is not running") : qsTr("Steam is running but no user is logged in")
                                                 color: Theme.textPrimary
                                                 font.family: Theme.fontFamily
                                                 font.pixelSize: 13
@@ -1513,7 +1513,7 @@ Item {
                                             }
 
                                             Text {
-                                                text: qsTr("To configure and optimize Counter-Strike 2, please launch the Steam client first.")
+                                                text: !window.steamIsRunning ? qsTr("To configure and optimize Counter-Strike 2, please launch the Steam client first.") : qsTr("Please log in to your Steam account to load and configure your Counter-Strike 2 settings.")
                                                 color: Theme.textSecondary
                                                 font.family: Theme.fontFamily
                                                 font.pixelSize: 10
@@ -1529,6 +1529,7 @@ Item {
                                         anchors.horizontalCenter: parent.horizontalCenter
                                         width: 140
                                         height: 28
+                                        visible: !window.steamIsRunning
                                         onClicked: {
                                             optimizerBackend.launchSteam();
                                             window.steamIsRunning = true;
@@ -1540,8 +1541,8 @@ Item {
                             Column {
                                 width: parent.width
                                 spacing: 12
-                                enabled: window.steamIsRunning
-                                opacity: window.steamIsRunning ? 1.0 : 0.4
+                                enabled: window.steamIsRunning && window.steamActiveUserId !== ""
+                                opacity: (window.steamIsRunning && window.steamActiveUserId !== "") ? 1.0 : 0.4
                                 Behavior on opacity { NumberAnimation { duration: Theme.animNormal } }
 
                                 // Steam Overlay for CS2 Toggle

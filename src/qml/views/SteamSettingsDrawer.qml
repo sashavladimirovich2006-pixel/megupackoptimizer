@@ -12,6 +12,7 @@ Item {
 
     property string subPage: "main" // "main", "friends", "chat", "notifications", "ingame", "interface", "library", "download", "storage", "toolbarPrefs", "accessibility", "gamerecording", "voice", "remoteplay", "music"
     property bool steamIsRunning: window.steamIsRunning
+    property string steamActiveUserId: window.steamActiveUserId
 
     Component.onCompleted: {
         optimizerBackend.scanSteamInstalledGames();
@@ -90,7 +91,7 @@ Item {
             color: Qt.rgba(Theme.accent.r, Theme.accent.g, Theme.accent.b, 0.05)
             border.color: Theme.accent
             border.width: 1
-            visible: !steamIsRunning
+            visible: !steamIsRunning || steamActiveUserId === ""
 
             Column {
                 id: warningColumn
@@ -121,7 +122,7 @@ Item {
                         anchors.verticalCenter: parent.verticalCenter
 
                         Text {
-                            text: qsTr("Steam is not running")
+                            text: !steamIsRunning ? qsTr("Steam is not running") : qsTr("Steam is running but no user is logged in")
                             color: Theme.textPrimary
                             font.family: Theme.fontFamily
                             font.pixelSize: 13
@@ -129,7 +130,7 @@ Item {
                         }
 
                         Text {
-                            text: qsTr("To configure and optimize Steam, please launch the Steam client first.")
+                            text: !steamIsRunning ? qsTr("To configure and optimize Steam, please launch the Steam client first.") : qsTr("Please log in to your Steam account to load and configure your profile settings.")
                             color: Theme.textSecondary
                             font.family: Theme.fontFamily
                             font.pixelSize: 10
@@ -145,6 +146,7 @@ Item {
                     anchors.horizontalCenter: parent.horizontalCenter
                     width: 140
                     height: 28
+                    visible: !steamIsRunning
                     onClicked: {
                         optimizerBackend.launchSteam();
                         steamIsRunning = true;
@@ -156,8 +158,8 @@ Item {
         Column {
             width: parent.width
             spacing: 12
-            enabled: steamIsRunning
-            opacity: steamIsRunning ? 1.0 : 0.4
+            enabled: steamIsRunning && steamActiveUserId !== ""
+            opacity: (steamIsRunning && steamActiveUserId !== "") ? 1.0 : 0.4
             Behavior on opacity { NumberAnimation { duration: Theme.animNormal } }
 
             // Friends & Chat Menu Option

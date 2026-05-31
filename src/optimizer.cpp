@@ -7482,6 +7482,24 @@ bool Optimizer::isSteamRunning() {
 #endif
 }
 
+QString Optimizer::getSteamActiveUserId() {
+#ifdef Q_OS_WIN
+    DWORD activeUser = 0;
+    HKEY hKeyActive;
+    if (RegOpenKeyExW(HKEY_CURRENT_USER, L"Software\\Valve\\Steam\\ActiveProcess", 0, KEY_READ, &hKeyActive) == ERROR_SUCCESS) {
+        DWORD dwSize = sizeof(activeUser);
+        if (RegQueryValueExW(hKeyActive, L"ActiveUser", nullptr, nullptr, reinterpret_cast<LPBYTE>(&activeUser), &dwSize) == ERROR_SUCCESS) {
+            RegCloseKey(hKeyActive);
+            if (activeUser != 0) {
+                return QString::number(activeUser);
+            }
+        }
+        RegCloseKey(hKeyActive);
+    }
+#endif
+    return "";
+}
+
 void Optimizer::killSteam() {
 #ifdef Q_OS_WIN
     HANDLE hSnapshot = CreateToolhelp32Snapshot(TH32CS_SNAPPROCESS, 0);
