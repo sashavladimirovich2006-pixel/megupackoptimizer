@@ -16,6 +16,8 @@ class Optimizer : public QObject {
     Q_PROPERTY(QString motherboard READ motherboard NOTIFY motherboardChanged)
     Q_PROPERTY(QString storage READ storage NOTIFY storageChanged)
     Q_PROPERTY(QString display READ display NOTIFY displayChanged)
+    Q_PROPERTY(double cpuLoadPercent READ cpuLoadPercent NOTIFY cpuLoadPercentChanged)
+    Q_PROPERTY(double ramLoadPercent READ ramLoadPercent NOTIFY ramLoadPercentChanged)
 
     // System Optimization properties
     Q_PROPERTY(bool classicContextMenuActive READ classicContextMenuActive WRITE setClassicContextMenuActive NOTIFY classicContextMenuActiveChanged)
@@ -34,6 +36,9 @@ class Optimizer : public QObject {
     Q_PROPERTY(bool coreIsolationActive READ coreIsolationActive WRITE setCoreIsolationActive NOTIFY coreIsolationActiveChanged)
     Q_PROPERTY(bool originalCoreIsolationActive READ originalCoreIsolationActive NOTIFY originalCoreIsolationActiveChanged)
     Q_PROPERTY(bool bootCoreIsolationActive READ bootCoreIsolationActive CONSTANT)
+    Q_PROPERTY(bool hagsActive READ hagsActive WRITE setHagsActive NOTIFY hagsActiveChanged)
+    Q_PROPERTY(bool originalHagsActive READ originalHagsActive NOTIFY originalHagsActiveChanged)
+    Q_PROPERTY(bool bootHagsActive READ bootHagsActive CONSTANT)
     Q_PROPERTY(bool mouseAccelerationActive READ mouseAccelerationActive WRITE setMouseAccelerationActive NOTIFY mouseAccelerationActiveChanged)
     Q_PROPERTY(bool originalMouseAccelerationActive READ originalMouseAccelerationActive NOTIFY originalMouseAccelerationActiveChanged)
     Q_PROPERTY(bool gameModeActive READ gameModeActive WRITE setGameModeActive NOTIFY gameModeActiveChanged)
@@ -116,6 +121,7 @@ class Optimizer : public QObject {
     Q_PROPERTY(bool originalPagefileAuto READ originalPagefileAuto NOTIFY originalPagefileAutoChanged)
     Q_PROPERTY(bool isOptimizingSystem READ isOptimizingSystem NOTIFY isOptimizingSystemChanged)
     Q_PROPERTY(double systemProgress READ systemProgress NOTIFY systemProgressChanged)
+    Q_PROPERTY(QVariantList backupList READ backupList NOTIFY backupListChanged)
 
 public:
     explicit Optimizer(QObject *parent = nullptr);
@@ -130,6 +136,8 @@ public:
     QString motherboard() const { return m_motherboard; }
     QString storage() const { return m_storage; }
     QString display() const { return m_display; }
+    double cpuLoadPercent() const { return m_cpuLoadPercent; }
+    double ramLoadPercent() const { return m_ramLoadPercent; }
 
     // System Optimization getters
     bool classicContextMenuActive() const { return m_classicContextMenuActive; }
@@ -148,6 +156,9 @@ public:
     bool coreIsolationActive() const { return m_coreIsolationActive; }
     bool originalCoreIsolationActive() const { return m_originalCoreIsolationActive; }
     bool bootCoreIsolationActive() const { return m_bootCoreIsolationActive; }
+    bool hagsActive() const { return m_hagsActive; }
+    bool originalHagsActive() const { return m_originalHagsActive; }
+    bool bootHagsActive() const { return m_bootHagsActive; }
     bool mouseAccelerationActive() const { return m_mouseAccelerationActive; }
     bool originalMouseAccelerationActive() const { return m_originalMouseAccelerationActive; }
     bool gameModeActive() const { return m_gameModeActive; }
@@ -232,6 +243,7 @@ public:
     QVariantMap originalDriveStates() const { return m_originalDriveStates; }
     bool isOptimizingSystem() const { return m_isOptimizingSystem; }
     double systemProgress() const { return m_systemProgress; }
+    QVariantList backupList() const { return m_backupList; }
     int pagefileMin() const { return m_pagefileMin; }
     int originalPagefileMin() const { return m_originalPagefileMin; }
     int pagefileMax() const { return m_pagefileMax; }
@@ -245,6 +257,7 @@ public:
     void setHibernationActive(bool val);
     void setGamingOverlayActive(bool val);
     void setCoreIsolationActive(bool val);
+    void setHagsActive(bool val);
     void setMouseAccelerationActive(bool val);
     void setGameModeActive(bool val);
     void setFirewallActive(bool val);
@@ -310,6 +323,10 @@ public:
     Q_INVOKABLE bool clearSteamDownloadCache();
     Q_INVOKABLE bool deleteSteamBrowserData();
     Q_INVOKABLE void copyToClipboard(const QString &text);
+    Q_INVOKABLE bool createSystemBackup(const QString &backupName = "");
+    Q_INVOKABLE bool restoreFromBackup(const QString &backupId);
+    Q_INVOKABLE bool deleteBackup(const QString &backupId);
+    Q_INVOKABLE void refreshBackupList();
 
 
 
@@ -324,6 +341,8 @@ signals:
     void motherboardChanged(const QString &val);
     void storageChanged(const QString &val);
     void displayChanged(const QString &val);
+    void cpuLoadPercentChanged(double val);
+    void ramLoadPercentChanged(double val);
 
     // System Optimization signals
     void classicContextMenuActiveChanged(bool val);
@@ -338,6 +357,8 @@ signals:
     void originalGamingOverlayActiveChanged(bool val);
     void coreIsolationActiveChanged(bool val);
     void originalCoreIsolationActiveChanged(bool val);
+    void hagsActiveChanged(bool val);
+    void originalHagsActiveChanged(bool val);
     void mouseAccelerationActiveChanged(bool val);
     void originalMouseAccelerationActiveChanged(bool val);
     void gameModeActiveChanged(bool val);
@@ -418,6 +439,7 @@ signals:
     void originalPagefileAutoChanged(bool val);
     void isOptimizingSystemChanged(bool val);
     void systemProgressChanged(double val);
+    void backupListChanged(const QVariantList &val);
     
     // Custom signal to report system optimization steps to LogViewer
     void systemStepReported(const QString &msg, const QString &type);
@@ -437,6 +459,14 @@ private:
     QString m_motherboard;
     QString m_storage;
     QString m_display;
+    double m_cpuLoadPercent = 0.0;
+    double m_ramLoadPercent = 0.0;
+    void updateCpuAndRamLoad();
+#ifdef Q_OS_WIN
+    void* m_prevIdleTime = nullptr;
+    void* m_prevKernelTime = nullptr;
+    void* m_prevUserTime = nullptr;
+#endif
 
     // System Optimization state
     bool m_classicContextMenuActive = false;
@@ -455,6 +485,9 @@ private:
     bool m_coreIsolationActive = false;
     bool m_originalCoreIsolationActive = false;
     bool m_bootCoreIsolationActive = true;
+    bool m_hagsActive = false;
+    bool m_originalHagsActive = false;
+    bool m_bootHagsActive = false;
     bool m_mouseAccelerationActive = false;
     bool m_originalMouseAccelerationActive = false;
     bool m_gameModeActive = true;
@@ -538,4 +571,6 @@ private:
     bool m_pagefileAuto = true;
     bool m_originalPagefileAuto = true;
     void loadPagefileSettings();
+    bool m_forceApplyAll = false;
+    QVariantList m_backupList;
 };

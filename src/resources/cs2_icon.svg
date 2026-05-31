@@ -1,0 +1,10 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="512" height="512">
+  <!-- CS Letters Group (Transparent Background) -->
+  <g transform="translate(256, 256) skewX(-15) translate(-256, -256)">
+    <!-- Letter C -->
+    <polygon points="230,120 120,120 90,150 90,362 120,392 230,392 230,332 150,332 150,180 230,180" fill="#FFFFFF" />
+
+    <!-- Letter S -->
+    <polygon points="422,120 312,120 282,150 282,236 372,236 372,276 282,276 282,392 392,392 422,362 422,276 332,276 332,180 422,180" fill="#FFFFFF" />
+  </g>
+</svg>

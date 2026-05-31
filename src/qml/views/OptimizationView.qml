@@ -59,6 +59,44 @@ Item {
     property bool mainChecked: allChecked
     property bool mainIndeterminate: !allChecked && !allUnchecked
 
+    // Tri-State derived logic for Windows Defender
+    property bool allDefenderChecked: optimizerBackend.defenderRegistryActive && optimizerBackend.defenderCmdActive && optimizerBackend.defenderServiceActive
+    property bool allDefenderUnchecked: !optimizerBackend.defenderRegistryActive && !optimizerBackend.defenderCmdActive && !optimizerBackend.defenderServiceActive
+    property bool defenderChecked: allDefenderChecked
+    property bool defenderIndeterminate: !allDefenderChecked && !allDefenderUnchecked
+
+    // Tri-State derived logic for Windows Notifications
+    property bool allNotificationsChecked: optimizerBackend.notifGlobalActive && optimizerBackend.notifAppActive && optimizerBackend.notifSoundsActive && optimizerBackend.notifLockscreenActive
+    property bool allNotificationsUnchecked: !optimizerBackend.notifGlobalActive && !optimizerBackend.notifAppActive && !optimizerBackend.notifSoundsActive && !optimizerBackend.notifLockscreenActive
+    property bool notificationsChecked: allNotificationsChecked
+    property bool notificationsIndeterminate: !allNotificationsChecked && !allNotificationsUnchecked
+
+    // Tri-State derived logic for Telemetry
+    property bool allTelemetryChecked: !optimizerBackend.telemetryDiagTrackActive && !optimizerBackend.telemetryWapPushActive && !optimizerBackend.telemetryCeipActive && !optimizerBackend.telemetryWerActive
+    property bool allTelemetryUnchecked: optimizerBackend.telemetryDiagTrackActive && optimizerBackend.telemetryWapPushActive && optimizerBackend.telemetryCeipActive && optimizerBackend.telemetryWerActive
+    property bool telemetryChecked: allTelemetryChecked
+    property bool telemetryIndeterminate: !allTelemetryChecked && !allTelemetryUnchecked
+
+    // Tri-State derived logic for USB 3.0 Power Saving
+    property bool allUsbChecked: {
+        var devices = optimizerBackend.usbDevices;
+        if (!devices || devices.length === 0) return false;
+        for (var i = 0; i < devices.length; i++) {
+            if (!devices[i].powerSavingActive) return false;
+        }
+        return true;
+    }
+    property bool allUsbUnchecked: {
+        var devices = optimizerBackend.usbDevices;
+        if (!devices || devices.length === 0) return true;
+        for (var i = 0; i < devices.length; i++) {
+            if (devices[i].powerSavingActive) return false;
+        }
+        return true;
+    }
+    property bool usbChecked: allUsbChecked
+    property bool usbIndeterminate: !allUsbChecked && !allUsbUnchecked
+
     // Reactive computation of changes between current live states and original states
     property bool hasChanges: {
         if (optimizerBackend.classicContextMenuActive !== optimizerBackend.originalClassicContextMenuActive) return true;
@@ -1266,19 +1304,32 @@ Item {
 
         Column {
             id: mainColumn
-            width: mainScroll.width - 12
+            width: mainScroll.width - 20
             spacing: 24
 
-            Text {
-                text: root.currentSection === "telemetry" ? qsTr("TELEMETRY SETTINGS") : 
-                      root.currentSection === "games" ? qsTr("VIDEO GAMES OPTIMIZATION") :
-                      root.currentSection === "customization" ? qsTr("CUSTOMIZATION SETTINGS") :
-                      qsTr("SYSTEM OPTIMIZATION")
-                color: Theme.yellowAccent
-                font.family: Theme.fontFamily
-                font.pixelSize: 11
-                font.bold: true
-                font.letterSpacing: 1.5
+            Row {
+                spacing: 8
+                height: 16
+
+                Rectangle {
+                    width: 4
+                    height: 16
+                    radius: 2
+                    color: Theme.accent
+                    anchors.verticalCenter: parent.verticalCenter
+                }
+
+                Text {
+                    text: root.currentSection === "telemetry" ? qsTr("Telemetry Settings") : 
+                          root.currentSection === "games" ? qsTr("Video Games Optimization") :
+                          root.currentSection === "customization" ? qsTr("Customization Settings") :
+                          qsTr("System Optimization")
+                    color: Theme.textPrimary
+                    font.family: Theme.fontFamily
+                    font.pixelSize: 13
+                    font.bold: true
+                    anchors.verticalCenter: parent.verticalCenter
+                }
             }
 
             // 0.5. VIDEO GAMES CATEGORY
@@ -1287,14 +1338,7 @@ Item {
                 width: parent.width
                 spacing: 12
 
-                Text {
-                    text: qsTr("VIDEO GAMES OPTIMIZATION")
-                    color: Theme.textSecondary
-                    font.family: Theme.fontFamily
-                    font.pixelSize: 10
-                    font.bold: true
-                    font.letterSpacing: 1
-                }
+
 
                 AcrylicPanel {
                     id: cs2Panel
@@ -1320,7 +1364,10 @@ Item {
                         // CS2 Header card row
                         Row {
                             id: mainLayout
-                            width: parent.width
+                            anchors.left: parent.left
+                            anchors.right: parent.right
+                            anchors.leftMargin: 16
+                            anchors.rightMargin: 16
                             spacing: 16
 
                             // Game Logo placeholder or icon
@@ -1644,8 +1691,11 @@ Item {
 
                     Row {
                         id: steamSettingsLayout
-                        width: parent.width - 24
-                        anchors.centerIn: parent
+                        anchors.left: parent.left
+                        anchors.right: parent.right
+                        anchors.leftMargin: 16
+                        anchors.rightMargin: 16
+                        anchors.verticalCenter: parent.verticalCenter
                         spacing: 16
 
                         Rectangle {
@@ -1744,41 +1794,63 @@ Item {
                 width: parent.width
                 spacing: 8
 
-                Text {
-                    text: qsTr("DRIVES & INDEXING")
-                    color: Theme.textSecondary
-                    font.family: Theme.fontFamily
-                    font.pixelSize: 10
-                    font.bold: true
-                    font.letterSpacing: 1
+                Row {
+                    spacing: 8
+                    height: 16
+
+                    Rectangle {
+                        width: 4
+                        height: 16
+                        radius: 2
+                        color: Theme.accent
+                        anchors.verticalCenter: parent.verticalCenter
+                    }
+
+                    Text {
+                        text: qsTr("Drives & Indexing")
+                        color: Theme.textPrimary
+                        font.family: Theme.fontFamily
+                        font.pixelSize: 13
+                        font.bold: true
+                        anchors.verticalCenter: parent.verticalCenter
+                    }
                 }
 
                 AcrylicPanel {
                     id: indexingPanel
                     width: parent.width
-                    height: 72
+                    height: 84
 
                     Row {
                         anchors.left: parent.left
+                        anchors.leftMargin: 16
                         anchors.verticalCenter: parent.verticalCenter
                         spacing: 12
 
-                        Item {
-                            width: 28
-                            height: 28
+                        Rectangle {
+                            width: 40
+                            height: 40
+                            radius: 10
+                            color: Qt.rgba(Theme.accent.r, Theme.accent.g, Theme.accent.b, 0.15)
                             anchors.verticalCenter: parent.verticalCenter
-                            Image {
-                                id: storageIconImg
-                                source: "qrc:/MeguPackOptimizer/src/resources/storage.svg"
-                                anchors.fill: parent
-                                sourceSize.width: 28
-                                sourceSize.height: 28
-                                visible: false
-                            }
-                            ColorOverlay {
-                                anchors.fill: storageIconImg
-                                source: storageIconImg
-                                color: Theme.accent
+
+                            Item {
+                                width: 20
+                                height: 20
+                                anchors.centerIn: parent
+                                Image {
+                                    id: indexingPanel_iconImg
+                                    source: "qrc:/MeguPackOptimizer/src/resources/storage.svg"
+                                    anchors.fill: parent
+                                    sourceSize.width: 20
+                                    sourceSize.height: 20
+                                    visible: false
+                                }
+                                ColorOverlay {
+                                    anchors.fill: indexingPanel_iconImg
+                                    source: indexingPanel_iconImg
+                                    color: Theme.accent
+                                }
                             }
                         }
 
@@ -1792,9 +1864,9 @@ Item {
                                     text: qsTr("File Indexing")
                                     color: Theme.textPrimary
                                     font.family: Theme.fontFamily
-                                    font.pixelSize: 13
+                                    font.pixelSize: 14
                                     font.bold: true
-                                }
+                                } 
                                 Rectangle {
                                     visible: root.indexingChanged
                                     height: 16
@@ -1820,13 +1892,14 @@ Item {
                                 text: qsTr("Controls file search indexing services and drive index properties.")
                                 color: Theme.textMuted
                                 font.family: Theme.fontFamily
-                                font.pixelSize: 10
+                                font.pixelSize: 11
                             }
                         }
                     }
 
                     Row {
                         anchors.right: parent.right
+                        anchors.rightMargin: 16
                         anchors.verticalCenter: parent.verticalCenter
                         spacing: 16
 
@@ -1893,56 +1966,70 @@ Item {
                 width: parent.width
                 spacing: 8
 
-                Text {
-                    text: qsTr("LATENCY & MOUSE TWEAKS")
-                    color: Theme.textSecondary
-                    font.family: Theme.fontFamily
-                    font.pixelSize: 10
-                    font.bold: true
-                    font.letterSpacing: 1
+                Row {
+                    spacing: 8
+                    height: 16
                     visible: root.currentSection === "core"
+
+                    Rectangle {
+                        width: 4
+                        height: 16
+                        radius: 2
+                        color: Theme.accent
+                        anchors.verticalCenter: parent.verticalCenter
+                    }
+
+                    Text {
+                        text: qsTr("Latency & Mouse Tweaks")
+                        color: Theme.textPrimary
+                        font.family: Theme.fontFamily
+                        font.pixelSize: 13
+                        font.bold: true
+                        anchors.verticalCenter: parent.verticalCenter
+                    }
                 }
 
-                Text {
-                    text: qsTr("TELEMETRY")
-                    color: Theme.textSecondary
-                    font.family: Theme.fontFamily
-                    font.pixelSize: 10
-                    font.bold: true
-                    font.letterSpacing: 1
-                    visible: root.currentSection === "telemetry"
-                }
+
 
                 // Xbox app Panel
                 AcrylicPanel {
                     id: xboxPanel
                     visible: root.currentSection === "core"
                     width: parent.width
-                    height: 72
+                    height: 84
 
                     Row {
                         anchors.left: parent.left
+                        anchors.leftMargin: 16
                         anchors.verticalCenter: parent.verticalCenter
                         spacing: 12
 
-                        Item {
-                                width: 28
-                                height: 28
-                                anchors.verticalCenter: parent.verticalCenter
+                        Rectangle {
+                            width: 40
+                            height: 40
+                            radius: 10
+                            color: Qt.rgba(Theme.accent.r, Theme.accent.g, Theme.accent.b, 0.15)
+                            anchors.verticalCenter: parent.verticalCenter
+
+                            Item {
+                                width: 20
+                                height: 20
+                                anchors.centerIn: parent
                                 Image {
-                                    id: settingsIconImg
+                                    id: xboxPanel_iconImg
                                     source: "qrc:/MeguPackOptimizer/src/resources/settings.svg"
                                     anchors.fill: parent
-                                    sourceSize.width: 28
-                                    sourceSize.height: 28
+                                    sourceSize.width: 20
+                                    sourceSize.height: 20
                                     visible: false
                                 }
                                 ColorOverlay {
-                                    anchors.fill: settingsIconImg
-                                    source: settingsIconImg
+                                    anchors.fill: xboxPanel_iconImg
+                                    source: xboxPanel_iconImg
                                     color: Theme.accent
                                 }
                             }
+                        }
 
                         Column {
                             anchors.verticalCenter: parent.verticalCenter
@@ -1954,9 +2041,9 @@ Item {
                                     text: qsTr("Xbox App & Game Bar")
                                     color: Theme.textPrimary
                                     font.family: Theme.fontFamily
-                                    font.pixelSize: 13
+                                    font.pixelSize: 14
                                     font.bold: true
-                                }
+                                } 
                                 Rectangle {
                                     visible: root.xboxChanged
                                     height: 16
@@ -1982,13 +2069,14 @@ Item {
                                 text: qsTr("Completely remove all Xbox overlays, TCUI, and game bar apps to optimize mouse input latency.")
                                 color: Theme.textMuted
                                 font.family: Theme.fontFamily
-                                font.pixelSize: 10
+                                font.pixelSize: 11
                             }
                         }
                     }
 
                     Row {
                         anchors.right: parent.right
+                        anchors.rightMargin: 16
                         anchors.verticalCenter: parent.verticalCenter
                         spacing: 16
 
@@ -2064,29 +2152,38 @@ Item {
                     id: mpoPanel
                     visible: root.currentSection === "core"
                     width: parent.width
-                    height: 72
+                    height: 84
 
                     Row {
                         anchors.left: parent.left
+                        anchors.leftMargin: 16
                         anchors.verticalCenter: parent.verticalCenter
                         spacing: 12
 
-                        Item {
-                            width: 28
-                            height: 28
+                        Rectangle {
+                            width: 40
+                            height: 40
+                            radius: 10
+                            color: Qt.rgba(Theme.accent.r, Theme.accent.g, Theme.accent.b, 0.15)
                             anchors.verticalCenter: parent.verticalCenter
-                            Image {
-                                id: monitorIconImg
-                                source: "qrc:/MeguPackOptimizer/src/resources/monitor.svg"
-                                anchors.fill: parent
-                                sourceSize.width: 28
-                                sourceSize.height: 28
-                                visible: false
-                            }
-                            ColorOverlay {
-                                anchors.fill: monitorIconImg
-                                source: monitorIconImg
-                                color: Theme.accent
+
+                            Item {
+                                width: 20
+                                height: 20
+                                anchors.centerIn: parent
+                                Image {
+                                    id: mpoPanel_iconImg
+                                    source: "qrc:/MeguPackOptimizer/src/resources/monitor.svg"
+                                    anchors.fill: parent
+                                    sourceSize.width: 20
+                                    sourceSize.height: 20
+                                    visible: false
+                                }
+                                ColorOverlay {
+                                    anchors.fill: mpoPanel_iconImg
+                                    source: mpoPanel_iconImg
+                                    color: Theme.accent
+                                }
                             }
                         }
 
@@ -2094,25 +2191,29 @@ Item {
                             anchors.verticalCenter: parent.verticalCenter
                             spacing: 2
 
-                            Text {
-                                text: qsTr("Multi-Plane Overlay (MPO)")
-                                color: Theme.textPrimary
-                                font.family: Theme.fontFamily
-                                font.pixelSize: 13
-                                font.bold: true
+                            Row {
+                                spacing: 8
+                                Text {
+                                    text: qsTr("Multi-Plane Overlay (MPO)")
+                                    color: Theme.textPrimary
+                                    font.family: Theme.fontFamily
+                                    font.pixelSize: 14
+                                    font.bold: true
+                                } 
                             }
 
                             Text {
                                 text: qsTr("Configure DWM multi-plane overlay modes to optimize latency and eliminate game stuttering.")
                                 color: Theme.textMuted
                                 font.family: Theme.fontFamily
-                                font.pixelSize: 10
+                                font.pixelSize: 11
                             }
                         }
                     }
 
                     Row {
                         anchors.right: parent.right
+                        anchors.rightMargin: 16
                         anchors.verticalCenter: parent.verticalCenter
                         spacing: 16
 
@@ -2201,29 +2302,38 @@ Item {
                     id: visualEffectsPanel
                     visible: root.currentSection === "core"
                     width: parent.width
-                    height: 72
+                    height: 84
 
                     Row {
                         anchors.left: parent.left
+                        anchors.leftMargin: 16
                         anchors.verticalCenter: parent.verticalCenter
                         spacing: 12
 
-                        Item {
-                            width: 28
-                            height: 28
+                        Rectangle {
+                            width: 40
+                            height: 40
+                            radius: 10
+                            color: Qt.rgba(Theme.accent.r, Theme.accent.g, Theme.accent.b, 0.15)
                             anchors.verticalCenter: parent.verticalCenter
-                            Image {
-                                id: visualEffectsIconImg
-                                source: "qrc:/MeguPackOptimizer/src/resources/monitor.svg"
-                                anchors.fill: parent
-                                sourceSize.width: 28
-                                sourceSize.height: 28
-                                visible: false
-                            }
-                            ColorOverlay {
-                                anchors.fill: visualEffectsIconImg
-                                source: visualEffectsIconImg
-                                color: Theme.accent
+
+                            Item {
+                                width: 20
+                                height: 20
+                                anchors.centerIn: parent
+                                Image {
+                                    id: visualEffectsPanel_iconImg
+                                    source: "qrc:/MeguPackOptimizer/src/resources/monitor.svg"
+                                    anchors.fill: parent
+                                    sourceSize.width: 20
+                                    sourceSize.height: 20
+                                    visible: false
+                                }
+                                ColorOverlay {
+                                    anchors.fill: visualEffectsPanel_iconImg
+                                    source: visualEffectsPanel_iconImg
+                                    color: Theme.accent
+                                }
                             }
                         }
 
@@ -2237,9 +2347,9 @@ Item {
                                     text: qsTr("Visual Effects")
                                     color: Theme.textPrimary
                                     font.family: Theme.fontFamily
-                                    font.pixelSize: 13
+                                    font.pixelSize: 14
                                     font.bold: true
-                                }
+                                } 
                                 Rectangle {
                                     visible: root.visualEffectsChanged
                                     height: 16
@@ -2265,13 +2375,14 @@ Item {
                                 text: qsTr("Optimize Windows animations, shadows, and rendering effects to improve system responsiveness.")
                                 color: Theme.textMuted
                                 font.family: Theme.fontFamily
-                                font.pixelSize: 10
+                                font.pixelSize: 11
                             }
                         }
                     }
 
                     Row {
                         anchors.right: parent.right
+                        anchors.rightMargin: 16
                         anchors.verticalCenter: parent.verticalCenter
                         spacing: 16
 
@@ -2288,7 +2399,8 @@ Item {
                         }
 
                         MeguSwitch {
-                            checked: root.visualEffectsPreset !== 2
+                            checked: root.visualEffectsPreset === 1
+                            indeterminate: root.visualEffectsPreset === 3
                             anchors.verticalCenter: parent.verticalCenter
                             onToggled: (isChecked) => {
                                 root.setPreset(isChecked ? 1 : 2);
@@ -2302,7 +2414,7 @@ Item {
                     id: coreIsolationPanel
                     visible: root.currentSection === "core"
                     width: parent.width
-                    height: (optimizerBackend.coreIsolationActive !== optimizerBackend.bootCoreIsolationActive) ? 116 : 72
+                    height: (optimizerBackend.coreIsolationActive !== optimizerBackend.bootCoreIsolationActive) ? 128 : 84
 
                     Behavior on height {
                         NumberAnimation { duration: Theme.animNormal; easing.type: Easing.InOutQuad }
@@ -2321,73 +2433,80 @@ Item {
                             height: 40
 
                             Row {
-                                anchors.left: parent.left
-                                anchors.verticalCenter: parent.verticalCenter
-                                spacing: 12
+                        anchors.left: parent.left
+                        anchors.leftMargin: 16
+                        anchors.verticalCenter: parent.verticalCenter
+                        spacing: 12
 
-                                Item {
-                                    width: 28
-                                    height: 28
-                                    anchors.verticalCenter: parent.verticalCenter
-                                    Image {
-                                        id: coresIconImg
-                                        source: "qrc:/MeguPackOptimizer/src/resources/cores.svg"
-                                        anchors.fill: parent
-                                        sourceSize.width: 28
-                                        sourceSize.height: 28
-                                        visible: false
-                                    }
-                                    ColorOverlay {
-                                        anchors.fill: coresIconImg
-                                        source: coresIconImg
-                                        color: Theme.accent
-                                    }
+                        Rectangle {
+                            width: 40
+                            height: 40
+                            radius: 10
+                            color: Qt.rgba(Theme.accent.r, Theme.accent.g, Theme.accent.b, 0.15)
+                            anchors.verticalCenter: parent.verticalCenter
+
+                            Item {
+                                width: 20
+                                height: 20
+                                anchors.centerIn: parent
+                                Image {
+                                    id: coreIsolationPanel_iconImg
+                                    source: "qrc:/MeguPackOptimizer/src/resources/cores.svg"
+                                    anchors.fill: parent
+                                    sourceSize.width: 20
+                                    sourceSize.height: 20
+                                    visible: false
                                 }
+                                ColorOverlay {
+                                    anchors.fill: coreIsolationPanel_iconImg
+                                    source: coreIsolationPanel_iconImg
+                                    color: Theme.accent
+                                }
+                            }
+                        }
 
-                                Column {
+                        Column {
+                            anchors.verticalCenter: parent.verticalCenter
+                            spacing: 2
+
+                            Row {
+                                spacing: 8
+                                Text {
+                                    text: qsTr("Core Isolation")
+                                    color: Theme.textPrimary
+                                    font.family: Theme.fontFamily
+                                    font.pixelSize: 14
+                                    font.bold: true
+                                } 
+                                Rectangle {
+                                    visible: root.coreIsolationChanged
+                                    height: 16
+                                    width: selectedTextCoreIsol.contentWidth + 10
+                                    radius: 4
+                                    color: Qt.rgba(Theme.success.r, Theme.success.g, Theme.success.b, 0.15)
+                                    border.color: Theme.success
+                                    border.width: 1
                                     anchors.verticalCenter: parent.verticalCenter
-                                    spacing: 2
-
-                                    Row {
-                                        spacing: 8
-                                        Text {
-                                            text: qsTr("Core Isolation")
-                                            color: Theme.textPrimary
-                                            font.family: Theme.fontFamily
-                                            font.pixelSize: 13
-                                            font.bold: true
-                                        }
-                                        Rectangle {
-                                            visible: root.coreIsolationChanged
-                                            height: 16
-                                            width: selectedText3.contentWidth + 10
-                                            radius: 4
-                                            color: Qt.rgba(Theme.success.r, Theme.success.g, Theme.success.b, 0.15)
-                                            border.color: Theme.success
-                                            border.width: 1
-                                            anchors.verticalCenter: parent.verticalCenter
-                                            Text {
-                                                id: selectedText3
-                                                text: qsTr("Selected for application")
-                                                color: Theme.success
-                                                font.family: Theme.fontFamily
-                                                font.pixelSize: 8
-                                                font.bold: true
-                                                anchors.centerIn: parent
-                                            }
-                                        }
-                                    }
-
                                     Text {
-                                        text: qsTr("Disabling kernel memory integrity reduces CPU overhead and input latency.")
-                                        color: Theme.textMuted
+                                        id: selectedTextCoreIsol
+                                        text: qsTr("Selected for application")
+                                        color: Theme.success
                                         font.family: Theme.fontFamily
-                                        font.pixelSize: 10
-                                        wrapMode: Text.Wrap
-                                        width: coreIsolationPanel.width - 220
+                                        font.pixelSize: 8
+                                        font.bold: true
+                                        anchors.centerIn: parent
                                     }
                                 }
                             }
+
+                            Text {
+                                text: qsTr("Disabling kernel memory integrity reduces CPU overhead and input latency.")
+                                color: Theme.textMuted
+                                font.family: Theme.fontFamily
+                                font.pixelSize: 11
+                            }
+                        }
+                    }
 
                             Row {
                                 anchors.right: parent.right
@@ -2460,29 +2579,38 @@ Item {
                     id: mouseAccelerationPanel
                     visible: root.currentSection === "core"
                     width: parent.width
-                    height: 72
+                    height: 84
 
                     Row {
                         anchors.left: parent.left
+                        anchors.leftMargin: 16
                         anchors.verticalCenter: parent.verticalCenter
                         spacing: 12
 
-                        Item {
-                            width: 28
-                            height: 28
+                        Rectangle {
+                            width: 40
+                            height: 40
+                            radius: 10
+                            color: Qt.rgba(Theme.accent.r, Theme.accent.g, Theme.accent.b, 0.15)
                             anchors.verticalCenter: parent.verticalCenter
-                            Image {
-                                id: mouseIconImg
-                                source: "qrc:/MeguPackOptimizer/src/resources/arrow.svg"
-                                anchors.fill: parent
-                                sourceSize.width: 28
-                                sourceSize.height: 28
-                                visible: false
-                            }
-                            ColorOverlay {
-                                anchors.fill: mouseIconImg
-                                source: mouseIconImg
-                                color: Theme.accent
+
+                            Item {
+                                width: 20
+                                height: 20
+                                anchors.centerIn: parent
+                                Image {
+                                    id: mouseAccelerationPanel_iconImg
+                                    source: "qrc:/MeguPackOptimizer/src/resources/arrow.svg"
+                                    anchors.fill: parent
+                                    sourceSize.width: 20
+                                    sourceSize.height: 20
+                                    visible: false
+                                }
+                                ColorOverlay {
+                                    anchors.fill: mouseAccelerationPanel_iconImg
+                                    source: mouseAccelerationPanel_iconImg
+                                    color: Theme.accent
+                                }
                             }
                         }
 
@@ -2496,20 +2624,20 @@ Item {
                                     text: qsTr("Mouse Acceleration")
                                     color: Theme.textPrimary
                                     font.family: Theme.fontFamily
-                                    font.pixelSize: 13
+                                    font.pixelSize: 14
                                     font.bold: true
-                                }
+                                } 
                                 Rectangle {
                                     visible: root.mouseAccelerationChanged
                                     height: 16
-                                    width: selectedText4.contentWidth + 10
+                                    width: selectedTextMouse.contentWidth + 10
                                     radius: 4
                                     color: Qt.rgba(Theme.success.r, Theme.success.g, Theme.success.b, 0.15)
                                     border.color: Theme.success
                                     border.width: 1
                                     anchors.verticalCenter: parent.verticalCenter
                                     Text {
-                                        id: selectedText4
+                                        id: selectedTextMouse
                                         text: qsTr("Selected for application")
                                         color: Theme.success
                                         font.family: Theme.fontFamily
@@ -2524,13 +2652,14 @@ Item {
                                 text: qsTr("Enhance pointer precision toggle to enable or disable system mouse acceleration.")
                                 color: Theme.textMuted
                                 font.family: Theme.fontFamily
-                                font.pixelSize: 10
+                                font.pixelSize: 11
                             }
                         }
                     }
 
                     Row {
                         anchors.right: parent.right
+                        anchors.rightMargin: 16
                         anchors.verticalCenter: parent.verticalCenter
                         spacing: 16
 
@@ -2554,29 +2683,38 @@ Item {
                     id: gameModePanel
                     visible: root.currentSection === "core"
                     width: parent.width
-                    height: 72
+                    height: 84
 
                     Row {
                         anchors.left: parent.left
+                        anchors.leftMargin: 16
                         anchors.verticalCenter: parent.verticalCenter
                         spacing: 12
 
-                        Item {
-                            width: 28
-                            height: 28
+                        Rectangle {
+                            width: 40
+                            height: 40
+                            radius: 10
+                            color: Qt.rgba(Theme.accent.r, Theme.accent.g, Theme.accent.b, 0.15)
                             anchors.verticalCenter: parent.verticalCenter
-                            Image {
-                                id: gameModeIconImg
-                                source: "qrc:/MeguPackOptimizer/src/resources/bolt.svg"
-                                anchors.fill: parent
-                                sourceSize.width: 28
-                                sourceSize.height: 28
-                                visible: false
-                            }
-                            ColorOverlay {
-                                anchors.fill: gameModeIconImg
-                                source: gameModeIconImg
-                                color: Theme.accent
+
+                            Item {
+                                width: 20
+                                height: 20
+                                anchors.centerIn: parent
+                                Image {
+                                    id: gameModePanel_iconImg
+                                    source: "qrc:/MeguPackOptimizer/src/resources/bolt.svg"
+                                    anchors.fill: parent
+                                    sourceSize.width: 20
+                                    sourceSize.height: 20
+                                    visible: false
+                                }
+                                ColorOverlay {
+                                    anchors.fill: gameModePanel_iconImg
+                                    source: gameModePanel_iconImg
+                                    color: Theme.accent
+                                }
                             }
                         }
 
@@ -2590,20 +2728,20 @@ Item {
                                     text: qsTr("Game Mode")
                                     color: Theme.textPrimary
                                     font.family: Theme.fontFamily
-                                    font.pixelSize: 13
+                                    font.pixelSize: 14
                                     font.bold: true
-                                }
+                                } 
                                 Rectangle {
                                     visible: root.gameModeChanged
                                     height: 16
-                                    width: selectedText5.contentWidth + 10
+                                    width: selectedTextGameMode.contentWidth + 10
                                     radius: 4
                                     color: Qt.rgba(Theme.success.r, Theme.success.g, Theme.success.b, 0.15)
                                     border.color: Theme.success
                                     border.width: 1
                                     anchors.verticalCenter: parent.verticalCenter
                                     Text {
-                                        id: selectedText5
+                                        id: selectedTextGameMode
                                         text: qsTr("Selected for application")
                                         color: Theme.success
                                         font.family: Theme.fontFamily
@@ -2618,13 +2756,14 @@ Item {
                                 text: qsTr("Enables or disables Windows Game Mode to prioritize gaming performance and stabilize FPS.")
                                 color: Theme.textMuted
                                 font.family: Theme.fontFamily
-                                font.pixelSize: 10
+                                font.pixelSize: 11
                             }
                         }
                     }
 
                     Row {
                         anchors.right: parent.right
+                        anchors.rightMargin: 16
                         anchors.verticalCenter: parent.verticalCenter
                         spacing: 16
 
@@ -2648,30 +2787,41 @@ Item {
                     id: discordOverlayPanel
                     visible: root.currentSection === "core"
                     width: parent.width
-                    height: root.isDiscordOpen ? 84 : 72
+                    height: root.isDiscordOpen ? 92 : 84
                     Behavior on height { NumberAnimation { duration: Theme.animNormal; easing.type: Easing.InOutQuad } }
 
                     Row {
                         anchors.left: parent.left
+                        anchors.leftMargin: 16
                         anchors.verticalCenter: parent.verticalCenter
                         spacing: 12
 
-                        Item {
-                            width: 28
-                            height: 28
+                        // Rounded square badge
+                        Rectangle {
+                            width: 40
+                            height: 40
+                            radius: 10
+                            color: Qt.rgba(0.35, 0.4, 0.9, 0.15)
                             anchors.verticalCenter: parent.verticalCenter
-                            Image {
-                                id: discordIconImg
-                                source: "qrc:/MeguPackOptimizer/src/resources/folder.svg"
-                                anchors.fill: parent
-                                sourceSize.width: 28
-                                sourceSize.height: 28
-                                visible: false
-                            }
-                            ColorOverlay {
-                                anchors.fill: discordIconImg
-                                source: discordIconImg
-                                color: Theme.accent
+
+                            Item {
+                                width: 20
+                                height: 20
+                                anchors.centerIn: parent
+
+                                Image {
+                                    id: discordIconImg
+                                    source: "qrc:/MeguPackOptimizer/src/resources/folder.svg"
+                                    anchors.fill: parent
+                                    sourceSize.width: 20
+                                    sourceSize.height: 20
+                                    visible: false
+                                }
+                                ColorOverlay {
+                                    anchors.fill: discordIconImg
+                                    source: discordIconImg
+                                    color: "#5865F2"
+                                }
                             }
                         }
 
@@ -2685,7 +2835,7 @@ Item {
                                     text: qsTr("Discord In-Game Overlay")
                                     color: Theme.textPrimary
                                     font.family: Theme.fontFamily
-                                    font.pixelSize: 13
+                                    font.pixelSize: 14
                                     font.bold: true
                                 }
                                 Rectangle {
@@ -2713,7 +2863,7 @@ Item {
                                 text: qsTr("Disable Discord's in-game overlay DLL injection to reduce CPU overhead and eliminate graphics micro-stutters.")
                                 color: Theme.textMuted
                                 font.family: Theme.fontFamily
-                                font.pixelSize: 10
+                                font.pixelSize: 11
                             }
 
                             Text {
@@ -2728,7 +2878,9 @@ Item {
                     }
 
                     Row {
+                        id: discordRightControls
                         anchors.right: parent.right
+                        anchors.rightMargin: 16
                         anchors.verticalCenter: parent.verticalCenter
                         spacing: 16
 
@@ -2752,29 +2904,38 @@ Item {
                     id: firewallPanel
                     visible: root.currentSection === "core"
                     width: parent.width
-                    height: 72
+                    height: 84
 
                     Row {
                         anchors.left: parent.left
+                        anchors.leftMargin: 16
                         anchors.verticalCenter: parent.verticalCenter
                         spacing: 12
 
-                        Item {
-                            width: 28
-                            height: 28
+                        Rectangle {
+                            width: 40
+                            height: 40
+                            radius: 10
+                            color: Qt.rgba(0.9, 0.3, 0.1, 0.15)
                             anchors.verticalCenter: parent.verticalCenter
-                            Image {
-                                id: firewallIconImg
-                                source: "qrc:/MeguPackOptimizer/src/resources/warning.svg"
-                                anchors.fill: parent
-                                sourceSize.width: 28
-                                sourceSize.height: 28
-                                visible: false
-                            }
-                            ColorOverlay {
-                                anchors.fill: firewallIconImg
-                                source: firewallIconImg
-                                color: Theme.accent
+
+                            Item {
+                                width: 20
+                                height: 20
+                                anchors.centerIn: parent
+                                Image {
+                                    id: firewallPanel_iconImg
+                                    source: "qrc:/MeguPackOptimizer/src/resources/warning.svg"
+                                    anchors.fill: parent
+                                    sourceSize.width: 20
+                                    sourceSize.height: 20
+                                    visible: false
+                                }
+                                ColorOverlay {
+                                    anchors.fill: firewallPanel_iconImg
+                                    source: firewallPanel_iconImg
+                                    color: "#FF5722"
+                                }
                             }
                         }
 
@@ -2788,9 +2949,9 @@ Item {
                                     text: qsTr("Windows Defender Firewall")
                                     color: Theme.textPrimary
                                     font.family: Theme.fontFamily
-                                    font.pixelSize: 13
+                                    font.pixelSize: 14
                                     font.bold: true
-                                }
+                                } 
                                 Rectangle {
                                     visible: root.firewallChanged
                                     height: 16
@@ -2816,13 +2977,14 @@ Item {
                                 text: qsTr("Enables or disables Windows Defender Firewall to control network traffic protection.")
                                 color: Theme.textMuted
                                 font.family: Theme.fontFamily
-                                font.pixelSize: 10
+                                font.pixelSize: 11
                             }
                         }
                     }
 
                     Row {
                         anchors.right: parent.right
+                        anchors.rightMargin: 16
                         anchors.verticalCenter: parent.verticalCenter
                         spacing: 16
 
@@ -2847,29 +3009,38 @@ Item {
                     id: remoteAccessPanel
                     visible: root.currentSection === "core"
                     width: parent.width
-                    height: 72
+                    height: 84
 
                     Row {
                         anchors.left: parent.left
+                        anchors.leftMargin: 16
                         anchors.verticalCenter: parent.verticalCenter
                         spacing: 12
 
-                        Item {
-                            width: 28
-                            height: 28
+                        Rectangle {
+                            width: 40
+                            height: 40
+                            radius: 10
+                            color: Qt.rgba(Theme.accent.r, Theme.accent.g, Theme.accent.b, 0.15)
                             anchors.verticalCenter: parent.verticalCenter
-                            Image {
-                                id: remoteAccessIconImg
-                                source: "qrc:/MeguPackOptimizer/src/resources/play.svg"
-                                anchors.fill: parent
-                                sourceSize.width: 28
-                                sourceSize.height: 28
-                                visible: false
-                            }
-                            ColorOverlay {
-                                anchors.fill: remoteAccessIconImg
-                                source: remoteAccessIconImg
-                                color: Theme.accent
+
+                            Item {
+                                width: 20
+                                height: 20
+                                anchors.centerIn: parent
+                                Image {
+                                    id: remoteAccessPanel_iconImg
+                                    source: "qrc:/MeguPackOptimizer/src/resources/monitor.svg"
+                                    anchors.fill: parent
+                                    sourceSize.width: 20
+                                    sourceSize.height: 20
+                                    visible: false
+                                }
+                                ColorOverlay {
+                                    anchors.fill: remoteAccessPanel_iconImg
+                                    source: remoteAccessPanel_iconImg
+                                    color: Theme.accent
+                                }
                             }
                         }
 
@@ -2883,20 +3054,20 @@ Item {
                                     text: qsTr("Remote Access (RDP)")
                                     color: Theme.textPrimary
                                     font.family: Theme.fontFamily
-                                    font.pixelSize: 13
+                                    font.pixelSize: 14
                                     font.bold: true
-                                }
+                                } 
                                 Rectangle {
                                     visible: root.remoteAccessChanged
                                     height: 16
-                                    width: selectedTextRdp.contentWidth + 10
+                                    width: selectedTextRemote.contentWidth + 10
                                     radius: 4
                                     color: Qt.rgba(Theme.success.r, Theme.success.g, Theme.success.b, 0.15)
                                     border.color: Theme.success
                                     border.width: 1
                                     anchors.verticalCenter: parent.verticalCenter
                                     Text {
-                                        id: selectedTextRdp
+                                        id: selectedTextRemote
                                         text: qsTr("Selected for application")
                                         color: Theme.success
                                         font.family: Theme.fontFamily
@@ -2908,16 +3079,17 @@ Item {
                             }
 
                             Text {
-                                text: qsTr("Enables or disables Remote Desktop connections (RDP) to securely connect and manage this computer from another device.")
+                                text: qsTr("Disable Remote Desktop (RDP) and Remote Assistance services to secure system and save background resources.")
                                 color: Theme.textMuted
                                 font.family: Theme.fontFamily
-                                font.pixelSize: 10
+                                font.pixelSize: 11
                             }
                         }
                     }
 
                     Row {
                         anchors.right: parent.right
+                        anchors.rightMargin: 16
                         anchors.verticalCenter: parent.verticalCenter
                         spacing: 16
 
@@ -2941,29 +3113,38 @@ Item {
                     id: telemetryPanel
                     visible: root.currentSection === "telemetry"
                     width: parent.width
-                    height: 72
+                    height: 84
 
                     Row {
                         anchors.left: parent.left
+                        anchors.leftMargin: 16
                         anchors.verticalCenter: parent.verticalCenter
                         spacing: 12
 
-                        Item {
-                            width: 28
-                            height: 28
+                        Rectangle {
+                            width: 40
+                            height: 40
+                            radius: 10
+                            color: Qt.rgba(0.5, 0.3, 0.9, 0.15)
                             anchors.verticalCenter: parent.verticalCenter
-                            Image {
-                                id: telemetryIconImg
-                                source: "qrc:/MeguPackOptimizer/src/resources/folder.svg"
-                                anchors.fill: parent
-                                sourceSize.width: 28
-                                sourceSize.height: 28
-                                visible: false
-                            }
-                            ColorOverlay {
-                                anchors.fill: telemetryIconImg
-                                source: telemetryIconImg
-                                color: Theme.accent
+
+                            Item {
+                                width: 20
+                                height: 20
+                                anchors.centerIn: parent
+                                Image {
+                                    id: telemetryPanel_iconImg
+                                    source: "qrc:/MeguPackOptimizer/src/resources/help.svg"
+                                    anchors.fill: parent
+                                    sourceSize.width: 20
+                                    sourceSize.height: 20
+                                    visible: false
+                                }
+                                ColorOverlay {
+                                    anchors.fill: telemetryPanel_iconImg
+                                    source: telemetryPanel_iconImg
+                                    color: "#8A2BE2"
+                                }
                             }
                         }
 
@@ -2977,9 +3158,9 @@ Item {
                                     text: qsTr("Telemetry")
                                     color: Theme.textPrimary
                                     font.family: Theme.fontFamily
-                                    font.pixelSize: 13
+                                    font.pixelSize: 14
                                     font.bold: true
-                                }
+                                } 
                                 Rectangle {
                                     visible: root.telemetryChanged
                                     height: 16
@@ -3002,16 +3183,17 @@ Item {
                             }
 
                             Text {
-                                text: qsTr("Disables system diagnostic data collection, CEIP telemetry policies, error reporting, and Connected User Experiences services.")
+                                text: qsTr("Neutralize diagnostics data collecting tracking, CEIP program and WER error report services to protect privacy.")
                                 color: Theme.textMuted
                                 font.family: Theme.fontFamily
-                                font.pixelSize: 10
+                                font.pixelSize: 11
                             }
                         }
                     }
 
                     Row {
                         anchors.right: parent.right
+                        anchors.rightMargin: 16
                         anchors.verticalCenter: parent.verticalCenter
                         spacing: 16
 
@@ -3077,29 +3259,38 @@ Item {
                     id: windowsUpdatePanel
                     visible: root.currentSection === "core"
                     width: parent.width
-                    height: 72
+                    height: 84
 
                     Row {
                         anchors.left: parent.left
+                        anchors.leftMargin: 16
                         anchors.verticalCenter: parent.verticalCenter
                         spacing: 12
 
-                        Item {
-                            width: 28
-                            height: 28
+                        Rectangle {
+                            width: 40
+                            height: 40
+                            radius: 10
+                            color: Qt.rgba(0.1, 0.6, 0.9, 0.15)
                             anchors.verticalCenter: parent.verticalCenter
-                            Image {
-                                id: wuIconImg
-                                source: "qrc:/MeguPackOptimizer/src/resources/settings.svg"
-                                anchors.fill: parent
-                                sourceSize.width: 28
-                                sourceSize.height: 28
-                                visible: false
-                            }
-                            ColorOverlay {
-                                anchors.fill: wuIconImg
-                                source: wuIconImg
-                                color: Theme.accent
+
+                            Item {
+                                width: 20
+                                height: 20
+                                anchors.centerIn: parent
+                                Image {
+                                    id: windowsUpdatePanel_iconImg
+                                    source: "qrc:/MeguPackOptimizer/src/resources/settings.svg"
+                                    anchors.fill: parent
+                                    sourceSize.width: 20
+                                    sourceSize.height: 20
+                                    visible: false
+                                }
+                                ColorOverlay {
+                                    anchors.fill: windowsUpdatePanel_iconImg
+                                    source: windowsUpdatePanel_iconImg
+                                    color: "#03A9F4"
+                                }
                             }
                         }
 
@@ -3113,20 +3304,20 @@ Item {
                                     text: qsTr("Windows Update")
                                     color: Theme.textPrimary
                                     font.family: Theme.fontFamily
-                                    font.pixelSize: 13
+                                    font.pixelSize: 14
                                     font.bold: true
-                                }
+                                } 
                                 Rectangle {
                                     visible: root.windowsUpdateChanged
                                     height: 16
-                                    width: selectedTextWU.contentWidth + 10
+                                    width: selectedTextUpdate.contentWidth + 10
                                     radius: 4
                                     color: Qt.rgba(Theme.success.r, Theme.success.g, Theme.success.b, 0.15)
                                     border.color: Theme.success
                                     border.width: 1
                                     anchors.verticalCenter: parent.verticalCenter
                                     Text {
-                                        id: selectedTextWU
+                                        id: selectedTextUpdate
                                         text: qsTr("Selected for application")
                                         color: Theme.success
                                         font.family: Theme.fontFamily
@@ -3138,16 +3329,17 @@ Item {
                             }
 
                             Text {
-                                text: qsTr("Configure system update modes: enable all, only security patches, manual check, or disable updates entirely.")
+                                text: qsTr("Block auto-updates, schedule manual checks, or download security patches only to prevent unexpected reboots.")
                                 color: Theme.textMuted
                                 font.family: Theme.fontFamily
-                                font.pixelSize: 10
+                                font.pixelSize: 11
                             }
                         }
                     }
 
                     Row {
                         anchors.right: parent.right
+                        anchors.rightMargin: 16
                         anchors.verticalCenter: parent.verticalCenter
                         spacing: 16
 
@@ -3237,29 +3429,38 @@ Item {
                     id: printerPanel
                     visible: root.currentSection === "core"
                     width: parent.width
-                    height: 72
+                    height: 84
 
                     Row {
                         anchors.left: parent.left
+                        anchors.leftMargin: 16
                         anchors.verticalCenter: parent.verticalCenter
                         spacing: 12
 
-                        Item {
-                            width: 28
-                            height: 28
+                        Rectangle {
+                            width: 40
+                            height: 40
+                            radius: 10
+                            color: Qt.rgba(Theme.accent.r, Theme.accent.g, Theme.accent.b, 0.15)
                             anchors.verticalCenter: parent.verticalCenter
-                            Image {
-                                id: printerIconImg
-                                source: "qrc:/MeguPackOptimizer/src/resources/settings.svg"
-                                anchors.fill: parent
-                                sourceSize.width: 28
-                                sourceSize.height: 28
-                                visible: false
-                            }
-                            ColorOverlay {
-                                anchors.fill: printerIconImg
-                                source: printerIconImg
-                                color: Theme.accent
+
+                            Item {
+                                width: 20
+                                height: 20
+                                anchors.centerIn: parent
+                                Image {
+                                    id: printerPanel_iconImg
+                                    source: "qrc:/MeguPackOptimizer/src/resources/settings.svg"
+                                    anchors.fill: parent
+                                    sourceSize.width: 20
+                                    sourceSize.height: 20
+                                    visible: false
+                                }
+                                ColorOverlay {
+                                    anchors.fill: printerPanel_iconImg
+                                    source: printerPanel_iconImg
+                                    color: Theme.accent
+                                }
                             }
                         }
 
@@ -3273,20 +3474,20 @@ Item {
                                     text: qsTr("Print Spooler (Printer)")
                                     color: Theme.textPrimary
                                     font.family: Theme.fontFamily
-                                    font.pixelSize: 13
+                                    font.pixelSize: 14
                                     font.bold: true
-                                }
+                                } 
                                 Rectangle {
                                     visible: root.printerChanged
                                     height: 16
-                                    width: selectedText7.contentWidth + 10
+                                    width: selectedTextPrinter.contentWidth + 10
                                     radius: 4
                                     color: Qt.rgba(Theme.success.r, Theme.success.g, Theme.success.b, 0.15)
                                     border.color: Theme.success
                                     border.width: 1
                                     anchors.verticalCenter: parent.verticalCenter
                                     Text {
-                                        id: selectedText7
+                                        id: selectedTextPrinter
                                         text: qsTr("Selected for application")
                                         color: Theme.success
                                         font.family: Theme.fontFamily
@@ -3298,16 +3499,17 @@ Item {
                             }
 
                             Text {
-                                text: qsTr("Disabling the print spooler frees memory and reduces background latency for gaming.")
+                                text: qsTr("Disabling the background printer service reduces interrupt load and frees memory.")
                                 color: Theme.textMuted
                                 font.family: Theme.fontFamily
-                                font.pixelSize: 10
+                                font.pixelSize: 11
                             }
                         }
                     }
 
                     Row {
                         anchors.right: parent.right
+                        anchors.rightMargin: 16
                         anchors.verticalCenter: parent.verticalCenter
                         spacing: 16
 
@@ -3376,29 +3578,38 @@ Item {
                     id: notificationsPanel
                     visible: root.currentSection === "core"
                     width: parent.width
-                    height: 72
+                    height: 84
 
                     Row {
                         anchors.left: parent.left
+                        anchors.leftMargin: 16
                         anchors.verticalCenter: parent.verticalCenter
                         spacing: 12
 
-                        Item {
-                            width: 28
-                            height: 28
+                        Rectangle {
+                            width: 40
+                            height: 40
+                            radius: 10
+                            color: Qt.rgba(Theme.accent.r, Theme.accent.g, Theme.accent.b, 0.15)
                             anchors.verticalCenter: parent.verticalCenter
-                            Image {
-                                id: notificationsIconImg
-                                source: "qrc:/MeguPackOptimizer/src/resources/info.svg"
-                                anchors.fill: parent
-                                sourceSize.width: 28
-                                sourceSize.height: 28
-                                visible: false
-                            }
-                            ColorOverlay {
-                                anchors.fill: notificationsIconImg
-                                source: notificationsIconImg
-                                color: Theme.accent
+
+                            Item {
+                                width: 20
+                                height: 20
+                                anchors.centerIn: parent
+                                Image {
+                                    id: notificationsPanel_iconImg
+                                    source: "qrc:/MeguPackOptimizer/src/resources/info.svg"
+                                    anchors.fill: parent
+                                    sourceSize.width: 20
+                                    sourceSize.height: 20
+                                    visible: false
+                                }
+                                ColorOverlay {
+                                    anchors.fill: notificationsPanel_iconImg
+                                    source: notificationsPanel_iconImg
+                                    color: Theme.accent
+                                }
                             }
                         }
 
@@ -3412,9 +3623,9 @@ Item {
                                     text: qsTr("Windows Notifications")
                                     color: Theme.textPrimary
                                     font.family: Theme.fontFamily
-                                    font.pixelSize: 13
+                                    font.pixelSize: 14
                                     font.bold: true
-                                }
+                                } 
                                 Rectangle {
                                     visible: root.notificationsChanged
                                     height: 16
@@ -3440,13 +3651,14 @@ Item {
                                 text: qsTr("Disabling background notifications frees CPU interrupts and stabilizes FPS.")
                                 color: Theme.textMuted
                                 font.family: Theme.fontFamily
-                                font.pixelSize: 10
+                                font.pixelSize: 11
                             }
                         }
                     }
 
                     Row {
                         anchors.right: parent.right
+                        anchors.rightMargin: 16
                         anchors.verticalCenter: parent.verticalCenter
                         spacing: 16
 
@@ -3456,10 +3668,15 @@ Item {
                         }
 
                         MeguSwitch {
-                            checked: optimizerBackend.notificationsActive
+                            checked: root.notificationsChecked
+                            indeterminate: root.notificationsIndeterminate
                             anchors.verticalCenter: parent.verticalCenter
                             onToggled: (isChecked) => {
                                 optimizerBackend.notificationsActive = isChecked;
+                                optimizerBackend.notifGlobalActive = isChecked;
+                                optimizerBackend.notifAppActive = isChecked;
+                                optimizerBackend.notifSoundsActive = isChecked;
+                                optimizerBackend.notifLockscreenActive = isChecked;
                             }
                         }
 
@@ -3517,55 +3734,60 @@ Item {
                 width: parent.width
                 spacing: 8
 
-                Text {
-                    text: qsTr("CUSTOMIZATION")
-                    color: Theme.textSecondary
-                    font.family: Theme.fontFamily
-                    font.pixelSize: 10
-                    font.bold: true
-                    font.letterSpacing: 1
-                }
+
 
                 // Classic Context Menu Panel
                 AcrylicPanel {
                     id: classicContextMenuPanel
                     width: parent.width
-                    height: optimizerBackend.classicContextMenuActive ? 126 : 72
+                    height: optimizerBackend.classicContextMenuActive ? 138 : 84
 
                     Behavior on height {
                         NumberAnimation { duration: Theme.animNormal; easing.type: Easing.InOutQuad }
                     }
 
                     Column {
-                        anchors.fill: parent
+                        anchors.left: parent.left
+                        anchors.right: parent.right
+                        anchors.top: parent.top
                         spacing: 12
 
                         // Main Row
                         Item {
-                            width: parent.width
-                            height: 40
+                            anchors.left: parent.left
+                            anchors.right: parent.right
+                            height: 52
 
                             Row {
                                 anchors.left: parent.left
+                                anchors.leftMargin: 16
                                 anchors.verticalCenter: parent.verticalCenter
-                                spacing: 12
+                                spacing: 16
 
-                                Item {
-                                    width: 28
-                                    height: 28
+                                Rectangle {
+                                    width: 40
+                                    height: 40
+                                    radius: 10
+                                    color: Qt.rgba(Theme.accent.r, Theme.accent.g, Theme.accent.b, 0.15)
                                     anchors.verticalCenter: parent.verticalCenter
-                                    Image {
-                                        id: classicContextMenuIconImg
-                                        source: "qrc:/MeguPackOptimizer/src/resources/settings.svg"
-                                        anchors.fill: parent
-                                        sourceSize.width: 28
-                                        sourceSize.height: 28
-                                        visible: false
-                                    }
-                                    ColorOverlay {
-                                        anchors.fill: classicContextMenuIconImg
-                                        source: classicContextMenuIconImg
-                                        color: Theme.accent
+
+                                    Item {
+                                        width: 20
+                                        height: 20
+                                        anchors.centerIn: parent
+                                        Image {
+                                            id: classicContextMenuPanel_iconImg
+                                            source: "qrc:/MeguPackOptimizer/src/resources/settings.svg"
+                                            anchors.fill: parent
+                                            sourceSize.width: 20
+                                            sourceSize.height: 20
+                                            visible: false
+                                        }
+                                        ColorOverlay {
+                                            anchors.fill: classicContextMenuPanel_iconImg
+                                            source: classicContextMenuPanel_iconImg
+                                            color: Theme.accent
+                                        }
                                     }
                                 }
 
@@ -3579,9 +3801,9 @@ Item {
                                             text: qsTr("Classic Context Menu")
                                             color: Theme.textPrimary
                                             font.family: Theme.fontFamily
-                                            font.pixelSize: 13
+                                            font.pixelSize: 14
                                             font.bold: true
-                                        }
+                                        } 
                                         Rectangle {
                                             visible: root.classicContextMenuChanged
                                             height: 16
@@ -3607,13 +3829,14 @@ Item {
                                         text: qsTr("Disables the modern Windows 11 Fluent context menu and restores the classic Windows 10 style context menu.")
                                         color: Theme.textMuted
                                         font.family: Theme.fontFamily
-                                        font.pixelSize: 10
+                                        font.pixelSize: 11
                                     }
                                 }
                             }
 
                             Row {
                                 anchors.right: parent.right
+                                anchors.rightMargin: 16
                                 anchors.verticalCenter: parent.verticalCenter
                                 spacing: 16
 
@@ -3634,7 +3857,10 @@ Item {
 
                         // Separator Line
                         Rectangle {
-                            width: parent.width
+                            anchors.left: parent.left
+                            anchors.right: parent.right
+                            anchors.leftMargin: 16
+                            anchors.rightMargin: 16
                             height: 1
                             color: Theme.border
                             opacity: 0.3
@@ -3643,7 +3869,10 @@ Item {
 
                         // Restart Explorer Section
                         Row {
-                            width: parent.width
+                            anchors.left: parent.left
+                            anchors.right: parent.right
+                            anchors.leftMargin: 16
+                            anchors.rightMargin: 16
                             visible: optimizerBackend.classicContextMenuActive
                             spacing: 12
 
@@ -3654,7 +3883,7 @@ Item {
                                 font.pixelSize: 11
                                 font.bold: true
                                 anchors.verticalCenter: parent.verticalCenter
-                                width: parent.width - restartBtn.width - 24
+                                width: parent.width - restartBtn.width - 28
                                 wrapMode: Text.Wrap
                             }
 
@@ -3679,41 +3908,63 @@ Item {
                 width: parent.width
                 spacing: 8
 
-                Text {
-                    text: qsTr("POWER & STORAGE")
-                    color: Theme.textSecondary
-                    font.family: Theme.fontFamily
-                    font.pixelSize: 10
-                    font.bold: true
-                    font.letterSpacing: 1
+                Row {
+                    spacing: 8
+                    height: 16
+
+                    Rectangle {
+                        width: 4
+                        height: 16
+                        radius: 2
+                        color: Theme.accent
+                        anchors.verticalCenter: parent.verticalCenter
+                    }
+
+                    Text {
+                        text: qsTr("Power & Storage")
+                        color: Theme.textPrimary
+                        font.family: Theme.fontFamily
+                        font.pixelSize: 13
+                        font.bold: true
+                        anchors.verticalCenter: parent.verticalCenter
+                    }
                 }
 
                 AcrylicPanel {
                     id: hibernationPanel
                     width: parent.width
-                    height: 72
+                    height: 84
 
                     Row {
                         anchors.left: parent.left
+                        anchors.leftMargin: 16
                         anchors.verticalCenter: parent.verticalCenter
                         spacing: 12
 
-                        Item {
-                            width: 28
-                            height: 28
+                        Rectangle {
+                            width: 40
+                            height: 40
+                            radius: 10
+                            color: Qt.rgba(Theme.accent.r, Theme.accent.g, Theme.accent.b, 0.15)
                             anchors.verticalCenter: parent.verticalCenter
-                            Image {
-                                id: cpuIconImg
-                                source: "qrc:/MeguPackOptimizer/src/resources/cpu.svg"
-                                anchors.fill: parent
-                                sourceSize.width: 28
-                                sourceSize.height: 28
-                                visible: false
-                            }
-                            ColorOverlay {
-                                anchors.fill: cpuIconImg
-                                source: cpuIconImg
-                                color: Theme.accent
+
+                            Item {
+                                width: 20
+                                height: 20
+                                anchors.centerIn: parent
+                                Image {
+                                    id: hibernationPanel_iconImg
+                                    source: "qrc:/MeguPackOptimizer/src/resources/folder.svg"
+                                    anchors.fill: parent
+                                    sourceSize.width: 20
+                                    sourceSize.height: 20
+                                    visible: false
+                                }
+                                ColorOverlay {
+                                    anchors.fill: hibernationPanel_iconImg
+                                    source: hibernationPanel_iconImg
+                                    color: Theme.accent
+                                }
                             }
                         }
 
@@ -3727,20 +3978,20 @@ Item {
                                     text: qsTr("System Hibernation")
                                     color: Theme.textPrimary
                                     font.family: Theme.fontFamily
-                                    font.pixelSize: 13
+                                    font.pixelSize: 14
                                     font.bold: true
-                                }
+                                } 
                                 Rectangle {
                                     visible: root.hibernationChanged
                                     height: 16
-                                    width: selectedText9.contentWidth + 10
+                                    width: selectedTextHibern.contentWidth + 10
                                     radius: 4
                                     color: Qt.rgba(Theme.success.r, Theme.success.g, Theme.success.b, 0.15)
                                     border.color: Theme.success
                                     border.width: 1
                                     anchors.verticalCenter: parent.verticalCenter
                                     Text {
-                                        id: selectedText9
+                                        id: selectedTextHibern
                                         text: qsTr("Selected for application")
                                         color: Theme.success
                                         font.family: Theme.fontFamily
@@ -3752,16 +4003,17 @@ Item {
                             }
 
                             Text {
-                                text: qsTr("Enable or disable Windows hibernation mode to free up disk space.")
+                                text: qsTr("Enables or disables system hibernation to clean storage drive space and optimize SSD lifetime.")
                                 color: Theme.textMuted
                                 font.family: Theme.fontFamily
-                                font.pixelSize: 10
+                                font.pixelSize: 11
                             }
                         }
                     }
 
                     Row {
                         anchors.right: parent.right
+                        anchors.rightMargin: 16
                         anchors.verticalCenter: parent.verticalCenter
                         spacing: 16
 
@@ -3784,30 +4036,41 @@ Item {
                 AcrylicPanel {
                     id: pageFilePanel
                     width: parent.width
-                    height: 72
+                    height: 84
                     visible: root.currentSection === "core"
 
                     Row {
                         anchors.left: parent.left
+                        anchors.leftMargin: 16
                         anchors.verticalCenter: parent.verticalCenter
                         spacing: 12
 
-                        Item {
-                            width: 28
-                            height: 28
+                        // Rounded square badge
+                        Rectangle {
+                            width: 40
+                            height: 40
+                            radius: 10
+                            color: Qt.rgba(0.9, 0.6, 0.1, 0.15)
                             anchors.verticalCenter: parent.verticalCenter
-                            Image {
-                                id: ramIconImg
-                                source: "qrc:/MeguPackOptimizer/src/resources/ram.svg"
-                                anchors.fill: parent
-                                sourceSize.width: 28
-                                sourceSize.height: 28
-                                visible: false
-                            }
-                            ColorOverlay {
-                                anchors.fill: ramIconImg
-                                source: ramIconImg
-                                color: Theme.accent
+
+                            Item {
+                                width: 20
+                                height: 20
+                                anchors.centerIn: parent
+
+                                Image {
+                                    id: ramIconImg
+                                    source: "qrc:/MeguPackOptimizer/src/resources/ram.svg"
+                                    anchors.fill: parent
+                                    sourceSize.width: 20
+                                    sourceSize.height: 20
+                                    visible: false
+                                }
+                                ColorOverlay {
+                                    anchors.fill: ramIconImg
+                                    source: ramIconImg
+                                    color: "#FFA000"
+                                }
                             }
                         }
 
@@ -3821,7 +4084,7 @@ Item {
                                     text: qsTr("Page File")
                                     color: Theme.textPrimary
                                     font.family: Theme.fontFamily
-                                    font.pixelSize: 13
+                                    font.pixelSize: 14
                                     font.bold: true
                                 }
                                 Rectangle {
@@ -3849,15 +4112,16 @@ Item {
                                 text: qsTr("Configure system virtual memory limits (initial/maximum size in MB).")
                                 color: Theme.textMuted
                                 font.family: Theme.fontFamily
-                                font.pixelSize: 10
+                                font.pixelSize: 11
                             }
                         }
                     }
 
                     Row {
                         anchors.right: parent.right
+                        anchors.rightMargin: 16
                         anchors.verticalCenter: parent.verticalCenter
-                        spacing: 8
+                        spacing: 12
 
                         // Initial/Min size field
                         Row {
@@ -4024,25 +4288,34 @@ Item {
 
                     Row {
                         anchors.left: parent.left
+                        anchors.leftMargin: 16
                         anchors.verticalCenter: parent.verticalCenter
                         spacing: 12
 
-                        Item {
-                            width: 28
-                            height: 28
+                        Rectangle {
+                            width: 40
+                            height: 40
+                            radius: 10
+                            color: Qt.rgba(Theme.accent.r, Theme.accent.g, Theme.accent.b, 0.15)
                             anchors.verticalCenter: parent.verticalCenter
-                            Image {
-                                id: bitlockerIconImg
-                                source: "qrc:/MeguPackOptimizer/src/resources/info.svg"
-                                anchors.fill: parent
-                                sourceSize.width: 28
-                                sourceSize.height: 28
-                                visible: false
-                            }
-                            ColorOverlay {
-                                anchors.fill: bitlockerIconImg
-                                source: bitlockerIconImg
-                                color: Theme.accent
+
+                            Item {
+                                width: 20
+                                height: 20
+                                anchors.centerIn: parent
+                                Image {
+                                    id: bitlockerPanel_iconImg
+                                    source: "qrc:/MeguPackOptimizer/src/resources/info.svg"
+                                    anchors.fill: parent
+                                    sourceSize.width: 20
+                                    sourceSize.height: 20
+                                    visible: false
+                                }
+                                ColorOverlay {
+                                    anchors.fill: bitlockerPanel_iconImg
+                                    source: bitlockerPanel_iconImg
+                                    color: Theme.accent
+                                }
                             }
                         }
 
@@ -4056,20 +4329,20 @@ Item {
                                     text: qsTr("BitLocker Drive Encryption")
                                     color: Theme.textPrimary
                                     font.family: Theme.fontFamily
-                                    font.pixelSize: 13
+                                    font.pixelSize: 14
                                     font.bold: true
-                                }
+                                } 
                                 Rectangle {
                                     visible: root.bitlockerChanged
                                     height: 16
-                                    width: selectedTextBitLocker.contentWidth + 10
+                                    width: selectedTextBitl.contentWidth + 10
                                     radius: 4
                                     color: Qt.rgba(Theme.success.r, Theme.success.g, Theme.success.b, 0.15)
                                     border.color: Theme.success
                                     border.width: 1
                                     anchors.verticalCenter: parent.verticalCenter
                                     Text {
-                                        id: selectedTextBitLocker
+                                        id: selectedTextBitl
                                         text: qsTr("Selected for application")
                                         color: Theme.success
                                         font.family: Theme.fontFamily
@@ -4081,38 +4354,17 @@ Item {
                             }
 
                             Text {
-                                text: qsTr("Enable or disable the BitLocker drive encryption background manager service.")
+                                text: qsTr("Deactivate the BitLocker background monitoring driver/service or decrypt drive C: to recover I/O throughput.")
                                 color: Theme.textMuted
                                 font.family: Theme.fontFamily
-                                font.pixelSize: 10
-                                wrapMode: Text.Wrap
-                                width: bitlockerPanel.width - 220
-                            }
-
-                            Text {
-                                text: qsTr("Before disabling BitLocker, it is recommended to first disable indexing on all drives.")
-                                color: Theme.warning
-                                font.family: Theme.fontFamily
-                                font.pixelSize: 10
-                                font.bold: true
-                                wrapMode: Text.Wrap
-                                width: bitlockerPanel.width - 220
-                            }
-
-                            Text {
-                                text: qsTr("Status: Service: %1 | Encryption (C:): %2")
-                                      .arg(optimizerBackend.bitlockerActive ? qsTr("Active") : qsTr("Disabled"))
-                                      .arg(optimizerBackend.bitlockerDriveEncrypted ? qsTr("Encrypted") : qsTr("Not Encrypted"))
-                                color: Theme.accent
-                                font.family: Theme.fontFamily
-                                font.pixelSize: 9
-                                font.bold: true
+                                font.pixelSize: 11
                             }
                         }
                     }
 
                     Row {
                         anchors.right: parent.right
+                        anchors.rightMargin: 16
                         anchors.verticalCenter: parent.verticalCenter
                         spacing: 16
 
@@ -4146,30 +4398,39 @@ Item {
                 AcrylicPanel {
                     id: defenderPanel
                     width: parent.width
-                    height: !optimizerBackend.defenderActive ? 84 : 72
+                    height: !optimizerBackend.defenderActive ? 96 : 84
                     Behavior on height { NumberAnimation { duration: Theme.animNormal; easing.type: Easing.InOutQuad } }
 
                     Row {
                         anchors.left: parent.left
+                        anchors.leftMargin: 16
                         anchors.verticalCenter: parent.verticalCenter
                         spacing: 12
 
-                        Item {
-                            width: 28
-                            height: 28
+                        Rectangle {
+                            width: 40
+                            height: 40
+                            radius: 10
+                            color: Qt.rgba(0.85, 0.23, 0.0, 0.15)
                             anchors.verticalCenter: parent.verticalCenter
-                            Image {
-                                id: defenderIconImg
-                                source: "qrc:/MeguPackOptimizer/src/resources/warning.svg"
-                                anchors.fill: parent
-                                sourceSize.width: 28
-                                sourceSize.height: 28
-                                visible: false
-                            }
-                            ColorOverlay {
-                                anchors.fill: defenderIconImg
-                                source: defenderIconImg
-                                color: Theme.accent
+
+                            Item {
+                                width: 20
+                                height: 20
+                                anchors.centerIn: parent
+                                Image {
+                                    id: defenderPanel_iconImg
+                                    source: "qrc:/MeguPackOptimizer/src/resources/warning.svg"
+                                    anchors.fill: parent
+                                    sourceSize.width: 20
+                                    sourceSize.height: 20
+                                    visible: false
+                                }
+                                ColorOverlay {
+                                    anchors.fill: defenderPanel_iconImg
+                                    source: defenderPanel_iconImg
+                                    color: "#D32F2F"
+                                }
                             }
                         }
 
@@ -4183,9 +4444,9 @@ Item {
                                     text: qsTr("Windows Defender")
                                     color: Theme.textPrimary
                                     font.family: Theme.fontFamily
-                                    font.pixelSize: 13
+                                    font.pixelSize: 14
                                     font.bold: true
-                                }
+                                } 
                                 Rectangle {
                                     visible: root.defenderChanged
                                     height: 16
@@ -4211,22 +4472,14 @@ Item {
                                 text: qsTr("Disable Microsoft Defender Antivirus protection, real-time scanning, and services to minimize system latency and resource consumption.")
                                 color: Theme.textMuted
                                 font.family: Theme.fontFamily
-                                font.pixelSize: 10
-                            }
-
-                            Text {
-                                visible: !optimizerBackend.defenderActive
-                                text: qsTr("Note: Requires disabling Tamper Protection.")
-                                color: Theme.warning
-                                font.family: Theme.fontFamily
-                                font.pixelSize: 9
-                                font.bold: true
+                                font.pixelSize: 11
                             }
                         }
                     }
 
                     Row {
                         anchors.right: parent.right
+                        anchors.rightMargin: 16
                         anchors.verticalCenter: parent.verticalCenter
                         spacing: 16
 
@@ -4280,10 +4533,14 @@ Item {
                         }
 
                         MeguSwitch {
-                            checked: optimizerBackend.defenderActive
+                            checked: root.defenderChecked
+                            indeterminate: root.defenderIndeterminate
                             anchors.verticalCenter: parent.verticalCenter
                             onToggled: (isChecked) => {
                                 optimizerBackend.defenderActive = isChecked;
+                                optimizerBackend.defenderRegistryActive = isChecked;
+                                optimizerBackend.defenderCmdActive = isChecked;
+                                optimizerBackend.defenderServiceActive = isChecked;
                             }
                         }
                     }
@@ -4293,29 +4550,38 @@ Item {
                 AcrylicPanel {
                     id: powerPlanPanel
                     width: parent.width
-                    height: 72
+                    height: 84
 
                     Row {
                         anchors.left: parent.left
+                        anchors.leftMargin: 16
                         anchors.verticalCenter: parent.verticalCenter
                         spacing: 12
 
-                        Item {
-                            width: 28
-                            height: 28
+                        Rectangle {
+                            width: 40
+                            height: 40
+                            radius: 10
+                            color: Qt.rgba(Theme.accent.r, Theme.accent.g, Theme.accent.b, 0.15)
                             anchors.verticalCenter: parent.verticalCenter
-                            Image {
-                                id: powerIconImg
-                                source: "qrc:/MeguPackOptimizer/src/resources/bolt.svg"
-                                anchors.fill: parent
-                                sourceSize.width: 28
-                                sourceSize.height: 28
-                                visible: false
-                            }
-                            ColorOverlay {
-                                anchors.fill: powerIconImg
-                                source: powerIconImg
-                                color: Theme.accent
+
+                            Item {
+                                width: 20
+                                height: 20
+                                anchors.centerIn: parent
+                                Image {
+                                    id: powerPlanPanel_iconImg
+                                    source: "qrc:/MeguPackOptimizer/src/resources/bolt.svg"
+                                    anchors.fill: parent
+                                    sourceSize.width: 20
+                                    sourceSize.height: 20
+                                    visible: false
+                                }
+                                ColorOverlay {
+                                    anchors.fill: powerPlanPanel_iconImg
+                                    source: powerPlanPanel_iconImg
+                                    color: Theme.accent
+                                }
                             }
                         }
 
@@ -4329,20 +4595,20 @@ Item {
                                     text: qsTr("Power Plan")
                                     color: Theme.textPrimary
                                     font.family: Theme.fontFamily
-                                    font.pixelSize: 13
+                                    font.pixelSize: 14
                                     font.bold: true
-                                }
+                                } 
                                 Rectangle {
-                                    visible: root.powerPlanChanged
+                                    visible: root.powerPlanChanged || optimizerBackend.deleteUltimateStaged
                                     height: 16
-                                    width: selectedText10.contentWidth + 10
+                                    width: selectedTextPower.contentWidth + 10
                                     radius: 4
                                     color: Qt.rgba(Theme.success.r, Theme.success.g, Theme.success.b, 0.15)
                                     border.color: Theme.success
                                     border.width: 1
                                     anchors.verticalCenter: parent.verticalCenter
                                     Text {
-                                        id: selectedText10
+                                        id: selectedTextPower
                                         text: qsTr("Selected for application")
                                         color: Theme.success
                                         font.family: Theme.fontFamily
@@ -4354,16 +4620,17 @@ Item {
                             }
 
                             Text {
-                                text: qsTr("Select system power plans and unlock the hidden Ultimate Performance mode.")
+                                text: qsTr("Select or deploy custom high-performance energy profiles and unlock the Ultimate Performance plan.")
                                 color: Theme.textMuted
                                 font.family: Theme.fontFamily
-                                font.pixelSize: 10
+                                font.pixelSize: 11
                             }
                         }
                     }
 
                     Row {
                         anchors.right: parent.right
+                        anchors.rightMargin: 16
                         anchors.verticalCenter: parent.verticalCenter
                         spacing: 16
 
@@ -4487,29 +4754,38 @@ Item {
                 AcrylicPanel {
                     id: usbPanel
                     width: parent.width
-                    height: 72
+                    height: 84
 
                     Row {
                         anchors.left: parent.left
+                        anchors.leftMargin: 16
                         anchors.verticalCenter: parent.verticalCenter
                         spacing: 12
 
-                        Item {
-                            width: 28
-                            height: 28
+                        Rectangle {
+                            width: 40
+                            height: 40
+                            radius: 10
+                            color: Qt.rgba(Theme.accent.r, Theme.accent.g, Theme.accent.b, 0.15)
                             anchors.verticalCenter: parent.verticalCenter
-                            Image {
-                                id: usbIconImg
-                                source: "qrc:/MeguPackOptimizer/src/resources/bolt.svg"
-                                anchors.fill: parent
-                                sourceSize.width: 28
-                                sourceSize.height: 28
-                                visible: false
-                            }
-                            ColorOverlay {
-                                anchors.fill: usbIconImg
-                                source: usbIconImg
-                                color: Theme.accent
+
+                            Item {
+                                width: 20
+                                height: 20
+                                anchors.centerIn: parent
+                                Image {
+                                    id: usbPanel_iconImg
+                                    source: "qrc:/MeguPackOptimizer/src/resources/bolt.svg"
+                                    anchors.fill: parent
+                                    sourceSize.width: 20
+                                    sourceSize.height: 20
+                                    visible: false
+                                }
+                                ColorOverlay {
+                                    anchors.fill: usbPanel_iconImg
+                                    source: usbPanel_iconImg
+                                    color: Theme.accent
+                                }
                             }
                         }
 
@@ -4523,9 +4799,9 @@ Item {
                                     text: qsTr("USB 3.0 Power Saving")
                                     color: Theme.textPrimary
                                     font.family: Theme.fontFamily
-                                    font.pixelSize: 13
+                                    font.pixelSize: 14
                                     font.bold: true
-                                }
+                                } 
                                 Rectangle {
                                     visible: root.usbPowerSavingChanged
                                     height: 16
@@ -4551,13 +4827,14 @@ Item {
                                 text: qsTr("Prevent Windows from turning off USB 3.0 ports to save power, avoiding connection dropouts and peripheral latency.")
                                 color: Theme.textMuted
                                 font.family: Theme.fontFamily
-                                font.pixelSize: 10
+                                font.pixelSize: 11
                             }
                         }
                     }
 
                     Row {
                         anchors.right: parent.right
+                        anchors.rightMargin: 16
                         anchors.verticalCenter: parent.verticalCenter
                         spacing: 16
 
@@ -4612,7 +4889,8 @@ Item {
                         }
 
                         MeguSwitch {
-                            checked: optimizerBackend.usbPowerSavingActive
+                            checked: root.usbChecked
+                            indeterminate: root.usbIndeterminate
                             anchors.verticalCenter: parent.verticalCenter
                             onToggled: (isChecked) => {
                                 optimizerBackend.usbPowerSavingActive = isChecked;

@@ -1,5 +1,6 @@
 import QtQuick
 import QtQuick.Controls
+import Qt5Compat.GraphicalEffects
 import MeguPackOptimizer 1.0
 import "../components"
 
@@ -53,39 +54,97 @@ Item {
                 width: parent.width
                 spacing: 8
 
-                Text {
-                    text: qsTr("THEME SETTINGS")
-                    color: Theme.yellowAccent
-                    font.family: Theme.fontFamily
-                    font.pixelSize: 11
-                    font.bold: true
-                    font.letterSpacing: 1.5
+                Row {
+                    spacing: 8
+                    height: 16
+
+                    Rectangle {
+                        width: 4
+                        height: 16
+                        radius: 2
+                        color: Theme.accent
+                        anchors.verticalCenter: parent.verticalCenter
+                    }
+
+                    Text {
+                        text: qsTr("Theme Settings")
+                        color: Theme.textPrimary
+                        font.family: Theme.fontFamily
+                        font.pixelSize: 13
+                        font.bold: true
+                        anchors.verticalCenter: parent.verticalCenter
+                    }
                 }
 
                 AcrylicPanel {
                     width: parent.width
-                    height: 56
+                    height: 84
 
-                    Text {
-                        text: qsTr("Choose Interface Theme:")
-                        color: Theme.textPrimary
-                        font.family: Theme.fontFamily
-                        font.pixelSize: 12
-                        font.bold: true
+                    Row {
                         anchors.left: parent.left
+                        anchors.leftMargin: 16
                         anchors.verticalCenter: parent.verticalCenter
+                        spacing: 12
+
+                        Rectangle {
+                            width: 40
+                            height: 40
+                            radius: 10
+                            color: Qt.rgba(Theme.accent.r, Theme.accent.g, Theme.accent.b, 0.15)
+                            anchors.verticalCenter: parent.verticalCenter
+
+                            Item {
+                                width: 20
+                                height: 20
+                                anchors.centerIn: parent
+                                Image {
+                                    id: themeIconImg
+                                    source: "qrc:/MeguPackOptimizer/src/resources/settings.svg"
+                                    anchors.fill: parent
+                                    sourceSize.width: 20
+                                    sourceSize.height: 20
+                                    visible: false
+                                }
+                                ColorOverlay {
+                                    anchors.fill: themeIconImg
+                                    source: themeIconImg
+                                    color: Theme.accent
+                                }
+                            }
+                        }
+
+                        Column {
+                            anchors.verticalCenter: parent.verticalCenter
+                            spacing: 2
+
+                            Text {
+                                text: qsTr("Choose Interface Theme:")
+                                color: Theme.textPrimary
+                                font.family: Theme.fontFamily
+                                font.pixelSize: 14
+                                font.bold: true
+                            }
+
+                            Text {
+                                text: qsTr("Select your preferred visual style and color accents for the interface.")
+                                color: Theme.textMuted
+                                font.family: Theme.fontFamily
+                                font.pixelSize: 11
+                            }
+                        }
                     }
 
                     // Interactive Box displaying current theme
                     Rectangle {
                         id: themeSelectBtn
                         width: 160
-                        height: 36
+                        height: 32
                         radius: Theme.radiusSmall
                         color: themeMouseArea.containsMouse ? Theme.accentDim : "transparent"
                         border.color: themeMouseArea.containsMouse ? Theme.accent : Theme.border
                         border.width: 1
                         anchors.right: parent.right
+                        anchors.rightMargin: 16
                         anchors.verticalCenter: parent.verticalCenter
 
                         Behavior on color { ColorAnimation { duration: Theme.animFast } }
@@ -148,33 +207,91 @@ Item {
                 width: parent.width
                 spacing: 8
 
-                Text {
-                    text: qsTr("LANGUAGE SETTINGS")
-                    color: Theme.yellowAccent
-                    font.family: Theme.fontFamily
-                    font.pixelSize: 11
-                    font.bold: true
-                    font.letterSpacing: 1.5
+                Row {
+                    spacing: 8
+                    height: 16
+
+                    Rectangle {
+                        width: 4
+                        height: 16
+                        radius: 2
+                        color: Theme.accent
+                        anchors.verticalCenter: parent.verticalCenter
+                    }
+
+                    Text {
+                        text: qsTr("Language Settings")
+                        color: Theme.textPrimary
+                        font.family: Theme.fontFamily
+                        font.pixelSize: 13
+                        font.bold: true
+                        anchors.verticalCenter: parent.verticalCenter
+                    }
                 }
 
                 AcrylicPanel {
                     width: parent.width
-                    height: 56
+                    height: 84
 
-                    Text {
-                        text: qsTr("Choose Interface Language:")
-                        color: Theme.textPrimary
-                        font.family: Theme.fontFamily
-                        font.pixelSize: 12
-                        font.bold: true
+                    Row {
                         anchors.left: parent.left
+                        anchors.leftMargin: 16
                         anchors.verticalCenter: parent.verticalCenter
+                        spacing: 12
+
+                        Rectangle {
+                            width: 40
+                            height: 40
+                            radius: 10
+                            color: Qt.rgba(Theme.textSecondary.r, Theme.textSecondary.g, Theme.textSecondary.b, 0.15)
+                            anchors.verticalCenter: parent.verticalCenter
+
+                            Item {
+                                width: 20
+                                height: 20
+                                anchors.centerIn: parent
+                                Image {
+                                    id: langIconImg
+                                    source: "qrc:/MeguPackOptimizer/src/resources/info.svg"
+                                    anchors.fill: parent
+                                    sourceSize.width: 20
+                                    sourceSize.height: 20
+                                    visible: false
+                                }
+                                ColorOverlay {
+                                    anchors.fill: langIconImg
+                                    source: langIconImg
+                                    color: Theme.textSecondary
+                                }
+                            }
+                        }
+
+                        Column {
+                            anchors.verticalCenter: parent.verticalCenter
+                            spacing: 2
+
+                            Text {
+                                text: qsTr("Choose Interface Language:")
+                                color: Theme.textPrimary
+                                font.family: Theme.fontFamily
+                                font.pixelSize: 14
+                                font.bold: true
+                            }
+
+                            Text {
+                                text: qsTr("Change the primary localization used across all application screens.")
+                                color: Theme.textMuted
+                                font.family: Theme.fontFamily
+                                font.pixelSize: 11
+                            }
+                        }
                     }
 
                     // Row of Language Option Buttons
                     Row {
                         spacing: 10
                         anchors.right: parent.right
+                        anchors.rightMargin: 16
                         anchors.verticalCenter: parent.verticalCenter
 
                         Repeater {
@@ -191,6 +308,174 @@ Item {
                                     console.log("[QML] After setting, backend language is:", settingsBackend.language);
                                 }
                             }
+                        }
+                    }
+                }
+            }
+
+            // 3. BACKUP SETTINGS SECTION
+            Column {
+                width: parent.width
+                spacing: 8
+
+                Row {
+                    spacing: 8
+                    height: 16
+
+                    Rectangle {
+                        width: 4
+                        height: 16
+                        radius: 2
+                        color: Theme.accent
+                        anchors.verticalCenter: parent.verticalCenter
+                    }
+
+                    Text {
+                        text: qsTr("Backup Settings")
+                        color: Theme.textPrimary
+                        font.family: Theme.fontFamily
+                        font.pixelSize: 13
+                        font.bold: true
+                        anchors.verticalCenter: parent.verticalCenter
+                    }
+                }
+
+                AcrylicPanel {
+                    width: parent.width
+                    height: 84
+
+                    Row {
+                        anchors.left: parent.left
+                        anchors.leftMargin: 16
+                        anchors.verticalCenter: parent.verticalCenter
+                        spacing: 12
+
+                        Rectangle {
+                            width: 40
+                            height: 40
+                            radius: 10
+                            color: Qt.rgba(0.9, 0.3, 0.1, 0.15)
+                            anchors.verticalCenter: parent.verticalCenter
+
+                            Item {
+                                width: 20
+                                height: 20
+                                anchors.centerIn: parent
+                                Image {
+                                    id: backupIconImg
+                                    source: "qrc:/MeguPackOptimizer/src/resources/warning.svg"
+                                    anchors.fill: parent
+                                    sourceSize.width: 20
+                                    sourceSize.height: 20
+                                    visible: false
+                                }
+                                ColorOverlay {
+                                    anchors.fill: backupIconImg
+                                    source: backupIconImg
+                                    color: "#FF5722"
+                                }
+                            }
+                        }
+
+                        Column {
+                            anchors.verticalCenter: parent.verticalCenter
+                            spacing: 2
+
+                            Text {
+                                text: qsTr("Do not create Backup (not recommended):")
+                                color: Theme.textPrimary
+                                font.family: Theme.fontFamily
+                                font.pixelSize: 14
+                                font.bold: true
+                            }
+
+                            Text {
+                                text: qsTr("Skip system restore point creation before executing optimizations.")
+                                color: Theme.textMuted
+                                font.family: Theme.fontFamily
+                                font.pixelSize: 11
+                            }
+                        }
+                    }
+
+                    MeguSwitch {
+                        anchors.right: parent.right
+                        anchors.rightMargin: 16
+                        anchors.verticalCenter: parent.verticalCenter
+                        checked: !settingsBackend.createBackup
+                        onToggled: (isChecked) => {
+                            settingsBackend.createBackup = !isChecked;
+                        }
+                    }
+                }
+
+                AcrylicPanel {
+                    width: parent.width
+                    height: 84
+
+                    Row {
+                        anchors.left: parent.left
+                        anchors.leftMargin: 16
+                        anchors.verticalCenter: parent.verticalCenter
+                        spacing: 12
+
+                        Rectangle {
+                            width: 40
+                            height: 40
+                            radius: 10
+                            color: Qt.rgba(0.1, 0.8, 0.5, 0.15)
+                            anchors.verticalCenter: parent.verticalCenter
+
+                            Item {
+                                width: 20
+                                height: 20
+                                anchors.centerIn: parent
+                                Image {
+                                    id: restoreIconImg
+                                    source: "qrc:/MeguPackOptimizer/src/resources/storage.svg"
+                                    anchors.fill: parent
+                                    sourceSize.width: 20
+                                    sourceSize.height: 20
+                                    visible: false
+                                }
+                                ColorOverlay {
+                                    anchors.fill: restoreIconImg
+                                    source: restoreIconImg
+                                    color: "#00C853"
+                                }
+                            }
+                        }
+
+                        Column {
+                            anchors.verticalCenter: parent.verticalCenter
+                            spacing: 2
+
+                            Text {
+                                text: qsTr("Restore system to a previous state:")
+                                color: Theme.textPrimary
+                                font.family: Theme.fontFamily
+                                font.pixelSize: 14
+                                font.bold: true
+                            }
+
+                            Text {
+                                text: qsTr("Open Windows System Restore (rstrui.exe) to revert changes.")
+                                color: Theme.textMuted
+                                font.family: Theme.fontFamily
+                                font.pixelSize: 11
+                            }
+                        }
+                    }
+
+                    MeguButton {
+                        width: 160
+                        height: 32
+                        text: qsTr("Restore System")
+                        anchors.right: parent.right
+                        anchors.rightMargin: 16
+                        anchors.verticalCenter: parent.verticalCenter
+                        onClicked: {
+                            optimizerBackend.restoreFromBackup("");
                         }
                     }
                 }

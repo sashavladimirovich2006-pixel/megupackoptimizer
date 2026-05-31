@@ -7,6 +7,7 @@
 #include <QStorageInfo>
 #include <QDirIterator>
 #include <QThread>
+#include <QTimer>
 #include <QCoreApplication>
 #include <QSysInfo>
 #include <QScreen>
@@ -35,6 +36,121 @@
 #endif
 
 namespace {
+    QString getActiveOrRecentUser(const QString &steamPath) {
+        // 1. Try registry first (active process)
+#ifdef Q_OS_WIN
+        DWORD activeUser = 0;
+        HKEY hKeyActive;
+        if (RegOpenKeyExW(HKEY_CURRENT_USER, L"Software\\Valve\\Steam\\ActiveProcess", 0, KEY_READ, &hKeyActive) == ERROR_SUCCESS) {
+            DWORD dwSize = sizeof(activeUser);
+            if (RegQueryValueExW(hKeyActive, L"ActiveUser", nullptr, nullptr, reinterpret_cast<LPBYTE>(&activeUser), &dwSize) == ERROR_SUCCESS) {
+                if (activeUser != 0) {
+                    RegCloseKey(hKeyActive);
+                    return QString::number(activeUser);
+                }
+            }
+            RegCloseKey(hKeyActive);
+        }
+#endif
+
+        // 2. Try loginusers.vdf
+        QString loginusersPath = steamPath + "/config/loginusers.vdf";
+        if (QFile::exists(loginusersPath)) {
+            QFile file(loginusersPath);
+            if (file.open(QIODevice::ReadOnly | QIODevice::Text)) {
+                QString content = QString::fromUtf8(file.readAll());
+                file.close();
+
+                QRegularExpression idRegex("\"(7656119\\d+)\"\\s*\\{");
+                QRegularExpressionMatchIterator it = idRegex.globalMatch(content);
+                QString mostRecentId = "";
+                qlonglong maxTimestamp = -1;
+                QString fallbackId = "";
+
+                while (it.hasNext()) {
+                    QRegularExpressionMatch match = it.next();
+                    QString steamId64Str = match.captured(1);
+                    
+                    int startIdx = match.capturedEnd();
+                    int count = 1;
+                    int idx = startIdx;
+                    int closeIdx = -1;
+                    while (count > 0 && idx < content.length()) {
+                        QChar ch = content.at(idx);
+                        if (ch == '{') {
+                            count++;
+                        } else if (ch == '}') {
+                            count--;
+                            if (count == 0) {
+                                closeIdx = idx;
+                                break;
+                            }
+                        }
+                        idx++;
+                    }
+
+                    if (closeIdx != -1) {
+                        QString userBlock = content.mid(startIdx, closeIdx - startIdx);
+                        
+                        QRegularExpression mostRecentRegex("\"MostRecent\"\\s*\"1\"");
+                        if (mostRecentRegex.match(userBlock).hasMatch()) {
+                            mostRecentId = steamId64Str;
+                            break;
+                        }
+
+                        QRegularExpression timestampRegex("\"Timestamp\"\\s*\"(\\d+)\"");
+                        QRegularExpressionMatch tsMatch = timestampRegex.match(userBlock);
+                        if (tsMatch.hasMatch()) {
+                            qlonglong ts = tsMatch.captured(1).toLongLong();
+                            if (ts > maxTimestamp) {
+                                maxTimestamp = ts;
+                                fallbackId = steamId64Str;
+                            }
+                        }
+                    }
+                }
+
+                QString targetId = mostRecentId.isEmpty() ? fallbackId : mostRecentId;
+                if (!targetId.isEmpty()) {
+                    qlonglong steamId64 = targetId.toLongLong();
+                    qlonglong steamId32 = steamId64 - 76561197960265728LL;
+                    return QString::number(steamId32);
+                }
+            }
+        }
+
+        // 3. Fallback to userdata subdirs (use the one with latest localconfig.vdf modification time)
+        QString userdataPath = steamPath + "/userdata";
+        QDir userdataDir(userdataPath);
+        if (userdataDir.exists()) {
+            QStringList subdirs = userdataDir.entryList(QDir::Dirs | QDir::NoDotAndDotDot);
+            QString latestUser = "";
+            QDateTime latestTime;
+            for (const QString &subdir : subdirs) {
+                bool isNumeric;
+                subdir.toInt(&isNumeric);
+                if (!isNumeric) {
+                    continue;
+                }
+
+                QString vdfPath = userdataPath + "/" + subdir + "/config/localconfig.vdf";
+                if (QFile::exists(vdfPath)) {
+                    QFileInfo fi(vdfPath);
+                    QDateTime modTime = fi.lastModified();
+                    if (latestUser.isEmpty() || modTime > latestTime) {
+                        latestTime = modTime;
+                        latestUser = subdir;
+                    }
+                }
+            }
+            if (!latestUser.isEmpty()) {
+                return latestUser;
+            }
+        }
+
+        return "";
+    }
+
     const QStringList CS2_MANAGED_OPTIONS = {
         "-allow_third_party_software",
         "-noreflex",
@@ -158,6 +274,212 @@ namespace {
         return true;
     }
 
+
+    bool getBlockBodyRange(const QString &content, int searchStart, int searchEnd, const QString &key, int &bodyStart, int &bodyEnd) {
+        QRegularExpression keyRegex(QString("\"%1\"\\s*\\{").arg(QRegularExpression::escape(key)));
+        int currentPos = searchStart;
+        while (currentPos < searchEnd) {
+            QRegularExpressionMatch match = keyRegex.match(content, currentPos);
+            if (!match.hasMatch()) {
+                return false;
+            }
+            int matchStart = match.capturedStart();
+            if (matchStart >= searchEnd) {
+                return false;
+            }
+
+            int braceLevel = 0;
+            bool inQuotes = false;
+            for (int i = searchStart; i < matchStart; ++i) {
+                QChar c = content.at(i);
+                if (c == '"' && (i == 0 || content.at(i - 1) != '\\')) {
+                    inQuotes = !inQuotes;
+                }
+                if (!inQuotes) {
+                    if (c == '{') {
+                        braceLevel++;
+                    } else if (c == '}') {
+                        braceLevel--;
+                    }
+                }
+            }
+
+            if (braceLevel == 0) {
+                int startIdx = match.capturedEnd();
+                int count = 1;
+                int idx = startIdx;
+                while (count > 0 && idx < searchEnd) {
+                    QChar ch = content.at(idx);
+                    if (ch == '{') {
+                        count++;
+                    } else if (ch == '}') {
+                        count--;
+                        if (count == 0) {
+                            bodyStart = startIdx;
+                            bodyEnd = idx;
+                            return true;
+                        }
+                    }
+                    idx++;
+                }
+                return false;
+            }
+            currentPos = match.capturedEnd();
+        }
+        return false;
+    }
+
+    bool getPathBodyRange(const QString &content, const QStringList &path, int &outStart, int &outEnd) {
+        int start = 0;
+        int end = content.length();
+        for (const QString &key : path) {
+            int nextStart, nextEnd;
+            if (!getBlockBodyRange(content, start, end, key, nextStart, nextEnd)) {
+                return false;
+            }
+            start = nextStart;
+            end = nextEnd;
+        }
+        outStart = start;
+        outEnd = end;
+        return true;
+    }
+
+    QString getValueFromBlockBody(const QString &content, int start, int end, const QString &key) {
+        QRegularExpression kvRegex(QString("\"%1\"\\s*\"((?:[^\"\\\\]|\\\\.)*)\"").arg(QRegularExpression::escape(key)));
+        int currentPos = start;
+        while (currentPos < end) {
+            QRegularExpressionMatch match = kvRegex.match(content, currentPos);
+            if (!match.hasMatch()) {
+                return "";
+            }
+            int matchStart = match.capturedStart();
+            if (matchStart >= end) {
+                return "";
+            }
+
+            int braceLevel = 0;
+            bool inQuotes = false;
+            for (int i = start; i < matchStart; ++i) {
+                QChar c = content.at(i);
+                if (c == '"' && (i == 0 || content.at(i - 1) != '\\')) {
+                    inQuotes = !inQuotes;
+                }
+                if (!inQuotes) {
+                    if (c == '{') {
+                        braceLevel++;
+                    } else if (c == '}') {
+                        braceLevel--;
+                    }
+                }
+            }
+
+            if (braceLevel == 0) {
+                return match.captured(1);
+            }
+            currentPos = match.capturedEnd();
+        }
+        return "";
+    }
+
+    bool updateValueInBlockBody(QString &content, int start, int &end, const QString &key, const QString &newValue) {
+        QRegularExpression kvRegex(QString("\"%1\"\\s*\"((?:[^\"\\\\]|\\\\.)*)\"").arg(QRegularExpression::escape(key)));
+        int currentPos = start;
+        while (currentPos < end) {
+            QRegularExpressionMatch match = kvRegex.match(content, currentPos);
+            if (match.hasMatch()) {
+                int matchStart = match.capturedStart();
+                if (matchStart < end) {
+                    int braceLevel = 0;
+                    bool inQuotes = false;
+                    for (int i = start; i < matchStart; ++i) {
+                        QChar c = content.at(i);
+                        if (c == '"' && (i == 0 || content.at(i - 1) != '\\')) {
+                            inQuotes = !inQuotes;
+                        }
+                        if (!inQuotes) {
+                            if (c == '{') {
+                                braceLevel++;
+                            } else if (c == '}') {
+                                braceLevel--;
+                            }
+                        }
+                    }
+
+                    if (braceLevel == 0) {
+                        int valStart = match.capturedStart(1);
+                        int valEnd = match.capturedEnd(1);
+                        content.replace(valStart, valEnd - valStart, newValue);
+                        int diff = newValue.length() - (valEnd - valStart);
+                        end += diff;
+                        return true;
+                    }
+                }
+                currentPos = match.capturedEnd();
+            } else {
+                break;
+            }
+        }
+
+        QString indent = "\t";
+        int firstLineEnd = content.indexOf('\n', start);
+        if (firstLineEnd != -1 && firstLineEnd < end) {
+            int wsIdx = firstLineEnd + 1;
+            while (wsIdx < end && (content.at(wsIdx) == ' ' || content.at(wsIdx) == '\t')) {
+                wsIdx++;
+            }
+            if (wsIdx > firstLineEnd + 1) {
+                indent = content.mid(firstLineEnd + 1, wsIdx - (firstLineEnd + 1));
+            }
+        }
+
+        QString insertion = QString("\n%1\"%2\"\t\t\"%3\"").arg(indent, key, newValue);
+        content.insert(start, insertion);
+        end += insertion.length();
+        return true;
+    }
+
+    bool ensurePathExists(QString &content, const QStringList &path, int &outStart, int &outEnd) {
+        int start = 0;
+        int end = content.length();
+        for (int i = 0; i < path.size(); ++i) {
+            const QString &key = path.at(i);
+            int nextStart, nextEnd;
+            if (getBlockBodyRange(content, start, end, key, nextStart, nextEnd)) {
+                start = nextStart;
+                end = nextEnd;
+            } else {
+                QString indent = "";
+                for (int k = 0; k < i + 1; ++k) {
+                    indent += "\t";
+                }
+
+                QString blockText = "";
+                QString currentIndent = indent;
+                for (int j = i; j < path.size(); ++j) {
+                    blockText += QString("\n%1\"%2\"\n%1{").arg(currentIndent, path.at(j));
+                    currentIndent += "\t";
+                }
+
+                blockText += "\n";
+                for (int j = path.size() - 1; j >= i; --j) {
+                    currentIndent.chop(1);
+                    blockText += QString("%1}\n").arg(currentIndent);
+                }
+
+                content.insert(start, blockText);
+
+                if (!getPathBodyRange(content, path, outStart, outEnd)) {
+                    return false;
+                }
+                return true;
+            }
+        }
+        outStart = start;
+        outEnd = end;
+        return true;
+    }
+
     QString getVdfOverlayState(const QString &filePath, const QString &appId) {
         QFile file(filePath);
         if (!file.open(QIODevice::ReadOnly | QIODevice::Text)) {
@@ -166,39 +488,28 @@ namespace {
         QString content = QString::fromUtf8(file.readAll());
         file.close();
 
-        QRegularExpression appRegex(QString("\"%1\"\\s*\\{").arg(appId));
-        QRegularExpressionMatch match = appRegex.match(content);
-        if (!match.hasMatch()) {
-            return "";
+        int start, end;
+        QString valState = "";
+        QString valEnable = "";
+
+        if (getPathBodyRange(content, {"UserLocalConfigStore", "apps", appId}, start, end)) {
+            valEnable = getValueFromBlockBody(content, start, end, "OverlayAppEnable");
         }
 
-        int startIdx = match.capturedEnd();
-        int count = 1;
-        int idx = startIdx;
-        int closeIdx = -1;
-        while (count > 0 && idx < content.length()) {
-            QChar ch = content.at(idx);
-            if (ch == '{') {
-                count++;
-            } else if (ch == '}') {
-                count--;
-                if (count == 0) {
-                    closeIdx = idx;
-                    break;
-                }
-            }
-            idx++;
+        if (getPathBodyRange(content, {"UserLocalConfigStore", "Software", "Valve", "Steam", "apps", appId}, start, end)) {
+            valState = getValueFromBlockBody(content, start, end, "OverlayState");
         }
 
-        if (closeIdx == -1) {
-            return "";
-        }
+        Logger::log(QString("getVdfOverlayState: Read values for app %1 -> OverlayAppEnable: '%2', OverlayState: '%3'")
+                    .arg(appId, valEnable, valState), "INFO");
 
-        QString appBlock = content.mid(startIdx, closeIdx - startIdx);
-        QRegularExpression overlayRegex("\"OverlayState\"\\s*\"([^\"]*)\"");
-        QRegularExpressionMatch overlayMatch = overlayRegex.match(appBlock);
-        if (overlayMatch.hasMatch()) {
-            return overlayMatch.captured(1);
+        // Prioritize the modern toggle OverlayAppEnable
+        if (!valEnable.isEmpty()) {
+            return (valEnable == "1") ? "1" : "2";
+        }
+        // Fallback to legacy/secondary OverlayState
+        if (!valState.isEmpty()) {
+            return (valState == "1") ? "1" : "2";
         }
         return "";
     }
@@ -211,56 +522,35 @@ namespace {
         QString content = QString::fromUtf8(file.readAll());
         file.close();
 
-        QRegularExpression appRegex(QString("\"%1\"\\s*\\{").arg(appId));
-        QRegularExpressionMatch match = appRegex.match(content);
-        if (!match.hasMatch()) {
-            return false;
-        }
+        QString valState = (state == "2" || state == "0") ? "2" : "1";
+        QString valEnable = (state == "2" || state == "0") ? "0" : "1";
 
-        int startIdx = match.capturedEnd();
-        int count = 1;
-        int idx = startIdx;
-        int closeIdx = -1;
-        while (count > 0 && idx < content.length()) {
-            QChar ch = content.at(idx);
-            if (ch == '{') {
-                count++;
-            } else if (ch == '}') {
-                count--;
-                if (count == 0) {
-                    closeIdx = idx;
-                    break;
-                }
+        int start, end;
+        bool changed = false;
+
+        if (ensurePathExists(content, {"UserLocalConfigStore", "Software", "Valve", "Steam", "apps", appId}, start, end)) {
+            if (updateValueInBlockBody(content, start, end, "OverlayState", valState)) {
+                changed = true;
             }
-            idx++;
         }
 
-        if (closeIdx == -1) {
-            return false;
+        if (ensurePathExists(content, {"UserLocalConfigStore", "apps", appId}, start, end)) {
+            if (updateValueInBlockBody(content, start, end, "OverlayAppEnable", valEnable)) {
+                changed = true;
+            }
         }
 
-        QString appBlock = content.mid(startIdx, closeIdx - startIdx);
-        QRegularExpression overlayRegex("\"OverlayState\"\\s*\"([^\"]*)\"");
-        QRegularExpressionMatch overlayMatch = overlayRegex.match(appBlock);
-
-        QString newAppBlock;
-        if (overlayMatch.hasMatch()) {
-            int overlayStart = overlayMatch.capturedStart();
-            int overlayEnd = overlayMatch.capturedEnd();
-            newAppBlock = appBlock.left(overlayStart) + QString("\"OverlayState\"\t\t\"%1\"").arg(state) + appBlock.mid(overlayEnd);
-        } else {
-            QString indent = "\t\t\t\t\t\t";
-            newAppBlock = QString("\n%1\"OverlayState\"\t\t\"%2\"").arg(indent, state) + appBlock;
+        if (changed) {
+            if (!file.open(QIODevice::WriteOnly | QIODevice::Text)) {
+                return false;
+            }
+            file.write(content.toUtf8());
+            file.close();
+            Logger::log(QString("updateVdfOverlayState: Successfully updated app %1 overlay to state: %2 (OverlayState=%3, OverlayAppEnable=%4)")
+                        .arg(appId, state, valState, valEnable), "INFO");
+            return true;
         }
-
-        QString newContent = content.left(startIdx) + newAppBlock + content.mid(closeIdx);
-
-        if (!file.open(QIODevice::WriteOnly | QIODevice::Text)) {
-            return false;
-        }
-        file.write(newContent.toUtf8());
-        file.close();
-        return true;
+        return false;
     }
 
     QString getVdfRootSetting(const QString &filePath, const QString &settingKey) {
@@ -559,39 +849,12 @@ namespace {
         QString content = QString::fromUtf8(file.readAll());
         file.close();
 
-        QRegularExpression friendsRegex("\"friends\"\\s*\\{");
-        QRegularExpressionMatch match = friendsRegex.match(content);
-        if (!match.hasMatch()) {
-            return "";
+        int start, end;
+        if (getPathBodyRange(content, {"UserLocalConfigStore", "friends"}, start, end)) {
+            return getValueFromBlockBody(content, start, end, settingKey);
         }
-
-        int startIdx = match.capturedEnd();
-        int count = 1;
-        int idx = startIdx;
-        int closeIdx = -1;
-        while (count > 0 && idx < content.length()) {
-            QChar ch = content.at(idx);
-            if (ch == '{') {
-                count++;
-            } else if (ch == '}') {
-                count--;
-                if (count == 0) {
-                    closeIdx = idx;
-                    break;
-                }
-            }
-            idx++;
-        }
-
-        if (closeIdx == -1) {
-            return "";
-        }
-
-        QString friendsBlock = content.mid(startIdx, closeIdx - startIdx);
-        QRegularExpression keyRegex(QString("\"%1\"\\s*\"((?:[^\"\\\\]|\\\\.)*)\"").arg(settingKey));
-        QRegularExpressionMatch keyMatch = keyRegex.match(friendsBlock);
-        if (keyMatch.hasMatch()) {
-            return keyMatch.captured(1);
+        if (getBlockBodyRange(content, 0, content.length(), "friends", start, end)) {
+            return getValueFromBlockBody(content, start, end, settingKey);
         }
         return "";
     }
@@ -604,56 +867,24 @@ namespace {
         QString content = QString::fromUtf8(file.readAll());
         file.close();
 
-        QRegularExpression friendsRegex("\"friends\"\\s*\\{");
-        QRegularExpressionMatch match = friendsRegex.match(content);
-        if (!match.hasMatch()) {
-            return false;
+        int start, end;
+        bool found = false;
+        if (ensurePathExists(content, {"UserLocalConfigStore", "friends"}, start, end)) {
+            found = true;
+        } else if (ensurePathExists(content, {"friends"}, start, end)) {
+            found = true;
         }
 
-        int startIdx = match.capturedEnd();
-        int count = 1;
-        int idx = startIdx;
-        int closeIdx = -1;
-        while (count > 0 && idx < content.length()) {
-            QChar ch = content.at(idx);
-            if (ch == '{') {
-                count++;
-            } else if (ch == '}') {
-                count--;
-                if (count == 0) {
-                    closeIdx = idx;
-                    break;
+        if (found) {
+            if (updateValueInBlockBody(content, start, end, settingKey, value)) {
+                if (file.open(QIODevice::WriteOnly | QIODevice::Text)) {
+                    file.write(content.toUtf8());
+                    file.close();
+                    return true;
                 }
             }
-            idx++;
         }
-
-        if (closeIdx == -1) {
-            return false;
-        }
-
-        QString friendsBlock = content.mid(startIdx, closeIdx - startIdx);
-        QRegularExpression keyRegex(QString("\"%1\"\\s*\"((?:[^\"\\\\]|\\\\.)*)\"").arg(settingKey));
-        QRegularExpressionMatch keyMatch = keyRegex.match(friendsBlock);
-
-        QString newFriendsBlock;
-        if (keyMatch.hasMatch()) {
-            int keyStart = keyMatch.capturedStart();
-            int keyEnd = keyMatch.capturedEnd();
-            newFriendsBlock = friendsBlock.left(keyStart) + QString("\"%1\"\t\t\"%2\"").arg(settingKey, value) + friendsBlock.mid(keyEnd);
-        } else {
-            QString indent = "\t\t";
-            newFriendsBlock = QString("\n%1\"%2\"\t\t\"%3\"").arg(indent, settingKey, value) + friendsBlock;
-        }
-
-        QString newContent = content.left(startIdx) + newFriendsBlock + content.mid(closeIdx);
-
-        if (!file.open(QIODevice::WriteOnly | QIODevice::Text)) {
-            return false;
-        }
-        file.write(newContent.toUtf8());
-        file.close();
-        return true;
+        return false;
     }
 
     QString getVdfBlockSetting(const QString &filePath, const QString &blockName, const QString &settingKey) {
@@ -664,39 +895,47 @@ namespace {
         QString content = QString::fromUtf8(file.readAll());
         file.close();
 
-        QRegularExpression blockRegex(QString("\"%1\"\\s*\\{").arg(blockName));
-        QRegularExpressionMatch match = blockRegex.match(content);
-        if (!match.hasMatch()) {
-            return "";
-        }
+        int start, end;
 
-        int startIdx = match.capturedEnd();
-        int count = 1;
-        int idx = startIdx;
-        int closeIdx = -1;
-        while (count > 0 && idx < content.length()) {
-            QChar ch = content.at(idx);
-            if (ch == '{') {
-                count++;
-            } else if (ch == '}') {
-                count--;
-                if (count == 0) {
-                    closeIdx = idx;
-                    break;
+        if (blockName == "Steam") {
+            QStringList deepKeys = {"AutoUpdateWindowEnabled", "DownloadThrottleKbps", "AllowDownloadsDuringGameplay", "StreamingThrottleEnabled"};
+            QStringList flatKeys = {"ShaderCacheEnabled", "LocalNetworkGameTransfers", "Display download rates in bits per second"};
+            QStringList roots = {"UserLocalConfigStore", "InstallConfigStore", "UserRoamingConfigStore"};
+
+            if (deepKeys.contains(settingKey)) {
+                for (const QString &root : roots) {
+                    if (getPathBodyRange(content, {root, "Software", "Valve", "Steam"}, start, end)) {
+                        QString val = getValueFromBlockBody(content, start, end, settingKey);
+                        if (!val.isEmpty()) return val;
+                    }
+                }
+                for (const QString &root : roots) {
+                    if (getPathBodyRange(content, {root, "Steam"}, start, end)) {
+                        QString val = getValueFromBlockBody(content, start, end, settingKey);
+                        if (!val.isEmpty()) return val;
+                    }
+                }
+            } else if (flatKeys.contains(settingKey)) {
+                for (const QString &root : roots) {
+                    if (getPathBodyRange(content, {root, "Steam"}, start, end)) {
+                        QString val = getValueFromBlockBody(content, start, end, settingKey);
+                        if (!val.isEmpty()) return val;
+                    }
+                }
+                for (const QString &root : roots) {
+                    if (getPathBodyRange(content, {root, "Software", "Valve", "Steam"}, start, end)) {
+                        QString val = getValueFromBlockBody(content, start, end, settingKey);
+                        if (!val.isEmpty()) return val;
+                    }
                 }
             }
-            idx++;
         }
 
-        if (closeIdx == -1) {
-            return "";
+        if (getPathBodyRange(content, {"UserLocalConfigStore", blockName}, start, end)) {
+            return getValueFromBlockBody(content, start, end, settingKey);
         }
-
-        QString blockContent = content.mid(startIdx, closeIdx - startIdx);
-        QRegularExpression keyRegex(QString("\"%1\"\\s*\"((?:[^\"\\\\]|\\\\.)*)\"").arg(settingKey));
-        QRegularExpressionMatch keyMatch = keyRegex.match(blockContent);
-        if (keyMatch.hasMatch()) {
-            return keyMatch.captured(1);
+        if (getBlockBodyRange(content, 0, content.length(), blockName, start, end)) {
+            return getValueFromBlockBody(content, start, end, settingKey);
         }
         return "";
     }
@@ -709,83 +948,109 @@ namespace {
         QString content = QString::fromUtf8(file.readAll());
         file.close();
 
-        QRegularExpression blockRegex(QString("\"%1\"\\s*\\{").arg(blockName));
-        QRegularExpressionMatch match = blockRegex.match(content);
+        int start, end;
+        bool found = false;
 
-        if (!match.hasMatch()) {
-            bool inserted = false;
+        if (blockName == "Steam") {
+            QStringList deepKeys = {"AutoUpdateWindowEnabled", "DownloadThrottleKbps", "AllowDownloadsDuringGameplay", "StreamingThrottleEnabled"};
+            QStringList flatKeys = {"ShaderCacheEnabled", "LocalNetworkGameTransfers", "Display download rates in bits per second"};
+            QStringList roots = {"UserLocalConfigStore", "InstallConfigStore", "UserRoamingConfigStore"};
+
+            if (deepKeys.contains(settingKey)) {
+                for (const QString &root : roots) {
+                    if (getPathBodyRange(content, {root, "Software", "Valve", "Steam"}, start, end)) {
+                        if (content.mid(start, end - start).contains(QString("\"%1\"").arg(settingKey))) {
+                            found = true;
+                            break;
+                        }
+                    }
+                }
+                if (!found) {
+                    for (const QString &root : roots) {
+                        if (getPathBodyRange(content, {root, "Steam"}, start, end)) {
+                            if (content.mid(start, end - start).contains(QString("\"%1\"").arg(settingKey))) {
+                                found = true;
+                                break;
+                            }
+                        }
+                    }
+                }
+                if (!found) {
+                    for (const QString &root : roots) {
+                        if (content.contains(QString("\"%1\"").arg(root))) {
+                            if (ensurePathExists(content, {root, "Software", "Valve", "Steam"}, start, end)) {
+                                found = true;
+                                break;
+                            }
+                        }
+                    }
+                }
+            } else if (flatKeys.contains(settingKey)) {
+                for (const QString &root : roots) {
+                    if (getPathBodyRange(content, {root, "Steam"}, start, end)) {
+                        if (content.mid(start, end - start).contains(QString("\"%1\"").arg(settingKey))) {
+                            found = true;
+                            break;
+                        }
+                    }
+                }
+                if (!found) {
+                    for (const QString &root : roots) {
+                        if (getPathBodyRange(content, {root, "Software", "Valve", "Steam"}, start, end)) {
+                            if (content.mid(start, end - start).contains(QString("\"%1\"").arg(settingKey))) {
+                                found = true;
+                                break;
+                            }
+                        }
+                    }
+                }
+                if (!found) {
+                    for (const QString &root : roots) {
+                        if (content.contains(QString("\"%1\"").arg(root))) {
+                            if (ensurePathExists(content, {root, "Steam"}, start, end)) {
+                                found = true;
+                                break;
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
+        if (!found) {
             if (blockName == "FriendsUI") {
-                QRegularExpression steamRegex("\"Steam\"\\s*\\{");
-                QRegularExpressionMatch steamMatch = steamRegex.match(content);
-                if (steamMatch.hasMatch()) {
-                    int insertIdx = steamMatch.capturedEnd();
-                    QString newBlock = QString("\n\t\t\t\t\"%1\"\n\t\t\t\t{\n\t\t\t\t\t\"%2\"\t\t\"%3\"\n\t\t\t\t}").arg(blockName, settingKey, value);
-                    content.insert(insertIdx, newBlock);
-                    inserted = true;
+                if (ensurePathExists(content, {"UserLocalConfigStore", "Steam", "FriendsUI"}, start, end)) {
+                    found = true;
+                } else if (ensurePathExists(content, {"UserRoamingConfigStore", "Steam", "FriendsUI"}, start, end)) {
+                    found = true;
+                } else if (ensurePathExists(content, {"InstallConfigStore", "Steam", "FriendsUI"}, start, end)) {
+                    found = true;
                 }
             }
-            if (!inserted) {
-                QRegularExpression rootRegex("\"(UserLocalConfigStore|UserRoamingConfigStore|InstallConfigStore)\"\\s*\\{");
-                QRegularExpressionMatch rootMatch = rootRegex.match(content);
-                if (!rootMatch.hasMatch()) {
-                    return false;
-                }
-                int insertIdx = rootMatch.capturedEnd();
-                QString newBlock = QString("\n\t\"%1\"\n\t{\n\t\t\"%2\"\t\t\"%3\"\n\t}").arg(blockName, settingKey, value);
-                content.insert(insertIdx, newBlock);
+        }
+        
+        if (!found) {
+            if (ensurePathExists(content, {"UserLocalConfigStore", blockName}, start, end)) {
+                found = true;
+            } else if (ensurePathExists(content, {"UserRoamingConfigStore", blockName}, start, end)) {
+                found = true;
+            } else if (ensurePathExists(content, {"InstallConfigStore", blockName}, start, end)) {
+                found = true;
+            } else if (ensurePathExists(content, {blockName}, start, end)) {
+                found = true;
             }
-            if (!file.open(QIODevice::WriteOnly | QIODevice::Text)) {
-                return false;
-            }
-            file.write(content.toUtf8());
-            file.close();
-            return true;
         }
 
-        int startIdx = match.capturedEnd();
-        int count = 1;
-        int idx = startIdx;
-        int closeIdx = -1;
-        while (count > 0 && idx < content.length()) {
-            QChar ch = content.at(idx);
-            if (ch == '{') {
-                count++;
-            } else if (ch == '}') {
-                count--;
-                if (count == 0) {
-                    closeIdx = idx;
-                    break;
+        if (found) {
+            if (updateValueInBlockBody(content, start, end, settingKey, value)) {
+                if (file.open(QIODevice::WriteOnly | QIODevice::Text)) {
+                    file.write(content.toUtf8());
+                    file.close();
+                    return true;
                 }
             }
-            idx++;
         }
-
-        if (closeIdx == -1) {
-            return false;
-        }
-
-        QString blockContent = content.mid(startIdx, closeIdx - startIdx);
-        QRegularExpression keyRegex(QString("\"%1\"\\s*\"((?:[^\"\\\\]|\\\\.)*)\"").arg(settingKey));
-        QRegularExpressionMatch keyMatch = keyRegex.match(blockContent);
-
-        QString newBlockContent;
-        if (keyMatch.hasMatch()) {
-            int keyStart = keyMatch.capturedStart();
-            int keyEnd = keyMatch.capturedEnd();
-            newBlockContent = blockContent.left(keyStart) + QString("\"%1\"\t\t\"%2\"").arg(settingKey, value) + blockContent.mid(keyEnd);
-        } else {
-            QString indent = "\t\t";
-            newBlockContent = QString("\n%1\"%2\"\t\t\"%3\"").arg(indent, settingKey, value) + blockContent;
-        }
-
-        QString newContent = content.left(startIdx) + newBlockContent + content.mid(closeIdx);
-
-        if (!file.open(QIODevice::WriteOnly | QIODevice::Text)) {
-            return false;
-        }
-        file.write(newContent.toUtf8());
-        file.close();
-        return true;
+        return false;
     }
 
 #ifdef Q_OS_WIN
@@ -1264,17 +1529,73 @@ bool Optimizer::getVdfFriendsSettings(const QString &filePath, const QString &ac
             if (!throttleStreaming.isEmpty()) {
                 settings["bThrottleDownloadsWhileStreaming"] = (throttleStreaming != "0");
             }
-            QString displayRates = getVdfBlockSetting(configVdfPath, "Steam", "Display download rates in bits per second");
+            QString displayRates = getVdfSystemSetting(filePath, "displayratesasbits");
             if (!displayRates.isEmpty()) {
                 settings["bDisplayDownloadRatesInBitsPerSecond"] = (displayRates != "0");
+            } else {
+                QString displayRatesConfig = getVdfBlockSetting(configVdfPath, "Steam", "Display download rates in bits per second");
+                if (!displayRatesConfig.isEmpty()) {
+                    settings["bDisplayDownloadRatesInBitsPerSecond"] = (displayRatesConfig != "0");
+                }
             }
-            QString networkTransfers = getVdfBlockSetting(configVdfPath, "Steam", "LocalNetworkGameTransfers");
-            if (!networkTransfers.isEmpty()) {
-                settings["bLocalNetworkGameFileTransfer"] = (networkTransfers != "0");
+            QString fpsCorner = getVdfSystemSetting(filePath, "InGameOverlayShowFPSCorner");
+            if (!fpsCorner.isEmpty()) {
+                settings["InGameOverlayShowFPSCorner"] = fpsCorner;
+            } else {
+                settings["InGameOverlayShowFPSCorner"] = "0";
             }
-            QString shaderCache = getVdfBlockSetting(configVdfPath, "Steam", "ShaderCacheEnabled");
-            if (!shaderCache.isEmpty()) {
-                settings["bEnableShaderPreCaching"] = (shaderCache != "0");
+            QString clientMode = getVdfBlockSetting(filePath, "PeerContent", "ClientMode");
+            if (!clientMode.isEmpty()) {
+                settings["bLocalNetworkGameFileTransfer"] = (clientMode != "0");
+            } else {
+                QString networkTransfers = getVdfBlockSetting(configVdfPath, "Steam", "LocalNetworkGameTransfers");
+                if (!networkTransfers.isEmpty()) {
+                    settings["bLocalNetworkGameFileTransfer"] = (networkTransfers != "0");
+                }
+            }
+            bool loadedDisableShaderCache = false;
+            {
+                int managerStart, managerEnd;
+                QFile cfgFile(configVdfPath);
+                if (cfgFile.open(QIODevice::ReadOnly | QIODevice::Text)) {
+                    QString cfgContent = QString::fromUtf8(cfgFile.readAll());
+                    cfgFile.close();
+                    QStringList roots = {"UserLocalConfigStore", "InstallConfigStore", "UserRoamingConfigStore"};
+                    for (const QString &root : roots) {
+                        if (getPathBodyRange(cfgContent, {root, "Software", "Valve", "Steam", "ShaderCacheManager"}, managerStart, managerEnd)) {
+                            QString val = getValueFromBlockBody(cfgContent, managerStart, managerEnd, "DisableShaderCache");
+                            if (!val.isEmpty()) {
+                                settings["bEnableShaderPreCaching"] = (val == "0");
+                                loadedDisableShaderCache = true;
+                                break;
+                            }
+                        }
+                    }
+                }
+            }
+            if (!loadedDisableShaderCache) {
+                QString shaderCache = getVdfBlockSetting(configVdfPath, "Steam", "ShaderCacheEnabled");
+                if (!shaderCache.isEmpty()) {
+                    settings["bEnableShaderPreCaching"] = (shaderCache != "0");
+                }
+            }
+            {
+                int managerStart, managerEnd;
+                QFile cfgFile(configVdfPath);
+                if (cfgFile.open(QIODevice::ReadOnly | QIODevice::Text)) {
+                    QString cfgContent = QString::fromUtf8(cfgFile.readAll());
+                    cfgFile.close();
+                    QStringList roots = {"UserLocalConfigStore", "InstallConfigStore", "UserRoamingConfigStore"};
+                    for (const QString &root : roots) {
+                        if (getPathBodyRange(cfgContent, {root, "Software", "Valve", "Steam", "ShaderCacheManager"}, managerStart, managerEnd)) {
+                            QString val = getValueFromBlockBody(cfgContent, managerStart, managerEnd, "EnableShaderBackgroundProcessing");
+                            if (!val.isEmpty()) {
+                                settings["bAllowBackgroundProcessingOfVulkanShaders"] = (val != "0");
+                                break;
+                            }
+                        }
+                    }
+                }
             }
         }
     }
@@ -1290,85 +1611,72 @@ bool Optimizer::updateVdfFriendsSettings(const QString &filePath, const QString 
     QString content = QString::fromUtf8(file.readAll());
     file.close();
 
-    QRegularExpression webStorageRegex("\"WebStorage\"\\s*\\{");
-    QRegularExpressionMatch match = webStorageRegex.match(content);
-    if (!match.hasMatch()) {
+    int start, end;
+    bool found = false;
+    if (ensurePathExists(content, {"UserLocalConfigStore", "WebStorage"}, start, end)) {
+        found = true;
+    } else if (ensurePathExists(content, {"WebStorage"}, start, end)) {
+        found = true;
+    }
+
+    if (!found) {
         return false;
     }
 
-    int startIdx = match.capturedEnd();
-    int count = 1;
-    int idx = startIdx;
-    int closeIdx = -1;
-    while (count > 0 && idx < content.length()) {
-        QChar ch = content.at(idx);
-        if (ch == '{') {
-            count++;
-        } else if (ch == '}') {
-            count--;
-            if (count == 0) {
-                closeIdx = idx;
-                break;
-            }
+    // A. Read existing FriendsUIWebSettings and update keys
+    QString currentFriendsUI = getValueFromBlockBody(content, start, end, QString("FriendsUIWebSettings_%1").arg(accountId));
+    QJsonObject friendsObj;
+    if (!currentFriendsUI.isEmpty()) {
+        QString clean = currentFriendsUI;
+        clean.replace(QLatin1String("\\\""), QLatin1String("\""));
+        clean.replace(QLatin1String("\\\\"), QLatin1String("\\"));
+        QJsonDocument doc = QJsonDocument::fromJson(clean.toUtf8());
+        if (doc.isObject()) {
+            friendsObj = doc.object();
         }
-        idx++;
     }
-
-    if (closeIdx == -1) {
-        return false;
+    
+    QJsonObject incomingObj = QJsonObject::fromVariantMap(settings);
+    incomingObj.remove("DownloadHighQualityAudio");
+    incomingObj.remove("EnableStreaming");
+    incomingObj.remove("noiseGateLevel");
+    incomingObj.remove("echoCancellation");
+    incomingObj.remove("noiseCancellation");
+    incomingObj.remove("autoGainControl");
+    incomingObj.remove("library_low_bandwidth_mode");
+    incomingObj.remove("library_low_perf_mode");
+    incomingObj.remove("library_disable_community_content");
+    incomingObj.remove("library_display_icon_in_game_list");
+    incomingObj.remove("ready_to_play_includes_streaming");
+    incomingObj.remove("show_steam_deck_info");
+    incomingObj.remove("bLibraryLowBandwidthMode");
+    incomingObj.remove("bLibraryLowPerformanceMode");
+    incomingObj.remove("bLibraryDisableCommunityContent");
+    incomingObj.remove("bLibraryDisplayGameIconsInSidebar");
+    incomingObj.remove("bLibraryReadyToPlayIncludesStreaming");
+    incomingObj.remove("bLibraryShowSteamDeckCompatibility");
+    
+    for (auto it = incomingObj.constBegin(); it != incomingObj.constEnd(); ++it) {
+        friendsObj[it.key()] = it.value();
     }
+    
+    QString cleanFriendsJson = QString::fromUtf8(QJsonDocument(friendsObj).toJson(QJsonDocument::Compact));
+    QString escapedFriendsJson = cleanFriendsJson;
+    escapedFriendsJson.replace(QLatin1String("\\"), QLatin1String("\\\\"));
+    escapedFriendsJson.replace(QLatin1String("\""), QLatin1String("\\\""));
+    
+    updateValueInBlockBody(content, start, end, QString("FriendsUIWebSettings_%1").arg(accountId), escapedFriendsJson);
 
-    QString wsBlock = content.mid(startIdx, closeIdx - startIdx);
-    QJsonObject obj = QJsonObject::fromVariantMap(settings);
-    obj.remove("DownloadHighQualityAudio");
-    obj.remove("EnableStreaming");
-    obj.remove("noiseGateLevel");
-    obj.remove("echoCancellation");
-    obj.remove("noiseCancellation");
-    obj.remove("autoGainControl");
-    obj.remove("library_low_bandwidth_mode");
-    obj.remove("library_low_perf_mode");
-    obj.remove("library_disable_community_content");
-    obj.remove("library_display_icon_in_game_list");
-    obj.remove("ready_to_play_includes_streaming");
-    obj.remove("show_steam_deck_info");
-    obj.remove("bLibraryLowBandwidthMode");
-    obj.remove("bLibraryLowPerformanceMode");
-    obj.remove("bLibraryDisableCommunityContent");
-    obj.remove("bLibraryDisplayGameIconsInSidebar");
-    obj.remove("bLibraryReadyToPlayIncludesStreaming");
-    obj.remove("bLibraryShowSteamDeckCompatibility");
-    QString cleanJson = QString::fromUtf8(QJsonDocument(obj).toJson(QJsonDocument::Compact));
-    QString escapedJson = cleanJson;
-    escapedJson.replace(QLatin1String("\\"), QLatin1String("\\\\"));
-    escapedJson.replace(QLatin1String("\""), QLatin1String("\\\""));
-
-    QRegularExpression settingsRegex(QString("\"FriendsUIWebSettings_%1\"\\s*\"((?:[^\"\\\\]|\\\\.)*)\"").arg(accountId));
-    QRegularExpressionMatch settingsMatch = settingsRegex.match(wsBlock);
-
-    QString newWsBlock;
-    if (settingsMatch.hasMatch()) {
-        int settingsStart = settingsMatch.capturedStart();
-        int settingsEnd = settingsMatch.capturedEnd();
-        newWsBlock = wsBlock.left(settingsStart) + QString("\"FriendsUIWebSettings_%1\"\t\t\"%2\"").arg(accountId, escapedJson) + wsBlock.mid(settingsEnd);
-    } else {
-        QString indent = "\n\t\t\t";
-        newWsBlock = QString("%1\"FriendsUIWebSettings_%2\"\t\t\"%3\"").arg(indent, accountId, escapedJson) + wsBlock;
-    }
-
-    // Update SteamVoiceSettings in newWsBlock
-    QRegularExpression voiceRegex(QString("\"SteamVoiceSettings_%1\"\\s*\"((?:[^\"\\\\]|\\\\.)*)\"").arg(accountId));
-    QRegularExpressionMatch voiceMatch = voiceRegex.match(newWsBlock);
-
+    // B. Read existing SteamVoiceSettings and update keys
+    QString currentVoice = getValueFromBlockBody(content, start, end, QString("SteamVoiceSettings_%1").arg(accountId));
     QJsonObject voiceObj;
-    if (voiceMatch.hasMatch()) {
-        QString voiceEscapedJson = voiceMatch.captured(1);
-        QString voiceCleanJson = voiceEscapedJson;
-        voiceCleanJson.replace(QLatin1String("\\\""), QLatin1String("\""));
-        voiceCleanJson.replace(QLatin1String("\\\\"), QLatin1String("\\"));
-        QJsonDocument voiceDoc = QJsonDocument::fromJson(voiceCleanJson.toUtf8());
-        if (voiceDoc.isObject()) {
-            voiceObj = voiceDoc.object();
+    if (!currentVoice.isEmpty()) {
+        QString clean = currentVoice;
+        clean.replace(QLatin1String("\\\""), QLatin1String("\""));
+        clean.replace(QLatin1String("\\\\"), QLatin1String("\\"));
+        QJsonDocument doc = QJsonDocument::fromJson(clean.toUtf8());
+        if (doc.isObject()) {
+            voiceObj = doc.object();
         }
     } else {
         voiceObj["inputGain"] = 1;
@@ -1393,28 +1701,17 @@ bool Optimizer::updateVdfFriendsSettings(const QString &filePath, const QString 
         voiceObj["autoGainControl"] = settings.value("autoGainControl").toBool();
     }
 
-    QString voiceCleanJson = QString::fromUtf8(QJsonDocument(voiceObj).toJson(QJsonDocument::Compact));
-    QString voiceEscapedJson = voiceCleanJson;
-    voiceEscapedJson.replace(QLatin1String("\\"), QLatin1String("\\\\"));
-    voiceEscapedJson.replace(QLatin1String("\""), QLatin1String("\\\""));
+    QString cleanVoiceJson = QString::fromUtf8(QJsonDocument(voiceObj).toJson(QJsonDocument::Compact));
+    QString escapedVoiceJson = cleanVoiceJson;
+    escapedVoiceJson.replace(QLatin1String("\\"), QLatin1String("\\\\"));
+    escapedVoiceJson.replace(QLatin1String("\""), QLatin1String("\\\""));
 
-    if (voiceMatch.hasMatch()) {
-        int voiceStart = voiceMatch.capturedStart();
-        int voiceEnd = voiceMatch.capturedEnd();
-        newWsBlock = newWsBlock.left(voiceStart) + QString("\"SteamVoiceSettings_%1\"\t\t\"%2\"").arg(accountId, voiceEscapedJson) + newWsBlock.mid(voiceEnd);
-    } else {
-        QString indent = "\n\t\t\t";
-        newWsBlock = QString("%1\"SteamVoiceSettings_%2\"\t\t\"%3\"").arg(indent, accountId, voiceEscapedJson) + newWsBlock;
-    }
-
-
-
-    QString newContent = content.left(startIdx) + newWsBlock + content.mid(closeIdx);
+    updateValueInBlockBody(content, start, end, QString("SteamVoiceSettings_%1").arg(accountId), escapedVoiceJson);
 
     if (!file.open(QIODevice::WriteOnly | QIODevice::Text)) {
         return false;
     }
-    file.write(newContent.toUtf8());
+    file.write(content.toUtf8());
     file.close();
 
     // Symmetrically write global VDF keys to match JSON values:
@@ -1722,12 +2019,81 @@ bool Optimizer::updateVdfFriendsSettings(const QString &filePath, const QString 
             }
             if (settings.contains("bDisplayDownloadRatesInBitsPerSecond")) {
                 updateVdfBlockSetting(configVdfPath, "Steam", "Display download rates in bits per second", settings.value("bDisplayDownloadRatesInBitsPerSecond").toBool() ? "1" : "0");
+                updateVdfSystemSetting(filePath, "displayratesasbits", settings.value("bDisplayDownloadRatesInBitsPerSecond").toBool() ? "1" : "0");
+            }
+            if (settings.contains("InGameOverlayShowFPSCorner")) {
+                updateVdfSystemSetting(filePath, "InGameOverlayShowFPSCorner", settings.value("InGameOverlayShowFPSCorner").toString());
             }
             if (settings.contains("bLocalNetworkGameFileTransfer")) {
-                updateVdfBlockSetting(configVdfPath, "Steam", "LocalNetworkGameTransfers", settings.value("bLocalNetworkGameFileTransfer").toBool() ? "3" : "0");
+                bool enabled = settings.value("bLocalNetworkGameFileTransfer").toBool();
+                updateVdfBlockSetting(configVdfPath, "Steam", "LocalNetworkGameTransfers", enabled ? "3" : "0");
+                
+                if (enabled) {
+                    QString currentMode = getVdfBlockSetting(filePath, "PeerContent", "ClientMode");
+                    QString targetMode = "3"; // default to Anyone
+                    if (!currentMode.isEmpty() && currentMode != "0") {
+                        targetMode = currentMode;
+                    }
+                    updateVdfBlockSetting(filePath, "PeerContent", "ClientMode", targetMode);
+                    updateVdfBlockSetting(filePath, "PeerContent", "ServerMode", "1");
+                } else {
+                    updateVdfBlockSetting(filePath, "PeerContent", "ClientMode", "0");
+                    updateVdfBlockSetting(filePath, "PeerContent", "ServerMode", "0");
+                }
             }
             if (settings.contains("bEnableShaderPreCaching")) {
-                updateVdfBlockSetting(configVdfPath, "Steam", "ShaderCacheEnabled", settings.value("bEnableShaderPreCaching").toBool() ? "1" : "0");
+                bool enabledVal = settings.value("bEnableShaderPreCaching").toBool();
+                updateVdfBlockSetting(configVdfPath, "Steam", "ShaderCacheEnabled", enabledVal ? "1" : "0");
+                
+                // Write DisableShaderCache to ShaderCacheManager deep block
+                QFile cfgFile(configVdfPath);
+                if (cfgFile.open(QIODevice::ReadOnly | QIODevice::Text)) {
+                    QString cfgContent = QString::fromUtf8(cfgFile.readAll());
+                    cfgFile.close();
+                    QStringList roots = {"UserLocalConfigStore", "InstallConfigStore", "UserRoamingConfigStore"};
+                    bool updated = false;
+                    for (const QString &root : roots) {
+                        int managerStart, managerEnd;
+                        if (ensurePathExists(cfgContent, {root, "Software", "Valve", "Steam", "ShaderCacheManager"}, managerStart, managerEnd)) {
+                            QString disableVal = enabledVal ? "0" : "1";
+                            if (updateValueInBlockBody(cfgContent, managerStart, managerEnd, "DisableShaderCache", disableVal)) {
+                                updated = true;
+                                break;
+                            }
+                        }
+                    }
+                    if (updated) {
+                        if (cfgFile.open(QIODevice::WriteOnly | QIODevice::Text)) {
+                            cfgFile.write(cfgContent.toUtf8());
+                            cfgFile.close();
+                        }
+                    }
+                }
+            }
+            if (settings.contains("bAllowBackgroundProcessingOfVulkanShaders")) {
+                QFile cfgFile(configVdfPath);
+                if (cfgFile.open(QIODevice::ReadOnly | QIODevice::Text)) {
+                    QString cfgContent = QString::fromUtf8(cfgFile.readAll());
+                    cfgFile.close();
+                    QStringList roots = {"UserLocalConfigStore", "InstallConfigStore", "UserRoamingConfigStore"};
+                    bool updated = false;
+                    for (const QString &root : roots) {
+                        int managerStart, managerEnd;
+                        if (ensurePathExists(cfgContent, {root, "Software", "Valve", "Steam", "ShaderCacheManager"}, managerStart, managerEnd)) {
+                            QString val = settings.value("bAllowBackgroundProcessingOfVulkanShaders").toBool() ? "1" : "0";
+                            if (updateValueInBlockBody(cfgContent, managerStart, managerEnd, "EnableShaderBackgroundProcessing", val)) {
+                                updated = true;
+                                break;
+                            }
+                        }
+                    }
+                    if (updated) {
+                        if (cfgFile.open(QIODevice::WriteOnly | QIODevice::Text)) {
+                            cfgFile.write(cfgContent.toUtf8());
+                            cfgFile.close();
+                        }
+                    }
+                }
             }
         }
     }
@@ -1833,13 +2199,95 @@ namespace {
 }
 
 Optimizer::Optimizer(QObject *parent) : QObject(parent) {
+#ifdef Q_OS_WIN
+    FILETIME idleTime, kernelTime, userTime;
+    if (GetSystemTimes(&idleTime, &kernelTime, &userTime)) {
+        m_prevIdleTime = new FILETIME(idleTime);
+        m_prevKernelTime = new FILETIME(kernelTime);
+        m_prevUserTime = new FILETIME(userTime);
+    }
+#endif
+
     refreshSystemInfo();
     loadSystemStates();
     scanSteamInstalledGames();
+
+    updateCpuAndRamLoad();
+
+    QTimer *loadTimer = new QTimer(this);
+    connect(loadTimer, &QTimer::timeout, this, [this]() {
+        this->updateCpuAndRamLoad();
+    });
+    loadTimer->start(2000);
 }
 
 Optimizer::~Optimizer() {
+#ifdef Q_OS_WIN
+    if (m_prevIdleTime) delete static_cast<FILETIME*>(m_prevIdleTime);
+    if (m_prevKernelTime) delete static_cast<FILETIME*>(m_prevKernelTime);
+    if (m_prevUserTime) delete static_cast<FILETIME*>(m_prevUserTime);
+#endif
 }
+
+void Optimizer::updateCpuAndRamLoad() {
+    double cpu = 0.0;
+    double ram = 0.0;
+
+#ifdef Q_OS_WIN
+    FILETIME idleTime, kernelTime, userTime;
+    if (GetSystemTimes(&idleTime, &kernelTime, &userTime) && m_prevIdleTime && m_prevKernelTime && m_prevUserTime) {
+        ULARGE_INTEGER idle, kernel, user;
+        idle.LowPart = idleTime.dwLowDateTime; idle.HighPart = idleTime.dwHighDateTime;
+        kernel.LowPart = kernelTime.dwLowDateTime; kernel.HighPart = kernelTime.dwHighDateTime;
+        user.LowPart = userTime.dwLowDateTime; user.HighPart = userTime.dwHighDateTime;
+        
+        FILETIME* prevIdleTimePtr = static_cast<FILETIME*>(m_prevIdleTime);
+        FILETIME* prevKernelTimePtr = static_cast<FILETIME*>(m_prevKernelTime);
+        FILETIME* prevUserTimePtr = static_cast<FILETIME*>(m_prevUserTime);
+
+        ULARGE_INTEGER prevIdle, prevKernel, prevUser;
+        prevIdle.LowPart = prevIdleTimePtr->dwLowDateTime; prevIdle.HighPart = prevIdleTimePtr->dwHighDateTime;
+        prevKernel.LowPart = prevKernelTimePtr->dwLowDateTime; prevKernel.HighPart = prevKernelTimePtr->dwHighDateTime;
+        prevUser.LowPart = prevUserTimePtr->dwLowDateTime; prevUser.HighPart = prevUserTimePtr->dwHighDateTime;
+        
+        *prevIdleTimePtr = idleTime;
+        *prevKernelTimePtr = kernelTime;
+        *prevUserTimePtr = userTime;
+        
+        ULONGLONG idleDiff = idle.QuadPart - prevIdle.QuadPart;
+        ULONGLONG kernelDiff = kernel.QuadPart - prevKernel.QuadPart;
+        ULONGLONG userDiff = user.QuadPart - prevUser.QuadPart;
+        
+        ULONGLONG totalDiff = kernelDiff + userDiff;
+        if (totalDiff > 0) {
+            ULONGLONG activeDiff = totalDiff - idleDiff;
+            cpu = double(activeDiff) / double(totalDiff);
+        }
+    }
+
+    MEMORYSTATUSEX memInfo;
+    memInfo.dwLength = sizeof(MEMORYSTATUSEX);
+    if (GlobalMemoryStatusEx(&memInfo)) {
+        ram = double(memInfo.dwMemoryLoad) / 100.0;
+    }
+#else
+    cpu = 0.15;
+    ram = 0.45;
+#endif
+
+    cpu = qBound(0.0, cpu, 1.0);
+    ram = qBound(0.0, ram, 1.0);
+
+    if (m_cpuLoadPercent != cpu) {
+        m_cpuLoadPercent = cpu;
+        emit cpuLoadPercentChanged(m_cpuLoadPercent);
+    }
+    if (m_ramLoadPercent != ram) {
+        m_ramLoadPercent = ram;
+        emit ramLoadPercentChanged(m_ramLoadPercent);
+    }
+}
+
 
 void Optimizer::setClassicContextMenuActive(bool val) {
     if (m_classicContextMenuActive != val) {
@@ -1873,6 +2321,13 @@ void Optimizer::setCoreIsolationActive(bool val) {
     if (m_coreIsolationActive != val) {
         m_coreIsolationActive = val;
         emit coreIsolationActiveChanged(m_coreIsolationActive);
+    }
+}
+
+void Optimizer::setHagsActive(bool val) {
+    if (m_hagsActive != val) {
+        m_hagsActive = val;
+        emit hagsActiveChanged(m_hagsActive);
     }
 }
 
@@ -2529,6 +2984,27 @@ void Optimizer::loadSystemStates() {
     m_bootCoreIsolationActive = isCoreIsolationActive;
     emit coreIsolationActiveChanged(m_coreIsolationActive);
     emit originalCoreIsolationActiveChanged(m_originalCoreIsolationActive);
+
+    // Check HAGS state on startup
+    bool isHagsActive = true; // Default to true (HAGS is enabled by default on modern Windows if key is missing)
+#ifdef Q_OS_WIN
+    HKEY hKeyHAGS;
+    if (RegOpenKeyExW(HKEY_LOCAL_MACHINE, L"SYSTEM\\CurrentControlSet\\Control\\GraphicsDrivers", 0, KEY_READ, &hKeyHAGS) == ERROR_SUCCESS) {
+        DWORD value = 0;
+        DWORD size = sizeof(value);
+        if (RegQueryValueExW(hKeyHAGS, L"HwSchMode", NULL, NULL, (LPBYTE)&value, &size) == ERROR_SUCCESS) {
+            isHagsActive = (value == 2);
+        }
+        RegCloseKey(hKeyHAGS);
+    }
+#else
+    isHagsActive = true; // Simulation default
+#endif
+    m_hagsActive = isHagsActive;
+    m_originalHagsActive = m_hagsActive;
+    m_bootHagsActive = isHagsActive;
+    emit hagsActiveChanged(m_hagsActive);
+    emit originalHagsActiveChanged(m_originalHagsActive);
 
     // Check Mouse Acceleration state on startup
     bool isMouseAccelerationActive = false;
@@ -3211,20 +3687,7 @@ void Optimizer::loadSystemStates() {
         QString userdataPath = steamPath + "/userdata";
         QDir userdataDir(userdataPath);
         if (userdataDir.exists()) {
-#ifdef Q_OS_WIN
-            // 1. Try to query the active user from registry first
-            QString activeUserStr = "";
-            DWORD activeUser = 0;
-            HKEY hKeyActive;
-            if (RegOpenKeyExW(HKEY_CURRENT_USER, L"Software\\Valve\\Steam\\ActiveProcess", 0, KEY_READ, &hKeyActive) == ERROR_SUCCESS) {
-                DWORD dwSize = sizeof(activeUser);
-                if (RegQueryValueExW(hKeyActive, L"ActiveUser", nullptr, nullptr, reinterpret_cast<LPBYTE>(&activeUser), &dwSize) == ERROR_SUCCESS) {
-                    if (activeUser != 0) {
-                        activeUserStr = QString::number(activeUser);
-                    }
-                }
-                RegCloseKey(hKeyActive);
-            }
+            QString activeUserStr = getActiveOrRecentUser(steamPath);
             if (!activeUserStr.isEmpty()) {
                 QString vdfPath = userdataPath + "/" + activeUserStr + "/config/localconfig.vdf";
                 if (QFile::exists(vdfPath)) {
@@ -3233,17 +3696,21 @@ void Optimizer::loadSystemStates() {
                     loadedFromProfile = true;
                 }
             }
-#endif
             // 2. If active user detection failed or settings not loaded, fallback to subdir loop
             if (!loadedFromProfile) {
                 QStringList subdirs = userdataDir.entryList(QDir::Dirs | QDir::NoDotAndDotDot);
                 for (const QString &subdir : subdirs) {
+                    bool isNumeric;
+                    subdir.toInt(&isNumeric);
+                    if (!isNumeric) continue;
+
                     QString vdfPath = userdataPath + "/" + subdir + "/config/localconfig.vdf";
                     if (QFile::exists(vdfPath)) {
                         QString opts = getVdfLaunchOptions(vdfPath, "730");
                         if (!opts.isEmpty() && !loadedFromProfile) {
                             firstLaunchOptions = opts;
                             loadedFromProfile = true;
+                            break;
                         }
                     }
                 }
@@ -3351,20 +3818,9 @@ void Optimizer::loadSystemStates() {
         if (userdataDir.exists()) {
             bool loaded = false;
             QString loadedVdfPath = "";
-            // 1. Try to query the active user from registry first
-#ifdef Q_OS_WIN
-            DWORD activeUser = 0;
-            HKEY hKeyActive;
-            if (RegOpenKeyExW(HKEY_CURRENT_USER, L"Software\\Valve\\Steam\\ActiveProcess", 0, KEY_READ, &hKeyActive) == ERROR_SUCCESS) {
-                DWORD dwSize = sizeof(activeUser);
-                if (RegQueryValueExW(hKeyActive, L"ActiveUser", nullptr, nullptr, reinterpret_cast<LPBYTE>(&activeUser), &dwSize) == ERROR_SUCCESS) {
-                    // Success
-                }
-                RegCloseKey(hKeyActive);
-            }
-            Logger::log("loadSystemStates: Active user ID from registry: " + QString::number(activeUser), "INFO");
-            if (activeUser != 0) {
-                QString activeUserStr = QString::number(activeUser);
+            QString activeUserStr = getActiveOrRecentUser(steamPath);
+            Logger::log("loadSystemStates: Active or recent user ID resolved: " + activeUserStr, "INFO");
+            if (!activeUserStr.isEmpty()) {
                 QString vdfPath = userdataPath + "/" + activeUserStr + "/config/localconfig.vdf";
                 Logger::log("loadSystemStates: Checking active user VDF path: " + vdfPath, "INFO");
                 if (QFile::exists(vdfPath)) {
@@ -3381,12 +3837,15 @@ void Optimizer::loadSystemStates() {
                     Logger::log("loadSystemStates: Active user VDF file does not exist", "WARNING");
                 }
             }
-#endif
             // 2. If active user detection failed or settings not loaded, fallback to subdir loop
             if (!loaded) {
                 Logger::log("loadSystemStates: Active user settings not loaded. Trying subdir loop fallback.", "INFO");
                 QStringList subdirs = userdataDir.entryList(QDir::Dirs | QDir::NoDotAndDotDot);
                 for (const QString &subdir : subdirs) {
+                    bool isNumeric;
+                    subdir.toInt(&isNumeric);
+                    if (!isNumeric) continue;
+
                     QString vdfPath = userdataPath + "/" + subdir + "/config/localconfig.vdf";
                     Logger::log("loadSystemStates: Checking fallback subdir VDF path: " + vdfPath, "INFO");
                     if (QFile::exists(vdfPath)) {
@@ -3465,20 +3924,7 @@ void Optimizer::loadSystemStates() {
     // Load global Steam Overlay active state (VDF & Registry)
     bool steamOverlayActive = true;
 #ifdef Q_OS_WIN
-    // 1. Try to query the active user from registry to check their VDF
-    QString activeUserStr = "";
-    DWORD activeUser = 0;
-    HKEY hKeyActive;
-    if (RegOpenKeyExW(HKEY_CURRENT_USER, L"Software\\Valve\\Steam\\ActiveProcess", 0, KEY_READ, &hKeyActive) == ERROR_SUCCESS) {
-        DWORD dwSize = sizeof(activeUser);
-        if (RegQueryValueExW(hKeyActive, L"ActiveUser", nullptr, nullptr, reinterpret_cast<LPBYTE>(&activeUser), &dwSize) == ERROR_SUCCESS) {
-            if (activeUser != 0) {
-                activeUserStr = QString::number(activeUser);
-            }
-        }
-        RegCloseKey(hKeyActive);
-    }
-
+    QString activeUserStr = getActiveOrRecentUser(steamPath);
     bool loadedGlobalOverlayFromVdf = false;
     if (!activeUserStr.isEmpty() && !steamPath.isEmpty() && QDir(steamPath).exists()) {
         QString vdfPath = steamPath + "/userdata/" + activeUserStr + "/config/localconfig.vdf";
@@ -3511,49 +3957,46 @@ void Optimizer::loadSystemStates() {
     emit originalSteamOverlayActiveChanged(m_originalSteamOverlayActive);
 
     // Load CS2-specific Steam Overlay active state (VDF)
-    bool cs2OverlayActive = true;
+    bool cs2OverlayActive = steamOverlayActive;
     bool loadedOverlayFromProfile = false;
 
     if (!steamPath.isEmpty() && QDir(steamPath).exists()) {
         QString userdataPath = steamPath + "/userdata";
         QDir userdataDir(userdataPath);
         if (userdataDir.exists()) {
-#ifdef Q_OS_WIN
-            // 1. Try to query the active user from registry first
-            QString activeUserStr = "";
-            DWORD activeUser = 0;
-            HKEY hKeyActive;
-            if (RegOpenKeyExW(HKEY_CURRENT_USER, L"Software\\Valve\\Steam\\ActiveProcess", 0, KEY_READ, &hKeyActive) == ERROR_SUCCESS) {
-                DWORD dwSize = sizeof(activeUser);
-                if (RegQueryValueExW(hKeyActive, L"ActiveUser", nullptr, nullptr, reinterpret_cast<LPBYTE>(&activeUser), &dwSize) == ERROR_SUCCESS) {
-                    if (activeUser != 0) {
-                        activeUserStr = QString::number(activeUser);
-                    }
-                }
-                RegCloseKey(hKeyActive);
-            }
+            QString activeUserStr = getActiveOrRecentUser(steamPath);
             if (!activeUserStr.isEmpty()) {
                 QString vdfPath = userdataPath + "/" + activeUserStr + "/config/localconfig.vdf";
                 if (QFile::exists(vdfPath)) {
+                    loadedOverlayFromProfile = true;
                     QString overlayState = getVdfOverlayState(vdfPath, "730");
+                    Logger::log("loadSystemStates: Active user CS2 overlay state in VDF is '" + overlayState + "'", "INFO");
                     if (!overlayState.isEmpty()) {
                         cs2OverlayActive = (overlayState != "2");
-                        loadedOverlayFromProfile = true;
+                    } else {
+                        cs2OverlayActive = steamOverlayActive;
                     }
                 }
             }
-#endif
             // 2. If active user detection failed, fallback to subdir loop
             if (!loadedOverlayFromProfile) {
                 QStringList subdirs = userdataDir.entryList(QDir::Dirs | QDir::NoDotAndDotDot);
                 for (const QString &subdir : subdirs) {
+                    bool isNumeric;
+                    subdir.toInt(&isNumeric);
+                    if (!isNumeric) continue;
+
                     QString vdfPath = userdataPath + "/" + subdir + "/config/localconfig.vdf";
                     if (QFile::exists(vdfPath)) {
+                        loadedOverlayFromProfile = true;
                         QString overlayState = getVdfOverlayState(vdfPath, "730");
-                        if (!overlayState.isEmpty() && !loadedOverlayFromProfile) {
+                        Logger::log("loadSystemStates: Fallback user " + subdir + " CS2 overlay state in VDF is '" + overlayState + "'", "INFO");
+                        if (!overlayState.isEmpty()) {
                             cs2OverlayActive = (overlayState != "2");
-                            loadedOverlayFromProfile = true;
+                        } else {
+                            cs2OverlayActive = steamOverlayActive;
                         }
+                        break;
                     }
                 }
             }
@@ -3563,6 +4006,8 @@ void Optimizer::loadSystemStates() {
 #ifndef Q_OS_WIN
     cs2OverlayActive = true;
 #endif
+
+    Logger::log("loadSystemStates: Final resolved cs2OverlayActive: " + QString(cs2OverlayActive ? "true" : "false"), "INFO");
 
     m_cs2OverlayActive = cs2OverlayActive;
     m_originalCs2OverlayActive = cs2OverlayActive;
@@ -3614,6 +4059,7 @@ void Optimizer::startSystemOptimization() {
     bool hibernationVal = m_hibernationActive;
     bool overlayVal = m_gamingOverlayActive;
     bool coreIsolationVal = m_coreIsolationActive;
+    bool hagsVal = m_hagsActive;
     bool mouseAccelVal = m_mouseAccelerationActive;
     bool gameModeVal = m_gameModeActive;
     bool firewallVal = m_firewallActive;
@@ -3672,6 +4118,7 @@ void Optimizer::startSystemOptimization() {
     bool origHibernation = m_originalHibernationActive;
     bool origOverlay = m_originalGamingOverlayActive;
     bool origCoreIsolation = m_originalCoreIsolationActive;
+    bool origHags = m_originalHagsActive;
     bool origMouseAccel = m_originalMouseAccelerationActive;
     bool origGameMode = m_originalGameModeActive;
     bool origFirewall = m_originalFirewallActive;
@@ -3714,11 +4161,21 @@ void Optimizer::startSystemOptimization() {
     int origPagefileMinVal = m_originalPagefileMin;
     int pagefileMaxVal = m_pagefileMax;
     int origPagefileMaxVal = m_originalPagefileMax;
+    bool forceVal = m_forceApplyAll;
+    m_forceApplyAll = false;
 
-    QThread* worker = QThread::create([this, searchVal, classicContextMenuVal, hibernationVal, overlayVal, coreIsolationVal, mouseAccelVal, gameModeVal, firewallVal, printerVal, bitlockerVal, discordOverlayVal, notificationsVal, notifGlobalVal, notifAppVal, notifSoundsVal, notifLockscreenVal, targetPowerSchemeVal, activePowerSchemeVal, deleteUltimateStagedVal, deleteDefenderStagedVal, defenderVal, defenderRegistryVal, defenderCmdVal, defenderServiceVal, remoteAccessVal, telemetryVal, telemetryDiagTrackVal, telemetryWapPushVal, telemetryCeipVal, telemetryWerVal, windowsUpdateModeVal, targets, originalTargets, origSearch, origClassicContextMenu, origHibernation, origOverlay, origCoreIsolation, origMouseAccel, origGameMode, origFirewall, origPrinter, origBitlocker, origDiscordOverlay, origNotifications, origNotifGlobal, origNotifApp, origNotifSounds, origNotifLockscreen, origDefender, origDefenderRegistry, origDefenderCmd, origDefenderService, origRemoteAccess, origTelemetry, origTelemetryDiagTrack, origTelemetryWapPush, origTelemetryCeip, origTelemetryWer, origWindowsUpdateMode, usbDevicesVal, origUsbDevicesVal, steamPathVal, cs2OptionsVal, origCs2OptionsVal, steamOverlayVal, origSteamOverlayVal, cs2OverlayVal, origCs2OverlayVal, visualEffectsVal, origVisualEffectsVal, steamFriendsSettingsVal, origSteamFriendsSettingsVal, steamFriendsChanged, pagefileMinVal, origPagefileMinVal, pagefileMaxVal, origPagefileMaxVal]() {
+    QThread* worker = QThread::create([this, forceVal, searchVal, classicContextMenuVal, hibernationVal, overlayVal, coreIsolationVal, hagsVal, mouseAccelVal, gameModeVal, firewallVal, printerVal, bitlockerVal, discordOverlayVal, notificationsVal, notifGlobalVal, notifAppVal, notifSoundsVal, notifLockscreenVal, targetPowerSchemeVal, activePowerSchemeVal, deleteUltimateStagedVal, deleteDefenderStagedVal, defenderVal, defenderRegistryVal, defenderCmdVal, defenderServiceVal, remoteAccessVal, telemetryVal, telemetryDiagTrackVal, telemetryWapPushVal, telemetryCeipVal, telemetryWerVal, windowsUpdateModeVal, targets, originalTargets, origSearch, origClassicContextMenu, origHibernation, origOverlay, origCoreIsolation, origHags, origMouseAccel, origGameMode, origFirewall, origPrinter, origBitlocker, origDiscordOverlay, origNotifications, origNotifGlobal, origNotifApp, origNotifSounds, origNotifLockscreen, origDefender, origDefenderRegistry, origDefenderCmd, origDefenderService, origRemoteAccess, origTelemetry, origTelemetryDiagTrack, origTelemetryWapPush, origTelemetryCeip, origTelemetryWer, origWindowsUpdateMode, usbDevicesVal, origUsbDevicesVal, steamPathVal, cs2OptionsVal, origCs2OptionsVal, steamOverlayVal, origSteamOverlayVal, cs2OverlayVal, origCs2OverlayVal, visualEffectsVal, origVisualEffectsVal, steamFriendsSettingsVal, origSteamFriendsSettingsVal, steamFriendsChanged, pagefileMinVal, origPagefileMinVal, pagefileMaxVal, origPagefileMaxVal]() {
+        // Step 00: Auto-create backup before making changes
+        if (!forceVal && Settings::instance()->createBackup()) {
+            emit systemStepReported(tr("Creating automatic system backup..."), "INFO");
+            createSystemBackup(tr("Pre-Optimization Backup"));
+            QThread::msleep(400);
+        }
+
         // Step 0: Check if anything actually changed
-        bool powerPlanChanged = (targetPowerSchemeVal != activePowerSchemeVal) || deleteUltimateStagedVal;
-        bool usbChanged = false;
+        bool force = forceVal;
+        bool powerPlanChanged = force || (targetPowerSchemeVal != activePowerSchemeVal) || deleteUltimateStagedVal;
+        bool usbChanged = force;
         if (usbDevicesVal.size() == origUsbDevicesVal.size()) {
             for (int i = 0; i < usbDevicesVal.size(); ++i) {
                 if (usbDevicesVal[i].toMap()["powerSavingActive"].toBool() != origUsbDevicesVal[i].toMap()["powerSavingActive"].toBool()) {
@@ -3730,25 +4187,26 @@ void Optimizer::startSystemOptimization() {
             usbChanged = true;
         }
 
-        bool telemetryChanged = (telemetryVal != origTelemetry) ||
+        bool telemetryChanged = force || (telemetryVal != origTelemetry) ||
                                 (telemetryDiagTrackVal != origTelemetryDiagTrack) ||
                                 (telemetryWapPushVal != origTelemetryWapPush) ||
                                 (telemetryCeipVal != origTelemetryCeip) ||
                                 (telemetryWerVal != origTelemetryWer);
 
-        bool windowsUpdateModeChanged = (windowsUpdateModeVal != origWindowsUpdateMode);
+        bool windowsUpdateModeChanged = force || (windowsUpdateModeVal != origWindowsUpdateMode);
 
-        bool cs2Changed = (cs2OptionsVal != origCs2OptionsVal);
-        bool steamOverlayChanged = (steamOverlayVal != origSteamOverlayVal);
-        bool cs2OverlayChanged = (cs2OverlayVal != origCs2OverlayVal);
-        bool visualEffectsChanged = (visualEffectsVal != origVisualEffectsVal);
-        bool pagefileChanged = (pagefileMinVal != origPagefileMinVal) || (pagefileMaxVal != origPagefileMaxVal);
+        bool cs2Changed = force || (cs2OptionsVal != origCs2OptionsVal);
+        bool steamOverlayChanged = force || (steamOverlayVal != origSteamOverlayVal);
+        bool cs2OverlayChanged = force || (cs2OverlayVal != origCs2OverlayVal);
+        bool visualEffectsChanged = force || (visualEffectsVal != origVisualEffectsVal);
+        bool pagefileChanged = force || (pagefileMinVal != origPagefileMinVal) || (pagefileMaxVal != origPagefileMaxVal);
 
-        bool anyChanges = (searchVal != origSearch) || 
+        bool anyChanges = force || (searchVal != origSearch) || 
                           (classicContextMenuVal != origClassicContextMenu) || 
                           (hibernationVal != origHibernation) || 
                           (overlayVal != origOverlay) ||
                           (coreIsolationVal != origCoreIsolation) ||
+                          (hagsVal != origHags) ||
                           (mouseAccelVal != origMouseAccel) ||
                           (gameModeVal != origGameMode) ||
                           (firewallVal != origFirewall) ||
@@ -3795,7 +4253,7 @@ void Optimizer::startSystemOptimization() {
 
         bool wSearchSuccess = true;
         // Step 1: Windows Search service (only if changed)
-        if (searchVal != origSearch) {
+        if (searchVal != origSearch || force) {
             emit systemStepReported(tr("Processing Windows Search service..."), "INFO");
             QThread::msleep(800);
             
@@ -3873,7 +4331,7 @@ void Optimizer::startSystemOptimization() {
 
         // Step 1.05: Classic Context Menu Configuration (only if changed)
         bool classicContextMenuSuccess = true;
-        if (classicContextMenuVal != origClassicContextMenu) {
+        if (classicContextMenuVal != origClassicContextMenu || force) {
             emit systemStepReported(tr("Processing Classic Context Menu configuration..."), "INFO");
             QThread::msleep(800);
 #ifdef Q_OS_WIN
@@ -3924,7 +4382,7 @@ void Optimizer::startSystemOptimization() {
 
         // Step 1.5: Hibernation Configuration (only if changed)
         bool hibernationSuccess = true;
-        if (hibernationVal != origHibernation) {
+        if (hibernationVal != origHibernation || force) {
             emit systemStepReported(tr("Configuring system hibernation..."), "INFO");
             QThread::msleep(800);
 #ifdef Q_OS_WIN
@@ -3964,7 +4422,7 @@ void Optimizer::startSystemOptimization() {
 
         // Step 1.7: Gaming Overlay Configuration (only if changed)
         bool overlaySuccess = true;
-        if (overlayVal != origOverlay) {
+        if (overlayVal != origOverlay || force) {
             emit systemStepReported(tr("Configuring Xbox gaming overlay popups..."), "INFO");
             QThread::msleep(800);
 #ifdef Q_OS_WIN
@@ -4056,7 +4514,7 @@ void Optimizer::startSystemOptimization() {
 
         // Step 1.8: Core Isolation / Memory Integrity Configuration (only if changed)
         bool coreIsolationSuccess = true;
-        if (coreIsolationVal != origCoreIsolation) {
+        if (coreIsolationVal != origCoreIsolation || force) {
             emit systemStepReported(tr("Configuring Core Isolation (Memory Integrity)..."), "INFO");
             QThread::msleep(800);
 #ifdef Q_OS_WIN
@@ -4100,9 +4558,43 @@ void Optimizer::startSystemOptimization() {
             emit coreIsolationActiveChanged(m_coreIsolationActive);
         }
 
+        // Step 1.82: Hardware-Accelerated GPU Scheduling (HAGS) Configuration (only if changed)
+        bool hagsSuccess = true;
+        if (hagsVal != origHags || force) {
+            emit systemStepReported(tr("Configuring Hardware-Accelerated GPU Scheduling (HAGS)..."), "INFO");
+            QThread::msleep(800);
+#ifdef Q_OS_WIN
+            bool success = false;
+            HKEY hKeyHAGS;
+            if (RegCreateKeyExW(HKEY_LOCAL_MACHINE, L"SYSTEM\\CurrentControlSet\\Control\\GraphicsDrivers", 0, NULL, REG_OPTION_NON_VOLATILE, KEY_WRITE, NULL, &hKeyHAGS, NULL) == ERROR_SUCCESS) {
+                DWORD val = hagsVal ? 2 : 1;
+                if (RegSetValueExW(hKeyHAGS, L"HwSchMode", 0, REG_DWORD, (const BYTE*)&val, sizeof(val)) == ERROR_SUCCESS) {
+                    success = true;
+                }
+                RegCloseKey(hKeyHAGS);
+            }
+
+            if (success) {
+                QString logMsg = hagsVal ? tr("Hardware-Accelerated GPU Scheduling (HAGS) is now ENABLED.") : tr("Hardware-Accelerated GPU Scheduling (HAGS) is now DISABLED.");
+                emit systemStepReported(logMsg, "SUCCESS");
+                Logger::log(logMsg, "SUCCESS");
+                emit systemStepReported(tr("Please restart your PC to apply HAGS changes."), "WARNING");
+                Logger::log("Please restart your PC to apply HAGS changes.", "WARNING");
+            } else {
+                hagsSuccess = false;
+                emit systemStepReported(tr("Failed to update HAGS state. Error: %1").arg(GetLastError()), "ERROR");
+                Logger::log(tr("Failed to update HAGS state. Error: %1").arg(GetLastError()), "ERROR");
+            }
+#else
+            emit systemStepReported(tr("[Simulation] Hardware-Accelerated GPU Scheduling (HAGS) set to: %1").arg(hagsVal ? "Enabled" : "Disabled"), "SUCCESS");
+#endif
+            m_hagsActive = hagsVal;
+            emit hagsActiveChanged(m_hagsActive);
+        }
+
         // Step 1.85: Mouse Acceleration Configuration (only if changed)
         bool mouseAccelSuccess = true;
-        if (mouseAccelVal != origMouseAccel) {
+        if (mouseAccelVal != origMouseAccel || force) {
             emit systemStepReported(tr("Configuring mouse acceleration..."), "INFO");
             QThread::msleep(800);
 #ifdef Q_OS_WIN
@@ -4138,7 +4630,7 @@ void Optimizer::startSystemOptimization() {
 
         // Step 1.9: Windows Game Mode Configuration (only if changed)
         bool gameModeSuccess = true;
-        if (gameModeVal != origGameMode) {
+        if (gameModeVal != origGameMode || force) {
             emit systemStepReported(tr("Configuring Windows Game Mode..."), "INFO");
             QThread::msleep(800);
 #ifdef Q_OS_WIN
@@ -4173,7 +4665,7 @@ void Optimizer::startSystemOptimization() {
 
         // Step 1.95: Windows Defender Firewall Configuration (only if changed)
         bool firewallSuccess = true;
-        if (firewallVal != origFirewall) {
+        if (firewallVal != origFirewall || force) {
             emit systemStepReported(tr("Configuring Windows Defender Firewall..."), "INFO");
             QThread::msleep(800);
 #ifdef Q_OS_WIN
@@ -4197,7 +4689,7 @@ void Optimizer::startSystemOptimization() {
 
         // Step 1.98: Print Spooler (Printer) Configuration (only if changed)
         bool printerSuccess = true;
-        if (printerVal != origPrinter) {
+        if (printerVal != origPrinter || force) {
             emit systemStepReported(tr("Processing Print Spooler service..."), "INFO");
             QThread::msleep(800);
 #ifdef Q_OS_WIN
@@ -4270,7 +4762,7 @@ void Optimizer::startSystemOptimization() {
 
         // Step 1.98b: BitLocker Drive Encryption (BDESVC) Configuration (only if changed)
         bool bitlockerSuccess = true;
-        if (bitlockerVal != origBitlocker) {
+        if (bitlockerVal != origBitlocker || force) {
             emit systemStepReported(tr("Processing BitLocker service..."), "INFO");
             QThread::msleep(800);
 #ifdef Q_OS_WIN
@@ -4342,7 +4834,7 @@ void Optimizer::startSystemOptimization() {
         }
 
         // Step 1.98c: Discord Overlay Configuration (only if changed)
-        if (discordOverlayVal != origDiscordOverlay) {
+        if (discordOverlayVal != origDiscordOverlay || force) {
             emit systemStepReported(tr("Processing Discord Overlay..."), "INFO");
             QThread::msleep(800);
 #ifdef Q_OS_WIN
@@ -4367,7 +4859,7 @@ void Optimizer::startSystemOptimization() {
 
         // Step 1.99: Windows Notifications Configuration (only if changed)
         bool notificationsSuccess = true;
-        if ((notificationsVal != origNotifications) ||
+        if (force || (notificationsVal != origNotifications) ||
             (notifGlobalVal != origNotifGlobal) ||
             (notifAppVal != origNotifApp) ||
             (notifSoundsVal != origNotifSounds) ||
@@ -4528,7 +5020,7 @@ void Optimizer::startSystemOptimization() {
 
         // Step 1.99d: Windows Defender Configuration (only if changed)
         bool defenderSuccess = true;
-        if ((defenderVal != origDefender) ||
+        if (force || (defenderVal != origDefender) ||
             (defenderRegistryVal != origDefenderRegistry) ||
             (defenderCmdVal != origDefenderCmd) ||
             (defenderServiceVal != origDefenderService)) {
@@ -4540,7 +5032,7 @@ void Optimizer::startSystemOptimization() {
             bool ok = true;
 
             // 1. Registry Policies
-            if (defenderRegistryVal != origDefenderRegistry) {
+            if (defenderRegistryVal != origDefenderRegistry || force) {
                 emit systemStepReported(tr("Applying Windows Defender registry policies..."), "INFO");
                 HKEY hKeyDef;
                 if (RegCreateKeyExW(HKEY_LOCAL_MACHINE, L"SOFTWARE\\Policies\\Microsoft\\Windows Defender", 0, NULL, REG_OPTION_NON_VOLATILE, KEY_WRITE, NULL, &hKeyDef, NULL) == ERROR_SUCCESS) {
@@ -4566,21 +5058,21 @@ void Optimizer::startSystemOptimization() {
             }
 
             // 2. PowerShell Command Preferences
-            if (defenderCmdVal != origDefenderCmd) {
+            if (defenderCmdVal != origDefenderCmd || force) {
                 emit systemStepReported(tr("Applying Windows Defender PowerShell preferences..."), "INFO");
                 QString cmd;
                 if (!defenderCmdVal) {
-                    cmd = "-NoProfile -NonInteractive -Command \"Set-MpPreference -DisableRealtimeMonitoring $true -DisableBehaviorMonitoring $true -DisableIOAVProtection $true -DisableIntrusionPreventionSystem $true -DisableScriptScanning $true -DisableBlockAtFirstSight $true -SubmitSamplesConsent 2 -MAPSReporting 0\"";
+                    cmd = "Set-MpPreference -DisableRealtimeMonitoring $true -DisableBehaviorMonitoring $true -DisableIOAVProtection $true -DisableIntrusionPreventionSystem $true -DisableScriptScanning $true -DisableBlockAtFirstSight $true -SubmitSamplesConsent 2 -MAPSReporting 0";
                 } else {
-                    cmd = "-NoProfile -NonInteractive -Command \"Set-MpPreference -DisableRealtimeMonitoring $false -DisableBehaviorMonitoring $false -DisableIOAVProtection $false -DisableIntrusionPreventionSystem $false -DisableScriptScanning $false -DisableBlockAtFirstSight $false -SubmitSamplesConsent 0 -MAPSReporting 2\"";
+                    cmd = "Set-MpPreference -DisableRealtimeMonitoring $false -DisableBehaviorMonitoring $false -DisableIOAVProtection $false -DisableIntrusionPreventionSystem $false -DisableScriptScanning $false -DisableBlockAtFirstSight $false -SubmitSamplesConsent 0 -MAPSReporting 2";
                 }
                 QProcess proc;
-                proc.start("powershell.exe", QStringList() << cmd);
+                proc.start("powershell.exe", QStringList() << "-NoProfile" << "-NonInteractive" << "-Command" << cmd);
                 proc.waitForFinished(12000);
             }
 
             // 3. Antivirus Services & Drivers
-            if (defenderServiceVal != origDefenderService) {
+            if (defenderServiceVal != origDefenderService || force) {
                 emit systemStepReported(tr("Configuring Windows Defender services..."), "INFO");
                 
                 SC_HANDLE hSCM = OpenSCManagerW(NULL, NULL, SC_MANAGER_ALL_ACCESS);
@@ -4892,7 +5384,7 @@ void Optimizer::startSystemOptimization() {
 
         // Step 1.99f: Remote Access (RDP) Configuration (only if changed)
         bool remoteAccessSuccess = true;
-        if (remoteAccessVal != origRemoteAccess) {
+        if (remoteAccessVal != origRemoteAccess || force) {
             emit systemStepReported(tr("Configuring Remote Access (RDP)..."), "INFO");
             QThread::msleep(800);
             
@@ -5621,7 +6113,7 @@ void Optimizer::startSystemOptimization() {
                 if (userdataDir.exists()) {
                     QStringList subdirs = userdataDir.entryList(QDir::Dirs | QDir::NoDotAndDotDot);
                     int updatedCount = 0;
-                    QString overlayStateVal = cs2OverlayVal ? "1" : "2";
+                    QString overlayStateVal = cs2OverlayVal ? "1" : "0";
                     for (const QString &subdir : subdirs) {
                         QString vdfPath = userdataPath + "/" + subdir + "/config/localconfig.vdf";
                         if (QFile::exists(vdfPath)) {
@@ -5979,7 +6471,7 @@ void Optimizer::startSystemOptimization() {
 #endif
         }
 
-        bool overallSuccess = wSearchSuccess && classicContextMenuSuccess && hibernationSuccess && overlaySuccess && coreIsolationSuccess && mouseAccelSuccess && gameModeSuccess && firewallSuccess && printerSuccess && notificationsSuccess && powerPlanSuccess && defenderSuccess && overallDrivesSuccess && usbSuccess && remoteAccessSuccess && telemetrySuccess && windowsUpdateSuccess && cs2Success && steamOverlaySuccess && cs2OverlaySuccess && steamFriendsSuccess && visualEffectsSuccess && pagefileSuccess;
+        bool overallSuccess = wSearchSuccess && classicContextMenuSuccess && hibernationSuccess && overlaySuccess && coreIsolationSuccess && hagsSuccess && mouseAccelSuccess && gameModeSuccess && firewallSuccess && printerSuccess && notificationsSuccess && powerPlanSuccess && defenderSuccess && overallDrivesSuccess && usbSuccess && remoteAccessSuccess && telemetrySuccess && windowsUpdateSuccess && cs2Success && steamOverlaySuccess && cs2OverlaySuccess && steamFriendsSuccess && visualEffectsSuccess && pagefileSuccess;
         if (overallSuccess) {
             emit systemStepReported(tr("System optimization completed successfully!"), "SUCCESS");
             Logger::log("System optimization completed successfully!", "INFO");
@@ -5994,6 +6486,7 @@ void Optimizer::startSystemOptimization() {
         m_originalHibernationActive = hibernationVal;
         m_originalGamingOverlayActive = overlayVal;
         m_originalCoreIsolationActive = coreIsolationVal;
+        m_originalHagsActive = hagsVal;
         m_originalMouseAccelerationActive = mouseAccelVal;
         m_originalGameModeActive = gameModeVal;
         m_originalFirewallActive = firewallVal;
@@ -6031,6 +6524,7 @@ void Optimizer::startSystemOptimization() {
         emit originalHibernationActiveChanged(m_originalHibernationActive);
         emit originalGamingOverlayActiveChanged(m_originalGamingOverlayActive);
         emit originalCoreIsolationActiveChanged(m_originalCoreIsolationActive);
+        emit originalHagsActiveChanged(m_originalHagsActive);
         emit originalMouseAccelerationActiveChanged(m_originalMouseAccelerationActive);
         emit originalGameModeActiveChanged(m_originalGameModeActive);
         emit originalFirewallActiveChanged(m_originalFirewallActive);
@@ -6075,6 +6569,9 @@ void Optimizer::showPath(const QString &funcName) {
     } else if (funcName == "coreisolation") {
         QProcess::startDetached("cmd.exe", QStringList() << "/c" << "start windowsdefender://devicesecurity");
         Logger::log("Opening Device Security (Core Isolation) settings...", "INFO");
+    } else if (funcName == "hags") {
+        QProcess::startDetached("cmd.exe", QStringList() << "/c" << "start ms-settings:display-advancedgraphics");
+        Logger::log("Opening Graphics Settings (HAGS) page...", "INFO");
     } else if (funcName == "mouseacceleration") {
         QProcess::startDetached("control.exe", QStringList() << "main.cpl,,1");
         Logger::log("Opening Mouse Properties (Pointer Options)...", "INFO");
@@ -7681,9 +8178,35 @@ void Optimizer::scanSteamInstalledGames() {
                         }
                     }
 
+                    qint64 dlcBytes = 0;
+                    QRegularExpression depotRegex("\"(\\d+)\"\\s*\\{\\s*([^{}]+)\\}");
+                    QRegularExpressionMatchIterator depotIt = depotRegex.globalMatch(content);
+                    while (depotIt.hasNext()) {
+                        QRegularExpressionMatch depotMatch = depotIt.next();
+                        QString depotBody = depotMatch.captured(2);
+                        if (depotBody.contains("\"dlcappid\"")) {
+                            QRegularExpression sizeDepotRegex("\"size\"\\s*\"(\\d+)\"");
+                            QRegularExpressionMatch sizeDepotMatch = sizeDepotRegex.match(depotBody);
+                            if (sizeDepotMatch.hasMatch()) {
+                                dlcBytes += sizeDepotMatch.captured(1).toLongLong();
+                            }
+                        }
+                    }
+
                     QString dlcInfo = "";
-                    if (appid == "393380") { // Squad
-                        dlcInfo = "DLC 15.29 KB";
+                    if (dlcBytes > 0) {
+                        double dlcGB = (double)dlcBytes / (1024.0 * 1024.0 * 1024.0);
+                        if (dlcGB >= 1.0) {
+                            dlcInfo = QString("DLC %1 GB").arg(dlcGB, 0, 'f', 2);
+                        } else {
+                            double dlcMB = (double)dlcBytes / (1024.0 * 1024.0);
+                            if (dlcMB >= 1.0) {
+                                dlcInfo = QString("DLC %1 MB").arg(dlcMB, 0, 'f', 2);
+                            } else {
+                                double dlcKB = (double)dlcBytes / 1024.0;
+                                dlcInfo = QString("DLC %1 KB").arg(dlcKB, 0, 'f', 2);
+                            }
+                        }
                     }
 
                     QString lastPlayedStr = "";
@@ -7867,4 +8390,43 @@ void Optimizer::setPagefileAuto(bool val) {
         emit pagefileAutoChanged(m_pagefileAuto);
     }
 }
+
+bool Optimizer::createSystemBackup(const QString &backupName) {
+    QString name = backupName.isEmpty() ? tr("Megu Pack Optimizer Backup") : backupName;
+    emit systemStepReported(tr("Creating Windows System Restore Point: %1...").arg(name), "INFO");
+    Logger::log(tr("Creating System Restore Point: %1").arg(name), "INFO");
+    
+#ifdef Q_OS_WIN
+    QString cmd = QString("Checkpoint-Computer -Description \"%1\" -RestorePointType MODIFY_SETTINGS").arg(name);
+    QProcess::startDetached("powershell.exe", QStringList() << "-NoProfile" << "-ExecutionPolicy" << "Bypass" << "-Command" << cmd);
+    emit systemStepReported(tr("System Restore Point creation initiated in background."), "SUCCESS");
+    Logger::log("System Restore Point creation initiated in background.", "SUCCESS");
+    return true;
+#else
+    emit systemStepReported(tr("[Simulation] Created System Restore Point: %1").arg(name), "SUCCESS");
+    return true;
+#endif
+}
+
+bool Optimizer::restoreFromBackup(const QString &backupId) {
+    Q_UNUSED(backupId);
+    emit systemStepReported(tr("Launching Windows System Restore utility..."), "INFO");
+    Logger::log("Launching Windows System Restore utility (rstrui.exe)...", "INFO");
+#ifdef Q_OS_WIN
+    return QProcess::startDetached("rstrui.exe");
+#else
+    emit systemStepReported(tr("[Simulation] Windows System Restore utility launched."), "SUCCESS");
+    return true;
+#endif
+}
+
+bool Optimizer::deleteBackup(const QString &backupId) {
+    Q_UNUSED(backupId);
+    return true;
+}
+
+void Optimizer::refreshBackupList() {
+    // Stub
+}
+
 

@@ -2220,43 +2220,6 @@ Item {
                     }
             }
 
-            // Toggle 3: Ask which account to use
-            Rectangle {
-                width: parent.width
-                height: Math.max(50, steamToggleCol_18.implicitHeight + 12)
-                color: "transparent"
-                    Column { id: steamToggleCol_18;
-                        anchors.verticalCenter: parent.verticalCenter
-                        spacing: 2
-                        anchors.left: parent.left
-                        anchors.right: steamToggleSwitch_18.left
-                        anchors.rightMargin: 12
-                        Text {
-                            text: qsTr("Ask which account to use each time Steam starts")
-                            color: Theme.textPrimary
-                            font.family: Theme.fontFamily
-                            font.pixelSize: 12
-                            font.bold: true
-                        }
-                        Text {
-                            text: qsTr("Prompts the account selector window on every Steam login.")
-                            color: Theme.textSecondary
-                            font.family: Theme.fontFamily
-                            font.pixelSize: 10
-                            width: parent.width
-                            wrapMode: Text.WordWrap
-                        }
-                    }
-                    MeguSwitch {
-                    id: steamToggleSwitch_18
-                    anchors.right: parent.right
-
-                        steamStyle: true
-                        checked: optimizerBackend.steamFriendsSettings ? !!optimizerBackend.steamFriendsSettings["bAskAccountOnStart"] : false
-                        anchors.verticalCenter: parent.verticalCenter
-                        onToggled: (isChecked) => { root.toggleSteamFriendsSetting("bAskAccountOnStart", isChecked); }
-                    }
-            }
 
             // Toggle 4: Start in Big Picture Mode
             Rectangle {
@@ -2368,7 +2331,12 @@ Item {
                         steamStyle: true
                         checked: optimizerBackend.steamFriendsSettings ? !!optimizerBackend.steamFriendsSettings["bGPUAcceleratedRendering"] : true
                         anchors.verticalCenter: parent.verticalCenter
-                        onToggled: (isChecked) => { root.toggleSteamFriendsSetting("bGPUAcceleratedRendering", isChecked); }
+                        onToggled: (isChecked) => {
+                            root.toggleSteamFriendsSetting("bGPUAcceleratedRendering", isChecked);
+                            if (!isChecked) {
+                                root.toggleSteamFriendsSetting("bHardwareVideoDecoding", false);
+                            }
+                        }
                     }
             }
 
@@ -2385,7 +2353,7 @@ Item {
                         anchors.rightMargin: 12
                         Text {
                             text: qsTr("Enable hardware video decoding, if supported (requires restart)")
-                            color: Theme.textPrimary
+                            color: steamToggleSwitch_22.enabled ? Theme.textPrimary : Theme.textMuted
                             font.family: Theme.fontFamily
                             font.pixelSize: 12
                             font.bold: true
@@ -2398,13 +2366,23 @@ Item {
                             width: parent.width
                             wrapMode: Text.WordWrap
                         }
+                        Text {
+                            visible: !steamToggleSwitch_22.enabled
+                            text: qsTr("\"Enable GPU accelerated rendering in web views\" setting must be enabled")
+                            color: "#c63939"
+                            font.family: Theme.fontFamily
+                            font.pixelSize: 10
+                            width: parent.width
+                            wrapMode: Text.WordWrap
+                        }
                     }
                     MeguSwitch {
                     id: steamToggleSwitch_22
                     anchors.right: parent.right
 
                         steamStyle: true
-                        checked: optimizerBackend.steamFriendsSettings ? !!optimizerBackend.steamFriendsSettings["bHardwareVideoDecoding"] : true
+                        enabled: optimizerBackend.steamFriendsSettings ? !!optimizerBackend.steamFriendsSettings["bGPUAcceleratedRendering"] : true
+                        checked: enabled && optimizerBackend.steamFriendsSettings ? !!optimizerBackend.steamFriendsSettings["bHardwareVideoDecoding"] : false
                         anchors.verticalCenter: parent.verticalCenter
                         onToggled: (isChecked) => { root.toggleSteamFriendsSetting("bHardwareVideoDecoding", isChecked); }
                     }
@@ -2688,6 +2666,155 @@ Item {
                         anchors.verticalCenter: parent.verticalCenter
                         onToggled: (isChecked) => { root.toggleSteamFriendsSetting("bScaleOverlayTextAndIcons", isChecked); }
                     }
+            }
+
+            // Header: Overlay Performance Monitor
+            Column {
+                width: parent.width
+                spacing: 6
+
+                Text {
+                    text: qsTr("Overlay Performance Monitor")
+                    color: Theme.accent
+                    font.family: Theme.fontFamily
+                    font.pixelSize: 11
+                    font.bold: true
+                    font.letterSpacing: 1.0
+                }
+
+                Text {
+                    width: parent.width
+                    wrapMode: Text.WordWrap
+                    textFormat: Text.RichText
+                    color: Theme.textSecondary
+                    font.family: Theme.fontFamily
+                    font.pixelSize: 10
+                    text: qsTr("The In-Game overlay is designed to help you understand your game and PC performance. It can render a variety of game and hardware performance information over a running game. <a href='https://support.steampowered.com/kb_article.php?ref=2235-QOMF-3286' style='color:#63b1e2; text-decoration:underline;'>Learn about the performance monitor numbers here.</a>")
+                    onLinkActivated: (link) => Qt.openUrlExternally(link)
+                }
+            }
+
+            // Row: Show performance monitor selector box
+            Rectangle {
+                width: parent.width
+                height: 50
+                color: "transparent"
+
+                Text {
+                    text: qsTr("Show performance monitor")
+                    color: Theme.textPrimary
+                    font.family: Theme.fontFamily
+                    font.pixelSize: 12
+                    font.bold: true
+                    anchors.left: parent.left
+                    anchors.verticalCenter: parent.verticalCenter
+                }
+
+                // Styled Premium ComboBox Dropdown
+                Rectangle {
+                    id: perfMonitorDropdown
+                    width: 140
+                    height: 32
+                    radius: 6
+                    color: "#05FFFFFF"
+                    border.color: Theme.border
+                    border.width: 1
+                    anchors.right: parent.right
+                    anchors.verticalCenter: parent.verticalCenter
+
+                    property string currentVal: optimizerBackend.steamFriendsSettings ? optimizerBackend.steamFriendsSettings["InGameOverlayShowFPSCorner"] || "0" : "0"
+
+                    readonly property var options: [
+                        { id: "0", label: qsTr("Off") },
+                        { id: "1", label: qsTr("Top-left") },
+                        { id: "5", label: qsTr("Top-center") },
+                        { id: "2", label: qsTr("Top-right") },
+                        { id: "3", label: qsTr("Bottom-right") },
+                        { id: "6", label: qsTr("Bottom-center") },
+                        { id: "4", label: qsTr("Bottom-left") }
+                    ]
+
+                    function getLabelForVal(v) {
+                        for (var i = 0; i < options.length; i++) {
+                            if (options[i].id === v) return options[i].label;
+                        }
+                        return qsTr("Off");
+                    }
+
+                    Text {
+                        anchors.left: parent.left
+                        anchors.leftMargin: 12
+                        anchors.verticalCenter: parent.verticalCenter
+                        text: perfMonitorDropdown.getLabelForVal(perfMonitorDropdown.currentVal)
+                        color: Theme.textPrimary
+                        font.family: Theme.fontFamily
+                        font.pixelSize: 11
+                    }
+
+                    Text {
+                        anchors.right: parent.right
+                        anchors.rightMargin: 12
+                        anchors.verticalCenter: parent.verticalCenter
+                        text: "⌵"
+                        color: Theme.textSecondary
+                        font.family: Theme.fontFamily
+                        font.pixelSize: 12
+                        font.bold: true
+                    }
+
+                    MouseArea {
+                        anchors.fill: parent
+                        hoverEnabled: true
+                        cursorShape: Qt.PointingHandCursor
+                        onClicked: {
+                            perfMenu.open();
+                        }
+                        onEntered: perfMonitorDropdown.border.color = Theme.accent
+                        onExited: perfMonitorDropdown.border.color = Theme.border
+                    }
+
+                    Menu {
+                        id: perfMenu
+                        y: perfMonitorDropdown.height + 4
+                        width: perfMonitorDropdown.width
+                        
+                        background: Rectangle {
+                            color: Theme.sidebarBg
+                            border.color: Theme.border
+                            border.width: 1
+                            radius: 6
+                        }
+
+                        Instantiator {
+                            model: perfMonitorDropdown.options
+                            onObjectAdded: (index, object) => perfMenu.insertItem(index, object)
+                            onObjectRemoved: (index, object) => perfMenu.removeItem(object)
+
+                            delegate: MenuItem {
+                                text: modelData.label
+                                width: perfMenu.width
+                                height: 32
+                                
+                                contentItem: Text {
+                                    text: parent.text
+                                    font.family: Theme.fontFamily
+                                    font.pixelSize: 11
+                                    color: parent.highlighted ? Theme.accent : Theme.textPrimary
+                                    verticalAlignment: Text.AlignVCenter
+                                    leftPadding: 12
+                                }
+
+                                background: Rectangle {
+                                    color: parent.highlighted ? Qt.rgba(Theme.accent.r, Theme.accent.g, Theme.accent.b, 0.1) : "transparent"
+                                }
+
+                                onTriggered: {
+                                    root.toggleSteamFriendsSetting("InGameOverlayShowFPSCorner", modelData.id);
+                                }
+                            }
+                        }
+                    }
+                }
             }
 
             Rectangle {
@@ -3940,65 +4067,7 @@ Item {
             width: parent.width
             spacing: 16
 
-            // Toggle 1: Limit download speed
-            Rectangle {
-                width: parent.width
-                height: Math.max(50, steamToggleCol_41.implicitHeight + 12)
-                color: "transparent"
-                    Column { id: steamToggleCol_41;
-                        anchors.verticalCenter: parent.verticalCenter
-                        spacing: 2
-                        anchors.left: parent.left
-                        anchors.right: steamToggleSwitch_41.left
-                        anchors.rightMargin: 12
-                        Text {
-                            text: qsTr("Limit download speed")
-                            color: Theme.textPrimary
-                            font.family: Theme.fontFamily
-                            font.pixelSize: 12
-                            font.bold: true
-                        }
-                    }
-                    MeguSwitch {
-                    id: steamToggleSwitch_41
-                    anchors.right: parent.right
 
-                        steamStyle: true
-                        checked: optimizerBackend.steamFriendsSettings ? !!optimizerBackend.steamFriendsSettings["bLimitDownloadSpeed"] : false
-                        anchors.verticalCenter: parent.verticalCenter
-                        onToggled: (isChecked) => { root.toggleSteamFriendsSetting("bLimitDownloadSpeed", isChecked); }
-                    }
-            }
-
-            // Toggle 2: Schedule auto-updates
-            Rectangle {
-                width: parent.width
-                height: Math.max(50, steamToggleCol_42.implicitHeight + 12)
-                color: "transparent"
-                    Column { id: steamToggleCol_42;
-                        anchors.verticalCenter: parent.verticalCenter
-                        spacing: 2
-                        anchors.left: parent.left
-                        anchors.right: steamToggleSwitch_42.left
-                        anchors.rightMargin: 12
-                        Text {
-                            text: qsTr("Schedule auto-updates")
-                            color: Theme.textPrimary
-                            font.family: Theme.fontFamily
-                            font.pixelSize: 12
-                            font.bold: true
-                        }
-                    }
-                    MeguSwitch {
-                    id: steamToggleSwitch_42
-                    anchors.right: parent.right
-
-                        steamStyle: true
-                        checked: optimizerBackend.steamFriendsSettings ? !!optimizerBackend.steamFriendsSettings["bScheduleAutoUpdates"] : false
-                        anchors.verticalCenter: parent.verticalCenter
-                        onToggled: (isChecked) => { root.toggleSteamFriendsSetting("bScheduleAutoUpdates", isChecked); }
-                    }
-            }
 
             // Toggle 3: Allow downloads during gameplay
             Rectangle {
@@ -4255,6 +4324,9 @@ Item {
                 width: parent.width
                 height: Math.max(50, steamToggleCol_49.implicitHeight + 12)
                 color: "transparent"
+                enabled: steamToggleSwitch_48.checked
+                opacity: enabled ? 1.0 : 0.5
+                Behavior on opacity { NumberAnimation { duration: Theme.animNormal } }
                     Column { id: steamToggleCol_49;
                         anchors.verticalCenter: parent.verticalCenter
                         spacing: 2
@@ -4309,7 +4381,7 @@ Item {
                     }
                 }
             }
-            return sum;
+            return sum - dlcSize;
         }
         property real dlcSize: {
             var sum = 0;
