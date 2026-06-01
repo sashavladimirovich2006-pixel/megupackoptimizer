@@ -4534,6 +4534,24 @@ Item {
                                     onClicked: { optimizerBackend.showPath("defender"); }
                                 }
                                 Rectangle {
+                                    height: 16
+                                    width: devText.contentWidth + 10
+                                    radius: 4
+                                    color: Qt.rgba(Theme.accent.r, Theme.accent.g, Theme.accent.b, 0.15)
+                                    border.color: Theme.accent
+                                    border.width: 1
+                                    anchors.verticalCenter: parent.verticalCenter
+                                    Text {
+                                        id: devText
+                                        text: qsTr("разработка")
+                                        color: Theme.accent
+                                        font.family: Theme.fontFamily
+                                        font.pixelSize: 8
+                                        font.bold: true
+                                        anchors.centerIn: parent
+                                    }
+                                }
+                                Rectangle {
                                     visible: root.defenderChanged
                                     height: 16
                                     width: selectedTextDefender.contentWidth + 10
@@ -4678,7 +4696,12 @@ Item {
                                     font.family: Theme.fontFamily
                                     font.pixelSize: 14
                                     font.bold: true
+                                    anchors.verticalCenter: parent.verticalCenter
                                 } 
+                                ShowPathButton {
+                                    anchors.verticalCenter: parent.verticalCenter
+                                    onClicked: { optimizerBackend.showPath("powerplan"); }
+                                }
                                 Rectangle {
                                     visible: root.powerPlanChanged || optimizerBackend.deleteUltimateStaged
                                     height: 16

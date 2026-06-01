@@ -6591,6 +6591,9 @@ void Optimizer::showPath(const QString &funcName) {
     } else if (funcName == "visualeffects" || funcName == "pagefile") {
         QProcess::startDetached("SystemPropertiesPerformance.exe");
         Logger::log("Opening Windows Visual Effects / Page File settings (Performance Options)...", "INFO");
+    } else if (funcName == "powerplan") {
+        QProcess::startDetached("control.exe", QStringList() << "powercfg.cpl");
+        Logger::log("Opening Windows Power Options Control Panel...", "INFO");
     } else if (funcName == "mpo") {
 #ifdef Q_OS_WIN
         HKEY hKey;
