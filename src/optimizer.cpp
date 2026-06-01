@@ -4285,11 +4285,12 @@ void Optimizer::startSystemOptimization() {
         bool visualEffectsChanged = force || (visualEffectsVal != origVisualEffectsVal);
         bool pagefileChanged = force || (pagefileMinVal != origPagefileMinVal) || (pagefileMaxVal != origPagefileMaxVal);
 
-        bool anyChanges = force || (searchVal != origSearch) || 
-                          (classicContextMenuVal != origClassicContextMenu) || 
-                          (shortcutArrowsVal != origShortcutArrows) || 
-                          (hibernationVal != origHibernation) || 
-                          (overlayVal != origOverlay) ||
+         bool anyChanges = force || (searchVal != origSearch) || 
+                           (classicContextMenuVal != origClassicContextMenu) || 
+                           (shortcutArrowsVal != origShortcutArrows) || 
+                           (clipboardHistoryVal != origClipboardHistory) ||
+                           (hibernationVal != origHibernation) || 
+                           (overlayVal != origOverlay) ||
                           (coreIsolationVal != origCoreIsolation) ||
                           (hagsVal != origHags) ||
                           (mouseAccelVal != origMouseAccel) ||
