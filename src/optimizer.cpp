@@ -36,6 +36,45 @@
 #endif
 
 namespace {
+    QString cleanAppName(const QString& appKey) {
+        if (appKey == "com.squirrel.Discord.Discord") return "Discord";
+        if (appKey == "com.nvidia.nvapp") return "NVIDIA App";
+        if (appKey == "Spotify.desktop.client") return "Spotify";
+        if (appKey == "Windows.Defender.SecurityCenter") return "Windows Defender";
+        if (appKey.contains("Telegram", Qt::CaseInsensitive)) return "Telegram";
+        if (appKey == "Exafunction.Windsurf") return "Windsurf";
+        if (appKey.contains("WindowsStore", Qt::CaseInsensitive)) return "Microsoft Store";
+        if (appKey.contains("immersivecontrolpanel", Qt::CaseInsensitive)) return "Windows Settings";
+        if (appKey == "Windows.SystemToast.StartupApp") return "Startup Notifications";
+        if (appKey == "Windows.SystemToast.Suggested") return "Suggested Content";
+        if (appKey == "Windows.SystemToast.DefaultAudioEndpoint") return "Audio Endpoint Notifications";
+        if (appKey == "Windows.SystemToast.PinConsent") return "Pin Consent Notifications";
+        if (appKey == "Windows.SystemToast.SecurityAndMaintenance") return "Security & Maintenance";
+        if (appKey == "Microsoft.Windows.InputSwitchToastHandler") return "Input Switch Handler";
+        if (appKey.startsWith("NotifyIconGeneratedAumid_")) {
+            return "System Tray Icon Application";
+        }
+        
+        QStringList parts = appKey.split('.');
+        if (!parts.isEmpty()) {
+            QString last = parts.last();
+            if (last.contains('!')) {
+                last = last.split('!').first();
+            }
+            if (last.contains('_')) {
+                last = last.split('_').first();
+            }
+            if ((last.compare("App", Qt::CaseInsensitive) == 0 || last.compare("client", Qt::CaseInsensitive) == 0 || last.compare("desktop", Qt::CaseInsensitive) == 0) && parts.size() > 1) {
+                last = parts[parts.size() - 2];
+            }
+            if (!last.isEmpty()) {
+                last[0] = last[0].toUpper();
+                return last;
+            }
+        }
+        return appKey;
+    }
+
     QString getActiveOrRecentUser(const QString &steamPath) {
         // 1. Try registry first (active process)
 #ifdef Q_OS_WIN
@@ -2543,6 +2582,18 @@ void Optimizer::setNotifLockscreenActive(bool val) {
     }
 }
 
+void Optimizer::setAppNotificationEnabled(const QString &appKey, bool enabled) {
+    for (int i = 0; i < m_appNotificationSettings.size(); ++i) {
+        QVariantMap item = m_appNotificationSettings[i].toMap();
+        if (item["key"].toString() == appKey) {
+            item["enabled"] = enabled;
+            m_appNotificationSettings[i] = item;
+            break;
+        }
+    }
+    emit appNotificationSettingsChanged();
+}
+
 void Optimizer::setDriveStates(const QVariantMap &states) {
     if (m_driveStates != states) {
         m_driveStates = states;
@@ -3089,6 +3140,68 @@ void Optimizer::loadSystemStates() {
     m_originalNotifLockscreenActive = m_notifLockscreenActive;
     emit notifLockscreenActiveChanged(m_notifLockscreenActive);
     emit originalNotifLockscreenActiveChanged(m_originalNotifLockscreenActive);
+
+    // ----------------------------------------------------
+    // Load Application Notification Settings
+    // ----------------------------------------------------
+    QVariantList appSettingsList;
+#ifdef Q_OS_WIN
+    HKEY hKeyParent;
+    if (RegOpenKeyExW(HKEY_CURRENT_USER, L"Software\\Microsoft\\Windows\\CurrentVersion\\Notifications\\Settings", 0, KEY_READ, &hKeyParent) == ERROR_SUCCESS) {
+        DWORD index = 0;
+        wchar_t subkeyName[256];
+        DWORD subkeyNameSize = 256;
+        
+        while (RegEnumKeyExW(hKeyParent, index, subkeyName, &subkeyNameSize, NULL, NULL, NULL, NULL) == ERROR_SUCCESS) {
+            QString appKey = QString::fromWCharArray(subkeyName);
+            
+            HKEY hKeySub;
+            bool enabled = true;
+            if (RegOpenKeyExW(hKeyParent, subkeyName, 0, KEY_READ, &hKeySub) == ERROR_SUCCESS) {
+                DWORD value = 1;
+                DWORD size = sizeof(value);
+                if (RegQueryValueExW(hKeySub, L"Enabled", NULL, NULL, (LPBYTE)&value, &size) == ERROR_SUCCESS) {
+                    enabled = (value != 0);
+                }
+                RegCloseKey(hKeySub);
+            }
+            
+            QVariantMap appItem;
+            appItem["key"] = appKey;
+            appItem["name"] = cleanAppName(appKey);
+            appItem["enabled"] = enabled;
+            appItem["originalEnabled"] = enabled;
+            
+            appSettingsList.append(appItem);
+            
+            index++;
+            subkeyNameSize = 256;
+        }
+        RegCloseKey(hKeyParent);
+    }
+#else
+    // Simulation mock data for non-Windows environments
+    QStringList mockKeys = {
+        "com.squirrel.Discord.Discord",
+        "Spotify.desktop.client",
+        "Telegram.TelegramDesktop.19a48c203bfb426d48b45d3a2461bfdb",
+        "Windows.Defender.SecurityCenter",
+        "com.nvidia.nvapp",
+        "electron.app.Antigravity",
+        "Windows.SystemToast.StartupApp"
+    };
+    for (const QString& key : mockKeys) {
+        QVariantMap appItem;
+        appItem["key"] = key;
+        appItem["name"] = cleanAppName(key);
+        appItem["enabled"] = (key != "Windows.SystemToast.StartupApp");
+        appItem["originalEnabled"] = appItem["enabled"];
+        appSettingsList.append(appItem);
+    }
+#endif
+
+    m_appNotificationSettings = appSettingsList;
+    emit appNotificationSettingsChanged();
 
     // ----------------------------------------------------
     // Load Windows Power Schemes
@@ -4045,6 +4158,7 @@ void Optimizer::startSystemOptimization() {
 
     QVariantList usbDevicesVal = m_usbDevices;
     QVariantList origUsbDevicesVal = m_originalUsbDevices;
+    QVariantList appNotificationSettingsVal = m_appNotificationSettings;
 
     bool steamOverlayVal = m_steamOverlayActive;
     bool origSteamOverlayVal = m_originalSteamOverlayActive;
@@ -4065,7 +4179,7 @@ void Optimizer::startSystemOptimization() {
     bool forceVal = m_forceApplyAll;
     m_forceApplyAll = false;
 
-    QThread* worker = QThread::create([this, forceVal, searchVal, classicContextMenuVal, hibernationVal, overlayVal, coreIsolationVal, hagsVal, mouseAccelVal, gameModeVal, firewallVal, bitlockerVal, discordOverlayVal, notificationsVal, notifGlobalVal, notifAppVal, notifSoundsVal, notifLockscreenVal, targetPowerSchemeVal, activePowerSchemeVal, deleteUltimateStagedVal, deleteDefenderStagedVal, defenderVal, defenderRegistryVal, defenderCmdVal, defenderServiceVal, remoteAccessVal, telemetryVal, telemetryDiagTrackVal, telemetryWapPushVal, telemetryCeipVal, telemetryWerVal, windowsUpdateModeVal, targets, originalTargets, origSearch, origClassicContextMenu, origHibernation, origOverlay, origCoreIsolation, origHags, origMouseAccel, origGameMode, origFirewall, origBitlocker, origDiscordOverlay, origNotifications, origNotifGlobal, origNotifApp, origNotifSounds, origNotifLockscreen, origDefender, origDefenderRegistry, origDefenderCmd, origDefenderService, origRemoteAccess, origTelemetry, origTelemetryDiagTrack, origTelemetryWapPush, origTelemetryCeip, origTelemetryWer, origWindowsUpdateMode, usbDevicesVal, origUsbDevicesVal, steamPathVal, cs2OptionsVal, origCs2OptionsVal, steamOverlayVal, origSteamOverlayVal, cs2OverlayVal, origCs2OverlayVal, visualEffectsVal, origVisualEffectsVal, steamFriendsSettingsVal, origSteamFriendsSettingsVal, steamFriendsChanged, pagefileMinVal, origPagefileMinVal, pagefileMaxVal, origPagefileMaxVal]() {
+    QThread* worker = QThread::create([this, forceVal, searchVal, classicContextMenuVal, hibernationVal, overlayVal, coreIsolationVal, hagsVal, mouseAccelVal, gameModeVal, firewallVal, bitlockerVal, discordOverlayVal, notificationsVal, notifGlobalVal, notifAppVal, notifSoundsVal, notifLockscreenVal, targetPowerSchemeVal, activePowerSchemeVal, deleteUltimateStagedVal, deleteDefenderStagedVal, defenderVal, defenderRegistryVal, defenderCmdVal, defenderServiceVal, remoteAccessVal, telemetryVal, telemetryDiagTrackVal, telemetryWapPushVal, telemetryCeipVal, telemetryWerVal, windowsUpdateModeVal, targets, originalTargets, origSearch, origClassicContextMenu, origHibernation, origOverlay, origCoreIsolation, origHags, origMouseAccel, origGameMode, origFirewall, origBitlocker, origDiscordOverlay, origNotifications, origNotifGlobal, origNotifApp, origNotifSounds, origNotifLockscreen, origDefender, origDefenderRegistry, origDefenderCmd, origDefenderService, origRemoteAccess, origTelemetry, origTelemetryDiagTrack, origTelemetryWapPush, origTelemetryCeip, origTelemetryWer, origWindowsUpdateMode, usbDevicesVal, origUsbDevicesVal, appNotificationSettingsVal, steamPathVal, cs2OptionsVal, origCs2OptionsVal, steamOverlayVal, origSteamOverlayVal, cs2OverlayVal, origCs2OverlayVal, visualEffectsVal, origVisualEffectsVal, steamFriendsSettingsVal, origSteamFriendsSettingsVal, steamFriendsChanged, pagefileMinVal, origPagefileMinVal, pagefileMaxVal, origPagefileMaxVal]() {
         // Step 00: Auto-create backup before making changes
         if (!forceVal && Settings::instance()->createBackup()) {
             emit systemStepReported(tr("Creating automatic system backup..."), "INFO");
@@ -4688,11 +4802,21 @@ void Optimizer::startSystemOptimization() {
 
         // Step 1.99: Windows Notifications Configuration (only if changed)
         bool notificationsSuccess = true;
+        bool appNotifsChanged = false;
+        for (const QVariant& itemVar : appNotificationSettingsVal) {
+            QVariantMap item = itemVar.toMap();
+            if (item["enabled"].toBool() != item["originalEnabled"].toBool()) {
+                appNotifsChanged = true;
+                break;
+            }
+        }
+
         if (force || (notificationsVal != origNotifications) ||
             (notifGlobalVal != origNotifGlobal) ||
             (notifAppVal != origNotifApp) ||
             (notifSoundsVal != origNotifSounds) ||
-            (notifLockscreenVal != origNotifLockscreen)) {
+            (notifLockscreenVal != origNotifLockscreen) ||
+            appNotifsChanged) {
 
             emit systemStepReported(tr("Processing Windows notifications configuration..."), "INFO");
             QThread::msleep(800);
@@ -4732,6 +4856,28 @@ void Optimizer::startSystemOptimization() {
                 ok = false;
             }
 
+            // 3. App-Specific Settings
+            for (const QVariant& itemVar : appNotificationSettingsVal) {
+                QVariantMap item = itemVar.toMap();
+                QString key = item["key"].toString();
+                bool enabled = item["enabled"].toBool();
+                bool originalEnabled = item["originalEnabled"].toBool();
+                if (force || (enabled != originalEnabled)) {
+                    HKEY hKeySub;
+                    QString subkeyPath = "Software\\Microsoft\\Windows\\CurrentVersion\\Notifications\\Settings\\" + key;
+                    std::wstring wPath = subkeyPath.toStdWString();
+                    if (RegCreateKeyExW(HKEY_CURRENT_USER, wPath.c_str(), 0, NULL, REG_OPTION_NON_VOLATILE, KEY_WRITE, NULL, &hKeySub, NULL) == ERROR_SUCCESS) {
+                        DWORD valApp = enabled ? 1 : 0;
+                        if (RegSetValueExW(hKeySub, L"Enabled", 0, REG_DWORD, (const BYTE*)&valApp, sizeof(valApp)) != ERROR_SUCCESS) {
+                            ok = false;
+                        }
+                        RegCloseKey(hKeySub);
+                    } else {
+                        ok = false;
+                    }
+                }
+            }
+
             if (ok) {
                 emit systemStepReported(tr("Windows notifications updated successfully."), "SUCCESS");
             } else {
@@ -4739,6 +4885,15 @@ void Optimizer::startSystemOptimization() {
                 emit systemStepReported(tr("Failed to update Windows notifications. Error: %1").arg(GetLastError()), "ERROR");
             }
 #else
+            for (const QVariant& itemVar : appNotificationSettingsVal) {
+                QVariantMap item = itemVar.toMap();
+                QString key = item["key"].toString();
+                bool enabled = item["enabled"].toBool();
+                bool originalEnabled = item["originalEnabled"].toBool();
+                if (force || (enabled != originalEnabled)) {
+                    emit systemStepReported(tr("[Simulation] App notifications for '%1' set to: %2").arg(item["name"].toString()).arg(enabled ? "Enabled" : "Disabled"), "SUCCESS");
+                }
+            }
             emit systemStepReported(tr("[Simulation] Windows notifications set to: %1").arg(notificationsVal ? "Enabled" : "Disabled"), "SUCCESS");
 #endif
             m_notificationsActive = notificationsVal;

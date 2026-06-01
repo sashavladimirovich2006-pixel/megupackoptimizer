@@ -73,6 +73,7 @@ class Optimizer : public QObject {
     Q_PROPERTY(bool originalNotifSoundsActive READ originalNotifSoundsActive NOTIFY originalNotifSoundsActiveChanged)
     Q_PROPERTY(bool notifLockscreenActive READ notifLockscreenActive WRITE setNotifLockscreenActive NOTIFY notifLockscreenActiveChanged)
     Q_PROPERTY(bool originalNotifLockscreenActive READ originalNotifLockscreenActive NOTIFY originalNotifLockscreenActiveChanged)
+    Q_PROPERTY(QVariantList appNotificationSettings READ appNotificationSettings NOTIFY appNotificationSettingsChanged)
     Q_PROPERTY(QVariantList powerSchemes READ powerSchemes NOTIFY powerSchemesChanged)
     Q_PROPERTY(bool ultimateSchemeUnlocked READ ultimateSchemeUnlocked NOTIFY ultimateSchemeUnlockedChanged)
     Q_PROPERTY(bool deleteUltimateStaged READ deleteUltimateStaged WRITE setDeleteUltimateStaged NOTIFY deleteUltimateStagedChanged)
@@ -198,6 +199,7 @@ public:
     bool originalNotifSoundsActive() const { return m_originalNotifSoundsActive; }
     bool notifLockscreenActive() const { return m_notifLockscreenActive; }
     bool originalNotifLockscreenActive() const { return m_originalNotifLockscreenActive; }
+    QVariantList appNotificationSettings() const { return m_appNotificationSettings; }
     QVariantList powerSchemes() const { return m_powerSchemes; }
     bool ultimateSchemeUnlocked() const { return m_ultimateSchemeUnlocked; }
     bool deleteUltimateStaged() const { return m_deleteUltimateStaged; }
@@ -311,6 +313,7 @@ public:
     Q_INVOKABLE void activateUltimatePerformance();
     Q_INVOKABLE void deleteUltimatePerformance();
     Q_INVOKABLE void setDevicePowerSavingActive(const QString &subkeyPath, bool active);
+    Q_INVOKABLE void setAppNotificationEnabled(const QString &appKey, bool enabled);
     Q_INVOKABLE void revertUsbDevices();
     Q_INVOKABLE void restartExplorer();
     Q_INVOKABLE void scanSteamInstalledGames();
@@ -387,6 +390,7 @@ signals:
     void originalNotifSoundsActiveChanged(bool val);
     void notifLockscreenActiveChanged(bool val);
     void originalNotifLockscreenActiveChanged(bool val);
+    void appNotificationSettingsChanged();
     void powerSchemesChanged(const QVariantList &val);
     void ultimateSchemeUnlockedChanged(bool val);
     void deleteUltimateStagedChanged(bool val);
@@ -513,6 +517,7 @@ private:
     bool m_originalNotifSoundsActive = true;
     bool m_notifLockscreenActive = true;
     bool m_originalNotifLockscreenActive = true;
+    QVariantList m_appNotificationSettings;
     QVariantList m_powerSchemes;
     bool m_ultimateSchemeUnlocked = false;
     bool m_deleteUltimateStaged = false;
