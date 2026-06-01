@@ -2300,6 +2300,13 @@ void Optimizer::setTaskbarEndTaskActive(bool val) {
     }
 }
 
+void Optimizer::setTaskbarSecondsActive(bool val) {
+    if (m_taskbarSecondsActive != val) {
+        m_taskbarSecondsActive = val;
+        emit taskbarSecondsActiveChanged(m_taskbarSecondsActive);
+    }
+}
+
 void Optimizer::setWinSearchActive(bool val) {
     if (m_winSearchActive != val) {
         m_winSearchActive = val;
@@ -2846,6 +2853,25 @@ void Optimizer::loadSystemStates() {
     m_originalTaskbarEndTaskActive = m_taskbarEndTaskActive;
     emit taskbarEndTaskActiveChanged(m_taskbarEndTaskActive);
     emit originalTaskbarEndTaskActiveChanged(m_originalTaskbarEndTaskActive);
+
+    // Load Taskbar Clock Seconds state (HKCU\Software\Microsoft\Windows\CurrentVersion\Explorer\Advanced -> ShowSecondsInSystemClock)
+    bool isTaskbarSecondsActive = false; // Disabled by default
+#ifdef Q_OS_WIN
+    HKEY hKeyTaskbarSeconds;
+    if (RegOpenKeyExW(HKEY_CURRENT_USER, L"Software\\Microsoft\\Windows\\CurrentVersion\\Explorer\\Advanced", 0, KEY_READ, &hKeyTaskbarSeconds) == ERROR_SUCCESS) {
+        DWORD val = 0;
+        DWORD dwSize = sizeof(val);
+        DWORD dwType = REG_DWORD;
+        if (RegQueryValueExW(hKeyTaskbarSeconds, L"ShowSecondsInSystemClock", nullptr, &dwType, reinterpret_cast<LPBYTE>(&val), &dwSize) == ERROR_SUCCESS) {
+            isTaskbarSecondsActive = (val != 0);
+        }
+        RegCloseKey(hKeyTaskbarSeconds);
+    }
+#endif
+    m_taskbarSecondsActive = isTaskbarSecondsActive;
+    m_originalTaskbarSecondsActive = m_taskbarSecondsActive;
+    emit taskbarSecondsActiveChanged(m_taskbarSecondsActive);
+    emit originalTaskbarSecondsActiveChanged(m_originalTaskbarSecondsActive);
 
 
 
@@ -4180,6 +4206,7 @@ void Optimizer::startSystemOptimization() {
     bool notifLockscreenVal = m_notifLockscreenActive;
     bool clipboardHistoryVal = m_clipboardHistoryActive;
     bool taskbarEndTaskVal = m_taskbarEndTaskActive;
+    bool taskbarSecondsVal = m_taskbarSecondsActive;
     QString targetPowerSchemeVal = m_targetPowerSchemeGuid;
     QString activePowerSchemeVal = m_activePowerSchemeGuid;
     bool defenderVal = m_defenderActive;
@@ -4227,6 +4254,7 @@ void Optimizer::startSystemOptimization() {
     bool origShortcutArrows = m_originalShortcutArrowsActive;
     bool origClipboardHistory = m_originalClipboardHistoryActive;
     bool origTaskbarEndTask = m_originalTaskbarEndTaskActive;
+    bool origTaskbarSeconds = m_originalTaskbarSecondsActive;
     bool origHibernation = m_originalHibernationActive;
     bool origOverlay = m_originalGamingOverlayActive;
     bool origCoreIsolation = m_originalCoreIsolationActive;
@@ -4276,7 +4304,7 @@ void Optimizer::startSystemOptimization() {
     bool forceVal = m_forceApplyAll;
     m_forceApplyAll = false;
 
-    QThread* worker = QThread::create([this, forceVal, searchVal, classicContextMenuVal, shortcutArrowsVal, clipboardHistoryVal, taskbarEndTaskVal, hibernationVal, overlayVal, coreIsolationVal, hagsVal, mouseAccelVal, gameModeVal, firewallVal, bitlockerVal, discordOverlayVal, notificationsVal, notifGlobalVal, notifAppVal, notifSoundsVal, notifLockscreenVal, targetPowerSchemeVal, activePowerSchemeVal, deleteUltimateStagedVal, deleteDefenderStagedVal, defenderVal, defenderRegistryVal, defenderCmdVal, defenderServiceVal, remoteAccessVal, telemetryVal, telemetryDiagTrackVal, telemetryWapPushVal, telemetryCeipVal, telemetryWerVal, windowsUpdateModeVal, targets, originalTargets, origSearch, origClassicContextMenu, origShortcutArrows, origClipboardHistory, origTaskbarEndTask, origHibernation, origOverlay, origCoreIsolation, origHags, origMouseAccel, origGameMode, origFirewall, origBitlocker, origDiscordOverlay, origNotifications, origNotifGlobal, origNotifApp, origNotifSounds, origNotifLockscreen, origDefender, origDefenderRegistry, origDefenderCmd, origDefenderService, origRemoteAccess, origTelemetry, origTelemetryDiagTrack, origTelemetryWapPush, origTelemetryCeip, origTelemetryWer, origWindowsUpdateMode, usbDevicesVal, origUsbDevicesVal, appNotificationSettingsVal, steamPathVal, cs2OptionsVal, origCs2OptionsVal, steamOverlayVal, origSteamOverlayVal, cs2OverlayVal, origCs2OverlayVal, visualEffectsVal, origVisualEffectsVal, steamFriendsSettingsVal, origSteamFriendsSettingsVal, steamFriendsChanged, pagefileMinVal, origPagefileMinVal, pagefileMaxVal, origPagefileMaxVal]() {
+    QThread* worker = QThread::create([this, forceVal, searchVal, classicContextMenuVal, shortcutArrowsVal, clipboardHistoryVal, taskbarEndTaskVal, taskbarSecondsVal, hibernationVal, overlayVal, coreIsolationVal, hagsVal, mouseAccelVal, gameModeVal, firewallVal, bitlockerVal, discordOverlayVal, notificationsVal, notifGlobalVal, notifAppVal, notifSoundsVal, notifLockscreenVal, targetPowerSchemeVal, activePowerSchemeVal, deleteUltimateStagedVal, deleteDefenderStagedVal, defenderVal, defenderRegistryVal, defenderCmdVal, defenderServiceVal, remoteAccessVal, telemetryVal, telemetryDiagTrackVal, telemetryWapPushVal, telemetryCeipVal, telemetryWerVal, windowsUpdateModeVal, targets, originalTargets, origSearch, origClassicContextMenu, origShortcutArrows, origClipboardHistory, origTaskbarEndTask, origTaskbarSeconds, origHibernation, origOverlay, origCoreIsolation, origHags, origMouseAccel, origGameMode, origFirewall, origBitlocker, origDiscordOverlay, origNotifications, origNotifGlobal, origNotifApp, origNotifSounds, origNotifLockscreen, origDefender, origDefenderRegistry, origDefenderCmd, origDefenderService, origRemoteAccess, origTelemetry, origTelemetryDiagTrack, origTelemetryWapPush, origTelemetryCeip, origTelemetryWer, origWindowsUpdateMode, usbDevicesVal, origUsbDevicesVal, appNotificationSettingsVal, steamPathVal, cs2OptionsVal, origCs2OptionsVal, steamOverlayVal, origSteamOverlayVal, cs2OverlayVal, origCs2OverlayVal, visualEffectsVal, origVisualEffectsVal, steamFriendsSettingsVal, origSteamFriendsSettingsVal, steamFriendsChanged, pagefileMinVal, origPagefileMinVal, pagefileMaxVal, origPagefileMaxVal]() {
         // Step 00: Auto-create backup before making changes
         if (!forceVal && Settings::instance()->createBackup()) {
             emit systemStepReported(tr("Creating automatic system backup..."), "INFO");
@@ -4318,6 +4346,7 @@ void Optimizer::startSystemOptimization() {
                            (shortcutArrowsVal != origShortcutArrows) || 
                            (clipboardHistoryVal != origClipboardHistory) ||
                            (taskbarEndTaskVal != origTaskbarEndTask) ||
+                           (taskbarSecondsVal != origTaskbarSeconds) ||
                            (hibernationVal != origHibernation) || 
                            (overlayVal != origOverlay) ||
                           (coreIsolationVal != origCoreIsolation) ||
@@ -4631,6 +4660,40 @@ void Optimizer::startSystemOptimization() {
 #endif
             m_taskbarEndTaskActive = taskbarEndTaskVal;
             emit taskbarEndTaskActiveChanged(m_taskbarEndTaskActive);
+        }
+
+        // Step 1.09: Taskbar clock seconds Configuration (only if changed)
+        bool taskbarSecondsSuccess = true;
+        if (taskbarSecondsVal != origTaskbarSeconds || force) {
+            emit systemStepReported(tr("Processing Taskbar clock seconds configuration..."), "INFO");
+            QThread::msleep(800);
+#ifdef Q_OS_WIN
+            bool success = false;
+            HKEY hKeyTaskbarSeconds = nullptr;
+            LSTATUS status = RegCreateKeyExW(HKEY_CURRENT_USER, 
+                L"Software\\Microsoft\\Windows\\CurrentVersion\\Explorer\\Advanced", 
+                0, nullptr, REG_OPTION_NON_VOLATILE, KEY_WRITE, nullptr, &hKeyTaskbarSeconds, nullptr);
+            if (status == ERROR_SUCCESS) {
+                DWORD val = taskbarSecondsVal ? 1 : 0;
+                status = RegSetValueExW(hKeyTaskbarSeconds, L"ShowSecondsInSystemClock", 0, REG_DWORD, reinterpret_cast<const BYTE*>(&val), sizeof(val));
+                if (status == ERROR_SUCCESS) {
+                    success = true;
+                }
+                RegCloseKey(hKeyTaskbarSeconds);
+            }
+
+            if (success) {
+                QString logMsg = taskbarSecondsVal ? tr("Taskbar clock seconds are now ENABLED. Please restart Windows Explorer to apply changes.") : tr("Taskbar clock seconds are now DISABLED. Please restart Windows Explorer to apply changes.");
+                emit systemStepReported(logMsg, "SUCCESS");
+            } else {
+                taskbarSecondsSuccess = false;
+                emit systemStepReported(tr("Failed to update Taskbar clock seconds state."), "ERROR");
+            }
+#else
+            emit systemStepReported(tr("[Simulation] Taskbar clock seconds set to: %1").arg(taskbarSecondsVal ? "Enabled" : "Disabled"), "SUCCESS");
+#endif
+            m_taskbarSecondsActive = taskbarSecondsVal;
+            emit taskbarSecondsActiveChanged(m_taskbarSecondsActive);
         }
 
         // Step 1.5: Hibernation Configuration (only if changed)
@@ -6704,7 +6767,7 @@ void Optimizer::startSystemOptimization() {
 #endif
         }
 
-        bool overallSuccess = wSearchSuccess && classicContextMenuSuccess && shortcutArrowsSuccess && clipboardHistorySuccess && taskbarEndTaskSuccess && hibernationSuccess && overlaySuccess && coreIsolationSuccess && hagsSuccess && mouseAccelSuccess && gameModeSuccess && firewallSuccess && notificationsSuccess && powerPlanSuccess && defenderSuccess && overallDrivesSuccess && usbSuccess && remoteAccessSuccess && telemetrySuccess && windowsUpdateSuccess && cs2Success && steamOverlaySuccess && cs2OverlaySuccess && steamFriendsSuccess && visualEffectsSuccess && pagefileSuccess;
+        bool overallSuccess = wSearchSuccess && classicContextMenuSuccess && shortcutArrowsSuccess && clipboardHistorySuccess && taskbarEndTaskSuccess && taskbarSecondsSuccess && hibernationSuccess && overlaySuccess && coreIsolationSuccess && hagsSuccess && mouseAccelSuccess && gameModeSuccess && firewallSuccess && notificationsSuccess && powerPlanSuccess && defenderSuccess && overallDrivesSuccess && usbSuccess && remoteAccessSuccess && telemetrySuccess && windowsUpdateSuccess && cs2Success && steamOverlaySuccess && cs2OverlaySuccess && steamFriendsSuccess && visualEffectsSuccess && pagefileSuccess;
         if (overallSuccess) {
             emit systemStepReported(tr("System optimization completed successfully!"), "SUCCESS");
             Logger::log("System optimization completed successfully!", "INFO");
@@ -6719,6 +6782,7 @@ void Optimizer::startSystemOptimization() {
         m_originalShortcutArrowsActive = shortcutArrowsVal;
         m_originalClipboardHistoryActive = clipboardHistoryVal;
         m_originalTaskbarEndTaskActive = taskbarEndTaskVal;
+        m_originalTaskbarSecondsActive = taskbarSecondsVal;
         m_originalHibernationActive = hibernationVal;
         m_originalGamingOverlayActive = overlayVal;
         m_originalCoreIsolationActive = coreIsolationVal;
@@ -6759,6 +6823,7 @@ void Optimizer::startSystemOptimization() {
         emit originalShortcutArrowsActiveChanged(m_originalShortcutArrowsActive);
         emit originalClipboardHistoryActiveChanged(m_originalClipboardHistoryActive);
         emit originalTaskbarEndTaskActiveChanged(m_originalTaskbarEndTaskActive);
+        emit originalTaskbarSecondsActiveChanged(m_originalTaskbarSecondsActive);
         emit originalHibernationActiveChanged(m_originalHibernationActive);
         emit originalGamingOverlayActiveChanged(m_originalGamingOverlayActive);
         emit originalCoreIsolationActiveChanged(m_originalCoreIsolationActive);
@@ -6887,6 +6952,19 @@ void Optimizer::showPath(const QString &funcName) {
         Logger::log("Opening Registry Editor for Clipboard History (HKCU)...", "INFO");
 #else
         Logger::log("[Simulation] Opening Registry Editor for Clipboard History...", "INFO");
+#endif
+    } else if (funcName == "taskbarseconds") {
+#ifdef Q_OS_WIN
+        HKEY hKey;
+        if (RegOpenKeyExW(HKEY_CURRENT_USER, L"Software\\Microsoft\\Windows\\CurrentVersion\\Applets\\Regedit", 0, KEY_SET_VALUE, &hKey) == ERROR_SUCCESS) {
+            const wchar_t* lastKey = L"Computer\\HKEY_CURRENT_USER\\Software\\Microsoft\\Windows\\CurrentVersion\\Explorer\\Advanced";
+            RegSetValueExW(hKey, L"LastKey", 0, REG_SZ, (const BYTE*)lastKey, (wcslen(lastKey) + 1) * sizeof(wchar_t));
+            RegCloseKey(hKey);
+        }
+        QProcess::startDetached("regedit.exe");
+        Logger::log("Opening Registry Editor for Taskbar clock seconds (HKCU)...", "INFO");
+#else
+        Logger::log("[Simulation] Opening Registry Editor for Taskbar clock seconds...", "INFO");
 #endif
     } else if (funcName == "taskbarendtask") {
 #ifdef Q_OS_WIN
