@@ -22,6 +22,8 @@ class Optimizer : public QObject {
     // System Optimization properties
     Q_PROPERTY(bool classicContextMenuActive READ classicContextMenuActive WRITE setClassicContextMenuActive NOTIFY classicContextMenuActiveChanged)
     Q_PROPERTY(bool originalClassicContextMenuActive READ originalClassicContextMenuActive NOTIFY originalClassicContextMenuActiveChanged)
+    Q_PROPERTY(bool shortcutArrowsActive READ shortcutArrowsActive WRITE setShortcutArrowsActive NOTIFY shortcutArrowsActiveChanged)
+    Q_PROPERTY(bool originalShortcutArrowsActive READ originalShortcutArrowsActive NOTIFY originalShortcutArrowsActiveChanged)
     Q_PROPERTY(bool winSearchActive READ winSearchActive WRITE setWinSearchActive NOTIFY winSearchActiveChanged)
     Q_PROPERTY(bool originalWinSearchActive READ originalWinSearchActive NOTIFY originalWinSearchActiveChanged)
     Q_PROPERTY(bool hibernationActive READ hibernationActive WRITE setHibernationActive NOTIFY hibernationActiveChanged)
@@ -140,6 +142,8 @@ public:
     // System Optimization getters
     bool classicContextMenuActive() const { return m_classicContextMenuActive; }
     bool originalClassicContextMenuActive() const { return m_originalClassicContextMenuActive; }
+    bool shortcutArrowsActive() const { return m_shortcutArrowsActive; }
+    bool originalShortcutArrowsActive() const { return m_originalShortcutArrowsActive; }
     bool winSearchActive() const { return m_winSearchActive; }
     bool originalWinSearchActive() const { return m_originalWinSearchActive; }
     bool hibernationActive() const { return m_hibernationActive; }
@@ -249,6 +253,7 @@ public:
 
     // Setters
     void setClassicContextMenuActive(bool val);
+    void setShortcutArrowsActive(bool val);
     void setWinSearchActive(bool val);
     void setHibernationActive(bool val);
     void setGamingOverlayActive(bool val);
@@ -345,6 +350,8 @@ signals:
     // System Optimization signals
     void classicContextMenuActiveChanged(bool val);
     void originalClassicContextMenuActiveChanged(bool val);
+    void shortcutArrowsActiveChanged(bool val);
+    void originalShortcutArrowsActiveChanged(bool val);
     void winSearchActiveChanged(bool val);
     void originalWinSearchActiveChanged(bool val);
     void hibernationActiveChanged(bool val);
@@ -467,6 +474,8 @@ private:
     // System Optimization state
     bool m_classicContextMenuActive = false;
     bool m_originalClassicContextMenuActive = false;
+    bool m_shortcutArrowsActive = true;
+    bool m_originalShortcutArrowsActive = true;
     bool m_winSearchActive = true;
     bool m_originalWinSearchActive = true;
     bool m_hibernationActive = false;

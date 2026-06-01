@@ -2279,6 +2279,13 @@ void Optimizer::setClassicContextMenuActive(bool val) {
     }
 }
 
+void Optimizer::setShortcutArrowsActive(bool val) {
+    if (m_shortcutArrowsActive != val) {
+        m_shortcutArrowsActive = val;
+        emit shortcutArrowsActiveChanged(m_shortcutArrowsActive);
+    }
+}
+
 void Optimizer::setWinSearchActive(bool val) {
     if (m_winSearchActive != val) {
         m_winSearchActive = val;
@@ -2755,6 +2762,38 @@ void Optimizer::loadSystemStates() {
     m_originalClassicContextMenuActive = m_classicContextMenuActive;
     emit classicContextMenuActiveChanged(m_classicContextMenuActive);
     emit originalClassicContextMenuActiveChanged(m_originalClassicContextMenuActive);
+
+    // Load Shortcut Arrow Overlays state (HKCU & HKLM -> "29")
+    bool isShortcutArrowsHidden = false;
+#ifdef Q_OS_WIN
+    // 1. Check HKCU
+    HKEY hKeyIcons;
+    if (RegOpenKeyExW(HKEY_CURRENT_USER, L"Software\\Microsoft\\Windows\\CurrentVersion\\Explorer\\Shell Icons", 0, KEY_READ, &hKeyIcons) == ERROR_SUCCESS) {
+        wchar_t valueBuf[512] = {0};
+        DWORD bufSize = sizeof(valueBuf);
+        DWORD type = 0;
+        if (RegQueryValueExW(hKeyIcons, L"29", nullptr, &type, reinterpret_cast<LPBYTE>(valueBuf), &bufSize) == ERROR_SUCCESS) {
+            isShortcutArrowsHidden = true;
+        }
+        RegCloseKey(hKeyIcons);
+    }
+    // 2. Check HKLM if not found in HKCU
+    if (!isShortcutArrowsHidden) {
+        if (RegOpenKeyExW(HKEY_LOCAL_MACHINE, L"SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Explorer\\Shell Icons", 0, KEY_READ, &hKeyIcons) == ERROR_SUCCESS) {
+            wchar_t valueBuf[512] = {0};
+            DWORD bufSize = sizeof(valueBuf);
+            DWORD type = 0;
+            if (RegQueryValueExW(hKeyIcons, L"29", nullptr, &type, reinterpret_cast<LPBYTE>(valueBuf), &bufSize) == ERROR_SUCCESS) {
+                isShortcutArrowsHidden = true;
+            }
+            RegCloseKey(hKeyIcons);
+        }
+    }
+#endif
+    m_shortcutArrowsActive = !isShortcutArrowsHidden;
+    m_originalShortcutArrowsActive = m_shortcutArrowsActive;
+    emit shortcutArrowsActiveChanged(m_shortcutArrowsActive);
+    emit originalShortcutArrowsActiveChanged(m_originalShortcutArrowsActive);
 
 
 
@@ -4072,6 +4111,7 @@ void Optimizer::startSystemOptimization() {
     // Copy targets to worker thread scope
     bool searchVal = m_winSearchActive;
     bool classicContextMenuVal = m_classicContextMenuActive;
+    bool shortcutArrowsVal = m_shortcutArrowsActive;
     bool hibernationVal = m_hibernationActive;
     bool overlayVal = m_gamingOverlayActive;
     bool coreIsolationVal = m_coreIsolationActive;
@@ -4130,6 +4170,7 @@ void Optimizer::startSystemOptimization() {
     QVariantMap originalTargets = m_originalDriveStates;
     bool origSearch = m_originalWinSearchActive;
     bool origClassicContextMenu = m_originalClassicContextMenuActive;
+    bool origShortcutArrows = m_originalShortcutArrowsActive;
     bool origHibernation = m_originalHibernationActive;
     bool origOverlay = m_originalGamingOverlayActive;
     bool origCoreIsolation = m_originalCoreIsolationActive;
@@ -4179,7 +4220,7 @@ void Optimizer::startSystemOptimization() {
     bool forceVal = m_forceApplyAll;
     m_forceApplyAll = false;
 
-    QThread* worker = QThread::create([this, forceVal, searchVal, classicContextMenuVal, hibernationVal, overlayVal, coreIsolationVal, hagsVal, mouseAccelVal, gameModeVal, firewallVal, bitlockerVal, discordOverlayVal, notificationsVal, notifGlobalVal, notifAppVal, notifSoundsVal, notifLockscreenVal, targetPowerSchemeVal, activePowerSchemeVal, deleteUltimateStagedVal, deleteDefenderStagedVal, defenderVal, defenderRegistryVal, defenderCmdVal, defenderServiceVal, remoteAccessVal, telemetryVal, telemetryDiagTrackVal, telemetryWapPushVal, telemetryCeipVal, telemetryWerVal, windowsUpdateModeVal, targets, originalTargets, origSearch, origClassicContextMenu, origHibernation, origOverlay, origCoreIsolation, origHags, origMouseAccel, origGameMode, origFirewall, origBitlocker, origDiscordOverlay, origNotifications, origNotifGlobal, origNotifApp, origNotifSounds, origNotifLockscreen, origDefender, origDefenderRegistry, origDefenderCmd, origDefenderService, origRemoteAccess, origTelemetry, origTelemetryDiagTrack, origTelemetryWapPush, origTelemetryCeip, origTelemetryWer, origWindowsUpdateMode, usbDevicesVal, origUsbDevicesVal, appNotificationSettingsVal, steamPathVal, cs2OptionsVal, origCs2OptionsVal, steamOverlayVal, origSteamOverlayVal, cs2OverlayVal, origCs2OverlayVal, visualEffectsVal, origVisualEffectsVal, steamFriendsSettingsVal, origSteamFriendsSettingsVal, steamFriendsChanged, pagefileMinVal, origPagefileMinVal, pagefileMaxVal, origPagefileMaxVal]() {
+    QThread* worker = QThread::create([this, forceVal, searchVal, classicContextMenuVal, shortcutArrowsVal, hibernationVal, overlayVal, coreIsolationVal, hagsVal, mouseAccelVal, gameModeVal, firewallVal, bitlockerVal, discordOverlayVal, notificationsVal, notifGlobalVal, notifAppVal, notifSoundsVal, notifLockscreenVal, targetPowerSchemeVal, activePowerSchemeVal, deleteUltimateStagedVal, deleteDefenderStagedVal, defenderVal, defenderRegistryVal, defenderCmdVal, defenderServiceVal, remoteAccessVal, telemetryVal, telemetryDiagTrackVal, telemetryWapPushVal, telemetryCeipVal, telemetryWerVal, windowsUpdateModeVal, targets, originalTargets, origSearch, origClassicContextMenu, origShortcutArrows, origHibernation, origOverlay, origCoreIsolation, origHags, origMouseAccel, origGameMode, origFirewall, origBitlocker, origDiscordOverlay, origNotifications, origNotifGlobal, origNotifApp, origNotifSounds, origNotifLockscreen, origDefender, origDefenderRegistry, origDefenderCmd, origDefenderService, origRemoteAccess, origTelemetry, origTelemetryDiagTrack, origTelemetryWapPush, origTelemetryCeip, origTelemetryWer, origWindowsUpdateMode, usbDevicesVal, origUsbDevicesVal, appNotificationSettingsVal, steamPathVal, cs2OptionsVal, origCs2OptionsVal, steamOverlayVal, origSteamOverlayVal, cs2OverlayVal, origCs2OverlayVal, visualEffectsVal, origVisualEffectsVal, steamFriendsSettingsVal, origSteamFriendsSettingsVal, steamFriendsChanged, pagefileMinVal, origPagefileMinVal, pagefileMaxVal, origPagefileMaxVal]() {
         // Step 00: Auto-create backup before making changes
         if (!forceVal && Settings::instance()->createBackup()) {
             emit systemStepReported(tr("Creating automatic system backup..."), "INFO");
@@ -4218,6 +4259,7 @@ void Optimizer::startSystemOptimization() {
 
         bool anyChanges = force || (searchVal != origSearch) || 
                           (classicContextMenuVal != origClassicContextMenu) || 
+                          (shortcutArrowsVal != origShortcutArrows) || 
                           (hibernationVal != origHibernation) || 
                           (overlayVal != origOverlay) ||
                           (coreIsolationVal != origCoreIsolation) ||
@@ -4392,6 +4434,77 @@ void Optimizer::startSystemOptimization() {
 #endif
             m_classicContextMenuActive = classicContextMenuVal;
             emit classicContextMenuActiveChanged(m_classicContextMenuActive);
+        }
+
+        // Step 1.06: Shortcut Arrow Overlays Configuration (only if changed)
+        bool shortcutArrowsSuccess = true;
+        if (shortcutArrowsVal != origShortcutArrows || force) {
+            emit systemStepReported(tr("Processing Shortcut Arrow Overlays configuration..."), "INFO");
+            QThread::msleep(800);
+#ifdef Q_OS_WIN
+            bool success = false;
+            if (!shortcutArrowsVal) {
+                // Hide shortcut arrows: set "29" under HKCU to "%windir%\System32\shell32.dll,-50"
+                HKEY hKeyIcons = nullptr;
+                LSTATUS status = RegCreateKeyExW(HKEY_CURRENT_USER, 
+                    L"Software\\Microsoft\\Windows\\CurrentVersion\\Explorer\\Shell Icons", 
+                    0, nullptr, REG_OPTION_NON_VOLATILE, KEY_WRITE, nullptr, &hKeyIcons, nullptr);
+                if (status == ERROR_SUCCESS) {
+                    wchar_t val[] = L"%windir%\\System32\\shell32.dll,-50";
+                    status = RegSetValueExW(hKeyIcons, L"29", 0, REG_SZ, reinterpret_cast<const BYTE*>(val), (wcslen(val) + 1) * sizeof(wchar_t));
+                    if (status == ERROR_SUCCESS) {
+                        success = true;
+                    }
+                    RegCloseKey(hKeyIcons);
+                }
+            } else {
+                // Show shortcut arrows (default): delete value "29" from both HKCU and HKLM
+                bool deletedFromHkcu = false;
+                HKEY hKeyIcons = nullptr;
+                LSTATUS status = RegOpenKeyExW(HKEY_CURRENT_USER, 
+                    L"Software\\Microsoft\\Windows\\CurrentVersion\\Explorer\\Shell Icons", 
+                    0, KEY_SET_VALUE, &hKeyIcons);
+                if (status == ERROR_SUCCESS) {
+                    status = RegDeleteValueW(hKeyIcons, L"29");
+                    if (status == ERROR_SUCCESS || status == ERROR_FILE_NOT_FOUND) {
+                        deletedFromHkcu = true;
+                    }
+                    RegCloseKey(hKeyIcons);
+                } else if (status == ERROR_FILE_NOT_FOUND) {
+                    deletedFromHkcu = true;
+                }
+
+                bool deletedFromHklm = false;
+                status = RegOpenKeyExW(HKEY_LOCAL_MACHINE, 
+                    L"SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Explorer\\Shell Icons", 
+                    0, KEY_SET_VALUE, &hKeyIcons);
+                if (status == ERROR_SUCCESS) {
+                    status = RegDeleteValueW(hKeyIcons, L"29");
+                    if (status == ERROR_SUCCESS || status == ERROR_FILE_NOT_FOUND) {
+                        deletedFromHklm = true;
+                    }
+                    RegCloseKey(hKeyIcons);
+                } else if (status == ERROR_FILE_NOT_FOUND) {
+                    deletedFromHklm = true;
+                }
+
+                if (deletedFromHkcu && deletedFromHklm) {
+                    success = true;
+                }
+            }
+
+            if (success) {
+                QString logMsg = !shortcutArrowsVal ? tr("Shortcut Arrow Overlays are now HIDDEN. Please restart Windows Explorer to apply changes.") : tr("Shortcut Arrow Overlays are now SHOWN (Default). Please restart Windows Explorer to apply changes.");
+                emit systemStepReported(logMsg, "SUCCESS");
+            } else {
+                shortcutArrowsSuccess = false;
+                emit systemStepReported(tr("Failed to update Shortcut Arrow Overlays state."), "ERROR");
+            }
+#else
+            emit systemStepReported(tr("[Simulation] Shortcut Arrow Overlays set to: %1").arg(shortcutArrowsVal ? "Shown" : "Hidden"), "SUCCESS");
+#endif
+            m_shortcutArrowsActive = shortcutArrowsVal;
+            emit shortcutArrowsActiveChanged(m_shortcutArrowsActive);
         }
 
         // Step 1.5: Hibernation Configuration (only if changed)
@@ -6465,7 +6578,7 @@ void Optimizer::startSystemOptimization() {
 #endif
         }
 
-        bool overallSuccess = wSearchSuccess && classicContextMenuSuccess && hibernationSuccess && overlaySuccess && coreIsolationSuccess && hagsSuccess && mouseAccelSuccess && gameModeSuccess && firewallSuccess && notificationsSuccess && powerPlanSuccess && defenderSuccess && overallDrivesSuccess && usbSuccess && remoteAccessSuccess && telemetrySuccess && windowsUpdateSuccess && cs2Success && steamOverlaySuccess && cs2OverlaySuccess && steamFriendsSuccess && visualEffectsSuccess && pagefileSuccess;
+        bool overallSuccess = wSearchSuccess && classicContextMenuSuccess && shortcutArrowsSuccess && hibernationSuccess && overlaySuccess && coreIsolationSuccess && hagsSuccess && mouseAccelSuccess && gameModeSuccess && firewallSuccess && notificationsSuccess && powerPlanSuccess && defenderSuccess && overallDrivesSuccess && usbSuccess && remoteAccessSuccess && telemetrySuccess && windowsUpdateSuccess && cs2Success && steamOverlaySuccess && cs2OverlaySuccess && steamFriendsSuccess && visualEffectsSuccess && pagefileSuccess;
         if (overallSuccess) {
             emit systemStepReported(tr("System optimization completed successfully!"), "SUCCESS");
             Logger::log("System optimization completed successfully!", "INFO");
@@ -6477,6 +6590,7 @@ void Optimizer::startSystemOptimization() {
         m_driveStates = targets;
         m_originalWinSearchActive = searchVal;
         m_originalClassicContextMenuActive = classicContextMenuVal;
+        m_originalShortcutArrowsActive = shortcutArrowsVal;
         m_originalHibernationActive = hibernationVal;
         m_originalGamingOverlayActive = overlayVal;
         m_originalCoreIsolationActive = coreIsolationVal;
@@ -6514,6 +6628,7 @@ void Optimizer::startSystemOptimization() {
         emit driveStatesChanged(m_driveStates);
         emit originalWinSearchActiveChanged(m_originalWinSearchActive);
         emit originalClassicContextMenuActiveChanged(m_originalClassicContextMenuActive);
+        emit originalShortcutArrowsActiveChanged(m_originalShortcutArrowsActive);
         emit originalHibernationActiveChanged(m_originalHibernationActive);
         emit originalGamingOverlayActiveChanged(m_originalGamingOverlayActive);
         emit originalCoreIsolationActiveChanged(m_originalCoreIsolationActive);
@@ -6608,6 +6723,28 @@ void Optimizer::showPath(const QString &funcName) {
         }
         QProcess::startDetached("regedit.exe");
         Logger::log("Opening Registry Editor for Classic Context Menu CLSID...", "INFO");
+    } else if (funcName == "shortcutarrows") {
+#ifdef Q_OS_WIN
+        bool existsInHklm = false;
+        HKEY hKeyIcons;
+        if (RegOpenKeyExW(HKEY_LOCAL_MACHINE, L"SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Explorer\\Shell Icons", 0, KEY_READ, &hKeyIcons) == ERROR_SUCCESS) {
+            existsInHklm = true;
+            RegCloseKey(hKeyIcons);
+        }
+
+        HKEY hKey;
+        if (RegOpenKeyExW(HKEY_CURRENT_USER, L"Software\\Microsoft\\Windows\\CurrentVersion\\Applets\\Regedit", 0, KEY_SET_VALUE, &hKey) == ERROR_SUCCESS) {
+            const wchar_t* lastKey = existsInHklm ? 
+                L"Computer\\HKEY_LOCAL_MACHINE\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Explorer\\Shell Icons" : 
+                L"Computer\\HKEY_CURRENT_USER\\Software\\Microsoft\\Windows\\CurrentVersion\\Explorer\\Shell Icons";
+            RegSetValueExW(hKey, L"LastKey", 0, REG_SZ, (const BYTE*)lastKey, (wcslen(lastKey) + 1) * sizeof(wchar_t));
+            RegCloseKey(hKey);
+        }
+        QProcess::startDetached("regedit.exe");
+        Logger::log(QString("Opening Registry Editor for Shortcut Arrow Overlays (%1)...").arg(existsInHklm ? "HKLM" : "HKCU"), "INFO");
+#else
+        Logger::log("[Simulation] Opening Registry Editor for Shortcut Arrow Overlays...", "INFO");
+#endif
     } else if (funcName == "visualeffects" || funcName == "pagefile") {
         QProcess::startDetached("SystemPropertiesPerformance.exe");
         Logger::log("Opening Windows Visual Effects / Page File settings (Performance Options)...", "INFO");
