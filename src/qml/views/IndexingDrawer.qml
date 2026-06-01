@@ -145,9 +145,9 @@ Column {
             visible: parent.expanded
             
             property bool isAnyIndexingActive: {
-                if (!!optimizerBackend.driveStates["C:"]) return true;
+                if (!!optimizerBackend.originalDriveStates["C:"]) return true;
                 for (var i = 0; i < optimizerBackend.fixedDrives.length; i++) {
-                    if (!!optimizerBackend.driveStates[optimizerBackend.fixedDrives[i]]) return true;
+                    if (!!optimizerBackend.originalDriveStates[optimizerBackend.fixedDrives[i]]) return true;
                 }
                 return false;
             }
