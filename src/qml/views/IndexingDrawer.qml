@@ -139,9 +139,18 @@ Column {
         
         // Collapsible Content
         Column {
+            id: collapsibleContent
             width: parent.width
             spacing: 12
             visible: parent.expanded
+            
+            property bool isAnyIndexingActive: {
+                if (!!optimizerBackend.driveStates["C:"]) return true;
+                for (var i = 0; i < optimizerBackend.fixedDrives.length; i++) {
+                    if (!!optimizerBackend.driveStates[optimizerBackend.fixedDrives[i]]) return true;
+                }
+                return false;
+            }
             
             Text {
                 text: qsTr("Recursively disables content indexing for all files and folders across all active drives. This process runs in the background (takes 10-15 minutes) and completely frees up drive I/O overhead.")
@@ -153,11 +162,13 @@ Column {
             }
             
             MeguButton {
-                text: qsTr("Disable indexing on all files/folders (10-15 mins)")
+                text: collapsibleContent.isAnyIndexingActive 
+                    ? qsTr("Disable indexing on all files/folders (10-15 mins)") 
+                    : qsTr("Indexing already fully disabled")
                 width: parent.width
                 height: 38
-                accented: true
-                enabled: !optimizerBackend.isOptimizingSystem
+                accented: collapsibleContent.isAnyIndexingActive
+                enabled: collapsibleContent.isAnyIndexingActive && !optimizerBackend.isOptimizingSystem
                 onClicked: {
                     // 1. Turn off all drive toggles in the UI immediately
                     var states = optimizerBackend.driveStates;
