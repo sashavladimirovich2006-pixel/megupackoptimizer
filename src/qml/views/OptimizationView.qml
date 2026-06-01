@@ -4162,6 +4162,11 @@ Item {
                                     font.family: Theme.fontFamily
                                     font.pixelSize: 14
                                     font.bold: true
+                                    anchors.verticalCenter: parent.verticalCenter
+                                }
+                                ShowPathButton {
+                                    anchors.verticalCenter: parent.verticalCenter
+                                    onClicked: { optimizerBackend.showPath("pagefile"); }
                                 }
                                 Rectangle {
                                     visible: root.pagefileChanged

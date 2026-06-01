@@ -6588,9 +6588,9 @@ void Optimizer::showPath(const QString &funcName) {
         }
         QProcess::startDetached("regedit.exe");
         Logger::log("Opening Registry Editor for Classic Context Menu CLSID...", "INFO");
-    } else if (funcName == "visualeffects") {
+    } else if (funcName == "visualeffects" || funcName == "pagefile") {
         QProcess::startDetached("SystemPropertiesPerformance.exe");
-        Logger::log("Opening Windows Visual Effects settings (Performance Options)...", "INFO");
+        Logger::log("Opening Windows Visual Effects / Page File settings (Performance Options)...", "INFO");
     } else if (funcName == "mpo") {
 #ifdef Q_OS_WIN
         HKEY hKey;
