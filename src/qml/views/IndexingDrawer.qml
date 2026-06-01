@@ -164,11 +164,11 @@ Column {
             MeguButton {
                 text: collapsibleContent.isAnyIndexingActive 
                     ? qsTr("Disable indexing on all files/folders (10-15 mins)") 
-                    : qsTr("Indexing already fully disabled")
+                    : qsTr("Force deep indexing removal (10-15 mins)")
                 width: parent.width
                 height: 38
                 accented: collapsibleContent.isAnyIndexingActive
-                enabled: collapsibleContent.isAnyIndexingActive && !optimizerBackend.isOptimizingSystem
+                enabled: !optimizerBackend.isOptimizingSystem
                 onClicked: {
                     // 1. Turn off all drive toggles in the UI immediately
                     var states = optimizerBackend.driveStates;
