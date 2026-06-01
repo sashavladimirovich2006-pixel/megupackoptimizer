@@ -14,6 +14,7 @@ ApplicationWindow {
     minimumWidth: 800
     minimumHeight: 560
     flags: Qt.Window | Qt.FramelessWindowHint
+    color: "transparent"
     title: {
         var tabName = "";
         if (activeTab === 0) tabName = qsTr("Dashboard");
@@ -24,6 +25,7 @@ ApplicationWindow {
     }
 
     background: Rectangle {
+        radius: window.visibility === Window.Maximized ? 0 : 12
         border.color: Theme.border
         border.width: 1
         
