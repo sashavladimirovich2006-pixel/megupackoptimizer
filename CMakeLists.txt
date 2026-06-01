@@ -51,7 +51,6 @@ qt_add_qml_module(megu_pack_optimizer
         src/qml/views/IndexingDrawer.qml
         src/qml/views/XboxDrawer.qml
         src/qml/views/MpoDrawer.qml
-        src/qml/views/PrinterDrawer.qml
         src/qml/views/NotificationsDrawer.qml
         src/qml/views/PowerDrawer.qml
         src/qml/views/DefenderDrawer.qml

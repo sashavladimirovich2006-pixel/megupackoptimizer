@@ -164,7 +164,6 @@ Item {
     property bool mouseAccelerationChanged: optimizerBackend.mouseAccelerationActive !== optimizerBackend.originalMouseAccelerationActive
     property bool gameModeChanged: optimizerBackend.gameModeActive !== optimizerBackend.originalGameModeActive
     property bool firewallChanged: optimizerBackend.firewallActive !== optimizerBackend.originalFirewallActive
-    property bool printerChanged: optimizerBackend.printerActive !== optimizerBackend.originalPrinterActive
     property bool notificationsChanged: {
         if (optimizerBackend.notificationsActive !== optimizerBackend.originalNotificationsActive) return true;
         if (optimizerBackend.notifGlobalActive !== optimizerBackend.originalNotifGlobalActive) return true;
@@ -346,7 +345,6 @@ Item {
         if (mouseAccelerationChanged) count++;
         if (gameModeChanged) count++;
         if (firewallChanged) count++;
-        if (printerChanged) count++;
         if (notificationsChanged) count++;
         if (hibernationChanged) count++;
         if (powerPlanChanged || optimizerBackend.deleteUltimateStaged) count++;
@@ -509,14 +507,6 @@ Item {
             hasSidebar: false,
             revert: function() {
                 optimizerBackend.firewallActive = optimizerBackend.originalFirewallActive;
-            }
-        });
-        if (printerChanged) list.push({
-            name: qsTr("Print Spooler (Printer)"),
-            icon: "qrc:/MeguPackOptimizer/src/resources/monitor.svg",
-            hasSidebar: true,
-            revert: function() {
-                optimizerBackend.printerActive = optimizerBackend.originalPrinterActive;
             }
         });
         if (notificationsChanged) list.push({
@@ -750,15 +740,6 @@ Item {
                     name: qsTr("Disable Game Bar Popup") + ": " + (optimizerBackend.originalGamingOverlayActive ? qsTr("Disabled") : qsTr("Enabled")) + " -> " + (optimizerBackend.gamingOverlayActive ? qsTr("Disabled") : qsTr("Enabled")),
                     revert: function() {
                         optimizerBackend.gamingOverlayActive = optimizerBackend.originalGamingOverlayActive;
-                    }
-                });
-            }
-        } else if (category === qsTr("Print Spooler (Printer)") || category === "Print Spooler (Printer)") {
-            if (optimizerBackend.printerActive !== optimizerBackend.originalPrinterActive) {
-                subList.push({
-                    name: qsTr("Print Spooler") + ": " + (optimizerBackend.originalPrinterActive ? qsTr("Enabled") : qsTr("Disabled")) + " -> " + (optimizerBackend.printerActive ? qsTr("Enabled") : qsTr("Disabled")),
-                    revert: function() {
-                        optimizerBackend.printerActive = optimizerBackend.originalPrinterActive;
                     }
                 });
             }
@@ -1192,7 +1173,6 @@ Item {
         if (name === qsTr("Game Mode") || name === "Game Mode") return gameModePanel;
         if (name === qsTr("Discord In-Game Overlay") || name === "Discord In-Game Overlay") return discordOverlayPanel;
         if (name === qsTr("Windows Defender Firewall") || name === "Windows Defender Firewall") return firewallPanel;
-        if (name === qsTr("Print Spooler (Printer)") || name === "Print Spooler (Printer)") return printerPanel;
         if (name === qsTr("Windows Notifications") || name === "Windows Notifications") return notificationsPanel;
         if (name === qsTr("System Hibernation") || name === "System Hibernation") return hibernationPanel;
         if (name === qsTr("Power Plan") || name === "Power Plan") return powerPlanPanel;
@@ -3500,154 +3480,7 @@ Item {
                     }
                 }
 
-                // Printer Panel
-                AcrylicPanel {
-                    id: printerPanel
-                    visible: false
-                    width: parent.width
-                    height: 0
 
-                    Row {
-                        anchors.left: parent.left
-                        anchors.leftMargin: 16
-                        anchors.verticalCenter: parent.verticalCenter
-                        spacing: 12
-
-                        Rectangle {
-                            width: 40
-                            height: 40
-                            radius: 10
-                            color: Qt.rgba(Theme.accent.r, Theme.accent.g, Theme.accent.b, 0.15)
-                            anchors.verticalCenter: parent.verticalCenter
-
-                            Item {
-                                width: 20
-                                height: 20
-                                anchors.centerIn: parent
-                                Image {
-                                    id: printerPanel_iconImg
-                                    source: "qrc:/MeguPackOptimizer/src/resources/settings.svg"
-                                    anchors.fill: parent
-                                    sourceSize.width: 20
-                                    sourceSize.height: 20
-                                    visible: false
-                                }
-                                ColorOverlay {
-                                    anchors.fill: printerPanel_iconImg
-                                    source: printerPanel_iconImg
-                                    color: Theme.accent
-                                }
-                            }
-                        }
-
-                        Column {
-                            anchors.verticalCenter: parent.verticalCenter
-                            spacing: 2
-
-                            Row {
-                                spacing: 8
-                                Text {
-                                    text: qsTr("Print Spooler (Printer)")
-                                    color: Theme.textPrimary
-                                    font.family: Theme.fontFamily
-                                    font.pixelSize: 14
-                                    font.bold: true
-                                    anchors.verticalCenter: parent.verticalCenter
-                                } 
-                                ShowPathButton {
-                                    anchors.verticalCenter: parent.verticalCenter
-                                    onClicked: { optimizerBackend.showPath("printer"); }
-                                }
-                                Rectangle {
-                                    visible: root.printerChanged
-                                    height: 16
-                                    width: selectedTextPrinter.contentWidth + 10
-                                    radius: 4
-                                    color: Qt.rgba(Theme.success.r, Theme.success.g, Theme.success.b, 0.15)
-                                    border.color: Theme.success
-                                    border.width: 1
-                                    anchors.verticalCenter: parent.verticalCenter
-                                    Text {
-                                        id: selectedTextPrinter
-                                        text: qsTr("Selected for application")
-                                        color: Theme.success
-                                        font.family: Theme.fontFamily
-                                        font.pixelSize: 8
-                                        font.bold: true
-                                        anchors.centerIn: parent
-                                    }
-                                }
-                            }
-
-                            Text {
-                                text: qsTr("Disabling the background printer service reduces interrupt load and frees memory.")
-                                color: Theme.textMuted
-                                font.family: Theme.fontFamily
-                                font.pixelSize: 11
-                            }
-                        }
-                    }
-
-                    Row {
-                        anchors.right: parent.right
-                        anchors.rightMargin: 16
-                        anchors.verticalCenter: parent.verticalCenter
-                        spacing: 16
-
-                        MeguSwitch {
-                            checked: optimizerBackend.printerActive
-                            anchors.verticalCenter: parent.verticalCenter
-                            onToggled: (isChecked) => {
-                                optimizerBackend.printerActive = isChecked;
-                            }
-                        }
-
-                        // Arrow button that slides right on hover & opens sidebar drawer for printers list
-                        Rectangle {
-                            width: 32
-                            height: 32
-                            radius: 16
-                            color: printerArrowMouseArea.containsMouse ? Theme.accentDim : "transparent"
-                            border.color: printerArrowMouseArea.containsMouse ? Theme.accent : Theme.border
-                            border.width: 1
-                            anchors.verticalCenter: parent.verticalCenter
-
-                            Behavior on color { ColorAnimation { duration: Theme.animFast } }
-                            Behavior on border.color { ColorAnimation { duration: Theme.animFast } }
-
-                            Item {
-                                width: 14
-                                height: 14
-                                anchors.centerIn: parent
-                                x: printerArrowMouseArea.containsMouse ? (parent.width/2 - 5) : (parent.width/2 - 7)
-                                Behavior on x { NumberAnimation { duration: Theme.animNormal; easing.type: Easing.OutCubic } }
-                                Image {
-                                    id: printerArrowImg
-                                    source: "qrc:/MeguPackOptimizer/src/resources/arrow.svg"
-                                    anchors.fill: parent
-                                    sourceSize.width: 14
-                                    sourceSize.height: 14
-                                    visible: false
-                                }
-                                ColorOverlay {
-                                    anchors.fill: printerArrowImg
-                                    source: printerArrowImg
-                                    color: printerArrowMouseArea.containsMouse ? Theme.accent : Theme.textSecondary
-                                }
-                            }
-
-                            MouseArea {
-                                id: printerArrowMouseArea
-                                anchors.fill: parent
-                                hoverEnabled: true
-                                cursorShape: Qt.PointingHandCursor
-                                onClicked: {
-                                    root.activeDrawer = "printer";
-                                }
-                            }
-                        }
-                    }
-                }
 
                 // Notifications Panel
                 AcrylicPanel {
@@ -5176,7 +5009,6 @@ Item {
                         if (root.activeDrawer === "indexing") return indexingDrawer.implicitHeight;
                         if (root.activeDrawer === "xbox") return xboxDrawer.implicitHeight;
                         if (root.activeDrawer === "mpo") return mpoDrawer.implicitHeight;
-                        if (root.activeDrawer === "printer") return printerDrawer.implicitHeight;
                         if (root.activeDrawer === "notifications") return notificationsDrawer.implicitHeight;
                         if (root.activeDrawer === "power") return powerDrawer.implicitHeight;
                         if (root.activeDrawer === "defender") return defenderDrawer.implicitHeight;
@@ -5207,14 +5039,6 @@ Item {
                     MpoDrawer {
                         id: mpoDrawer
                         visible: root.activeDrawer === "mpo"
-                        width: visible ? parent.width : 800
-                        height: visible ? implicitHeight : 0
-                    }
-
-                    // 4. Printer Options Content
-                    PrinterDrawer {
-                        id: printerDrawer
-                        visible: root.activeDrawer === "printer"
                         width: visible ? parent.width : 800
                         height: visible ? implicitHeight : 0
                     }

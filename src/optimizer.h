@@ -45,8 +45,6 @@ class Optimizer : public QObject {
     Q_PROPERTY(bool originalGameModeActive READ originalGameModeActive NOTIFY originalGameModeActiveChanged)
     Q_PROPERTY(bool firewallActive READ firewallActive WRITE setFirewallActive NOTIFY firewallActiveChanged)
     Q_PROPERTY(bool originalFirewallActive READ originalFirewallActive NOTIFY originalFirewallActiveChanged)
-    Q_PROPERTY(bool printerActive READ printerActive WRITE setPrinterActive NOTIFY printerActiveChanged)
-    Q_PROPERTY(bool originalPrinterActive READ originalPrinterActive NOTIFY originalPrinterActiveChanged)
     Q_PROPERTY(bool bitlockerActive READ bitlockerActive WRITE setBitlockerActive NOTIFY bitlockerActiveChanged)
     Q_PROPERTY(bool originalBitlockerActive READ originalBitlockerActive NOTIFY originalBitlockerActiveChanged)
     Q_PROPERTY(bool bitlockerDriveEncrypted READ bitlockerDriveEncrypted NOTIFY bitlockerDriveEncryptedChanged)
@@ -65,7 +63,6 @@ class Optimizer : public QObject {
     Q_PROPERTY(bool usbPowerSavingActive READ usbPowerSavingActive WRITE setUsbPowerSavingActive NOTIFY usbPowerSavingActiveChanged)
     Q_PROPERTY(bool originalUsbPowerSavingActive READ originalUsbPowerSavingActive NOTIFY originalUsbPowerSavingActiveChanged)
     Q_PROPERTY(bool usbChanged READ usbChanged NOTIFY usbDevicesChanged)
-    Q_PROPERTY(QStringList detectedPrinters READ detectedPrinters NOTIFY detectedPrintersChanged)
     Q_PROPERTY(bool notificationsActive READ notificationsActive WRITE setNotificationsActive NOTIFY notificationsActiveChanged)
     Q_PROPERTY(bool originalNotificationsActive READ originalNotificationsActive NOTIFY originalNotificationsActiveChanged)
     Q_PROPERTY(bool notifGlobalActive READ notifGlobalActive WRITE setNotifGlobalActive NOTIFY notifGlobalActiveChanged)
@@ -165,8 +162,6 @@ public:
     bool originalGameModeActive() const { return m_originalGameModeActive; }
     bool firewallActive() const { return m_firewallActive; }
     bool originalFirewallActive() const { return m_originalFirewallActive; }
-    bool printerActive() const { return m_printerActive; }
-    bool originalPrinterActive() const { return m_originalPrinterActive; }
     bool bitlockerActive() const { return m_bitlockerActive; }
     bool originalBitlockerActive() const { return m_originalBitlockerActive; }
     bool bitlockerDriveEncrypted() const { return m_bitlockerDriveEncrypted; }
@@ -193,7 +188,6 @@ public:
         }
         return false;
     }
-    QStringList detectedPrinters() const { return m_detectedPrinters; }
     bool notificationsActive() const { return m_notificationsActive; }
     bool originalNotificationsActive() const { return m_originalNotificationsActive; }
     bool notifGlobalActive() const { return m_notifGlobalActive; }
@@ -261,7 +255,6 @@ public:
     void setMouseAccelerationActive(bool val);
     void setGameModeActive(bool val);
     void setFirewallActive(bool val);
-    void setPrinterActive(bool val);
     void setBitlockerActive(bool val);
     void setDiscordOverlayActive(bool val);
     void setDefenderActive(bool val);
@@ -367,8 +360,6 @@ signals:
     void originalGameModeActiveChanged(bool val);
     void firewallActiveChanged(bool val);
     void originalFirewallActiveChanged(bool val);
-    void printerActiveChanged(bool val);
-    void originalPrinterActiveChanged(bool val);
     void bitlockerActiveChanged(bool val);
     void originalBitlockerActiveChanged(bool val);
     void bitlockerDriveEncryptedChanged(bool val);
@@ -382,7 +373,6 @@ signals:
     void originalDefenderCmdActiveChanged(bool val);
     void defenderServiceActiveChanged(bool val);
     void originalDefenderServiceActiveChanged(bool val);
-    void detectedPrintersChanged(const QStringList &val);
     void usbDevicesChanged(const QVariantList &val);
     void usbPowerSavingActiveChanged(bool val);
     void originalUsbPowerSavingActiveChanged(bool val);
@@ -496,8 +486,6 @@ private:
     bool m_originalGameModeActive = true;
     bool m_firewallActive = true;
     bool m_originalFirewallActive = true;
-    bool m_printerActive = true;
-    bool m_originalPrinterActive = true;
     bool m_bitlockerActive = true;
     bool m_originalBitlockerActive = true;
     bool m_bitlockerDriveEncrypted = false;
@@ -511,7 +499,6 @@ private:
     bool m_originalDefenderCmdActive = true;
     bool m_defenderServiceActive = true;
     bool m_originalDefenderServiceActive = true;
-    QStringList m_detectedPrinters;
     QVariantList m_usbDevices;
     QVariantList m_originalUsbDevices;
     bool m_usbPowerSavingActive = false;

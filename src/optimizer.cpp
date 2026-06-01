@@ -2417,12 +2417,7 @@ void Optimizer::setSteamFriendsSettings(const QVariantMap &val) {
     }
 }
 
-void Optimizer::setPrinterActive(bool val) {
-    if (m_printerActive != val) {
-        m_printerActive = val;
-        emit printerActiveChanged(m_printerActive);
-    }
-}
+
 
 void Optimizer::setBitlockerActive(bool val) {
     if (m_bitlockerActive != val) {
@@ -2710,61 +2705,7 @@ void Optimizer::loadSystemStates() {
     emit classicContextMenuActiveChanged(m_classicContextMenuActive);
     emit originalClassicContextMenuActiveChanged(m_originalClassicContextMenuActive);
 
-    // Query Print Spooler (Printer) startup state on startup
-    bool isPrinterDisabled = false;
-#ifdef Q_OS_WIN
-    SC_HANDLE hSCMPrinter = OpenSCManagerW(NULL, NULL, SC_MANAGER_CONNECT);
-    if (hSCMPrinter) {
-        SC_HANDLE hService = OpenServiceW(hSCMPrinter, L"Spooler", SERVICE_QUERY_CONFIG);
-        if (hService) {
-            DWORD bytesNeeded = 0;
-            if (!QueryServiceConfigW(hService, NULL, 0, &bytesNeeded) && GetLastError() == ERROR_INSUFFICIENT_BUFFER) {
-                QByteArray buffer(static_cast<int>(bytesNeeded), 0);
-                LPQUERY_SERVICE_CONFIGW pConfig = reinterpret_cast<LPQUERY_SERVICE_CONFIGW>(buffer.data());
-                if (QueryServiceConfigW(hService, pConfig, bytesNeeded, &bytesNeeded)) {
-                    if (pConfig->dwStartType == SERVICE_DISABLED) {
-                        isPrinterDisabled = true;
-                    }
-                }
-            }
-            CloseServiceHandle(hService);
-        }
-        CloseServiceHandle(hSCMPrinter);
-    }
-#endif
-    m_printerActive = !isPrinterDisabled;
-    m_originalPrinterActive = m_printerActive;
-    emit printerActiveChanged(m_printerActive);
-    emit originalPrinterActiveChanged(m_originalPrinterActive);
 
-    // Scan detected print queues using Win32 Spooler API (matches Device Manager "Print queues")
-    QStringList printers;
-#ifdef Q_OS_WIN
-    DWORD cbNeeded = 0;
-    DWORD cReturned = 0;
-    // Call EnumPrintersW to get size. We use PRINTER_ENUM_LOCAL | PRINTER_ENUM_CONNECTIONS.
-    // Level 4 is extremely fast and provides name and attributes.
-    EnumPrintersW(PRINTER_ENUM_LOCAL | PRINTER_ENUM_CONNECTIONS, NULL, 4, NULL, 0, &cbNeeded, &cReturned);
-    if (cbNeeded > 0) {
-        QByteArray buffer(static_cast<int>(cbNeeded), 0);
-        PRINTER_INFO_4W* pPrinterInfo = reinterpret_cast<PRINTER_INFO_4W*>(buffer.data());
-        if (EnumPrintersW(PRINTER_ENUM_LOCAL | PRINTER_ENUM_CONNECTIONS, NULL, 4, reinterpret_cast<LPBYTE>(pPrinterInfo), cbNeeded, &cbNeeded, &cReturned)) {
-            for (DWORD i = 0; i < cReturned; ++i) {
-                if (pPrinterInfo[i].pPrinterName) {
-                    printers.append(QString::fromWCharArray(pPrinterInfo[i].pPrinterName));
-                }
-            }
-        }
-    }
-#else
-    // Simulation fallbacks
-    printers.append("Root Print Queue");
-    printers.append("Microsoft Print to PDF");
-    printers.append("Microsoft XPS Document Writer");
-    printers.append("Fax");
-#endif
-    m_detectedPrinters = printers;
-    emit detectedPrintersChanged(m_detectedPrinters);
 
     // Query BitLocker (BDESVC) startup state on startup
     bool isBitlockerDisabled = false;
@@ -4025,7 +3966,6 @@ void Optimizer::startSystemOptimization() {
     bool mouseAccelVal = m_mouseAccelerationActive;
     bool gameModeVal = m_gameModeActive;
     bool firewallVal = m_firewallActive;
-    bool printerVal = m_printerActive;
     bool bitlockerVal = m_bitlockerActive;
     bool discordOverlayVal = m_discordOverlayActive;
     bool notificationsVal = m_notificationsActive;
@@ -4084,7 +4024,6 @@ void Optimizer::startSystemOptimization() {
     bool origMouseAccel = m_originalMouseAccelerationActive;
     bool origGameMode = m_originalGameModeActive;
     bool origFirewall = m_originalFirewallActive;
-    bool origPrinter = m_originalPrinterActive;
     bool origBitlocker = m_originalBitlockerActive;
     bool origDiscordOverlay = m_originalDiscordOverlayActive;
     bool origNotifications = m_originalNotificationsActive;
@@ -4126,7 +4065,7 @@ void Optimizer::startSystemOptimization() {
     bool forceVal = m_forceApplyAll;
     m_forceApplyAll = false;
 
-    QThread* worker = QThread::create([this, forceVal, searchVal, classicContextMenuVal, hibernationVal, overlayVal, coreIsolationVal, hagsVal, mouseAccelVal, gameModeVal, firewallVal, printerVal, bitlockerVal, discordOverlayVal, notificationsVal, notifGlobalVal, notifAppVal, notifSoundsVal, notifLockscreenVal, targetPowerSchemeVal, activePowerSchemeVal, deleteUltimateStagedVal, deleteDefenderStagedVal, defenderVal, defenderRegistryVal, defenderCmdVal, defenderServiceVal, remoteAccessVal, telemetryVal, telemetryDiagTrackVal, telemetryWapPushVal, telemetryCeipVal, telemetryWerVal, windowsUpdateModeVal, targets, originalTargets, origSearch, origClassicContextMenu, origHibernation, origOverlay, origCoreIsolation, origHags, origMouseAccel, origGameMode, origFirewall, origPrinter, origBitlocker, origDiscordOverlay, origNotifications, origNotifGlobal, origNotifApp, origNotifSounds, origNotifLockscreen, origDefender, origDefenderRegistry, origDefenderCmd, origDefenderService, origRemoteAccess, origTelemetry, origTelemetryDiagTrack, origTelemetryWapPush, origTelemetryCeip, origTelemetryWer, origWindowsUpdateMode, usbDevicesVal, origUsbDevicesVal, steamPathVal, cs2OptionsVal, origCs2OptionsVal, steamOverlayVal, origSteamOverlayVal, cs2OverlayVal, origCs2OverlayVal, visualEffectsVal, origVisualEffectsVal, steamFriendsSettingsVal, origSteamFriendsSettingsVal, steamFriendsChanged, pagefileMinVal, origPagefileMinVal, pagefileMaxVal, origPagefileMaxVal]() {
+    QThread* worker = QThread::create([this, forceVal, searchVal, classicContextMenuVal, hibernationVal, overlayVal, coreIsolationVal, hagsVal, mouseAccelVal, gameModeVal, firewallVal, bitlockerVal, discordOverlayVal, notificationsVal, notifGlobalVal, notifAppVal, notifSoundsVal, notifLockscreenVal, targetPowerSchemeVal, activePowerSchemeVal, deleteUltimateStagedVal, deleteDefenderStagedVal, defenderVal, defenderRegistryVal, defenderCmdVal, defenderServiceVal, remoteAccessVal, telemetryVal, telemetryDiagTrackVal, telemetryWapPushVal, telemetryCeipVal, telemetryWerVal, windowsUpdateModeVal, targets, originalTargets, origSearch, origClassicContextMenu, origHibernation, origOverlay, origCoreIsolation, origHags, origMouseAccel, origGameMode, origFirewall, origBitlocker, origDiscordOverlay, origNotifications, origNotifGlobal, origNotifApp, origNotifSounds, origNotifLockscreen, origDefender, origDefenderRegistry, origDefenderCmd, origDefenderService, origRemoteAccess, origTelemetry, origTelemetryDiagTrack, origTelemetryWapPush, origTelemetryCeip, origTelemetryWer, origWindowsUpdateMode, usbDevicesVal, origUsbDevicesVal, steamPathVal, cs2OptionsVal, origCs2OptionsVal, steamOverlayVal, origSteamOverlayVal, cs2OverlayVal, origCs2OverlayVal, visualEffectsVal, origVisualEffectsVal, steamFriendsSettingsVal, origSteamFriendsSettingsVal, steamFriendsChanged, pagefileMinVal, origPagefileMinVal, pagefileMaxVal, origPagefileMaxVal]() {
         // Step 00: Auto-create backup before making changes
         if (!forceVal && Settings::instance()->createBackup()) {
             emit systemStepReported(tr("Creating automatic system backup..."), "INFO");
@@ -4172,7 +4111,6 @@ void Optimizer::startSystemOptimization() {
                           (mouseAccelVal != origMouseAccel) ||
                           (gameModeVal != origGameMode) ||
                           (firewallVal != origFirewall) ||
-                          (printerVal != origPrinter) ||
                           (bitlockerVal != origBitlocker) ||
                           (discordOverlayVal != origDiscordOverlay) ||
                           (notificationsVal != origNotifications) ||
@@ -4649,78 +4587,7 @@ void Optimizer::startSystemOptimization() {
             emit firewallActiveChanged(m_firewallActive);
         }
 
-        // Step 1.98: Print Spooler (Printer) Configuration (only if changed)
-        bool printerSuccess = true;
-        if (printerVal != origPrinter || force) {
-            emit systemStepReported(tr("Processing Print Spooler service..."), "INFO");
-            QThread::msleep(800);
-#ifdef Q_OS_WIN
-            SC_HANDLE hSCM = OpenSCManagerW(NULL, NULL, SC_MANAGER_ALL_ACCESS);
-            if (hSCM) {
-                SC_HANDLE hService = OpenServiceW(hSCM, L"Spooler", SERVICE_CHANGE_CONFIG | SERVICE_STOP | SERVICE_START | SERVICE_QUERY_STATUS);
-                if (hService) {
-                    DWORD startType = printerVal ? SERVICE_AUTO_START : SERVICE_DISABLED;
-                    if (ChangeServiceConfigW(hService, SERVICE_NO_CHANGE, startType, SERVICE_NO_CHANGE, NULL, NULL, NULL, NULL, NULL, NULL, NULL)) {
-                        QString logMsg = printerVal ? tr("Print Spooler startup set to Automatic.") : tr("Print Spooler startup set to Disabled.");
-                        emit systemStepReported(logMsg, "INFO");
-                        
-                        SERVICE_STATUS_PROCESS ssp;
-                        DWORD bytesNeeded = 0;
-                        if (QueryServiceStatusEx(hService, SC_STATUS_PROCESS_INFO, reinterpret_cast<LPBYTE>(&ssp), sizeof(ssp), &bytesNeeded)) {
-                            if (!printerVal && ssp.dwCurrentState != SERVICE_STOPPED && ssp.dwCurrentState != SERVICE_STOP_PENDING) {
-                                emit systemStepReported(tr("Stopping Print Spooler service..."), "INFO");
-                                SERVICE_STATUS status;
-                                ControlService(hService, SERVICE_CONTROL_STOP, &status);
-                                for (int i = 0; i < 15; ++i) {
-                                    QThread::msleep(200);
-                                    if (QueryServiceStatusEx(hService, SC_STATUS_PROCESS_INFO, reinterpret_cast<LPBYTE>(&ssp), sizeof(ssp), &bytesNeeded)) {
-                                        if (ssp.dwCurrentState == SERVICE_STOPPED) break;
-                                    }
-                                }
-                                if (ssp.dwCurrentState == SERVICE_STOPPED) {
-                                    emit systemStepReported(tr("Print Spooler service stopped successfully."), "SUCCESS");
-                                } else {
-                                    emit systemStepReported(tr("Print Spooler service stop requested."), "WARNING");
-                                }
-                            } else if (printerVal && ssp.dwCurrentState != SERVICE_RUNNING && ssp.dwCurrentState != SERVICE_START_PENDING) {
-                                emit systemStepReported(tr("Starting Print Spooler service..."), "INFO");
-                                if (StartServiceW(hService, 0, NULL)) {
-                                    for (int i = 0; i < 15; ++i) {
-                                        QThread::msleep(200);
-                                        if (QueryServiceStatusEx(hService, SC_STATUS_PROCESS_INFO, reinterpret_cast<LPBYTE>(&ssp), sizeof(ssp), &bytesNeeded)) {
-                                            if (ssp.dwCurrentState == SERVICE_RUNNING) break;
-                                        }
-                                    }
-                                    if (ssp.dwCurrentState == SERVICE_RUNNING) {
-                                        emit systemStepReported(tr("Print Spooler service started successfully."), "SUCCESS");
-                                    } else {
-                                        emit systemStepReported(tr("Print Spooler service start pending."), "INFO");
-                                    }
-                                } else {
-                                    emit systemStepReported(tr("Failed to start Print Spooler service."), "ERROR");
-                                }
-                            }
-                        }
-                    } else {
-                        printerSuccess = false;
-                        emit systemStepReported(tr("Failed to change Print Spooler service configuration. Error: %1").arg(GetLastError()), "ERROR");
-                    }
-                    CloseServiceHandle(hService);
-                } else {
-                    printerSuccess = false;
-                    emit systemStepReported(tr("Failed to open Print Spooler service. Error: %1").arg(GetLastError()), "ERROR");
-                }
-                CloseServiceHandle(hSCM);
-            } else {
-                printerSuccess = false;
-                emit systemStepReported(tr("Failed to connect to SCM. Error: %1").arg(GetLastError()), "ERROR");
-            }
-#else
-            emit systemStepReported(tr("[Simulation] Print Spooler service state set to: %1").arg(printerVal ? "Enabled" : "Disabled"), "SUCCESS");
-#endif
-            m_printerActive = printerVal;
-            emit printerActiveChanged(m_printerActive);
-        }
+
 
         // Step 1.98b: BitLocker Drive Encryption (BDESVC) Configuration (only if changed)
         bool bitlockerSuccess = true;
@@ -6443,7 +6310,7 @@ void Optimizer::startSystemOptimization() {
 #endif
         }
 
-        bool overallSuccess = wSearchSuccess && classicContextMenuSuccess && hibernationSuccess && overlaySuccess && coreIsolationSuccess && hagsSuccess && mouseAccelSuccess && gameModeSuccess && firewallSuccess && printerSuccess && notificationsSuccess && powerPlanSuccess && defenderSuccess && overallDrivesSuccess && usbSuccess && remoteAccessSuccess && telemetrySuccess && windowsUpdateSuccess && cs2Success && steamOverlaySuccess && cs2OverlaySuccess && steamFriendsSuccess && visualEffectsSuccess && pagefileSuccess;
+        bool overallSuccess = wSearchSuccess && classicContextMenuSuccess && hibernationSuccess && overlaySuccess && coreIsolationSuccess && hagsSuccess && mouseAccelSuccess && gameModeSuccess && firewallSuccess && notificationsSuccess && powerPlanSuccess && defenderSuccess && overallDrivesSuccess && usbSuccess && remoteAccessSuccess && telemetrySuccess && windowsUpdateSuccess && cs2Success && steamOverlaySuccess && cs2OverlaySuccess && steamFriendsSuccess && visualEffectsSuccess && pagefileSuccess;
         if (overallSuccess) {
             emit systemStepReported(tr("System optimization completed successfully!"), "SUCCESS");
             Logger::log("System optimization completed successfully!", "INFO");
@@ -6462,7 +6329,6 @@ void Optimizer::startSystemOptimization() {
         m_originalMouseAccelerationActive = mouseAccelVal;
         m_originalGameModeActive = gameModeVal;
         m_originalFirewallActive = firewallVal;
-        m_originalPrinterActive = printerVal;
         m_originalNotificationsActive = notificationsVal;
         m_originalNotifGlobalActive = notifGlobalVal;
         m_originalNotifAppActive = notifAppVal;
@@ -6500,7 +6366,6 @@ void Optimizer::startSystemOptimization() {
         emit originalMouseAccelerationActiveChanged(m_originalMouseAccelerationActive);
         emit originalGameModeActiveChanged(m_originalGameModeActive);
         emit originalFirewallActiveChanged(m_originalFirewallActive);
-        emit originalPrinterActiveChanged(m_originalPrinterActive);
         emit originalNotificationsActiveChanged(m_originalNotificationsActive);
         emit originalNotifGlobalActiveChanged(m_originalNotifGlobalActive);
         emit originalNotifAppActiveChanged(m_originalNotifAppActive);
@@ -6553,7 +6418,7 @@ void Optimizer::showPath(const QString &funcName) {
     } else if (funcName == "firewall") {
         QProcess::startDetached("cmd.exe", QStringList() << "/c" << "start windowsdefender://network");
         Logger::log("Opening Firewall & Network Protection settings...", "INFO");
-    } else if (funcName == "printer" || funcName == "usb") {
+    } else if (funcName == "usb") {
         QProcess::startDetached("cmd.exe", QStringList() << "/c" << "start devmgmt.msc");
         Logger::log(QString("Opening Device Manager for %1...").arg(funcName), "INFO");
     } else if (funcName == "notifications") {
