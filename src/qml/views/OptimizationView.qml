@@ -102,6 +102,7 @@ Item {
         if (optimizerBackend.classicContextMenuActive !== optimizerBackend.originalClassicContextMenuActive) return true;
         if (optimizerBackend.shortcutArrowsActive !== optimizerBackend.originalShortcutArrowsActive) return true;
         if (optimizerBackend.clipboardHistoryActive !== optimizerBackend.originalClipboardHistoryActive) return true;
+        if (optimizerBackend.taskbarEndTaskActive !== optimizerBackend.originalTaskbarEndTaskActive) return true;
         if (optimizerBackend.winSearchActive !== optimizerBackend.originalWinSearchActive) return true;
         if (optimizerBackend.hibernationActive !== optimizerBackend.originalHibernationActive) return true;
         if (optimizerBackend.gamingOverlayActive !== optimizerBackend.originalGamingOverlayActive) return true;
@@ -151,6 +152,7 @@ Item {
     property bool classicContextMenuChanged: optimizerBackend.classicContextMenuActive !== optimizerBackend.originalClassicContextMenuActive
     property bool shortcutArrowsChanged: optimizerBackend.shortcutArrowsActive !== optimizerBackend.originalShortcutArrowsActive
     property bool clipboardHistoryChanged: optimizerBackend.clipboardHistoryActive !== optimizerBackend.originalClipboardHistoryActive
+    property bool taskbarEndTaskChanged: optimizerBackend.taskbarEndTaskActive !== optimizerBackend.originalTaskbarEndTaskActive
 
     property bool indexingChanged: {
         if (optimizerBackend.winSearchActive !== optimizerBackend.originalWinSearchActive) return true;
@@ -344,6 +346,7 @@ Item {
         if (classicContextMenuChanged) count++;
         if (shortcutArrowsChanged) count++;
         if (clipboardHistoryChanged) count++;
+        if (taskbarEndTaskChanged) count++;
         if (indexingChanged) count++;
         if (xboxChanged) count++;
         if (coreIsolationChanged) count++;
@@ -374,6 +377,7 @@ Item {
         if (optimizerBackend.classicContextMenuActive !== optimizerBackend.originalClassicContextMenuActive) count++;
         if (optimizerBackend.shortcutArrowsActive !== optimizerBackend.originalShortcutArrowsActive) count++;
         if (optimizerBackend.clipboardHistoryActive !== optimizerBackend.originalClipboardHistoryActive) count++;
+        if (optimizerBackend.taskbarEndTaskActive !== optimizerBackend.originalTaskbarEndTaskActive) count++;
         if (optimizerBackend.winSearchActive !== optimizerBackend.originalWinSearchActive) count++;
         if (optimizerBackend.gamingOverlayActive !== optimizerBackend.originalGamingOverlayActive) count++;
         if (optimizerBackend.coreIsolationActive !== optimizerBackend.originalCoreIsolationActive) count++;
@@ -480,6 +484,14 @@ Item {
             hasSidebar: false,
             revert: function() {
                 optimizerBackend.clipboardHistoryActive = optimizerBackend.originalClipboardHistoryActive;
+            }
+        });
+        if (taskbarEndTaskChanged) list.push({
+            name: qsTr("Taskbar 'End task'"),
+            icon: "qrc:/MeguPackOptimizer/src/resources/settings.svg",
+            hasSidebar: false,
+            revert: function() {
+                optimizerBackend.taskbarEndTaskActive = optimizerBackend.originalTaskbarEndTaskActive;
             }
         });
         if (indexingChanged) list.push({
@@ -1207,6 +1219,7 @@ Item {
         if (name === qsTr("Classic Context Menu") || name === "Classic Context Menu") return classicContextMenuPanel;
         if (name === qsTr("Shortcut Arrow Overlays") || name === "Shortcut Arrow Overlays") return shortcutArrowsPanel;
         if (name === qsTr("Clipboard History") || name === "Clipboard History") return clipboardHistoryPanel;
+        if (name === qsTr("Taskbar 'End task'") || name === "Taskbar 'End task'") return taskbarEndTaskPanel;
         return null;
     }
 
@@ -1215,7 +1228,7 @@ Item {
             root.currentSection = "telemetry";
         } else if (categoryName === qsTr("Counter-Strike 2 Launch Options") || categoryName === "Counter-Strike 2 Launch Options" || categoryName === qsTr("CS2 Steam Overlay") || categoryName === "CS2 Steam Overlay" || categoryName === qsTr("Steam Settings") || categoryName === "Steam Settings") {
             root.currentSection = "games";
-        } else if (categoryName === qsTr("Classic Context Menu") || categoryName === "Classic Context Menu" || categoryName === qsTr("Shortcut Arrow Overlays") || categoryName === "Shortcut Arrow Overlays" || categoryName === qsTr("Clipboard History") || categoryName === "Clipboard History") {
+        } else if (categoryName === qsTr("Classic Context Menu") || categoryName === "Classic Context Menu" || categoryName === qsTr("Shortcut Arrow Overlays") || categoryName === "Shortcut Arrow Overlays" || categoryName === qsTr("Clipboard History") || categoryName === "Clipboard History" || categoryName === qsTr("Taskbar 'End task'") || categoryName === "Taskbar 'End task'") {
             root.currentSection = "customization";
         } else {
             root.currentSection = "core";
@@ -4107,6 +4120,172 @@ Item {
                                     anchors.verticalCenter: parent.verticalCenter
                                     onToggled: (isChecked) => {
                                         optimizerBackend.clipboardHistoryActive = isChecked;
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+
+                // Taskbar End Task Panel
+                AcrylicPanel {
+                    id: taskbarEndTaskPanel
+                    width: parent.width
+                    height: (optimizerBackend.taskbarEndTaskActive !== optimizerBackend.originalTaskbarEndTaskActive) ? 132 : 84
+                    Behavior on height {
+                        NumberAnimation { duration: 250; easing.type: Easing.InOutQuad }
+                    }
+
+                    Column {
+                        anchors.left: parent.left
+                        anchors.right: parent.right
+                        anchors.top: parent.top
+                        spacing: 12
+
+                        // Main Row
+                        Item {
+                            anchors.left: parent.left
+                            anchors.right: parent.right
+                            height: 52
+
+                            Row {
+                                anchors.left: parent.left
+                                anchors.leftMargin: 16
+                                anchors.verticalCenter: parent.verticalCenter
+                                spacing: 16
+
+                                Rectangle {
+                                    width: 40
+                                    height: 40
+                                    radius: 10
+                                    color: Qt.rgba(Theme.accent.r, Theme.accent.g, Theme.accent.b, 0.15)
+                                    anchors.verticalCenter: parent.verticalCenter
+
+                                    Item {
+                                        width: 20
+                                        height: 20
+                                        anchors.centerIn: parent
+                                        Image {
+                                            id: taskbarEndTaskPanel_iconImg
+                                            source: "qrc:/MeguPackOptimizer/src/resources/settings.svg"
+                                            anchors.fill: parent
+                                            sourceSize.width: 20
+                                            sourceSize.height: 20
+                                            visible: false
+                                        }
+                                        ColorOverlay {
+                                            anchors.fill: taskbarEndTaskPanel_iconImg
+                                            source: taskbarEndTaskPanel_iconImg
+                                            color: Theme.accent
+                                        }
+                                    }
+                                }
+
+                                Column {
+                                    anchors.verticalCenter: parent.verticalCenter
+                                    spacing: 2
+
+                                    Row {
+                                        spacing: 8
+                                        Text {
+                                            text: qsTr("Taskbar 'End task'")
+                                            color: Theme.textPrimary
+                                            font.family: Theme.fontFamily
+                                            font.pixelSize: 14
+                                            font.bold: true
+                                            anchors.verticalCenter: parent.verticalCenter
+                                        }
+                                        ShowPathButton {
+                                            anchors.verticalCenter: parent.verticalCenter
+                                            onClicked: { optimizerBackend.showPath("taskbarendtask"); }
+                                        }
+                                        Rectangle {
+                                            visible: root.taskbarEndTaskChanged
+                                            height: 16
+                                            width: selectedTextTaskbarEndTask.contentWidth + 10
+                                            radius: 4
+                                            color: Qt.rgba(Theme.success.r, Theme.success.g, Theme.success.b, 0.15)
+                                            border.color: Theme.success
+                                            border.width: 1
+                                            anchors.verticalCenter: parent.verticalCenter
+                                            Text {
+                                                id: selectedTextTaskbarEndTask
+                                                text: qsTr("Selected for application")
+                                                color: Theme.success
+                                                font.family: Theme.fontFamily
+                                                font.pixelSize: 8
+                                                font.bold: true
+                                                anchors.centerIn: parent
+                                            }
+                                        }
+                                    }
+
+                                    Text {
+                                        text: qsTr("Enables the 'End task' context menu item on taskbar applications to close them directly.")
+                                        color: Theme.textMuted
+                                        font.family: Theme.fontFamily
+                                        font.pixelSize: 11
+                                    }
+                                }
+                            }
+
+                            Row {
+                                anchors.right: parent.right
+                                anchors.rightMargin: 16
+                                anchors.verticalCenter: parent.verticalCenter
+                                spacing: 16
+
+                                MeguSwitch {
+                                    checked: optimizerBackend.taskbarEndTaskActive
+                                    anchors.verticalCenter: parent.verticalCenter
+                                    onToggled: (isChecked) => {
+                                        optimizerBackend.taskbarEndTaskActive = isChecked;
+                                    }
+                                }
+                            }
+                        }
+
+                        // Collapsible Restart Explorer Warning
+                        Item {
+                            anchors.left: parent.left
+                            anchors.right: parent.right
+                            height: 48
+                            visible: (optimizerBackend.taskbarEndTaskActive !== optimizerBackend.originalTaskbarEndTaskActive)
+                            clip: true
+
+                            Rectangle {
+                                anchors.fill: parent
+                                anchors.leftMargin: 16
+                                anchors.rightMargin: 16
+                                radius: 8
+                                color: Qt.rgba(Theme.warning.r, Theme.warning.g, Theme.warning.b, 0.1)
+                                border.color: Qt.rgba(Theme.warning.r, Theme.warning.g, Theme.warning.b, 0.2)
+                                border.width: 1
+
+                                Text {
+                                    id: warningLabelEndTask
+                                    anchors.left: parent.left
+                                    anchors.leftMargin: 12
+                                    text: qsTr("Changes require a Windows Explorer restart to take effect.")
+                                    color: Theme.warning
+                                    font.family: Theme.fontFamily
+                                    font.pixelSize: 11
+                                    font.bold: true
+                                    anchors.verticalCenter: parent.verticalCenter
+                                    width: parent.width - restartBtnEndTask.width - 28
+                                    wrapMode: Text.Wrap
+                                }
+
+                                MeguButton {
+                                    id: restartBtnEndTask
+                                    text: qsTr("Restart Explorer")
+                                    iconSource: "qrc:/MeguPackOptimizer/src/resources/play.svg"
+                                    anchors.right: parent.right
+                                    anchors.rightMargin: 12
+                                    anchors.verticalCenter: parent.verticalCenter
+                                    height: 28
+                                    onClicked: {
+                                        optimizerBackend.restartExplorer();
                                     }
                                 }
                             }

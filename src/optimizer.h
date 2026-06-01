@@ -26,6 +26,8 @@ class Optimizer : public QObject {
     Q_PROPERTY(bool originalShortcutArrowsActive READ originalShortcutArrowsActive NOTIFY originalShortcutArrowsActiveChanged)
     Q_PROPERTY(bool clipboardHistoryActive READ clipboardHistoryActive WRITE setClipboardHistoryActive NOTIFY clipboardHistoryActiveChanged)
     Q_PROPERTY(bool originalClipboardHistoryActive READ originalClipboardHistoryActive NOTIFY originalClipboardHistoryActiveChanged)
+    Q_PROPERTY(bool taskbarEndTaskActive READ taskbarEndTaskActive WRITE setTaskbarEndTaskActive NOTIFY taskbarEndTaskActiveChanged)
+    Q_PROPERTY(bool originalTaskbarEndTaskActive READ originalTaskbarEndTaskActive NOTIFY originalTaskbarEndTaskActiveChanged)
     Q_PROPERTY(bool winSearchActive READ winSearchActive WRITE setWinSearchActive NOTIFY winSearchActiveChanged)
     Q_PROPERTY(bool originalWinSearchActive READ originalWinSearchActive NOTIFY originalWinSearchActiveChanged)
     Q_PROPERTY(bool hibernationActive READ hibernationActive WRITE setHibernationActive NOTIFY hibernationActiveChanged)
@@ -148,6 +150,8 @@ public:
     bool originalShortcutArrowsActive() const { return m_originalShortcutArrowsActive; }
     bool clipboardHistoryActive() const { return m_clipboardHistoryActive; }
     bool originalClipboardHistoryActive() const { return m_originalClipboardHistoryActive; }
+    bool taskbarEndTaskActive() const { return m_taskbarEndTaskActive; }
+    bool originalTaskbarEndTaskActive() const { return m_originalTaskbarEndTaskActive; }
     bool winSearchActive() const { return m_winSearchActive; }
     bool originalWinSearchActive() const { return m_originalWinSearchActive; }
     bool hibernationActive() const { return m_hibernationActive; }
@@ -259,6 +263,7 @@ public:
     void setClassicContextMenuActive(bool val);
     void setShortcutArrowsActive(bool val);
     void setClipboardHistoryActive(bool val);
+    void setTaskbarEndTaskActive(bool val);
     void setWinSearchActive(bool val);
     void setHibernationActive(bool val);
     void setGamingOverlayActive(bool val);
@@ -359,6 +364,8 @@ signals:
     void originalShortcutArrowsActiveChanged(bool val);
     void clipboardHistoryActiveChanged(bool val);
     void originalClipboardHistoryActiveChanged(bool val);
+    void taskbarEndTaskActiveChanged(bool val);
+    void originalTaskbarEndTaskActiveChanged(bool val);
     void winSearchActiveChanged(bool val);
     void originalWinSearchActiveChanged(bool val);
     void hibernationActiveChanged(bool val);
@@ -485,6 +492,8 @@ private:
     bool m_originalShortcutArrowsActive = true;
     bool m_clipboardHistoryActive = false;
     bool m_originalClipboardHistoryActive = false;
+    bool m_taskbarEndTaskActive = false;
+    bool m_originalTaskbarEndTaskActive = false;
     bool m_winSearchActive = true;
     bool m_originalWinSearchActive = true;
     bool m_hibernationActive = false;
