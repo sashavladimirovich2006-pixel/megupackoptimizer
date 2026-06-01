@@ -40,22 +40,22 @@ Item {
 
     property color gradientStart: {
         if (currentTheme === "Белоснежная") return "#FFE2D1"; // soft warm peach/amber
-        if (currentTheme === "Темная") return "#2A1847"; // brighter premium deep amethyst/violet glow
+        if (currentTheme === "Темная") return "#3A1903"; // warm glowing premium orange/amber glow
         if (currentTheme === "Blackout полностью черная") return "#000000";
         if (currentTheme === "Ргб") return Qt.hsla(rgbHue, 0.65, 0.15, 1.0); // much brighter cycling rgb glow
         if (currentTheme === "Розовая") return "#FFD3D9"; // brighter glowing pastel rose
         if (currentTheme === "Black pink") return "#3D0C22"; // brighter neon magenta cyber glow
-        return "#2A1847";
+        return "#3A1903";
     }
 
     property color gradientEnd: {
         if (currentTheme === "Белоснежная") return "#E2EAF5"; // light glowing blue-slate
-        if (currentTheme === "Темная") return "#0A0A0F"; // deep charcoal with slate-blue tint
+        if (currentTheme === "Темная") return "#070503"; // deep dark charcoal with a touch of warm amber
         if (currentTheme === "Blackout полностью черная") return "#000000";
         if (currentTheme === "Ргб") return "#050508";
         if (currentTheme === "Розовая") return "#F2BAC3"; // rich pastel rose-blush
         if (currentTheme === "Black pink") return "#070509"; // deep charcoal black pink
-        return "#0A0A0F";
+        return "#070503";
     }
 
     property color sidebarBg: {
