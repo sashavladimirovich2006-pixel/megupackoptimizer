@@ -107,7 +107,6 @@ Item {
         if (optimizerBackend.mouseAccelerationActive !== optimizerBackend.originalMouseAccelerationActive) return true;
         if (optimizerBackend.gameModeActive !== optimizerBackend.originalGameModeActive) return true;
         if (optimizerBackend.firewallActive !== optimizerBackend.originalFirewallActive) return true;
-        if (optimizerBackend.printerActive !== optimizerBackend.originalPrinterActive) return true;
         if (optimizerBackend.bitlockerActive !== optimizerBackend.originalBitlockerActive) return true;
         if (optimizerBackend.discordOverlayActive !== optimizerBackend.originalDiscordOverlayActive) return true;
         if (optimizerBackend.notificationsActive !== optimizerBackend.originalNotificationsActive) return true;
@@ -373,7 +372,6 @@ Item {
         if (optimizerBackend.mouseAccelerationActive !== optimizerBackend.originalMouseAccelerationActive) count++;
         if (optimizerBackend.gameModeActive !== optimizerBackend.originalGameModeActive) count++;
         if (optimizerBackend.firewallActive !== optimizerBackend.originalFirewallActive) count++;
-        if (optimizerBackend.printerActive !== optimizerBackend.originalPrinterActive) count++;
         if (optimizerBackend.notificationsActive !== optimizerBackend.originalNotificationsActive) count++;
         if (optimizerBackend.hibernationActive !== optimizerBackend.originalHibernationActive) count++;
         if (optimizerBackend.bitlockerActive !== optimizerBackend.originalBitlockerActive) count++;
@@ -659,13 +657,11 @@ Item {
         var _idx = indexingChanged;
         var _ntf = notificationsChanged;
         var _xbc = xboxChanged;
-        var _prn = printerChanged;
         var _pwr = powerPlanChanged;
         var _btl = bitlockerChanged;
         var _ws = optimizerBackend.winSearchActive;
         var _ds = optimizerBackend.driveStates;
         var _ga = optimizerBackend.gamingOverlayActive;
-        var _pa = optimizerBackend.printerActive;
         var _tg = optimizerBackend.targetPowerSchemeGuid;
         var _ng = optimizerBackend.notifGlobalActive;
         var _na = optimizerBackend.notifAppActive;
@@ -4937,7 +4933,6 @@ Item {
                             if (root.activeDrawer === "indexing") return qsTr("INDEXING OPTIONS");
                             if (root.activeDrawer === "xbox") return qsTr("XBOX APP & GAME BAR");
                             if (root.activeDrawer === "mpo") return qsTr("MPO LATENCY TWEAK");
-                            if (root.activeDrawer === "printer") return qsTr("PRINTER TWEAKS");
                             if (root.activeDrawer === "notifications") return qsTr("NOTIFICATION SETTINGS");
                             if (root.activeDrawer === "power") return qsTr("POWER PLANS");
                             if (root.activeDrawer === "defender") return qsTr("WINDOWS DEFENDER");
