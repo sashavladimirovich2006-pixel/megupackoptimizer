@@ -2275,7 +2275,12 @@ Item {
                                     font.family: Theme.fontFamily
                                     font.pixelSize: 14
                                     font.bold: true
+                                    anchors.verticalCenter: parent.verticalCenter
                                 } 
+                                ShowPathButton {
+                                    anchors.verticalCenter: parent.verticalCenter
+                                    onClicked: { optimizerBackend.showPath("mpo"); }
+                                }
                             }
 
                             Text {
@@ -2292,11 +2297,6 @@ Item {
                         anchors.rightMargin: 16
                         anchors.verticalCenter: parent.verticalCenter
                         spacing: 16
-
-                        ShowPathButton {
-                            anchors.verticalCenter: parent.verticalCenter
-                            onClicked: { optimizerBackend.showPath("mpo"); }
-                        }
 
                         // Current Value indicator pill
                         Rectangle {
@@ -2425,7 +2425,12 @@ Item {
                                     font.family: Theme.fontFamily
                                     font.pixelSize: 14
                                     font.bold: true
+                                    anchors.verticalCenter: parent.verticalCenter
                                 } 
+                                ShowPathButton {
+                                    anchors.verticalCenter: parent.verticalCenter
+                                    onClicked: { optimizerBackend.showPath("visualeffects"); }
+                                }
                                 Rectangle {
                                     visible: root.visualEffectsChanged
                                     height: 16
@@ -2461,11 +2466,6 @@ Item {
                         anchors.rightMargin: 16
                         anchors.verticalCenter: parent.verticalCenter
                         spacing: 16
-
-                        ShowPathButton {
-                            anchors.verticalCenter: parent.verticalCenter
-                            onClicked: { optimizerBackend.showPath("visualeffects"); }
-                        }
 
                         ShowPathButton {
                             text: qsTr("Open")
@@ -2553,7 +2553,12 @@ Item {
                                     font.family: Theme.fontFamily
                                     font.pixelSize: 14
                                     font.bold: true
+                                    anchors.verticalCenter: parent.verticalCenter
                                 } 
+                                ShowPathButton {
+                                    anchors.verticalCenter: parent.verticalCenter
+                                    onClicked: { optimizerBackend.showPath("coreisolation"); }
+                                }
                                 Rectangle {
                                     visible: root.coreIsolationChanged
                                     height: 16
@@ -2588,11 +2593,6 @@ Item {
                                 anchors.right: parent.right
                                 anchors.verticalCenter: parent.verticalCenter
                                 spacing: 16
-
-                                ShowPathButton {
-                                    anchors.verticalCenter: parent.verticalCenter
-                                    onClicked: { optimizerBackend.showPath("coreisolation"); }
-                                }
 
                                 MeguSwitch {
                                     checked: optimizerBackend.coreIsolationActive
@@ -2702,7 +2702,12 @@ Item {
                                     font.family: Theme.fontFamily
                                     font.pixelSize: 14
                                     font.bold: true
+                                    anchors.verticalCenter: parent.verticalCenter
                                 } 
+                                ShowPathButton {
+                                    anchors.verticalCenter: parent.verticalCenter
+                                    onClicked: { optimizerBackend.showPath("mouseacceleration"); }
+                                }
                                 Rectangle {
                                     visible: root.mouseAccelerationChanged
                                     height: 16
@@ -2738,11 +2743,6 @@ Item {
                         anchors.rightMargin: 16
                         anchors.verticalCenter: parent.verticalCenter
                         spacing: 16
-
-                        ShowPathButton {
-                            anchors.verticalCenter: parent.verticalCenter
-                            onClicked: { optimizerBackend.showPath("mouseacceleration"); }
-                        }
 
                         MeguSwitch {
                             checked: optimizerBackend.mouseAccelerationActive
@@ -2806,7 +2806,12 @@ Item {
                                     font.family: Theme.fontFamily
                                     font.pixelSize: 14
                                     font.bold: true
+                                    anchors.verticalCenter: parent.verticalCenter
                                 } 
+                                ShowPathButton {
+                                    anchors.verticalCenter: parent.verticalCenter
+                                    onClicked: { optimizerBackend.showPath("gamemode"); }
+                                }
                                 Rectangle {
                                     visible: root.gameModeChanged
                                     height: 16
@@ -2842,11 +2847,6 @@ Item {
                         anchors.rightMargin: 16
                         anchors.verticalCenter: parent.verticalCenter
                         spacing: 16
-
-                        ShowPathButton {
-                            anchors.verticalCenter: parent.verticalCenter
-                            onClicked: { optimizerBackend.showPath("gamemode"); }
-                        }
 
                         MeguSwitch {
                             checked: optimizerBackend.gameModeActive
@@ -2913,6 +2913,11 @@ Item {
                                     font.family: Theme.fontFamily
                                     font.pixelSize: 14
                                     font.bold: true
+                                    anchors.verticalCenter: parent.verticalCenter
+                                }
+                                ShowPathButton {
+                                    anchors.verticalCenter: parent.verticalCenter
+                                    onClicked: { optimizerBackend.showPath("discord"); }
                                 }
                                 Rectangle {
                                     visible: root.discordOverlayChanged
@@ -2959,11 +2964,6 @@ Item {
                         anchors.rightMargin: 16
                         anchors.verticalCenter: parent.verticalCenter
                         spacing: 16
-
-                        ShowPathButton {
-                            anchors.verticalCenter: parent.verticalCenter
-                            onClicked: { optimizerBackend.showPath("discord"); }
-                        }
 
                         MeguSwitch {
                             checked: optimizerBackend.discordOverlayActive
@@ -3027,7 +3027,12 @@ Item {
                                     font.family: Theme.fontFamily
                                     font.pixelSize: 14
                                     font.bold: true
+                                    anchors.verticalCenter: parent.verticalCenter
                                 } 
+                                ShowPathButton {
+                                    anchors.verticalCenter: parent.verticalCenter
+                                    onClicked: { optimizerBackend.showPath("firewall"); }
+                                }
                                 Rectangle {
                                     visible: root.firewallChanged
                                     height: 16
@@ -3063,11 +3068,6 @@ Item {
                         anchors.rightMargin: 16
                         anchors.verticalCenter: parent.verticalCenter
                         spacing: 16
-
-                        ShowPathButton {
-                            anchors.verticalCenter: parent.verticalCenter
-                            onClicked: { optimizerBackend.showPath("firewall"); }
-                        }
 
                         MeguSwitch {
                             checked: optimizerBackend.firewallActive
@@ -3132,7 +3132,12 @@ Item {
                                     font.family: Theme.fontFamily
                                     font.pixelSize: 14
                                     font.bold: true
+                                    anchors.verticalCenter: parent.verticalCenter
                                 } 
+                                ShowPathButton {
+                                    anchors.verticalCenter: parent.verticalCenter
+                                    onClicked: { optimizerBackend.showPath("remoteaccess"); }
+                                }
                                 Rectangle {
                                     visible: root.remoteAccessChanged
                                     height: 16
@@ -3168,11 +3173,6 @@ Item {
                         anchors.rightMargin: 16
                         anchors.verticalCenter: parent.verticalCenter
                         spacing: 16
-
-                        ShowPathButton {
-                            anchors.verticalCenter: parent.verticalCenter
-                            onClicked: { optimizerBackend.showPath("remoteaccess"); }
-                        }
 
                         MeguSwitch {
                             checked: optimizerBackend.remoteAccessActive
@@ -3236,7 +3236,12 @@ Item {
                                     font.family: Theme.fontFamily
                                     font.pixelSize: 14
                                     font.bold: true
+                                    anchors.verticalCenter: parent.verticalCenter
                                 } 
+                                ShowPathButton {
+                                    anchors.verticalCenter: parent.verticalCenter
+                                    onClicked: { optimizerBackend.showPath("telemetry"); }
+                                }
                                 Rectangle {
                                     visible: root.telemetryChanged
                                     height: 16
@@ -3272,11 +3277,6 @@ Item {
                         anchors.rightMargin: 16
                         anchors.verticalCenter: parent.verticalCenter
                         spacing: 16
-
-                        ShowPathButton {
-                            anchors.verticalCenter: parent.verticalCenter
-                            onClicked: { optimizerBackend.showPath("telemetry"); }
-                        }
 
                         Rectangle {
                             width: 32
@@ -3382,7 +3382,12 @@ Item {
                                     font.family: Theme.fontFamily
                                     font.pixelSize: 14
                                     font.bold: true
+                                    anchors.verticalCenter: parent.verticalCenter
                                 } 
+                                ShowPathButton {
+                                    anchors.verticalCenter: parent.verticalCenter
+                                    onClicked: { optimizerBackend.showPath("windowsupdate"); }
+                                }
                                 Rectangle {
                                     visible: root.windowsUpdateChanged
                                     height: 16
@@ -3418,11 +3423,6 @@ Item {
                         anchors.rightMargin: 16
                         anchors.verticalCenter: parent.verticalCenter
                         spacing: 16
-
-                        ShowPathButton {
-                            anchors.verticalCenter: parent.verticalCenter
-                            onClicked: { optimizerBackend.showPath("windowsupdate"); }
-                        }
 
                         // Current Mode indicator pill
                         Rectangle {
@@ -3552,7 +3552,12 @@ Item {
                                     font.family: Theme.fontFamily
                                     font.pixelSize: 14
                                     font.bold: true
+                                    anchors.verticalCenter: parent.verticalCenter
                                 } 
+                                ShowPathButton {
+                                    anchors.verticalCenter: parent.verticalCenter
+                                    onClicked: { optimizerBackend.showPath("printer"); }
+                                }
                                 Rectangle {
                                     visible: root.printerChanged
                                     height: 16
@@ -3588,11 +3593,6 @@ Item {
                         anchors.rightMargin: 16
                         anchors.verticalCenter: parent.verticalCenter
                         spacing: 16
-
-                        ShowPathButton {
-                            anchors.verticalCenter: parent.verticalCenter
-                            onClicked: { optimizerBackend.showPath("printer"); }
-                        }
 
                         MeguSwitch {
                             checked: optimizerBackend.printerActive
@@ -3701,7 +3701,12 @@ Item {
                                     font.family: Theme.fontFamily
                                     font.pixelSize: 14
                                     font.bold: true
+                                    anchors.verticalCenter: parent.verticalCenter
                                 } 
+                                ShowPathButton {
+                                    anchors.verticalCenter: parent.verticalCenter
+                                    onClicked: { optimizerBackend.showPath("notifications"); }
+                                }
                                 Rectangle {
                                     visible: root.notificationsChanged
                                     height: 16
@@ -3737,11 +3742,6 @@ Item {
                         anchors.rightMargin: 16
                         anchors.verticalCenter: parent.verticalCenter
                         spacing: 16
-
-                        ShowPathButton {
-                            anchors.verticalCenter: parent.verticalCenter
-                            onClicked: { optimizerBackend.showPath("notifications"); }
-                        }
 
                         MeguSwitch {
                             checked: root.notificationsChecked
@@ -3879,7 +3879,12 @@ Item {
                                             font.family: Theme.fontFamily
                                             font.pixelSize: 14
                                             font.bold: true
+                                            anchors.verticalCenter: parent.verticalCenter
                                         } 
+                                        ShowPathButton {
+                                            anchors.verticalCenter: parent.verticalCenter
+                                            onClicked: { optimizerBackend.showPath("classiccontextmenu"); }
+                                        }
                                         Rectangle {
                                             visible: root.classicContextMenuChanged
                                             height: 16
@@ -3915,11 +3920,6 @@ Item {
                                 anchors.rightMargin: 16
                                 anchors.verticalCenter: parent.verticalCenter
                                 spacing: 16
-
-                                ShowPathButton {
-                                    anchors.verticalCenter: parent.verticalCenter
-                                    onClicked: { optimizerBackend.showPath("classiccontextmenu"); }
-                                }
 
                                 MeguSwitch {
                                     checked: optimizerBackend.classicContextMenuActive
@@ -4056,7 +4056,12 @@ Item {
                                     font.family: Theme.fontFamily
                                     font.pixelSize: 14
                                     font.bold: true
+                                    anchors.verticalCenter: parent.verticalCenter
                                 } 
+                                ShowPathButton {
+                                    anchors.verticalCenter: parent.verticalCenter
+                                    onClicked: { optimizerBackend.showPath("hibernation"); }
+                                }
                                 Rectangle {
                                     visible: root.hibernationChanged
                                     height: 16
@@ -4092,11 +4097,6 @@ Item {
                         anchors.rightMargin: 16
                         anchors.verticalCenter: parent.verticalCenter
                         spacing: 16
-
-                        ShowPathButton {
-                            anchors.verticalCenter: parent.verticalCenter
-                            onClicked: { optimizerBackend.showPath("hibernation"); }
-                        }
 
                         MeguSwitch {
                             checked: optimizerBackend.hibernationActive
@@ -4407,7 +4407,12 @@ Item {
                                     font.family: Theme.fontFamily
                                     font.pixelSize: 14
                                     font.bold: true
+                                    anchors.verticalCenter: parent.verticalCenter
                                 } 
+                                ShowPathButton {
+                                    anchors.verticalCenter: parent.verticalCenter
+                                    onClicked: { optimizerBackend.showPath("bitlocker"); }
+                                }
                                 Rectangle {
                                     visible: root.bitlockerChanged
                                     height: 16
@@ -4453,11 +4458,6 @@ Item {
                             onClicked: {
                                 optimizerBackend.decryptBitLocker();
                             }
-                        }
-
-                        ShowPathButton {
-                            anchors.verticalCenter: parent.verticalCenter
-                            onClicked: { optimizerBackend.showPath("bitlocker"); }
                         }
 
                         MeguSwitch {
@@ -4522,7 +4522,12 @@ Item {
                                     font.family: Theme.fontFamily
                                     font.pixelSize: 14
                                     font.bold: true
+                                    anchors.verticalCenter: parent.verticalCenter
                                 } 
+                                ShowPathButton {
+                                    anchors.verticalCenter: parent.verticalCenter
+                                    onClicked: { optimizerBackend.showPath("defender"); }
+                                }
                                 Rectangle {
                                     visible: root.defenderChanged
                                     height: 16
@@ -4558,11 +4563,6 @@ Item {
                         anchors.rightMargin: 16
                         anchors.verticalCenter: parent.verticalCenter
                         spacing: 16
-
-                        ShowPathButton {
-                            anchors.verticalCenter: parent.verticalCenter
-                            onClicked: { optimizerBackend.showPath("defender"); }
-                        }
 
                         // Arrow button that slides right on hover & opens sidebar drawer for Windows Defender options
                         Rectangle {
@@ -4877,7 +4877,12 @@ Item {
                                     font.family: Theme.fontFamily
                                     font.pixelSize: 14
                                     font.bold: true
+                                    anchors.verticalCenter: parent.verticalCenter
                                 } 
+                                ShowPathButton {
+                                    anchors.verticalCenter: parent.verticalCenter
+                                    onClicked: { optimizerBackend.showPath("usb"); }
+                                }
                                 Rectangle {
                                     visible: root.usbPowerSavingChanged
                                     height: 16
@@ -4913,11 +4918,6 @@ Item {
                         anchors.rightMargin: 16
                         anchors.verticalCenter: parent.verticalCenter
                         spacing: 16
-
-                        ShowPathButton {
-                            anchors.verticalCenter: parent.verticalCenter
-                            onClicked: { optimizerBackend.showPath("usb"); }
-                        }
 
                         // Arrow button that slides right on hover & opens sidebar drawer for USB device list
                         Rectangle {
