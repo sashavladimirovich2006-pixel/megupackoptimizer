@@ -13,8 +13,8 @@ Item {
     
     signal clicked()
     
-    implicitWidth: isIconOnly ? 18 : buttonLayout.implicitWidth + 20
-    implicitHeight: isIconOnly ? 18 : 24
+    implicitWidth: isIconOnly ? 20 : buttonLayout.implicitWidth + 20
+    implicitHeight: isIconOnly ? 20 : 24
     
     opacity: control.enabled ? 1.0 : 0.35
     scale: mouseArea.containsMouse ? 1.08 : 1.0
@@ -25,15 +25,15 @@ Item {
     Rectangle {
         id: bg
         anchors.fill: parent
-        radius: isIconOnly ? 9 : 6 // Fully circular if icon-only
+        radius: isIconOnly ? 10 : 6 // Fully circular if icon-only
         
-        color: isIconOnly 
-            ? (mouseArea.containsMouse ? Qt.rgba(Theme.accent.r, Theme.accent.g, Theme.accent.b, 0.15) : "transparent")
-            : (mouseArea.containsMouse ? Qt.rgba(Theme.accent.r, Theme.accent.g, Theme.accent.b, 0.15) : Qt.rgba(Theme.accent.r, Theme.accent.g, Theme.accent.b, 0.05))
+        color: mouseArea.containsMouse 
+            ? Qt.rgba(Theme.accent.r, Theme.accent.g, Theme.accent.b, 0.15)
+            : Qt.rgba(Theme.accent.r, Theme.accent.g, Theme.accent.b, 0.05)
             
-        border.color: isIconOnly
-            ? (mouseArea.containsMouse ? Theme.accent : "transparent")
-            : (mouseArea.containsMouse ? Theme.accent : Qt.rgba(Theme.accent.r, Theme.accent.g, Theme.accent.b, 0.3))
+        border.color: mouseArea.containsMouse
+            ? Theme.accent
+            : (isIconOnly ? Qt.rgba(Theme.accent.r, Theme.accent.g, Theme.accent.b, 0.2) : Qt.rgba(Theme.accent.r, Theme.accent.g, Theme.accent.b, 0.3))
             
         border.width: 1
         
@@ -89,7 +89,7 @@ Item {
                 id: arrowIcon
                 source: control.iconSource
                 anchors.fill: parent
-                anchors.margins: 2 // Reduced margins to make it bigger and more visible!
+                anchors.margins: 3 // Balanced padding inside 20x20 circle
                 sourceSize.width: 14
                 sourceSize.height: 14
                 visible: false
