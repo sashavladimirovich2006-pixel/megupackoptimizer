@@ -83,30 +83,40 @@ Item {
         Item {
             anchors.fill: parent
             visible: control.isIconOnly
+            rotation: -45 // Point up-right! This rotates both the image and the color overlay together!
             
             Image {
                 id: arrowIcon
                 source: control.iconSource
                 anchors.fill: parent
-                anchors.margins: 4
-                sourceSize.width: 10
-                sourceSize.height: 10
-                rotation: -45 // Point up-right
+                anchors.margins: 2 // Reduced margins to make it bigger and more visible!
+                sourceSize.width: 14
+                sourceSize.height: 14
                 visible: false
             }
             
             ColorOverlay {
                 anchors.fill: arrowIcon
                 source: arrowIcon
-                color: mouseArea.containsMouse ? Theme.accentLight : Theme.textMuted
+                color: mouseArea.containsMouse ? Theme.accent : Theme.textSecondary // Highly visible colors!
                 Behavior on color { ColorAnimation { duration: Theme.animFast } }
             }
         }
     }
     
+    Timer {
+        id: hoverTimer
+        interval: 1000 // 1.0 second delay for a true "long hover"
+        repeat: false
+        onTriggered: {
+            if (mouseArea.containsMouse && control.isIconOnly) {
+                customTooltip.visible = true;
+            }
+        }
+    }
+    
     ToolTip {
-        visible: control.isIconOnly && mouseArea.containsMouse
-        delay: 500
+        id: customTooltip
         text: control.text
         background: Rectangle {
             color: Theme.panelBg
@@ -115,7 +125,7 @@ Item {
             radius: 4
         }
         contentItem: Text {
-            text: parent.text
+            text: customTooltip.text
             color: Theme.textPrimary
             font.family: Theme.fontFamily
             font.pixelSize: 10
@@ -127,7 +137,18 @@ Item {
         anchors.fill: parent
         hoverEnabled: control.enabled
         cursorShape: control.enabled ? Qt.PointingHandCursor : Qt.ArrowCursor
+        onEntered: {
+            if (control.isIconOnly) {
+                hoverTimer.start();
+            }
+        }
+        onExited: {
+            hoverTimer.stop();
+            customTooltip.visible = false;
+        }
         onClicked: {
+            hoverTimer.stop();
+            customTooltip.visible = false;
             if (control.enabled) {
                 control.clicked();
             }
