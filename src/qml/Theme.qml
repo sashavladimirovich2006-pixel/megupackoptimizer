@@ -38,6 +38,26 @@ Item {
         return "#070709";
     }
 
+    property color gradientStart: {
+        if (currentTheme === "Белоснежная") return "#FFEFE6"; // soft warm amber/orange tint
+        if (currentTheme === "Темная") return "#160C22"; // premium deep dark amethyst/violet glow
+        if (currentTheme === "Blackout полностью черная") return "#000000";
+        if (currentTheme === "Ргб") return Qt.hsla(rgbHue, 0.4, 0.08, 1.0); // deep cycling rgb glow
+        if (currentTheme === "Розовая") return "#FDEEF0"; // soft warm rose cream
+        if (currentTheme === "Black pink") return "#1E0610"; // premium deep magenta cyber glow
+        return "#160C22";
+    }
+
+    property color gradientEnd: {
+        if (currentTheme === "Белоснежная") return "#F1F5F9"; // cool slate-white
+        if (currentTheme === "Темная") return "#060608"; // deep charcoal
+        if (currentTheme === "Blackout полностью черная") return "#000000";
+        if (currentTheme === "Ргб") return "#030305";
+        if (currentTheme === "Розовая") return "#EAD2D7"; // pastel rose
+        if (currentTheme === "Black pink") return "#050406"; // cyber black
+        return "#060608";
+    }
+
     property color sidebarBg: {
         if (currentTheme === "Белоснежная") return "#FFF3F4F6"; // 100% opacity
         if (currentTheme === "Темная") return "#FF0A0B0E"; // Sleek solid dark gray sidebar

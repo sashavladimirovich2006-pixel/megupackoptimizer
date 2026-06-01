@@ -24,11 +24,28 @@ ApplicationWindow {
     }
 
     background: Rectangle {
-        color: Theme.background
         border.color: Theme.border
         border.width: 1
         
+        color: Theme.currentTheme === "Blackout полностью черная" ? Theme.background : "transparent"
+        gradient: Theme.currentTheme === "Blackout полностью черная" ? null : mainGradient
+        
+        Gradient {
+            id: mainGradient
+            GradientStop {
+                position: 0.0
+                color: Theme.gradientStart
+                Behavior on color { ColorAnimation { duration: Theme.animNormal } }
+            }
+            GradientStop {
+                position: 1.0
+                color: Theme.gradientEnd
+                Behavior on color { ColorAnimation { duration: Theme.animNormal } }
+            }
+        }
+        
         Behavior on color { ColorAnimation { duration: Theme.animNormal } }
+        Behavior on border.color { ColorAnimation { duration: Theme.animNormal } }
     }
 
     property int activeTab: 1
