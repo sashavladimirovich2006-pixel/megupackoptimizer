@@ -6623,6 +6623,22 @@ void Optimizer::showPath(const QString &funcName) {
     }
 }
 
+void Optimizer::runDeepIndexingRemoval() {
+    Logger::log("Starting recursive deep content indexing removal in the background...", "INFO");
+#ifdef Q_OS_WIN
+    // Construct the PowerShell command to run hiddenly in the background for all fixed drives
+    QString cmd = "[System.IO.DriveInfo]::GetDrives() | Where-Object { $_.DriveType -eq 'Fixed' } | ForEach-Object { attrib.exe +I ($_.Name + '*') /S /D }";
+    bool success = QProcess::startDetached("powershell.exe", QStringList() << "-NoProfile" << "-NonInteractive" << "-WindowStyle" << "Hidden" << "-Command" << cmd);
+    if (success) {
+        Logger::log("Deep indexing removal process successfully launched in the background via PowerShell.", "SUCCESS");
+    } else {
+        Logger::log("Failed to start PowerShell for deep indexing removal.", "ERROR");
+    }
+#else
+    Logger::log("[Simulation] Deep indexing removal process successfully simulated.", "SUCCESS");
+#endif
+}
+
 void Optimizer::decryptBitLocker() {
     Logger::log(tr("Initiating BitLocker decryption for C: drive..."), "INFO");
 #ifdef Q_OS_WIN
