@@ -3503,9 +3503,9 @@ Item {
                 // Printer Panel
                 AcrylicPanel {
                     id: printerPanel
-                    visible: root.currentSection === "core"
+                    visible: false
                     width: parent.width
-                    height: 84
+                    height: 0
 
                     Row {
                         anchors.left: parent.left
