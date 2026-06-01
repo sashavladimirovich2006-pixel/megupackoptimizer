@@ -24,6 +24,8 @@ class Optimizer : public QObject {
     Q_PROPERTY(bool originalClassicContextMenuActive READ originalClassicContextMenuActive NOTIFY originalClassicContextMenuActiveChanged)
     Q_PROPERTY(bool shortcutArrowsActive READ shortcutArrowsActive WRITE setShortcutArrowsActive NOTIFY shortcutArrowsActiveChanged)
     Q_PROPERTY(bool originalShortcutArrowsActive READ originalShortcutArrowsActive NOTIFY originalShortcutArrowsActiveChanged)
+    Q_PROPERTY(bool clipboardHistoryActive READ clipboardHistoryActive WRITE setClipboardHistoryActive NOTIFY clipboardHistoryActiveChanged)
+    Q_PROPERTY(bool originalClipboardHistoryActive READ originalClipboardHistoryActive NOTIFY originalClipboardHistoryActiveChanged)
     Q_PROPERTY(bool winSearchActive READ winSearchActive WRITE setWinSearchActive NOTIFY winSearchActiveChanged)
     Q_PROPERTY(bool originalWinSearchActive READ originalWinSearchActive NOTIFY originalWinSearchActiveChanged)
     Q_PROPERTY(bool hibernationActive READ hibernationActive WRITE setHibernationActive NOTIFY hibernationActiveChanged)
@@ -144,6 +146,8 @@ public:
     bool originalClassicContextMenuActive() const { return m_originalClassicContextMenuActive; }
     bool shortcutArrowsActive() const { return m_shortcutArrowsActive; }
     bool originalShortcutArrowsActive() const { return m_originalShortcutArrowsActive; }
+    bool clipboardHistoryActive() const { return m_clipboardHistoryActive; }
+    bool originalClipboardHistoryActive() const { return m_originalClipboardHistoryActive; }
     bool winSearchActive() const { return m_winSearchActive; }
     bool originalWinSearchActive() const { return m_originalWinSearchActive; }
     bool hibernationActive() const { return m_hibernationActive; }
@@ -254,6 +258,7 @@ public:
     // Setters
     void setClassicContextMenuActive(bool val);
     void setShortcutArrowsActive(bool val);
+    void setClipboardHistoryActive(bool val);
     void setWinSearchActive(bool val);
     void setHibernationActive(bool val);
     void setGamingOverlayActive(bool val);
@@ -352,6 +357,8 @@ signals:
     void originalClassicContextMenuActiveChanged(bool val);
     void shortcutArrowsActiveChanged(bool val);
     void originalShortcutArrowsActiveChanged(bool val);
+    void clipboardHistoryActiveChanged(bool val);
+    void originalClipboardHistoryActiveChanged(bool val);
     void winSearchActiveChanged(bool val);
     void originalWinSearchActiveChanged(bool val);
     void hibernationActiveChanged(bool val);
@@ -476,6 +483,8 @@ private:
     bool m_originalClassicContextMenuActive = false;
     bool m_shortcutArrowsActive = true;
     bool m_originalShortcutArrowsActive = true;
+    bool m_clipboardHistoryActive = false;
+    bool m_originalClipboardHistoryActive = false;
     bool m_winSearchActive = true;
     bool m_originalWinSearchActive = true;
     bool m_hibernationActive = false;

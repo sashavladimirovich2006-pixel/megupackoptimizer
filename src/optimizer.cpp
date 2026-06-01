@@ -2286,6 +2286,13 @@ void Optimizer::setShortcutArrowsActive(bool val) {
     }
 }
 
+void Optimizer::setClipboardHistoryActive(bool val) {
+    if (m_clipboardHistoryActive != val) {
+        m_clipboardHistoryActive = val;
+        emit clipboardHistoryActiveChanged(m_clipboardHistoryActive);
+    }
+}
+
 void Optimizer::setWinSearchActive(bool val) {
     if (m_winSearchActive != val) {
         m_winSearchActive = val;
@@ -2794,6 +2801,25 @@ void Optimizer::loadSystemStates() {
     m_originalShortcutArrowsActive = m_shortcutArrowsActive;
     emit shortcutArrowsActiveChanged(m_shortcutArrowsActive);
     emit originalShortcutArrowsActiveChanged(m_originalShortcutArrowsActive);
+
+    // Load Clipboard History state (HKCU\Software\Microsoft\Clipboard -> EnableClipboardHistory)
+    bool isClipboardHistoryActive = false; // Disabled by default in Windows 10/11
+#ifdef Q_OS_WIN
+    HKEY hKeyClipboard;
+    if (RegOpenKeyExW(HKEY_CURRENT_USER, L"Software\\Microsoft\\Clipboard", 0, KEY_READ, &hKeyClipboard) == ERROR_SUCCESS) {
+        DWORD val = 0;
+        DWORD dwSize = sizeof(val);
+        DWORD dwType = REG_DWORD;
+        if (RegQueryValueExW(hKeyClipboard, L"EnableClipboardHistory", nullptr, &dwType, reinterpret_cast<LPBYTE>(&val), &dwSize) == ERROR_SUCCESS) {
+            isClipboardHistoryActive = (val != 0);
+        }
+        RegCloseKey(hKeyClipboard);
+    }
+#endif
+    m_clipboardHistoryActive = isClipboardHistoryActive;
+    m_originalClipboardHistoryActive = m_clipboardHistoryActive;
+    emit clipboardHistoryActiveChanged(m_clipboardHistoryActive);
+    emit originalClipboardHistoryActiveChanged(m_originalClipboardHistoryActive);
 
 
 
@@ -4126,6 +4152,7 @@ void Optimizer::startSystemOptimization() {
     bool notifAppVal = m_notifAppActive;
     bool notifSoundsVal = m_notifSoundsActive;
     bool notifLockscreenVal = m_notifLockscreenActive;
+    bool clipboardHistoryVal = m_clipboardHistoryActive;
     QString targetPowerSchemeVal = m_targetPowerSchemeGuid;
     QString activePowerSchemeVal = m_activePowerSchemeGuid;
     bool defenderVal = m_defenderActive;
@@ -4171,6 +4198,7 @@ void Optimizer::startSystemOptimization() {
     bool origSearch = m_originalWinSearchActive;
     bool origClassicContextMenu = m_originalClassicContextMenuActive;
     bool origShortcutArrows = m_originalShortcutArrowsActive;
+    bool origClipboardHistory = m_originalClipboardHistoryActive;
     bool origHibernation = m_originalHibernationActive;
     bool origOverlay = m_originalGamingOverlayActive;
     bool origCoreIsolation = m_originalCoreIsolationActive;
@@ -4220,7 +4248,7 @@ void Optimizer::startSystemOptimization() {
     bool forceVal = m_forceApplyAll;
     m_forceApplyAll = false;
 
-    QThread* worker = QThread::create([this, forceVal, searchVal, classicContextMenuVal, shortcutArrowsVal, hibernationVal, overlayVal, coreIsolationVal, hagsVal, mouseAccelVal, gameModeVal, firewallVal, bitlockerVal, discordOverlayVal, notificationsVal, notifGlobalVal, notifAppVal, notifSoundsVal, notifLockscreenVal, targetPowerSchemeVal, activePowerSchemeVal, deleteUltimateStagedVal, deleteDefenderStagedVal, defenderVal, defenderRegistryVal, defenderCmdVal, defenderServiceVal, remoteAccessVal, telemetryVal, telemetryDiagTrackVal, telemetryWapPushVal, telemetryCeipVal, telemetryWerVal, windowsUpdateModeVal, targets, originalTargets, origSearch, origClassicContextMenu, origShortcutArrows, origHibernation, origOverlay, origCoreIsolation, origHags, origMouseAccel, origGameMode, origFirewall, origBitlocker, origDiscordOverlay, origNotifications, origNotifGlobal, origNotifApp, origNotifSounds, origNotifLockscreen, origDefender, origDefenderRegistry, origDefenderCmd, origDefenderService, origRemoteAccess, origTelemetry, origTelemetryDiagTrack, origTelemetryWapPush, origTelemetryCeip, origTelemetryWer, origWindowsUpdateMode, usbDevicesVal, origUsbDevicesVal, appNotificationSettingsVal, steamPathVal, cs2OptionsVal, origCs2OptionsVal, steamOverlayVal, origSteamOverlayVal, cs2OverlayVal, origCs2OverlayVal, visualEffectsVal, origVisualEffectsVal, steamFriendsSettingsVal, origSteamFriendsSettingsVal, steamFriendsChanged, pagefileMinVal, origPagefileMinVal, pagefileMaxVal, origPagefileMaxVal]() {
+    QThread* worker = QThread::create([this, forceVal, searchVal, classicContextMenuVal, shortcutArrowsVal, clipboardHistoryVal, hibernationVal, overlayVal, coreIsolationVal, hagsVal, mouseAccelVal, gameModeVal, firewallVal, bitlockerVal, discordOverlayVal, notificationsVal, notifGlobalVal, notifAppVal, notifSoundsVal, notifLockscreenVal, targetPowerSchemeVal, activePowerSchemeVal, deleteUltimateStagedVal, deleteDefenderStagedVal, defenderVal, defenderRegistryVal, defenderCmdVal, defenderServiceVal, remoteAccessVal, telemetryVal, telemetryDiagTrackVal, telemetryWapPushVal, telemetryCeipVal, telemetryWerVal, windowsUpdateModeVal, targets, originalTargets, origSearch, origClassicContextMenu, origShortcutArrows, origClipboardHistory, origHibernation, origOverlay, origCoreIsolation, origHags, origMouseAccel, origGameMode, origFirewall, origBitlocker, origDiscordOverlay, origNotifications, origNotifGlobal, origNotifApp, origNotifSounds, origNotifLockscreen, origDefender, origDefenderRegistry, origDefenderCmd, origDefenderService, origRemoteAccess, origTelemetry, origTelemetryDiagTrack, origTelemetryWapPush, origTelemetryCeip, origTelemetryWer, origWindowsUpdateMode, usbDevicesVal, origUsbDevicesVal, appNotificationSettingsVal, steamPathVal, cs2OptionsVal, origCs2OptionsVal, steamOverlayVal, origSteamOverlayVal, cs2OverlayVal, origCs2OverlayVal, visualEffectsVal, origVisualEffectsVal, steamFriendsSettingsVal, origSteamFriendsSettingsVal, steamFriendsChanged, pagefileMinVal, origPagefileMinVal, pagefileMaxVal, origPagefileMaxVal]() {
         // Step 00: Auto-create backup before making changes
         if (!forceVal && Settings::instance()->createBackup()) {
             emit systemStepReported(tr("Creating automatic system backup..."), "INFO");
@@ -4505,6 +4533,40 @@ void Optimizer::startSystemOptimization() {
 #endif
             m_shortcutArrowsActive = shortcutArrowsVal;
             emit shortcutArrowsActiveChanged(m_shortcutArrowsActive);
+        }
+
+        // Step 1.07: Clipboard History Configuration (only if changed)
+        bool clipboardHistorySuccess = true;
+        if (clipboardHistoryVal != origClipboardHistory || force) {
+            emit systemStepReported(tr("Processing Clipboard History configuration..."), "INFO");
+            QThread::msleep(800);
+#ifdef Q_OS_WIN
+            bool success = false;
+            HKEY hKeyClipboard = nullptr;
+            LSTATUS status = RegCreateKeyExW(HKEY_CURRENT_USER, 
+                L"Software\\Microsoft\\Clipboard", 
+                0, nullptr, REG_OPTION_NON_VOLATILE, KEY_WRITE, nullptr, &hKeyClipboard, nullptr);
+            if (status == ERROR_SUCCESS) {
+                DWORD val = clipboardHistoryVal ? 1 : 0;
+                status = RegSetValueExW(hKeyClipboard, L"EnableClipboardHistory", 0, REG_DWORD, reinterpret_cast<const BYTE*>(&val), sizeof(val));
+                if (status == ERROR_SUCCESS) {
+                    success = true;
+                }
+                RegCloseKey(hKeyClipboard);
+            }
+
+            if (success) {
+                QString logMsg = clipboardHistoryVal ? tr("Clipboard History is now ENABLED. You can open it via Win + V.") : tr("Clipboard History is now DISABLED.");
+                emit systemStepReported(logMsg, "SUCCESS");
+            } else {
+                clipboardHistorySuccess = false;
+                emit systemStepReported(tr("Failed to update Clipboard History state."), "ERROR");
+            }
+#else
+            emit systemStepReported(tr("[Simulation] Clipboard History set to: %1").arg(clipboardHistoryVal ? "Enabled" : "Disabled"), "SUCCESS");
+#endif
+            m_clipboardHistoryActive = clipboardHistoryVal;
+            emit clipboardHistoryActiveChanged(m_clipboardHistoryActive);
         }
 
         // Step 1.5: Hibernation Configuration (only if changed)
@@ -6578,7 +6640,7 @@ void Optimizer::startSystemOptimization() {
 #endif
         }
 
-        bool overallSuccess = wSearchSuccess && classicContextMenuSuccess && shortcutArrowsSuccess && hibernationSuccess && overlaySuccess && coreIsolationSuccess && hagsSuccess && mouseAccelSuccess && gameModeSuccess && firewallSuccess && notificationsSuccess && powerPlanSuccess && defenderSuccess && overallDrivesSuccess && usbSuccess && remoteAccessSuccess && telemetrySuccess && windowsUpdateSuccess && cs2Success && steamOverlaySuccess && cs2OverlaySuccess && steamFriendsSuccess && visualEffectsSuccess && pagefileSuccess;
+        bool overallSuccess = wSearchSuccess && classicContextMenuSuccess && shortcutArrowsSuccess && clipboardHistorySuccess && hibernationSuccess && overlaySuccess && coreIsolationSuccess && hagsSuccess && mouseAccelSuccess && gameModeSuccess && firewallSuccess && notificationsSuccess && powerPlanSuccess && defenderSuccess && overallDrivesSuccess && usbSuccess && remoteAccessSuccess && telemetrySuccess && windowsUpdateSuccess && cs2Success && steamOverlaySuccess && cs2OverlaySuccess && steamFriendsSuccess && visualEffectsSuccess && pagefileSuccess;
         if (overallSuccess) {
             emit systemStepReported(tr("System optimization completed successfully!"), "SUCCESS");
             Logger::log("System optimization completed successfully!", "INFO");
@@ -6591,6 +6653,7 @@ void Optimizer::startSystemOptimization() {
         m_originalWinSearchActive = searchVal;
         m_originalClassicContextMenuActive = classicContextMenuVal;
         m_originalShortcutArrowsActive = shortcutArrowsVal;
+        m_originalClipboardHistoryActive = clipboardHistoryVal;
         m_originalHibernationActive = hibernationVal;
         m_originalGamingOverlayActive = overlayVal;
         m_originalCoreIsolationActive = coreIsolationVal;
@@ -6629,6 +6692,7 @@ void Optimizer::startSystemOptimization() {
         emit originalWinSearchActiveChanged(m_originalWinSearchActive);
         emit originalClassicContextMenuActiveChanged(m_originalClassicContextMenuActive);
         emit originalShortcutArrowsActiveChanged(m_originalShortcutArrowsActive);
+        emit originalClipboardHistoryActiveChanged(m_originalClipboardHistoryActive);
         emit originalHibernationActiveChanged(m_originalHibernationActive);
         emit originalGamingOverlayActiveChanged(m_originalGamingOverlayActive);
         emit originalCoreIsolationActiveChanged(m_originalCoreIsolationActive);
@@ -6744,6 +6808,19 @@ void Optimizer::showPath(const QString &funcName) {
         Logger::log(QString("Opening Registry Editor for Shortcut Arrow Overlays (%1)...").arg(existsInHklm ? "HKLM" : "HKCU"), "INFO");
 #else
         Logger::log("[Simulation] Opening Registry Editor for Shortcut Arrow Overlays...", "INFO");
+#endif
+    } else if (funcName == "clipboardhistory") {
+#ifdef Q_OS_WIN
+        HKEY hKey;
+        if (RegOpenKeyExW(HKEY_CURRENT_USER, L"Software\\Microsoft\\Windows\\CurrentVersion\\Applets\\Regedit", 0, KEY_SET_VALUE, &hKey) == ERROR_SUCCESS) {
+            const wchar_t* lastKey = L"Computer\\HKEY_CURRENT_USER\\Software\\Microsoft\\Clipboard";
+            RegSetValueExW(hKey, L"LastKey", 0, REG_SZ, (const BYTE*)lastKey, (wcslen(lastKey) + 1) * sizeof(wchar_t));
+            RegCloseKey(hKey);
+        }
+        QProcess::startDetached("regedit.exe");
+        Logger::log("Opening Registry Editor for Clipboard History (HKCU)...", "INFO");
+#else
+        Logger::log("[Simulation] Opening Registry Editor for Clipboard History...", "INFO");
 #endif
     } else if (funcName == "visualeffects" || funcName == "pagefile") {
         QProcess::startDetached("SystemPropertiesPerformance.exe");

@@ -101,6 +101,7 @@ Item {
     property bool hasChanges: {
         if (optimizerBackend.classicContextMenuActive !== optimizerBackend.originalClassicContextMenuActive) return true;
         if (optimizerBackend.shortcutArrowsActive !== optimizerBackend.originalShortcutArrowsActive) return true;
+        if (optimizerBackend.clipboardHistoryActive !== optimizerBackend.originalClipboardHistoryActive) return true;
         if (optimizerBackend.winSearchActive !== optimizerBackend.originalWinSearchActive) return true;
         if (optimizerBackend.hibernationActive !== optimizerBackend.originalHibernationActive) return true;
         if (optimizerBackend.gamingOverlayActive !== optimizerBackend.originalGamingOverlayActive) return true;
@@ -149,6 +150,7 @@ Item {
     property bool pagefileChanged: optimizerBackend.pagefileMin !== optimizerBackend.originalPagefileMin || optimizerBackend.pagefileMax !== optimizerBackend.originalPagefileMax
     property bool classicContextMenuChanged: optimizerBackend.classicContextMenuActive !== optimizerBackend.originalClassicContextMenuActive
     property bool shortcutArrowsChanged: optimizerBackend.shortcutArrowsActive !== optimizerBackend.originalShortcutArrowsActive
+    property bool clipboardHistoryChanged: optimizerBackend.clipboardHistoryActive !== optimizerBackend.originalClipboardHistoryActive
 
     property bool indexingChanged: {
         if (optimizerBackend.winSearchActive !== optimizerBackend.originalWinSearchActive) return true;
@@ -341,6 +343,7 @@ Item {
         var count = 0;
         if (classicContextMenuChanged) count++;
         if (shortcutArrowsChanged) count++;
+        if (clipboardHistoryChanged) count++;
         if (indexingChanged) count++;
         if (xboxChanged) count++;
         if (coreIsolationChanged) count++;
@@ -370,6 +373,7 @@ Item {
         var count = 0;
         if (optimizerBackend.classicContextMenuActive !== optimizerBackend.originalClassicContextMenuActive) count++;
         if (optimizerBackend.shortcutArrowsActive !== optimizerBackend.originalShortcutArrowsActive) count++;
+        if (optimizerBackend.clipboardHistoryActive !== optimizerBackend.originalClipboardHistoryActive) count++;
         if (optimizerBackend.winSearchActive !== optimizerBackend.originalWinSearchActive) count++;
         if (optimizerBackend.gamingOverlayActive !== optimizerBackend.originalGamingOverlayActive) count++;
         if (optimizerBackend.coreIsolationActive !== optimizerBackend.originalCoreIsolationActive) count++;
@@ -468,6 +472,14 @@ Item {
             hasSidebar: false,
             revert: function() {
                 optimizerBackend.shortcutArrowsActive = optimizerBackend.originalShortcutArrowsActive;
+            }
+        });
+        if (clipboardHistoryChanged) list.push({
+            name: qsTr("Clipboard History"),
+            icon: "qrc:/MeguPackOptimizer/src/resources/settings.svg",
+            hasSidebar: false,
+            revert: function() {
+                optimizerBackend.clipboardHistoryActive = optimizerBackend.originalClipboardHistoryActive;
             }
         });
         if (indexingChanged) list.push({
@@ -1194,6 +1206,7 @@ Item {
         if (name === qsTr("Steam Settings") || name === "Steam Settings") return steamSettingsPanel;
         if (name === qsTr("Classic Context Menu") || name === "Classic Context Menu") return classicContextMenuPanel;
         if (name === qsTr("Shortcut Arrow Overlays") || name === "Shortcut Arrow Overlays") return shortcutArrowsPanel;
+        if (name === qsTr("Clipboard History") || name === "Clipboard History") return clipboardHistoryPanel;
         return null;
     }
 
@@ -1202,7 +1215,7 @@ Item {
             root.currentSection = "telemetry";
         } else if (categoryName === qsTr("Counter-Strike 2 Launch Options") || categoryName === "Counter-Strike 2 Launch Options" || categoryName === qsTr("CS2 Steam Overlay") || categoryName === "CS2 Steam Overlay" || categoryName === qsTr("Steam Settings") || categoryName === "Steam Settings") {
             root.currentSection = "games";
-        } else if (categoryName === qsTr("Classic Context Menu") || categoryName === "Classic Context Menu" || categoryName === qsTr("Shortcut Arrow Overlays") || categoryName === "Shortcut Arrow Overlays") {
+        } else if (categoryName === qsTr("Classic Context Menu") || categoryName === "Classic Context Menu" || categoryName === qsTr("Shortcut Arrow Overlays") || categoryName === "Shortcut Arrow Overlays" || categoryName === qsTr("Clipboard History") || categoryName === "Clipboard History") {
             root.currentSection = "customization";
         } else {
             root.currentSection = "core";
@@ -3978,6 +3991,123 @@ Item {
                                 height: 28
                                 onClicked: {
                                     optimizerBackend.restartExplorer();
+                                }
+                            }
+                        }
+                    }
+                }
+
+                // Clipboard History Panel
+                AcrylicPanel {
+                    id: clipboardHistoryPanel
+                    width: parent.width
+                    height: 84
+
+                    Column {
+                        anchors.left: parent.left
+                        anchors.right: parent.right
+                        anchors.top: parent.top
+                        spacing: 12
+
+                        // Main Row
+                        Item {
+                            anchors.left: parent.left
+                            anchors.right: parent.right
+                            height: 52
+
+                            Row {
+                                anchors.left: parent.left
+                                anchors.leftMargin: 16
+                                anchors.verticalCenter: parent.verticalCenter
+                                spacing: 16
+
+                                Rectangle {
+                                    width: 40
+                                    height: 40
+                                    radius: 10
+                                    color: Qt.rgba(Theme.accent.r, Theme.accent.g, Theme.accent.b, 0.15)
+                                    anchors.verticalCenter: parent.verticalCenter
+
+                                    Item {
+                                        width: 20
+                                        height: 20
+                                        anchors.centerIn: parent
+                                        Image {
+                                            id: clipboardHistoryPanel_iconImg
+                                            source: "qrc:/MeguPackOptimizer/src/resources/settings.svg"
+                                            anchors.fill: parent
+                                            sourceSize.width: 20
+                                            sourceSize.height: 20
+                                            visible: false
+                                        }
+                                        ColorOverlay {
+                                            anchors.fill: clipboardHistoryPanel_iconImg
+                                            source: clipboardHistoryPanel_iconImg
+                                            color: Theme.accent
+                                        }
+                                    }
+                                }
+
+                                Column {
+                                    anchors.verticalCenter: parent.verticalCenter
+                                    spacing: 2
+
+                                    Row {
+                                        spacing: 8
+                                        Text {
+                                            text: qsTr("Clipboard History")
+                                            color: Theme.textPrimary
+                                            font.family: Theme.fontFamily
+                                            font.pixelSize: 14
+                                            font.bold: true
+                                            anchors.verticalCenter: parent.verticalCenter
+                                        }
+                                        ShowPathButton {
+                                            anchors.verticalCenter: parent.verticalCenter
+                                            onClicked: { optimizerBackend.showPath("clipboardhistory"); }
+                                        }
+                                        Rectangle {
+                                            visible: root.clipboardHistoryChanged
+                                            height: 16
+                                            width: selectedTextClipboardHistory.contentWidth + 10
+                                            radius: 4
+                                            color: Qt.rgba(Theme.success.r, Theme.success.g, Theme.success.b, 0.15)
+                                            border.color: Theme.success
+                                            border.width: 1
+                                            anchors.verticalCenter: parent.verticalCenter
+                                            Text {
+                                                id: selectedTextClipboardHistory
+                                                text: qsTr("Selected for application")
+                                                color: Theme.success
+                                                font.family: Theme.fontFamily
+                                                font.pixelSize: 8
+                                                font.bold: true
+                                                anchors.centerIn: parent
+                                            }
+                                        }
+                                    }
+
+                                    Text {
+                                        text: qsTr("Enables or disables the clipboard history buffer accessed via the Win + V shortcut.")
+                                        color: Theme.textMuted
+                                        font.family: Theme.fontFamily
+                                        font.pixelSize: 11
+                                    }
+                                }
+                            }
+
+                            Row {
+                                anchors.right: parent.right
+                                anchors.rightMargin: 16
+                                anchors.verticalCenter: parent.verticalCenter
+                                spacing: 16
+
+                                MeguSwitch {
+                                    checked: optimizerBackend.clipboardHistoryActive
+                                    anchors.verticalCenter: parent.verticalCenter
+                                    onToggled: (isChecked) => {
+                                        optimizerBackend.clipboardHistoryActive = isChecked;
+                                    }
                                 }
                             }
                         }
