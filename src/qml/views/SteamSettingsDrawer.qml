@@ -2185,44 +2185,6 @@ Item {
             }
 
 
-            // Toggle 4: Start in Big Picture Mode
-            Rectangle {
-                width: parent.width
-                height: Math.max(50, steamToggleCol_19.implicitHeight + 12)
-                color: "transparent"
-                    Column { id: steamToggleCol_19;
-                        anchors.verticalCenter: parent.verticalCenter
-                        spacing: 2
-                        anchors.left: parent.left
-                        anchors.right: steamToggleSwitch_19.left
-                        anchors.rightMargin: 12
-                        Text {
-                            text: qsTr("Start Steam in Big Picture Mode")
-                            color: Theme.textPrimary
-                            font.family: Theme.fontFamily
-                            font.pixelSize: 12
-                            font.bold: true
-                        }
-                        Text {
-                            text: qsTr("Launches Steam directly in the gamepad-friendly Big Picture Mode interface.")
-                            color: Theme.textSecondary
-                            font.family: Theme.fontFamily
-                            font.pixelSize: 10
-                            width: parent.width
-                            wrapMode: Text.WordWrap
-                        }
-                    }
-                    MeguSwitch {
-                    id: steamToggleSwitch_19
-                    anchors.right: parent.right
-
-                        steamStyle: true
-                        checked: optimizerBackend.steamFriendsSettings ? !!optimizerBackend.steamFriendsSettings["bStartInBigPicture"] : false
-                        anchors.verticalCenter: parent.verticalCenter
-                        onToggled: (isChecked) => { root.toggleSteamFriendsSetting("bStartInBigPicture", isChecked); }
-                    }
-            }
-
             // Toggle 5: Enable smooth scrolling
             Rectangle {
                 width: parent.width
