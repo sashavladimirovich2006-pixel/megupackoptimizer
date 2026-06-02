@@ -141,6 +141,7 @@ Item {
         if (optimizerBackend.adsWindowsTipsActive !== optimizerBackend.originalAdsWindowsTipsActive) return true;
         if (optimizerBackend.adsWelcomeExperienceActive !== optimizerBackend.originalAdsWelcomeExperienceActive) return true;
         if (optimizerBackend.adsFinishSetupActive !== optimizerBackend.originalAdsFinishSetupActive) return true;
+        if (privacyChanged) return true;
         if (optimizerBackend.windowsUpdateMode !== optimizerBackend.originalWindowsUpdateMode) return true;
         if (cs2Changed) return true;
         if (optimizerBackend.steamOverlayActive !== optimizerBackend.originalSteamOverlayActive) return true;
@@ -216,6 +217,20 @@ Item {
         if (optimizerBackend.adsWindowsTipsActive !== optimizerBackend.originalAdsWindowsTipsActive) return true;
         if (optimizerBackend.adsWelcomeExperienceActive !== optimizerBackend.originalAdsWelcomeExperienceActive) return true;
         if (optimizerBackend.adsFinishSetupActive !== optimizerBackend.originalAdsFinishSetupActive) return true;
+        return false;
+    }
+    property bool privacyChanged: {
+        if (optimizerBackend.privacyLocationActive !== optimizerBackend.originalPrivacyLocationActive) return true;
+        if (optimizerBackend.privacyTelemetryActive !== optimizerBackend.originalPrivacyTelemetryActive) return true;
+        if (optimizerBackend.privacyCeipActive !== optimizerBackend.originalPrivacyCeipActive) return true;
+        if (optimizerBackend.privacyAppsTelemetryActive !== optimizerBackend.originalPrivacyAppsTelemetryActive) return true;
+        if (optimizerBackend.privacyAppLaunchesActive !== optimizerBackend.originalPrivacyAppLaunchesActive) return true;
+        if (optimizerBackend.privacyImproveInkingActive !== optimizerBackend.originalPrivacyImproveInkingActive) return true;
+        if (optimizerBackend.privacyPersonalizeInkingActive !== optimizerBackend.originalPrivacyPersonalizeInkingActive) return true;
+        if (optimizerBackend.privacyErrorReportingActive !== optimizerBackend.originalPrivacyErrorReportingActive) return true;
+        if (optimizerBackend.privacyLockScreenCameraActive !== optimizerBackend.originalPrivacyLockScreenCameraActive) return true;
+        if (optimizerBackend.privacyCameraIndicatorActive !== optimizerBackend.originalPrivacyCameraIndicatorActive) return true;
+        if (optimizerBackend.privacyOnlineSpeechActive !== optimizerBackend.originalPrivacyOnlineSpeechActive) return true;
         return false;
     }
     property bool windowsUpdateChanged: optimizerBackend.windowsUpdateMode !== optimizerBackend.originalWindowsUpdateMode
@@ -394,6 +409,7 @@ Item {
         if (visualEffectsChanged) count++;
         if (pagefileChanged) count++;
         if (adsChanged) count++;
+        if (privacyChanged) count++;
         return count;
     }
 
@@ -427,6 +443,17 @@ Item {
         if (optimizerBackend.adsWindowsTipsActive !== optimizerBackend.originalAdsWindowsTipsActive) count++;
         if (optimizerBackend.adsWelcomeExperienceActive !== optimizerBackend.originalAdsWelcomeExperienceActive) count++;
         if (optimizerBackend.adsFinishSetupActive !== optimizerBackend.originalAdsFinishSetupActive) count++;
+        if (optimizerBackend.privacyLocationActive !== optimizerBackend.originalPrivacyLocationActive) count++;
+        if (optimizerBackend.privacyTelemetryActive !== optimizerBackend.originalPrivacyTelemetryActive) count++;
+        if (optimizerBackend.privacyCeipActive !== optimizerBackend.originalPrivacyCeipActive) count++;
+        if (optimizerBackend.privacyAppsTelemetryActive !== optimizerBackend.originalPrivacyAppsTelemetryActive) count++;
+        if (optimizerBackend.privacyAppLaunchesActive !== optimizerBackend.originalPrivacyAppLaunchesActive) count++;
+        if (optimizerBackend.privacyImproveInkingActive !== optimizerBackend.originalPrivacyImproveInkingActive) count++;
+        if (optimizerBackend.privacyPersonalizeInkingActive !== optimizerBackend.originalPrivacyPersonalizeInkingActive) count++;
+        if (optimizerBackend.privacyErrorReportingActive !== optimizerBackend.originalPrivacyErrorReportingActive) count++;
+        if (optimizerBackend.privacyLockScreenCameraActive !== optimizerBackend.originalPrivacyLockScreenCameraActive) count++;
+        if (optimizerBackend.privacyCameraIndicatorActive !== optimizerBackend.originalPrivacyCameraIndicatorActive) count++;
+        if (optimizerBackend.privacyOnlineSpeechActive !== optimizerBackend.originalPrivacyOnlineSpeechActive) count++;
         if (pagefileChanged) count++;
         return count;
     }
@@ -685,6 +712,24 @@ Item {
                 optimizerBackend.adsWindowsTipsActive = optimizerBackend.originalAdsWindowsTipsActive;
                 optimizerBackend.adsWelcomeExperienceActive = optimizerBackend.originalAdsWelcomeExperienceActive;
                 optimizerBackend.adsFinishSetupActive = optimizerBackend.originalAdsFinishSetupActive;
+            }
+        });
+        if (privacyChanged) list.push({
+            name: qsTr("Privacy"),
+            icon: "qrc:/MeguPackOptimizer/src/resources/privacy.svg",
+            hasSidebar: false,
+            revert: function() {
+                optimizerBackend.privacyLocationActive = optimizerBackend.originalPrivacyLocationActive;
+                optimizerBackend.privacyTelemetryActive = optimizerBackend.originalPrivacyTelemetryActive;
+                optimizerBackend.privacyCeipActive = optimizerBackend.originalPrivacyCeipActive;
+                optimizerBackend.privacyAppsTelemetryActive = optimizerBackend.originalPrivacyAppsTelemetryActive;
+                optimizerBackend.privacyAppLaunchesActive = optimizerBackend.originalPrivacyAppLaunchesActive;
+                optimizerBackend.privacyImproveInkingActive = optimizerBackend.originalPrivacyImproveInkingActive;
+                optimizerBackend.privacyPersonalizeInkingActive = optimizerBackend.originalPrivacyPersonalizeInkingActive;
+                optimizerBackend.privacyErrorReportingActive = optimizerBackend.originalPrivacyErrorReportingActive;
+                optimizerBackend.privacyLockScreenCameraActive = optimizerBackend.originalPrivacyLockScreenCameraActive;
+                optimizerBackend.privacyCameraIndicatorActive = optimizerBackend.originalPrivacyCameraIndicatorActive;
+                optimizerBackend.privacyOnlineSpeechActive = optimizerBackend.originalPrivacyOnlineSpeechActive;
             }
         });
         if (windowsUpdateChanged) list.push({
@@ -1281,11 +1326,12 @@ Item {
         if (name === qsTr("Taskbar 'End task'") || name === "Taskbar 'End task'") return taskbarEndTaskPanel;
         if (name === qsTr("Clock with seconds") || name === "Clock with seconds") return taskbarSecondsPanel;
         if (name === qsTr("Ads & Privacy") || name === "Ads & Privacy" || name === "Ads" || name === "Ad" || name === qsTr("Ads") || name === qsTr("Ad")) return adsPanel;
+        if (name === qsTr("Privacy") || name === "Privacy") return privacyPanel;
         return null;
     }
 
     function locateFunction(categoryName) {
-        if (categoryName === qsTr("Telemetry") || categoryName === "Telemetry" || categoryName === qsTr("Ads & Privacy") || categoryName === "Ads & Privacy" || categoryName === "Ads" || categoryName === "Ad" || categoryName === qsTr("Ads") || categoryName === qsTr("Ad")) {
+        if (categoryName === qsTr("Telemetry") || categoryName === "Telemetry" || categoryName === qsTr("Ads & Privacy") || categoryName === "Ads & Privacy" || categoryName === "Ads" || categoryName === "Ad" || categoryName === qsTr("Ads") || categoryName === qsTr("Ad") || categoryName === qsTr("Privacy") || categoryName === "Privacy" || categoryName === "Location" || categoryName === "Speech" || categoryName === "Camera") {
             root.currentSection = "telemetry";
         } else if (categoryName === qsTr("Counter-Strike 2 Launch Options") || categoryName === "Counter-Strike 2 Launch Options" || categoryName === qsTr("CS2 Steam Overlay") || categoryName === "CS2 Steam Overlay" || categoryName === qsTr("Steam Settings") || categoryName === "Steam Settings") {
             root.currentSection = "games";
@@ -4002,6 +4048,699 @@ Item {
                                     anchors.right: parent.right
                                     anchors.verticalCenter: parent.verticalCenter
                                     onToggled: (val) => { optimizerBackend.adsFinishSetupActive = val; }
+                                }
+                            }
+                        }
+                    }
+                }
+
+                // Privacy Panel
+                AcrylicPanel {
+                    id: privacyPanel
+                    visible: root.currentSection === "telemetry"
+                    width: parent.width
+                    height: detailsExpanded ? privacyColumn.implicitHeight + 16 : 84
+                    property bool detailsExpanded: false
+
+                    Behavior on height {
+                        NumberAnimation { duration: Theme.animNormal; easing.type: Easing.InOutQuad }
+                    }
+
+                    Column {
+                        id: privacyColumn
+                        anchors.left: parent.left
+                        anchors.right: parent.right
+                        anchors.top: parent.top
+                        spacing: 16
+
+                        // Header Row
+                        Item {
+                            id: privacyHeaderRow
+                            anchors.left: parent.left
+                            anchors.right: parent.right
+                            anchors.leftMargin: 16
+                            anchors.rightMargin: 16
+                            height: 84
+
+                            Rectangle {
+                                id: privacyHeaderIconRect
+                                width: 40
+                                height: 40
+                                radius: 10
+                                color: Qt.rgba(Theme.accent.r, Theme.accent.g, Theme.accent.b, 0.15)
+                                anchors.left: parent.left
+                                anchors.verticalCenter: parent.verticalCenter
+
+                                Item {
+                                    width: 20
+                                    height: 20
+                                    anchors.centerIn: parent
+                                    Image {
+                                        id: privacyPanel_iconImg
+                                        source: "qrc:/MeguPackOptimizer/src/resources/privacy.svg"
+                                        anchors.fill: parent
+                                        sourceSize.width: 20
+                                        sourceSize.height: 20
+                                        visible: false
+                                    }
+                                    ColorOverlay {
+                                        anchors.fill: privacyPanel_iconImg
+                                        source: privacyPanel_iconImg
+                                        color: Theme.accent
+                                    }
+                                }
+                            }
+
+                            Column {
+                                id: privacyHeaderTexts
+                                anchors.left: privacyHeaderIconRect.right
+                                anchors.leftMargin: 12
+                                anchors.right: privacyExpandBtn.left
+                                anchors.rightMargin: 12
+                                anchors.verticalCenter: parent.verticalCenter
+                                spacing: 2
+
+                                Row {
+                                    spacing: 8
+                                    Text {
+                                        text: qsTr("Privacy")
+                                        color: Theme.textPrimary
+                                        font.family: Theme.fontFamily
+                                        font.pixelSize: 14
+                                        font.bold: true
+                                        anchors.verticalCenter: parent.verticalCenter
+                                    }
+                                    ShowPathButton {
+                                        anchors.verticalCenter: parent.verticalCenter
+                                        onClicked: { optimizerBackend.showPath("privacy"); }
+                                    }
+                                    Rectangle {
+                                        visible: root.privacyChanged
+                                        height: 16
+                                        width: selectedTextPrivacy.contentWidth + 10
+                                        radius: 4
+                                        color: Qt.rgba(Theme.success.r, Theme.success.g, Theme.success.b, 0.15)
+                                        border.color: Theme.success
+                                        border.width: 1
+                                        anchors.verticalCenter: parent.verticalCenter
+                                        Text {
+                                            id: selectedTextPrivacy
+                                            text: qsTr("Selected for application")
+                                            color: Theme.success
+                                            font.family: Theme.fontFamily
+                                            font.pixelSize: 8
+                                            font.bold: true
+                                            anchors.centerIn: parent
+                                        }
+                                    }
+                                }
+
+                                Text {
+                                    text: qsTr("Change privacy related settings that send data to Microsoft about your usage patterns.")
+                                    color: Theme.textMuted
+                                    font.family: Theme.fontFamily
+                                    font.pixelSize: 11
+                                    elide: Text.ElideRight
+                                    width: parent.width
+                                }
+                            }
+
+                            // Expand button on top right
+                            Rectangle {
+                                id: privacyExpandBtn
+                                width: 32
+                                height: 32
+                                radius: 16
+                                color: privacyExpandMouseArea.containsMouse ? Theme.accentDim : "transparent"
+                                border.color: privacyExpandMouseArea.containsMouse ? Theme.accent : Theme.border
+                                border.width: 1
+                                anchors.right: parent.right
+                                anchors.verticalCenter: parent.verticalCenter
+
+                                Behavior on color { ColorAnimation { duration: Theme.animFast } }
+                                Behavior on border.color { ColorAnimation { duration: Theme.animFast } }
+
+                                Item {
+                                    width: 14
+                                    height: 14
+                                    anchors.centerIn: parent
+                                    rotation: privacyPanel.detailsExpanded ? 180 : 0
+                                    Behavior on rotation { NumberAnimation { duration: Theme.animFast } }
+
+                                    Image {
+                                        id: privacyExpandArrowImg
+                                        source: "qrc:/MeguPackOptimizer/src/resources/arrow.svg"
+                                        anchors.fill: parent
+                                        sourceSize.width: 14
+                                        sourceSize.height: 14
+                                        visible: false
+                                    }
+                                    ColorOverlay {
+                                        anchors.fill: privacyExpandArrowImg
+                                        source: privacyExpandArrowImg
+                                        color: privacyExpandMouseArea.containsMouse ? Theme.accent : Theme.textSecondary
+                                    }
+                                }
+
+                                MouseArea {
+                                    id: privacyExpandMouseArea
+                                    anchors.fill: parent
+                                    hoverEnabled: true
+                                    cursorShape: Qt.PointingHandCursor
+                                    onClicked: {
+                                        privacyPanel.detailsExpanded = !privacyPanel.detailsExpanded;
+                                    }
+                                }
+                            }
+                        }
+
+                        // Separator line
+                        Rectangle {
+                            height: 1
+                            anchors.left: parent.left
+                            anchors.right: parent.right
+                            anchors.leftMargin: 16
+                            anchors.rightMargin: 16
+                            color: Theme.border
+                            opacity: privacyPanel.detailsExpanded ? 0.2 : 0.0
+                            Behavior on opacity { NumberAnimation { duration: Theme.animFast } }
+                        }
+
+                        // Expansion Container listing the 11 options
+                        Column {
+                            id: privacyDetailsContainer
+                            anchors.left: parent.left
+                            anchors.right: parent.right
+                            anchors.leftMargin: 28
+                            anchors.rightMargin: 16
+                            spacing: 4
+                            visible: privacyPanel.detailsExpanded
+                            opacity: privacyPanel.detailsExpanded ? 1.0 : 0.0
+                            Behavior on opacity { NumberAnimation { duration: Theme.animFast } }
+
+                            // 1. Location
+                            Item {
+                                anchors.left: parent.left
+                                anchors.right: parent.right
+                                height: 40
+
+                                Item {
+                                    id: iconLocationContainer
+                                    width: 16
+                                    height: 16
+                                    anchors.left: parent.left
+                                    anchors.verticalCenter: parent.verticalCenter
+
+                                    Image {
+                                        id: iconLocation
+                                        source: "qrc:/MeguPackOptimizer/src/resources/location.svg"
+                                        anchors.fill: parent
+                                        sourceSize.width: 16
+                                        sourceSize.height: 16
+                                        visible: false
+                                    }
+                                    ColorOverlay {
+                                        anchors.fill: parent
+                                        source: iconLocation
+                                        color: optimizerBackend.privacyLocationActive !== optimizerBackend.originalPrivacyLocationActive ? Theme.accent : Theme.textSecondary
+                                    }
+                                }
+
+                                Text {
+                                    text: qsTr("Location")
+                                    color: Theme.textPrimary
+                                    font.family: Theme.fontFamily
+                                    font.pixelSize: 12
+                                    anchors.left: iconLocationContainer.right
+                                    anchors.leftMargin: 24
+                                    anchors.verticalCenter: parent.verticalCenter
+                                }
+
+                                MeguSwitch {
+                                    checked: optimizerBackend.privacyLocationActive
+                                    anchors.right: parent.right
+                                    anchors.verticalCenter: parent.verticalCenter
+                                    onToggled: (val) => { optimizerBackend.privacyLocationActive = val; }
+                                }
+                            }
+
+                            // 2. Telemetry
+                            Item {
+                                anchors.left: parent.left
+                                anchors.right: parent.right
+                                height: 40
+
+                                Item {
+                                    id: iconPrivacyTelemetryContainer
+                                    width: 16
+                                    height: 16
+                                    anchors.left: parent.left
+                                    anchors.verticalCenter: parent.verticalCenter
+
+                                    Image {
+                                        id: iconPrivacyTelemetry
+                                        source: "qrc:/MeguPackOptimizer/src/resources/telemetry.svg"
+                                        anchors.fill: parent
+                                        sourceSize.width: 16
+                                        sourceSize.height: 16
+                                        visible: false
+                                    }
+                                    ColorOverlay {
+                                        anchors.fill: parent
+                                        source: iconPrivacyTelemetry
+                                        color: optimizerBackend.privacyTelemetryActive !== optimizerBackend.originalPrivacyTelemetryActive ? Theme.accent : Theme.textSecondary
+                                    }
+                                }
+
+                                Text {
+                                    text: qsTr("Telemetry")
+                                    color: Theme.textPrimary
+                                    font.family: Theme.fontFamily
+                                    font.pixelSize: 12
+                                    anchors.left: iconPrivacyTelemetryContainer.right
+                                    anchors.leftMargin: 24
+                                    anchors.verticalCenter: parent.verticalCenter
+                                }
+
+                                MeguSwitch {
+                                    checked: optimizerBackend.privacyTelemetryActive
+                                    anchors.right: parent.right
+                                    anchors.verticalCenter: parent.verticalCenter
+                                    onToggled: (val) => { optimizerBackend.privacyTelemetryActive = val; }
+                                }
+                            }
+
+                            // 3. CEIP
+                            Item {
+                                anchors.left: parent.left
+                                anchors.right: parent.right
+                                height: 40
+
+                                Item {
+                                    id: iconPrivacyCeipContainer
+                                    width: 16
+                                    height: 16
+                                    anchors.left: parent.left
+                                    anchors.verticalCenter: parent.verticalCenter
+
+                                    Image {
+                                        id: iconPrivacyCeip
+                                        source: "qrc:/MeguPackOptimizer/src/resources/telemetry.svg"
+                                        anchors.fill: parent
+                                        sourceSize.width: 16
+                                        sourceSize.height: 16
+                                        visible: false
+                                    }
+                                    ColorOverlay {
+                                        anchors.fill: parent
+                                        source: iconPrivacyCeip
+                                        color: optimizerBackend.privacyCeipActive !== optimizerBackend.originalPrivacyCeipActive ? Theme.accent : Theme.textSecondary
+                                    }
+                                }
+
+                                Text {
+                                    text: qsTr("CEIP")
+                                    color: Theme.textPrimary
+                                    font.family: Theme.fontFamily
+                                    font.pixelSize: 12
+                                    anchors.left: iconPrivacyCeipContainer.right
+                                    anchors.leftMargin: 24
+                                    anchors.verticalCenter: parent.verticalCenter
+                                }
+
+                                MeguSwitch {
+                                    checked: optimizerBackend.privacyCeipActive
+                                    anchors.right: parent.right
+                                    anchors.verticalCenter: parent.verticalCenter
+                                    onToggled: (val) => { optimizerBackend.privacyCeipActive = val; }
+                                }
+                            }
+
+                            // 4. Apps telemetry
+                            Item {
+                                anchors.left: parent.left
+                                anchors.right: parent.right
+                                height: 40
+
+                                Item {
+                                    id: iconPrivacyAppsTelemetryContainer
+                                    width: 16
+                                    height: 16
+                                    anchors.left: parent.left
+                                    anchors.verticalCenter: parent.verticalCenter
+
+                                    Image {
+                                        id: iconPrivacyAppsTelemetry
+                                        source: "qrc:/MeguPackOptimizer/src/resources/telemetry.svg"
+                                        anchors.fill: parent
+                                        sourceSize.width: 16
+                                        sourceSize.height: 16
+                                        visible: false
+                                    }
+                                    ColorOverlay {
+                                        anchors.fill: parent
+                                        source: iconPrivacyAppsTelemetry
+                                        color: optimizerBackend.privacyAppsTelemetryActive !== optimizerBackend.originalPrivacyAppsTelemetryActive ? Theme.accent : Theme.textSecondary
+                                    }
+                                }
+
+                                Text {
+                                    text: qsTr("Apps telemetry")
+                                    color: Theme.textPrimary
+                                    font.family: Theme.fontFamily
+                                    font.pixelSize: 12
+                                    anchors.left: iconPrivacyAppsTelemetryContainer.right
+                                    anchors.leftMargin: 24
+                                    anchors.verticalCenter: parent.verticalCenter
+                                }
+
+                                MeguSwitch {
+                                    checked: optimizerBackend.privacyAppsTelemetryActive
+                                    anchors.right: parent.right
+                                    anchors.verticalCenter: parent.verticalCenter
+                                    onToggled: (val) => { optimizerBackend.privacyAppsTelemetryActive = val; }
+                                }
+                            }
+
+                            // 5. App launches
+                            Item {
+                                anchors.left: parent.left
+                                anchors.right: parent.right
+                                height: 40
+
+                                Item {
+                                    id: iconPrivacyAppLaunchesContainer
+                                    width: 16
+                                    height: 16
+                                    anchors.left: parent.left
+                                    anchors.verticalCenter: parent.verticalCenter
+
+                                    Image {
+                                        id: iconPrivacyAppLaunches
+                                        source: "qrc:/MeguPackOptimizer/src/resources/settings.svg"
+                                        anchors.fill: parent
+                                        sourceSize.width: 16
+                                        sourceSize.height: 16
+                                        visible: false
+                                    }
+                                    ColorOverlay {
+                                        anchors.fill: parent
+                                        source: iconPrivacyAppLaunches
+                                        color: optimizerBackend.privacyAppLaunchesActive !== optimizerBackend.originalPrivacyAppLaunchesActive ? Theme.accent : Theme.textSecondary
+                                    }
+                                }
+
+                                Text {
+                                    text: qsTr("App launches")
+                                    color: Theme.textPrimary
+                                    font.family: Theme.fontFamily
+                                    font.pixelSize: 12
+                                    anchors.left: iconPrivacyAppLaunchesContainer.right
+                                    anchors.leftMargin: 24
+                                    anchors.verticalCenter: parent.verticalCenter
+                                }
+
+                                MeguSwitch {
+                                    checked: optimizerBackend.privacyAppLaunchesActive
+                                    anchors.right: parent.right
+                                    anchors.verticalCenter: parent.verticalCenter
+                                    onToggled: (val) => { optimizerBackend.privacyAppLaunchesActive = val; }
+                                }
+                            }
+
+                            // 6. Improve inking & typing
+                            Item {
+                                anchors.left: parent.left
+                                anchors.right: parent.right
+                                height: 40
+
+                                Item {
+                                    id: iconPrivacyImproveInkingContainer
+                                    width: 16
+                                    height: 16
+                                    anchors.left: parent.left
+                                    anchors.verticalCenter: parent.verticalCenter
+
+                                    Image {
+                                        id: iconPrivacyImproveInking
+                                        source: "qrc:/MeguPackOptimizer/src/resources/microphone.svg"
+                                        anchors.fill: parent
+                                        sourceSize.width: 16
+                                        sourceSize.height: 16
+                                        visible: false
+                                    }
+                                    ColorOverlay {
+                                        anchors.fill: parent
+                                        source: iconPrivacyImproveInking
+                                        color: optimizerBackend.privacyImproveInkingActive !== optimizerBackend.originalPrivacyImproveInkingActive ? Theme.accent : Theme.textSecondary
+                                    }
+                                }
+
+                                Text {
+                                    text: qsTr("Improve inking & typing")
+                                    color: Theme.textPrimary
+                                    font.family: Theme.fontFamily
+                                    font.pixelSize: 12
+                                    anchors.left: iconPrivacyImproveInkingContainer.right
+                                    anchors.leftMargin: 24
+                                    anchors.verticalCenter: parent.verticalCenter
+                                }
+
+                                MeguSwitch {
+                                    checked: optimizerBackend.privacyImproveInkingActive
+                                    anchors.right: parent.right
+                                    anchors.verticalCenter: parent.verticalCenter
+                                    onToggled: (val) => { optimizerBackend.privacyImproveInkingActive = val; }
+                                }
+                            }
+
+                            // 7. Personalize inking & typing
+                            Item {
+                                anchors.left: parent.left
+                                anchors.right: parent.right
+                                height: 40
+
+                                Item {
+                                    id: iconPrivacyPersonalizeInkingContainer
+                                    width: 16
+                                    height: 16
+                                    anchors.left: parent.left
+                                    anchors.verticalCenter: parent.verticalCenter
+
+                                    Image {
+                                        id: iconPrivacyPersonalizeInking
+                                        source: "qrc:/MeguPackOptimizer/src/resources/microphone.svg"
+                                        anchors.fill: parent
+                                        sourceSize.width: 16
+                                        sourceSize.height: 16
+                                        visible: false
+                                    }
+                                    ColorOverlay {
+                                        anchors.fill: parent
+                                        source: iconPrivacyPersonalizeInking
+                                        color: optimizerBackend.privacyPersonalizeInkingActive !== optimizerBackend.originalPrivacyPersonalizeInkingActive ? Theme.accent : Theme.textSecondary
+                                    }
+                                }
+
+                                Text {
+                                    text: qsTr("Personalize inking & typing")
+                                    color: Theme.textPrimary
+                                    font.family: Theme.fontFamily
+                                    font.pixelSize: 12
+                                    anchors.left: iconPrivacyPersonalizeInkingContainer.right
+                                    anchors.leftMargin: 24
+                                    anchors.verticalCenter: parent.verticalCenter
+                                }
+
+                                MeguSwitch {
+                                    checked: optimizerBackend.privacyPersonalizeInkingActive
+                                    anchors.right: parent.right
+                                    anchors.verticalCenter: parent.verticalCenter
+                                    onToggled: (val) => { optimizerBackend.privacyPersonalizeInkingActive = val; }
+                                }
+                            }
+
+                            // 8. Error reporting
+                            Item {
+                                anchors.left: parent.left
+                                anchors.right: parent.right
+                                height: 40
+
+                                Item {
+                                    id: iconPrivacyErrorReportingContainer
+                                    width: 16
+                                    height: 16
+                                    anchors.left: parent.left
+                                    anchors.verticalCenter: parent.verticalCenter
+
+                                    Image {
+                                        id: iconPrivacyErrorReporting
+                                        source: "qrc:/MeguPackOptimizer/src/resources/warning.svg"
+                                        anchors.fill: parent
+                                        sourceSize.width: 16
+                                        sourceSize.height: 16
+                                        visible: false
+                                    }
+                                    ColorOverlay {
+                                        anchors.fill: parent
+                                        source: iconPrivacyErrorReporting
+                                        color: optimizerBackend.privacyErrorReportingActive !== optimizerBackend.originalPrivacyErrorReportingActive ? Theme.accent : Theme.textSecondary
+                                    }
+                                }
+
+                                Text {
+                                    text: qsTr("Error reporting")
+                                    color: Theme.textPrimary
+                                    font.family: Theme.fontFamily
+                                    font.pixelSize: 12
+                                    anchors.left: iconPrivacyErrorReportingContainer.right
+                                    anchors.leftMargin: 24
+                                    anchors.verticalCenter: parent.verticalCenter
+                                }
+
+                                MeguSwitch {
+                                    checked: optimizerBackend.privacyErrorReportingActive
+                                    anchors.right: parent.right
+                                    anchors.verticalCenter: parent.verticalCenter
+                                    onToggled: (val) => { optimizerBackend.privacyErrorReportingActive = val; }
+                                }
+                            }
+
+                            // 9. Camera on lock screen
+                            Item {
+                                anchors.left: parent.left
+                                anchors.right: parent.right
+                                height: 40
+
+                                Item {
+                                    id: iconPrivacyLockScreenCameraContainer
+                                    width: 16
+                                    height: 16
+                                    anchors.left: parent.left
+                                    anchors.verticalCenter: parent.verticalCenter
+
+                                    Image {
+                                        id: iconPrivacyLockScreenCamera
+                                        source: "qrc:/MeguPackOptimizer/src/resources/camera.svg"
+                                        anchors.fill: parent
+                                        sourceSize.width: 16
+                                        sourceSize.height: 16
+                                        visible: false
+                                    }
+                                    ColorOverlay {
+                                        anchors.fill: parent
+                                        source: iconPrivacyLockScreenCamera
+                                        color: optimizerBackend.privacyLockScreenCameraActive !== optimizerBackend.originalPrivacyLockScreenCameraActive ? Theme.accent : Theme.textSecondary
+                                    }
+                                }
+
+                                Text {
+                                    text: qsTr("Camera on lock screen")
+                                    color: Theme.textPrimary
+                                    font.family: Theme.fontFamily
+                                    font.pixelSize: 12
+                                    anchors.left: iconPrivacyLockScreenCameraContainer.right
+                                    anchors.leftMargin: 24
+                                    anchors.verticalCenter: parent.verticalCenter
+                                }
+
+                                MeguSwitch {
+                                    checked: optimizerBackend.privacyLockScreenCameraActive
+                                    anchors.right: parent.right
+                                    anchors.verticalCenter: parent.verticalCenter
+                                    onToggled: (val) => { optimizerBackend.privacyLockScreenCameraActive = val; }
+                                }
+                            }
+
+                            // 10. Camera indicator
+                            Item {
+                                anchors.left: parent.left
+                                anchors.right: parent.right
+                                height: 40
+
+                                Item {
+                                    id: iconPrivacyCameraIndicatorContainer
+                                    width: 16
+                                    height: 16
+                                    anchors.left: parent.left
+                                    anchors.verticalCenter: parent.verticalCenter
+
+                                    Image {
+                                        id: iconPrivacyCameraIndicator
+                                        source: "qrc:/MeguPackOptimizer/src/resources/camera.svg"
+                                        anchors.fill: parent
+                                        sourceSize.width: 16
+                                        sourceSize.height: 16
+                                        visible: false
+                                    }
+                                    ColorOverlay {
+                                        anchors.fill: parent
+                                        source: iconPrivacyCameraIndicator
+                                        color: optimizerBackend.privacyCameraIndicatorActive !== optimizerBackend.originalPrivacyCameraIndicatorActive ? Theme.accent : Theme.textSecondary
+                                    }
+                                }
+
+                                Text {
+                                    text: qsTr("Camera indicator")
+                                    color: Theme.textPrimary
+                                    font.family: Theme.fontFamily
+                                    font.pixelSize: 12
+                                    anchors.left: iconPrivacyCameraIndicatorContainer.right
+                                    anchors.leftMargin: 24
+                                    anchors.verticalCenter: parent.verticalCenter
+                                }
+
+                                MeguSwitch {
+                                    checked: optimizerBackend.privacyCameraIndicatorActive
+                                    anchors.right: parent.right
+                                    anchors.verticalCenter: parent.verticalCenter
+                                    onToggled: (val) => { optimizerBackend.privacyCameraIndicatorActive = val; }
+                                }
+                            }
+
+                            // 11. Online speech
+                            Item {
+                                anchors.left: parent.left
+                                anchors.right: parent.right
+                                height: 40
+
+                                Item {
+                                    id: iconPrivacyOnlineSpeechContainer
+                                    width: 16
+                                    height: 16
+                                    anchors.left: parent.left
+                                    anchors.verticalCenter: parent.verticalCenter
+
+                                    Image {
+                                        id: iconPrivacyOnlineSpeech
+                                        source: "qrc:/MeguPackOptimizer/src/resources/microphone.svg"
+                                        anchors.fill: parent
+                                        sourceSize.width: 16
+                                        sourceSize.height: 16
+                                        visible: false
+                                    }
+                                    ColorOverlay {
+                                        anchors.fill: parent
+                                        source: iconPrivacyOnlineSpeech
+                                        color: optimizerBackend.privacyOnlineSpeechActive !== optimizerBackend.originalPrivacyOnlineSpeechActive ? Theme.accent : Theme.textSecondary
+                                    }
+                                }
+
+                                Text {
+                                    text: qsTr("Online speech")
+                                    color: Theme.textPrimary
+                                    font.family: Theme.fontFamily
+                                    font.pixelSize: 12
+                                    anchors.left: iconPrivacyOnlineSpeechContainer.right
+                                    anchors.leftMargin: 24
+                                    anchors.verticalCenter: parent.verticalCenter
+                                }
+
+                                MeguSwitch {
+                                    checked: optimizerBackend.privacyOnlineSpeechActive
+                                    anchors.right: parent.right
+                                    anchors.verticalCenter: parent.verticalCenter
+                                    onToggled: (val) => { optimizerBackend.privacyOnlineSpeechActive = val; }
                                 }
                             }
                         }

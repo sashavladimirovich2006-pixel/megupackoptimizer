@@ -121,6 +121,31 @@ class Optimizer : public QObject {
     Q_PROPERTY(bool originalAdsWelcomeExperienceActive READ originalAdsWelcomeExperienceActive NOTIFY originalAdsWelcomeExperienceActiveChanged)
     Q_PROPERTY(bool adsFinishSetupActive READ adsFinishSetupActive WRITE setAdsFinishSetupActive NOTIFY adsFinishSetupActiveChanged)
     Q_PROPERTY(bool originalAdsFinishSetupActive READ originalAdsFinishSetupActive NOTIFY originalAdsFinishSetupActiveChanged)
+
+    // Privacy Optimization properties
+    Q_PROPERTY(bool privacyLocationActive READ privacyLocationActive WRITE setPrivacyLocationActive NOTIFY privacyLocationActiveChanged)
+    Q_PROPERTY(bool originalPrivacyLocationActive READ originalPrivacyLocationActive NOTIFY originalPrivacyLocationActiveChanged)
+    Q_PROPERTY(bool privacyTelemetryActive READ privacyTelemetryActive WRITE setPrivacyTelemetryActive NOTIFY privacyTelemetryActiveChanged)
+    Q_PROPERTY(bool originalPrivacyTelemetryActive READ originalPrivacyTelemetryActive NOTIFY originalPrivacyTelemetryActiveChanged)
+    Q_PROPERTY(bool privacyCeipActive READ privacyCeipActive WRITE setPrivacyCeipActive NOTIFY privacyCeipActiveChanged)
+    Q_PROPERTY(bool originalPrivacyCeipActive READ originalPrivacyCeipActive NOTIFY originalPrivacyCeipActiveChanged)
+    Q_PROPERTY(bool privacyAppsTelemetryActive READ privacyAppsTelemetryActive WRITE setPrivacyAppsTelemetryActive NOTIFY privacyAppsTelemetryActiveChanged)
+    Q_PROPERTY(bool originalPrivacyAppsTelemetryActive READ originalPrivacyAppsTelemetryActive NOTIFY originalPrivacyAppsTelemetryActiveChanged)
+    Q_PROPERTY(bool privacyAppLaunchesActive READ privacyAppLaunchesActive WRITE setPrivacyAppLaunchesActive NOTIFY privacyAppLaunchesActiveChanged)
+    Q_PROPERTY(bool originalPrivacyAppLaunchesActive READ originalPrivacyAppLaunchesActive NOTIFY originalPrivacyAppLaunchesActiveChanged)
+    Q_PROPERTY(bool privacyImproveInkingActive READ privacyImproveInkingActive WRITE setPrivacyImproveInkingActive NOTIFY privacyImproveInkingActiveChanged)
+    Q_PROPERTY(bool originalPrivacyImproveInkingActive READ originalPrivacyImproveInkingActive NOTIFY originalPrivacyImproveInkingActiveChanged)
+    Q_PROPERTY(bool privacyPersonalizeInkingActive READ privacyPersonalizeInkingActive WRITE setPrivacyPersonalizeInkingActive NOTIFY privacyPersonalizeInkingActiveChanged)
+    Q_PROPERTY(bool originalPrivacyPersonalizeInkingActive READ originalPrivacyPersonalizeInkingActive NOTIFY originalPrivacyPersonalizeInkingActiveChanged)
+    Q_PROPERTY(bool privacyErrorReportingActive READ privacyErrorReportingActive WRITE setPrivacyErrorReportingActive NOTIFY privacyErrorReportingActiveChanged)
+    Q_PROPERTY(bool originalPrivacyErrorReportingActive READ originalPrivacyErrorReportingActive NOTIFY originalPrivacyErrorReportingActiveChanged)
+    Q_PROPERTY(bool privacyLockScreenCameraActive READ privacyLockScreenCameraActive WRITE setPrivacyLockScreenCameraActive NOTIFY privacyLockScreenCameraActiveChanged)
+    Q_PROPERTY(bool originalPrivacyLockScreenCameraActive READ originalPrivacyLockScreenCameraActive NOTIFY originalPrivacyLockScreenCameraActiveChanged)
+    Q_PROPERTY(bool privacyCameraIndicatorActive READ privacyCameraIndicatorActive WRITE setPrivacyCameraIndicatorActive NOTIFY privacyCameraIndicatorActiveChanged)
+    Q_PROPERTY(bool originalPrivacyCameraIndicatorActive READ originalPrivacyCameraIndicatorActive NOTIFY originalPrivacyCameraIndicatorActiveChanged)
+    Q_PROPERTY(bool privacyOnlineSpeechActive READ privacyOnlineSpeechActive WRITE setPrivacyOnlineSpeechActive NOTIFY privacyOnlineSpeechActiveChanged)
+    Q_PROPERTY(bool originalPrivacyOnlineSpeechActive READ originalPrivacyOnlineSpeechActive NOTIFY originalPrivacyOnlineSpeechActiveChanged)
+
     Q_PROPERTY(int windowsUpdateMode READ windowsUpdateMode WRITE setWindowsUpdateMode NOTIFY windowsUpdateModeChanged)
     Q_PROPERTY(int originalWindowsUpdateMode READ originalWindowsUpdateMode NOTIFY originalWindowsUpdateModeChanged)
     Q_PROPERTY(QVariantMap cs2LaunchOptions READ cs2LaunchOptions WRITE setCs2LaunchOptions NOTIFY cs2LaunchOptionsChanged)
@@ -275,6 +300,31 @@ public:
     bool originalAdsWelcomeExperienceActive() const { return m_originalAdsWelcomeExperienceActive; }
     bool adsFinishSetupActive() const { return m_adsFinishSetupActive; }
     bool originalAdsFinishSetupActive() const { return m_originalAdsFinishSetupActive; }
+
+    // Privacy Getters
+    bool privacyLocationActive() const { return m_privacyLocationActive; }
+    bool originalPrivacyLocationActive() const { return m_originalPrivacyLocationActive; }
+    bool privacyTelemetryActive() const { return m_privacyTelemetryActive; }
+    bool originalPrivacyTelemetryActive() const { return m_originalPrivacyTelemetryActive; }
+    bool privacyCeipActive() const { return m_privacyCeipActive; }
+    bool originalPrivacyCeipActive() const { return m_originalPrivacyCeipActive; }
+    bool privacyAppsTelemetryActive() const { return m_privacyAppsTelemetryActive; }
+    bool originalPrivacyAppsTelemetryActive() const { return m_originalPrivacyAppsTelemetryActive; }
+    bool privacyAppLaunchesActive() const { return m_privacyAppLaunchesActive; }
+    bool originalPrivacyAppLaunchesActive() const { return m_originalPrivacyAppLaunchesActive; }
+    bool privacyImproveInkingActive() const { return m_privacyImproveInkingActive; }
+    bool originalPrivacyImproveInkingActive() const { return m_originalPrivacyImproveInkingActive; }
+    bool privacyPersonalizeInkingActive() const { return m_privacyPersonalizeInkingActive; }
+    bool originalPrivacyPersonalizeInkingActive() const { return m_originalPrivacyPersonalizeInkingActive; }
+    bool privacyErrorReportingActive() const { return m_privacyErrorReportingActive; }
+    bool originalPrivacyErrorReportingActive() const { return m_originalPrivacyErrorReportingActive; }
+    bool privacyLockScreenCameraActive() const { return m_privacyLockScreenCameraActive; }
+    bool originalPrivacyLockScreenCameraActive() const { return m_originalPrivacyLockScreenCameraActive; }
+    bool privacyCameraIndicatorActive() const { return m_privacyCameraIndicatorActive; }
+    bool originalPrivacyCameraIndicatorActive() const { return m_originalPrivacyCameraIndicatorActive; }
+    bool privacyOnlineSpeechActive() const { return m_privacyOnlineSpeechActive; }
+    bool originalPrivacyOnlineSpeechActive() const { return m_originalPrivacyOnlineSpeechActive; }
+
     int windowsUpdateMode() const { return m_windowsUpdateMode; }
     int originalWindowsUpdateMode() const { return m_originalWindowsUpdateMode; }
     QVariantMap cs2LaunchOptions() const { return m_cs2LaunchOptions; }
@@ -347,6 +397,20 @@ public:
     void setAdsWindowsTipsActive(bool val);
     void setAdsWelcomeExperienceActive(bool val);
     void setAdsFinishSetupActive(bool val);
+
+    // Privacy Setters
+    void setPrivacyLocationActive(bool val);
+    void setPrivacyTelemetryActive(bool val);
+    void setPrivacyCeipActive(bool val);
+    void setPrivacyAppsTelemetryActive(bool val);
+    void setPrivacyAppLaunchesActive(bool val);
+    void setPrivacyImproveInkingActive(bool val);
+    void setPrivacyPersonalizeInkingActive(bool val);
+    void setPrivacyErrorReportingActive(bool val);
+    void setPrivacyLockScreenCameraActive(bool val);
+    void setPrivacyCameraIndicatorActive(bool val);
+    void setPrivacyOnlineSpeechActive(bool val);
+
     void setWindowsUpdateMode(int mode);
     void setCs2LaunchOptions(const QVariantMap &val);
     void setSteamOverlayActive(bool val);
@@ -509,6 +573,31 @@ signals:
     void originalAdsWelcomeExperienceActiveChanged(bool val);
     void adsFinishSetupActiveChanged(bool val);
     void originalAdsFinishSetupActiveChanged(bool val);
+
+    // Privacy Signals
+    void privacyLocationActiveChanged(bool val);
+    void originalPrivacyLocationActiveChanged(bool val);
+    void privacyTelemetryActiveChanged(bool val);
+    void originalPrivacyTelemetryActiveChanged(bool val);
+    void privacyCeipActiveChanged(bool val);
+    void originalPrivacyCeipActiveChanged(bool val);
+    void privacyAppsTelemetryActiveChanged(bool val);
+    void originalPrivacyAppsTelemetryActiveChanged(bool val);
+    void privacyAppLaunchesActiveChanged(bool val);
+    void originalPrivacyAppLaunchesActiveChanged(bool val);
+    void privacyImproveInkingActiveChanged(bool val);
+    void originalPrivacyImproveInkingActiveChanged(bool val);
+    void privacyPersonalizeInkingActiveChanged(bool val);
+    void originalPrivacyPersonalizeInkingActiveChanged(bool val);
+    void privacyErrorReportingActiveChanged(bool val);
+    void originalPrivacyErrorReportingActiveChanged(bool val);
+    void privacyLockScreenCameraActiveChanged(bool val);
+    void originalPrivacyLockScreenCameraActiveChanged(bool val);
+    void privacyCameraIndicatorActiveChanged(bool val);
+    void originalPrivacyCameraIndicatorActiveChanged(bool val);
+    void privacyOnlineSpeechActiveChanged(bool val);
+    void originalPrivacyOnlineSpeechActiveChanged(bool val);
+
     void windowsUpdateModeChanged(int mode);
     void originalWindowsUpdateModeChanged(int mode);
     void cs2LaunchOptionsChanged(const QVariantMap &val);
@@ -664,6 +753,31 @@ private:
     bool m_originalAdsWelcomeExperienceActive = true;
     bool m_adsFinishSetupActive = true;
     bool m_originalAdsFinishSetupActive = true;
+
+    // Privacy variables
+    bool m_privacyLocationActive = true;
+    bool m_originalPrivacyLocationActive = true;
+    bool m_privacyTelemetryActive = true;
+    bool m_originalPrivacyTelemetryActive = true;
+    bool m_privacyCeipActive = true;
+    bool m_originalPrivacyCeipActive = true;
+    bool m_privacyAppsTelemetryActive = true;
+    bool m_originalPrivacyAppsTelemetryActive = true;
+    bool m_privacyAppLaunchesActive = true;
+    bool m_originalPrivacyAppLaunchesActive = true;
+    bool m_privacyImproveInkingActive = true;
+    bool m_originalPrivacyImproveInkingActive = true;
+    bool m_privacyPersonalizeInkingActive = true;
+    bool m_originalPrivacyPersonalizeInkingActive = true;
+    bool m_privacyErrorReportingActive = true;
+    bool m_originalPrivacyErrorReportingActive = true;
+    bool m_privacyLockScreenCameraActive = true;
+    bool m_originalPrivacyLockScreenCameraActive = true;
+    bool m_privacyCameraIndicatorActive = true;
+    bool m_originalPrivacyCameraIndicatorActive = true;
+    bool m_privacyOnlineSpeechActive = true;
+    bool m_originalPrivacyOnlineSpeechActive = true;
+
     int m_windowsUpdateMode = 0;
     int m_originalWindowsUpdateMode = 0;
     QVariantMap m_cs2LaunchOptions;

@@ -2505,6 +2505,83 @@ void Optimizer::setAdsFinishSetupActive(bool val) {
     }
 }
 
+void Optimizer::setPrivacyLocationActive(bool val) {
+    if (m_privacyLocationActive != val) {
+        m_privacyLocationActive = val;
+        emit privacyLocationActiveChanged(m_privacyLocationActive);
+    }
+}
+
+void Optimizer::setPrivacyTelemetryActive(bool val) {
+    if (m_privacyTelemetryActive != val) {
+        m_privacyTelemetryActive = val;
+        emit privacyTelemetryActiveChanged(m_privacyTelemetryActive);
+    }
+}
+
+void Optimizer::setPrivacyCeipActive(bool val) {
+    if (m_privacyCeipActive != val) {
+        m_privacyCeipActive = val;
+        emit privacyCeipActiveChanged(m_privacyCeipActive);
+    }
+}
+
+void Optimizer::setPrivacyAppsTelemetryActive(bool val) {
+    if (m_privacyAppsTelemetryActive != val) {
+        m_privacyAppsTelemetryActive = val;
+        emit privacyAppsTelemetryActiveChanged(m_privacyAppsTelemetryActive);
+    }
+}
+
+void Optimizer::setPrivacyAppLaunchesActive(bool val) {
+    if (m_privacyAppLaunchesActive != val) {
+        m_privacyAppLaunchesActive = val;
+        emit privacyAppLaunchesActiveChanged(m_privacyAppLaunchesActive);
+    }
+}
+
+void Optimizer::setPrivacyImproveInkingActive(bool val) {
+    if (m_privacyImproveInkingActive != val) {
+        m_privacyImproveInkingActive = val;
+        emit privacyImproveInkingActiveChanged(m_privacyImproveInkingActive);
+    }
+}
+
+void Optimizer::setPrivacyPersonalizeInkingActive(bool val) {
+    if (m_privacyPersonalizeInkingActive != val) {
+        m_privacyPersonalizeInkingActive = val;
+        emit privacyPersonalizeInkingActiveChanged(m_privacyPersonalizeInkingActive);
+    }
+}
+
+void Optimizer::setPrivacyErrorReportingActive(bool val) {
+    if (m_privacyErrorReportingActive != val) {
+        m_privacyErrorReportingActive = val;
+        emit privacyErrorReportingActiveChanged(m_privacyErrorReportingActive);
+    }
+}
+
+void Optimizer::setPrivacyLockScreenCameraActive(bool val) {
+    if (m_privacyLockScreenCameraActive != val) {
+        m_privacyLockScreenCameraActive = val;
+        emit privacyLockScreenCameraActiveChanged(m_privacyLockScreenCameraActive);
+    }
+}
+
+void Optimizer::setPrivacyCameraIndicatorActive(bool val) {
+    if (m_privacyCameraIndicatorActive != val) {
+        m_privacyCameraIndicatorActive = val;
+        emit privacyCameraIndicatorActiveChanged(m_privacyCameraIndicatorActive);
+    }
+}
+
+void Optimizer::setPrivacyOnlineSpeechActive(bool val) {
+    if (m_privacyOnlineSpeechActive != val) {
+        m_privacyOnlineSpeechActive = val;
+        emit privacyOnlineSpeechActiveChanged(m_privacyOnlineSpeechActive);
+    }
+}
+
 void Optimizer::setWindowsUpdateMode(int mode) {
     if (m_windowsUpdateMode != mode) {
         m_windowsUpdateMode = mode;
@@ -3958,6 +4035,216 @@ void Optimizer::loadSystemStates() {
     emit originalAdsFinishSetupActiveChanged(m_originalAdsFinishSetupActive);
 
     // ----------------------------------------------------
+    // Load Privacy States
+    // ----------------------------------------------------
+    bool privacyLocationActive = true;
+    bool privacyTelemetryActive = true;
+    bool privacyCeipActive = true;
+    bool privacyAppsTelemetryActive = true;
+    bool privacyAppLaunchesActive = true;
+    bool privacyImproveInkingActive = true;
+    bool privacyPersonalizeInkingActive = true;
+    bool privacyErrorReportingActive = true;
+    bool privacyLockScreenCameraActive = true;
+    bool privacyCameraIndicatorActive = false;
+    bool privacyOnlineSpeechActive = true;
+
+#ifdef Q_OS_WIN
+    // 1. Location
+    HKEY hKeyLoc;
+    if (RegOpenKeyExW(HKEY_LOCAL_MACHINE, L"SOFTWARE\\Policies\\Microsoft\\Windows\\LocationAndSensors", 0, KEY_READ, &hKeyLoc) == ERROR_SUCCESS) {
+        DWORD value = 0;
+        DWORD size = sizeof(value);
+        if (RegQueryValueExW(hKeyLoc, L"DisableLocation", NULL, NULL, (LPBYTE)&value, &size) == ERROR_SUCCESS) {
+            privacyLocationActive = (value == 0);
+        }
+        RegCloseKey(hKeyLoc);
+    }
+    if (privacyLocationActive) {
+        if (RegOpenKeyExW(HKEY_CURRENT_USER, L"Software\\Microsoft\\Windows\\CurrentVersion\\CapabilityAccessManager\\ConsentStore\\location", 0, KEY_READ, &hKeyLoc) == ERROR_SUCCESS) {
+            wchar_t valueBuf[64] = {0};
+            DWORD bufSize = sizeof(valueBuf);
+            if (RegQueryValueExW(hKeyLoc, L"Value", NULL, NULL, (LPBYTE)valueBuf, &bufSize) == ERROR_SUCCESS) {
+                QString valStr = QString::fromWCharArray(valueBuf);
+                if (valStr.compare("Deny", Qt::CaseInsensitive) == 0) {
+                    privacyLocationActive = false;
+                }
+            }
+            RegCloseKey(hKeyLoc);
+        }
+    }
+
+    // 2. Telemetry (AllowTelemetry)
+    HKEY hKeyTelPolicy;
+    if (RegOpenKeyExW(HKEY_LOCAL_MACHINE, L"SOFTWARE\\Policies\\Microsoft\\Windows\\DataCollection", 0, KEY_READ, &hKeyTelPolicy) == ERROR_SUCCESS) {
+        DWORD value = 1;
+        DWORD size = sizeof(value);
+        if (RegQueryValueExW(hKeyTelPolicy, L"AllowTelemetry", NULL, NULL, (LPBYTE)&value, &size) == ERROR_SUCCESS) {
+            privacyTelemetryActive = (value != 0);
+        }
+        RegCloseKey(hKeyTelPolicy);
+    }
+
+    // 3. CEIP (SQM Client CEIPEnable)
+    HKEY hKeyCeip1;
+    if (RegOpenKeyExW(HKEY_LOCAL_MACHINE, L"SOFTWARE\\Policies\\Microsoft\\SQMClient\\Windows", 0, KEY_READ, &hKeyCeip1) == ERROR_SUCCESS) {
+        DWORD value = 1;
+        DWORD size = sizeof(value);
+        if (RegQueryValueExW(hKeyCeip1, L"CEIPEnable", NULL, NULL, (LPBYTE)&value, &size) == ERROR_SUCCESS) {
+            privacyCeipActive = (value != 0);
+        }
+        RegCloseKey(hKeyCeip1);
+    }
+
+    // 4. Apps Telemetry (AppCompat AITEnable / DisableInventory)
+    HKEY hKeyAppCompat;
+    if (RegOpenKeyExW(HKEY_LOCAL_MACHINE, L"SOFTWARE\\Policies\\Microsoft\\Windows\\AppCompat", 0, KEY_READ, &hKeyAppCompat) == ERROR_SUCCESS) {
+        DWORD aitValue = 1;
+        DWORD invValue = 0;
+        DWORD size = sizeof(aitValue);
+        RegQueryValueExW(hKeyAppCompat, L"AITEnable", NULL, NULL, (LPBYTE)&aitValue, &size);
+        size = sizeof(invValue);
+        RegQueryValueExW(hKeyAppCompat, L"DisableInventory", NULL, NULL, (LPBYTE)&invValue, &size);
+        privacyAppsTelemetryActive = (aitValue != 0 && invValue == 0);
+        RegCloseKey(hKeyAppCompat);
+    }
+
+    // 5. App Launches Tracking (Start_TrackProgs)
+    HKEY hKeyTrack;
+    if (RegOpenKeyExW(HKEY_CURRENT_USER, L"Software\\Microsoft\\Windows\\CurrentVersion\\Explorer\\Advanced", 0, KEY_READ, &hKeyTrack) == ERROR_SUCCESS) {
+        DWORD value = 1;
+        DWORD size = sizeof(value);
+        if (RegQueryValueExW(hKeyTrack, L"Start_TrackProgs", NULL, NULL, (LPBYTE)&value, &size) == ERROR_SUCCESS) {
+            privacyAppLaunchesActive = (value != 0);
+        }
+        RegCloseKey(hKeyTrack);
+    }
+
+    // 6. Improve Inking and Typing (RestrictImplicitInkCollection / RestrictImplicitTextCollection)
+    HKEY hKeyInking1;
+    if (RegOpenKeyExW(HKEY_CURRENT_USER, L"Software\\Microsoft\\InputPersonalization", 0, KEY_READ, &hKeyInking1) == ERROR_SUCCESS) {
+        DWORD val1 = 0;
+        DWORD val2 = 0;
+        DWORD size = sizeof(val1);
+        RegQueryValueExW(hKeyInking1, L"RestrictImplicitInkCollection", NULL, NULL, (LPBYTE)&val1, &size);
+        size = sizeof(val2);
+        RegQueryValueExW(hKeyInking1, L"RestrictImplicitTextCollection", NULL, NULL, (LPBYTE)&val2, &size);
+        privacyImproveInkingActive = (val1 == 0 && val2 == 0);
+        RegCloseKey(hKeyInking1);
+    }
+
+    // 7. Personalize Inking and Typing (AllowInputPersonalization)
+    HKEY hKeyInking2;
+    if (RegOpenKeyExW(HKEY_CURRENT_USER, L"Software\\Microsoft\\InputPersonalization", 0, KEY_READ, &hKeyInking2) == ERROR_SUCCESS) {
+        DWORD value = 1;
+        DWORD size = sizeof(value);
+        if (RegQueryValueExW(hKeyInking2, L"AllowInputPersonalization", NULL, NULL, (LPBYTE)&value, &size) == ERROR_SUCCESS) {
+            privacyPersonalizeInkingActive = (value != 0);
+        }
+        RegCloseKey(hKeyInking2);
+    }
+
+    // 8. Error Reporting (WER Disabled)
+    HKEY hKeyWerPolicy;
+    if (RegOpenKeyExW(HKEY_LOCAL_MACHINE, L"SOFTWARE\\Policies\\Microsoft\\Windows\\Windows Error Reporting", 0, KEY_READ, &hKeyWerPolicy) == ERROR_SUCCESS) {
+        DWORD value = 0;
+        DWORD size = sizeof(value);
+        if (RegQueryValueExW(hKeyWerPolicy, L"Disabled", NULL, NULL, (LPBYTE)&value, &size) == ERROR_SUCCESS) {
+            privacyErrorReportingActive = (value == 0);
+        }
+        RegCloseKey(hKeyWerPolicy);
+    }
+
+    // 9. Camera on Lock Screen (NoLockScreenCamera)
+    HKEY hKeyCamLock;
+    if (RegOpenKeyExW(HKEY_LOCAL_MACHINE, L"SOFTWARE\\Policies\\Microsoft\\Windows\\Personalization", 0, KEY_READ, &hKeyCamLock) == ERROR_SUCCESS) {
+        DWORD value = 0;
+        DWORD size = sizeof(value);
+        if (RegQueryValueExW(hKeyCamLock, L"NoLockScreenCamera", NULL, NULL, (LPBYTE)&value, &size) == ERROR_SUCCESS) {
+            privacyLockScreenCameraActive = (value == 0);
+        }
+        RegCloseKey(hKeyCamLock);
+    }
+
+    // 10. Camera Indicator (NoPhysicalCameraLED)
+    HKEY hKeyCamInd;
+    if (RegOpenKeyExW(HKEY_LOCAL_MACHINE, L"SOFTWARE\\Microsoft\\OEM\\Device\\Capture", 0, KEY_READ, &hKeyCamInd) == ERROR_SUCCESS) {
+        DWORD value = 0;
+        DWORD size = sizeof(value);
+        if (RegQueryValueExW(hKeyCamInd, L"NoPhysicalCameraLED", NULL, NULL, (LPBYTE)&value, &size) == ERROR_SUCCESS) {
+            privacyCameraIndicatorActive = (value != 0);
+        }
+        RegCloseKey(hKeyCamInd);
+    }
+
+    // 11. Online Speech (HasUserConsent)
+    HKEY hKeySpeech;
+    if (RegOpenKeyExW(HKEY_CURRENT_USER, L"Software\\Microsoft\\Speech_OneCore\\Settings\\OnlineSpeechPrivacy", 0, KEY_READ, &hKeySpeech) == ERROR_SUCCESS) {
+        DWORD value = 1;
+        DWORD size = sizeof(value);
+        if (RegQueryValueExW(hKeySpeech, L"HasUserConsent", NULL, NULL, (LPBYTE)&value, &size) == ERROR_SUCCESS) {
+            privacyOnlineSpeechActive = (value != 0);
+        }
+        RegCloseKey(hKeySpeech);
+    }
+#endif
+
+    m_privacyLocationActive = privacyLocationActive;
+    m_originalPrivacyLocationActive = privacyLocationActive;
+    emit privacyLocationActiveChanged(m_privacyLocationActive);
+    emit originalPrivacyLocationActiveChanged(m_originalPrivacyLocationActive);
+
+    m_privacyTelemetryActive = privacyTelemetryActive;
+    m_originalPrivacyTelemetryActive = privacyTelemetryActive;
+    emit privacyTelemetryActiveChanged(m_privacyTelemetryActive);
+    emit originalPrivacyTelemetryActiveChanged(m_originalPrivacyTelemetryActive);
+
+    m_privacyCeipActive = privacyCeipActive;
+    m_originalPrivacyCeipActive = privacyCeipActive;
+    emit privacyCeipActiveChanged(m_privacyCeipActive);
+    emit originalPrivacyCeipActiveChanged(m_originalPrivacyCeipActive);
+
+    m_privacyAppsTelemetryActive = privacyAppsTelemetryActive;
+    m_originalPrivacyAppsTelemetryActive = privacyAppsTelemetryActive;
+    emit privacyAppsTelemetryActiveChanged(m_privacyAppsTelemetryActive);
+    emit originalPrivacyAppsTelemetryActiveChanged(m_originalPrivacyAppsTelemetryActive);
+
+    m_privacyAppLaunchesActive = privacyAppLaunchesActive;
+    m_originalPrivacyAppLaunchesActive = privacyAppLaunchesActive;
+    emit privacyAppLaunchesActiveChanged(m_privacyAppLaunchesActive);
+    emit originalPrivacyAppLaunchesActiveChanged(m_originalPrivacyAppLaunchesActive);
+
+    m_privacyImproveInkingActive = privacyImproveInkingActive;
+    m_originalPrivacyImproveInkingActive = privacyImproveInkingActive;
+    emit privacyImproveInkingActiveChanged(m_privacyImproveInkingActive);
+    emit originalPrivacyImproveInkingActiveChanged(m_originalPrivacyImproveInkingActive);
+
+    m_privacyPersonalizeInkingActive = privacyPersonalizeInkingActive;
+    m_originalPrivacyPersonalizeInkingActive = privacyPersonalizeInkingActive;
+    emit privacyPersonalizeInkingActiveChanged(m_privacyPersonalizeInkingActive);
+    emit originalPrivacyPersonalizeInkingActiveChanged(m_originalPrivacyPersonalizeInkingActive);
+
+    m_privacyErrorReportingActive = privacyErrorReportingActive;
+    m_originalPrivacyErrorReportingActive = privacyErrorReportingActive;
+    emit privacyErrorReportingActiveChanged(m_privacyErrorReportingActive);
+    emit originalPrivacyErrorReportingActiveChanged(m_originalPrivacyErrorReportingActive);
+
+    m_privacyLockScreenCameraActive = privacyLockScreenCameraActive;
+    m_originalPrivacyLockScreenCameraActive = privacyLockScreenCameraActive;
+    emit privacyLockScreenCameraActiveChanged(m_privacyLockScreenCameraActive);
+    emit originalPrivacyLockScreenCameraActiveChanged(m_originalPrivacyLockScreenCameraActive);
+
+    m_privacyCameraIndicatorActive = privacyCameraIndicatorActive;
+    m_originalPrivacyCameraIndicatorActive = privacyCameraIndicatorActive;
+    emit privacyCameraIndicatorActiveChanged(m_privacyCameraIndicatorActive);
+    emit originalPrivacyCameraIndicatorActiveChanged(m_originalPrivacyCameraIndicatorActive);
+
+    m_privacyOnlineSpeechActive = privacyOnlineSpeechActive;
+    m_originalPrivacyOnlineSpeechActive = privacyOnlineSpeechActive;
+    emit privacyOnlineSpeechActiveChanged(m_privacyOnlineSpeechActive);
+    emit originalPrivacyOnlineSpeechActiveChanged(m_originalPrivacyOnlineSpeechActive);
+
+    // ----------------------------------------------------
     // Load Windows Update Mode
     // ----------------------------------------------------
     int updateMode = 0; // Default
@@ -4480,6 +4767,19 @@ void Optimizer::startSystemOptimization() {
     bool adsWelcomeExperienceVal = m_adsWelcomeExperienceActive;
     bool adsFinishSetupVal = m_adsFinishSetupActive;
 
+    // Copy Privacy targets
+    bool privacyLocationVal = m_privacyLocationActive;
+    bool privacyTelemetryVal = m_privacyTelemetryActive;
+    bool privacyCeipVal = m_privacyCeipActive;
+    bool privacyAppsTelemetryVal = m_privacyAppsTelemetryActive;
+    bool privacyAppLaunchesVal = m_privacyAppLaunchesActive;
+    bool privacyImproveInkingVal = m_privacyImproveInkingActive;
+    bool privacyPersonalizeInkingVal = m_privacyPersonalizeInkingActive;
+    bool privacyErrorReportingVal = m_privacyErrorReportingActive;
+    bool privacyLockScreenCameraVal = m_privacyLockScreenCameraActive;
+    bool privacyCameraIndicatorVal = m_privacyCameraIndicatorActive;
+    bool privacyOnlineSpeechVal = m_privacyOnlineSpeechActive;
+
     QString steamPathVal = "";
 #ifdef Q_OS_WIN
     HKEY hKeySteam;
@@ -4551,6 +4851,19 @@ void Optimizer::startSystemOptimization() {
     bool origAdsWelcomeExperience = m_originalAdsWelcomeExperienceActive;
     bool origAdsFinishSetup = m_originalAdsFinishSetupActive;
 
+    // Copy Privacy original baselines
+    bool origPrivacyLocation = m_originalPrivacyLocationActive;
+    bool origPrivacyTelemetry = m_originalPrivacyTelemetryActive;
+    bool origPrivacyCeip = m_originalPrivacyCeipActive;
+    bool origPrivacyAppsTelemetry = m_originalPrivacyAppsTelemetryActive;
+    bool origPrivacyAppLaunches = m_originalPrivacyAppLaunchesActive;
+    bool origPrivacyImproveInking = m_originalPrivacyImproveInkingActive;
+    bool origPrivacyPersonalizeInking = m_originalPrivacyPersonalizeInkingActive;
+    bool origPrivacyErrorReporting = m_originalPrivacyErrorReportingActive;
+    bool origPrivacyLockScreenCamera = m_originalPrivacyLockScreenCameraActive;
+    bool origPrivacyCameraIndicator = m_originalPrivacyCameraIndicatorActive;
+    bool origPrivacyOnlineSpeech = m_originalPrivacyOnlineSpeechActive;
+
     QVariantList usbDevicesVal = m_usbDevices;
     QVariantList origUsbDevicesVal = m_originalUsbDevices;
     QVariantList appNotificationSettingsVal = m_appNotificationSettings;
@@ -4574,7 +4887,7 @@ void Optimizer::startSystemOptimization() {
     bool forceVal = m_forceApplyAll;
     m_forceApplyAll = false;
 
-    QThread* worker = QThread::create([this, forceVal, searchVal, classicContextMenuVal, shortcutArrowsVal, clipboardHistoryVal, taskbarEndTaskVal, taskbarSecondsVal, hibernationVal, overlayVal, coreIsolationVal, hagsVal, mouseAccelVal, gameModeVal, firewallVal, bitlockerVal, discordOverlayVal, notificationsVal, notifGlobalVal, notifAppVal, notifSoundsVal, notifLockscreenVal, targetPowerSchemeVal, activePowerSchemeVal, deleteUltimateStagedVal, deleteDefenderStagedVal, defenderVal, defenderRegistryVal, defenderCmdVal, defenderServiceVal, remoteAccessVal, telemetryVal, telemetryDiagTrackVal, telemetryWapPushVal, telemetryCeipVal, telemetryWerVal, windowsUpdateModeVal, targets, originalTargets, origSearch, origClassicContextMenu, origShortcutArrows, origClipboardHistory, origTaskbarEndTask, origTaskbarSeconds, origHibernation, origOverlay, origCoreIsolation, origHags, origMouseAccel, origGameMode, origFirewall, origBitlocker, origDiscordOverlay, origNotifications, origNotifGlobal, origNotifApp, origNotifSounds, origNotifLockscreen, origDefender, origDefenderRegistry, origDefenderCmd, origDefenderService, origRemoteAccess, origTelemetry, origTelemetryDiagTrack, origTelemetryWapPush, origTelemetryCeip, origTelemetryWer, origWindowsUpdateMode, usbDevicesVal, origUsbDevicesVal, appNotificationSettingsVal, steamPathVal, cs2OptionsVal, origCs2OptionsVal, steamOverlayVal, origSteamOverlayVal, cs2OverlayVal, origCs2OverlayVal, visualEffectsVal, origVisualEffectsVal, steamFriendsSettingsVal, origSteamFriendsSettingsVal, steamFriendsChanged, pagefileMinVal, origPagefileMinVal, pagefileMaxVal, origPagefileMaxVal, adsTailoredExperiencesVal, origAdsTailored, adsAdvertisingIdVal, origAdsAdvertisingId, adsSuggestedContentVal, origAdsSuggestedContent, adsSettingsHomeVal, origAdsSettingsHome, adsSuggestedNotificationsVal, origAdsSuggestedNotifications, adsLockScreenTipsVal, origAdsLockScreenTips, adsWindowsTipsVal, origAdsWindowsTips, adsWelcomeExperienceVal, origAdsWelcomeExperience, adsFinishSetupVal, origAdsFinishSetup]() {
+    QThread* worker = QThread::create([this, forceVal, searchVal, classicContextMenuVal, shortcutArrowsVal, clipboardHistoryVal, taskbarEndTaskVal, taskbarSecondsVal, hibernationVal, overlayVal, coreIsolationVal, hagsVal, mouseAccelVal, gameModeVal, firewallVal, bitlockerVal, discordOverlayVal, notificationsVal, notifGlobalVal, notifAppVal, notifSoundsVal, notifLockscreenVal, targetPowerSchemeVal, activePowerSchemeVal, deleteUltimateStagedVal, deleteDefenderStagedVal, defenderVal, defenderRegistryVal, defenderCmdVal, defenderServiceVal, remoteAccessVal, telemetryVal, telemetryDiagTrackVal, telemetryWapPushVal, telemetryCeipVal, telemetryWerVal, windowsUpdateModeVal, targets, originalTargets, origSearch, origClassicContextMenu, origShortcutArrows, origClipboardHistory, origTaskbarEndTask, origTaskbarSeconds, origHibernation, origOverlay, origCoreIsolation, origHags, origMouseAccel, origGameMode, origFirewall, origBitlocker, origDiscordOverlay, origNotifications, origNotifGlobal, origNotifApp, origNotifSounds, origNotifLockscreen, origDefender, origDefenderRegistry, origDefenderCmd, origDefenderService, origRemoteAccess, origTelemetry, origTelemetryDiagTrack, origTelemetryWapPush, origTelemetryCeip, origTelemetryWer, origWindowsUpdateMode, usbDevicesVal, origUsbDevicesVal, appNotificationSettingsVal, steamPathVal, cs2OptionsVal, origCs2OptionsVal, steamOverlayVal, origSteamOverlayVal, cs2OverlayVal, origCs2OverlayVal, visualEffectsVal, origVisualEffectsVal, steamFriendsSettingsVal, origSteamFriendsSettingsVal, steamFriendsChanged, pagefileMinVal, origPagefileMinVal, pagefileMaxVal, origPagefileMaxVal, adsTailoredExperiencesVal, origAdsTailored, adsAdvertisingIdVal, origAdsAdvertisingId, adsSuggestedContentVal, origAdsSuggestedContent, adsSettingsHomeVal, origAdsSettingsHome, adsSuggestedNotificationsVal, origAdsSuggestedNotifications, adsLockScreenTipsVal, origAdsLockScreenTips, adsWindowsTipsVal, origAdsWindowsTips, adsWelcomeExperienceVal, origAdsWelcomeExperience, adsFinishSetupVal, origAdsFinishSetup, privacyLocationVal, origPrivacyLocation, privacyTelemetryVal, origPrivacyTelemetry, privacyCeipVal, origPrivacyCeip, privacyAppsTelemetryVal, origPrivacyAppsTelemetry, privacyAppLaunchesVal, origPrivacyAppLaunches, privacyImproveInkingVal, origPrivacyImproveInking, privacyPersonalizeInkingVal, origPrivacyPersonalizeInking, privacyErrorReportingVal, origPrivacyErrorReporting, privacyLockScreenCameraVal, origPrivacyLockScreenCamera, privacyCameraIndicatorVal, origPrivacyCameraIndicator, privacyOnlineSpeechVal, origPrivacyOnlineSpeech]() {
         // Step 00: Auto-create backup before making changes
         if (!forceVal && Settings::instance()->createBackup()) {
             emit systemStepReported(tr("Creating automatic system backup..."), "INFO");
@@ -4614,6 +4927,19 @@ void Optimizer::startSystemOptimization() {
                           (adsWelcomeExperienceVal != origAdsWelcomeExperience) ||
                           (adsFinishSetupVal != origAdsFinishSetup);
 
+        bool privacyChanged = force ||
+                              (privacyLocationVal != origPrivacyLocation) ||
+                              (privacyTelemetryVal != origPrivacyTelemetry) ||
+                              (privacyCeipVal != origPrivacyCeip) ||
+                              (privacyAppsTelemetryVal != origPrivacyAppsTelemetry) ||
+                              (privacyAppLaunchesVal != origPrivacyAppLaunches) ||
+                              (privacyImproveInkingVal != origPrivacyImproveInking) ||
+                              (privacyPersonalizeInkingVal != origPrivacyPersonalizeInking) ||
+                              (privacyErrorReportingVal != origPrivacyErrorReporting) ||
+                              (privacyLockScreenCameraVal != origPrivacyLockScreenCamera) ||
+                              (privacyCameraIndicatorVal != origPrivacyCameraIndicator) ||
+                              (privacyOnlineSpeechVal != origPrivacyOnlineSpeech);
+
         bool windowsUpdateModeChanged = force || (windowsUpdateModeVal != origWindowsUpdateMode);
 
         bool cs2Changed = force || (cs2OptionsVal != origCs2OptionsVal);
@@ -4649,6 +4975,7 @@ void Optimizer::startSystemOptimization() {
                           (remoteAccessVal != origRemoteAccess) ||
                           telemetryChanged ||
                           adsChanged ||
+                          privacyChanged ||
                           windowsUpdateModeChanged ||
                           powerPlanChanged ||
                           usbChanged ||
@@ -6418,6 +6745,256 @@ void Optimizer::startSystemOptimization() {
             }
         }
 
+        // Step 1.99p: Privacy Configuration (only if changed)
+        bool privacySuccess = true;
+        if (privacyChanged) {
+            emit systemStepReported(Optimizer::tr("Configuring Privacy settings..."), "INFO");
+            QThread::msleep(800);
+            bool ok = true;
+#ifdef Q_OS_WIN
+            // 1. Location
+            if (privacyLocationVal != origPrivacyLocation || force) {
+                HKEY hKey;
+                // Write HKLM Policy
+                if (RegCreateKeyExW(HKEY_LOCAL_MACHINE, L"SOFTWARE\\Policies\\Microsoft\\Windows\\LocationAndSensors", 0, NULL, REG_OPTION_NON_VOLATILE, KEY_WRITE, NULL, &hKey, NULL) == ERROR_SUCCESS) {
+                    DWORD val = privacyLocationVal ? 0 : 1;
+                    if (RegSetValueExW(hKey, L"DisableLocation", 0, REG_DWORD, (const BYTE*)&val, sizeof(val)) == ERROR_SUCCESS) {
+                        emit systemStepReported(Optimizer::tr("Location system policy set to %1.").arg(privacyLocationVal ? "Enabled" : "Disabled"), "SUCCESS");
+                    } else {
+                        ok = false;
+                        emit systemStepReported(Optimizer::tr("Failed to write Location policy key."), "ERROR");
+                    }
+                    RegCloseKey(hKey);
+                } else {
+                    ok = false;
+                    emit systemStepReported(Optimizer::tr("Failed to open Location policy registry key."), "ERROR");
+                }
+                // Write HKCU ConsentStore location value
+                if (RegCreateKeyExW(HKEY_CURRENT_USER, L"Software\\Microsoft\\Windows\\CurrentVersion\\CapabilityAccessManager\\ConsentStore\\location", 0, NULL, REG_OPTION_NON_VOLATILE, KEY_WRITE, NULL, &hKey, NULL) == ERROR_SUCCESS) {
+                    const wchar_t* val = privacyLocationVal ? L"Allow" : L"Deny";
+                    RegSetValueExW(hKey, L"Value", 0, REG_SZ, (const BYTE*)val, (wcslen(val) + 1) * sizeof(wchar_t));
+                    RegCloseKey(hKey);
+                }
+                // Write HKLM ConsentStore location value
+                if (RegCreateKeyExW(HKEY_LOCAL_MACHINE, L"SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\CapabilityAccessManager\\ConsentStore\\location", 0, NULL, REG_OPTION_NON_VOLATILE, KEY_WRITE, NULL, &hKey, NULL) == ERROR_SUCCESS) {
+                    const wchar_t* val = privacyLocationVal ? L"Allow" : L"Deny";
+                    RegSetValueExW(hKey, L"Value", 0, REG_SZ, (const BYTE*)val, (wcslen(val) + 1) * sizeof(wchar_t));
+                    RegCloseKey(hKey);
+                }
+            }
+
+            // 2. Telemetry (AllowTelemetry)
+            if (privacyTelemetryVal != origPrivacyTelemetry || force) {
+                HKEY hKey;
+                if (RegCreateKeyExW(HKEY_LOCAL_MACHINE, L"SOFTWARE\\Policies\\Microsoft\\Windows\\DataCollection", 0, NULL, REG_OPTION_NON_VOLATILE, KEY_WRITE, NULL, &hKey, NULL) == ERROR_SUCCESS) {
+                    DWORD val = privacyTelemetryVal ? 3 : 0;
+                    if (RegSetValueExW(hKey, L"AllowTelemetry", 0, REG_DWORD, (const BYTE*)&val, sizeof(val)) == ERROR_SUCCESS) {
+                        emit systemStepReported(Optimizer::tr("System Telemetry level set to %1.").arg(privacyTelemetryVal ? "Full (3)" : "Disabled (0)"), "SUCCESS");
+                    } else {
+                        ok = false;
+                        emit systemStepReported(Optimizer::tr("Failed to write AllowTelemetry key."), "ERROR");
+                    }
+                    RegCloseKey(hKey);
+                } else {
+                    ok = false;
+                    emit systemStepReported(Optimizer::tr("Failed to open DataCollection registry key."), "ERROR");
+                }
+                // Stop/Start Connected User Experiences (DiagTrack) Service
+                SC_HANDLE hSCM = OpenSCManagerW(NULL, NULL, SC_MANAGER_ALL_ACCESS);
+                if (hSCM) {
+                    SC_HANDLE hService = OpenServiceW(hSCM, L"DiagTrack", SERVICE_CHANGE_CONFIG | SERVICE_STOP | SERVICE_START);
+                    if (hService) {
+                        DWORD startType = privacyTelemetryVal ? SERVICE_AUTO_START : SERVICE_DISABLED;
+                        ChangeServiceConfigW(hService, SERVICE_NO_CHANGE, startType, SERVICE_NO_CHANGE, NULL, NULL, NULL, NULL, NULL, NULL, NULL);
+                        if (!privacyTelemetryVal) {
+                            SERVICE_STATUS status;
+                            ControlService(hService, SERVICE_CONTROL_STOP, &status);
+                        } else {
+                            StartServiceW(hService, 0, NULL);
+                        }
+                        CloseServiceHandle(hService);
+                    }
+                    CloseServiceHandle(hSCM);
+                }
+            }
+
+            // 3. CEIP (CEIPEnable)
+            if (privacyCeipVal != origPrivacyCeip || force) {
+                HKEY hKey;
+                // SQMClient HKLM
+                if (RegCreateKeyExW(HKEY_LOCAL_MACHINE, L"SOFTWARE\\Policies\\Microsoft\\SQMClient\\Windows", 0, NULL, REG_OPTION_NON_VOLATILE, KEY_WRITE, NULL, &hKey, NULL) == ERROR_SUCCESS) {
+                    DWORD val = privacyCeipVal ? 1 : 0;
+                    RegSetValueExW(hKey, L"CEIPEnable", 0, REG_DWORD, (const BYTE*)&val, sizeof(val));
+                    RegCloseKey(hKey);
+                }
+                // SQMClient HKCU
+                if (RegCreateKeyExW(HKEY_CURRENT_USER, L"Software\\Policies\\Microsoft\\SQMClient\\Windows", 0, NULL, REG_OPTION_NON_VOLATILE, KEY_WRITE, NULL, &hKey, NULL) == ERROR_SUCCESS) {
+                    DWORD val = privacyCeipVal ? 1 : 0;
+                    RegSetValueExW(hKey, L"CEIPEnable", 0, REG_DWORD, (const BYTE*)&val, sizeof(val));
+                    RegCloseKey(hKey);
+                }
+                // SQMLogger
+                if (RegCreateKeyExW(HKEY_LOCAL_MACHINE, L"SYSTEM\\CurrentControlSet\\Control\\WMI\\Autologger\\SQMLogger", 0, NULL, REG_OPTION_NON_VOLATILE, KEY_WRITE, NULL, &hKey, NULL) == ERROR_SUCCESS) {
+                    DWORD val = privacyCeipVal ? 1 : 0;
+                    RegSetValueExW(hKey, L"Start", 0, REG_DWORD, (const BYTE*)&val, sizeof(val));
+                    RegCloseKey(hKey);
+                }
+                emit systemStepReported(Optimizer::tr("Customer Experience Improvement Program set to %1.").arg(privacyCeipVal ? "Enabled" : "Disabled"), "SUCCESS");
+            }
+
+            // 4. Apps Telemetry (AITEnable / DisableInventory)
+            if (privacyAppsTelemetryVal != origPrivacyAppsTelemetry || force) {
+                HKEY hKey;
+                if (RegCreateKeyExW(HKEY_LOCAL_MACHINE, L"SOFTWARE\\Policies\\Microsoft\\Windows\\AppCompat", 0, NULL, REG_OPTION_NON_VOLATILE, KEY_WRITE, NULL, &hKey, NULL) == ERROR_SUCCESS) {
+                    DWORD aitVal = privacyAppsTelemetryVal ? 1 : 0;
+                    DWORD invVal = privacyAppsTelemetryVal ? 0 : 1;
+                    RegSetValueExW(hKey, L"AITEnable", 0, REG_DWORD, (const BYTE*)&aitVal, sizeof(aitVal));
+                    RegSetValueExW(hKey, L"DisableInventory", 0, REG_DWORD, (const BYTE*)&invVal, sizeof(invVal));
+                    RegCloseKey(hKey);
+                    emit systemStepReported(Optimizer::tr("Applications inventory and usage telemetry set to %1.").arg(privacyAppsTelemetryVal ? "Enabled" : "Disabled"), "SUCCESS");
+                } else {
+                    ok = false;
+                    emit systemStepReported(Optimizer::tr("Failed to open AppCompat registry key."), "ERROR");
+                }
+            }
+
+            // 5. App Launches Tracking (Start_TrackProgs)
+            if (privacyAppLaunchesVal != origPrivacyAppLaunches || force) {
+                HKEY hKey;
+                if (RegCreateKeyExW(HKEY_CURRENT_USER, L"Software\\Microsoft\\Windows\\CurrentVersion\\Explorer\\Advanced", 0, NULL, REG_OPTION_NON_VOLATILE, KEY_WRITE, NULL, &hKey, NULL) == ERROR_SUCCESS) {
+                    DWORD val = privacyAppLaunchesVal ? 1 : 0;
+                    if (RegSetValueExW(hKey, L"Start_TrackProgs", 0, REG_DWORD, (const BYTE*)&val, sizeof(val)) == ERROR_SUCCESS) {
+                        emit systemStepReported(Optimizer::tr("Application launch history tracking set to %1.").arg(privacyAppLaunchesVal ? "Enabled" : "Disabled"), "SUCCESS");
+                    } else {
+                        ok = false;
+                        emit systemStepReported(Optimizer::tr("Failed to write Start_TrackProgs key."), "ERROR");
+                    }
+                    RegCloseKey(hKey);
+                }
+            }
+
+            // 6. Improve Inking and Typing (RestrictImplicitInkCollection / RestrictImplicitTextCollection)
+            if (privacyImproveInkingVal != origPrivacyImproveInking || force) {
+                HKEY hKey;
+                DWORD restrictVal = privacyImproveInkingVal ? 0 : 1;
+                // Write to HKCU
+                if (RegCreateKeyExW(HKEY_CURRENT_USER, L"Software\\Microsoft\\InputPersonalization", 0, NULL, REG_OPTION_NON_VOLATILE, KEY_WRITE, NULL, &hKey, NULL) == ERROR_SUCCESS) {
+                    RegSetValueExW(hKey, L"RestrictImplicitInkCollection", 0, REG_DWORD, (const BYTE*)&restrictVal, sizeof(restrictVal));
+                    RegSetValueExW(hKey, L"RestrictImplicitTextCollection", 0, REG_DWORD, (const BYTE*)&restrictVal, sizeof(restrictVal));
+                    RegCloseKey(hKey);
+                }
+                // Write to HKLM Policies
+                if (RegCreateKeyExW(HKEY_LOCAL_MACHINE, L"SOFTWARE\\Policies\\Microsoft\\InputPersonalization", 0, NULL, REG_OPTION_NON_VOLATILE, KEY_WRITE, NULL, &hKey, NULL) == ERROR_SUCCESS) {
+                    RegSetValueExW(hKey, L"RestrictImplicitInkCollection", 0, REG_DWORD, (const BYTE*)&restrictVal, sizeof(restrictVal));
+                    RegSetValueExW(hKey, L"RestrictImplicitTextCollection", 0, REG_DWORD, (const BYTE*)&restrictVal, sizeof(restrictVal));
+                    RegCloseKey(hKey);
+                }
+                emit systemStepReported(Optimizer::tr("Inking and typing data collection restriction set to %1.").arg(privacyImproveInkingVal ? "Off (Improve Enabled)" : "On (Improve Disabled)"), "SUCCESS");
+            }
+
+            // 7. Personalize Inking and Typing (AllowInputPersonalization)
+            if (privacyPersonalizeInkingVal != origPrivacyPersonalizeInking || force) {
+                HKEY hKey;
+                DWORD allowVal = privacyPersonalizeInkingVal ? 1 : 0;
+                // HKCU
+                if (RegCreateKeyExW(HKEY_CURRENT_USER, L"Software\\Microsoft\\InputPersonalization", 0, NULL, REG_OPTION_NON_VOLATILE, KEY_WRITE, NULL, &hKey, NULL) == ERROR_SUCCESS) {
+                    RegSetValueExW(hKey, L"AllowInputPersonalization", 0, REG_DWORD, (const BYTE*)&allowVal, sizeof(allowVal));
+                    RegCloseKey(hKey);
+                }
+                if (RegCreateKeyExW(HKEY_CURRENT_USER, L"Software\\Microsoft\\Personalization\\Settings", 0, NULL, REG_OPTION_NON_VOLATILE, KEY_WRITE, NULL, &hKey, NULL) == ERROR_SUCCESS) {
+                    RegSetValueExW(hKey, L"AcceptedPrivacyPolicy", 0, REG_DWORD, (const BYTE*)&allowVal, sizeof(allowVal));
+                    RegCloseKey(hKey);
+                }
+                // HKLM Policy
+                if (RegCreateKeyExW(HKEY_LOCAL_MACHINE, L"SOFTWARE\\Policies\\Microsoft\\InputPersonalization", 0, NULL, REG_OPTION_NON_VOLATILE, KEY_WRITE, NULL, &hKey, NULL) == ERROR_SUCCESS) {
+                    RegSetValueExW(hKey, L"AllowInputPersonalization", 0, REG_DWORD, (const BYTE*)&allowVal, sizeof(allowVal));
+                    RegCloseKey(hKey);
+                }
+                emit systemStepReported(Optimizer::tr("Personal dictionary and handwriting personalization set to %1.").arg(privacyPersonalizeInkingVal ? "Enabled" : "Disabled"), "SUCCESS");
+            }
+
+            // 8. Error Reporting (WER Disabled)
+            if (privacyErrorReportingVal != origPrivacyErrorReporting || force) {
+                HKEY hKey;
+                DWORD disabledVal = privacyErrorReportingVal ? 0 : 1;
+                // HKLM
+                if (RegCreateKeyExW(HKEY_LOCAL_MACHINE, L"SOFTWARE\\Policies\\Microsoft\\Windows\\Windows Error Reporting", 0, NULL, REG_OPTION_NON_VOLATILE, KEY_WRITE, NULL, &hKey, NULL) == ERROR_SUCCESS) {
+                    RegSetValueExW(hKey, L"Disabled", 0, REG_DWORD, (const BYTE*)&disabledVal, sizeof(disabledVal));
+                    RegCloseKey(hKey);
+                }
+                // HKCU
+                if (RegCreateKeyExW(HKEY_CURRENT_USER, L"Software\\Policies\\Microsoft\\Windows\\Windows Error Reporting", 0, NULL, REG_OPTION_NON_VOLATILE, KEY_WRITE, NULL, &hKey, NULL) == ERROR_SUCCESS) {
+                    RegSetValueExW(hKey, L"Disabled", 0, REG_DWORD, (const BYTE*)&disabledVal, sizeof(disabledVal));
+                    RegCloseKey(hKey);
+                }
+                emit systemStepReported(Optimizer::tr("Windows Error Reporting system service set to %1.").arg(privacyErrorReportingVal ? "Enabled" : "Disabled"), "SUCCESS");
+            }
+
+            // 9. Camera on Lock Screen (NoLockScreenCamera)
+            if (privacyLockScreenCameraVal != origPrivacyLockScreenCamera || force) {
+                HKEY hKey;
+                if (RegCreateKeyExW(HKEY_LOCAL_MACHINE, L"SOFTWARE\\Policies\\Microsoft\\Windows\\Personalization", 0, NULL, REG_OPTION_NON_VOLATILE, KEY_WRITE, NULL, &hKey, NULL) == ERROR_SUCCESS) {
+                    DWORD val = privacyLockScreenCameraVal ? 0 : 1;
+                    if (RegSetValueExW(hKey, L"NoLockScreenCamera", 0, REG_DWORD, (const BYTE*)&val, sizeof(val)) == ERROR_SUCCESS) {
+                        emit systemStepReported(Optimizer::tr("Camera access on the Lock Screen set to %1.").arg(privacyLockScreenCameraVal ? "Enabled" : "Disabled"), "SUCCESS");
+                    } else {
+                        ok = false;
+                        emit systemStepReported(Optimizer::tr("Failed to write NoLockScreenCamera key."), "ERROR");
+                    }
+                    RegCloseKey(hKey);
+                }
+            }
+
+            // 10. Camera Indicator (NoPhysicalCameraLED)
+            if (privacyCameraIndicatorVal != origPrivacyCameraIndicator || force) {
+                HKEY hKey;
+                if (RegCreateKeyExW(HKEY_LOCAL_MACHINE, L"SOFTWARE\\Microsoft\\OEM\\Device\\Capture", 0, NULL, REG_OPTION_NON_VOLATILE, KEY_WRITE, NULL, &hKey, NULL) == ERROR_SUCCESS) {
+                    DWORD val = privacyCameraIndicatorVal ? 1 : 0;
+                    if (RegSetValueExW(hKey, L"NoPhysicalCameraLED", 0, REG_DWORD, (const BYTE*)&val, sizeof(val)) == ERROR_SUCCESS) {
+                        emit systemStepReported(Optimizer::tr("On-screen Camera On/Off Indicator set to %1.").arg(privacyCameraIndicatorVal ? "Enabled" : "Disabled"), "SUCCESS");
+                    } else {
+                        ok = false;
+                        emit systemStepReported(Optimizer::tr("Failed to write NoPhysicalCameraLED key."), "ERROR");
+                    }
+                    RegCloseKey(hKey);
+                }
+            }
+
+            // 11. Online Speech (HasUserConsent)
+            if (privacyOnlineSpeechVal != origPrivacyOnlineSpeech || force) {
+                HKEY hKey;
+                if (RegCreateKeyExW(HKEY_CURRENT_USER, L"Software\\Microsoft\\Speech_OneCore\\Settings\\OnlineSpeechPrivacy", 0, NULL, REG_OPTION_NON_VOLATILE, KEY_WRITE, NULL, &hKey, NULL) == ERROR_SUCCESS) {
+                    DWORD val = privacyOnlineSpeechVal ? 1 : 0;
+                    if (RegSetValueExW(hKey, L"HasUserConsent", 0, REG_DWORD, (const BYTE*)&val, sizeof(val)) == ERROR_SUCCESS) {
+                        emit systemStepReported(Optimizer::tr("Online speech recognition and dictation set to %1.").arg(privacyOnlineSpeechVal ? "Enabled" : "Disabled"), "SUCCESS");
+                    } else {
+                        ok = false;
+                        emit systemStepReported(Optimizer::tr("Failed to write HasUserConsent key."), "ERROR");
+                    }
+                    RegCloseKey(hKey);
+                }
+            }
+#else
+            emit systemStepReported(Optimizer::tr("[Simulation] Location set to: %1").arg(privacyLocationVal ? "Enabled" : "Disabled"), "SUCCESS");
+            emit systemStepReported(Optimizer::tr("[Simulation] Telemetry set to: %1").arg(privacyTelemetryVal ? "Enabled" : "Disabled"), "SUCCESS");
+            emit systemStepReported(Optimizer::tr("[Simulation] CEIP set to: %1").arg(privacyCeipVal ? "Enabled" : "Disabled"), "SUCCESS");
+            emit systemStepReported(Optimizer::tr("[Simulation] Apps Telemetry set to: %1").arg(privacyAppsTelemetryVal ? "Enabled" : "Disabled"), "SUCCESS");
+            emit systemStepReported(Optimizer::tr("[Simulation] App Launches Tracking set to: %1").arg(privacyAppLaunchesVal ? "Enabled" : "Disabled"), "SUCCESS");
+            emit systemStepReported(Optimizer::tr("[Simulation] Improve Inking and Typing set to: %1").arg(privacyImproveInkingVal ? "Enabled" : "Disabled"), "SUCCESS");
+            emit systemStepReported(Optimizer::tr("[Simulation] Personalize Inking set to: %1").arg(privacyPersonalizeInkingVal ? "Enabled" : "Disabled"), "SUCCESS");
+            emit systemStepReported(Optimizer::tr("[Simulation] Error Reporting set to: %1").arg(privacyErrorReportingVal ? "Enabled" : "Disabled"), "SUCCESS");
+            emit systemStepReported(Optimizer::tr("[Simulation] Camera on Lock Screen set to: %1").arg(privacyLockScreenCameraVal ? "Enabled" : "Disabled"), "SUCCESS");
+            emit systemStepReported(Optimizer::tr("[Simulation] Camera On/Off Indicator set to: %1").arg(privacyCameraIndicatorVal ? "Enabled" : "Disabled"), "SUCCESS");
+            emit systemStepReported(Optimizer::tr("[Simulation] Online Speech Recognition set to: %1").arg(privacyOnlineSpeechVal ? "Enabled" : "Disabled"), "SUCCESS");
+#endif
+            if (ok) {
+                emit systemStepReported(Optimizer::tr("Privacy settings configured successfully."), "SUCCESS");
+            } else {
+                privacySuccess = false;
+                emit systemStepReported(Optimizer::tr("Failed to configure some Privacy settings."), "WARNING");
+            }
+        }
+
         // Step 1.99u: Windows Update Mode Configuration (only if changed)
         bool windowsUpdateSuccess = true;
         if (windowsUpdateModeChanged) {
@@ -7334,6 +7911,18 @@ void Optimizer::startSystemOptimization() {
         m_originalAdsWelcomeExperienceActive = adsWelcomeExperienceVal;
         m_originalAdsFinishSetupActive = adsFinishSetupVal;
         
+        m_originalPrivacyLocationActive = privacyLocationVal;
+        m_originalPrivacyTelemetryActive = privacyTelemetryVal;
+        m_originalPrivacyCeipActive = privacyCeipVal;
+        m_originalPrivacyAppsTelemetryActive = privacyAppsTelemetryVal;
+        m_originalPrivacyAppLaunchesActive = privacyAppLaunchesVal;
+        m_originalPrivacyImproveInkingActive = privacyImproveInkingVal;
+        m_originalPrivacyPersonalizeInkingActive = privacyPersonalizeInkingVal;
+        m_originalPrivacyErrorReportingActive = privacyErrorReportingVal;
+        m_originalPrivacyLockScreenCameraActive = privacyLockScreenCameraVal;
+        m_originalPrivacyCameraIndicatorActive = privacyCameraIndicatorVal;
+        m_originalPrivacyOnlineSpeechActive = privacyOnlineSpeechVal;
+        
         loadSystemStates();
 
         emit driveStatesChanged(m_driveStates);
@@ -7376,6 +7965,19 @@ void Optimizer::startSystemOptimization() {
         emit originalAdsWindowsTipsActiveChanged(m_originalAdsWindowsTipsActive);
         emit originalAdsWelcomeExperienceActiveChanged(m_originalAdsWelcomeExperienceActive);
         emit originalAdsFinishSetupActiveChanged(m_originalAdsFinishSetupActive);
+
+        emit originalPrivacyLocationActiveChanged(m_originalPrivacyLocationActive);
+        emit originalPrivacyTelemetryActiveChanged(m_originalPrivacyTelemetryActive);
+        emit originalPrivacyCeipActiveChanged(m_originalPrivacyCeipActive);
+        emit originalPrivacyAppsTelemetryActiveChanged(m_originalPrivacyAppsTelemetryActive);
+        emit originalPrivacyAppLaunchesActiveChanged(m_originalPrivacyAppLaunchesActive);
+        emit originalPrivacyImproveInkingActiveChanged(m_originalPrivacyImproveInkingActive);
+        emit originalPrivacyPersonalizeInkingActiveChanged(m_originalPrivacyPersonalizeInkingActive);
+        emit originalPrivacyErrorReportingActiveChanged(m_originalPrivacyErrorReportingActive);
+        emit originalPrivacyLockScreenCameraActiveChanged(m_originalPrivacyLockScreenCameraActive);
+        emit originalPrivacyCameraIndicatorActiveChanged(m_originalPrivacyCameraIndicatorActive);
+        emit originalPrivacyOnlineSpeechActiveChanged(m_originalPrivacyOnlineSpeechActive);
+
         emit originalVisualEffectsChanged(m_originalVisualEffects);
         emit originalDriveStatesChanged(m_originalDriveStates);
         emit originalPagefileMinChanged(m_originalPagefileMin);
@@ -7447,6 +8049,19 @@ void Optimizer::showPath(const QString &funcName) {
         Logger::log("Opening Registry Editor for ContentDeliveryManager (Ads)...", "INFO");
 #else
         Logger::log("[Simulation] Opening Registry Editor for ContentDeliveryManager...", "INFO");
+#endif
+    } else if (funcName == "privacy") {
+#ifdef Q_OS_WIN
+        HKEY hKey;
+        if (RegOpenKeyExW(HKEY_CURRENT_USER, L"Software\\Microsoft\\Windows\\CurrentVersion\\Applets\\Regedit", 0, KEY_SET_VALUE, &hKey) == ERROR_SUCCESS) {
+            const wchar_t* lastKey = L"Computer\\HKEY_LOCAL_MACHINE\\SOFTWARE\\Policies\\Microsoft\\Windows\\DataCollection";
+            RegSetValueExW(hKey, L"LastKey", 0, REG_SZ, (const BYTE*)lastKey, (wcslen(lastKey) + 1) * sizeof(wchar_t));
+            RegCloseKey(hKey);
+        }
+        QProcess::startDetached("regedit.exe");
+        Logger::log("Opening Registry Editor for DataCollection (Privacy)...", "INFO");
+#else
+        Logger::log("[Simulation] Opening Registry Editor for DataCollection...", "INFO");
 #endif
     } else if (funcName == "windowsupdate") {
         QProcess::startDetached("cmd.exe", QStringList() << "/c" << "start ms-settings:windowsupdate");
