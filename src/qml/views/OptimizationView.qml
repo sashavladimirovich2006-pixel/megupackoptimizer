@@ -3407,11 +3407,12 @@ Item {
                 }
 
                 // Ads & Privacy Panel
+                // Ads & Privacy Panel
                 AcrylicPanel {
                     id: adsPanel
                     visible: root.currentSection === "telemetry"
                     width: parent.width
-                    height: detailsExpanded ? 84 + adsDetailsContainer.implicitHeight + 20 : 84
+                    height: detailsExpanded ? adsColumn.implicitHeight + 16 : 84
                     property bool detailsExpanded: false
 
                     Behavior on height {
@@ -3583,8 +3584,8 @@ Item {
                             id: adsDetailsContainer
                             anchors.left: parent.left
                             anchors.right: parent.right
-                            anchors.leftMargin: 20
-                            anchors.rightMargin: 20
+                            anchors.leftMargin: 28
+                            anchors.rightMargin: 16
                             spacing: 4
                             visible: adsPanel.detailsExpanded
                             opacity: adsPanel.detailsExpanded ? 1.0 : 0.0
@@ -3596,38 +3597,36 @@ Item {
                                 anchors.right: parent.right
                                 height: 40
 
-                                Row {
-                                    spacing: 12
+                                Item {
+                                    id: iconTailoredContainer
+                                    width: 16
+                                    height: 16
                                     anchors.left: parent.left
                                     anchors.verticalCenter: parent.verticalCenter
 
-                                    Item {
-                                        width: 16
-                                        height: 16
-                                        anchors.verticalCenter: parent.verticalCenter
-
-                                        Image {
-                                            id: iconTailored
-                                            source: "qrc:/MeguPackOptimizer/src/resources/help.svg"
-                                            anchors.fill: parent
-                                            sourceSize.width: 16
-                                            sourceSize.height: 16
-                                            visible: false
-                                        }
-                                        ColorOverlay {
-                                            anchors.fill: parent
-                                            source: iconTailored
-                                            color: optimizerBackend.adsTailoredExperiencesActive !== optimizerBackend.originalAdsTailoredExperiencesActive ? Theme.accent : Theme.textSecondary
-                                        }
+                                    Image {
+                                        id: iconTailored
+                                        source: "qrc:/MeguPackOptimizer/src/resources/help.svg"
+                                        anchors.fill: parent
+                                        sourceSize.width: 16
+                                        sourceSize.height: 16
+                                        visible: false
                                     }
-
-                                    Text {
-                                        text: qsTr("Tailored experiences")
-                                        color: Theme.textPrimary
-                                        font.family: Theme.fontFamily
-                                        font.pixelSize: 12
-                                        anchors.verticalCenter: parent.verticalCenter
+                                    ColorOverlay {
+                                        anchors.fill: parent
+                                        source: iconTailored
+                                        color: optimizerBackend.adsTailoredExperiencesActive !== optimizerBackend.originalAdsTailoredExperiencesActive ? Theme.accent : Theme.textSecondary
                                     }
+                                }
+
+                                Text {
+                                    text: qsTr("Tailored experiences")
+                                    color: Theme.textPrimary
+                                    font.family: Theme.fontFamily
+                                    font.pixelSize: 12
+                                    anchors.left: iconTailoredContainer.right
+                                    anchors.leftMargin: 24
+                                    anchors.verticalCenter: parent.verticalCenter
                                 }
 
                                 MeguSwitch {
@@ -3644,38 +3643,36 @@ Item {
                                 anchors.right: parent.right
                                 height: 40
 
-                                Row {
-                                    spacing: 12
+                                Item {
+                                    id: iconAdvContainer
+                                    width: 16
+                                    height: 16
                                     anchors.left: parent.left
                                     anchors.verticalCenter: parent.verticalCenter
 
-                                    Item {
-                                        width: 16
-                                        height: 16
-                                        anchors.verticalCenter: parent.verticalCenter
-
-                                        Image {
-                                            id: iconAdv
-                                            source: "qrc:/MeguPackOptimizer/src/resources/settings.svg"
-                                            anchors.fill: parent
-                                            sourceSize.width: 16
-                                            sourceSize.height: 16
-                                            visible: false
-                                        }
-                                        ColorOverlay {
-                                            anchors.fill: parent
-                                            source: iconAdv
-                                            color: optimizerBackend.adsAdvertisingIdActive !== optimizerBackend.originalAdsAdvertisingIdActive ? Theme.accent : Theme.textSecondary
-                                        }
+                                    Image {
+                                        id: iconAdv
+                                        source: "qrc:/MeguPackOptimizer/src/resources/settings.svg"
+                                        anchors.fill: parent
+                                        sourceSize.width: 16
+                                        sourceSize.height: 16
+                                        visible: false
                                     }
-
-                                    Text {
-                                        text: qsTr("Advertising ID")
-                                        color: Theme.textPrimary
-                                        font.family: Theme.fontFamily
-                                        font.pixelSize: 12
-                                        anchors.verticalCenter: parent.verticalCenter
+                                    ColorOverlay {
+                                        anchors.fill: parent
+                                        source: iconAdv
+                                        color: optimizerBackend.adsAdvertisingIdActive !== optimizerBackend.originalAdsAdvertisingIdActive ? Theme.accent : Theme.textSecondary
                                     }
+                                }
+
+                                Text {
+                                    text: qsTr("Advertising ID")
+                                    color: Theme.textPrimary
+                                    font.family: Theme.fontFamily
+                                    font.pixelSize: 12
+                                    anchors.left: iconAdvContainer.right
+                                    anchors.leftMargin: 24
+                                    anchors.verticalCenter: parent.verticalCenter
                                 }
 
                                 MeguSwitch {
@@ -3692,38 +3689,36 @@ Item {
                                 anchors.right: parent.right
                                 height: 40
 
-                                Row {
-                                    spacing: 12
+                                Item {
+                                    id: iconSuggestedContentContainer
+                                    width: 16
+                                    height: 16
                                     anchors.left: parent.left
                                     anchors.verticalCenter: parent.verticalCenter
 
-                                    Item {
-                                        width: 16
-                                        height: 16
-                                        anchors.verticalCenter: parent.verticalCenter
-
-                                        Image {
-                                            id: iconSuggestedContent
-                                            source: "qrc:/MeguPackOptimizer/src/resources/settings.svg"
-                                            anchors.fill: parent
-                                            sourceSize.width: 16
-                                            sourceSize.height: 16
-                                            visible: false
-                                        }
-                                        ColorOverlay {
-                                            anchors.fill: parent
-                                            source: iconSuggestedContent
-                                            color: optimizerBackend.adsSuggestedContentActive !== optimizerBackend.originalAdsSuggestedContentActive ? Theme.accent : Theme.textSecondary
-                                        }
+                                    Image {
+                                        id: iconSuggestedContent
+                                        source: "qrc:/MeguPackOptimizer/src/resources/settings.svg"
+                                        anchors.fill: parent
+                                        sourceSize.width: 16
+                                        sourceSize.height: 16
+                                        visible: false
                                     }
-
-                                    Text {
-                                        text: qsTr("Suggested content in settings")
-                                        color: Theme.textPrimary
-                                        font.family: Theme.fontFamily
-                                        font.pixelSize: 12
-                                        anchors.verticalCenter: parent.verticalCenter
+                                    ColorOverlay {
+                                        anchors.fill: parent
+                                        source: iconSuggestedContent
+                                        color: optimizerBackend.adsSuggestedContentActive !== optimizerBackend.originalAdsSuggestedContentActive ? Theme.accent : Theme.textSecondary
                                     }
+                                }
+
+                                Text {
+                                    text: qsTr("Suggested content in settings")
+                                    color: Theme.textPrimary
+                                    font.family: Theme.fontFamily
+                                    font.pixelSize: 12
+                                    anchors.left: iconSuggestedContentContainer.right
+                                    anchors.leftMargin: 24
+                                    anchors.verticalCenter: parent.verticalCenter
                                 }
 
                                 MeguSwitch {
@@ -3740,38 +3735,36 @@ Item {
                                 anchors.right: parent.right
                                 height: 40
 
-                                Row {
-                                    spacing: 12
+                                Item {
+                                    id: iconHomeContainer
+                                    width: 16
+                                    height: 16
                                     anchors.left: parent.left
                                     anchors.verticalCenter: parent.verticalCenter
 
-                                    Item {
-                                        width: 16
-                                        height: 16
-                                        anchors.verticalCenter: parent.verticalCenter
-
-                                        Image {
-                                            id: iconHome
-                                            source: "qrc:/MeguPackOptimizer/src/resources/monitor.svg"
-                                            anchors.fill: parent
-                                            sourceSize.width: 16
-                                            sourceSize.height: 16
-                                            visible: false
-                                        }
-                                        ColorOverlay {
-                                            anchors.fill: parent
-                                            source: iconHome
-                                            color: optimizerBackend.adsSettingsHomeActive !== optimizerBackend.originalAdsSettingsHomeActive ? Theme.accent : Theme.textSecondary
-                                        }
+                                    Image {
+                                        id: iconHome
+                                        source: "qrc:/MeguPackOptimizer/src/resources/monitor.svg"
+                                        anchors.fill: parent
+                                        sourceSize.width: 16
+                                        sourceSize.height: 16
+                                        visible: false
                                     }
-
-                                    Text {
-                                        text: qsTr("Home page in the settings app")
-                                        color: Theme.textPrimary
-                                        font.family: Theme.fontFamily
-                                        font.pixelSize: 12
-                                        anchors.verticalCenter: parent.verticalCenter
+                                    ColorOverlay {
+                                        anchors.fill: parent
+                                        source: iconHome
+                                        color: optimizerBackend.adsSettingsHomeActive !== optimizerBackend.originalAdsSettingsHomeActive ? Theme.accent : Theme.textSecondary
                                     }
+                                }
+
+                                Text {
+                                    text: qsTr("Home page in the settings app")
+                                    color: Theme.textPrimary
+                                    font.family: Theme.fontFamily
+                                    font.pixelSize: 12
+                                    anchors.left: iconHomeContainer.right
+                                    anchors.leftMargin: 24
+                                    anchors.verticalCenter: parent.verticalCenter
                                 }
 
                                 MeguSwitch {
@@ -3788,38 +3781,36 @@ Item {
                                 anchors.right: parent.right
                                 height: 40
 
-                                Row {
-                                    spacing: 12
+                                Item {
+                                    id: iconSuggestedNotificationsContainer
+                                    width: 16
+                                    height: 16
                                     anchors.left: parent.left
                                     anchors.verticalCenter: parent.verticalCenter
 
-                                    Item {
-                                        width: 16
-                                        height: 16
-                                        anchors.verticalCenter: parent.verticalCenter
-
-                                        Image {
-                                            id: iconSuggestedNotifications
-                                            source: "qrc:/MeguPackOptimizer/src/resources/warning.svg"
-                                            anchors.fill: parent
-                                            sourceSize.width: 16
-                                            sourceSize.height: 16
-                                            visible: false
-                                        }
-                                        ColorOverlay {
-                                            anchors.fill: parent
-                                            source: iconSuggestedNotifications
-                                            color: optimizerBackend.adsSuggestedNotificationsActive !== optimizerBackend.originalAdsSuggestedNotificationsActive ? Theme.accent : Theme.textSecondary
-                                        }
+                                    Image {
+                                        id: iconSuggestedNotifications
+                                        source: "qrc:/MeguPackOptimizer/src/resources/warning.svg"
+                                        anchors.fill: parent
+                                        sourceSize.width: 16
+                                        sourceSize.height: 16
+                                        visible: false
                                     }
-
-                                    Text {
-                                        text: qsTr("Suggested notifications")
-                                        color: Theme.textPrimary
-                                        font.family: Theme.fontFamily
-                                        font.pixelSize: 12
-                                        anchors.verticalCenter: parent.verticalCenter
+                                    ColorOverlay {
+                                        anchors.fill: parent
+                                        source: iconSuggestedNotifications
+                                        color: optimizerBackend.adsSuggestedNotificationsActive !== optimizerBackend.originalAdsSuggestedNotificationsActive ? Theme.accent : Theme.textSecondary
                                     }
+                                }
+
+                                Text {
+                                    text: qsTr("Suggested notifications")
+                                    color: Theme.textPrimary
+                                    font.family: Theme.fontFamily
+                                    font.pixelSize: 12
+                                    anchors.left: iconSuggestedNotificationsContainer.right
+                                    anchors.leftMargin: 24
+                                    anchors.verticalCenter: parent.verticalCenter
                                 }
 
                                 MeguSwitch {
@@ -3836,38 +3827,36 @@ Item {
                                 anchors.right: parent.right
                                 height: 40
 
-                                Row {
-                                    spacing: 12
+                                Item {
+                                    id: iconLockTipsContainer
+                                    width: 16
+                                    height: 16
                                     anchors.left: parent.left
                                     anchors.verticalCenter: parent.verticalCenter
 
-                                    Item {
-                                        width: 16
-                                        height: 16
-                                        anchors.verticalCenter: parent.verticalCenter
-
-                                        Image {
-                                            id: iconLockTips
-                                            source: "qrc:/MeguPackOptimizer/src/resources/monitor.svg"
-                                            anchors.fill: parent
-                                            sourceSize.width: 16
-                                            sourceSize.height: 16
-                                            visible: false
-                                        }
-                                        ColorOverlay {
-                                            anchors.fill: parent
-                                            source: iconLockTips
-                                            color: optimizerBackend.adsLockScreenTipsActive !== optimizerBackend.originalAdsLockScreenTipsActive ? Theme.accent : Theme.textSecondary
-                                        }
+                                    Image {
+                                        id: iconLockTips
+                                        source: "qrc:/MeguPackOptimizer/src/resources/monitor.svg"
+                                        anchors.fill: parent
+                                        sourceSize.width: 16
+                                        sourceSize.height: 16
+                                        visible: false
                                     }
-
-                                    Text {
-                                        text: qsTr("Lock screen fun facts, tips and tricks")
-                                        color: Theme.textPrimary
-                                        font.family: Theme.fontFamily
-                                        font.pixelSize: 12
-                                        anchors.verticalCenter: parent.verticalCenter
+                                    ColorOverlay {
+                                        anchors.fill: parent
+                                        source: iconLockTips
+                                        color: optimizerBackend.adsLockScreenTipsActive !== optimizerBackend.originalAdsLockScreenTipsActive ? Theme.accent : Theme.textSecondary
                                     }
+                                }
+
+                                Text {
+                                    text: qsTr("Lock screen fun facts, tips and tricks")
+                                    color: Theme.textPrimary
+                                    font.family: Theme.fontFamily
+                                    font.pixelSize: 12
+                                    anchors.left: iconLockTipsContainer.right
+                                    anchors.leftMargin: 24
+                                    anchors.verticalCenter: parent.verticalCenter
                                 }
 
                                 MeguSwitch {
@@ -3884,38 +3873,36 @@ Item {
                                 anchors.right: parent.right
                                 height: 40
 
-                                Row {
-                                    spacing: 12
+                                Item {
+                                    id: iconWinTipsContainer
+                                    width: 16
+                                    height: 16
                                     anchors.left: parent.left
                                     anchors.verticalCenter: parent.verticalCenter
 
-                                    Item {
-                                        width: 16
-                                        height: 16
-                                        anchors.verticalCenter: parent.verticalCenter
-
-                                        Image {
-                                            id: iconWinTips
-                                            source: "qrc:/MeguPackOptimizer/src/resources/help.svg"
-                                            anchors.fill: parent
-                                            sourceSize.width: 16
-                                            sourceSize.height: 16
-                                            visible: false
-                                        }
-                                        ColorOverlay {
-                                            anchors.fill: parent
-                                            source: iconWinTips
-                                            color: optimizerBackend.adsWindowsTipsActive !== optimizerBackend.originalAdsWindowsTipsActive ? Theme.accent : Theme.textSecondary
-                                        }
+                                    Image {
+                                        id: iconWinTips
+                                        source: "qrc:/MeguPackOptimizer/src/resources/help.svg"
+                                        anchors.fill: parent
+                                        sourceSize.width: 16
+                                        sourceSize.height: 16
+                                        visible: false
                                     }
-
-                                    Text {
-                                        text: qsTr("Windows tips and suggestions")
-                                        color: Theme.textPrimary
-                                        font.family: Theme.fontFamily
-                                        font.pixelSize: 12
-                                        anchors.verticalCenter: parent.verticalCenter
+                                    ColorOverlay {
+                                        anchors.fill: parent
+                                        source: iconWinTips
+                                        color: optimizerBackend.adsWindowsTipsActive !== optimizerBackend.originalAdsWindowsTipsActive ? Theme.accent : Theme.textSecondary
                                     }
+                                }
+
+                                Text {
+                                    text: qsTr("Windows tips and suggestions")
+                                    color: Theme.textPrimary
+                                    font.family: Theme.fontFamily
+                                    font.pixelSize: 12
+                                    anchors.left: iconWinTipsContainer.right
+                                    anchors.leftMargin: 24
+                                    anchors.verticalCenter: parent.verticalCenter
                                 }
 
                                 MeguSwitch {
@@ -3932,38 +3919,36 @@ Item {
                                 anchors.right: parent.right
                                 height: 40
 
-                                Row {
-                                    spacing: 12
+                                Item {
+                                    id: iconWelcomeContainer
+                                    width: 16
+                                    height: 16
                                     anchors.left: parent.left
                                     anchors.verticalCenter: parent.verticalCenter
 
-                                    Item {
-                                        width: 16
-                                        height: 16
-                                        anchors.verticalCenter: parent.verticalCenter
-
-                                        Image {
-                                            id: iconWelcome
-                                            source: "qrc:/MeguPackOptimizer/src/resources/bolt.svg"
-                                            anchors.fill: parent
-                                            sourceSize.width: 16
-                                            sourceSize.height: 16
-                                            visible: false
-                                        }
-                                        ColorOverlay {
-                                            anchors.fill: parent
-                                            source: iconWelcome
-                                            color: optimizerBackend.adsWelcomeExperienceActive !== optimizerBackend.originalAdsWelcomeExperienceActive ? Theme.accent : Theme.textSecondary
-                                        }
+                                    Image {
+                                        id: iconWelcome
+                                        source: "qrc:/MeguPackOptimizer/src/resources/bolt.svg"
+                                        anchors.fill: parent
+                                        sourceSize.width: 16
+                                        sourceSize.height: 16
+                                        visible: false
                                     }
-
-                                    Text {
-                                        text: qsTr("Windows welcome experience")
-                                        color: Theme.textPrimary
-                                        font.family: Theme.fontFamily
-                                        font.pixelSize: 12
-                                        anchors.verticalCenter: parent.verticalCenter
+                                    ColorOverlay {
+                                        anchors.fill: parent
+                                        source: iconWelcome
+                                        color: optimizerBackend.adsWelcomeExperienceActive !== optimizerBackend.originalAdsWelcomeExperienceActive ? Theme.accent : Theme.textSecondary
                                     }
+                                }
+
+                                Text {
+                                    text: qsTr("Windows welcome experience")
+                                    color: Theme.textPrimary
+                                    font.family: Theme.fontFamily
+                                    font.pixelSize: 12
+                                    anchors.left: iconWelcomeContainer.right
+                                    anchors.leftMargin: 24
+                                    anchors.verticalCenter: parent.verticalCenter
                                 }
 
                                 MeguSwitch {
@@ -3980,38 +3965,36 @@ Item {
                                 anchors.right: parent.right
                                 height: 40
 
-                                Row {
-                                    spacing: 12
+                                Item {
+                                    id: iconFinishSetupContainer
+                                    width: 16
+                                    height: 16
                                     anchors.left: parent.left
                                     anchors.verticalCenter: parent.verticalCenter
 
-                                    Item {
-                                        width: 16
-                                        height: 16
-                                        anchors.verticalCenter: parent.verticalCenter
-
-                                        Image {
-                                            id: iconFinishSetup
-                                            source: "qrc:/MeguPackOptimizer/src/resources/settings.svg"
-                                            anchors.fill: parent
-                                            sourceSize.width: 16
-                                            sourceSize.height: 16
-                                            visible: false
-                                        }
-                                        ColorOverlay {
-                                            anchors.fill: parent
-                                            source: iconFinishSetup
-                                            color: optimizerBackend.adsFinishSetupActive !== optimizerBackend.originalAdsFinishSetupActive ? Theme.accent : Theme.textSecondary
-                                        }
+                                    Image {
+                                        id: iconFinishSetup
+                                        source: "qrc:/MeguPackOptimizer/src/resources/settings.svg"
+                                        anchors.fill: parent
+                                        sourceSize.width: 16
+                                        sourceSize.height: 16
+                                        visible: false
                                     }
-
-                                    Text {
-                                        text: qsTr("Finish setting up your device")
-                                        color: Theme.textPrimary
-                                        font.family: Theme.fontFamily
-                                        font.pixelSize: 12
-                                        anchors.verticalCenter: parent.verticalCenter
+                                    ColorOverlay {
+                                        anchors.fill: parent
+                                        source: iconFinishSetup
+                                        color: optimizerBackend.adsFinishSetupActive !== optimizerBackend.originalAdsFinishSetupActive ? Theme.accent : Theme.textSecondary
                                     }
+                                }
+
+                                Text {
+                                    text: qsTr("Finish setting up your device")
+                                    color: Theme.textPrimary
+                                    font.family: Theme.fontFamily
+                                    font.pixelSize: 12
+                                    anchors.left: iconFinishSetupContainer.right
+                                    anchors.leftMargin: 24
+                                    anchors.verticalCenter: parent.verticalCenter
                                 }
 
                                 MeguSwitch {
