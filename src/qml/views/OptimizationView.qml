@@ -3583,27 +3583,35 @@ Item {
                             Behavior on opacity { NumberAnimation { duration: Theme.animFast } }
 
                             // 1. Tailored experiences
-                            Row {
+                            Item {
                                 width: parent.width
                                 height: 40
 
                                 Row {
                                     spacing: 12
+                                    anchors.left: parent.left
                                     anchors.verticalCenter: parent.verticalCenter
-                                    Image {
-                                        id: iconTailored
-                                        source: "qrc:/MeguPackOptimizer/src/resources/help.svg"
-                                        sourceSize.width: 16
-                                        sourceSize.height: 16
+
+                                    Item {
                                         width: 16
                                         height: 16
-                                        visible: false
+                                        anchors.verticalCenter: parent.verticalCenter
+
+                                        Image {
+                                            id: iconTailored
+                                            source: "qrc:/MeguPackOptimizer/src/resources/help.svg"
+                                            anchors.fill: parent
+                                            sourceSize.width: 16
+                                            sourceSize.height: 16
+                                            visible: false
+                                        }
+                                        ColorOverlay {
+                                            anchors.fill: parent
+                                            source: iconTailored
+                                            color: optimizerBackend.adsTailoredExperiencesActive !== optimizerBackend.originalAdsTailoredExperiencesActive ? Theme.accent : Theme.textSecondary
+                                        }
                                     }
-                                    ColorOverlay {
-                                        anchors.fill: iconTailored
-                                        source: iconTailored
-                                        color: optimizerBackend.adsTailoredExperiencesActive !== optimizerBackend.originalAdsTailoredExperiencesActive ? Theme.accent : Theme.textSecondary
-                                    }
+
                                     Text {
                                         text: qsTr("Tailored experiences")
                                         color: Theme.textPrimary
@@ -3622,27 +3630,35 @@ Item {
                             }
 
                             // 2. Advertising ID
-                            Row {
+                            Item {
                                 width: parent.width
                                 height: 40
 
                                 Row {
                                     spacing: 12
+                                    anchors.left: parent.left
                                     anchors.verticalCenter: parent.verticalCenter
-                                    Image {
-                                        id: iconAdv
-                                        source: "qrc:/MeguPackOptimizer/src/resources/settings.svg"
-                                        sourceSize.width: 16
-                                        sourceSize.height: 16
+
+                                    Item {
                                         width: 16
                                         height: 16
-                                        visible: false
+                                        anchors.verticalCenter: parent.verticalCenter
+
+                                        Image {
+                                            id: iconAdv
+                                            source: "qrc:/MeguPackOptimizer/src/resources/settings.svg"
+                                            anchors.fill: parent
+                                            sourceSize.width: 16
+                                            sourceSize.height: 16
+                                            visible: false
+                                        }
+                                        ColorOverlay {
+                                            anchors.fill: parent
+                                            source: iconAdv
+                                            color: optimizerBackend.adsAdvertisingIdActive !== optimizerBackend.originalAdsAdvertisingIdActive ? Theme.accent : Theme.textSecondary
+                                        }
                                     }
-                                    ColorOverlay {
-                                        anchors.fill: iconAdv
-                                        source: iconAdv
-                                        color: optimizerBackend.adsAdvertisingIdActive !== optimizerBackend.originalAdsAdvertisingIdActive ? Theme.accent : Theme.textSecondary
-                                    }
+
                                     Text {
                                         text: qsTr("Advertising ID")
                                         color: Theme.textPrimary
@@ -3661,27 +3677,35 @@ Item {
                             }
 
                             // 3. Suggested content in settings
-                            Row {
+                            Item {
                                 width: parent.width
                                 height: 40
 
                                 Row {
                                     spacing: 12
+                                    anchors.left: parent.left
                                     anchors.verticalCenter: parent.verticalCenter
-                                    Image {
-                                        id: iconSuggestedContent
-                                        source: "qrc:/MeguPackOptimizer/src/resources/settings.svg"
-                                        sourceSize.width: 16
-                                        sourceSize.height: 16
+
+                                    Item {
                                         width: 16
                                         height: 16
-                                        visible: false
+                                        anchors.verticalCenter: parent.verticalCenter
+
+                                        Image {
+                                            id: iconSuggestedContent
+                                            source: "qrc:/MeguPackOptimizer/src/resources/settings.svg"
+                                            anchors.fill: parent
+                                            sourceSize.width: 16
+                                            sourceSize.height: 16
+                                            visible: false
+                                        }
+                                        ColorOverlay {
+                                            anchors.fill: parent
+                                            source: iconSuggestedContent
+                                            color: optimizerBackend.adsSuggestedContentActive !== optimizerBackend.originalAdsSuggestedContentActive ? Theme.accent : Theme.textSecondary
+                                        }
                                     }
-                                    ColorOverlay {
-                                        anchors.fill: iconSuggestedContent
-                                        source: iconSuggestedContent
-                                        color: optimizerBackend.adsSuggestedContentActive !== optimizerBackend.originalAdsSuggestedContentActive ? Theme.accent : Theme.textSecondary
-                                    }
+
                                     Text {
                                         text: qsTr("Suggested content in settings")
                                         color: Theme.textPrimary
@@ -3700,27 +3724,35 @@ Item {
                             }
 
                             // 4. Home page in settings app
-                            Row {
+                            Item {
                                 width: parent.width
                                 height: 40
 
                                 Row {
                                     spacing: 12
+                                    anchors.left: parent.left
                                     anchors.verticalCenter: parent.verticalCenter
-                                    Image {
-                                        id: iconHome
-                                        source: "qrc:/MeguPackOptimizer/src/resources/monitor.svg"
-                                        sourceSize.width: 16
-                                        sourceSize.height: 16
+
+                                    Item {
                                         width: 16
                                         height: 16
-                                        visible: false
+                                        anchors.verticalCenter: parent.verticalCenter
+
+                                        Image {
+                                            id: iconHome
+                                            source: "qrc:/MeguPackOptimizer/src/resources/monitor.svg"
+                                            anchors.fill: parent
+                                            sourceSize.width: 16
+                                            sourceSize.height: 16
+                                            visible: false
+                                        }
+                                        ColorOverlay {
+                                            anchors.fill: parent
+                                            source: iconHome
+                                            color: optimizerBackend.adsSettingsHomeActive !== optimizerBackend.originalAdsSettingsHomeActive ? Theme.accent : Theme.textSecondary
+                                        }
                                     }
-                                    ColorOverlay {
-                                        anchors.fill: iconHome
-                                        source: iconHome
-                                        color: optimizerBackend.adsSettingsHomeActive !== optimizerBackend.originalAdsSettingsHomeActive ? Theme.accent : Theme.textSecondary
-                                    }
+
                                     Text {
                                         text: qsTr("Home page in the settings app")
                                         color: Theme.textPrimary
@@ -3739,27 +3771,35 @@ Item {
                             }
 
                             // 5. Suggested notifications
-                            Row {
+                            Item {
                                 width: parent.width
                                 height: 40
 
                                 Row {
                                     spacing: 12
+                                    anchors.left: parent.left
                                     anchors.verticalCenter: parent.verticalCenter
-                                    Image {
-                                        id: iconSuggestedNotifications
-                                        source: "qrc:/MeguPackOptimizer/src/resources/warning.svg"
-                                        sourceSize.width: 16
-                                        sourceSize.height: 16
+
+                                    Item {
                                         width: 16
                                         height: 16
-                                        visible: false
+                                        anchors.verticalCenter: parent.verticalCenter
+
+                                        Image {
+                                            id: iconSuggestedNotifications
+                                            source: "qrc:/MeguPackOptimizer/src/resources/warning.svg"
+                                            anchors.fill: parent
+                                            sourceSize.width: 16
+                                            sourceSize.height: 16
+                                            visible: false
+                                        }
+                                        ColorOverlay {
+                                            anchors.fill: parent
+                                            source: iconSuggestedNotifications
+                                            color: optimizerBackend.adsSuggestedNotificationsActive !== optimizerBackend.originalAdsSuggestedNotificationsActive ? Theme.accent : Theme.textSecondary
+                                        }
                                     }
-                                    ColorOverlay {
-                                        anchors.fill: iconSuggestedNotifications
-                                        source: iconSuggestedNotifications
-                                        color: optimizerBackend.adsSuggestedNotificationsActive !== optimizerBackend.originalAdsSuggestedNotificationsActive ? Theme.accent : Theme.textSecondary
-                                    }
+
                                     Text {
                                         text: qsTr("Suggested notifications")
                                         color: Theme.textPrimary
@@ -3778,27 +3818,35 @@ Item {
                             }
 
                             // 6. Lock screen fun facts, tips and tricks
-                            Row {
+                            Item {
                                 width: parent.width
                                 height: 40
 
                                 Row {
                                     spacing: 12
+                                    anchors.left: parent.left
                                     anchors.verticalCenter: parent.verticalCenter
-                                    Image {
-                                        id: iconLockTips
-                                        source: "qrc:/MeguPackOptimizer/src/resources/monitor.svg"
-                                        sourceSize.width: 16
-                                        sourceSize.height: 16
+
+                                    Item {
                                         width: 16
                                         height: 16
-                                        visible: false
+                                        anchors.verticalCenter: parent.verticalCenter
+
+                                        Image {
+                                            id: iconLockTips
+                                            source: "qrc:/MeguPackOptimizer/src/resources/monitor.svg"
+                                            anchors.fill: parent
+                                            sourceSize.width: 16
+                                            sourceSize.height: 16
+                                            visible: false
+                                        }
+                                        ColorOverlay {
+                                            anchors.fill: parent
+                                            source: iconLockTips
+                                            color: optimizerBackend.adsLockScreenTipsActive !== optimizerBackend.originalAdsLockScreenTipsActive ? Theme.accent : Theme.textSecondary
+                                        }
                                     }
-                                    ColorOverlay {
-                                        anchors.fill: iconLockTips
-                                        source: iconLockTips
-                                        color: optimizerBackend.adsLockScreenTipsActive !== optimizerBackend.originalAdsLockScreenTipsActive ? Theme.accent : Theme.textSecondary
-                                    }
+
                                     Text {
                                         text: qsTr("Lock screen fun facts, tips and tricks")
                                         color: Theme.textPrimary
@@ -3817,27 +3865,35 @@ Item {
                             }
 
                             // 7. Windows tips and suggestions
-                            Row {
+                            Item {
                                 width: parent.width
                                 height: 40
 
                                 Row {
                                     spacing: 12
+                                    anchors.left: parent.left
                                     anchors.verticalCenter: parent.verticalCenter
-                                    Image {
-                                        id: iconWinTips
-                                        source: "qrc:/MeguPackOptimizer/src/resources/help.svg"
-                                        sourceSize.width: 16
-                                        sourceSize.height: 16
+
+                                    Item {
                                         width: 16
                                         height: 16
-                                        visible: false
+                                        anchors.verticalCenter: parent.verticalCenter
+
+                                        Image {
+                                            id: iconWinTips
+                                            source: "qrc:/MeguPackOptimizer/src/resources/help.svg"
+                                            anchors.fill: parent
+                                            sourceSize.width: 16
+                                            sourceSize.height: 16
+                                            visible: false
+                                        }
+                                        ColorOverlay {
+                                            anchors.fill: parent
+                                            source: iconWinTips
+                                            color: optimizerBackend.adsWindowsTipsActive !== optimizerBackend.originalAdsWindowsTipsActive ? Theme.accent : Theme.textSecondary
+                                        }
                                     }
-                                    ColorOverlay {
-                                        anchors.fill: iconWinTips
-                                        source: iconWinTips
-                                        color: optimizerBackend.adsWindowsTipsActive !== optimizerBackend.originalAdsWindowsTipsActive ? Theme.accent : Theme.textSecondary
-                                    }
+
                                     Text {
                                         text: qsTr("Windows tips and suggestions")
                                         color: Theme.textPrimary
@@ -3856,27 +3912,35 @@ Item {
                             }
 
                             // 8. Windows welcome experience
-                            Row {
+                            Item {
                                 width: parent.width
                                 height: 40
 
                                 Row {
                                     spacing: 12
+                                    anchors.left: parent.left
                                     anchors.verticalCenter: parent.verticalCenter
-                                    Image {
-                                        id: iconWelcome
-                                        source: "qrc:/MeguPackOptimizer/src/resources/bolt.svg"
-                                        sourceSize.width: 16
-                                        sourceSize.height: 16
+
+                                    Item {
                                         width: 16
                                         height: 16
-                                        visible: false
+                                        anchors.verticalCenter: parent.verticalCenter
+
+                                        Image {
+                                            id: iconWelcome
+                                            source: "qrc:/MeguPackOptimizer/src/resources/bolt.svg"
+                                            anchors.fill: parent
+                                            sourceSize.width: 16
+                                            sourceSize.height: 16
+                                            visible: false
+                                        }
+                                        ColorOverlay {
+                                            anchors.fill: parent
+                                            source: iconWelcome
+                                            color: optimizerBackend.adsWelcomeExperienceActive !== optimizerBackend.originalAdsWelcomeExperienceActive ? Theme.accent : Theme.textSecondary
+                                        }
                                     }
-                                    ColorOverlay {
-                                        anchors.fill: iconWelcome
-                                        source: iconWelcome
-                                        color: optimizerBackend.adsWelcomeExperienceActive !== optimizerBackend.originalAdsWelcomeExperienceActive ? Theme.accent : Theme.textSecondary
-                                    }
+
                                     Text {
                                         text: qsTr("Windows welcome experience")
                                         color: Theme.textPrimary
@@ -3895,27 +3959,35 @@ Item {
                             }
 
                             // 9. Finish setting up your device
-                            Row {
+                            Item {
                                 width: parent.width
                                 height: 40
 
                                 Row {
                                     spacing: 12
+                                    anchors.left: parent.left
                                     anchors.verticalCenter: parent.verticalCenter
-                                    Image {
-                                        id: iconFinishSetup
-                                        source: "qrc:/MeguPackOptimizer/src/resources/settings.svg"
-                                        sourceSize.width: 16
-                                        sourceSize.height: 16
+
+                                    Item {
                                         width: 16
                                         height: 16
-                                        visible: false
+                                        anchors.verticalCenter: parent.verticalCenter
+
+                                        Image {
+                                            id: iconFinishSetup
+                                            source: "qrc:/MeguPackOptimizer/src/resources/settings.svg"
+                                            anchors.fill: parent
+                                            sourceSize.width: 16
+                                            sourceSize.height: 16
+                                            visible: false
+                                        }
+                                        ColorOverlay {
+                                            anchors.fill: parent
+                                            source: iconFinishSetup
+                                            color: optimizerBackend.adsFinishSetupActive !== optimizerBackend.originalAdsFinishSetupActive ? Theme.accent : Theme.textSecondary
+                                        }
                                     }
-                                    ColorOverlay {
-                                        anchors.fill: iconFinishSetup
-                                        source: iconFinishSetup
-                                        color: optimizerBackend.adsFinishSetupActive !== optimizerBackend.originalAdsFinishSetupActive ? Theme.accent : Theme.textSecondary
-                                    }
+
                                     Text {
                                         text: qsTr("Finish setting up your device")
                                         color: Theme.textPrimary
