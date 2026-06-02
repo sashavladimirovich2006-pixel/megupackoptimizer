@@ -4186,7 +4186,7 @@ void Optimizer::loadSystemStates() {
         RegCloseKey(hKeyTrack);
     }
 
-    // 6. Improve Inking and Typing (RestrictImplicitInkCollection / RestrictImplicitTextCollection)
+    // 6. Improve Inking and Typing (RestrictImplicitInkCollection / RestrictImplicitTextCollection / AllowLinguisticDataCollection)
     HKEY hKeyInking1;
     if (RegOpenKeyExW(HKEY_CURRENT_USER, L"Software\\Microsoft\\InputPersonalization", 0, KEY_READ, &hKeyInking1) == ERROR_SUCCESS) {
         DWORD val1 = 0;
@@ -4212,8 +4212,17 @@ void Optimizer::loadSystemStates() {
             RegCloseKey(hKeyInking1);
         }
     }
-    if (!privacyTelemetryActive) {
-        privacyImproveInkingActive = false;
+    if (privacyImproveInkingActive) {
+        if (RegOpenKeyExW(HKEY_LOCAL_MACHINE, L"SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Policies\\TextInput", 0, KEY_READ, &hKeyInking1) == ERROR_SUCCESS) {
+            DWORD val = 1;
+            DWORD size = sizeof(val);
+            if (RegQueryValueExW(hKeyInking1, L"AllowLinguisticDataCollection", NULL, NULL, (LPBYTE)&val, &size) == ERROR_SUCCESS) {
+                if (val == 0) {
+                    privacyImproveInkingActive = false;
+                }
+            }
+            RegCloseKey(hKeyInking1);
+        }
     }
 
     // 7. Personalize Inking and Typing (AllowInputPersonalization)
@@ -4245,9 +4254,6 @@ void Optimizer::loadSystemStates() {
             }
             RegCloseKey(hKeyInking2);
         }
-    }
-    if (!privacyTelemetryActive) {
-        privacyPersonalizeInkingActive = false;
     }
 
     // 8. Error Reporting (WER Disabled)
@@ -7017,7 +7023,7 @@ void Optimizer::startSystemOptimization() {
                 }
             }
 
-            // 6. Improve Inking and Typing (RestrictImplicitInkCollection / RestrictImplicitTextCollection)
+            // 6. Improve Inking and Typing (RestrictImplicitInkCollection / RestrictImplicitTextCollection / AllowLinguisticDataCollection)
             if (privacyImproveInkingVal != origPrivacyImproveInking || force) {
                 HKEY hKey;
                 DWORD restrictVal = privacyImproveInkingVal ? 0 : 1;
@@ -7027,10 +7033,16 @@ void Optimizer::startSystemOptimization() {
                     RegSetValueExW(hKey, L"RestrictImplicitTextCollection", 0, REG_DWORD, (const BYTE*)&restrictVal, sizeof(restrictVal));
                     RegCloseKey(hKey);
                 }
-                // Write to HKLM Policies
+                // Write to HKLM Policies InputPersonalization
                 if (RegCreateKeyExW(HKEY_LOCAL_MACHINE, L"SOFTWARE\\Policies\\Microsoft\\InputPersonalization", 0, NULL, REG_OPTION_NON_VOLATILE, KEY_WRITE, NULL, &hKey, NULL) == ERROR_SUCCESS) {
                     RegSetValueExW(hKey, L"RestrictImplicitInkCollection", 0, REG_DWORD, (const BYTE*)&restrictVal, sizeof(restrictVal));
                     RegSetValueExW(hKey, L"RestrictImplicitTextCollection", 0, REG_DWORD, (const BYTE*)&restrictVal, sizeof(restrictVal));
+                    RegCloseKey(hKey);
+                }
+                // Write HKLM TextInput Policy AllowLinguisticDataCollection
+                if (RegCreateKeyExW(HKEY_LOCAL_MACHINE, L"SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Policies\\TextInput", 0, NULL, REG_OPTION_NON_VOLATILE, KEY_WRITE, NULL, &hKey, NULL) == ERROR_SUCCESS) {
+                    DWORD val = privacyImproveInkingVal ? 1 : 0;
+                    RegSetValueExW(hKey, L"AllowLinguisticDataCollection", 0, REG_DWORD, (const BYTE*)&val, sizeof(val));
                     RegCloseKey(hKey);
                 }
                 emit systemStepReported(Optimizer::tr("Inking and typing data collection restriction set to %1.").arg(privacyImproveInkingVal ? "Off (Improve Enabled)" : "On (Improve Disabled)"), "SUCCESS");
