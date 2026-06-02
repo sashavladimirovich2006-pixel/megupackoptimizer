@@ -3426,20 +3426,21 @@ Item {
                         spacing: 16
 
                         // Header Row
-                        Row {
-                            width: parent.width
-                            height: 84
+                        Item {
+                            id: adsHeaderRow
                             anchors.left: parent.left
                             anchors.right: parent.right
                             anchors.leftMargin: 16
                             anchors.rightMargin: 16
-                            spacing: 12
+                            height: 84
 
                             Rectangle {
+                                id: adsHeaderIconRect
                                 width: 40
                                 height: 40
                                 radius: 10
                                 color: Qt.rgba(0.9, 0.45, 0.1, 0.15)
+                                anchors.left: parent.left
                                 anchors.verticalCenter: parent.verticalCenter
 
                                 Item {
@@ -3463,9 +3464,13 @@ Item {
                             }
 
                             Column {
+                                id: adsHeaderTexts
+                                anchors.left: adsHeaderIconRect.right
+                                anchors.leftMargin: 12
+                                anchors.right: expandBtn.left
+                                anchors.rightMargin: 12
                                 anchors.verticalCenter: parent.verticalCenter
                                 spacing: 2
-                                width: parent.width - 40 - 12 - expandBtn.width - 12
 
                                 Row {
                                     spacing: 8
@@ -3521,6 +3526,7 @@ Item {
                                 color: expandMouseArea.containsMouse ? Theme.accentDim : "transparent"
                                 border.color: expandMouseArea.containsMouse ? Theme.accent : Theme.border
                                 border.width: 1
+                                anchors.right: parent.right
                                 anchors.verticalCenter: parent.verticalCenter
 
                                 Behavior on color { ColorAnimation { duration: Theme.animFast } }
@@ -3563,8 +3569,10 @@ Item {
                         // Separator line
                         Rectangle {
                             height: 1
-                            width: parent.width - 32
-                            anchors.horizontalCenter: parent.horizontalCenter
+                            anchors.left: parent.left
+                            anchors.right: parent.right
+                            anchors.leftMargin: 16
+                            anchors.rightMargin: 16
                             color: Theme.border
                             opacity: adsPanel.detailsExpanded ? 0.2 : 0.0
                             Behavior on opacity { NumberAnimation { duration: Theme.animFast } }
@@ -3584,7 +3592,8 @@ Item {
 
                             // 1. Tailored experiences
                             Item {
-                                width: parent.width
+                                anchors.left: parent.left
+                                anchors.right: parent.right
                                 height: 40
 
                                 Row {
@@ -3631,7 +3640,8 @@ Item {
 
                             // 2. Advertising ID
                             Item {
-                                width: parent.width
+                                anchors.left: parent.left
+                                anchors.right: parent.right
                                 height: 40
 
                                 Row {
@@ -3678,7 +3688,8 @@ Item {
 
                             // 3. Suggested content in settings
                             Item {
-                                width: parent.width
+                                anchors.left: parent.left
+                                anchors.right: parent.right
                                 height: 40
 
                                 Row {
@@ -3725,7 +3736,8 @@ Item {
 
                             // 4. Home page in settings app
                             Item {
-                                width: parent.width
+                                anchors.left: parent.left
+                                anchors.right: parent.right
                                 height: 40
 
                                 Row {
@@ -3772,7 +3784,8 @@ Item {
 
                             // 5. Suggested notifications
                             Item {
-                                width: parent.width
+                                anchors.left: parent.left
+                                anchors.right: parent.right
                                 height: 40
 
                                 Row {
@@ -3819,7 +3832,8 @@ Item {
 
                             // 6. Lock screen fun facts, tips and tricks
                             Item {
-                                width: parent.width
+                                anchors.left: parent.left
+                                anchors.right: parent.right
                                 height: 40
 
                                 Row {
@@ -3866,7 +3880,8 @@ Item {
 
                             // 7. Windows tips and suggestions
                             Item {
-                                width: parent.width
+                                anchors.left: parent.left
+                                anchors.right: parent.right
                                 height: 40
 
                                 Row {
@@ -3913,7 +3928,8 @@ Item {
 
                             // 8. Windows welcome experience
                             Item {
-                                width: parent.width
+                                anchors.left: parent.left
+                                anchors.right: parent.right
                                 height: 40
 
                                 Row {
@@ -3960,7 +3976,8 @@ Item {
 
                             // 9. Finish setting up your device
                             Item {
-                                width: parent.width
+                                anchors.left: parent.left
+                                anchors.right: parent.right
                                 height: 40
 
                                 Row {
