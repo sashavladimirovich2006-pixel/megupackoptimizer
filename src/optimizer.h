@@ -101,6 +101,26 @@ class Optimizer : public QObject {
     Q_PROPERTY(bool originalTelemetryCeipActive READ originalTelemetryCeipActive NOTIFY originalTelemetryCeipActiveChanged)
     Q_PROPERTY(bool telemetryWerActive READ telemetryWerActive WRITE setTelemetryWerActive NOTIFY telemetryWerActiveChanged)
     Q_PROPERTY(bool originalTelemetryWerActive READ originalTelemetryWerActive NOTIFY originalTelemetryWerActiveChanged)
+
+    // Ads Optimization properties
+    Q_PROPERTY(bool adsTailoredExperiencesActive READ adsTailoredExperiencesActive WRITE setAdsTailoredExperiencesActive NOTIFY adsTailoredExperiencesActiveChanged)
+    Q_PROPERTY(bool originalAdsTailoredExperiencesActive READ originalAdsTailoredExperiencesActive NOTIFY originalAdsTailoredExperiencesActiveChanged)
+    Q_PROPERTY(bool adsAdvertisingIdActive READ adsAdvertisingIdActive WRITE setAdsAdvertisingIdActive NOTIFY adsAdvertisingIdActiveChanged)
+    Q_PROPERTY(bool originalAdsAdvertisingIdActive READ originalAdsAdvertisingIdActive NOTIFY originalAdsAdvertisingIdActiveChanged)
+    Q_PROPERTY(bool adsSuggestedContentActive READ adsSuggestedContentActive WRITE setAdsSuggestedContentActive NOTIFY adsSuggestedContentActiveChanged)
+    Q_PROPERTY(bool originalAdsSuggestedContentActive READ originalAdsSuggestedContentActive NOTIFY originalAdsSuggestedContentActiveChanged)
+    Q_PROPERTY(bool adsSettingsHomeActive READ adsSettingsHomeActive WRITE setAdsSettingsHomeActive NOTIFY adsSettingsHomeActiveChanged)
+    Q_PROPERTY(bool originalAdsSettingsHomeActive READ originalAdsSettingsHomeActive NOTIFY originalAdsSettingsHomeActiveChanged)
+    Q_PROPERTY(bool adsSuggestedNotificationsActive READ adsSuggestedNotificationsActive WRITE setAdsSuggestedNotificationsActive NOTIFY adsSuggestedNotificationsActiveChanged)
+    Q_PROPERTY(bool originalAdsSuggestedNotificationsActive READ originalAdsSuggestedNotificationsActive NOTIFY originalAdsSuggestedNotificationsActiveChanged)
+    Q_PROPERTY(bool adsLockScreenTipsActive READ adsLockScreenTipsActive WRITE setAdsLockScreenTipsActive NOTIFY adsLockScreenTipsActiveChanged)
+    Q_PROPERTY(bool originalAdsLockScreenTipsActive READ originalAdsLockScreenTipsActive NOTIFY originalAdsLockScreenTipsActiveChanged)
+    Q_PROPERTY(bool adsWindowsTipsActive READ adsWindowsTipsActive WRITE setAdsWindowsTipsActive NOTIFY adsWindowsTipsActiveChanged)
+    Q_PROPERTY(bool originalAdsWindowsTipsActive READ originalAdsWindowsTipsActive NOTIFY originalAdsWindowsTipsActiveChanged)
+    Q_PROPERTY(bool adsWelcomeExperienceActive READ adsWelcomeExperienceActive WRITE setAdsWelcomeExperienceActive NOTIFY adsWelcomeExperienceActiveChanged)
+    Q_PROPERTY(bool originalAdsWelcomeExperienceActive READ originalAdsWelcomeExperienceActive NOTIFY originalAdsWelcomeExperienceActiveChanged)
+    Q_PROPERTY(bool adsFinishSetupActive READ adsFinishSetupActive WRITE setAdsFinishSetupActive NOTIFY adsFinishSetupActiveChanged)
+    Q_PROPERTY(bool originalAdsFinishSetupActive READ originalAdsFinishSetupActive NOTIFY originalAdsFinishSetupActiveChanged)
     Q_PROPERTY(int windowsUpdateMode READ windowsUpdateMode WRITE setWindowsUpdateMode NOTIFY windowsUpdateModeChanged)
     Q_PROPERTY(int originalWindowsUpdateMode READ originalWindowsUpdateMode NOTIFY originalWindowsUpdateModeChanged)
     Q_PROPERTY(QVariantMap cs2LaunchOptions READ cs2LaunchOptions WRITE setCs2LaunchOptions NOTIFY cs2LaunchOptionsChanged)
@@ -235,6 +255,26 @@ public:
     bool originalTelemetryCeipActive() const { return m_originalTelemetryCeipActive; }
     bool telemetryWerActive() const { return m_telemetryWerActive; }
     bool originalTelemetryWerActive() const { return m_originalTelemetryWerActive; }
+
+    // Ads Getters
+    bool adsTailoredExperiencesActive() const { return m_adsTailoredExperiencesActive; }
+    bool originalAdsTailoredExperiencesActive() const { return m_originalAdsTailoredExperiencesActive; }
+    bool adsAdvertisingIdActive() const { return m_adsAdvertisingIdActive; }
+    bool originalAdsAdvertisingIdActive() const { return m_originalAdsAdvertisingIdActive; }
+    bool adsSuggestedContentActive() const { return m_adsSuggestedContentActive; }
+    bool originalAdsSuggestedContentActive() const { return m_originalAdsSuggestedContentActive; }
+    bool adsSettingsHomeActive() const { return m_adsSettingsHomeActive; }
+    bool originalAdsSettingsHomeActive() const { return m_originalAdsSettingsHomeActive; }
+    bool adsSuggestedNotificationsActive() const { return m_adsSuggestedNotificationsActive; }
+    bool originalAdsSuggestedNotificationsActive() const { return m_originalAdsSuggestedNotificationsActive; }
+    bool adsLockScreenTipsActive() const { return m_adsLockScreenTipsActive; }
+    bool originalAdsLockScreenTipsActive() const { return m_originalAdsLockScreenTipsActive; }
+    bool adsWindowsTipsActive() const { return m_adsWindowsTipsActive; }
+    bool originalAdsWindowsTipsActive() const { return m_originalAdsWindowsTipsActive; }
+    bool adsWelcomeExperienceActive() const { return m_adsWelcomeExperienceActive; }
+    bool originalAdsWelcomeExperienceActive() const { return m_originalAdsWelcomeExperienceActive; }
+    bool adsFinishSetupActive() const { return m_adsFinishSetupActive; }
+    bool originalAdsFinishSetupActive() const { return m_originalAdsFinishSetupActive; }
     int windowsUpdateMode() const { return m_windowsUpdateMode; }
     int originalWindowsUpdateMode() const { return m_originalWindowsUpdateMode; }
     QVariantMap cs2LaunchOptions() const { return m_cs2LaunchOptions; }
@@ -296,6 +336,17 @@ public:
     void setTelemetryWapPushActive(bool val);
     void setTelemetryCeipActive(bool val);
     void setTelemetryWerActive(bool val);
+
+    // Ads Setters
+    void setAdsTailoredExperiencesActive(bool val);
+    void setAdsAdvertisingIdActive(bool val);
+    void setAdsSuggestedContentActive(bool val);
+    void setAdsSettingsHomeActive(bool val);
+    void setAdsSuggestedNotificationsActive(bool val);
+    void setAdsLockScreenTipsActive(bool val);
+    void setAdsWindowsTipsActive(bool val);
+    void setAdsWelcomeExperienceActive(bool val);
+    void setAdsFinishSetupActive(bool val);
     void setWindowsUpdateMode(int mode);
     void setCs2LaunchOptions(const QVariantMap &val);
     void setSteamOverlayActive(bool val);
@@ -438,6 +489,26 @@ signals:
     void originalTelemetryCeipActiveChanged(bool val);
     void telemetryWerActiveChanged(bool val);
     void originalTelemetryWerActiveChanged(bool val);
+
+    // Ads Signals
+    void adsTailoredExperiencesActiveChanged(bool val);
+    void originalAdsTailoredExperiencesActiveChanged(bool val);
+    void adsAdvertisingIdActiveChanged(bool val);
+    void originalAdsAdvertisingIdActiveChanged(bool val);
+    void adsSuggestedContentActiveChanged(bool val);
+    void originalAdsSuggestedContentActiveChanged(bool val);
+    void adsSettingsHomeActiveChanged(bool val);
+    void originalAdsSettingsHomeActiveChanged(bool val);
+    void adsSuggestedNotificationsActiveChanged(bool val);
+    void originalAdsSuggestedNotificationsActiveChanged(bool val);
+    void adsLockScreenTipsActiveChanged(bool val);
+    void originalAdsLockScreenTipsActiveChanged(bool val);
+    void adsWindowsTipsActiveChanged(bool val);
+    void originalAdsWindowsTipsActiveChanged(bool val);
+    void adsWelcomeExperienceActiveChanged(bool val);
+    void originalAdsWelcomeExperienceActiveChanged(bool val);
+    void adsFinishSetupActiveChanged(bool val);
+    void originalAdsFinishSetupActiveChanged(bool val);
     void windowsUpdateModeChanged(int mode);
     void originalWindowsUpdateModeChanged(int mode);
     void cs2LaunchOptionsChanged(const QVariantMap &val);
@@ -573,6 +644,26 @@ private:
     bool m_originalTelemetryCeipActive = true;
     bool m_telemetryWerActive = true;
     bool m_originalTelemetryWerActive = true;
+
+    // Ads variables
+    bool m_adsTailoredExperiencesActive = true;
+    bool m_originalAdsTailoredExperiencesActive = true;
+    bool m_adsAdvertisingIdActive = true;
+    bool m_originalAdsAdvertisingIdActive = true;
+    bool m_adsSuggestedContentActive = true;
+    bool m_originalAdsSuggestedContentActive = true;
+    bool m_adsSettingsHomeActive = true;
+    bool m_originalAdsSettingsHomeActive = true;
+    bool m_adsSuggestedNotificationsActive = true;
+    bool m_originalAdsSuggestedNotificationsActive = true;
+    bool m_adsLockScreenTipsActive = true;
+    bool m_originalAdsLockScreenTipsActive = true;
+    bool m_adsWindowsTipsActive = true;
+    bool m_originalAdsWindowsTipsActive = true;
+    bool m_adsWelcomeExperienceActive = true;
+    bool m_originalAdsWelcomeExperienceActive = true;
+    bool m_adsFinishSetupActive = true;
+    bool m_originalAdsFinishSetupActive = true;
     int m_windowsUpdateMode = 0;
     int m_originalWindowsUpdateMode = 0;
     QVariantMap m_cs2LaunchOptions;

@@ -2442,6 +2442,69 @@ void Optimizer::setTelemetryWerActive(bool val) {
     }
 }
 
+void Optimizer::setAdsTailoredExperiencesActive(bool val) {
+    if (m_adsTailoredExperiencesActive != val) {
+        m_adsTailoredExperiencesActive = val;
+        emit adsTailoredExperiencesActiveChanged(m_adsTailoredExperiencesActive);
+    }
+}
+
+void Optimizer::setAdsAdvertisingIdActive(bool val) {
+    if (m_adsAdvertisingIdActive != val) {
+        m_adsAdvertisingIdActive = val;
+        emit adsAdvertisingIdActiveChanged(m_adsAdvertisingIdActive);
+    }
+}
+
+void Optimizer::setAdsSuggestedContentActive(bool val) {
+    if (m_adsSuggestedContentActive != val) {
+        m_adsSuggestedContentActive = val;
+        emit adsSuggestedContentActiveChanged(m_adsSuggestedContentActive);
+    }
+}
+
+void Optimizer::setAdsSettingsHomeActive(bool val) {
+    if (m_adsSettingsHomeActive != val) {
+        m_adsSettingsHomeActive = val;
+        emit adsSettingsHomeActiveChanged(m_adsSettingsHomeActive);
+    }
+}
+
+void Optimizer::setAdsSuggestedNotificationsActive(bool val) {
+    if (m_adsSuggestedNotificationsActive != val) {
+        m_adsSuggestedNotificationsActive = val;
+        emit adsSuggestedNotificationsActiveChanged(m_adsSuggestedNotificationsActive);
+    }
+}
+
+void Optimizer::setAdsLockScreenTipsActive(bool val) {
+    if (m_adsLockScreenTipsActive != val) {
+        m_adsLockScreenTipsActive = val;
+        emit adsLockScreenTipsActiveChanged(m_adsLockScreenTipsActive);
+    }
+}
+
+void Optimizer::setAdsWindowsTipsActive(bool val) {
+    if (m_adsWindowsTipsActive != val) {
+        m_adsWindowsTipsActive = val;
+        emit adsWindowsTipsActiveChanged(m_adsWindowsTipsActive);
+    }
+}
+
+void Optimizer::setAdsWelcomeExperienceActive(bool val) {
+    if (m_adsWelcomeExperienceActive != val) {
+        m_adsWelcomeExperienceActive = val;
+        emit adsWelcomeExperienceActiveChanged(m_adsWelcomeExperienceActive);
+    }
+}
+
+void Optimizer::setAdsFinishSetupActive(bool val) {
+    if (m_adsFinishSetupActive != val) {
+        m_adsFinishSetupActive = val;
+        emit adsFinishSetupActiveChanged(m_adsFinishSetupActive);
+    }
+}
+
 void Optimizer::setWindowsUpdateMode(int mode) {
     if (m_windowsUpdateMode != mode) {
         m_windowsUpdateMode = mode;
@@ -3710,6 +3773,169 @@ void Optimizer::loadSystemStates() {
     emit originalTelemetryActiveChanged(m_originalTelemetryActive);
 
     // ----------------------------------------------------
+    // Load Ads & Privacy States
+    // ----------------------------------------------------
+    bool adsTailoredExperiencesActive = true;
+    bool adsAdvertisingIdActive = true;
+    bool adsSuggestedContentActive = true;
+    bool adsSettingsHomeActive = true;
+    bool adsSuggestedNotificationsActive = true;
+    bool adsLockScreenTipsActive = true;
+    bool adsWindowsTipsActive = true;
+    bool adsWelcomeExperienceActive = true;
+    bool adsFinishSetupActive = true;
+
+#ifdef Q_OS_WIN
+    // 1. Tailored Experiences
+    HKEY hKeyTailored;
+    if (RegOpenKeyExW(HKEY_CURRENT_USER, L"Software\\Microsoft\\Windows\\CurrentVersion\\Privacy", 0, KEY_READ, &hKeyTailored) == ERROR_SUCCESS) {
+        DWORD value = 1;
+        DWORD size = sizeof(value);
+        if (RegQueryValueExW(hKeyTailored, L"TailoredExperiencesWithDiagnosticDataEnabled", NULL, NULL, (LPBYTE)&value, &size) == ERROR_SUCCESS) {
+            adsTailoredExperiencesActive = (value != 0);
+        }
+        RegCloseKey(hKeyTailored);
+    }
+
+    // 2. Advertising ID
+    HKEY hKeyAdv;
+    if (RegOpenKeyExW(HKEY_CURRENT_USER, L"Software\\Microsoft\\Windows\\CurrentVersion\\AdvertisingInfo", 0, KEY_READ, &hKeyAdv) == ERROR_SUCCESS) {
+        DWORD value = 1;
+        DWORD size = sizeof(value);
+        if (RegQueryValueExW(hKeyAdv, L"Enabled", NULL, NULL, (LPBYTE)&value, &size) == ERROR_SUCCESS) {
+            adsAdvertisingIdActive = (value != 0);
+        }
+        RegCloseKey(hKeyAdv);
+    }
+
+    // 3. Suggested content in settings
+    HKEY hKeySuggContent;
+    if (RegOpenKeyExW(HKEY_CURRENT_USER, L"Software\\Microsoft\\Windows\\CurrentVersion\\ContentDeliveryManager", 0, KEY_READ, &hKeySuggContent) == ERROR_SUCCESS) {
+        DWORD value = 1;
+        DWORD size = sizeof(value);
+        if (RegQueryValueExW(hKeySuggContent, L"SubscribedContent-338393Enabled", NULL, NULL, (LPBYTE)&value, &size) == ERROR_SUCCESS) {
+            adsSuggestedContentActive = (value != 0);
+        }
+        RegCloseKey(hKeySuggContent);
+    }
+
+    // 4. Home page in settings app
+    HKEY hKeyHome;
+    if (RegOpenKeyExW(HKEY_CURRENT_USER, L"Software\\Microsoft\\Windows\\CurrentVersion\\Policies\\Explorer", 0, KEY_READ, &hKeyHome) == ERROR_SUCCESS) {
+        wchar_t valueBuf[512] = {0};
+        DWORD bufSize = sizeof(valueBuf);
+        DWORD type = 0;
+        if (RegQueryValueExW(hKeyHome, L"SettingsPageVisibility", nullptr, &type, reinterpret_cast<LPBYTE>(valueBuf), &bufSize) == ERROR_SUCCESS) {
+            QString visibility = QString::fromWCharArray(valueBuf);
+            if (visibility.contains("hide:home", Qt::CaseInsensitive)) {
+                adsSettingsHomeActive = false;
+            }
+        }
+        RegCloseKey(hKeyHome);
+    }
+
+    // 5. Suggested notifications
+    HKEY hKeySuggNotif;
+    if (RegOpenKeyExW(HKEY_CURRENT_USER, L"Software\\Microsoft\\Windows\\CurrentVersion\\Notifications\\Settings\\Windows.SystemToast.Suggested", 0, KEY_READ, &hKeySuggNotif) == ERROR_SUCCESS) {
+        DWORD value = 1;
+        DWORD size = sizeof(value);
+        if (RegQueryValueExW(hKeySuggNotif, L"Enabled", NULL, NULL, (LPBYTE)&value, &size) == ERROR_SUCCESS) {
+            adsSuggestedNotificationsActive = (value != 0);
+        }
+        RegCloseKey(hKeySuggNotif);
+    }
+
+    // 6. Lock screen fun facts
+    HKEY hKeyLockTips;
+    if (RegOpenKeyExW(HKEY_CURRENT_USER, L"Software\\Microsoft\\Windows\\CurrentVersion\\ContentDeliveryManager", 0, KEY_READ, &hKeyLockTips) == ERROR_SUCCESS) {
+        DWORD value = 1;
+        DWORD size = sizeof(value);
+        if (RegQueryValueExW(hKeyLockTips, L"RotatingLockScreenOverlayEnabled", NULL, NULL, (LPBYTE)&value, &size) == ERROR_SUCCESS) {
+            adsLockScreenTipsActive = (value != 0);
+        }
+        RegCloseKey(hKeyLockTips);
+    }
+
+    // 7. Windows tips
+    HKEY hKeyWinTips;
+    if (RegOpenKeyExW(HKEY_CURRENT_USER, L"Software\\Microsoft\\Windows\\CurrentVersion\\ContentDeliveryManager", 0, KEY_READ, &hKeyWinTips) == ERROR_SUCCESS) {
+        DWORD value = 1;
+        DWORD size = sizeof(value);
+        if (RegQueryValueExW(hKeyWinTips, L"SubscribedContent-338389Enabled", NULL, NULL, (LPBYTE)&value, &size) == ERROR_SUCCESS) {
+            adsWindowsTipsActive = (value != 0);
+        }
+        RegCloseKey(hKeyWinTips);
+    }
+
+    // 8. Welcome experience
+    HKEY hKeyWelcome;
+    if (RegOpenKeyExW(HKEY_CURRENT_USER, L"Software\\Microsoft\\Windows\\CurrentVersion\\ContentDeliveryManager", 0, KEY_READ, &hKeyWelcome) == ERROR_SUCCESS) {
+        DWORD value = 1;
+        DWORD size = sizeof(value);
+        if (RegQueryValueExW(hKeyWelcome, L"SubscribedContent-310093Enabled", NULL, NULL, (LPBYTE)&value, &size) == ERROR_SUCCESS) {
+            adsWelcomeExperienceActive = (value != 0);
+        }
+        RegCloseKey(hKeyWelcome);
+    }
+
+    // 9. Finish setting up device
+    HKEY hKeyFinish;
+    if (RegOpenKeyExW(HKEY_CURRENT_USER, L"Software\\Microsoft\\Windows\\CurrentVersion\\UserProfileEngagement", 0, KEY_READ, &hKeyFinish) == ERROR_SUCCESS) {
+        DWORD value = 1;
+        DWORD size = sizeof(value);
+        if (RegQueryValueExW(hKeyFinish, L"ScoobeSystemSettingEnabled", NULL, NULL, (LPBYTE)&value, &size) == ERROR_SUCCESS) {
+            adsFinishSetupActive = (value != 0);
+        }
+        RegCloseKey(hKeyFinish);
+    }
+#endif
+
+    m_adsTailoredExperiencesActive = adsTailoredExperiencesActive;
+    m_originalAdsTailoredExperiencesActive = adsTailoredExperiencesActive;
+    emit adsTailoredExperiencesActiveChanged(m_adsTailoredExperiencesActive);
+    emit originalAdsTailoredExperiencesActiveChanged(m_originalAdsTailoredExperiencesActive);
+
+    m_adsAdvertisingIdActive = adsAdvertisingIdActive;
+    m_originalAdsAdvertisingIdActive = adsAdvertisingIdActive;
+    emit adsAdvertisingIdActiveChanged(m_adsAdvertisingIdActive);
+    emit originalAdsAdvertisingIdActiveChanged(m_originalAdsAdvertisingIdActive);
+
+    m_adsSuggestedContentActive = adsSuggestedContentActive;
+    m_originalAdsSuggestedContentActive = adsSuggestedContentActive;
+    emit adsSuggestedContentActiveChanged(m_adsSuggestedContentActive);
+    emit originalAdsSuggestedContentActiveChanged(m_originalAdsSuggestedContentActive);
+
+    m_adsSettingsHomeActive = adsSettingsHomeActive;
+    m_originalAdsSettingsHomeActive = adsSettingsHomeActive;
+    emit adsSettingsHomeActiveChanged(m_adsSettingsHomeActive);
+    emit originalAdsSettingsHomeActiveChanged(m_originalAdsSettingsHomeActive);
+
+    m_adsSuggestedNotificationsActive = adsSuggestedNotificationsActive;
+    m_originalAdsSuggestedNotificationsActive = adsSuggestedNotificationsActive;
+    emit adsSuggestedNotificationsActiveChanged(m_adsSuggestedNotificationsActive);
+    emit originalAdsSuggestedNotificationsActiveChanged(m_originalAdsSuggestedNotificationsActive);
+
+    m_adsLockScreenTipsActive = adsLockScreenTipsActive;
+    m_originalAdsLockScreenTipsActive = adsLockScreenTipsActive;
+    emit adsLockScreenTipsActiveChanged(m_adsLockScreenTipsActive);
+    emit originalAdsLockScreenTipsActiveChanged(m_originalAdsLockScreenTipsActive);
+
+    m_adsWindowsTipsActive = adsWindowsTipsActive;
+    m_originalAdsWindowsTipsActive = adsWindowsTipsActive;
+    emit adsWindowsTipsActiveChanged(m_adsWindowsTipsActive);
+    emit originalAdsWindowsTipsActiveChanged(m_originalAdsWindowsTipsActive);
+
+    m_adsWelcomeExperienceActive = adsWelcomeExperienceActive;
+    m_originalAdsWelcomeExperienceActive = adsWelcomeExperienceActive;
+    emit adsWelcomeExperienceActiveChanged(m_adsWelcomeExperienceActive);
+    emit originalAdsWelcomeExperienceActiveChanged(m_originalAdsWelcomeExperienceActive);
+
+    m_adsFinishSetupActive = adsFinishSetupActive;
+    m_originalAdsFinishSetupActive = adsFinishSetupActive;
+    emit adsFinishSetupActiveChanged(m_adsFinishSetupActive);
+    emit originalAdsFinishSetupActiveChanged(m_originalAdsFinishSetupActive);
+
+    // ----------------------------------------------------
     // Load Windows Update Mode
     // ----------------------------------------------------
     int updateMode = 0; // Default
@@ -4221,6 +4447,17 @@ void Optimizer::startSystemOptimization() {
     bool telemetryWerVal = m_telemetryWerActive;
     int windowsUpdateModeVal = m_windowsUpdateMode;
 
+    // Copy Ads targets
+    bool adsTailoredExperiencesVal = m_adsTailoredExperiencesActive;
+    bool adsAdvertisingIdVal = m_adsAdvertisingIdActive;
+    bool adsSuggestedContentVal = m_adsSuggestedContentActive;
+    bool adsSettingsHomeVal = m_adsSettingsHomeActive;
+    bool adsSuggestedNotificationsVal = m_adsSuggestedNotificationsActive;
+    bool adsLockScreenTipsVal = m_adsLockScreenTipsActive;
+    bool adsWindowsTipsVal = m_adsWindowsTipsActive;
+    bool adsWelcomeExperienceVal = m_adsWelcomeExperienceActive;
+    bool adsFinishSetupVal = m_adsFinishSetupActive;
+
     QString steamPathVal = "";
 #ifdef Q_OS_WIN
     HKEY hKeySteam;
@@ -4281,6 +4518,17 @@ void Optimizer::startSystemOptimization() {
     bool origTelemetryWer = m_originalTelemetryWerActive;
     int origWindowsUpdateMode = m_originalWindowsUpdateMode;
 
+    // Copy Ads original baselines
+    bool origAdsTailored = m_originalAdsTailoredExperiencesActive;
+    bool origAdsAdvertisingId = m_originalAdsAdvertisingIdActive;
+    bool origAdsSuggestedContent = m_originalAdsSuggestedContentActive;
+    bool origAdsSettingsHome = m_originalAdsSettingsHomeActive;
+    bool origAdsSuggestedNotifications = m_originalAdsSuggestedNotificationsActive;
+    bool origAdsLockScreenTips = m_originalAdsLockScreenTipsActive;
+    bool origAdsWindowsTips = m_originalAdsWindowsTipsActive;
+    bool origAdsWelcomeExperience = m_originalAdsWelcomeExperienceActive;
+    bool origAdsFinishSetup = m_originalAdsFinishSetupActive;
+
     QVariantList usbDevicesVal = m_usbDevices;
     QVariantList origUsbDevicesVal = m_originalUsbDevices;
     QVariantList appNotificationSettingsVal = m_appNotificationSettings;
@@ -4304,7 +4552,7 @@ void Optimizer::startSystemOptimization() {
     bool forceVal = m_forceApplyAll;
     m_forceApplyAll = false;
 
-    QThread* worker = QThread::create([this, forceVal, searchVal, classicContextMenuVal, shortcutArrowsVal, clipboardHistoryVal, taskbarEndTaskVal, taskbarSecondsVal, hibernationVal, overlayVal, coreIsolationVal, hagsVal, mouseAccelVal, gameModeVal, firewallVal, bitlockerVal, discordOverlayVal, notificationsVal, notifGlobalVal, notifAppVal, notifSoundsVal, notifLockscreenVal, targetPowerSchemeVal, activePowerSchemeVal, deleteUltimateStagedVal, deleteDefenderStagedVal, defenderVal, defenderRegistryVal, defenderCmdVal, defenderServiceVal, remoteAccessVal, telemetryVal, telemetryDiagTrackVal, telemetryWapPushVal, telemetryCeipVal, telemetryWerVal, windowsUpdateModeVal, targets, originalTargets, origSearch, origClassicContextMenu, origShortcutArrows, origClipboardHistory, origTaskbarEndTask, origTaskbarSeconds, origHibernation, origOverlay, origCoreIsolation, origHags, origMouseAccel, origGameMode, origFirewall, origBitlocker, origDiscordOverlay, origNotifications, origNotifGlobal, origNotifApp, origNotifSounds, origNotifLockscreen, origDefender, origDefenderRegistry, origDefenderCmd, origDefenderService, origRemoteAccess, origTelemetry, origTelemetryDiagTrack, origTelemetryWapPush, origTelemetryCeip, origTelemetryWer, origWindowsUpdateMode, usbDevicesVal, origUsbDevicesVal, appNotificationSettingsVal, steamPathVal, cs2OptionsVal, origCs2OptionsVal, steamOverlayVal, origSteamOverlayVal, cs2OverlayVal, origCs2OverlayVal, visualEffectsVal, origVisualEffectsVal, steamFriendsSettingsVal, origSteamFriendsSettingsVal, steamFriendsChanged, pagefileMinVal, origPagefileMinVal, pagefileMaxVal, origPagefileMaxVal]() {
+    QThread* worker = QThread::create([this, forceVal, searchVal, classicContextMenuVal, shortcutArrowsVal, clipboardHistoryVal, taskbarEndTaskVal, taskbarSecondsVal, hibernationVal, overlayVal, coreIsolationVal, hagsVal, mouseAccelVal, gameModeVal, firewallVal, bitlockerVal, discordOverlayVal, notificationsVal, notifGlobalVal, notifAppVal, notifSoundsVal, notifLockscreenVal, targetPowerSchemeVal, activePowerSchemeVal, deleteUltimateStagedVal, deleteDefenderStagedVal, defenderVal, defenderRegistryVal, defenderCmdVal, defenderServiceVal, remoteAccessVal, telemetryVal, telemetryDiagTrackVal, telemetryWapPushVal, telemetryCeipVal, telemetryWerVal, windowsUpdateModeVal, targets, originalTargets, origSearch, origClassicContextMenu, origShortcutArrows, origClipboardHistory, origTaskbarEndTask, origTaskbarSeconds, origHibernation, origOverlay, origCoreIsolation, origHags, origMouseAccel, origGameMode, origFirewall, origBitlocker, origDiscordOverlay, origNotifications, origNotifGlobal, origNotifApp, origNotifSounds, origNotifLockscreen, origDefender, origDefenderRegistry, origDefenderCmd, origDefenderService, origRemoteAccess, origTelemetry, origTelemetryDiagTrack, origTelemetryWapPush, origTelemetryCeip, origTelemetryWer, origWindowsUpdateMode, usbDevicesVal, origUsbDevicesVal, appNotificationSettingsVal, steamPathVal, cs2OptionsVal, origCs2OptionsVal, steamOverlayVal, origSteamOverlayVal, cs2OverlayVal, origCs2OverlayVal, visualEffectsVal, origVisualEffectsVal, steamFriendsSettingsVal, origSteamFriendsSettingsVal, steamFriendsChanged, pagefileMinVal, origPagefileMinVal, pagefileMaxVal, origPagefileMaxVal, adsTailoredExperiencesVal, origAdsTailored, adsAdvertisingIdVal, origAdsAdvertisingId, adsSuggestedContentVal, origAdsSuggestedContent, adsSettingsHomeVal, origAdsSettingsHome, adsSuggestedNotificationsVal, origAdsSuggestedNotifications, adsLockScreenTipsVal, origAdsLockScreenTips, adsWindowsTipsVal, origAdsWindowsTips, adsWelcomeExperienceVal, origAdsWelcomeExperience, adsFinishSetupVal, origAdsFinishSetup]() {
         // Step 00: Auto-create backup before making changes
         if (!forceVal && Settings::instance()->createBackup()) {
             emit systemStepReported(tr("Creating automatic system backup..."), "INFO");
@@ -4332,6 +4580,17 @@ void Optimizer::startSystemOptimization() {
                                 (telemetryWapPushVal != origTelemetryWapPush) ||
                                 (telemetryCeipVal != origTelemetryCeip) ||
                                 (telemetryWerVal != origTelemetryWer);
+
+        bool adsChanged = force ||
+                          (adsTailoredExperiencesVal != origAdsTailored) ||
+                          (adsAdvertisingIdVal != origAdsAdvertisingId) ||
+                          (adsSuggestedContentVal != origAdsSuggestedContent) ||
+                          (adsSettingsHomeVal != origAdsSettingsHome) ||
+                          (adsSuggestedNotificationsVal != origAdsSuggestedNotifications) ||
+                          (adsLockScreenTipsVal != origAdsLockScreenTips) ||
+                          (adsWindowsTipsVal != origAdsWindowsTips) ||
+                          (adsWelcomeExperienceVal != origAdsWelcomeExperience) ||
+                          (adsFinishSetupVal != origAdsFinishSetup);
 
         bool windowsUpdateModeChanged = force || (windowsUpdateModeVal != origWindowsUpdateMode);
 
@@ -4367,6 +4626,7 @@ void Optimizer::startSystemOptimization() {
                           (defenderServiceVal != origDefenderService) ||
                           (remoteAccessVal != origRemoteAccess) ||
                           telemetryChanged ||
+                          adsChanged ||
                           windowsUpdateModeChanged ||
                           powerPlanChanged ||
                           usbChanged ||
@@ -5909,6 +6169,198 @@ void Optimizer::startSystemOptimization() {
             }
         }
 
+        // Step 1.99h: Ads & Privacy Configuration (only if changed)
+        bool adsSuccess = true;
+        if (adsChanged) {
+            emit systemStepReported(Optimizer::tr("Configuring Ads & Privacy settings..."), "INFO");
+            QThread::msleep(800);
+            bool ok = true;
+#ifdef Q_OS_WIN
+            // 1. Tailored experiences
+            if (adsTailoredExperiencesVal != origAdsTailored || force) {
+                HKEY hKey;
+                if (RegCreateKeyExW(HKEY_CURRENT_USER, L"Software\\Microsoft\\Windows\\CurrentVersion\\Privacy", 0, NULL, REG_OPTION_NON_VOLATILE, KEY_WRITE, NULL, &hKey, NULL) == ERROR_SUCCESS) {
+                    DWORD val = adsTailoredExperiencesVal ? 1 : 0;
+                    if (RegSetValueExW(hKey, L"TailoredExperiencesWithDiagnosticDataEnabled", 0, REG_DWORD, (const BYTE*)&val, sizeof(val)) == ERROR_SUCCESS) {
+                        emit systemStepReported(Optimizer::tr("Tailored Experiences set to %1.").arg(adsTailoredExperiencesVal ? "Enabled" : "Disabled"), "SUCCESS");
+                    } else {
+                        ok = false;
+                        emit systemStepReported(Optimizer::tr("Failed to write Tailored Experiences key."), "ERROR");
+                    }
+                    RegCloseKey(hKey);
+                } else {
+                    ok = false;
+                    emit systemStepReported(Optimizer::tr("Failed to open Privacy registry key."), "ERROR");
+                }
+            }
+
+            // 2. Advertising ID
+            if (adsAdvertisingIdVal != origAdsAdvertisingId || force) {
+                HKEY hKey;
+                if (RegCreateKeyExW(HKEY_CURRENT_USER, L"Software\\Microsoft\\Windows\\CurrentVersion\\AdvertisingInfo", 0, NULL, REG_OPTION_NON_VOLATILE, KEY_WRITE, NULL, &hKey, NULL) == ERROR_SUCCESS) {
+                    DWORD val = adsAdvertisingIdVal ? 1 : 0;
+                    if (RegSetValueExW(hKey, L"Enabled", 0, REG_DWORD, (const BYTE*)&val, sizeof(val)) == ERROR_SUCCESS) {
+                        emit systemStepReported(Optimizer::tr("Advertising ID set to %1.").arg(adsAdvertisingIdVal ? "Enabled" : "Disabled"), "SUCCESS");
+                    } else {
+                        ok = false;
+                        emit systemStepReported(Optimizer::tr("Failed to write Advertising ID key."), "ERROR");
+                    }
+                    RegCloseKey(hKey);
+                } else {
+                    ok = false;
+                    emit systemStepReported(Optimizer::tr("Failed to open AdvertisingInfo registry key."), "ERROR");
+                }
+            }
+
+            // 3. Suggested content in settings
+            if (adsSuggestedContentVal != origAdsSuggestedContent || force) {
+                HKEY hKey;
+                if (RegCreateKeyExW(HKEY_CURRENT_USER, L"Software\\Microsoft\\Windows\\CurrentVersion\\ContentDeliveryManager", 0, NULL, REG_OPTION_NON_VOLATILE, KEY_WRITE, NULL, &hKey, NULL) == ERROR_SUCCESS) {
+                    DWORD val = adsSuggestedContentVal ? 1 : 0;
+                    if (RegSetValueExW(hKey, L"SubscribedContent-338393Enabled", 0, REG_DWORD, (const BYTE*)&val, sizeof(val)) == ERROR_SUCCESS) {
+                        emit systemStepReported(Optimizer::tr("Suggested Content in Settings set to %1.").arg(adsSuggestedContentVal ? "Enabled" : "Disabled"), "SUCCESS");
+                    } else {
+                        ok = false;
+                        emit systemStepReported(Optimizer::tr("Failed to write Suggested Content in Settings key."), "ERROR");
+                    }
+                    RegCloseKey(hKey);
+                } else {
+                    ok = false;
+                    emit systemStepReported(Optimizer::tr("Failed to open ContentDeliveryManager registry key for suggested content."), "ERROR");
+                }
+            }
+
+            // 4. Home page in settings app
+            if (adsSettingsHomeVal != origAdsSettingsHome || force) {
+                HKEY hKey;
+                if (RegCreateKeyExW(HKEY_CURRENT_USER, L"Software\\Microsoft\\Windows\\CurrentVersion\\Policies\\Explorer", 0, NULL, REG_OPTION_NON_VOLATILE, KEY_WRITE, NULL, &hKey, NULL) == ERROR_SUCCESS) {
+                    if (adsSettingsHomeVal) {
+                        RegDeleteValueW(hKey, L"SettingsPageVisibility");
+                        emit systemStepReported(Optimizer::tr("Home Page in Settings restored to Visible."), "SUCCESS");
+                    } else {
+                        const wchar_t* visibility = L"hide:home";
+                        if (RegSetValueExW(hKey, L"SettingsPageVisibility", 0, REG_SZ, (const BYTE*)visibility, (wcslen(visibility) + 1) * sizeof(wchar_t)) == ERROR_SUCCESS) {
+                            emit systemStepReported(Optimizer::tr("Home Page in Settings Hidden."), "SUCCESS");
+                        } else {
+                            ok = false;
+                            emit systemStepReported(Optimizer::tr("Failed to write SettingsPageVisibility key."), "ERROR");
+                        }
+                    }
+                    RegCloseKey(hKey);
+                } else {
+                    ok = false;
+                    emit systemStepReported(Optimizer::tr("Failed to open Explorer Policies registry key."), "ERROR");
+                }
+            }
+
+            // 5. Suggested notifications
+            if (adsSuggestedNotificationsVal != origAdsSuggestedNotifications || force) {
+                HKEY hKey;
+                if (RegCreateKeyExW(HKEY_CURRENT_USER, L"Software\\Microsoft\\Windows\\CurrentVersion\\Notifications\\Settings\\Windows.SystemToast.Suggested", 0, NULL, REG_OPTION_NON_VOLATILE, KEY_WRITE, NULL, &hKey, NULL) == ERROR_SUCCESS) {
+                    DWORD val = adsSuggestedNotificationsVal ? 1 : 0;
+                    if (RegSetValueExW(hKey, L"Enabled", 0, REG_DWORD, (const BYTE*)&val, sizeof(val)) == ERROR_SUCCESS) {
+                        emit systemStepReported(Optimizer::tr("Suggested Notifications set to %1.").arg(adsSuggestedNotificationsVal ? "Enabled" : "Disabled"), "SUCCESS");
+                    } else {
+                        ok = false;
+                        emit systemStepReported(Optimizer::tr("Failed to write Suggested Notifications key."), "ERROR");
+                    }
+                    RegCloseKey(hKey);
+                } else {
+                    ok = false;
+                    emit systemStepReported(Optimizer::tr("Failed to open Suggested Notifications registry key."), "ERROR");
+                }
+            }
+
+            // 6. Lock screen fun facts, tips and tricks
+            if (adsLockScreenTipsVal != origAdsLockScreenTips || force) {
+                HKEY hKey;
+                if (RegCreateKeyExW(HKEY_CURRENT_USER, L"Software\\Microsoft\\Windows\\CurrentVersion\\ContentDeliveryManager", 0, NULL, REG_OPTION_NON_VOLATILE, KEY_WRITE, NULL, &hKey, NULL) == ERROR_SUCCESS) {
+                    DWORD val = adsLockScreenTipsVal ? 1 : 0;
+                    if (RegSetValueExW(hKey, L"RotatingLockScreenOverlayEnabled", 0, REG_DWORD, (const BYTE*)&val, sizeof(val)) == ERROR_SUCCESS) {
+                        emit systemStepReported(Optimizer::tr("Lock Screen Fun Facts set to %1.").arg(adsLockScreenTipsVal ? "Enabled" : "Disabled"), "SUCCESS");
+                    } else {
+                        ok = false;
+                        emit systemStepReported(Optimizer::tr("Failed to write Lock Screen Fun Facts key."), "ERROR");
+                    }
+                    RegCloseKey(hKey);
+                } else {
+                    ok = false;
+                    emit systemStepReported(Optimizer::tr("Failed to open ContentDeliveryManager registry key for lock screen overlay."), "ERROR");
+                }
+            }
+
+            // 7. Windows tips and suggestions
+            if (adsWindowsTipsVal != origAdsWindowsTips || force) {
+                HKEY hKey;
+                if (RegCreateKeyExW(HKEY_CURRENT_USER, L"Software\\Microsoft\\Windows\\CurrentVersion\\ContentDeliveryManager", 0, NULL, REG_OPTION_NON_VOLATILE, KEY_WRITE, NULL, &hKey, NULL) == ERROR_SUCCESS) {
+                    DWORD val = adsWindowsTipsVal ? 1 : 0;
+                    if (RegSetValueExW(hKey, L"SubscribedContent-338389Enabled", 0, REG_DWORD, (const BYTE*)&val, sizeof(val)) == ERROR_SUCCESS) {
+                        emit systemStepReported(Optimizer::tr("Windows Tips and Suggestions set to %1.").arg(adsWindowsTipsVal ? "Enabled" : "Disabled"), "SUCCESS");
+                    } else {
+                        ok = false;
+                        emit systemStepReported(Optimizer::tr("Failed to write Windows Tips key."), "ERROR");
+                    }
+                    RegCloseKey(hKey);
+                } else {
+                    ok = false;
+                    emit systemStepReported(Optimizer::tr("Failed to open ContentDeliveryManager registry key for Windows tips."), "ERROR");
+                }
+            }
+
+            // 8. Windows welcome experience
+            if (adsWelcomeExperienceVal != origAdsWelcomeExperience || force) {
+                HKEY hKey;
+                if (RegCreateKeyExW(HKEY_CURRENT_USER, L"Software\\Microsoft\\Windows\\CurrentVersion\\ContentDeliveryManager", 0, NULL, REG_OPTION_NON_VOLATILE, KEY_WRITE, NULL, &hKey, NULL) == ERROR_SUCCESS) {
+                    DWORD val = adsWelcomeExperienceVal ? 1 : 0;
+                    if (RegSetValueExW(hKey, L"SubscribedContent-310093Enabled", 0, REG_DWORD, (const BYTE*)&val, sizeof(val)) == ERROR_SUCCESS) {
+                        emit systemStepReported(Optimizer::tr("Windows Welcome Experience set to %1.").arg(adsWelcomeExperienceVal ? "Enabled" : "Disabled"), "SUCCESS");
+                    } else {
+                        ok = false;
+                        emit systemStepReported(Optimizer::tr("Failed to write Windows Welcome Experience key."), "ERROR");
+                    }
+                    RegCloseKey(hKey);
+                } else {
+                    ok = false;
+                    emit systemStepReported(Optimizer::tr("Failed to open ContentDeliveryManager registry key for welcome experience."), "ERROR");
+                }
+            }
+
+            // 9. Finish setting up your device
+            if (adsFinishSetupVal != origAdsFinishSetup || force) {
+                HKEY hKey;
+                if (RegCreateKeyExW(HKEY_CURRENT_USER, L"Software\\Microsoft\\Windows\\CurrentVersion\\UserProfileEngagement", 0, NULL, REG_OPTION_NON_VOLATILE, KEY_WRITE, NULL, &hKey, NULL) == ERROR_SUCCESS) {
+                    DWORD val = adsFinishSetupVal ? 1 : 0;
+                    if (RegSetValueExW(hKey, L"ScoobeSystemSettingEnabled", 0, REG_DWORD, (const BYTE*)&val, sizeof(val)) == ERROR_SUCCESS) {
+                        emit systemStepReported(Optimizer::tr("Finish Setting Up Your Device screen set to %1.").arg(adsFinishSetupVal ? "Enabled" : "Disabled"), "SUCCESS");
+                    } else {
+                        ok = false;
+                        emit systemStepReported(Optimizer::tr("Failed to write UserProfileEngagement key."), "ERROR");
+                    }
+                    RegCloseKey(hKey);
+                } else {
+                    ok = false;
+                    emit systemStepReported(Optimizer::tr("Failed to open UserProfileEngagement registry key."), "ERROR");
+                }
+            }
+#else
+            emit systemStepReported(Optimizer::tr("[Simulation] Tailored experiences set to: %1").arg(adsTailoredExperiencesVal ? "Enabled" : "Disabled"), "SUCCESS");
+            emit systemStepReported(Optimizer::tr("[Simulation] Advertising ID set to: %1").arg(adsAdvertisingIdVal ? "Enabled" : "Disabled"), "SUCCESS");
+            emit systemStepReported(Optimizer::tr("[Simulation] Suggested content in settings set to: %1").arg(adsSuggestedContentVal ? "Enabled" : "Disabled"), "SUCCESS");
+            emit systemStepReported(Optimizer::tr("[Simulation] Home page in settings app set to: %1").arg(adsSettingsHomeVal ? "Enabled" : "Disabled"), "SUCCESS");
+            emit systemStepReported(Optimizer::tr("[Simulation] Suggested notifications set to: %1").arg(adsSuggestedNotificationsVal ? "Enabled" : "Disabled"), "SUCCESS");
+            emit systemStepReported(Optimizer::tr("[Simulation] Lock screen tips set to: %1").arg(adsLockScreenTipsVal ? "Enabled" : "Disabled"), "SUCCESS");
+            emit systemStepReported(Optimizer::tr("[Simulation] Windows tips set to: %1").arg(adsWindowsTipsVal ? "Enabled" : "Disabled"), "SUCCESS");
+            emit systemStepReported(Optimizer::tr("[Simulation] Windows welcome experience set to: %1").arg(adsWelcomeExperienceVal ? "Enabled" : "Disabled"), "SUCCESS");
+            emit systemStepReported(Optimizer::tr("[Simulation] Finish setting up device screen set to: %1").arg(adsFinishSetupVal ? "Enabled" : "Disabled"), "SUCCESS");
+#endif
+            if (ok) {
+                emit systemStepReported(Optimizer::tr("Ads & Privacy settings configured successfully."), "SUCCESS");
+            } else {
+                adsSuccess = false;
+                emit systemStepReported(Optimizer::tr("Failed to configure some Ads & Privacy settings."), "WARNING");
+            }
+        }
+
         // Step 1.99u: Windows Update Mode Configuration (only if changed)
         bool windowsUpdateSuccess = true;
         if (windowsUpdateModeChanged) {
@@ -6767,7 +7219,7 @@ void Optimizer::startSystemOptimization() {
 #endif
         }
 
-        bool overallSuccess = wSearchSuccess && classicContextMenuSuccess && shortcutArrowsSuccess && clipboardHistorySuccess && taskbarEndTaskSuccess && taskbarSecondsSuccess && hibernationSuccess && overlaySuccess && coreIsolationSuccess && hagsSuccess && mouseAccelSuccess && gameModeSuccess && firewallSuccess && notificationsSuccess && powerPlanSuccess && defenderSuccess && overallDrivesSuccess && usbSuccess && remoteAccessSuccess && telemetrySuccess && windowsUpdateSuccess && cs2Success && steamOverlaySuccess && cs2OverlaySuccess && steamFriendsSuccess && visualEffectsSuccess && pagefileSuccess;
+        bool overallSuccess = wSearchSuccess && classicContextMenuSuccess && shortcutArrowsSuccess && clipboardHistorySuccess && taskbarEndTaskSuccess && taskbarSecondsSuccess && hibernationSuccess && overlaySuccess && coreIsolationSuccess && hagsSuccess && mouseAccelSuccess && gameModeSuccess && firewallSuccess && notificationsSuccess && powerPlanSuccess && defenderSuccess && overallDrivesSuccess && usbSuccess && remoteAccessSuccess && telemetrySuccess && windowsUpdateSuccess && cs2Success && steamOverlaySuccess && cs2OverlaySuccess && steamFriendsSuccess && visualEffectsSuccess && pagefileSuccess && adsSuccess;
         if (overallSuccess) {
             emit systemStepReported(tr("System optimization completed successfully!"), "SUCCESS");
             Logger::log("System optimization completed successfully!", "INFO");
@@ -6814,6 +7266,16 @@ void Optimizer::startSystemOptimization() {
         m_originalDriveStates = targets;
         m_originalPagefileMin = pagefileMinVal;
         m_originalPagefileMax = pagefileMaxVal;
+
+        m_originalAdsTailoredExperiencesActive = adsTailoredExperiencesVal;
+        m_originalAdsAdvertisingIdActive = adsAdvertisingIdVal;
+        m_originalAdsSuggestedContentActive = adsSuggestedContentVal;
+        m_originalAdsSettingsHomeActive = adsSettingsHomeVal;
+        m_originalAdsSuggestedNotificationsActive = adsSuggestedNotificationsVal;
+        m_originalAdsLockScreenTipsActive = adsLockScreenTipsVal;
+        m_originalAdsWindowsTipsActive = adsWindowsTipsVal;
+        m_originalAdsWelcomeExperienceActive = adsWelcomeExperienceVal;
+        m_originalAdsFinishSetupActive = adsFinishSetupVal;
         
         loadSystemStates();
 
@@ -6847,6 +7309,16 @@ void Optimizer::startSystemOptimization() {
         emit originalTelemetryCeipActiveChanged(m_originalTelemetryCeipActive);
         emit originalTelemetryWerActiveChanged(m_originalTelemetryWerActive);
         emit originalWindowsUpdateModeChanged(m_originalWindowsUpdateMode);
+
+        emit originalAdsTailoredExperiencesActiveChanged(m_originalAdsTailoredExperiencesActive);
+        emit originalAdsAdvertisingIdActiveChanged(m_originalAdsAdvertisingIdActive);
+        emit originalAdsSuggestedContentActiveChanged(m_originalAdsSuggestedContentActive);
+        emit originalAdsSettingsHomeActiveChanged(m_originalAdsSettingsHomeActive);
+        emit originalAdsSuggestedNotificationsActiveChanged(m_originalAdsSuggestedNotificationsActive);
+        emit originalAdsLockScreenTipsActiveChanged(m_originalAdsLockScreenTipsActive);
+        emit originalAdsWindowsTipsActiveChanged(m_originalAdsWindowsTipsActive);
+        emit originalAdsWelcomeExperienceActiveChanged(m_originalAdsWelcomeExperienceActive);
+        emit originalAdsFinishSetupActiveChanged(m_originalAdsFinishSetupActive);
         emit originalVisualEffectsChanged(m_originalVisualEffects);
         emit originalDriveStatesChanged(m_originalDriveStates);
         emit originalPagefileMinChanged(m_originalPagefileMin);
@@ -6906,6 +7378,19 @@ void Optimizer::showPath(const QString &funcName) {
     } else if (funcName == "telemetry") {
         QProcess::startDetached("cmd.exe", QStringList() << "/c" << "start ms-settings:privacy-feedback");
         Logger::log("Opening Windows Diagnostic & Feedback settings...", "INFO");
+    } else if (funcName == "ads" || funcName == "ad") {
+#ifdef Q_OS_WIN
+        HKEY hKey;
+        if (RegOpenKeyExW(HKEY_CURRENT_USER, L"Software\\Microsoft\\Windows\\CurrentVersion\\Applets\\Regedit", 0, KEY_SET_VALUE, &hKey) == ERROR_SUCCESS) {
+            const wchar_t* lastKey = L"Computer\\HKEY_CURRENT_USER\\Software\\Microsoft\\Windows\\CurrentVersion\\ContentDeliveryManager";
+            RegSetValueExW(hKey, L"LastKey", 0, REG_SZ, (const BYTE*)lastKey, (wcslen(lastKey) + 1) * sizeof(wchar_t));
+            RegCloseKey(hKey);
+        }
+        QProcess::startDetached("regedit.exe");
+        Logger::log("Opening Registry Editor for ContentDeliveryManager (Ads)...", "INFO");
+#else
+        Logger::log("[Simulation] Opening Registry Editor for ContentDeliveryManager...", "INFO");
+#endif
     } else if (funcName == "windowsupdate") {
         QProcess::startDetached("cmd.exe", QStringList() << "/c" << "start ms-settings:windowsupdate");
         Logger::log("Opening Windows Update settings...", "INFO");

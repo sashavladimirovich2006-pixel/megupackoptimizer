@@ -132,6 +132,15 @@ Item {
         if (optimizerBackend.telemetryWapPushActive !== optimizerBackend.originalTelemetryWapPushActive) return true;
         if (optimizerBackend.telemetryCeipActive !== optimizerBackend.originalTelemetryCeipActive) return true;
         if (optimizerBackend.telemetryWerActive !== optimizerBackend.originalTelemetryWerActive) return true;
+        if (optimizerBackend.adsTailoredExperiencesActive !== optimizerBackend.originalAdsTailoredExperiencesActive) return true;
+        if (optimizerBackend.adsAdvertisingIdActive !== optimizerBackend.originalAdsAdvertisingIdActive) return true;
+        if (optimizerBackend.adsSuggestedContentActive !== optimizerBackend.originalAdsSuggestedContentActive) return true;
+        if (optimizerBackend.adsSettingsHomeActive !== optimizerBackend.originalAdsSettingsHomeActive) return true;
+        if (optimizerBackend.adsSuggestedNotificationsActive !== optimizerBackend.originalAdsSuggestedNotificationsActive) return true;
+        if (optimizerBackend.adsLockScreenTipsActive !== optimizerBackend.originalAdsLockScreenTipsActive) return true;
+        if (optimizerBackend.adsWindowsTipsActive !== optimizerBackend.originalAdsWindowsTipsActive) return true;
+        if (optimizerBackend.adsWelcomeExperienceActive !== optimizerBackend.originalAdsWelcomeExperienceActive) return true;
+        if (optimizerBackend.adsFinishSetupActive !== optimizerBackend.originalAdsFinishSetupActive) return true;
         if (optimizerBackend.windowsUpdateMode !== optimizerBackend.originalWindowsUpdateMode) return true;
         if (cs2Changed) return true;
         if (optimizerBackend.steamOverlayActive !== optimizerBackend.originalSteamOverlayActive) return true;
@@ -195,6 +204,18 @@ Item {
         if (optimizerBackend.telemetryWapPushActive !== optimizerBackend.originalTelemetryWapPushActive) return true;
         if (optimizerBackend.telemetryCeipActive !== optimizerBackend.originalTelemetryCeipActive) return true;
         if (optimizerBackend.telemetryWerActive !== optimizerBackend.originalTelemetryWerActive) return true;
+        return false;
+    }
+    property bool adsChanged: {
+        if (optimizerBackend.adsTailoredExperiencesActive !== optimizerBackend.originalAdsTailoredExperiencesActive) return true;
+        if (optimizerBackend.adsAdvertisingIdActive !== optimizerBackend.originalAdsAdvertisingIdActive) return true;
+        if (optimizerBackend.adsSuggestedContentActive !== optimizerBackend.originalAdsSuggestedContentActive) return true;
+        if (optimizerBackend.adsSettingsHomeActive !== optimizerBackend.originalAdsSettingsHomeActive) return true;
+        if (optimizerBackend.adsSuggestedNotificationsActive !== optimizerBackend.originalAdsSuggestedNotificationsActive) return true;
+        if (optimizerBackend.adsLockScreenTipsActive !== optimizerBackend.originalAdsLockScreenTipsActive) return true;
+        if (optimizerBackend.adsWindowsTipsActive !== optimizerBackend.originalAdsWindowsTipsActive) return true;
+        if (optimizerBackend.adsWelcomeExperienceActive !== optimizerBackend.originalAdsWelcomeExperienceActive) return true;
+        if (optimizerBackend.adsFinishSetupActive !== optimizerBackend.originalAdsFinishSetupActive) return true;
         return false;
     }
     property bool windowsUpdateChanged: optimizerBackend.windowsUpdateMode !== optimizerBackend.originalWindowsUpdateMode
@@ -372,6 +393,7 @@ Item {
         if (steamFriendsSettingsChanged) count++;
         if (visualEffectsChanged) count++;
         if (pagefileChanged) count++;
+        if (adsChanged) count++;
         return count;
     }
 
@@ -396,6 +418,15 @@ Item {
         if (optimizerBackend.usbPowerSavingActive !== optimizerBackend.originalUsbPowerSavingActive) count++;
         if (optimizerBackend.remoteAccessActive !== optimizerBackend.originalRemoteAccessActive) count++;
         if (optimizerBackend.telemetryActive !== optimizerBackend.originalTelemetryActive) count++;
+        if (optimizerBackend.adsTailoredExperiencesActive !== optimizerBackend.originalAdsTailoredExperiencesActive) count++;
+        if (optimizerBackend.adsAdvertisingIdActive !== optimizerBackend.originalAdsAdvertisingIdActive) count++;
+        if (optimizerBackend.adsSuggestedContentActive !== optimizerBackend.originalAdsSuggestedContentActive) count++;
+        if (optimizerBackend.adsSettingsHomeActive !== optimizerBackend.originalAdsSettingsHomeActive) count++;
+        if (optimizerBackend.adsSuggestedNotificationsActive !== optimizerBackend.originalAdsSuggestedNotificationsActive) count++;
+        if (optimizerBackend.adsLockScreenTipsActive !== optimizerBackend.originalAdsLockScreenTipsActive) count++;
+        if (optimizerBackend.adsWindowsTipsActive !== optimizerBackend.originalAdsWindowsTipsActive) count++;
+        if (optimizerBackend.adsWelcomeExperienceActive !== optimizerBackend.originalAdsWelcomeExperienceActive) count++;
+        if (optimizerBackend.adsFinishSetupActive !== optimizerBackend.originalAdsFinishSetupActive) count++;
         if (pagefileChanged) count++;
         return count;
     }
@@ -638,6 +669,22 @@ Item {
                 optimizerBackend.telemetryWapPushActive = optimizerBackend.originalTelemetryWapPushActive;
                 optimizerBackend.telemetryCeipActive = optimizerBackend.originalTelemetryCeipActive;
                 optimizerBackend.telemetryWerActive = optimizerBackend.originalTelemetryWerActive;
+            }
+        });
+        if (adsChanged) list.push({
+            name: qsTr("Ads & Privacy"),
+            icon: "qrc:/MeguPackOptimizer/src/resources/ads.svg",
+            hasSidebar: false,
+            revert: function() {
+                optimizerBackend.adsTailoredExperiencesActive = optimizerBackend.originalAdsTailoredExperiencesActive;
+                optimizerBackend.adsAdvertisingIdActive = optimizerBackend.originalAdsAdvertisingIdActive;
+                optimizerBackend.adsSuggestedContentActive = optimizerBackend.originalAdsSuggestedContentActive;
+                optimizerBackend.adsSettingsHomeActive = optimizerBackend.originalAdsSettingsHomeActive;
+                optimizerBackend.adsSuggestedNotificationsActive = optimizerBackend.originalAdsSuggestedNotificationsActive;
+                optimizerBackend.adsLockScreenTipsActive = optimizerBackend.originalAdsLockScreenTipsActive;
+                optimizerBackend.adsWindowsTipsActive = optimizerBackend.originalAdsWindowsTipsActive;
+                optimizerBackend.adsWelcomeExperienceActive = optimizerBackend.originalAdsWelcomeExperienceActive;
+                optimizerBackend.adsFinishSetupActive = optimizerBackend.originalAdsFinishSetupActive;
             }
         });
         if (windowsUpdateChanged) list.push({
@@ -1233,11 +1280,12 @@ Item {
         if (name === qsTr("Clipboard History") || name === "Clipboard History") return clipboardHistoryPanel;
         if (name === qsTr("Taskbar 'End task'") || name === "Taskbar 'End task'") return taskbarEndTaskPanel;
         if (name === qsTr("Clock with seconds") || name === "Clock with seconds") return taskbarSecondsPanel;
+        if (name === qsTr("Ads & Privacy") || name === "Ads & Privacy" || name === "Ads" || name === "Ad" || name === qsTr("Ads") || name === qsTr("Ad")) return adsPanel;
         return null;
     }
 
     function locateFunction(categoryName) {
-        if (categoryName === qsTr("Telemetry") || categoryName === "Telemetry") {
+        if (categoryName === qsTr("Telemetry") || categoryName === "Telemetry" || categoryName === qsTr("Ads & Privacy") || categoryName === "Ads & Privacy" || categoryName === "Ads" || categoryName === "Ad" || categoryName === qsTr("Ads") || categoryName === qsTr("Ad")) {
             root.currentSection = "telemetry";
         } else if (categoryName === qsTr("Counter-Strike 2 Launch Options") || categoryName === "Counter-Strike 2 Launch Options" || categoryName === qsTr("CS2 Steam Overlay") || categoryName === "CS2 Steam Overlay" || categoryName === qsTr("Steam Settings") || categoryName === "Steam Settings") {
             root.currentSection = "games";
@@ -3353,6 +3401,536 @@ Item {
                             anchors.verticalCenter: parent.verticalCenter
                             onToggled: (isChecked) => {
                                 optimizerBackend.telemetryActive = !isChecked;
+                            }
+                        }
+                    }
+                }
+
+                // Ads & Privacy Panel
+                AcrylicPanel {
+                    id: adsPanel
+                    visible: root.currentSection === "telemetry"
+                    width: parent.width
+                    height: detailsExpanded ? 84 + detailsContainer.implicitHeight + 20 : 84
+                    property bool detailsExpanded: false
+
+                    Behavior on height {
+                        NumberAnimation { duration: Theme.animNormal; easing.type: Easing.InOutQuad }
+                    }
+
+                    Column {
+                        id: adsColumn
+                        anchors.left: parent.left
+                        anchors.right: parent.right
+                        anchors.top: parent.top
+                        spacing: 16
+
+                        // Header Row
+                        Row {
+                            width: parent.width
+                            height: 84
+                            anchors.left: parent.left
+                            anchors.right: parent.right
+                            anchors.leftMargin: 16
+                            anchors.rightMargin: 16
+                            spacing: 12
+
+                            Rectangle {
+                                width: 40
+                                height: 40
+                                radius: 10
+                                color: Qt.rgba(0.9, 0.45, 0.1, 0.15)
+                                anchors.verticalCenter: parent.verticalCenter
+
+                                Item {
+                                    width: 20
+                                    height: 20
+                                    anchors.centerIn: parent
+                                    Image {
+                                        id: adsPanel_iconImg
+                                        source: "qrc:/MeguPackOptimizer/src/resources/ads.svg"
+                                        anchors.fill: parent
+                                        sourceSize.width: 20
+                                        sourceSize.height: 20
+                                        visible: false
+                                    }
+                                    ColorOverlay {
+                                        anchors.fill: adsPanel_iconImg
+                                        source: adsPanel_iconImg
+                                        color: "#FF8C00"
+                                    }
+                                }
+                            }
+
+                            Column {
+                                anchors.verticalCenter: parent.verticalCenter
+                                spacing: 2
+                                width: parent.width - 40 - 12 - expandBtn.width - 12
+
+                                Row {
+                                    spacing: 8
+                                    Text {
+                                        text: qsTr("Ads")
+                                        color: Theme.textPrimary
+                                        font.family: Theme.fontFamily
+                                        font.pixelSize: 14
+                                        font.bold: true
+                                        anchors.verticalCenter: parent.verticalCenter
+                                    }
+                                    ShowPathButton {
+                                        anchors.verticalCenter: parent.verticalCenter
+                                        onClicked: { optimizerBackend.showPath("ads"); }
+                                    }
+                                    Rectangle {
+                                        visible: root.adsChanged
+                                        height: 16
+                                        width: selectedTextAds.contentWidth + 10
+                                        radius: 4
+                                        color: Qt.rgba(Theme.success.r, Theme.success.g, Theme.success.b, 0.15)
+                                        border.color: Theme.success
+                                        border.width: 1
+                                        anchors.verticalCenter: parent.verticalCenter
+                                        Text {
+                                            id: selectedTextAds
+                                            text: qsTr("Selected for application")
+                                            color: Theme.success
+                                            font.family: Theme.fontFamily
+                                            font.pixelSize: 8
+                                            font.bold: true
+                                            anchors.centerIn: parent
+                                        }
+                                    }
+                                }
+
+                                Text {
+                                    text: qsTr("Change ads related settings that might display content promoting products or new features.")
+                                    color: Theme.textMuted
+                                    font.family: Theme.fontFamily
+                                    font.pixelSize: 11
+                                    elide: Text.ElideRight
+                                    width: parent.width
+                                }
+                            }
+
+                            // Expand button on top right
+                            Rectangle {
+                                id: expandBtn
+                                width: 32
+                                height: 32
+                                radius: 16
+                                color: expandMouseArea.containsMouse ? Theme.accentDim : "transparent"
+                                border.color: expandMouseArea.containsMouse ? Theme.accent : Theme.border
+                                border.width: 1
+                                anchors.verticalCenter: parent.verticalCenter
+
+                                Behavior on color { ColorAnimation { duration: Theme.animFast } }
+                                Behavior on border.color { ColorAnimation { duration: Theme.animFast } }
+
+                                Item {
+                                    width: 14
+                                    height: 14
+                                    anchors.centerIn: parent
+                                    rotation: adsPanel.detailsExpanded ? 180 : 0
+                                    Behavior on rotation { NumberAnimation { duration: Theme.animFast } }
+
+                                    Image {
+                                        id: expandArrowImg
+                                        source: "qrc:/MeguPackOptimizer/src/resources/arrow.svg"
+                                        anchors.fill: parent
+                                        sourceSize.width: 14
+                                        sourceSize.height: 14
+                                        visible: false
+                                    }
+                                    ColorOverlay {
+                                        anchors.fill: expandArrowImg
+                                        source: expandArrowImg
+                                        color: expandMouseArea.containsMouse ? Theme.accent : Theme.textSecondary
+                                    }
+                                }
+
+                                MouseArea {
+                                    id: expandMouseArea
+                                    anchors.fill: parent
+                                    hoverEnabled: true
+                                    cursorShape: Qt.PointingHandCursor
+                                    onClicked: {
+                                        adsPanel.detailsExpanded = !adsPanel.detailsExpanded;
+                                    }
+                                }
+                            }
+                        }
+
+                        // Separator line
+                        Rectangle {
+                            height: 1
+                            width: parent.width - 32
+                            anchors.horizontalCenter: parent.horizontalCenter
+                            color: Theme.border
+                            opacity: adsPanel.detailsExpanded ? 0.2 : 0.0
+                            Behavior on opacity { NumberAnimation { duration: Theme.animFast } }
+                        }
+
+                        // Expansion Container listing the 9 options
+                        Column {
+                            id: detailsContainer
+                            anchors.left: parent.left
+                            anchors.right: parent.right
+                            anchors.leftMargin: 20
+                            anchors.rightMargin: 20
+                            spacing: 4
+                            visible: adsPanel.detailsExpanded
+                            opacity: adsPanel.detailsExpanded ? 1.0 : 0.0
+                            Behavior on opacity { NumberAnimation { duration: Theme.animFast } }
+
+                            // 1. Tailored experiences
+                            Row {
+                                width: parent.width
+                                height: 40
+
+                                Row {
+                                    spacing: 12
+                                    anchors.verticalCenter: parent.verticalCenter
+                                    Image {
+                                        id: iconTailored
+                                        source: "qrc:/MeguPackOptimizer/src/resources/help.svg"
+                                        sourceSize.width: 16
+                                        sourceSize.height: 16
+                                        width: 16
+                                        height: 16
+                                        visible: false
+                                    }
+                                    ColorOverlay {
+                                        anchors.fill: iconTailored
+                                        source: iconTailored
+                                        color: optimizerBackend.adsTailoredExperiencesActive !== optimizerBackend.originalAdsTailoredExperiencesActive ? Theme.accent : Theme.textSecondary
+                                    }
+                                    Text {
+                                        text: qsTr("Tailored experiences")
+                                        color: Theme.textPrimary
+                                        font.family: Theme.fontFamily
+                                        font.pixelSize: 12
+                                        anchors.verticalCenter: parent.verticalCenter
+                                    }
+                                }
+
+                                MeguSwitch {
+                                    checked: optimizerBackend.adsTailoredExperiencesActive
+                                    anchors.right: parent.right
+                                    anchors.verticalCenter: parent.verticalCenter
+                                    onToggled: (val) => { optimizerBackend.adsTailoredExperiencesActive = val; }
+                                }
+                            }
+
+                            // 2. Advertising ID
+                            Row {
+                                width: parent.width
+                                height: 40
+
+                                Row {
+                                    spacing: 12
+                                    anchors.verticalCenter: parent.verticalCenter
+                                    Image {
+                                        id: iconAdv
+                                        source: "qrc:/MeguPackOptimizer/src/resources/settings.svg"
+                                        sourceSize.width: 16
+                                        sourceSize.height: 16
+                                        width: 16
+                                        height: 16
+                                        visible: false
+                                    }
+                                    ColorOverlay {
+                                        anchors.fill: iconAdv
+                                        source: iconAdv
+                                        color: optimizerBackend.adsAdvertisingIdActive !== optimizerBackend.originalAdsAdvertisingIdActive ? Theme.accent : Theme.textSecondary
+                                    }
+                                    Text {
+                                        text: qsTr("Advertising ID")
+                                        color: Theme.textPrimary
+                                        font.family: Theme.fontFamily
+                                        font.pixelSize: 12
+                                        anchors.verticalCenter: parent.verticalCenter
+                                    }
+                                }
+
+                                MeguSwitch {
+                                    checked: optimizerBackend.adsAdvertisingIdActive
+                                    anchors.right: parent.right
+                                    anchors.verticalCenter: parent.verticalCenter
+                                    onToggled: (val) => { optimizerBackend.adsAdvertisingIdActive = val; }
+                                }
+                            }
+
+                            // 3. Suggested content in settings
+                            Row {
+                                width: parent.width
+                                height: 40
+
+                                Row {
+                                    spacing: 12
+                                    anchors.verticalCenter: parent.verticalCenter
+                                    Image {
+                                        id: iconSuggestedContent
+                                        source: "qrc:/MeguPackOptimizer/src/resources/settings.svg"
+                                        sourceSize.width: 16
+                                        sourceSize.height: 16
+                                        width: 16
+                                        height: 16
+                                        visible: false
+                                    }
+                                    ColorOverlay {
+                                        anchors.fill: iconSuggestedContent
+                                        source: iconSuggestedContent
+                                        color: optimizerBackend.adsSuggestedContentActive !== optimizerBackend.originalAdsSuggestedContentActive ? Theme.accent : Theme.textSecondary
+                                    }
+                                    Text {
+                                        text: qsTr("Suggested content in settings")
+                                        color: Theme.textPrimary
+                                        font.family: Theme.fontFamily
+                                        font.pixelSize: 12
+                                        anchors.verticalCenter: parent.verticalCenter
+                                    }
+                                }
+
+                                MeguSwitch {
+                                    checked: optimizerBackend.adsSuggestedContentActive
+                                    anchors.right: parent.right
+                                    anchors.verticalCenter: parent.verticalCenter
+                                    onToggled: (val) => { optimizerBackend.adsSuggestedContentActive = val; }
+                                }
+                            }
+
+                            // 4. Home page in settings app
+                            Row {
+                                width: parent.width
+                                height: 40
+
+                                Row {
+                                    spacing: 12
+                                    anchors.verticalCenter: parent.verticalCenter
+                                    Image {
+                                        id: iconHome
+                                        source: "qrc:/MeguPackOptimizer/src/resources/monitor.svg"
+                                        sourceSize.width: 16
+                                        sourceSize.height: 16
+                                        width: 16
+                                        height: 16
+                                        visible: false
+                                    }
+                                    ColorOverlay {
+                                        anchors.fill: iconHome
+                                        source: iconHome
+                                        color: optimizerBackend.adsSettingsHomeActive !== optimizerBackend.originalAdsSettingsHomeActive ? Theme.accent : Theme.textSecondary
+                                    }
+                                    Text {
+                                        text: qsTr("Home page in the settings app")
+                                        color: Theme.textPrimary
+                                        font.family: Theme.fontFamily
+                                        font.pixelSize: 12
+                                        anchors.verticalCenter: parent.verticalCenter
+                                    }
+                                }
+
+                                MeguSwitch {
+                                    checked: optimizerBackend.adsSettingsHomeActive
+                                    anchors.right: parent.right
+                                    anchors.verticalCenter: parent.verticalCenter
+                                    onToggled: (val) => { optimizerBackend.adsSettingsHomeActive = val; }
+                                }
+                            }
+
+                            // 5. Suggested notifications
+                            Row {
+                                width: parent.width
+                                height: 40
+
+                                Row {
+                                    spacing: 12
+                                    anchors.verticalCenter: parent.verticalCenter
+                                    Image {
+                                        id: iconSuggestedNotifications
+                                        source: "qrc:/MeguPackOptimizer/src/resources/warning.svg"
+                                        sourceSize.width: 16
+                                        sourceSize.height: 16
+                                        width: 16
+                                        height: 16
+                                        visible: false
+                                    }
+                                    ColorOverlay {
+                                        anchors.fill: iconSuggestedNotifications
+                                        source: iconSuggestedNotifications
+                                        color: optimizerBackend.adsSuggestedNotificationsActive !== optimizerBackend.originalAdsSuggestedNotificationsActive ? Theme.accent : Theme.textSecondary
+                                    }
+                                    Text {
+                                        text: qsTr("Suggested notifications")
+                                        color: Theme.textPrimary
+                                        font.family: Theme.fontFamily
+                                        font.pixelSize: 12
+                                        anchors.verticalCenter: parent.verticalCenter
+                                    }
+                                }
+
+                                MeguSwitch {
+                                    checked: optimizerBackend.adsSuggestedNotificationsActive
+                                    anchors.right: parent.right
+                                    anchors.verticalCenter: parent.verticalCenter
+                                    onToggled: (val) => { optimizerBackend.adsSuggestedNotificationsActive = val; }
+                                }
+                            }
+
+                            // 6. Lock screen fun facts, tips and tricks
+                            Row {
+                                width: parent.width
+                                height: 40
+
+                                Row {
+                                    spacing: 12
+                                    anchors.verticalCenter: parent.verticalCenter
+                                    Image {
+                                        id: iconLockTips
+                                        source: "qrc:/MeguPackOptimizer/src/resources/monitor.svg"
+                                        sourceSize.width: 16
+                                        sourceSize.height: 16
+                                        width: 16
+                                        height: 16
+                                        visible: false
+                                    }
+                                    ColorOverlay {
+                                        anchors.fill: iconLockTips
+                                        source: iconLockTips
+                                        color: optimizerBackend.adsLockScreenTipsActive !== optimizerBackend.originalAdsLockScreenTipsActive ? Theme.accent : Theme.textSecondary
+                                    }
+                                    Text {
+                                        text: qsTr("Lock screen fun facts, tips and tricks")
+                                        color: Theme.textPrimary
+                                        font.family: Theme.fontFamily
+                                        font.pixelSize: 12
+                                        anchors.verticalCenter: parent.verticalCenter
+                                    }
+                                }
+
+                                MeguSwitch {
+                                    checked: optimizerBackend.adsLockScreenTipsActive
+                                    anchors.right: parent.right
+                                    anchors.verticalCenter: parent.verticalCenter
+                                    onToggled: (val) => { optimizerBackend.adsLockScreenTipsActive = val; }
+                                }
+                            }
+
+                            // 7. Windows tips and suggestions
+                            Row {
+                                width: parent.width
+                                height: 40
+
+                                Row {
+                                    spacing: 12
+                                    anchors.verticalCenter: parent.verticalCenter
+                                    Image {
+                                        id: iconWinTips
+                                        source: "qrc:/MeguPackOptimizer/src/resources/help.svg"
+                                        sourceSize.width: 16
+                                        sourceSize.height: 16
+                                        width: 16
+                                        height: 16
+                                        visible: false
+                                    }
+                                    ColorOverlay {
+                                        anchors.fill: iconWinTips
+                                        source: iconWinTips
+                                        color: optimizerBackend.adsWindowsTipsActive !== optimizerBackend.originalAdsWindowsTipsActive ? Theme.accent : Theme.textSecondary
+                                    }
+                                    Text {
+                                        text: qsTr("Windows tips and suggestions")
+                                        color: Theme.textPrimary
+                                        font.family: Theme.fontFamily
+                                        font.pixelSize: 12
+                                        anchors.verticalCenter: parent.verticalCenter
+                                    }
+                                }
+
+                                MeguSwitch {
+                                    checked: optimizerBackend.adsWindowsTipsActive
+                                    anchors.right: parent.right
+                                    anchors.verticalCenter: parent.verticalCenter
+                                    onToggled: (val) => { optimizerBackend.adsWindowsTipsActive = val; }
+                                }
+                            }
+
+                            // 8. Windows welcome experience
+                            Row {
+                                width: parent.width
+                                height: 40
+
+                                Row {
+                                    spacing: 12
+                                    anchors.verticalCenter: parent.verticalCenter
+                                    Image {
+                                        id: iconWelcome
+                                        source: "qrc:/MeguPackOptimizer/src/resources/bolt.svg"
+                                        sourceSize.width: 16
+                                        sourceSize.height: 16
+                                        width: 16
+                                        height: 16
+                                        visible: false
+                                    }
+                                    ColorOverlay {
+                                        anchors.fill: iconWelcome
+                                        source: iconWelcome
+                                        color: optimizerBackend.adsWelcomeExperienceActive !== optimizerBackend.originalAdsWelcomeExperienceActive ? Theme.accent : Theme.textSecondary
+                                    }
+                                    Text {
+                                        text: qsTr("Windows welcome experience")
+                                        color: Theme.textPrimary
+                                        font.family: Theme.fontFamily
+                                        font.pixelSize: 12
+                                        anchors.verticalCenter: parent.verticalCenter
+                                    }
+                                }
+
+                                MeguSwitch {
+                                    checked: optimizerBackend.adsWelcomeExperienceActive
+                                    anchors.right: parent.right
+                                    anchors.verticalCenter: parent.verticalCenter
+                                    onToggled: (val) => { optimizerBackend.adsWelcomeExperienceActive = val; }
+                                }
+                            }
+
+                            // 9. Finish setting up your device
+                            Row {
+                                width: parent.width
+                                height: 40
+
+                                Row {
+                                    spacing: 12
+                                    anchors.verticalCenter: parent.verticalCenter
+                                    Image {
+                                        id: iconFinishSetup
+                                        source: "qrc:/MeguPackOptimizer/src/resources/settings.svg"
+                                        sourceSize.width: 16
+                                        sourceSize.height: 16
+                                        width: 16
+                                        height: 16
+                                        visible: false
+                                    }
+                                    ColorOverlay {
+                                        anchors.fill: iconFinishSetup
+                                        source: iconFinishSetup
+                                        color: optimizerBackend.adsFinishSetupActive !== optimizerBackend.originalAdsFinishSetupActive ? Theme.accent : Theme.textSecondary
+                                    }
+                                    Text {
+                                        text: qsTr("Finish setting up your device")
+                                        color: Theme.textPrimary
+                                        font.family: Theme.fontFamily
+                                        font.pixelSize: 12
+                                        anchors.verticalCenter: parent.verticalCenter
+                                    }
+                                }
+
+                                MeguSwitch {
+                                    checked: optimizerBackend.adsFinishSetupActive
+                                    anchors.right: parent.right
+                                    anchors.verticalCenter: parent.verticalCenter
+                                    onToggled: (val) => { optimizerBackend.adsFinishSetupActive = val; }
+                                }
                             }
                         }
                     }

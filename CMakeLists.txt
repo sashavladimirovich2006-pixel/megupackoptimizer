@@ -82,6 +82,7 @@ qt_add_qml_module(megu_pack_optimizer
         src/resources/help.svg
         src/resources/megu_logo_transparent.png
         src/resources/cs2_icon.svg
+        src/resources/ads.svg
         translations/megu_pack_optimizer_uk.qm
 )
 
