@@ -3811,11 +3811,15 @@ void Optimizer::loadSystemStates() {
     // 3. Suggested content in settings
     HKEY hKeySuggContent;
     if (RegOpenKeyExW(HKEY_CURRENT_USER, L"Software\\Microsoft\\Windows\\CurrentVersion\\ContentDeliveryManager", 0, KEY_READ, &hKeySuggContent) == ERROR_SUCCESS) {
-        DWORD value = 1;
-        DWORD size = sizeof(value);
-        if (RegQueryValueExW(hKeySuggContent, L"SubscribedContent-338393Enabled", NULL, NULL, (LPBYTE)&value, &size) == ERROR_SUCCESS) {
-            adsSuggestedContentActive = (value != 0);
-        }
+        DWORD val1 = 1, val2 = 1, val3 = 1;
+        DWORD size = sizeof(DWORD);
+        RegQueryValueExW(hKeySuggContent, L"SubscribedContent-338393Enabled", NULL, NULL, (LPBYTE)&val1, &size);
+        size = sizeof(DWORD);
+        RegQueryValueExW(hKeySuggContent, L"SubscribedContent-353694Enabled", NULL, NULL, (LPBYTE)&val2, &size);
+        size = sizeof(DWORD);
+        RegQueryValueExW(hKeySuggContent, L"SubscribedContent-353696Enabled", NULL, NULL, (LPBYTE)&val3, &size);
+        
+        adsSuggestedContentActive = (val1 != 0 || val2 != 0 || val3 != 0);
         RegCloseKey(hKeySuggContent);
     }
 
@@ -6235,7 +6239,18 @@ void Optimizer::startSystemOptimization() {
                 HKEY hKey;
                 if (RegCreateKeyExW(HKEY_CURRENT_USER, L"Software\\Microsoft\\Windows\\CurrentVersion\\ContentDeliveryManager", 0, NULL, REG_OPTION_NON_VOLATILE, KEY_WRITE, NULL, &hKey, NULL) == ERROR_SUCCESS) {
                     DWORD val = adsSuggestedContentVal ? 1 : 0;
-                    if (RegSetValueExW(hKey, L"SubscribedContent-338393Enabled", 0, REG_DWORD, (const BYTE*)&val, sizeof(val)) == ERROR_SUCCESS) {
+                    bool okWrite = true;
+                    if (RegSetValueExW(hKey, L"SubscribedContent-338393Enabled", 0, REG_DWORD, (const BYTE*)&val, sizeof(val)) != ERROR_SUCCESS) {
+                        okWrite = false;
+                    }
+                    if (RegSetValueExW(hKey, L"SubscribedContent-353694Enabled", 0, REG_DWORD, (const BYTE*)&val, sizeof(val)) != ERROR_SUCCESS) {
+                        okWrite = false;
+                    }
+                    if (RegSetValueExW(hKey, L"SubscribedContent-353696Enabled", 0, REG_DWORD, (const BYTE*)&val, sizeof(val)) != ERROR_SUCCESS) {
+                        okWrite = false;
+                    }
+
+                    if (okWrite) {
                         emit systemStepReported(Optimizer::tr("Suggested Content in Settings set to %1.").arg(adsSuggestedContentVal ? "Enabled" : "Disabled"), "SUCCESS");
                     } else {
                         ok = false;
