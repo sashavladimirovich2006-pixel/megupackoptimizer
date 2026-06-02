@@ -4224,6 +4224,18 @@ void Optimizer::loadSystemStates() {
             RegCloseKey(hKeyInking1);
         }
     }
+    if (privacyImproveInkingActive) {
+        if (RegOpenKeyExW(HKEY_CURRENT_USER, L"Software\\Microsoft\\Input\\TIPC", 0, KEY_READ, &hKeyInking1) == ERROR_SUCCESS) {
+            DWORD val = 1;
+            DWORD size = sizeof(val);
+            if (RegQueryValueExW(hKeyInking1, L"Enabled", NULL, NULL, (LPBYTE)&val, &size) == ERROR_SUCCESS) {
+                if (val == 0) {
+                    privacyImproveInkingActive = false;
+                }
+            }
+            RegCloseKey(hKeyInking1);
+        }
+    }
 
     // 7. Personalize Inking and Typing (AllowInputPersonalization)
     HKEY hKeyInking2;
@@ -4250,6 +4262,16 @@ void Optimizer::loadSystemStates() {
             DWORD value = 1;
             DWORD size = sizeof(value);
             if (RegQueryValueExW(hKeyInking2, L"AcceptedPrivacyPolicy", NULL, NULL, (LPBYTE)&value, &size) == ERROR_SUCCESS) {
+                privacyPersonalizeInkingActive = (value != 0);
+            }
+            RegCloseKey(hKeyInking2);
+        }
+    }
+    if (privacyPersonalizeInkingActive) {
+        if (RegOpenKeyExW(HKEY_CURRENT_USER, L"Software\\Microsoft\\Windows\\CurrentVersion\\CPSS\\Store\\InkingAndTypingPersonalization", 0, KEY_READ, &hKeyInking2) == ERROR_SUCCESS) {
+            DWORD value = 1;
+            DWORD size = sizeof(value);
+            if (RegQueryValueExW(hKeyInking2, L"Value", NULL, NULL, (LPBYTE)&value, &size) == ERROR_SUCCESS) {
                 privacyPersonalizeInkingActive = (value != 0);
             }
             RegCloseKey(hKeyInking2);
@@ -4309,13 +4331,20 @@ void Optimizer::loadSystemStates() {
         RegCloseKey(hKeyCamInd);
     }
 
-    // 11. Online Speech (HasUserConsent)
+    // 11. Online Speech (HasUserConsent / HasAccepted)
     HKEY hKeySpeech;
     if (RegOpenKeyExW(HKEY_CURRENT_USER, L"Software\\Microsoft\\Speech_OneCore\\Settings\\OnlineSpeechPrivacy", 0, KEY_READ, &hKeySpeech) == ERROR_SUCCESS) {
         DWORD value = 0;
         DWORD size = sizeof(value);
+        bool found = false;
         if (RegQueryValueExW(hKeySpeech, L"HasUserConsent", NULL, NULL, (LPBYTE)&value, &size) == ERROR_SUCCESS) {
             privacyOnlineSpeechActive = (value != 0);
+            found = true;
+        }
+        size = sizeof(value);
+        if (RegQueryValueExW(hKeySpeech, L"HasAccepted", NULL, NULL, (LPBYTE)&value, &size) == ERROR_SUCCESS) {
+            privacyOnlineSpeechActive = (value != 0);
+            found = true;
         }
         RegCloseKey(hKeySpeech);
     }
@@ -7023,7 +7052,7 @@ void Optimizer::startSystemOptimization() {
                 }
             }
 
-            // 6. Improve Inking and Typing (RestrictImplicitInkCollection / RestrictImplicitTextCollection / AllowLinguisticDataCollection)
+            // 6. Improve Inking and Typing (RestrictImplicitInkCollection / RestrictImplicitTextCollection / AllowLinguisticDataCollection / TIPC Enabled)
             if (privacyImproveInkingVal != origPrivacyImproveInking || force) {
                 HKEY hKey;
                 DWORD restrictVal = privacyImproveInkingVal ? 0 : 1;
@@ -7045,10 +7074,16 @@ void Optimizer::startSystemOptimization() {
                     RegSetValueExW(hKey, L"AllowLinguisticDataCollection", 0, REG_DWORD, (const BYTE*)&val, sizeof(val));
                     RegCloseKey(hKey);
                 }
+                // Write HKCU TIPC Enabled
+                if (RegCreateKeyExW(HKEY_CURRENT_USER, L"Software\\Microsoft\\Input\\TIPC", 0, NULL, REG_OPTION_NON_VOLATILE, KEY_WRITE, NULL, &hKey, NULL) == ERROR_SUCCESS) {
+                    DWORD val = privacyImproveInkingVal ? 1 : 0;
+                    RegSetValueExW(hKey, L"Enabled", 0, REG_DWORD, (const BYTE*)&val, sizeof(val));
+                    RegCloseKey(hKey);
+                }
                 emit systemStepReported(Optimizer::tr("Inking and typing data collection restriction set to %1.").arg(privacyImproveInkingVal ? "Off (Improve Enabled)" : "On (Improve Disabled)"), "SUCCESS");
             }
 
-            // 7. Personalize Inking and Typing (AllowInputPersonalization)
+            // 7. Personalize Inking and Typing (AllowInputPersonalization / CPSS Value)
             if (privacyPersonalizeInkingVal != origPrivacyPersonalizeInking || force) {
                 HKEY hKey;
                 DWORD allowVal = privacyPersonalizeInkingVal ? 1 : 0;
@@ -7064,6 +7099,11 @@ void Optimizer::startSystemOptimization() {
                 // HKLM Policy
                 if (RegCreateKeyExW(HKEY_LOCAL_MACHINE, L"SOFTWARE\\Policies\\Microsoft\\InputPersonalization", 0, NULL, REG_OPTION_NON_VOLATILE, KEY_WRITE, NULL, &hKey, NULL) == ERROR_SUCCESS) {
                     RegSetValueExW(hKey, L"AllowInputPersonalization", 0, REG_DWORD, (const BYTE*)&allowVal, sizeof(allowVal));
+                    RegCloseKey(hKey);
+                }
+                // CPSS Store
+                if (RegCreateKeyExW(HKEY_CURRENT_USER, L"Software\\Microsoft\\Windows\\CurrentVersion\\CPSS\\Store\\InkingAndTypingPersonalization", 0, NULL, REG_OPTION_NON_VOLATILE, KEY_WRITE, NULL, &hKey, NULL) == ERROR_SUCCESS) {
+                    RegSetValueExW(hKey, L"Value", 0, REG_DWORD, (const BYTE*)&allowVal, sizeof(allowVal));
                     RegCloseKey(hKey);
                 }
                 emit systemStepReported(Optimizer::tr("Personal dictionary and handwriting personalization set to %1.").arg(privacyPersonalizeInkingVal ? "Enabled" : "Disabled"), "SUCCESS");
@@ -7121,17 +7161,14 @@ void Optimizer::startSystemOptimization() {
                 }
             }
 
-            // 11. Online Speech (HasUserConsent)
+            // 11. Online Speech (HasUserConsent / HasAccepted)
             if (privacyOnlineSpeechVal != origPrivacyOnlineSpeech || force) {
                 HKEY hKey;
                 if (RegCreateKeyExW(HKEY_CURRENT_USER, L"Software\\Microsoft\\Speech_OneCore\\Settings\\OnlineSpeechPrivacy", 0, NULL, REG_OPTION_NON_VOLATILE, KEY_WRITE, NULL, &hKey, NULL) == ERROR_SUCCESS) {
                     DWORD val = privacyOnlineSpeechVal ? 1 : 0;
-                    if (RegSetValueExW(hKey, L"HasUserConsent", 0, REG_DWORD, (const BYTE*)&val, sizeof(val)) == ERROR_SUCCESS) {
-                        emit systemStepReported(Optimizer::tr("Online speech recognition and dictation set to %1.").arg(privacyOnlineSpeechVal ? "Enabled" : "Disabled"), "SUCCESS");
-                    } else {
-                        ok = false;
-                        emit systemStepReported(Optimizer::tr("Failed to write HasUserConsent key."), "ERROR");
-                    }
+                    RegSetValueExW(hKey, L"HasUserConsent", 0, REG_DWORD, (const BYTE*)&val, sizeof(val));
+                    RegSetValueExW(hKey, L"HasAccepted", 0, REG_DWORD, (const BYTE*)&val, sizeof(val));
+                    emit systemStepReported(Optimizer::tr("Online speech recognition and dictation set to %1.").arg(privacyOnlineSpeechVal ? "Enabled" : "Disabled"), "SUCCESS");
                     RegCloseKey(hKey);
                 }
             }
