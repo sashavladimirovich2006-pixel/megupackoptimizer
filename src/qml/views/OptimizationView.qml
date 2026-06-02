@@ -3411,7 +3411,7 @@ Item {
                     id: adsPanel
                     visible: root.currentSection === "telemetry"
                     width: parent.width
-                    height: detailsExpanded ? 84 + detailsContainer.implicitHeight + 20 : 84
+                    height: detailsExpanded ? 84 + adsDetailsContainer.implicitHeight + 20 : 84
                     property bool detailsExpanded: false
 
                     Behavior on height {
@@ -3572,7 +3572,7 @@ Item {
 
                         // Expansion Container listing the 9 options
                         Column {
-                            id: detailsContainer
+                            id: adsDetailsContainer
                             anchors.left: parent.left
                             anchors.right: parent.right
                             anchors.leftMargin: 20
