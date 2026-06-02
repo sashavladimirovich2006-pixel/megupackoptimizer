@@ -4047,7 +4047,7 @@ void Optimizer::loadSystemStates() {
     bool privacyErrorReportingActive = true;
     bool privacyLockScreenCameraActive = true;
     bool privacyCameraIndicatorActive = false;
-    bool privacyOnlineSpeechActive = true;
+    bool privacyOnlineSpeechActive = false; // Default to false unless explicitly consented (1)
 
 #ifdef Q_OS_WIN
     // 1. Location
@@ -4073,6 +4073,19 @@ void Optimizer::loadSystemStates() {
             RegCloseKey(hKeyLoc);
         }
     }
+    if (privacyLocationActive) {
+        if (RegOpenKeyExW(HKEY_LOCAL_MACHINE, L"SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\CapabilityAccessManager\\ConsentStore\\location", 0, KEY_READ, &hKeyLoc) == ERROR_SUCCESS) {
+            wchar_t valueBuf[64] = {0};
+            DWORD bufSize = sizeof(valueBuf);
+            if (RegQueryValueExW(hKeyLoc, L"Value", NULL, NULL, (LPBYTE)valueBuf, &bufSize) == ERROR_SUCCESS) {
+                QString valStr = QString::fromWCharArray(valueBuf);
+                if (valStr.compare("Deny", Qt::CaseInsensitive) == 0) {
+                    privacyLocationActive = false;
+                }
+            }
+            RegCloseKey(hKeyLoc);
+        }
+    }
 
     // 2. Telemetry (AllowTelemetry)
     HKEY hKeyTelPolicy;
@@ -4084,16 +4097,66 @@ void Optimizer::loadSystemStates() {
         }
         RegCloseKey(hKeyTelPolicy);
     }
+    if (privacyTelemetryActive) {
+        if (RegOpenKeyExW(HKEY_LOCAL_MACHINE, L"SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Policies\\DataCollection", 0, KEY_READ, &hKeyTelPolicy) == ERROR_SUCCESS) {
+            DWORD value = 1;
+            DWORD size = sizeof(value);
+            if (RegQueryValueExW(hKeyTelPolicy, L"AllowTelemetry", NULL, NULL, (LPBYTE)&value, &size) == ERROR_SUCCESS) {
+                privacyTelemetryActive = (value != 0);
+            }
+            RegCloseKey(hKeyTelPolicy);
+        }
+    }
 
     // 3. CEIP (SQM Client CEIPEnable)
-    HKEY hKeyCeip1;
-    if (RegOpenKeyExW(HKEY_LOCAL_MACHINE, L"SOFTWARE\\Policies\\Microsoft\\SQMClient\\Windows", 0, KEY_READ, &hKeyCeip1) == ERROR_SUCCESS) {
+    HKEY hKeyCeipPriv;
+    if (RegOpenKeyExW(HKEY_LOCAL_MACHINE, L"SOFTWARE\\Policies\\Microsoft\\SQMClient\\Windows", 0, KEY_READ, &hKeyCeipPriv) == ERROR_SUCCESS) {
         DWORD value = 1;
         DWORD size = sizeof(value);
-        if (RegQueryValueExW(hKeyCeip1, L"CEIPEnable", NULL, NULL, (LPBYTE)&value, &size) == ERROR_SUCCESS) {
-            privacyCeipActive = (value != 0);
+        if (RegQueryValueExW(hKeyCeipPriv, L"CEIPEnable", NULL, NULL, (LPBYTE)&value, &size) == ERROR_SUCCESS) {
+            if (value == 0) privacyCeipActive = false;
         }
-        RegCloseKey(hKeyCeip1);
+        RegCloseKey(hKeyCeipPriv);
+    }
+    if (privacyCeipActive) {
+        if (RegOpenKeyExW(HKEY_CURRENT_USER, L"Software\\Policies\\Microsoft\\SQMClient\\Windows", 0, KEY_READ, &hKeyCeipPriv) == ERROR_SUCCESS) {
+            DWORD value = 1;
+            DWORD size = sizeof(value);
+            if (RegQueryValueExW(hKeyCeipPriv, L"CEIPEnable", NULL, NULL, (LPBYTE)&value, &size) == ERROR_SUCCESS) {
+                if (value == 0) privacyCeipActive = false;
+            }
+            RegCloseKey(hKeyCeipPriv);
+        }
+    }
+    if (privacyCeipActive) {
+        if (RegOpenKeyExW(HKEY_LOCAL_MACHINE, L"SOFTWARE\\Microsoft\\SQMClient\\Windows", 0, KEY_READ, &hKeyCeipPriv) == ERROR_SUCCESS) {
+            DWORD value = 1;
+            DWORD size = sizeof(value);
+            if (RegQueryValueExW(hKeyCeipPriv, L"CEIPEnable", NULL, NULL, (LPBYTE)&value, &size) == ERROR_SUCCESS) {
+                if (value == 0) privacyCeipActive = false;
+            }
+            RegCloseKey(hKeyCeipPriv);
+        }
+    }
+    if (privacyCeipActive) {
+        if (RegOpenKeyExW(HKEY_CURRENT_USER, L"Software\\Microsoft\\SQMClient\\Windows", 0, KEY_READ, &hKeyCeipPriv) == ERROR_SUCCESS) {
+            DWORD value = 1;
+            DWORD size = sizeof(value);
+            if (RegQueryValueExW(hKeyCeipPriv, L"CEIPEnable", NULL, NULL, (LPBYTE)&value, &size) == ERROR_SUCCESS) {
+                if (value == 0) privacyCeipActive = false;
+            }
+            RegCloseKey(hKeyCeipPriv);
+        }
+    }
+    if (privacyCeipActive) {
+        if (RegOpenKeyExW(HKEY_LOCAL_MACHINE, L"SYSTEM\\CurrentControlSet\\Control\\WMI\\Autologger\\SQMLogger", 0, KEY_READ, &hKeyCeipPriv) == ERROR_SUCCESS) {
+            DWORD value = 1;
+            DWORD size = sizeof(value);
+            if (RegQueryValueExW(hKeyCeipPriv, L"Start", NULL, NULL, (LPBYTE)&value, &size) == ERROR_SUCCESS) {
+                if (value == 0) privacyCeipActive = false;
+            }
+            RegCloseKey(hKeyCeipPriv);
+        }
     }
 
     // 4. Apps Telemetry (AppCompat AITEnable / DisableInventory)
@@ -4107,6 +4170,9 @@ void Optimizer::loadSystemStates() {
         RegQueryValueExW(hKeyAppCompat, L"DisableInventory", NULL, NULL, (LPBYTE)&invValue, &size);
         privacyAppsTelemetryActive = (aitValue != 0 && invValue == 0);
         RegCloseKey(hKeyAppCompat);
+    }
+    if (!privacyTelemetryActive) {
+        privacyAppsTelemetryActive = false;
     }
 
     // 5. App Launches Tracking (Start_TrackProgs)
@@ -4132,6 +4198,23 @@ void Optimizer::loadSystemStates() {
         privacyImproveInkingActive = (val1 == 0 && val2 == 0);
         RegCloseKey(hKeyInking1);
     }
+    if (privacyImproveInkingActive) {
+        if (RegOpenKeyExW(HKEY_LOCAL_MACHINE, L"SOFTWARE\\Policies\\Microsoft\\InputPersonalization", 0, KEY_READ, &hKeyInking1) == ERROR_SUCCESS) {
+            DWORD val1 = 0;
+            DWORD val2 = 0;
+            DWORD size = sizeof(val1);
+            RegQueryValueExW(hKeyInking1, L"RestrictImplicitInkCollection", NULL, NULL, (LPBYTE)&val1, &size);
+            size = sizeof(val2);
+            RegQueryValueExW(hKeyInking1, L"RestrictImplicitTextCollection", NULL, NULL, (LPBYTE)&val2, &size);
+            if (val1 != 0 || val2 != 0) {
+                privacyImproveInkingActive = false;
+            }
+            RegCloseKey(hKeyInking1);
+        }
+    }
+    if (!privacyTelemetryActive) {
+        privacyImproveInkingActive = false;
+    }
 
     // 7. Personalize Inking and Typing (AllowInputPersonalization)
     HKEY hKeyInking2;
@@ -4143,16 +4226,59 @@ void Optimizer::loadSystemStates() {
         }
         RegCloseKey(hKeyInking2);
     }
+    if (privacyPersonalizeInkingActive) {
+        if (RegOpenKeyExW(HKEY_LOCAL_MACHINE, L"SOFTWARE\\Policies\\Microsoft\\InputPersonalization", 0, KEY_READ, &hKeyInking2) == ERROR_SUCCESS) {
+            DWORD value = 1;
+            DWORD size = sizeof(value);
+            if (RegQueryValueExW(hKeyInking2, L"AllowInputPersonalization", NULL, NULL, (LPBYTE)&value, &size) == ERROR_SUCCESS) {
+                privacyPersonalizeInkingActive = (value != 0);
+            }
+            RegCloseKey(hKeyInking2);
+        }
+    }
+    if (privacyPersonalizeInkingActive) {
+        if (RegOpenKeyExW(HKEY_CURRENT_USER, L"Software\\Microsoft\\Personalization\\Settings", 0, KEY_READ, &hKeyInking2) == ERROR_SUCCESS) {
+            DWORD value = 1;
+            DWORD size = sizeof(value);
+            if (RegQueryValueExW(hKeyInking2, L"AcceptedPrivacyPolicy", NULL, NULL, (LPBYTE)&value, &size) == ERROR_SUCCESS) {
+                privacyPersonalizeInkingActive = (value != 0);
+            }
+            RegCloseKey(hKeyInking2);
+        }
+    }
+    if (!privacyTelemetryActive) {
+        privacyPersonalizeInkingActive = false;
+    }
 
     // 8. Error Reporting (WER Disabled)
-    HKEY hKeyWerPolicy;
-    if (RegOpenKeyExW(HKEY_LOCAL_MACHINE, L"SOFTWARE\\Policies\\Microsoft\\Windows\\Windows Error Reporting", 0, KEY_READ, &hKeyWerPolicy) == ERROR_SUCCESS) {
+    HKEY hKeyWerPriv;
+    if (RegOpenKeyExW(HKEY_LOCAL_MACHINE, L"SOFTWARE\\Policies\\Microsoft\\Windows\\Windows Error Reporting", 0, KEY_READ, &hKeyWerPriv) == ERROR_SUCCESS) {
         DWORD value = 0;
         DWORD size = sizeof(value);
-        if (RegQueryValueExW(hKeyWerPolicy, L"Disabled", NULL, NULL, (LPBYTE)&value, &size) == ERROR_SUCCESS) {
-            privacyErrorReportingActive = (value == 0);
+        if (RegQueryValueExW(hKeyWerPriv, L"Disabled", NULL, NULL, (LPBYTE)&value, &size) == ERROR_SUCCESS) {
+            if (value != 0) privacyErrorReportingActive = false;
         }
-        RegCloseKey(hKeyWerPolicy);
+        RegCloseKey(hKeyWerPriv);
+    }
+    if (privacyErrorReportingActive) {
+        if (RegOpenKeyExW(HKEY_CURRENT_USER, L"Software\\Policies\\Microsoft\\Windows\\Windows Error Reporting", 0, KEY_READ, &hKeyWerPriv) == ERROR_SUCCESS) {
+            DWORD value = 0;
+            DWORD size = sizeof(value);
+            if (RegQueryValueExW(hKeyWerPriv, L"Disabled", NULL, NULL, (LPBYTE)&value, &size) == ERROR_SUCCESS) {
+                if (value != 0) privacyErrorReportingActive = false;
+            }
+            RegCloseKey(hKeyWerPriv);
+        }
+    }
+    if (privacyErrorReportingActive) {
+        if (RegOpenKeyExW(HKEY_LOCAL_MACHINE, L"SOFTWARE\\Microsoft\\Windows\\Windows Error Reporting", 0, KEY_READ, &hKeyWerPriv) == ERROR_SUCCESS) {
+            DWORD value = 0;
+            DWORD size = sizeof(value);
+            if (RegQueryValueExW(hKeyWerPriv, L"Disabled", NULL, NULL, (LPBYTE)&value, &size) == ERROR_SUCCESS) {
+                if (value != 0) privacyErrorReportingActive = false;
+            }
+            RegCloseKey(hKeyWerPriv);
+        }
     }
 
     // 9. Camera on Lock Screen (NoLockScreenCamera)
@@ -4180,7 +4306,7 @@ void Optimizer::loadSystemStates() {
     // 11. Online Speech (HasUserConsent)
     HKEY hKeySpeech;
     if (RegOpenKeyExW(HKEY_CURRENT_USER, L"Software\\Microsoft\\Speech_OneCore\\Settings\\OnlineSpeechPrivacy", 0, KEY_READ, &hKeySpeech) == ERROR_SUCCESS) {
-        DWORD value = 1;
+        DWORD value = 0;
         DWORD size = sizeof(value);
         if (RegQueryValueExW(hKeySpeech, L"HasUserConsent", NULL, NULL, (LPBYTE)&value, &size) == ERROR_SUCCESS) {
             privacyOnlineSpeechActive = (value != 0);
@@ -6786,18 +6912,24 @@ void Optimizer::startSystemOptimization() {
             // 2. Telemetry (AllowTelemetry)
             if (privacyTelemetryVal != origPrivacyTelemetry || force) {
                 HKEY hKey;
+                bool writeSuccess = false;
                 if (RegCreateKeyExW(HKEY_LOCAL_MACHINE, L"SOFTWARE\\Policies\\Microsoft\\Windows\\DataCollection", 0, NULL, REG_OPTION_NON_VOLATILE, KEY_WRITE, NULL, &hKey, NULL) == ERROR_SUCCESS) {
                     DWORD val = privacyTelemetryVal ? 3 : 0;
                     if (RegSetValueExW(hKey, L"AllowTelemetry", 0, REG_DWORD, (const BYTE*)&val, sizeof(val)) == ERROR_SUCCESS) {
-                        emit systemStepReported(Optimizer::tr("System Telemetry level set to %1.").arg(privacyTelemetryVal ? "Full (3)" : "Disabled (0)"), "SUCCESS");
-                    } else {
-                        ok = false;
-                        emit systemStepReported(Optimizer::tr("Failed to write AllowTelemetry key."), "ERROR");
+                        writeSuccess = true;
                     }
                     RegCloseKey(hKey);
+                }
+                if (RegCreateKeyExW(HKEY_LOCAL_MACHINE, L"SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Policies\\DataCollection", 0, NULL, REG_OPTION_NON_VOLATILE, KEY_WRITE, NULL, &hKey, NULL) == ERROR_SUCCESS) {
+                    DWORD val = privacyTelemetryVal ? 3 : 0;
+                    RegSetValueExW(hKey, L"AllowTelemetry", 0, REG_DWORD, (const BYTE*)&val, sizeof(val));
+                    RegCloseKey(hKey);
+                }
+                if (writeSuccess) {
+                    emit systemStepReported(Optimizer::tr("System Telemetry level set to %1.").arg(privacyTelemetryVal ? "Full (3)" : "Disabled (0)"), "SUCCESS");
                 } else {
                     ok = false;
-                    emit systemStepReported(Optimizer::tr("Failed to open DataCollection registry key."), "ERROR");
+                    emit systemStepReported(Optimizer::tr("Failed to write AllowTelemetry key."), "ERROR");
                 }
                 // Stop/Start Connected User Experiences (DiagTrack) Service
                 SC_HANDLE hSCM = OpenSCManagerW(NULL, NULL, SC_MANAGER_ALL_ACCESS);
@@ -6821,14 +6953,26 @@ void Optimizer::startSystemOptimization() {
             // 3. CEIP (CEIPEnable)
             if (privacyCeipVal != origPrivacyCeip || force) {
                 HKEY hKey;
-                // SQMClient HKLM
+                // SQMClient HKLM Policy
                 if (RegCreateKeyExW(HKEY_LOCAL_MACHINE, L"SOFTWARE\\Policies\\Microsoft\\SQMClient\\Windows", 0, NULL, REG_OPTION_NON_VOLATILE, KEY_WRITE, NULL, &hKey, NULL) == ERROR_SUCCESS) {
                     DWORD val = privacyCeipVal ? 1 : 0;
                     RegSetValueExW(hKey, L"CEIPEnable", 0, REG_DWORD, (const BYTE*)&val, sizeof(val));
                     RegCloseKey(hKey);
                 }
-                // SQMClient HKCU
+                // SQMClient HKCU Policy
                 if (RegCreateKeyExW(HKEY_CURRENT_USER, L"Software\\Policies\\Microsoft\\SQMClient\\Windows", 0, NULL, REG_OPTION_NON_VOLATILE, KEY_WRITE, NULL, &hKey, NULL) == ERROR_SUCCESS) {
+                    DWORD val = privacyCeipVal ? 1 : 0;
+                    RegSetValueExW(hKey, L"CEIPEnable", 0, REG_DWORD, (const BYTE*)&val, sizeof(val));
+                    RegCloseKey(hKey);
+                }
+                // SQMClient HKLM Non-Policy
+                if (RegCreateKeyExW(HKEY_LOCAL_MACHINE, L"SOFTWARE\\Microsoft\\SQMClient\\Windows", 0, NULL, REG_OPTION_NON_VOLATILE, KEY_WRITE, NULL, &hKey, NULL) == ERROR_SUCCESS) {
+                    DWORD val = privacyCeipVal ? 1 : 0;
+                    RegSetValueExW(hKey, L"CEIPEnable", 0, REG_DWORD, (const BYTE*)&val, sizeof(val));
+                    RegCloseKey(hKey);
+                }
+                // SQMClient HKCU Non-Policy
+                if (RegCreateKeyExW(HKEY_CURRENT_USER, L"Software\\Microsoft\\SQMClient\\Windows", 0, NULL, REG_OPTION_NON_VOLATILE, KEY_WRITE, NULL, &hKey, NULL) == ERROR_SUCCESS) {
                     DWORD val = privacyCeipVal ? 1 : 0;
                     RegSetValueExW(hKey, L"CEIPEnable", 0, REG_DWORD, (const BYTE*)&val, sizeof(val));
                     RegCloseKey(hKey);
@@ -6917,13 +7061,18 @@ void Optimizer::startSystemOptimization() {
             if (privacyErrorReportingVal != origPrivacyErrorReporting || force) {
                 HKEY hKey;
                 DWORD disabledVal = privacyErrorReportingVal ? 0 : 1;
-                // HKLM
+                // HKLM Policy
                 if (RegCreateKeyExW(HKEY_LOCAL_MACHINE, L"SOFTWARE\\Policies\\Microsoft\\Windows\\Windows Error Reporting", 0, NULL, REG_OPTION_NON_VOLATILE, KEY_WRITE, NULL, &hKey, NULL) == ERROR_SUCCESS) {
                     RegSetValueExW(hKey, L"Disabled", 0, REG_DWORD, (const BYTE*)&disabledVal, sizeof(disabledVal));
                     RegCloseKey(hKey);
                 }
-                // HKCU
+                // HKCU Policy
                 if (RegCreateKeyExW(HKEY_CURRENT_USER, L"Software\\Policies\\Microsoft\\Windows\\Windows Error Reporting", 0, NULL, REG_OPTION_NON_VOLATILE, KEY_WRITE, NULL, &hKey, NULL) == ERROR_SUCCESS) {
+                    RegSetValueExW(hKey, L"Disabled", 0, REG_DWORD, (const BYTE*)&disabledVal, sizeof(disabledVal));
+                    RegCloseKey(hKey);
+                }
+                // HKLM Standard
+                if (RegCreateKeyExW(HKEY_LOCAL_MACHINE, L"SOFTWARE\\Microsoft\\Windows\\Windows Error Reporting", 0, NULL, REG_OPTION_NON_VOLATILE, KEY_WRITE, NULL, &hKey, NULL) == ERROR_SUCCESS) {
                     RegSetValueExW(hKey, L"Disabled", 0, REG_DWORD, (const BYTE*)&disabledVal, sizeof(disabledVal));
                     RegCloseKey(hKey);
                 }
