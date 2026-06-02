@@ -3820,19 +3820,37 @@ void Optimizer::loadSystemStates() {
     }
 
     // 4. Home page in settings app
+    bool homeHidden = false;
     HKEY hKeyHome;
-    if (RegOpenKeyExW(HKEY_CURRENT_USER, L"Software\\Microsoft\\Windows\\CurrentVersion\\Policies\\Explorer", 0, KEY_READ, &hKeyHome) == ERROR_SUCCESS) {
+    // Check HKLM first (takes precedence/common for machine-wide policies like Wintoys)
+    if (RegOpenKeyExW(HKEY_LOCAL_MACHINE, L"SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Policies\\Explorer", 0, KEY_READ, &hKeyHome) == ERROR_SUCCESS) {
         wchar_t valueBuf[512] = {0};
         DWORD bufSize = sizeof(valueBuf);
         DWORD type = 0;
         if (RegQueryValueExW(hKeyHome, L"SettingsPageVisibility", nullptr, &type, reinterpret_cast<LPBYTE>(valueBuf), &bufSize) == ERROR_SUCCESS) {
             QString visibility = QString::fromWCharArray(valueBuf);
             if (visibility.contains("hide:home", Qt::CaseInsensitive)) {
-                adsSettingsHomeActive = false;
+                homeHidden = true;
             }
         }
         RegCloseKey(hKeyHome);
     }
+    // Check HKCU if not already found hidden in HKLM
+    if (!homeHidden) {
+        if (RegOpenKeyExW(HKEY_CURRENT_USER, L"Software\\Microsoft\\Windows\\CurrentVersion\\Policies\\Explorer", 0, KEY_READ, &hKeyHome) == ERROR_SUCCESS) {
+            wchar_t valueBuf[512] = {0};
+            DWORD bufSize = sizeof(valueBuf);
+            DWORD type = 0;
+            if (RegQueryValueExW(hKeyHome, L"SettingsPageVisibility", nullptr, &type, reinterpret_cast<LPBYTE>(valueBuf), &bufSize) == ERROR_SUCCESS) {
+                QString visibility = QString::fromWCharArray(valueBuf);
+                if (visibility.contains("hide:home", Qt::CaseInsensitive)) {
+                    homeHidden = true;
+                }
+            }
+            RegCloseKey(hKeyHome);
+        }
+    }
+    adsSettingsHomeActive = !homeHidden;
 
     // 5. Suggested notifications
     HKEY hKeySuggNotif;
@@ -6232,24 +6250,48 @@ void Optimizer::startSystemOptimization() {
 
             // 4. Home page in settings app
             if (adsSettingsHomeVal != origAdsSettingsHome || force) {
-                HKEY hKey;
-                if (RegCreateKeyExW(HKEY_CURRENT_USER, L"Software\\Microsoft\\Windows\\CurrentVersion\\Policies\\Explorer", 0, NULL, REG_OPTION_NON_VOLATILE, KEY_WRITE, NULL, &hKey, NULL) == ERROR_SUCCESS) {
+                bool hklmSuccess = false;
+                bool hkcuSuccess = false;
+
+                // Write to HKLM
+                HKEY hKeyLM;
+                if (RegCreateKeyExW(HKEY_LOCAL_MACHINE, L"SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Policies\\Explorer", 0, NULL, REG_OPTION_NON_VOLATILE, KEY_WRITE, NULL, &hKeyLM, NULL) == ERROR_SUCCESS) {
                     if (adsSettingsHomeVal) {
-                        RegDeleteValueW(hKey, L"SettingsPageVisibility");
-                        emit systemStepReported(Optimizer::tr("Home Page in Settings restored to Visible."), "SUCCESS");
+                        RegDeleteValueW(hKeyLM, L"SettingsPageVisibility");
+                        hklmSuccess = true;
                     } else {
                         const wchar_t* visibility = L"hide:home";
-                        if (RegSetValueExW(hKey, L"SettingsPageVisibility", 0, REG_SZ, (const BYTE*)visibility, (wcslen(visibility) + 1) * sizeof(wchar_t)) == ERROR_SUCCESS) {
-                            emit systemStepReported(Optimizer::tr("Home Page in Settings Hidden."), "SUCCESS");
-                        } else {
-                            ok = false;
-                            emit systemStepReported(Optimizer::tr("Failed to write SettingsPageVisibility key."), "ERROR");
+                        if (RegSetValueExW(hKeyLM, L"SettingsPageVisibility", 0, REG_SZ, (const BYTE*)visibility, (wcslen(visibility) + 1) * sizeof(wchar_t)) == ERROR_SUCCESS) {
+                            hklmSuccess = true;
                         }
                     }
-                    RegCloseKey(hKey);
+                    RegCloseKey(hKeyLM);
+                }
+
+                // Write to HKCU
+                HKEY hKeyCU;
+                if (RegCreateKeyExW(HKEY_CURRENT_USER, L"Software\\Microsoft\\Windows\\CurrentVersion\\Policies\\Explorer", 0, NULL, REG_OPTION_NON_VOLATILE, KEY_WRITE, NULL, &hKeyCU, NULL) == ERROR_SUCCESS) {
+                    if (adsSettingsHomeVal) {
+                        RegDeleteValueW(hKeyCU, L"SettingsPageVisibility");
+                        hkcuSuccess = true;
+                    } else {
+                        const wchar_t* visibility = L"hide:home";
+                        if (RegSetValueExW(hKeyCU, L"SettingsPageVisibility", 0, REG_SZ, (const BYTE*)visibility, (wcslen(visibility) + 1) * sizeof(wchar_t)) == ERROR_SUCCESS) {
+                            hkcuSuccess = true;
+                        }
+                    }
+                    RegCloseKey(hKeyCU);
+                }
+
+                if (hklmSuccess || hkcuSuccess) {
+                    if (adsSettingsHomeVal) {
+                        emit systemStepReported(Optimizer::tr("Home Page in Settings restored to Visible."), "SUCCESS");
+                    } else {
+                        emit systemStepReported(Optimizer::tr("Home Page in Settings Hidden."), "SUCCESS");
+                    }
                 } else {
                     ok = false;
-                    emit systemStepReported(Optimizer::tr("Failed to open Explorer Policies registry key."), "ERROR");
+                    emit systemStepReported(Optimizer::tr("Failed to write SettingsPageVisibility key."), "ERROR");
                 }
             }
 
