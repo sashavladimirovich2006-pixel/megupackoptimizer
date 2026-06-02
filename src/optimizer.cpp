@@ -4186,17 +4186,32 @@ void Optimizer::loadSystemStates() {
         RegCloseKey(hKeyTrack);
     }
 
-    // 6. Improve Inking and Typing (RestrictImplicitInkCollection / RestrictImplicitTextCollection / AllowLinguisticDataCollection)
+    // 6. Improve Inking and Typing (RestrictImplicitInkCollection / RestrictImplicitTextCollection / AllowLinguisticDataCollection / TIPC Enabled)
+    // On Windows 11, the primary indicator is HKEY_CURRENT_USER\Software\Microsoft\Input\TIPC -> Enabled.
+    // If it is missing or 0, Wintoys treats the setting as disabled/OFF.
+    privacyImproveInkingActive = false;
     HKEY hKeyInking1;
-    if (RegOpenKeyExW(HKEY_CURRENT_USER, L"Software\\Microsoft\\InputPersonalization", 0, KEY_READ, &hKeyInking1) == ERROR_SUCCESS) {
-        DWORD val1 = 0;
-        DWORD val2 = 0;
-        DWORD size = sizeof(val1);
-        RegQueryValueExW(hKeyInking1, L"RestrictImplicitInkCollection", NULL, NULL, (LPBYTE)&val1, &size);
-        size = sizeof(val2);
-        RegQueryValueExW(hKeyInking1, L"RestrictImplicitTextCollection", NULL, NULL, (LPBYTE)&val2, &size);
-        privacyImproveInkingActive = (val1 == 0 && val2 == 0);
+    if (RegOpenKeyExW(HKEY_CURRENT_USER, L"Software\\Microsoft\\Input\\TIPC", 0, KEY_READ, &hKeyInking1) == ERROR_SUCCESS) {
+        DWORD val = 0;
+        DWORD size = sizeof(val);
+        if (RegQueryValueExW(hKeyInking1, L"Enabled", NULL, NULL, (LPBYTE)&val, &size) == ERROR_SUCCESS) {
+            privacyImproveInkingActive = (val != 0);
+        }
         RegCloseKey(hKeyInking1);
+    }
+    if (privacyImproveInkingActive) {
+        if (RegOpenKeyExW(HKEY_CURRENT_USER, L"Software\\Microsoft\\InputPersonalization", 0, KEY_READ, &hKeyInking1) == ERROR_SUCCESS) {
+            DWORD val1 = 0;
+            DWORD val2 = 0;
+            DWORD size = sizeof(val1);
+            RegQueryValueExW(hKeyInking1, L"RestrictImplicitInkCollection", NULL, NULL, (LPBYTE)&val1, &size);
+            size = sizeof(val2);
+            RegQueryValueExW(hKeyInking1, L"RestrictImplicitTextCollection", NULL, NULL, (LPBYTE)&val2, &size);
+            if (val1 != 0 || val2 != 0) {
+                privacyImproveInkingActive = false;
+            }
+            RegCloseKey(hKeyInking1);
+        }
     }
     if (privacyImproveInkingActive) {
         if (RegOpenKeyExW(HKEY_LOCAL_MACHINE, L"SOFTWARE\\Policies\\Microsoft\\InputPersonalization", 0, KEY_READ, &hKeyInking1) == ERROR_SUCCESS) {
@@ -4224,35 +4239,40 @@ void Optimizer::loadSystemStates() {
             RegCloseKey(hKeyInking1);
         }
     }
-    if (privacyImproveInkingActive) {
-        if (RegOpenKeyExW(HKEY_CURRENT_USER, L"Software\\Microsoft\\Input\\TIPC", 0, KEY_READ, &hKeyInking1) == ERROR_SUCCESS) {
-            DWORD val = 1;
-            DWORD size = sizeof(val);
-            if (RegQueryValueExW(hKeyInking1, L"Enabled", NULL, NULL, (LPBYTE)&val, &size) == ERROR_SUCCESS) {
-                if (val == 0) {
-                    privacyImproveInkingActive = false;
-                }
-            }
-            RegCloseKey(hKeyInking1);
-        }
-    }
 
-    // 7. Personalize Inking and Typing (AllowInputPersonalization)
+    // 7. Personalize Inking and Typing (AllowInputPersonalization / CPSS Value)
+    // On Windows 11, the primary indicator is HKEY_CURRENT_USER\Software\Microsoft\Windows\CurrentVersion\CPSS\Store\InkingAndTypingPersonalization -> Value.
+    // If it is missing or 0, Wintoys treats the setting as disabled/OFF.
+    privacyPersonalizeInkingActive = false;
     HKEY hKeyInking2;
-    if (RegOpenKeyExW(HKEY_CURRENT_USER, L"Software\\Microsoft\\InputPersonalization", 0, KEY_READ, &hKeyInking2) == ERROR_SUCCESS) {
-        DWORD value = 1;
+    if (RegOpenKeyExW(HKEY_CURRENT_USER, L"Software\\Microsoft\\Windows\\CurrentVersion\\CPSS\\Store\\InkingAndTypingPersonalization", 0, KEY_READ, &hKeyInking2) == ERROR_SUCCESS) {
+        DWORD value = 0;
         DWORD size = sizeof(value);
-        if (RegQueryValueExW(hKeyInking2, L"AllowInputPersonalization", NULL, NULL, (LPBYTE)&value, &size) == ERROR_SUCCESS) {
+        if (RegQueryValueExW(hKeyInking2, L"Value", NULL, NULL, (LPBYTE)&value, &size) == ERROR_SUCCESS) {
             privacyPersonalizeInkingActive = (value != 0);
         }
         RegCloseKey(hKeyInking2);
+    }
+    if (privacyPersonalizeInkingActive) {
+        if (RegOpenKeyExW(HKEY_CURRENT_USER, L"Software\\Microsoft\\InputPersonalization", 0, KEY_READ, &hKeyInking2) == ERROR_SUCCESS) {
+            DWORD value = 1;
+            DWORD size = sizeof(value);
+            if (RegQueryValueExW(hKeyInking2, L"AllowInputPersonalization", NULL, NULL, (LPBYTE)&value, &size) == ERROR_SUCCESS) {
+                if (value == 0) {
+                    privacyPersonalizeInkingActive = false;
+                }
+            }
+            RegCloseKey(hKeyInking2);
+        }
     }
     if (privacyPersonalizeInkingActive) {
         if (RegOpenKeyExW(HKEY_LOCAL_MACHINE, L"SOFTWARE\\Policies\\Microsoft\\InputPersonalization", 0, KEY_READ, &hKeyInking2) == ERROR_SUCCESS) {
             DWORD value = 1;
             DWORD size = sizeof(value);
             if (RegQueryValueExW(hKeyInking2, L"AllowInputPersonalization", NULL, NULL, (LPBYTE)&value, &size) == ERROR_SUCCESS) {
-                privacyPersonalizeInkingActive = (value != 0);
+                if (value == 0) {
+                    privacyPersonalizeInkingActive = false;
+                }
             }
             RegCloseKey(hKeyInking2);
         }
@@ -4262,17 +4282,9 @@ void Optimizer::loadSystemStates() {
             DWORD value = 1;
             DWORD size = sizeof(value);
             if (RegQueryValueExW(hKeyInking2, L"AcceptedPrivacyPolicy", NULL, NULL, (LPBYTE)&value, &size) == ERROR_SUCCESS) {
-                privacyPersonalizeInkingActive = (value != 0);
-            }
-            RegCloseKey(hKeyInking2);
-        }
-    }
-    if (privacyPersonalizeInkingActive) {
-        if (RegOpenKeyExW(HKEY_CURRENT_USER, L"Software\\Microsoft\\Windows\\CurrentVersion\\CPSS\\Store\\InkingAndTypingPersonalization", 0, KEY_READ, &hKeyInking2) == ERROR_SUCCESS) {
-            DWORD value = 1;
-            DWORD size = sizeof(value);
-            if (RegQueryValueExW(hKeyInking2, L"Value", NULL, NULL, (LPBYTE)&value, &size) == ERROR_SUCCESS) {
-                privacyPersonalizeInkingActive = (value != 0);
+                if (value == 0) {
+                    privacyPersonalizeInkingActive = false;
+                }
             }
             RegCloseKey(hKeyInking2);
         }
@@ -4331,20 +4343,16 @@ void Optimizer::loadSystemStates() {
         RegCloseKey(hKeyCamInd);
     }
 
-    // 11. Online Speech (HasUserConsent / HasAccepted)
+    // 11. Online Speech (HasAccepted)
+    // On Windows 11, the primary indicator is HKEY_CURRENT_USER\Software\Microsoft\Speech_OneCore\Settings\OnlineSpeechPrivacy -> HasAccepted.
+    // If it is missing or 0, Wintoys treats the setting as disabled/OFF.
+    privacyOnlineSpeechActive = false;
     HKEY hKeySpeech;
     if (RegOpenKeyExW(HKEY_CURRENT_USER, L"Software\\Microsoft\\Speech_OneCore\\Settings\\OnlineSpeechPrivacy", 0, KEY_READ, &hKeySpeech) == ERROR_SUCCESS) {
         DWORD value = 0;
         DWORD size = sizeof(value);
-        bool found = false;
-        if (RegQueryValueExW(hKeySpeech, L"HasUserConsent", NULL, NULL, (LPBYTE)&value, &size) == ERROR_SUCCESS) {
-            privacyOnlineSpeechActive = (value != 0);
-            found = true;
-        }
-        size = sizeof(value);
         if (RegQueryValueExW(hKeySpeech, L"HasAccepted", NULL, NULL, (LPBYTE)&value, &size) == ERROR_SUCCESS) {
             privacyOnlineSpeechActive = (value != 0);
-            found = true;
         }
         RegCloseKey(hKeySpeech);
     }
