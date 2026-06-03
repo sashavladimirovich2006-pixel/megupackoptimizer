@@ -4,8 +4,8 @@ import MeguPackOptimizer 1.0
 
 ScrollBar {
     id: control
-    implicitWidth: 8
-    implicitHeight: 8
+    implicitWidth: 14
+    implicitHeight: 14
     policy: ScrollBar.AsNeeded
 
     contentItem: Rectangle {

@@ -13,6 +13,9 @@ Column {
     property bool dismChecked: false
     property bool sfcChecked: false
     property bool chkdskChecked: false
+    property bool isRepairSessionActive: false
+    property bool showRebootSuggestion: false
+    property bool lastActionWasRepair: false
 
     RowLayout {
         width: parent.width
@@ -359,6 +362,186 @@ Column {
         }
     }
 
+    function appendLog(msg, type) {
+        var color = "#8A9CB2"; // default Theme.textSecondary
+        if (type === "SUCCESS") color = "#10B981"; // Theme.success
+        else if (type === "WARNING") color = "#F59E0B"; // Theme.warning
+        else if (type === "ERROR") color = "#EF4444"; // Theme.error
+        
+        var escapedMsg = msg.replace(/&/g, "&amp;")
+                            .replace(/</g, "&lt;")
+                            .replace(/>/g, "&gt;")
+                            .replace(/\n/g, "<br/>");
+        
+        var bullet = "<font color='" + color + "'>●</font> ";
+        var textColor = (type === "INFO" ? "#F8FAFC" : color);
+        
+        var line = "<p style='margin:0;'>" + bullet + "<font color='" + textColor + "'>" + escapedMsg + "</font></p>";
+        logText.append(line);
+    }
+
+    Connections {
+        target: optimizerBackend
+        function onRepairRunningChanged() {
+            if (optimizerBackend.repairRunning) {
+                repairColumn.isRepairSessionActive = true;
+                repairColumn.showRebootSuggestion = false;
+            } else {
+                repairColumn.isRepairSessionActive = false;
+                if (repairColumn.lastActionWasRepair) {
+                    repairColumn.showRebootSuggestion = true;
+                }
+            }
+        }
+        function onSystemStepReported(msg, type) {
+            if (repairColumn.isRepairSessionActive) {
+                var trimmed = msg.trim();
+                if (trimmed.length > 0) {
+                    repairColumn.appendLog(trimmed, type);
+                }
+            }
+        }
+    }
+
+    // Reboot Suggestion Panel (Mandatory warning after repair)
+    Rectangle {
+        id: rebootBox
+        width: parent.width
+        height: rebootLayout.implicitHeight + 24
+        radius: Theme.radiusNormal
+        color: Qt.rgba(Theme.warning.r, Theme.warning.g, Theme.warning.b, 0.1)
+        border.color: Theme.warning
+        border.width: 1
+        visible: repairColumn.showRebootSuggestion
+
+        ColumnLayout {
+            id: rebootLayout
+            anchors.fill: parent
+            anchors.margins: 12
+            spacing: 8
+
+            RowLayout {
+                spacing: 8
+                Layout.fillWidth: true
+
+                Text {
+                    text: "⚠"
+                    color: Theme.warning
+                    font.pixelSize: 14
+                    font.bold: true
+                }
+
+                Text {
+                    text: qsTr("System Reboot Required")
+                    color: Theme.warning
+                    font.family: Theme.fontFamily
+                    font.pixelSize: 12
+                    font.bold: true
+                    Layout.fillWidth: true
+                }
+            }
+
+            Text {
+                text: qsTr("To complete the repairs and apply all system changes (including scheduled CHKDSK disk repairs and system file replacements), a reboot is mandatory. Would you like to restart your PC now?")
+                color: Theme.textPrimary
+                font.family: Theme.fontFamily
+                font.pixelSize: 11
+                Layout.fillWidth: true
+                wrapMode: Text.WordWrap
+                lineHeight: 1.3
+            }
+
+            RowLayout {
+                spacing: 12
+                Layout.alignment: Qt.AlignRight
+
+                MeguButton {
+                    text: qsTr("Later")
+                    height: 24
+                    width: 80
+                    onClicked: {
+                        repairColumn.showRebootSuggestion = false;
+                    }
+                }
+
+                MeguButton {
+                    text: qsTr("Restart Now")
+                    accented: true
+                    height: 24
+                    width: 100
+                    onClicked: {
+                        optimizerBackend.rebootSystem();
+                    }
+                }
+            }
+        }
+    }
+
+    // Log Viewer Title
+    Text {
+        text: qsTr("Detailed Results:")
+        color: Theme.textSecondary
+        font.family: Theme.fontFamily
+        font.pixelSize: 11
+        font.bold: true
+        visible: logText.text.length > 0
+    }
+
+    // Scrollable Console Log Box
+    Rectangle {
+        id: logBox
+        width: parent.width
+        height: 200
+        radius: Theme.radiusNormal
+        color: Theme.panelBg
+        border.color: Theme.border
+        border.width: 1
+        visible: logText.text.length > 0
+        clip: true
+
+        ScrollView {
+            id: logScroll
+            anchors.fill: parent
+            anchors.margins: 10
+            clip: true
+            ScrollBar.vertical: MeguScrollBar { id: vBar }
+            ScrollBar.horizontal: MeguScrollBar { }
+
+            MouseArea {
+                anchors.fill: parent
+                acceptedButtons: Qt.NoButton
+                onWheel: (wheel) => {
+                    var speedMultiplier = 2.5;
+                    var angle = wheel.angleDelta.y;
+                    if (angle !== 0) {
+                        var newY = logScroll.contentItem.contentY - (angle * speedMultiplier);
+                        logScroll.contentItem.contentY = Math.max(logScroll.contentItem.originY, 
+                            Math.min(newY, logScroll.contentItem.contentHeight - logScroll.contentItem.height));
+                    }
+                }
+            }
+
+            TextArea {
+                id: logText
+                readOnly: true
+                selectByMouse: true
+                color: Theme.textPrimary
+                font.family: "Consolas, Monaco, Courier New, monospace"
+                font.pixelSize: 11
+                background: null
+                wrapMode: TextEdit.Wrap
+                textFormat: TextEdit.RichText
+                text: ""
+
+                onTextChanged: {
+                    Qt.callLater(() => {
+                        vBar.position = 1.0 - vBar.size;
+                    });
+                }
+            }
+        }
+    }
+
     // Bottom Action Row
     RowLayout {
         width: parent.width
@@ -387,6 +570,9 @@ Column {
             width: 100
             enabled: (repairColumn.dismChecked || repairColumn.sfcChecked || repairColumn.chkdskChecked) && !optimizerBackend.repairRunning
             onClicked: {
+                logText.text = "";
+                repairColumn.lastActionWasRepair = false;
+                repairColumn.isRepairSessionActive = true;
                 optimizerBackend.runRepairScan(repairColumn.dismChecked, repairColumn.sfcChecked, repairColumn.chkdskChecked);
             }
         }
@@ -398,6 +584,9 @@ Column {
             width: 100
             enabled: (repairColumn.dismChecked || repairColumn.sfcChecked || repairColumn.chkdskChecked) && !optimizerBackend.repairRunning
             onClicked: {
+                logText.text = "";
+                repairColumn.lastActionWasRepair = true;
+                repairColumn.isRepairSessionActive = true;
                 optimizerBackend.runRepairFix(repairColumn.dismChecked, repairColumn.sfcChecked, repairColumn.chkdskChecked);
             }
         }

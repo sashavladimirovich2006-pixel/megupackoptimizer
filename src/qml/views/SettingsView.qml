@@ -43,6 +43,20 @@ Item {
         ScrollBar.vertical: MeguScrollBar { }
         ScrollBar.horizontal: MeguScrollBar { }
 
+        MouseArea {
+            anchors.fill: parent
+            acceptedButtons: Qt.NoButton
+            onWheel: (wheel) => {
+                var speedMultiplier = 2.5;
+                var angle = wheel.angleDelta.y;
+                if (angle !== 0) {
+                    var newY = mainScroll.contentItem.contentY - (angle * speedMultiplier);
+                    mainScroll.contentItem.contentY = Math.max(mainScroll.contentItem.originY, 
+                        Math.min(newY, mainScroll.contentItem.contentHeight - mainScroll.contentItem.height));
+                }
+            }
+        }
+
         // Main layout container spanning settings area
         Column {
             id: mainColumn

@@ -12221,7 +12221,48 @@ void Optimizer::stopWakeTasks() {
     int count = scanWakeTasksCount(true);
     m_sleepingPillWakeCount = 0;
     emit sleepingPillWakeCountChanged(m_sleepingPillWakeCount);
-    emit systemStepReported(tr("Success: Disabled wake-to-run triggers for %1 task(s).").arg(count), "SUCCESS");
+}
+
+static QString decodeProcessOutput(const QByteArray &bytes) {
+    if (bytes.isEmpty()) return "";
+    
+    bool isUtf16 = false;
+    if (bytes.size() >= 2) {
+        unsigned char b0 = static_cast<unsigned char>(bytes[0]);
+        unsigned char b1 = static_cast<unsigned char>(bytes[1]);
+        if ((b0 == 0xFF && b1 == 0xFE) || (b0 == 0xFE && b1 == 0xFF)) {
+            isUtf16 = true;
+        } else {
+            int nullCount = 0;
+            int limit = bytes.size();
+            if (limit > 100) limit = 100;
+            for (int i = 1; i < limit; i += 2) {
+                if (bytes[i] == 0) nullCount++;
+            }
+            if (nullCount > (limit / 4)) {
+                isUtf16 = true;
+            }
+        }
+    }
+    
+    if (isUtf16) {
+        int offset = 0;
+        if (bytes.size() >= 2) {
+            unsigned char b0 = static_cast<unsigned char>(bytes[0]);
+            unsigned char b1 = static_cast<unsigned char>(bytes[1]);
+            if ((b0 == 0xFF && b1 == 0xFE) || (b0 == 0xFE && b1 == 0xFF)) {
+                offset = 2;
+            }
+        }
+        const char* dataPtr = bytes.constData() + offset;
+        int dataSize = bytes.size() - offset;
+        if (dataSize % 2 != 0) {
+            dataSize--;
+        }
+        return QString::fromUtf16(reinterpret_cast<const char16_t*>(dataPtr), dataSize / 2);
+    }
+    
+    return QString::fromLocal8Bit(bytes);
 }
 
 void Optimizer::runRepairScan(bool runDism, bool runSfc, bool runChkdsk) {
@@ -12260,12 +12301,18 @@ void Optimizer::runRepairScan(bool runDism, bool runSfc, bool runChkdsk) {
             QProcess proc;
             proc.start("cmd.exe", QStringList() << "/c" << "dism.exe /Online /Cleanup-Image /CheckHealth");
             proc.waitForFinished(-1);
-            QString output = QString::fromLocal8Bit(proc.readAllStandardOutput()).trimmed();
+            QString output = decodeProcessOutput(proc.readAllStandardOutput()).trimmed();
             if (!output.isEmpty()) {
                 emit systemStepReported(output, "INFO");
             }
             if (proc.exitCode() == 0) {
-                emit systemStepReported(tr("DISM scan completed successfully. No component store corruption detected."), "SUCCESS");
+                if (output.contains("non-repairable", Qt::CaseInsensitive)) {
+                    emit systemStepReported(tr("DISM scan completed. Component store is non-repairable!"), "ERROR");
+                } else if (output.contains("repairable", Qt::CaseInsensitive)) {
+                    emit systemStepReported(tr("DISM scan completed. Component store corruption detected (repairable). Click 'Repair' to restore integrity."), "WARNING");
+                } else {
+                    emit systemStepReported(tr("DISM scan completed successfully. No component store corruption detected."), "SUCCESS");
+                }
             } else {
                 emit systemStepReported(tr("DISM scan finished with issues. Exit code: %1").arg(proc.exitCode()), "WARNING");
             }
@@ -12285,7 +12332,7 @@ void Optimizer::runRepairScan(bool runDism, bool runSfc, bool runChkdsk) {
             QProcess proc;
             proc.start("cmd.exe", QStringList() << "/c" << "sfc.exe /verifyonly");
             proc.waitForFinished(-1);
-            QString output = QString::fromLocal8Bit(proc.readAllStandardOutput()).trimmed();
+            QString output = decodeProcessOutput(proc.readAllStandardOutput()).trimmed();
             if (!output.isEmpty()) {
                 emit systemStepReported(output, "INFO");
             }
@@ -12310,7 +12357,7 @@ void Optimizer::runRepairScan(bool runDism, bool runSfc, bool runChkdsk) {
             QProcess proc;
             proc.start("cmd.exe", QStringList() << "/c" << "chkdsk.exe C:");
             proc.waitForFinished(-1);
-            QString output = QString::fromLocal8Bit(proc.readAllStandardOutput()).trimmed();
+            QString output = decodeProcessOutput(proc.readAllStandardOutput()).trimmed();
             if (!output.isEmpty()) {
                 emit systemStepReported(output, "INFO");
             }
@@ -12375,7 +12422,7 @@ void Optimizer::runRepairFix(bool runDism, bool runSfc, bool runChkdsk) {
             QProcess proc;
             proc.start("cmd.exe", QStringList() << "/c" << "dism.exe /Online /Cleanup-Image /RestoreHealth");
             proc.waitForFinished(-1);
-            QString output = QString::fromLocal8Bit(proc.readAllStandardOutput()).trimmed();
+            QString output = decodeProcessOutput(proc.readAllStandardOutput()).trimmed();
             if (!output.isEmpty()) {
                 emit systemStepReported(output, "INFO");
             }
@@ -12400,7 +12447,7 @@ void Optimizer::runRepairFix(bool runDism, bool runSfc, bool runChkdsk) {
             QProcess proc;
             proc.start("cmd.exe", QStringList() << "/c" << "sfc.exe /scannow");
             proc.waitForFinished(-1);
-            QString output = QString::fromLocal8Bit(proc.readAllStandardOutput()).trimmed();
+            QString output = decodeProcessOutput(proc.readAllStandardOutput()).trimmed();
             if (!output.isEmpty()) {
                 emit systemStepReported(output, "INFO");
             }
@@ -12425,7 +12472,7 @@ void Optimizer::runRepairFix(bool runDism, bool runSfc, bool runChkdsk) {
             QProcess proc;
             proc.start("cmd.exe", QStringList() << "/c" << "echo Y | chkdsk C: /f");
             proc.waitForFinished(-1);
-            QString output = QString::fromLocal8Bit(proc.readAllStandardOutput()).trimmed();
+            QString output = decodeProcessOutput(proc.readAllStandardOutput()).trimmed();
             if (!output.isEmpty()) {
                 emit systemStepReported(output, "INFO");
             }
@@ -12449,6 +12496,15 @@ void Optimizer::runRepairFix(bool runDism, bool runSfc, bool runChkdsk) {
 
     connect(worker, &QThread::finished, worker, &QThread::deleteLater);
     worker->start();
+}
+
+void Optimizer::rebootSystem() {
+    Logger::log("System reboot initiated by user after repair.", "WARNING");
+#ifdef Q_OS_WIN
+    QProcess::startDetached("shutdown.exe", QStringList() << "/r" << "/t" << "0" << "/f");
+#else
+    Logger::log("[Simulation] System reboot simulated.", "INFO");
+#endif
 }
 
 

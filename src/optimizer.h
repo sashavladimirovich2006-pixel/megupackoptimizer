@@ -647,6 +647,7 @@ public:
     Q_INVOKABLE void runSleepingPillScan();
     Q_INVOKABLE void runRepairScan(bool runDism, bool runSfc, bool runChkdsk);
     Q_INVOKABLE void runRepairFix(bool runDism, bool runSfc, bool runChkdsk);
+    Q_INVOKABLE void rebootSystem();
     Q_INVOKABLE void stopWakeTasks();
     Q_INVOKABLE void scanSteamInstalledGames();
     Q_INVOKABLE QVariantMap getDriveInfo(const QString &path);

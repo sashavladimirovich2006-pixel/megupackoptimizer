@@ -8228,6 +8228,7 @@ Item {
 
                 // Dynamic options content
                 ScrollView {
+                    id: drawerScroll
                     width: parent.width
                     height: parent.height - 60
                     clip: true
@@ -8235,6 +8236,20 @@ Item {
 
                     ScrollBar.vertical: MeguScrollBar { }
                     ScrollBar.horizontal: MeguScrollBar { }
+
+                    MouseArea {
+                        anchors.fill: parent
+                        acceptedButtons: Qt.NoButton
+                        onWheel: (wheel) => {
+                            var speedMultiplier = 2.5;
+                            var angle = wheel.angleDelta.y;
+                            if (angle !== 0) {
+                                var newY = drawerScroll.contentItem.contentY - (angle * speedMultiplier);
+                                drawerScroll.contentItem.contentY = Math.max(drawerScroll.contentItem.originY, 
+                                    Math.min(newY, drawerScroll.contentItem.contentHeight - drawerScroll.contentItem.height));
+                            }
+                        }
+                    }
 
                     contentHeight: {
                         if (root.activeDrawer === "indexing") return indexingDrawer.implicitHeight;
