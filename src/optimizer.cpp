@@ -38,6 +38,8 @@
 #pragma comment(lib, "propsys.lib")
 #pragma comment(lib, "taskschd.lib")
 #pragma comment(lib, "comsuppw.lib")
+#pragma comment(lib, "advapi32.lib")
+#pragma comment(lib, "user32.lib")
 #include <winevt.h>
 #pragma comment(lib, "wevtapi.lib")
 #endif
@@ -11172,10 +11174,59 @@ main();
 void Optimizer::restartExplorer() {
 #ifdef Q_OS_WIN
     QThread* thread = QThread::create([]() {
+        HANDLE hDupToken = nullptr;
+        
+        // 1. Try to grab the token from Shell_TrayWnd (Explorer taskbar) before we kill it
+        HWND hwnd = FindWindowW(L"Shell_TrayWnd", nullptr);
+        if (hwnd) {
+            DWORD pid = 0;
+            GetWindowThreadProcessId(hwnd, &pid);
+            if (pid != 0) {
+                HANDLE hProcess = OpenProcess(PROCESS_QUERY_INFORMATION, FALSE, pid);
+                if (hProcess) {
+                    HANDLE hToken = nullptr;
+                    if (OpenProcessToken(hProcess, TOKEN_DUPLICATE, &hToken)) {
+                        DuplicateTokenEx(hToken, TOKEN_ALL_ACCESS, nullptr, SecurityImpersonation, TokenPrimary, &hDupToken);
+                        CloseHandle(hToken);
+                    }
+                    CloseHandle(hProcess);
+                }
+            }
+        }
+
+        // 2. Kill the old explorer.exe process
         QProcess proc;
         proc.start("taskkill.exe", QStringList() << "/f" << "/im" << "explorer.exe");
         proc.waitForFinished(3000);
-        QProcess::startDetached("explorer.exe");
+
+        bool success = false;
+        
+        // 3. Restart explorer.exe non-elevated using the captured token
+        if (hDupToken) {
+            STARTUPINFOW si;
+            PROCESS_INFORMATION pi;
+            ZeroMemory(&si, sizeof(si));
+            si.cb = sizeof(si);
+            ZeroMemory(&pi, sizeof(pi));
+
+            wchar_t cmd[] = L"explorer.exe";
+            if (CreateProcessWithTokenW(hDupToken, LOGON_WITH_PROFILE, nullptr, cmd, 0, nullptr, nullptr, &si, &pi)) {
+                CloseHandle(pi.hProcess);
+                CloseHandle(pi.hThread);
+                success = true;
+                Logger::log("Windows Explorer restarted non-elevated using Shell token.", "INFO");
+            } else {
+                DWORD err = GetLastError();
+                Logger::log("CreateProcessWithTokenW failed with error " + QString::number(err) + ". Falling back to normal restart.", "WARNING");
+            }
+            CloseHandle(hDupToken);
+        }
+
+        // 4. Fallback if token duplication / launch failed
+        if (!success) {
+            QProcess::startDetached("explorer.exe");
+            Logger::log("Windows Explorer restarted using fallback QProcess::startDetached (elevated).", "WARNING");
+        }
     });
     connect(thread, &QThread::finished, thread, &QThread::deleteLater);
     thread->start();
@@ -11233,10 +11284,32 @@ void Optimizer::restartGraphicsDriver() {
 void Optimizer::rebuildIconCache() {
 #ifdef Q_OS_WIN
     Logger::log("Starting icon and thumbnail cache rebuild...", "INFO");
+    
+    // 1. Try to grab the token from Shell_TrayWnd (Explorer taskbar) before we kill it
+    HANDLE hDupToken = nullptr;
+    HWND hwnd = FindWindowW(L"Shell_TrayWnd", nullptr);
+    if (hwnd) {
+        DWORD pid = 0;
+        GetWindowThreadProcessId(hwnd, &pid);
+        if (pid != 0) {
+            HANDLE hProcess = OpenProcess(PROCESS_QUERY_INFORMATION, FALSE, pid);
+            if (hProcess) {
+                HANDLE hToken = nullptr;
+                if (OpenProcessToken(hProcess, TOKEN_DUPLICATE, &hToken)) {
+                    DuplicateTokenEx(hToken, TOKEN_ALL_ACCESS, nullptr, SecurityImpersonation, TokenPrimary, &hDupToken);
+                    CloseHandle(hToken);
+                }
+                CloseHandle(hProcess);
+            }
+        }
+    }
+
+    // 2. Kill the old explorer.exe process
     QProcess proc;
     proc.start("taskkill.exe", QStringList() << "/f" << "/im" << "explorer.exe");
     proc.waitForFinished(5000);
     
+    // 3. Clear the cache files
     QString localAppData = QString::fromLocal8Bit(qgetenv("LOCALAPPDATA"));
     if (!localAppData.isEmpty()) {
         bool cacheDeleted = QFile::remove(localAppData + "/IconCache.db");
@@ -11257,7 +11330,35 @@ void Optimizer::rebuildIconCache() {
         }
     }
     
-    QProcess::startDetached("explorer.exe");
+    bool success = false;
+    
+    // 4. Restart explorer.exe non-elevated using the captured token
+    if (hDupToken) {
+        STARTUPINFOW si;
+        PROCESS_INFORMATION pi;
+        ZeroMemory(&si, sizeof(si));
+        si.cb = sizeof(si);
+        ZeroMemory(&pi, sizeof(pi));
+
+        wchar_t cmd[] = L"explorer.exe";
+        if (CreateProcessWithTokenW(hDupToken, LOGON_WITH_PROFILE, nullptr, cmd, 0, nullptr, nullptr, &si, &pi)) {
+            CloseHandle(pi.hProcess);
+            CloseHandle(pi.hThread);
+            success = true;
+            Logger::log("Windows Explorer restarted non-elevated using Shell token after icon cache rebuild.", "INFO");
+        } else {
+            DWORD err = GetLastError();
+            Logger::log("CreateProcessWithTokenW failed in rebuildIconCache with error " + QString::number(err) + ". Falling back to normal restart.", "WARNING");
+        }
+        CloseHandle(hDupToken);
+    }
+    
+    // 5. Fallback if token duplication / launch failed
+    if (!success) {
+        QProcess::startDetached("explorer.exe");
+        Logger::log("Windows Explorer restarted using fallback QProcess::startDetached (elevated) in rebuildIconCache.", "WARNING");
+    }
+    
     Logger::log("Icon cache rebuild completed. Explorer restarted.", "INFO");
 #endif
 }
