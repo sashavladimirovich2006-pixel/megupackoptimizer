@@ -5442,14 +5442,24 @@ void Optimizer::loadSystemStates() {
     explorerClassicRibbon = isClassicRibbonBlocked;
     
     // 4. Recycle Bin Desktop visibility
+    bool showRecycleBin = true;
     if (RegOpenKeyExW(HKEY_CURRENT_USER, L"Software\\Microsoft\\Windows\\CurrentVersion\\Explorer\\HideDesktopIcons\\NewStartPanel", 0, KEY_READ, &hKeyExp) == ERROR_SUCCESS) {
         DWORD dwVal = 0;
         DWORD dwSize = sizeof(dwVal);
         if (RegQueryValueExW(hKeyExp, L"{645FF040-5081-101B-9F08-00AA002F954E}", nullptr, nullptr, reinterpret_cast<LPBYTE>(&dwVal), &dwSize) == ERROR_SUCCESS) {
-            explorerShowRecycleBin = (dwVal == 0); // 0 = show, 1 = hide
+            if (dwVal == 1) showRecycleBin = false;
         }
         RegCloseKey(hKeyExp);
     }
+    if (RegOpenKeyExW(HKEY_CURRENT_USER, L"Software\\Microsoft\\Windows\\CurrentVersion\\Explorer\\HideDesktopIcons\\ClassicStartMenu", 0, KEY_READ, &hKeyExp) == ERROR_SUCCESS) {
+        DWORD dwVal = 0;
+        DWORD dwSize = sizeof(dwVal);
+        if (RegQueryValueExW(hKeyExp, L"{645FF040-5081-101B-9F08-00AA002F954E}", nullptr, nullptr, reinterpret_cast<LPBYTE>(&dwVal), &dwSize) == ERROR_SUCCESS) {
+            if (dwVal == 1) showRecycleBin = false;
+        }
+        RegCloseKey(hKeyExp);
+    }
+    explorerShowRecycleBin = showRecycleBin;
 
     // 4b. Recycle Bin navigation pane visibility
     if (RegOpenKeyExW(HKEY_CURRENT_USER, L"Software\\Classes\\CLSID\\{645FF040-5081-101B-9F08-00AA002F954E}", 0, KEY_READ, &hKeyExp) == ERROR_SUCCESS) {
@@ -5640,14 +5650,24 @@ void Optimizer::loadSystemStates() {
     HKEY hKeyDesk;
 
     // 1. This PC icon ({20D04FE0-3AEA-1069-A2D8-08002B30309D}) -> 0 = show, 1 = hide
+    bool showThisPC = true;
     if (RegOpenKeyExW(HKEY_CURRENT_USER, L"Software\\Microsoft\\Windows\\CurrentVersion\\Explorer\\HideDesktopIcons\\NewStartPanel", 0, KEY_READ, &hKeyDesk) == ERROR_SUCCESS) {
         DWORD dwVal = 0;
         DWORD dwSize = sizeof(dwVal);
         if (RegQueryValueExW(hKeyDesk, L"{20D04FE0-3AEA-1069-A2D8-08002B30309D}", nullptr, nullptr, reinterpret_cast<LPBYTE>(&dwVal), &dwSize) == ERROR_SUCCESS) {
-            desktopShowThisPC = (dwVal == 0);
+            if (dwVal == 1) showThisPC = false;
         }
         RegCloseKey(hKeyDesk);
     }
+    if (RegOpenKeyExW(HKEY_CURRENT_USER, L"Software\\Microsoft\\Windows\\CurrentVersion\\Explorer\\HideDesktopIcons\\ClassicStartMenu", 0, KEY_READ, &hKeyDesk) == ERROR_SUCCESS) {
+        DWORD dwVal = 0;
+        DWORD dwSize = sizeof(dwVal);
+        if (RegQueryValueExW(hKeyDesk, L"{20D04FE0-3AEA-1069-A2D8-08002B30309D}", nullptr, nullptr, reinterpret_cast<LPBYTE>(&dwVal), &dwSize) == ERROR_SUCCESS) {
+            if (dwVal == 1) showThisPC = false;
+        }
+        RegCloseKey(hKeyDesk);
+    }
+    desktopShowThisPC = showThisPC;
 
     // 2. Widgets (TaskbarDa), Drop Shadows (ListviewShadow), Show Desktop (TaskbarSd), Aero Shake (DisallowShaking)
     if (RegOpenKeyExW(HKEY_CURRENT_USER, L"Software\\Microsoft\\Windows\\CurrentVersion\\Explorer\\Advanced", 0, KEY_READ, &hKeyDesk) == ERROR_SUCCESS) {
@@ -6578,14 +6598,20 @@ void Optimizer::startSystemOptimization() {
                     success = false;
                 }
             }
+            DWORD recycleBinVal = explorerShowRecycleBinVal ? 0 : 1;
             if (RegCreateKeyExW(HKEY_CURRENT_USER, L"Software\\Microsoft\\Windows\\CurrentVersion\\Explorer\\HideDesktopIcons\\NewStartPanel", 0, nullptr, REG_OPTION_NON_VOLATILE, KEY_WRITE, nullptr, &hKey, nullptr) == ERROR_SUCCESS) {
-                DWORD val = explorerShowRecycleBinVal ? 0 : 1;
-                RegSetValueExW(hKey, L"{645FF040-5081-101B-9F08-00AA002F954E}", 0, REG_DWORD, reinterpret_cast<const BYTE*>(&val), sizeof(val));
+                RegSetValueExW(hKey, L"{645FF040-5081-101B-9F08-00AA002F954E}", 0, REG_DWORD, reinterpret_cast<const BYTE*>(&recycleBinVal), sizeof(recycleBinVal));
                 RegCloseKey(hKey);
-                SHChangeNotify(SHCNE_ASSOCCHANGED, SHCNF_FLUSHNOWAIT, NULL, NULL);
             } else {
                 success = false;
             }
+            if (RegCreateKeyExW(HKEY_CURRENT_USER, L"Software\\Microsoft\\Windows\\CurrentVersion\\Explorer\\HideDesktopIcons\\ClassicStartMenu", 0, nullptr, REG_OPTION_NON_VOLATILE, KEY_WRITE, nullptr, &hKey, nullptr) == ERROR_SUCCESS) {
+                RegSetValueExW(hKey, L"{645FF040-5081-101B-9F08-00AA002F954E}", 0, REG_DWORD, reinterpret_cast<const BYTE*>(&recycleBinVal), sizeof(recycleBinVal));
+                RegCloseKey(hKey);
+            } else {
+                success = false;
+            }
+            SHChangeNotify(SHCNE_ASSOCCHANGED, SHCNF_FLUSHNOWAIT, NULL, NULL);
             if (explorerPinRecycleBinVal != origExplorerPinRecycleBinVal || force) {
                 explorerNeedsRestart = true;
                 if (RegCreateKeyExW(HKEY_CURRENT_USER, L"Software\\Classes\\CLSID\\{645FF040-5081-101B-9F08-00AA002F954E}", 0, nullptr, REG_OPTION_NON_VOLATILE, KEY_WRITE, nullptr, &hKey, nullptr) == ERROR_SUCCESS) {
@@ -6751,14 +6777,20 @@ void Optimizer::startSystemOptimization() {
             HKEY hKey = nullptr;
 
             // 1. This PC icon ({20D04FE0-3AEA-1069-A2D8-08002B30309D}) -> 0 = show, 1 = hide
+            DWORD thisPcVal = desktopShowThisPCVal ? 0 : 1;
             if (RegCreateKeyExW(HKEY_CURRENT_USER, L"Software\\Microsoft\\Windows\\CurrentVersion\\Explorer\\HideDesktopIcons\\NewStartPanel", 0, nullptr, REG_OPTION_NON_VOLATILE, KEY_WRITE, nullptr, &hKey, nullptr) == ERROR_SUCCESS) {
-                DWORD val = desktopShowThisPCVal ? 0 : 1;
-                RegSetValueExW(hKey, L"{20D04FE0-3AEA-1069-A2D8-08002B30309D}", 0, REG_DWORD, reinterpret_cast<const BYTE*>(&val), sizeof(val));
+                RegSetValueExW(hKey, L"{20D04FE0-3AEA-1069-A2D8-08002B30309D}", 0, REG_DWORD, reinterpret_cast<const BYTE*>(&thisPcVal), sizeof(thisPcVal));
                 RegCloseKey(hKey);
-                SHChangeNotify(SHCNE_ASSOCCHANGED, SHCNF_FLUSHNOWAIT, NULL, NULL);
             } else {
                 success = false;
             }
+            if (RegCreateKeyExW(HKEY_CURRENT_USER, L"Software\\Microsoft\\Windows\\CurrentVersion\\Explorer\\HideDesktopIcons\\ClassicStartMenu", 0, nullptr, REG_OPTION_NON_VOLATILE, KEY_WRITE, nullptr, &hKey, nullptr) == ERROR_SUCCESS) {
+                RegSetValueExW(hKey, L"{20D04FE0-3AEA-1069-A2D8-08002B30309D}", 0, REG_DWORD, reinterpret_cast<const BYTE*>(&thisPcVal), sizeof(thisPcVal));
+                RegCloseKey(hKey);
+            } else {
+                success = false;
+            }
+            SHChangeNotify(SHCNE_ASSOCCHANGED, SHCNF_FLUSHNOWAIT, NULL, NULL);
 
             // 2. Widgets (TaskbarDa), Drop Shadows (ListviewShadow), Show Desktop (TaskbarSd), Aero Shake (DisallowShaking)
             if (RegCreateKeyExW(HKEY_CURRENT_USER, L"Software\\Microsoft\\Windows\\CurrentVersion\\Explorer\\Advanced", 0, nullptr, REG_OPTION_NON_VOLATILE, KEY_WRITE, nullptr, &hKey, nullptr) == ERROR_SUCCESS) {
