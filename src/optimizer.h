@@ -247,6 +247,7 @@ class Optimizer : public QObject {
     Q_PROPERTY(bool repairRunning READ repairRunning NOTIFY repairRunningChanged)
     Q_PROPERTY(double repairProgress READ repairProgress NOTIFY repairProgressChanged)
     Q_PROPERTY(QString repairStatusText READ repairStatusText NOTIFY repairStatusTextChanged)
+    Q_PROPERTY(bool explorerNeedsRestart READ explorerNeedsRestart WRITE setExplorerNeedsRestart NOTIFY explorerNeedsRestartChanged)
 
 public:
     explicit Optimizer(QObject *parent = nullptr);
@@ -434,6 +435,7 @@ public:
     bool originalExplorerSyncNotifications() const { return m_originalExplorerSyncNotifications; }
     int explorerLaunchTo() const { return m_explorerLaunchTo; }
     int originalExplorerLaunchTo() const { return m_originalExplorerLaunchTo; }
+    bool explorerNeedsRestart() const { return m_explorerNeedsRestart; }
 
     // Start Menu Customization Getters
     bool startMenuWebResults() const { return m_startMenuWebResults; }
@@ -578,6 +580,7 @@ public:
     void setExplorerUseCheckboxes(bool val);
     void setExplorerSyncNotifications(bool val);
     void setExplorerLaunchTo(int val);
+    void setExplorerNeedsRestart(bool val);
 
     // Start Menu Customization Setters
     void setStartMenuWebResults(bool val);
@@ -827,6 +830,7 @@ signals:
     void originalExplorerSyncNotificationsChanged(bool val);
     void explorerLaunchToChanged(int val);
     void originalExplorerLaunchToChanged(int val);
+    void explorerNeedsRestartChanged(bool val);
 
     // Start Menu Customization Signals
     void startMenuWebResultsChanged(bool val);
@@ -1083,6 +1087,7 @@ private:
     bool m_originalExplorerSyncNotifications = true;
     int m_explorerLaunchTo = 1;
     int m_originalExplorerLaunchTo = 1;
+    bool m_explorerNeedsRestart = false;
 
     // Start Menu Customization backing fields
     bool m_startMenuWebResults = true;

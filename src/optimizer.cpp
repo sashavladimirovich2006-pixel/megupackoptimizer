@@ -2824,6 +2824,13 @@ void Optimizer::setExplorerLaunchTo(int val) {
     }
 }
 
+void Optimizer::setExplorerNeedsRestart(bool val) {
+    if (m_explorerNeedsRestart != val) {
+        m_explorerNeedsRestart = val;
+        emit explorerNeedsRestartChanged(m_explorerNeedsRestart);
+    }
+}
+
 void Optimizer::setStartMenuWebResults(bool val) {
     if (m_startMenuWebResults != val) {
         m_startMenuWebResults = val;
@@ -5985,6 +5992,9 @@ void Optimizer::startSystemOptimization() {
     bool forceVal = m_forceApplyAll;
     m_forceApplyAll = false;
 
+    m_explorerNeedsRestart = false;
+    emit explorerNeedsRestartChanged(m_explorerNeedsRestart);
+
     QThread* worker = QThread::create([this, explorerShowExtensionsVal, origExplorerShowExtensionsVal, explorerShowHiddenVal, origExplorerShowHiddenVal, explorerShowExtractFilesVal, origExplorerShowExtractFilesVal, explorerClassicRibbonVal, origExplorerClassicRibbonVal, explorerShowPreviewPaneVal, origExplorerShowPreviewPaneVal, explorerShowRecycleBinVal, origExplorerShowRecycleBinVal, explorerPinRecycleBinVal, origExplorerPinRecycleBinVal, explorerPinHomeVal, origExplorerPinHomeVal, explorerPinGalleryVal, origExplorerPinGalleryVal, explorerUseCheckboxesVal, origExplorerUseCheckboxesVal, explorerSyncNotificationsVal, origExplorerSyncNotificationsVal, explorerLaunchToVal, origExplorerLaunchToVal, forceVal, searchVal, classicContextMenuVal, shortcutArrowsVal, clipboardHistoryVal, taskbarEndTaskVal, taskbarSecondsVal, hibernationVal, overlayVal, coreIsolationVal, hagsVal, mouseAccelVal, gameModeVal, firewallVal, bitlockerVal, discordOverlayVal, notificationsVal, notifGlobalVal, notifAppVal, notifSoundsVal, notifLockscreenVal, targetPowerSchemeVal, activePowerSchemeVal, deleteUltimateStagedVal, deleteDefenderStagedVal, defenderVal, defenderRegistryVal, defenderCmdVal, defenderServiceVal, remoteAccessVal, telemetryVal, telemetryDiagTrackVal, telemetryWapPushVal, telemetryCeipVal, telemetryWerVal, windowsUpdateModeVal, targets, originalTargets, origSearch, origClassicContextMenu, origShortcutArrows, origClipboardHistory, origTaskbarEndTask, origTaskbarSeconds, origHibernation, origOverlay, origCoreIsolation, origHags, origMouseAccel, origGameMode, origFirewall, origBitlocker, origDiscordOverlay, origNotifications, origNotifGlobal, origNotifApp, origNotifSounds, origNotifLockscreen, origDefender, origDefenderRegistry, origDefenderCmd, origDefenderService, origRemoteAccess, origTelemetry, origTelemetryDiagTrack, origTelemetryWapPush, origTelemetryCeip, origTelemetryWer, origWindowsUpdateMode, usbDevicesVal, origUsbDevicesVal, appNotificationSettingsVal, steamPathVal, cs2OptionsVal, origCs2OptionsVal, steamOverlayVal, origSteamOverlayVal, cs2OverlayVal, origCs2OverlayVal, visualEffectsVal, origVisualEffectsVal, steamFriendsSettingsVal, origSteamFriendsSettingsVal, steamFriendsChanged, pagefileMinVal, origPagefileMinVal, pagefileMaxVal, origPagefileMaxVal, adsTailoredExperiencesVal, origAdsTailored, adsAdvertisingIdVal, origAdsAdvertisingId, adsSuggestedContentVal, origAdsSuggestedContent, adsSettingsHomeVal, origAdsSettingsHome, adsSuggestedNotificationsVal, origAdsSuggestedNotifications, adsLockScreenTipsVal, origAdsLockScreenTips, adsWindowsTipsVal, origAdsWindowsTips, adsWelcomeExperienceVal, origAdsWelcomeExperience, adsFinishSetupVal, origAdsFinishSetup, privacyLocationVal, origPrivacyLocation, privacyTelemetryVal, origPrivacyTelemetry, privacyCeipVal, origPrivacyCeip, privacyAppsTelemetryVal, origPrivacyAppsTelemetry, privacyAppLaunchesVal, origPrivacyAppLaunches, privacyImproveInkingVal, origPrivacyImproveInking, privacyPersonalizeInkingVal, origPrivacyPersonalizeInking, privacyErrorReportingVal, origPrivacyErrorReporting, privacyLockScreenCameraVal, origPrivacyLockScreenCamera, privacyCameraIndicatorVal, origPrivacyCameraIndicator, privacyOnlineSpeechVal, origPrivacyOnlineSpeech, superuserGodModeVal, superuserDeveloperModeVal, superuserUacLevelVal, superuserUcpdVal, superuserGodModeOrig, superuserDeveloperModeOrig, superuserUacLevelOrig, superuserUcpdOrig, startMenuWebResultsVal, origStartMenuWebResultsVal, startMenuAutoinstallVal, origStartMenuAutoinstallVal, startMenuAccountNotificationsVal, origStartMenuAccountNotificationsVal, startMenuShowHibernateVal, origStartMenuShowHibernateVal, desktopShowThisPCVal, origDesktopShowThisPCVal, desktopShowWidgetsVal, origDesktopShowWidgetsVal, desktopIconShadowsVal, origDesktopIconShadowsVal, desktopShowDesktopButtonVal, origDesktopShowDesktopButtonVal, desktopAeroShakeVal, origDesktopAeroShakeVal, desktopWallpaperQualityVal, origDesktopWallpaperQualityVal, coinstallersActiveVal, origCoinstallersActiveVal, driverUpdatesVal, origDriverUpdatesVal, appUpdatesVal, origAppUpdatesVal, storageSenseVal, origStorageSenseVal]() {
         // Step 00: Auto-create backup before making changes
         if (!forceVal && Settings::instance()->createBackup()) {
@@ -6256,6 +6266,8 @@ void Optimizer::startSystemOptimization() {
             if (success) {
                 QString logMsg = classicContextMenuVal ? tr("Classic Context Menu is now ENABLED. Please restart Windows Explorer to apply changes.") : tr("Classic Context Menu is now DISABLED. Please restart Windows Explorer to apply changes.");
                 emit systemStepReported(logMsg, "SUCCESS");
+                m_explorerNeedsRestart = true;
+                emit explorerNeedsRestartChanged(m_explorerNeedsRestart);
             } else {
                 classicContextMenuSuccess = false;
                 emit systemStepReported(tr("Failed to update Classic Context Menu state."), "ERROR");
@@ -6327,6 +6339,8 @@ void Optimizer::startSystemOptimization() {
             if (success) {
                 QString logMsg = !shortcutArrowsVal ? tr("Shortcut Arrow Overlays are now HIDDEN. Please restart Windows Explorer to apply changes.") : tr("Shortcut Arrow Overlays are now SHOWN (Default). Please restart Windows Explorer to apply changes.");
                 emit systemStepReported(logMsg, "SUCCESS");
+                m_explorerNeedsRestart = true;
+                emit explorerNeedsRestartChanged(m_explorerNeedsRestart);
             } else {
                 shortcutArrowsSuccess = false;
                 emit systemStepReported(tr("Failed to update Shortcut Arrow Overlays state."), "ERROR");
@@ -6395,6 +6409,8 @@ void Optimizer::startSystemOptimization() {
             if (success) {
                 QString logMsg = taskbarEndTaskVal ? tr("Taskbar 'End task' option is now ENABLED. Please restart Windows Explorer to apply changes.") : tr("Taskbar 'End task' option is now DISABLED. Please restart Windows Explorer to apply changes.");
                 emit systemStepReported(logMsg, "SUCCESS");
+                m_explorerNeedsRestart = true;
+                emit explorerNeedsRestartChanged(m_explorerNeedsRestart);
             } else {
                 taskbarEndTaskSuccess = false;
                 emit systemStepReported(tr("Failed to update Taskbar 'End task' state."), "ERROR");
@@ -6429,6 +6445,8 @@ void Optimizer::startSystemOptimization() {
             if (success) {
                 QString logMsg = taskbarSecondsVal ? tr("Taskbar clock seconds are now ENABLED. Please restart Windows Explorer to apply changes.") : tr("Taskbar clock seconds are now DISABLED. Please restart Windows Explorer to apply changes.");
                 emit systemStepReported(logMsg, "SUCCESS");
+                m_explorerNeedsRestart = true;
+                emit explorerNeedsRestartChanged(m_explorerNeedsRestart);
             } else {
                 taskbarSecondsSuccess = false;
                 emit systemStepReported(tr("Failed to update Taskbar clock seconds state."), "ERROR");
@@ -6599,6 +6617,10 @@ void Optimizer::startSystemOptimization() {
             if (success) {
                 QString logMsg = explorerNeedsRestart ? tr("File Explorer settings applied successfully. Some changes require a Windows Explorer restart.") : tr("File Explorer settings applied successfully.");
                 emit systemStepReported(logMsg, "SUCCESS");
+                if (explorerNeedsRestart) {
+                    m_explorerNeedsRestart = true;
+                    emit explorerNeedsRestartChanged(m_explorerNeedsRestart);
+                }
             } else {
                 explorerCustomizationSuccess = false;
                 emit systemStepReported(tr("Failed to apply File Explorer customization settings."), "ERROR");

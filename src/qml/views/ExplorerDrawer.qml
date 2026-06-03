@@ -27,11 +27,7 @@ Column {
         color: Qt.rgba(Theme.accent.r, Theme.accent.g, Theme.accent.b, 0.1)
         border.color: Theme.accent
         border.width: 1
-        visible: (optimizerBackend.explorerClassicRibbon !== optimizerBackend.originalExplorerClassicRibbon) ||
-                 (optimizerBackend.explorerPinHome !== optimizerBackend.originalExplorerPinHome) ||
-                 (optimizerBackend.explorerPinGallery !== optimizerBackend.originalExplorerPinGallery) ||
-                 (optimizerBackend.explorerPinRecycleBin !== optimizerBackend.originalExplorerPinRecycleBin) ||
-                 (optimizerBackend.explorerShowPreviewPane !== optimizerBackend.originalExplorerShowPreviewPane)
+        visible: false
         clip: true
 
         Behavior on height { NumberAnimation { duration: Theme.animNormal; easing.type: Easing.OutCubic } }

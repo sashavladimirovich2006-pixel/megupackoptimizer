@@ -5780,7 +5780,7 @@ Item {
                 AcrylicPanel {
                     id: taskbarEndTaskPanel
                     width: parent.width
-                    height: (optimizerBackend.taskbarEndTaskActive !== optimizerBackend.originalTaskbarEndTaskActive) ? 132 : 84
+                    height: 84
                     Behavior on height {
                         NumberAnimation { duration: 250; easing.type: Easing.InOutQuad }
                     }
@@ -5899,7 +5899,7 @@ Item {
                             anchors.left: parent.left
                             anchors.right: parent.right
                             height: 48
-                            visible: (optimizerBackend.taskbarEndTaskActive !== optimizerBackend.originalTaskbarEndTaskActive)
+                            visible: false
                             clip: true
 
                             Rectangle {
@@ -5946,7 +5946,7 @@ Item {
                 AcrylicPanel {
                     id: taskbarSecondsPanel
                     width: parent.width
-                    height: (optimizerBackend.taskbarSecondsActive !== optimizerBackend.originalTaskbarSecondsActive) ? 132 : 84
+                    height: 84
                     Behavior on height {
                         NumberAnimation { duration: 250; easing.type: Easing.InOutQuad }
                     }
@@ -6065,7 +6065,7 @@ Item {
                             anchors.left: parent.left
                             anchors.right: parent.right
                             height: 48
-                            visible: (optimizerBackend.taskbarSecondsActive !== optimizerBackend.originalTaskbarSecondsActive)
+                            visible: false
                             clip: true
 
                             Rectangle {
@@ -9147,16 +9147,31 @@ Item {
                                 elide: Text.ElideRight
                             }
 
-                            // Close button
-                            MeguButton {
-                                text: qsTr("Close")
-                                accented: true
+                            Row {
                                 anchors.horizontalCenter: parent.horizontalCenter
+                                spacing: 12
                                 visible: !optimizerBackend.isOptimizingSystem
-                                height: 28
-                                width: 90
-                                onClicked: {
-                                    progressOverlay.showFinishedOverlay = false;
+
+                                MeguButton {
+                                    text: qsTr("Restart Explorer")
+                                    accented: true
+                                    height: 28
+                                    width: 140
+                                    visible: optimizerBackend.explorerNeedsRestart
+                                    onClicked: {
+                                        optimizerBackend.restartExplorer();
+                                        optimizerBackend.explorerNeedsRestart = false;
+                                    }
+                                }
+
+                                MeguButton {
+                                    text: qsTr("Close")
+                                    accented: !optimizerBackend.explorerNeedsRestart
+                                    height: 28
+                                    width: 90
+                                    onClicked: {
+                                        progressOverlay.showFinishedOverlay = false;
+                                    }
                                 }
                             }
                         }
