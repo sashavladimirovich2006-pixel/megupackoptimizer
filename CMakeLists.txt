@@ -58,6 +58,7 @@ qt_add_qml_module(megu_pack_optimizer
         src/qml/views/TelemetryDrawer.qml
         src/qml/views/WindowsUpdateDrawer.qml
         src/qml/views/VisualEffectsDrawer.qml
+        src/qml/views/MoreRightsDrawer.qml
     RESOURCES
         src/resources/settings.svg
         src/resources/steam.svg

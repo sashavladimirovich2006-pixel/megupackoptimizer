@@ -2582,6 +2582,34 @@ void Optimizer::setPrivacyOnlineSpeechActive(bool val) {
     }
 }
 
+void Optimizer::setSuperuserGodModeActive(bool val) {
+    if (m_superuserGodModeActive != val) {
+        m_superuserGodModeActive = val;
+        emit superuserGodModeActiveChanged(m_superuserGodModeActive);
+    }
+}
+
+void Optimizer::setSuperuserDeveloperModeActive(bool val) {
+    if (m_superuserDeveloperModeActive != val) {
+        m_superuserDeveloperModeActive = val;
+        emit superuserDeveloperModeActiveChanged(m_superuserDeveloperModeActive);
+    }
+}
+
+void Optimizer::setSuperuserUacLevel(int val) {
+    if (m_superuserUacLevel != val) {
+        m_superuserUacLevel = val;
+        emit superuserUacLevelChanged(m_superuserUacLevel);
+    }
+}
+
+void Optimizer::setSuperuserUcpdActive(bool val) {
+    if (m_superuserUcpdActive != val) {
+        m_superuserUcpdActive = val;
+        emit superuserUcpdActiveChanged(m_superuserUcpdActive);
+    }
+}
+
 void Optimizer::setWindowsUpdateMode(int mode) {
     if (m_windowsUpdateMode != mode) {
         m_windowsUpdateMode = mode;
@@ -4876,6 +4904,90 @@ void Optimizer::loadSystemStates() {
     emit visualEffectsChanged(m_visualEffects);
     emit originalVisualEffectsChanged(m_originalVisualEffects);
 
+    // Load Superuser / More Rights settings
+    bool isGodModeActive = false;
+#ifdef Q_OS_WIN
+    HKEY hKeyGod;
+    if (RegOpenKeyExW(HKEY_CURRENT_USER, L"Software\\Microsoft\\Windows\\CurrentVersion\\Explorer\\Desktop\\NameSpace\\{ED7BA470-8E54-465E-825C-99712043E01C}", 0, KEY_READ, &hKeyGod) == ERROR_SUCCESS) {
+        isGodModeActive = true;
+        RegCloseKey(hKeyGod);
+    }
+#endif
+    m_superuserGodModeActive = isGodModeActive;
+    m_originalSuperuserGodModeActive = isGodModeActive;
+    emit superuserGodModeActiveChanged(m_superuserGodModeActive);
+    emit originalSuperuserGodModeActiveChanged(m_originalSuperuserGodModeActive);
+
+    bool isDeveloperModeActive = false;
+#ifdef Q_OS_WIN
+    HKEY hKeyDev;
+    if (RegOpenKeyExW(HKEY_LOCAL_MACHINE, L"SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\AppModelUnlock", 0, KEY_READ, &hKeyDev) == ERROR_SUCCESS) {
+        DWORD dwVal1 = 0, dwVal2 = 0;
+        DWORD dwSize1 = sizeof(dwVal1), dwSize2 = sizeof(dwVal2);
+        DWORD dwType1 = 0, dwType2 = 0;
+        bool read1 = (RegQueryValueExW(hKeyDev, L"AllowDevelopmentWithoutDevLicense", nullptr, &dwType1, reinterpret_cast<LPBYTE>(&dwVal1), &dwSize1) == ERROR_SUCCESS);
+        bool read2 = (RegQueryValueExW(hKeyDev, L"AllowAllTrustedApps", nullptr, &dwType2, reinterpret_cast<LPBYTE>(&dwVal2), &dwSize2) == ERROR_SUCCESS);
+        if (read1 && read2 && dwVal1 == 1 && dwVal2 == 1) {
+            isDeveloperModeActive = true;
+        }
+        RegCloseKey(hKeyDev);
+    }
+#endif
+    m_superuserDeveloperModeActive = isDeveloperModeActive;
+    m_originalSuperuserDeveloperModeActive = isDeveloperModeActive;
+    emit superuserDeveloperModeActiveChanged(m_superuserDeveloperModeActive);
+    emit originalSuperuserDeveloperModeActiveChanged(m_originalSuperuserDeveloperModeActive);
+
+    int uacLevel = 1; // Default
+#ifdef Q_OS_WIN
+    HKEY hKeyUac;
+    if (RegOpenKeyExW(HKEY_LOCAL_MACHINE, L"SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Policies\\System", 0, KEY_READ, &hKeyUac) == ERROR_SUCCESS) {
+        DWORD dwBehavior = 5;
+        DWORD dwSecure = 1;
+        DWORD dwSize1 = sizeof(dwBehavior), dwSize2 = sizeof(dwSecure);
+        RegQueryValueExW(hKeyUac, L"ConsentPromptBehaviorAdmin", nullptr, nullptr, reinterpret_cast<LPBYTE>(&dwBehavior), &dwSize1);
+        RegQueryValueExW(hKeyUac, L"PromptOnSecureDesktop", nullptr, nullptr, reinterpret_cast<LPBYTE>(&dwSecure), &dwSize2);
+        
+        if (dwBehavior == 2 && dwSecure == 1) {
+            uacLevel = 0;
+        } else if (dwBehavior == 5 && dwSecure == 1) {
+            uacLevel = 1;
+        } else if (dwBehavior == 5 && dwSecure == 0) {
+            uacLevel = 2;
+        } else if (dwBehavior == 0 && dwSecure == 0) {
+            uacLevel = 3;
+        } else {
+            uacLevel = 1;
+        }
+        RegCloseKey(hKeyUac);
+    }
+#endif
+    m_superuserUacLevel = uacLevel;
+    m_originalSuperuserUacLevel = uacLevel;
+    emit superuserUacLevelChanged(m_superuserUacLevel);
+    emit originalSuperuserUacLevelChanged(m_originalSuperuserUacLevel);
+
+    bool ucpdActive = true;
+#ifdef Q_OS_WIN
+    HKEY hKeyUcpd;
+    if (RegOpenKeyExW(HKEY_LOCAL_MACHINE, L"SYSTEM\\CurrentControlSet\\Services\\Ucpd", 0, KEY_READ, &hKeyUcpd) == ERROR_SUCCESS) {
+        DWORD dwStart = 2;
+        DWORD dwSize = sizeof(dwStart);
+        if (RegQueryValueExW(hKeyUcpd, L"Start", nullptr, nullptr, reinterpret_cast<LPBYTE>(&dwStart), &dwSize) == ERROR_SUCCESS) {
+            if (dwStart == 4) {
+                ucpdActive = false;
+            } else {
+                ucpdActive = true;
+            }
+        }
+        RegCloseKey(hKeyUcpd);
+    }
+#endif
+    m_superuserUcpdActive = ucpdActive;
+    m_originalSuperuserUcpdActive = ucpdActive;
+    emit superuserUcpdActiveChanged(m_superuserUcpdActive);
+    emit originalSuperuserUcpdActiveChanged(m_originalSuperuserUcpdActive);
+
     loadPagefileSettings();
 }
 
@@ -4948,6 +5060,17 @@ void Optimizer::startSystemOptimization() {
     bool privacyLockScreenCameraVal = m_privacyLockScreenCameraActive;
     bool privacyCameraIndicatorVal = m_privacyCameraIndicatorActive;
     bool privacyOnlineSpeechVal = m_privacyOnlineSpeechActive;
+
+    // Copy Superuser / More Rights targets
+    bool superuserGodModeVal = m_superuserGodModeActive;
+    bool superuserDeveloperModeVal = m_superuserDeveloperModeActive;
+    int superuserUacLevelVal = m_superuserUacLevel;
+    bool superuserUcpdVal = m_superuserUcpdActive;
+
+    bool superuserGodModeOrig = m_originalSuperuserGodModeActive;
+    bool superuserDeveloperModeOrig = m_originalSuperuserDeveloperModeActive;
+    int superuserUacLevelOrig = m_originalSuperuserUacLevel;
+    bool superuserUcpdOrig = m_originalSuperuserUcpdActive;
 
     QString steamPathVal = "";
 #ifdef Q_OS_WIN
@@ -5056,7 +5179,7 @@ void Optimizer::startSystemOptimization() {
     bool forceVal = m_forceApplyAll;
     m_forceApplyAll = false;
 
-    QThread* worker = QThread::create([this, forceVal, searchVal, classicContextMenuVal, shortcutArrowsVal, clipboardHistoryVal, taskbarEndTaskVal, taskbarSecondsVal, hibernationVal, overlayVal, coreIsolationVal, hagsVal, mouseAccelVal, gameModeVal, firewallVal, bitlockerVal, discordOverlayVal, notificationsVal, notifGlobalVal, notifAppVal, notifSoundsVal, notifLockscreenVal, targetPowerSchemeVal, activePowerSchemeVal, deleteUltimateStagedVal, deleteDefenderStagedVal, defenderVal, defenderRegistryVal, defenderCmdVal, defenderServiceVal, remoteAccessVal, telemetryVal, telemetryDiagTrackVal, telemetryWapPushVal, telemetryCeipVal, telemetryWerVal, windowsUpdateModeVal, targets, originalTargets, origSearch, origClassicContextMenu, origShortcutArrows, origClipboardHistory, origTaskbarEndTask, origTaskbarSeconds, origHibernation, origOverlay, origCoreIsolation, origHags, origMouseAccel, origGameMode, origFirewall, origBitlocker, origDiscordOverlay, origNotifications, origNotifGlobal, origNotifApp, origNotifSounds, origNotifLockscreen, origDefender, origDefenderRegistry, origDefenderCmd, origDefenderService, origRemoteAccess, origTelemetry, origTelemetryDiagTrack, origTelemetryWapPush, origTelemetryCeip, origTelemetryWer, origWindowsUpdateMode, usbDevicesVal, origUsbDevicesVal, appNotificationSettingsVal, steamPathVal, cs2OptionsVal, origCs2OptionsVal, steamOverlayVal, origSteamOverlayVal, cs2OverlayVal, origCs2OverlayVal, visualEffectsVal, origVisualEffectsVal, steamFriendsSettingsVal, origSteamFriendsSettingsVal, steamFriendsChanged, pagefileMinVal, origPagefileMinVal, pagefileMaxVal, origPagefileMaxVal, adsTailoredExperiencesVal, origAdsTailored, adsAdvertisingIdVal, origAdsAdvertisingId, adsSuggestedContentVal, origAdsSuggestedContent, adsSettingsHomeVal, origAdsSettingsHome, adsSuggestedNotificationsVal, origAdsSuggestedNotifications, adsLockScreenTipsVal, origAdsLockScreenTips, adsWindowsTipsVal, origAdsWindowsTips, adsWelcomeExperienceVal, origAdsWelcomeExperience, adsFinishSetupVal, origAdsFinishSetup, privacyLocationVal, origPrivacyLocation, privacyTelemetryVal, origPrivacyTelemetry, privacyCeipVal, origPrivacyCeip, privacyAppsTelemetryVal, origPrivacyAppsTelemetry, privacyAppLaunchesVal, origPrivacyAppLaunches, privacyImproveInkingVal, origPrivacyImproveInking, privacyPersonalizeInkingVal, origPrivacyPersonalizeInking, privacyErrorReportingVal, origPrivacyErrorReporting, privacyLockScreenCameraVal, origPrivacyLockScreenCamera, privacyCameraIndicatorVal, origPrivacyCameraIndicator, privacyOnlineSpeechVal, origPrivacyOnlineSpeech]() {
+    QThread* worker = QThread::create([this, forceVal, searchVal, classicContextMenuVal, shortcutArrowsVal, clipboardHistoryVal, taskbarEndTaskVal, taskbarSecondsVal, hibernationVal, overlayVal, coreIsolationVal, hagsVal, mouseAccelVal, gameModeVal, firewallVal, bitlockerVal, discordOverlayVal, notificationsVal, notifGlobalVal, notifAppVal, notifSoundsVal, notifLockscreenVal, targetPowerSchemeVal, activePowerSchemeVal, deleteUltimateStagedVal, deleteDefenderStagedVal, defenderVal, defenderRegistryVal, defenderCmdVal, defenderServiceVal, remoteAccessVal, telemetryVal, telemetryDiagTrackVal, telemetryWapPushVal, telemetryCeipVal, telemetryWerVal, windowsUpdateModeVal, targets, originalTargets, origSearch, origClassicContextMenu, origShortcutArrows, origClipboardHistory, origTaskbarEndTask, origTaskbarSeconds, origHibernation, origOverlay, origCoreIsolation, origHags, origMouseAccel, origGameMode, origFirewall, origBitlocker, origDiscordOverlay, origNotifications, origNotifGlobal, origNotifApp, origNotifSounds, origNotifLockscreen, origDefender, origDefenderRegistry, origDefenderCmd, origDefenderService, origRemoteAccess, origTelemetry, origTelemetryDiagTrack, origTelemetryWapPush, origTelemetryCeip, origTelemetryWer, origWindowsUpdateMode, usbDevicesVal, origUsbDevicesVal, appNotificationSettingsVal, steamPathVal, cs2OptionsVal, origCs2OptionsVal, steamOverlayVal, origSteamOverlayVal, cs2OverlayVal, origCs2OverlayVal, visualEffectsVal, origVisualEffectsVal, steamFriendsSettingsVal, origSteamFriendsSettingsVal, steamFriendsChanged, pagefileMinVal, origPagefileMinVal, pagefileMaxVal, origPagefileMaxVal, adsTailoredExperiencesVal, origAdsTailored, adsAdvertisingIdVal, origAdsAdvertisingId, adsSuggestedContentVal, origAdsSuggestedContent, adsSettingsHomeVal, origAdsSettingsHome, adsSuggestedNotificationsVal, origAdsSuggestedNotifications, adsLockScreenTipsVal, origAdsLockScreenTips, adsWindowsTipsVal, origAdsWindowsTips, adsWelcomeExperienceVal, origAdsWelcomeExperience, adsFinishSetupVal, origAdsFinishSetup, privacyLocationVal, origPrivacyLocation, privacyTelemetryVal, origPrivacyTelemetry, privacyCeipVal, origPrivacyCeip, privacyAppsTelemetryVal, origPrivacyAppsTelemetry, privacyAppLaunchesVal, origPrivacyAppLaunches, privacyImproveInkingVal, origPrivacyImproveInking, privacyPersonalizeInkingVal, origPrivacyPersonalizeInking, privacyErrorReportingVal, origPrivacyErrorReporting, privacyLockScreenCameraVal, origPrivacyLockScreenCamera, privacyCameraIndicatorVal, origPrivacyCameraIndicator, privacyOnlineSpeechVal, origPrivacyOnlineSpeech, superuserGodModeVal, superuserDeveloperModeVal, superuserUacLevelVal, superuserUcpdVal, superuserGodModeOrig, superuserDeveloperModeOrig, superuserUacLevelOrig, superuserUcpdOrig]() {
         // Step 00: Auto-create backup before making changes
         if (!forceVal && Settings::instance()->createBackup()) {
             emit systemStepReported(tr("Creating automatic system backup..."), "INFO");
@@ -5109,6 +5232,12 @@ void Optimizer::startSystemOptimization() {
                               (privacyCameraIndicatorVal != origPrivacyCameraIndicator) ||
                               (privacyOnlineSpeechVal != origPrivacyOnlineSpeech);
 
+        bool superuserChanged = force ||
+                                (superuserGodModeVal != superuserGodModeOrig) ||
+                                (superuserDeveloperModeVal != superuserDeveloperModeOrig) ||
+                                (superuserUacLevelVal != superuserUacLevelOrig) ||
+                                (superuserUcpdVal != superuserUcpdOrig);
+
         bool windowsUpdateModeChanged = force || (windowsUpdateModeVal != origWindowsUpdateMode);
 
         bool cs2Changed = force || (cs2OptionsVal != origCs2OptionsVal);
@@ -5151,7 +5280,7 @@ void Optimizer::startSystemOptimization() {
                           cs2Changed ||
                           steamOverlayChanged ||
                           cs2OverlayChanged ||
-                          visualEffectsChanged || deleteDefenderStagedVal || steamFriendsChanged || pagefileChanged;
+                          visualEffectsChanged || deleteDefenderStagedVal || steamFriendsChanged || pagefileChanged || superuserChanged;
         if (!anyChanges) {
             for (const QString &driveLetter : targets.keys()) {
                 if (targets.value(driveLetter).toBool() != originalTargets.value(driveLetter).toBool()) {
@@ -8059,7 +8188,135 @@ void Optimizer::startSystemOptimization() {
 #endif
         }
 
-        bool overallSuccess = wSearchSuccess && classicContextMenuSuccess && shortcutArrowsSuccess && clipboardHistorySuccess && taskbarEndTaskSuccess && taskbarSecondsSuccess && hibernationSuccess && overlaySuccess && coreIsolationSuccess && hagsSuccess && mouseAccelSuccess && gameModeSuccess && firewallSuccess && notificationsSuccess && powerPlanSuccess && defenderSuccess && overallDrivesSuccess && usbSuccess && remoteAccessSuccess && telemetrySuccess && windowsUpdateSuccess && cs2Success && steamOverlaySuccess && cs2OverlaySuccess && steamFriendsSuccess && visualEffectsSuccess && pagefileSuccess && adsSuccess;
+        bool superuserSuccess = true;
+        if (superuserChanged) {
+            emit systemStepReported(tr("Applying advanced administrator settings..."), "INFO");
+            QThread::msleep(800);
+
+#ifdef Q_OS_WIN
+            // 1. God Mode
+            if (superuserGodModeVal != superuserGodModeOrig || force) {
+                if (superuserGodModeVal) {
+                    HKEY hKeyGod = nullptr;
+                    DWORD disp = 0;
+                    LONG res = RegCreateKeyExW(HKEY_CURRENT_USER, L"Software\\Microsoft\\Windows\\CurrentVersion\\Explorer\\Desktop\\NameSpace\\{ED7BA470-8E54-465E-825C-99712043E01C}", 0, nullptr, REG_OPTION_NON_VOLATILE, KEY_WRITE, nullptr, &hKeyGod, &disp);
+                    if (res == ERROR_SUCCESS) {
+                        RegCloseKey(hKeyGod);
+                        emit systemStepReported(tr("God Mode enabled successfully."), "SUCCESS");
+                    } else {
+                        superuserSuccess = false;
+                        emit systemStepReported(tr("Failed to enable God Mode (Error code %1).").arg(res), "ERROR");
+                    }
+                } else {
+                    LONG res = RegDeleteKeyW(HKEY_CURRENT_USER, L"Software\\Microsoft\\Windows\\CurrentVersion\\Explorer\\Desktop\\NameSpace\\{ED7BA470-8E54-465E-825C-99712043E01C}");
+                    if (res == ERROR_SUCCESS || res == ERROR_FILE_NOT_FOUND) {
+                        emit systemStepReported(tr("God Mode disabled successfully."), "SUCCESS");
+                    } else {
+                        superuserSuccess = false;
+                        emit systemStepReported(tr("Failed to disable God Mode (Error code %1).").arg(res), "ERROR");
+                    }
+                }
+            }
+
+            // 2. Developer Mode
+            if (superuserDeveloperModeVal != superuserDeveloperModeOrig || force) {
+                HKEY hKeyDev = nullptr;
+                DWORD disp = 0;
+                LONG res = RegCreateKeyExW(HKEY_LOCAL_MACHINE, L"SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\AppModelUnlock", 0, nullptr, REG_OPTION_NON_VOLATILE, KEY_WRITE, nullptr, &hKeyDev, &disp);
+                if (res == ERROR_SUCCESS) {
+                    DWORD val = superuserDeveloperModeVal ? 1 : 0;
+                    LONG res1 = RegSetValueExW(hKeyDev, L"AllowDevelopmentWithoutDevLicense", 0, REG_DWORD, reinterpret_cast<const BYTE*>(&val), sizeof(val));
+                    LONG res2 = RegSetValueExW(hKeyDev, L"AllowAllTrustedApps", 0, REG_DWORD, reinterpret_cast<const BYTE*>(&val), sizeof(val));
+                    RegCloseKey(hKeyDev);
+                    if (res1 == ERROR_SUCCESS && res2 == ERROR_SUCCESS) {
+                        emit systemStepReported(superuserDeveloperModeVal ? tr("Developer Mode enabled successfully.") : tr("Developer Mode disabled successfully."), "SUCCESS");
+                    } else {
+                        superuserSuccess = false;
+                        emit systemStepReported(tr("Failed to set Developer Mode values (Error code %1/%2).").arg(res1).arg(res2), "ERROR");
+                    }
+                } else {
+                    superuserSuccess = false;
+                    emit systemStepReported(tr("Failed to open AppModelUnlock registry key (Error code %1).").arg(res), "ERROR");
+                }
+            }
+
+            // 3. User Account Control (UAC)
+            if (superuserUacLevelVal != superuserUacLevelOrig || force) {
+                HKEY hKeyUac = nullptr;
+                LONG res = RegOpenKeyExW(HKEY_LOCAL_MACHINE, L"SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Policies\\System", 0, KEY_WRITE, &hKeyUac);
+                if (res == ERROR_SUCCESS) {
+                    DWORD dwBehavior = 5;
+                    DWORD dwSecure = 1;
+                    if (superuserUacLevelVal == 0) {
+                        dwBehavior = 2;
+                        dwSecure = 1;
+                    } else if (superuserUacLevelVal == 1) {
+                        dwBehavior = 5;
+                        dwSecure = 1;
+                    } else if (superuserUacLevelVal == 2) {
+                        dwBehavior = 5;
+                        dwSecure = 0;
+                    } else if (superuserUacLevelVal == 3) {
+                        dwBehavior = 0;
+                        dwSecure = 0;
+                    }
+                    LONG res1 = RegSetValueExW(hKeyUac, L"ConsentPromptBehaviorAdmin", 0, REG_DWORD, reinterpret_cast<const BYTE*>(&dwBehavior), sizeof(dwBehavior));
+                    LONG res2 = RegSetValueExW(hKeyUac, L"PromptOnSecureDesktop", 0, REG_DWORD, reinterpret_cast<const BYTE*>(&dwSecure), sizeof(dwSecure));
+                    RegCloseKey(hKeyUac);
+                    if (res1 == ERROR_SUCCESS && res2 == ERROR_SUCCESS) {
+                        emit systemStepReported(tr("UAC level updated successfully. A system reboot is required for changes to take effect."), "SUCCESS");
+                    } else {
+                        superuserSuccess = false;
+                        emit systemStepReported(tr("Failed to set UAC level (Error code %1/%2).").arg(res1).arg(res2), "ERROR");
+                    }
+                } else {
+                    superuserSuccess = false;
+                    emit systemStepReported(tr("Failed to open UAC Policies key (Error code %1).").arg(res), "ERROR");
+                }
+            }
+
+            // 4. User Choice Protection Driver (UCPD)
+            if (superuserUcpdVal != superuserUcpdOrig || force) {
+                HKEY hKeyUcpd = nullptr;
+                LONG res = RegOpenKeyExW(HKEY_LOCAL_MACHINE, L"SYSTEM\\CurrentControlSet\\Services\\Ucpd", 0, KEY_WRITE, &hKeyUcpd);
+                if (res == ERROR_SUCCESS) {
+                    DWORD dwStart = superuserUcpdVal ? 2 : 4;
+                    LONG res1 = RegSetValueExW(hKeyUcpd, L"Start", 0, REG_DWORD, reinterpret_cast<const BYTE*>(&dwStart), sizeof(dwStart));
+                    RegCloseKey(hKeyUcpd);
+                    if (res1 == ERROR_SUCCESS) {
+                        emit systemStepReported(superuserUcpdVal ? tr("UCPD Service registry updated to enabled (Automatic).") : tr("UCPD Service registry updated to disabled."), "SUCCESS");
+                    } else {
+                        superuserSuccess = false;
+                        emit systemStepReported(tr("Failed to update UCPD registry (Error code %1).").arg(res1), "ERROR");
+                    }
+                } else {
+                    superuserSuccess = false;
+                    emit systemStepReported(tr("Failed to open UCPD Service key (Error code %1).").arg(res), "ERROR");
+                }
+
+                // Call schtasks to disable or enable the scheduled task \Microsoft\Windows\AppxDeploymentClient\UCPD velocity
+                QString taskAction = superuserUcpdVal ? "/Enable" : "/Disable";
+                QString taskName = "\\Microsoft\\Windows\\AppxDeploymentClient\\UCPD velocity";
+                
+                QProcess proc;
+                proc.start("schtasks.exe", QStringList() << "/change" << taskAction << "/TN" << taskName);
+                if (proc.waitForFinished(10000)) {
+                    if (proc.exitCode() == 0) {
+                        emit systemStepReported(superuserUcpdVal ? tr("UCPD task enabled successfully.") : tr("UCPD task disabled successfully."), "SUCCESS");
+                    } else {
+                        QString errOut = proc.readAllStandardError();
+                        emit systemStepReported(tr("UCPD task command finished with code %1. Info: %2").arg(proc.exitCode()).arg(errOut), "WARNING");
+                    }
+                } else {
+                    emit systemStepReported(tr("Timed out waiting for schtasks on UCPD task."), "WARNING");
+                }
+            }
+#else
+            emit systemStepReported(tr("[Simulation] Advanced administrator settings applied successfully."), "SUCCESS");
+#endif
+        }
+
+        bool overallSuccess = wSearchSuccess && classicContextMenuSuccess && shortcutArrowsSuccess && clipboardHistorySuccess && taskbarEndTaskSuccess && taskbarSecondsSuccess && hibernationSuccess && overlaySuccess && coreIsolationSuccess && hagsSuccess && mouseAccelSuccess && gameModeSuccess && firewallSuccess && notificationsSuccess && powerPlanSuccess && defenderSuccess && overallDrivesSuccess && usbSuccess && remoteAccessSuccess && telemetrySuccess && windowsUpdateSuccess && cs2Success && steamOverlaySuccess && cs2OverlaySuccess && steamFriendsSuccess && visualEffectsSuccess && pagefileSuccess && adsSuccess && superuserSuccess;
         if (overallSuccess) {
             emit systemStepReported(tr("System optimization completed successfully!"), "SUCCESS");
             Logger::log("System optimization completed successfully!", "INFO");
@@ -8128,6 +8385,11 @@ void Optimizer::startSystemOptimization() {
         m_originalPrivacyLockScreenCameraActive = privacyLockScreenCameraVal;
         m_originalPrivacyCameraIndicatorActive = privacyCameraIndicatorVal;
         m_originalPrivacyOnlineSpeechActive = privacyOnlineSpeechVal;
+
+        m_originalSuperuserGodModeActive = superuserGodModeVal;
+        m_originalSuperuserDeveloperModeActive = superuserDeveloperModeVal;
+        m_originalSuperuserUacLevel = superuserUacLevelVal;
+        m_originalSuperuserUcpdActive = superuserUcpdVal;
         
         loadSystemStates();
 
@@ -8183,6 +8445,11 @@ void Optimizer::startSystemOptimization() {
         emit originalPrivacyLockScreenCameraActiveChanged(m_originalPrivacyLockScreenCameraActive);
         emit originalPrivacyCameraIndicatorActiveChanged(m_originalPrivacyCameraIndicatorActive);
         emit originalPrivacyOnlineSpeechActiveChanged(m_originalPrivacyOnlineSpeechActive);
+
+        emit originalSuperuserGodModeActiveChanged(m_originalSuperuserGodModeActive);
+        emit originalSuperuserDeveloperModeActiveChanged(m_originalSuperuserDeveloperModeActive);
+        emit originalSuperuserUacLevelChanged(m_originalSuperuserUacLevel);
+        emit originalSuperuserUcpdActiveChanged(m_originalSuperuserUcpdActive);
 
         emit originalVisualEffectsChanged(m_originalVisualEffects);
         emit originalDriveStatesChanged(m_originalDriveStates);

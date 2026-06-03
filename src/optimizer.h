@@ -146,6 +146,16 @@ class Optimizer : public QObject {
     Q_PROPERTY(bool privacyOnlineSpeechActive READ privacyOnlineSpeechActive WRITE setPrivacyOnlineSpeechActive NOTIFY privacyOnlineSpeechActiveChanged)
     Q_PROPERTY(bool originalPrivacyOnlineSpeechActive READ originalPrivacyOnlineSpeechActive NOTIFY originalPrivacyOnlineSpeechActiveChanged)
 
+    // Superuser / More Rights properties
+    Q_PROPERTY(bool superuserGodModeActive READ superuserGodModeActive WRITE setSuperuserGodModeActive NOTIFY superuserGodModeActiveChanged)
+    Q_PROPERTY(bool originalSuperuserGodModeActive READ originalSuperuserGodModeActive NOTIFY originalSuperuserGodModeActiveChanged)
+    Q_PROPERTY(bool superuserDeveloperModeActive READ superuserDeveloperModeActive WRITE setSuperuserDeveloperModeActive NOTIFY superuserDeveloperModeActiveChanged)
+    Q_PROPERTY(bool originalSuperuserDeveloperModeActive READ originalSuperuserDeveloperModeActive NOTIFY originalSuperuserDeveloperModeActiveChanged)
+    Q_PROPERTY(int superuserUacLevel READ superuserUacLevel WRITE setSuperuserUacLevel NOTIFY superuserUacLevelChanged)
+    Q_PROPERTY(int originalSuperuserUacLevel READ originalSuperuserUacLevel NOTIFY originalSuperuserUacLevelChanged)
+    Q_PROPERTY(bool superuserUcpdActive READ superuserUcpdActive WRITE setSuperuserUcpdActive NOTIFY superuserUcpdActiveChanged)
+    Q_PROPERTY(bool originalSuperuserUcpdActive READ originalSuperuserUcpdActive NOTIFY originalSuperuserUcpdActiveChanged)
+
     Q_PROPERTY(int windowsUpdateMode READ windowsUpdateMode WRITE setWindowsUpdateMode NOTIFY windowsUpdateModeChanged)
     Q_PROPERTY(int originalWindowsUpdateMode READ originalWindowsUpdateMode NOTIFY originalWindowsUpdateModeChanged)
     Q_PROPERTY(QVariantMap cs2LaunchOptions READ cs2LaunchOptions WRITE setCs2LaunchOptions NOTIFY cs2LaunchOptionsChanged)
@@ -325,6 +335,16 @@ public:
     bool privacyOnlineSpeechActive() const { return m_privacyOnlineSpeechActive; }
     bool originalPrivacyOnlineSpeechActive() const { return m_originalPrivacyOnlineSpeechActive; }
 
+    // Superuser / More Rights Getters
+    bool superuserGodModeActive() const { return m_superuserGodModeActive; }
+    bool originalSuperuserGodModeActive() const { return m_originalSuperuserGodModeActive; }
+    bool superuserDeveloperModeActive() const { return m_superuserDeveloperModeActive; }
+    bool originalSuperuserDeveloperModeActive() const { return m_originalSuperuserDeveloperModeActive; }
+    int superuserUacLevel() const { return m_superuserUacLevel; }
+    int originalSuperuserUacLevel() const { return m_originalSuperuserUacLevel; }
+    bool superuserUcpdActive() const { return m_superuserUcpdActive; }
+    bool originalSuperuserUcpdActive() const { return m_originalSuperuserUcpdActive; }
+
     int windowsUpdateMode() const { return m_windowsUpdateMode; }
     int originalWindowsUpdateMode() const { return m_originalWindowsUpdateMode; }
     QVariantMap cs2LaunchOptions() const { return m_cs2LaunchOptions; }
@@ -410,6 +430,12 @@ public:
     void setPrivacyLockScreenCameraActive(bool val);
     void setPrivacyCameraIndicatorActive(bool val);
     void setPrivacyOnlineSpeechActive(bool val);
+
+    // Superuser / More Rights Setters
+    void setSuperuserGodModeActive(bool val);
+    void setSuperuserDeveloperModeActive(bool val);
+    void setSuperuserUacLevel(int val);
+    void setSuperuserUcpdActive(bool val);
 
     void setWindowsUpdateMode(int mode);
     void setCs2LaunchOptions(const QVariantMap &val);
@@ -598,6 +624,16 @@ signals:
     void privacyOnlineSpeechActiveChanged(bool val);
     void originalPrivacyOnlineSpeechActiveChanged(bool val);
 
+    // Superuser / More Rights signals
+    void superuserGodModeActiveChanged(bool val);
+    void originalSuperuserGodModeActiveChanged(bool val);
+    void superuserDeveloperModeActiveChanged(bool val);
+    void originalSuperuserDeveloperModeActiveChanged(bool val);
+    void superuserUacLevelChanged(int val);
+    void originalSuperuserUacLevelChanged(int val);
+    void superuserUcpdActiveChanged(bool val);
+    void originalSuperuserUcpdActiveChanged(bool val);
+
     void windowsUpdateModeChanged(int mode);
     void originalWindowsUpdateModeChanged(int mode);
     void cs2LaunchOptionsChanged(const QVariantMap &val);
@@ -777,6 +813,16 @@ private:
     bool m_originalPrivacyCameraIndicatorActive = true;
     bool m_privacyOnlineSpeechActive = true;
     bool m_originalPrivacyOnlineSpeechActive = true;
+
+    // Superuser / More Rights member variables
+    bool m_superuserGodModeActive = false;
+    bool m_originalSuperuserGodModeActive = false;
+    bool m_superuserDeveloperModeActive = false;
+    bool m_originalSuperuserDeveloperModeActive = false;
+    int m_superuserUacLevel = 1;
+    int m_originalSuperuserUacLevel = 1;
+    bool m_superuserUcpdActive = true;
+    bool m_originalSuperuserUcpdActive = true;
 
     int m_windowsUpdateMode = 0;
     int m_originalWindowsUpdateMode = 0;

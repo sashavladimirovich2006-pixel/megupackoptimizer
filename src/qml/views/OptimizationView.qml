@@ -150,6 +150,7 @@ Item {
         if (visualEffectsChanged) return true;
         if (optimizerBackend.pagefileMin !== optimizerBackend.originalPagefileMin) return true;
         if (optimizerBackend.pagefileMax !== optimizerBackend.originalPagefileMax) return true;
+        if (moreRightsChanged) return true;
         if (!optimizerBackend.driveStates || !optimizerBackend.originalDriveStates) return false;
         var keys = Object.keys(optimizerBackend.driveStates);
         for (var i = 0; i < keys.length; i++) {
@@ -165,6 +166,13 @@ Item {
     property bool clipboardHistoryChanged: optimizerBackend.clipboardHistoryActive !== optimizerBackend.originalClipboardHistoryActive
     property bool taskbarEndTaskChanged: optimizerBackend.taskbarEndTaskActive !== optimizerBackend.originalTaskbarEndTaskActive
     property bool taskbarSecondsChanged: optimizerBackend.taskbarSecondsActive !== optimizerBackend.originalTaskbarSecondsActive
+    property bool moreRightsChanged: {
+        if (optimizerBackend.superuserGodModeActive !== optimizerBackend.originalSuperuserGodModeActive) return true;
+        if (optimizerBackend.superuserDeveloperModeActive !== optimizerBackend.originalSuperuserDeveloperModeActive) return true;
+        if (optimizerBackend.superuserUacLevel !== optimizerBackend.originalSuperuserUacLevel) return true;
+        if (optimizerBackend.superuserUcpdActive !== optimizerBackend.originalSuperuserUcpdActive) return true;
+        return false;
+    }
 
     property bool indexingChanged: {
         if (optimizerBackend.winSearchActive !== optimizerBackend.originalWinSearchActive) return true;
@@ -518,6 +526,10 @@ Item {
                 }
             }
         }
+        if (optimizerBackend.superuserGodModeActive !== optimizerBackend.originalSuperuserGodModeActive) count++;
+        if (optimizerBackend.superuserDeveloperModeActive !== optimizerBackend.originalSuperuserDeveloperModeActive) count++;
+        if (optimizerBackend.superuserUacLevel !== optimizerBackend.originalSuperuserUacLevel) count++;
+        if (optimizerBackend.superuserUcpdActive !== optimizerBackend.originalSuperuserUcpdActive) count++;
         return count;
     }
 
@@ -676,6 +688,17 @@ Item {
             hasSidebar: true,
             revert: function() {
                 optimizerBackend.revertUsbDevices();
+            }
+        });
+        if (moreRightsChanged) list.push({
+            name: qsTr("Больше прав"),
+            icon: "qrc:/MeguPackOptimizer/src/resources/settings.svg",
+            hasSidebar: true,
+            revert: function() {
+                optimizerBackend.superuserGodModeActive = optimizerBackend.originalSuperuserGodModeActive;
+                optimizerBackend.superuserDeveloperModeActive = optimizerBackend.originalSuperuserDeveloperModeActive;
+                optimizerBackend.superuserUacLevel = optimizerBackend.originalSuperuserUacLevel;
+                optimizerBackend.superuserUcpdActive = optimizerBackend.originalSuperuserUcpdActive;
             }
         });
         if (remoteAccessChanged) list.push({
@@ -1294,6 +1317,40 @@ Item {
                     }
                 });
             }
+        } else if (category === qsTr("Больше прав") || category === "Больше прав") {
+            if (optimizerBackend.superuserGodModeActive !== optimizerBackend.originalSuperuserGodModeActive) {
+                subList.push({
+                    name: qsTr("God Mode") + ": " + (optimizerBackend.originalSuperuserGodModeActive ? qsTr("Enabled") : qsTr("Disabled")) + " -> " + (optimizerBackend.superuserGodModeActive ? qsTr("Enabled") : qsTr("Disabled")),
+                    revert: function() {
+                        optimizerBackend.superuserGodModeActive = optimizerBackend.originalSuperuserGodModeActive;
+                    }
+                });
+            }
+            if (optimizerBackend.superuserDeveloperModeActive !== optimizerBackend.originalSuperuserDeveloperModeActive) {
+                subList.push({
+                    name: qsTr("Developer Mode") + ": " + (optimizerBackend.originalSuperuserDeveloperModeActive ? qsTr("Enabled") : qsTr("Disabled")) + " -> " + (optimizerBackend.superuserDeveloperModeActive ? qsTr("Enabled") : qsTr("Disabled")),
+                    revert: function() {
+                        optimizerBackend.superuserDeveloperModeActive = optimizerBackend.originalSuperuserDeveloperModeActive;
+                    }
+                });
+            }
+            if (optimizerBackend.superuserUacLevel !== optimizerBackend.originalSuperuserUacLevel) {
+                var uacLabels = [qsTr("Always notify"), qsTr("Changes dim"), qsTr("Changes no dim"), qsTr("Never notify")];
+                subList.push({
+                    name: qsTr("UAC Level") + ": " + uacLabels[optimizerBackend.originalSuperuserUacLevel] + " -> " + uacLabels[optimizerBackend.superuserUacLevel],
+                    revert: function() {
+                        optimizerBackend.superuserUacLevel = optimizerBackend.originalSuperuserUacLevel;
+                    }
+                });
+            }
+            if (optimizerBackend.superuserUcpdActive !== optimizerBackend.originalSuperuserUcpdActive) {
+                subList.push({
+                    name: qsTr("UCPD Driver") + ": " + (optimizerBackend.originalSuperuserUcpdActive ? qsTr("Enabled") : qsTr("Disabled")) + " -> " + (optimizerBackend.superuserUcpdActive ? qsTr("Enabled") : qsTr("Disabled")),
+                    revert: function() {
+                        optimizerBackend.superuserUcpdActive = optimizerBackend.originalSuperuserUcpdActive;
+                    }
+                });
+            }
         }
         return subList;
     }
@@ -1319,6 +1376,7 @@ Item {
         if (name === qsTr("Telemetry") || name === "Telemetry") return telemetryPanel;
         if (name === qsTr("Windows Update") || name === "Windows Update") return windowsUpdatePanel;
         if (name === qsTr("CS2 Steam Overlay") || name === "CS2 Steam Overlay") return cs2Panel;
+        if (name === qsTr("Больше прав") || name === "Больше прав") return moreRightsPanel;
         if (name === qsTr("Steam Settings") || name === "Steam Settings") return steamSettingsPanel;
         if (name === qsTr("Classic Context Menu") || name === "Classic Context Menu") return classicContextMenuPanel;
         if (name === qsTr("Shortcut Arrow Overlays") || name === "Shortcut Arrow Overlays") return shortcutArrowsPanel;
@@ -1335,7 +1393,7 @@ Item {
             root.currentSection = "telemetry";
         } else if (categoryName === qsTr("Counter-Strike 2 Launch Options") || categoryName === "Counter-Strike 2 Launch Options" || categoryName === qsTr("CS2 Steam Overlay") || categoryName === "CS2 Steam Overlay" || categoryName === qsTr("Steam Settings") || categoryName === "Steam Settings") {
             root.currentSection = "games";
-        } else if (categoryName === qsTr("Classic Context Menu") || categoryName === "Classic Context Menu" || categoryName === qsTr("Shortcut Arrow Overlays") || categoryName === "Shortcut Arrow Overlays" || categoryName === qsTr("Clipboard History") || categoryName === "Clipboard History" || categoryName === qsTr("Taskbar 'End task'") || categoryName === "Taskbar 'End task'" || categoryName === qsTr("Clock with seconds") || categoryName === "Clock with seconds") {
+        } else if (categoryName === qsTr("Classic Context Menu") || categoryName === "Classic Context Menu" || categoryName === qsTr("Shortcut Arrow Overlays") || categoryName === "Shortcut Arrow Overlays" || categoryName === qsTr("Clipboard History") || categoryName === "Clipboard History" || categoryName === qsTr("Taskbar 'End task'") || categoryName === "Taskbar 'End task'" || categoryName === qsTr("Clock with seconds") || categoryName === "Clock with seconds" || categoryName === qsTr("Больше прав") || categoryName === "Больше прав") {
             root.currentSection = "customization";
         } else {
             root.currentSection = "core";
@@ -5860,6 +5918,149 @@ Item {
                         }
                     }
                 }
+
+                // More Rights Panel (Больше прав)
+                AcrylicPanel {
+                    id: moreRightsPanel
+                    width: parent.width
+                    height: 84
+
+                    Column {
+                        anchors.left: parent.left
+                        anchors.right: parent.right
+                        anchors.top: parent.top
+                        spacing: 12
+
+                        // Main Row
+                        Item {
+                            anchors.left: parent.left
+                            anchors.right: parent.right
+                            height: 52
+
+                            Row {
+                                anchors.left: parent.left
+                                anchors.verticalCenter: parent.verticalCenter
+                                spacing: 16
+
+                                Rectangle {
+                                    width: 40
+                                    height: 40
+                                    radius: 10
+                                    color: Qt.rgba(Theme.accent.r, Theme.accent.g, Theme.accent.b, 0.15)
+                                    anchors.verticalCenter: parent.verticalCenter
+
+                                    Item {
+                                        width: 20
+                                        height: 20
+                                        anchors.centerIn: parent
+                                        Image {
+                                            id: moreRightsPanel_iconImg
+                                            source: "qrc:/MeguPackOptimizer/src/resources/development.svg"
+                                            anchors.fill: parent
+                                            sourceSize.width: 20
+                                            sourceSize.height: 20
+                                            visible: false
+                                        }
+                                        ColorOverlay {
+                                            anchors.fill: moreRightsPanel_iconImg
+                                            source: moreRightsPanel_iconImg
+                                            color: Theme.accent
+                                        }
+                                    }
+                                }
+
+                                Column {
+                                    anchors.verticalCenter: parent.verticalCenter
+                                    spacing: 2
+
+                                    Row {
+                                        spacing: 8
+                                        Text {
+                                            text: qsTr("Больше прав")
+                                            color: Theme.textPrimary
+                                            font.family: Theme.fontFamily
+                                            font.pixelSize: 14
+                                            font.bold: true
+                                            anchors.verticalCenter: parent.verticalCenter
+                                        }
+                                        Rectangle {
+                                            visible: root.moreRightsChanged
+                                            height: 16
+                                            width: selectedTextMoreRights.contentWidth + 10
+                                            radius: 4
+                                            color: Qt.rgba(Theme.success.r, Theme.success.g, Theme.success.b, 0.15)
+                                            border.color: Theme.success
+                                            border.width: 1
+                                            anchors.verticalCenter: parent.verticalCenter
+                                            Text {
+                                                id: selectedTextMoreRights
+                                                text: qsTr("Selected for application")
+                                                color: Theme.success
+                                                font.family: Theme.fontFamily
+                                                font.pixelSize: 8
+                                                font.bold: true
+                                                anchors.centerIn: parent
+                                            }
+                                        }
+                                    }
+
+                                    Text {
+                                        text: qsTr("Управление продвинутыми системными правами и параметрами безопасности Windows.")
+                                        color: Theme.textMuted
+                                        font.family: Theme.fontFamily
+                                        font.pixelSize: 11
+                                    }
+                                }
+                            }
+
+                            Row {
+                                anchors.right: parent.right
+                                anchors.verticalCenter: parent.verticalCenter
+                                spacing: 16
+
+                                // Arrow button to open drawer
+                                Rectangle {
+                                    width: 32
+                                    height: 32
+                                    radius: 8
+                                    color: moreRightsArrowMouse.containsMouse ? Theme.buttonBgHover : "transparent"
+                                    border.color: moreRightsArrowMouse.containsMouse ? Theme.borderHover : "transparent"
+                                    border.width: 1
+                                    anchors.verticalCenter: parent.verticalCenter
+
+                                    Behavior on color { ColorAnimation { duration: Theme.animFast } }
+
+                                    Item {
+                                        anchors.fill: parent
+                                        Image {
+                                            id: moreRightsArrowIcon
+                                            source: "qrc:/MeguPackOptimizer/src/resources/arrow.svg"
+                                            anchors.centerIn: parent
+                                            width: 12
+                                            height: 12
+                                            visible: false
+                                        }
+                                        ColorOverlay {
+                                            anchors.fill: moreRightsArrowIcon
+                                            source: moreRightsArrowIcon
+                                            color: moreRightsArrowMouse.containsMouse ? Theme.accent : Theme.textSecondary
+                                        }
+                                    }
+
+                                    MouseArea {
+                                        id: moreRightsArrowMouse
+                                        anchors.fill: parent
+                                        hoverEnabled: true
+                                        cursorShape: Qt.PointingHandCursor
+                                        onClicked: {
+                                            root.activeDrawer = "moreRights";
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
             }
 
             // 3. HIBERNATION CATEGORY
@@ -6996,6 +7197,7 @@ Item {
                             if (root.activeDrawer === "windowsUpdate") return qsTr("WINDOWS UPDATE");
                             if (root.activeDrawer === "visualEffects") return qsTr("VISUAL EFFECTS");
                             if (root.activeDrawer === "steamSettings") return qsTr("STEAM SETTINGS");
+                            if (root.activeDrawer === "moreRights") return qsTr("Больше прав");
                             return "";
                         }
                         color: Theme.textPrimary
@@ -7067,6 +7269,7 @@ Item {
                         if (root.activeDrawer === "windowsUpdate") return windowsUpdateDrawer.implicitHeight;
                         if (root.activeDrawer === "visualEffects") return visualEffectsDrawer.implicitHeight;
                         if (root.activeDrawer === "steamSettings") return steamSettingsDrawer.dynamicHeight;
+                        if (root.activeDrawer === "moreRights") return moreRightsDrawer.implicitHeight;
                         return height;
                     }
 
@@ -7155,6 +7358,14 @@ Item {
                         visible: root.activeDrawer === "steamSettings"
                         width: visible ? parent.width : 800
                         height: visible ? dynamicHeight : 0
+                    }
+
+                    // 13. More Rights Drawer Content
+                    MoreRightsDrawer {
+                        id: moreRightsDrawer
+                        visible: root.activeDrawer === "moreRights"
+                        width: visible ? parent.width : 800
+                        height: visible ? implicitHeight : 0
                     }
                 }
             }
