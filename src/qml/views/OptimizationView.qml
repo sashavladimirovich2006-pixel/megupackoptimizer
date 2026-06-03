@@ -9153,7 +9153,7 @@ Item {
                                 anchors.horizontalCenter: parent.horizontalCenter
                                 horizontalAlignment: Text.AlignHCenter
                                 wrapMode: Text.WordWrap
-                                text: qsTr("To apply changes, you must restart Windows Explorer. Note that all open File Explorer tabs and windows will be closed.")
+                                text: qsTr("To apply changes, you must restart Windows Explorer. Note: the restart process may take a few seconds, and all open File Explorer windows and tabs will be closed.")
                                 color: Theme.warning
                                 font.family: Theme.fontFamily
                                 font.pixelSize: 10
