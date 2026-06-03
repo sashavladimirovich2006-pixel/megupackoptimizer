@@ -11171,11 +11171,15 @@ main();
 
 void Optimizer::restartExplorer() {
 #ifdef Q_OS_WIN
-    QProcess proc;
-    proc.start("taskkill.exe", QStringList() << "/f" << "/im" << "explorer.exe");
-    proc.waitForFinished(3000);
-    QProcess::startDetached("explorer.exe");
-    Logger::log("Windows Explorer restarted successfully.", "INFO");
+    QThread* thread = QThread::create([]() {
+        QProcess proc;
+        proc.start("taskkill.exe", QStringList() << "/f" << "/im" << "explorer.exe");
+        proc.waitForFinished(3000);
+        QProcess::startDetached("explorer.exe");
+    });
+    connect(thread, &QThread::finished, thread, &QThread::deleteLater);
+    thread->start();
+    Logger::log("Windows Explorer restart initiated asynchronously.", "INFO");
 #endif
 }
 
