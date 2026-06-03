@@ -2272,6 +2272,49 @@ void Optimizer::updateCpuAndRamLoad() {
 }
 
 
+void Optimizer::setDesktopShowThisPC(bool val) {
+    if (m_desktopShowThisPC != val) {
+        m_desktopShowThisPC = val;
+        emit desktopShowThisPCChanged(m_desktopShowThisPC);
+    }
+}
+
+void Optimizer::setDesktopShowWidgets(bool val) {
+    if (m_desktopShowWidgets != val) {
+        m_desktopShowWidgets = val;
+        emit desktopShowWidgetsChanged(m_desktopShowWidgets);
+    }
+}
+
+void Optimizer::setDesktopIconShadows(bool val) {
+    if (m_desktopIconShadows != val) {
+        m_desktopIconShadows = val;
+        emit desktopIconShadowsChanged(m_desktopIconShadows);
+    }
+}
+
+void Optimizer::setDesktopShowDesktopButton(bool val) {
+    if (m_desktopShowDesktopButton != val) {
+        m_desktopShowDesktopButton = val;
+        emit desktopShowDesktopButtonChanged(m_desktopShowDesktopButton);
+    }
+}
+
+void Optimizer::setDesktopAeroShake(bool val) {
+    if (m_desktopAeroShake != val) {
+        m_desktopAeroShake = val;
+        emit desktopAeroShakeChanged(m_desktopAeroShake);
+    }
+}
+
+void Optimizer::setDesktopWallpaperQuality(int val) {
+    if (m_desktopWallpaperQuality != val) {
+        m_desktopWallpaperQuality = val;
+        emit desktopWallpaperQualityChanged(m_desktopWallpaperQuality);
+    }
+}
+
+
 void Optimizer::setClassicContextMenuActive(bool val) {
     if (m_classicContextMenuActive != val) {
         m_classicContextMenuActive = val;
@@ -2684,6 +2727,34 @@ void Optimizer::setExplorerLaunchTo(int val) {
     if (m_explorerLaunchTo != val) {
         m_explorerLaunchTo = val;
         emit explorerLaunchToChanged(m_explorerLaunchTo);
+    }
+}
+
+void Optimizer::setStartMenuWebResults(bool val) {
+    if (m_startMenuWebResults != val) {
+        m_startMenuWebResults = val;
+        emit startMenuWebResultsChanged(m_startMenuWebResults);
+    }
+}
+
+void Optimizer::setStartMenuAutoinstall(bool val) {
+    if (m_startMenuAutoinstall != val) {
+        m_startMenuAutoinstall = val;
+        emit startMenuAutoinstallChanged(m_startMenuAutoinstall);
+    }
+}
+
+void Optimizer::setStartMenuAccountNotifications(bool val) {
+    if (m_startMenuAccountNotifications != val) {
+        m_startMenuAccountNotifications = val;
+        emit startMenuAccountNotificationsChanged(m_startMenuAccountNotifications);
+    }
+}
+
+void Optimizer::setStartMenuShowHibernate(bool val) {
+    if (m_startMenuShowHibernate != val) {
+        m_startMenuShowHibernate = val;
+        emit startMenuShowHibernateChanged(m_startMenuShowHibernate);
     }
 }
 
@@ -5235,6 +5306,188 @@ void Optimizer::loadSystemStates() {
     emit explorerLaunchToChanged(m_explorerLaunchTo);
     emit originalExplorerLaunchToChanged(m_originalExplorerLaunchTo);
 
+    // ----------------------------------------------------
+    // Load Start Menu Customization States
+    // ----------------------------------------------------
+    bool startMenuWebResults = true;
+    bool startMenuAutoinstall = true;
+    bool startMenuAccountNotifications = true;
+    bool startMenuShowHibernate = false;
+
+#ifdef Q_OS_WIN
+    HKEY hKeyStart;
+
+    // 1. Web results (BingSearchEnabled & DisableSearchBoxSuggestions)
+    if (RegOpenKeyExW(HKEY_CURRENT_USER, L"Software\\Microsoft\\Windows\\CurrentVersion\\Search", 0, KEY_READ, &hKeyStart) == ERROR_SUCCESS) {
+        DWORD dwVal = 1;
+        DWORD dwSize = sizeof(dwVal);
+        if (RegQueryValueExW(hKeyStart, L"BingSearchEnabled", nullptr, nullptr, reinterpret_cast<LPBYTE>(&dwVal), &dwSize) == ERROR_SUCCESS) {
+            if (dwVal == 0) {
+                startMenuWebResults = false;
+            }
+        }
+        RegCloseKey(hKeyStart);
+    }
+    if (RegOpenKeyExW(HKEY_CURRENT_USER, L"Software\\Policies\\Microsoft\\Windows\\Explorer", 0, KEY_READ, &hKeyStart) == ERROR_SUCCESS) {
+        DWORD dwVal = 0;
+        DWORD dwSize = sizeof(dwVal);
+        if (RegQueryValueExW(hKeyStart, L"DisableSearchBoxSuggestions", nullptr, nullptr, reinterpret_cast<LPBYTE>(&dwVal), &dwSize) == ERROR_SUCCESS) {
+            if (dwVal == 1) {
+                startMenuWebResults = false;
+            }
+        }
+        RegCloseKey(hKeyStart);
+    }
+
+    // 2. Autoinstall suggestions (SilentInstalledAppsEnabled)
+    if (RegOpenKeyExW(HKEY_CURRENT_USER, L"Software\\Microsoft\\Windows\\CurrentVersion\\ContentDeliveryManager", 0, KEY_READ, &hKeyStart) == ERROR_SUCCESS) {
+        DWORD dwVal = 1;
+        DWORD dwSize = sizeof(dwVal);
+        if (RegQueryValueExW(hKeyStart, L"SilentInstalledAppsEnabled", nullptr, nullptr, reinterpret_cast<LPBYTE>(&dwVal), &dwSize) == ERROR_SUCCESS) {
+            startMenuAutoinstall = (dwVal != 0);
+        }
+        RegCloseKey(hKeyStart);
+    }
+
+    // 3. Account notifications (Start_AccountNotifications)
+    if (RegOpenKeyExW(HKEY_CURRENT_USER, L"Software\\Microsoft\\Windows\\CurrentVersion\\Explorer\\Advanced", 0, KEY_READ, &hKeyStart) == ERROR_SUCCESS) {
+        DWORD dwVal = 1;
+        DWORD dwSize = sizeof(dwVal);
+        if (RegQueryValueExW(hKeyStart, L"Start_AccountNotifications", nullptr, nullptr, reinterpret_cast<LPBYTE>(&dwVal), &dwSize) == ERROR_SUCCESS) {
+            startMenuAccountNotifications = (dwVal != 0);
+        }
+        RegCloseKey(hKeyStart);
+    }
+
+    // 4. Show hibernate in power menu (ShowHibernateOption) -> HKLM
+    if (RegOpenKeyExW(HKEY_LOCAL_MACHINE, L"SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Explorer\\FlyoutMenuSettings", 0, KEY_READ, &hKeyStart) == ERROR_SUCCESS) {
+        DWORD dwVal = 0;
+        DWORD dwSize = sizeof(dwVal);
+        if (RegQueryValueExW(hKeyStart, L"ShowHibernateOption", nullptr, nullptr, reinterpret_cast<LPBYTE>(&dwVal), &dwSize) == ERROR_SUCCESS) {
+            startMenuShowHibernate = (dwVal != 0);
+        }
+        RegCloseKey(hKeyStart);
+    }
+#endif
+
+    m_startMenuWebResults = startMenuWebResults;
+    m_originalStartMenuWebResults = startMenuWebResults;
+    emit startMenuWebResultsChanged(m_startMenuWebResults);
+    emit originalStartMenuWebResultsChanged(m_originalStartMenuWebResults);
+
+    m_startMenuAutoinstall = startMenuAutoinstall;
+    m_originalStartMenuAutoinstall = startMenuAutoinstall;
+    emit startMenuAutoinstallChanged(m_startMenuAutoinstall);
+    emit originalStartMenuAutoinstallChanged(m_originalStartMenuAutoinstall);
+
+    m_startMenuAccountNotifications = startMenuAccountNotifications;
+    m_originalStartMenuAccountNotifications = startMenuAccountNotifications;
+    emit startMenuAccountNotificationsChanged(m_startMenuAccountNotifications);
+    emit originalStartMenuAccountNotificationsChanged(m_originalStartMenuAccountNotifications);
+
+    m_startMenuShowHibernate = startMenuShowHibernate;
+    m_originalStartMenuShowHibernate = startMenuShowHibernate;
+    emit startMenuShowHibernateChanged(m_startMenuShowHibernate);
+    emit originalStartMenuShowHibernateChanged(m_originalStartMenuShowHibernate);
+
+    // ----------------------------------------------------
+    // Load Desktop Customization States
+    // ----------------------------------------------------
+    bool desktopShowThisPC = true;
+    bool desktopShowWidgets = true;
+    bool desktopIconShadows = true;
+    bool desktopShowDesktopButton = true;
+    bool desktopAeroShake = true;
+    int desktopWallpaperQuality = 85;
+
+#ifdef Q_OS_WIN
+    HKEY hKeyDesk;
+
+    // 1. This PC icon ({20D04FE0-3AEA-1069-A2D8-08002B30309D}) -> 0 = show, 1 = hide
+    if (RegOpenKeyExW(HKEY_CURRENT_USER, L"Software\\Microsoft\\Windows\\CurrentVersion\\Explorer\\HideDesktopIcons\\NewStartPanel", 0, KEY_READ, &hKeyDesk) == ERROR_SUCCESS) {
+        DWORD dwVal = 0;
+        DWORD dwSize = sizeof(dwVal);
+        if (RegQueryValueExW(hKeyDesk, L"{20D04FE0-3AEA-1069-A2D8-08002B30309D}", nullptr, nullptr, reinterpret_cast<LPBYTE>(&dwVal), &dwSize) == ERROR_SUCCESS) {
+            desktopShowThisPC = (dwVal == 0);
+        }
+        RegCloseKey(hKeyDesk);
+    }
+
+    // 2. Widgets (TaskbarDa), Drop Shadows (ListviewShadow), Show Desktop (TaskbarSd), Aero Shake (DisallowShaking)
+    if (RegOpenKeyExW(HKEY_CURRENT_USER, L"Software\\Microsoft\\Windows\\CurrentVersion\\Explorer\\Advanced", 0, KEY_READ, &hKeyDesk) == ERROR_SUCCESS) {
+        DWORD dwVal = 0;
+        DWORD dwSize = sizeof(dwVal);
+
+        // Widgets
+        dwSize = sizeof(dwVal);
+        if (RegQueryValueExW(hKeyDesk, L"TaskbarDa", nullptr, nullptr, reinterpret_cast<LPBYTE>(&dwVal), &dwSize) == ERROR_SUCCESS) {
+            desktopShowWidgets = (dwVal != 0);
+        }
+
+        // Drop Shadows
+        dwSize = sizeof(dwVal);
+        if (RegQueryValueExW(hKeyDesk, L"ListviewShadow", nullptr, nullptr, reinterpret_cast<LPBYTE>(&dwVal), &dwSize) == ERROR_SUCCESS) {
+            desktopIconShadows = (dwVal != 0);
+        }
+
+        // Show Desktop
+        dwSize = sizeof(dwVal);
+        if (RegQueryValueExW(hKeyDesk, L"TaskbarSd", nullptr, nullptr, reinterpret_cast<LPBYTE>(&dwVal), &dwSize) == ERROR_SUCCESS) {
+            desktopShowDesktopButton = (dwVal != 0);
+        }
+
+        // Aero Shake
+        dwSize = sizeof(dwVal);
+        if (RegQueryValueExW(hKeyDesk, L"DisallowShaking", nullptr, nullptr, reinterpret_cast<LPBYTE>(&dwVal), &dwSize) == ERROR_SUCCESS) {
+            desktopAeroShake = (dwVal == 0); // 0 = enabled (shaking allowed), 1 = disabled
+        }
+
+        RegCloseKey(hKeyDesk);
+    }
+
+    // 3. Wallpaper Quality (JPEGImportQuality)
+    if (RegOpenKeyExW(HKEY_CURRENT_USER, L"Control Panel\\Desktop", 0, KEY_READ, &hKeyDesk) == ERROR_SUCCESS) {
+        DWORD dwVal = 85;
+        DWORD dwSize = sizeof(dwVal);
+        if (RegQueryValueExW(hKeyDesk, L"JPEGImportQuality", nullptr, nullptr, reinterpret_cast<LPBYTE>(&dwVal), &dwSize) == ERROR_SUCCESS) {
+            desktopWallpaperQuality = static_cast<int>(dwVal);
+            if (desktopWallpaperQuality < 0) desktopWallpaperQuality = 0;
+            if (desktopWallpaperQuality > 100) desktopWallpaperQuality = 100;
+        }
+        RegCloseKey(hKeyDesk);
+    }
+#endif
+
+    m_desktopShowThisPC = desktopShowThisPC;
+    m_originalDesktopShowThisPC = desktopShowThisPC;
+    emit desktopShowThisPCChanged(m_desktopShowThisPC);
+    emit originalDesktopShowThisPCChanged(m_originalDesktopShowThisPC);
+
+    m_desktopShowWidgets = desktopShowWidgets;
+    m_originalDesktopShowWidgets = desktopShowWidgets;
+    emit desktopShowWidgetsChanged(m_desktopShowWidgets);
+    emit originalDesktopShowWidgetsChanged(m_originalDesktopShowWidgets);
+
+    m_desktopIconShadows = desktopIconShadows;
+    m_originalDesktopIconShadows = desktopIconShadows;
+    emit desktopIconShadowsChanged(m_desktopIconShadows);
+    emit originalDesktopIconShadowsChanged(m_originalDesktopIconShadows);
+
+    m_desktopShowDesktopButton = desktopShowDesktopButton;
+    m_originalDesktopShowDesktopButton = desktopShowDesktopButton;
+    emit desktopShowDesktopButtonChanged(m_desktopShowDesktopButton);
+    emit originalDesktopShowDesktopButtonChanged(m_originalDesktopShowDesktopButton);
+
+    m_desktopAeroShake = desktopAeroShake;
+    m_originalDesktopAeroShake = desktopAeroShake;
+    emit desktopAeroShakeChanged(m_desktopAeroShake);
+    emit originalDesktopAeroShakeChanged(m_originalDesktopAeroShake);
+
+    m_desktopWallpaperQuality = desktopWallpaperQuality;
+    m_originalDesktopWallpaperQuality = desktopWallpaperQuality;
+    emit desktopWallpaperQualityChanged(m_desktopWallpaperQuality);
+    emit originalDesktopWallpaperQualityChanged(m_originalDesktopWallpaperQuality);
+
     loadPagefileSettings();
 }
 
@@ -5343,6 +5596,30 @@ void Optimizer::startSystemOptimization() {
     int explorerLaunchToVal = m_explorerLaunchTo;
     int origExplorerLaunchToVal = m_originalExplorerLaunchTo;
 
+    // Copy Start Menu targets
+    bool startMenuWebResultsVal = m_startMenuWebResults;
+    bool origStartMenuWebResultsVal = m_originalStartMenuWebResults;
+    bool startMenuAutoinstallVal = m_startMenuAutoinstall;
+    bool origStartMenuAutoinstallVal = m_originalStartMenuAutoinstall;
+    bool startMenuAccountNotificationsVal = m_startMenuAccountNotifications;
+    bool origStartMenuAccountNotificationsVal = m_originalStartMenuAccountNotifications;
+    bool startMenuShowHibernateVal = m_startMenuShowHibernate;
+    bool origStartMenuShowHibernateVal = m_originalStartMenuShowHibernate;
+
+    // Copy Desktop targets
+    bool desktopShowThisPCVal = m_desktopShowThisPC;
+    bool origDesktopShowThisPCVal = m_originalDesktopShowThisPC;
+    bool desktopShowWidgetsVal = m_desktopShowWidgets;
+    bool origDesktopShowWidgetsVal = m_originalDesktopShowWidgets;
+    bool desktopIconShadowsVal = m_desktopIconShadows;
+    bool origDesktopIconShadowsVal = m_originalDesktopIconShadows;
+    bool desktopShowDesktopButtonVal = m_desktopShowDesktopButton;
+    bool origDesktopShowDesktopButtonVal = m_originalDesktopShowDesktopButton;
+    bool desktopAeroShakeVal = m_desktopAeroShake;
+    bool origDesktopAeroShakeVal = m_originalDesktopAeroShake;
+    int desktopWallpaperQualityVal = m_desktopWallpaperQuality;
+    int origDesktopWallpaperQualityVal = m_originalDesktopWallpaperQuality;
+
     QString steamPathVal = "";
 #ifdef Q_OS_WIN
     HKEY hKeySteam;
@@ -5450,7 +5727,7 @@ void Optimizer::startSystemOptimization() {
     bool forceVal = m_forceApplyAll;
     m_forceApplyAll = false;
 
-    QThread* worker = QThread::create([this, explorerShowExtensionsVal, origExplorerShowExtensionsVal, explorerShowHiddenVal, origExplorerShowHiddenVal, explorerShowExtractFilesVal, origExplorerShowExtractFilesVal, explorerClassicRibbonVal, origExplorerClassicRibbonVal, explorerShowPreviewPaneVal, origExplorerShowPreviewPaneVal, explorerShowRecycleBinVal, origExplorerShowRecycleBinVal, explorerPinHomeVal, origExplorerPinHomeVal, explorerPinGalleryVal, origExplorerPinGalleryVal, explorerUseCheckboxesVal, origExplorerUseCheckboxesVal, explorerSyncNotificationsVal, origExplorerSyncNotificationsVal, explorerLaunchToVal, origExplorerLaunchToVal, forceVal, searchVal, classicContextMenuVal, shortcutArrowsVal, clipboardHistoryVal, taskbarEndTaskVal, taskbarSecondsVal, hibernationVal, overlayVal, coreIsolationVal, hagsVal, mouseAccelVal, gameModeVal, firewallVal, bitlockerVal, discordOverlayVal, notificationsVal, notifGlobalVal, notifAppVal, notifSoundsVal, notifLockscreenVal, targetPowerSchemeVal, activePowerSchemeVal, deleteUltimateStagedVal, deleteDefenderStagedVal, defenderVal, defenderRegistryVal, defenderCmdVal, defenderServiceVal, remoteAccessVal, telemetryVal, telemetryDiagTrackVal, telemetryWapPushVal, telemetryCeipVal, telemetryWerVal, windowsUpdateModeVal, targets, originalTargets, origSearch, origClassicContextMenu, origShortcutArrows, origClipboardHistory, origTaskbarEndTask, origTaskbarSeconds, origHibernation, origOverlay, origCoreIsolation, origHags, origMouseAccel, origGameMode, origFirewall, origBitlocker, origDiscordOverlay, origNotifications, origNotifGlobal, origNotifApp, origNotifSounds, origNotifLockscreen, origDefender, origDefenderRegistry, origDefenderCmd, origDefenderService, origRemoteAccess, origTelemetry, origTelemetryDiagTrack, origTelemetryWapPush, origTelemetryCeip, origTelemetryWer, origWindowsUpdateMode, usbDevicesVal, origUsbDevicesVal, appNotificationSettingsVal, steamPathVal, cs2OptionsVal, origCs2OptionsVal, steamOverlayVal, origSteamOverlayVal, cs2OverlayVal, origCs2OverlayVal, visualEffectsVal, origVisualEffectsVal, steamFriendsSettingsVal, origSteamFriendsSettingsVal, steamFriendsChanged, pagefileMinVal, origPagefileMinVal, pagefileMaxVal, origPagefileMaxVal, adsTailoredExperiencesVal, origAdsTailored, adsAdvertisingIdVal, origAdsAdvertisingId, adsSuggestedContentVal, origAdsSuggestedContent, adsSettingsHomeVal, origAdsSettingsHome, adsSuggestedNotificationsVal, origAdsSuggestedNotifications, adsLockScreenTipsVal, origAdsLockScreenTips, adsWindowsTipsVal, origAdsWindowsTips, adsWelcomeExperienceVal, origAdsWelcomeExperience, adsFinishSetupVal, origAdsFinishSetup, privacyLocationVal, origPrivacyLocation, privacyTelemetryVal, origPrivacyTelemetry, privacyCeipVal, origPrivacyCeip, privacyAppsTelemetryVal, origPrivacyAppsTelemetry, privacyAppLaunchesVal, origPrivacyAppLaunches, privacyImproveInkingVal, origPrivacyImproveInking, privacyPersonalizeInkingVal, origPrivacyPersonalizeInking, privacyErrorReportingVal, origPrivacyErrorReporting, privacyLockScreenCameraVal, origPrivacyLockScreenCamera, privacyCameraIndicatorVal, origPrivacyCameraIndicator, privacyOnlineSpeechVal, origPrivacyOnlineSpeech, superuserGodModeVal, superuserDeveloperModeVal, superuserUacLevelVal, superuserUcpdVal, superuserGodModeOrig, superuserDeveloperModeOrig, superuserUacLevelOrig, superuserUcpdOrig]() {
+    QThread* worker = QThread::create([this, explorerShowExtensionsVal, origExplorerShowExtensionsVal, explorerShowHiddenVal, origExplorerShowHiddenVal, explorerShowExtractFilesVal, origExplorerShowExtractFilesVal, explorerClassicRibbonVal, origExplorerClassicRibbonVal, explorerShowPreviewPaneVal, origExplorerShowPreviewPaneVal, explorerShowRecycleBinVal, origExplorerShowRecycleBinVal, explorerPinHomeVal, origExplorerPinHomeVal, explorerPinGalleryVal, origExplorerPinGalleryVal, explorerUseCheckboxesVal, origExplorerUseCheckboxesVal, explorerSyncNotificationsVal, origExplorerSyncNotificationsVal, explorerLaunchToVal, origExplorerLaunchToVal, forceVal, searchVal, classicContextMenuVal, shortcutArrowsVal, clipboardHistoryVal, taskbarEndTaskVal, taskbarSecondsVal, hibernationVal, overlayVal, coreIsolationVal, hagsVal, mouseAccelVal, gameModeVal, firewallVal, bitlockerVal, discordOverlayVal, notificationsVal, notifGlobalVal, notifAppVal, notifSoundsVal, notifLockscreenVal, targetPowerSchemeVal, activePowerSchemeVal, deleteUltimateStagedVal, deleteDefenderStagedVal, defenderVal, defenderRegistryVal, defenderCmdVal, defenderServiceVal, remoteAccessVal, telemetryVal, telemetryDiagTrackVal, telemetryWapPushVal, telemetryCeipVal, telemetryWerVal, windowsUpdateModeVal, targets, originalTargets, origSearch, origClassicContextMenu, origShortcutArrows, origClipboardHistory, origTaskbarEndTask, origTaskbarSeconds, origHibernation, origOverlay, origCoreIsolation, origHags, origMouseAccel, origGameMode, origFirewall, origBitlocker, origDiscordOverlay, origNotifications, origNotifGlobal, origNotifApp, origNotifSounds, origNotifLockscreen, origDefender, origDefenderRegistry, origDefenderCmd, origDefenderService, origRemoteAccess, origTelemetry, origTelemetryDiagTrack, origTelemetryWapPush, origTelemetryCeip, origTelemetryWer, origWindowsUpdateMode, usbDevicesVal, origUsbDevicesVal, appNotificationSettingsVal, steamPathVal, cs2OptionsVal, origCs2OptionsVal, steamOverlayVal, origSteamOverlayVal, cs2OverlayVal, origCs2OverlayVal, visualEffectsVal, origVisualEffectsVal, steamFriendsSettingsVal, origSteamFriendsSettingsVal, steamFriendsChanged, pagefileMinVal, origPagefileMinVal, pagefileMaxVal, origPagefileMaxVal, adsTailoredExperiencesVal, origAdsTailored, adsAdvertisingIdVal, origAdsAdvertisingId, adsSuggestedContentVal, origAdsSuggestedContent, adsSettingsHomeVal, origAdsSettingsHome, adsSuggestedNotificationsVal, origAdsSuggestedNotifications, adsLockScreenTipsVal, origAdsLockScreenTips, adsWindowsTipsVal, origAdsWindowsTips, adsWelcomeExperienceVal, origAdsWelcomeExperience, adsFinishSetupVal, origAdsFinishSetup, privacyLocationVal, origPrivacyLocation, privacyTelemetryVal, origPrivacyTelemetry, privacyCeipVal, origPrivacyCeip, privacyAppsTelemetryVal, origPrivacyAppsTelemetry, privacyAppLaunchesVal, origPrivacyAppLaunches, privacyImproveInkingVal, origPrivacyImproveInking, privacyPersonalizeInkingVal, origPrivacyPersonalizeInking, privacyErrorReportingVal, origPrivacyErrorReporting, privacyLockScreenCameraVal, origPrivacyLockScreenCamera, privacyCameraIndicatorVal, origPrivacyCameraIndicator, privacyOnlineSpeechVal, origPrivacyOnlineSpeech, superuserGodModeVal, superuserDeveloperModeVal, superuserUacLevelVal, superuserUcpdVal, superuserGodModeOrig, superuserDeveloperModeOrig, superuserUacLevelOrig, superuserUcpdOrig, startMenuWebResultsVal, origStartMenuWebResultsVal, startMenuAutoinstallVal, origStartMenuAutoinstallVal, startMenuAccountNotificationsVal, origStartMenuAccountNotificationsVal, startMenuShowHibernateVal, origStartMenuShowHibernateVal, desktopShowThisPCVal, origDesktopShowThisPCVal, desktopShowWidgetsVal, origDesktopShowWidgetsVal, desktopIconShadowsVal, origDesktopIconShadowsVal, desktopShowDesktopButtonVal, origDesktopShowDesktopButtonVal, desktopAeroShakeVal, origDesktopAeroShakeVal, desktopWallpaperQualityVal, origDesktopWallpaperQualityVal]() {
         // Step 00: Auto-create backup before making changes
         if (!forceVal && Settings::instance()->createBackup()) {
             emit systemStepReported(tr("Creating automatic system backup..."), "INFO");
@@ -5999,6 +6276,167 @@ void Optimizer::startSystemOptimization() {
             emit explorerUseCheckboxesChanged(m_explorerUseCheckboxes);
             emit explorerSyncNotificationsChanged(m_explorerSyncNotifications);
             emit explorerLaunchToChanged(m_explorerLaunchTo);
+        }
+
+        // Step 1.11: Start Menu Customization Configuration (only if changed)
+        bool startMenuSuccess = true;
+        if (startMenuWebResultsVal != origStartMenuWebResultsVal ||
+            startMenuAutoinstallVal != origStartMenuAutoinstallVal ||
+            startMenuAccountNotificationsVal != origStartMenuAccountNotificationsVal ||
+            startMenuShowHibernateVal != origStartMenuShowHibernateVal ||
+            force) 
+        {
+            emit systemStepReported(tr("Configuring Start Menu settings..."), "INFO");
+            QThread::msleep(800);
+#ifdef Q_OS_WIN
+            bool success = true;
+            HKEY hKey = nullptr;
+            
+            // 1. Web results (BingSearchEnabled & DisableSearchBoxSuggestions)
+            if (RegCreateKeyExW(HKEY_CURRENT_USER, L"Software\\Microsoft\\Windows\\CurrentVersion\\Search", 0, nullptr, REG_OPTION_NON_VOLATILE, KEY_WRITE, nullptr, &hKey, nullptr) == ERROR_SUCCESS) {
+                DWORD val = startMenuWebResultsVal ? 1 : 0;
+                RegSetValueExW(hKey, L"BingSearchEnabled", 0, REG_DWORD, reinterpret_cast<const BYTE*>(&val), sizeof(val));
+                RegCloseKey(hKey);
+            } else {
+                success = false;
+            }
+            if (RegCreateKeyExW(HKEY_CURRENT_USER, L"Software\\Policies\\Microsoft\\Windows\\Explorer", 0, nullptr, REG_OPTION_NON_VOLATILE, KEY_WRITE, nullptr, &hKey, nullptr) == ERROR_SUCCESS) {
+                DWORD val = startMenuWebResultsVal ? 0 : 1;
+                RegSetValueExW(hKey, L"DisableSearchBoxSuggestions", 0, REG_DWORD, reinterpret_cast<const BYTE*>(&val), sizeof(val));
+                RegCloseKey(hKey);
+            } else {
+                success = false;
+            }
+
+            // 2. Autoinstall suggestions (SilentInstalledAppsEnabled)
+            if (RegCreateKeyExW(HKEY_CURRENT_USER, L"Software\\Microsoft\\Windows\\CurrentVersion\\ContentDeliveryManager", 0, nullptr, REG_OPTION_NON_VOLATILE, KEY_WRITE, nullptr, &hKey, nullptr) == ERROR_SUCCESS) {
+                DWORD val = startMenuAutoinstallVal ? 1 : 0;
+                RegSetValueExW(hKey, L"SilentInstalledAppsEnabled", 0, REG_DWORD, reinterpret_cast<const BYTE*>(&val), sizeof(val));
+                RegCloseKey(hKey);
+            } else {
+                success = false;
+            }
+
+            // 3. Account notifications (Start_AccountNotifications)
+            if (RegCreateKeyExW(HKEY_CURRENT_USER, L"Software\\Microsoft\\Windows\\CurrentVersion\\Explorer\\Advanced", 0, nullptr, REG_OPTION_NON_VOLATILE, KEY_WRITE, nullptr, &hKey, nullptr) == ERROR_SUCCESS) {
+                DWORD val = startMenuAccountNotificationsVal ? 1 : 0;
+                RegSetValueExW(hKey, L"Start_AccountNotifications", 0, REG_DWORD, reinterpret_cast<const BYTE*>(&val), sizeof(val));
+                RegCloseKey(hKey);
+            } else {
+                success = false;
+            }
+
+            // 4. Show hibernate in power menu (ShowHibernateOption) -> HKLM
+            if (RegCreateKeyExW(HKEY_LOCAL_MACHINE, L"SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Explorer\\FlyoutMenuSettings", 0, nullptr, REG_OPTION_NON_VOLATILE, KEY_WRITE, nullptr, &hKey, nullptr) == ERROR_SUCCESS) {
+                DWORD val = startMenuShowHibernateVal ? 1 : 0;
+                RegSetValueExW(hKey, L"ShowHibernateOption", 0, REG_DWORD, reinterpret_cast<const BYTE*>(&val), sizeof(val));
+                RegCloseKey(hKey);
+            } else {
+                success = false;
+            }
+
+            if (success) {
+                emit systemStepReported(tr("Start Menu settings applied successfully."), "SUCCESS");
+            } else {
+                startMenuSuccess = false;
+                emit systemStepReported(tr("Failed to apply Start Menu customization settings."), "ERROR");
+            }
+#else
+            emit systemStepReported(tr("[Simulation] Start Menu settings configured."), "SUCCESS");
+#endif
+            m_startMenuWebResults = startMenuWebResultsVal;
+            m_startMenuAutoinstall = startMenuAutoinstallVal;
+            m_startMenuAccountNotifications = startMenuAccountNotificationsVal;
+            m_startMenuShowHibernate = startMenuShowHibernateVal;
+
+            emit startMenuWebResultsChanged(m_startMenuWebResults);
+            emit startMenuAutoinstallChanged(m_startMenuAutoinstall);
+            emit startMenuAccountNotificationsChanged(m_startMenuAccountNotifications);
+            emit startMenuShowHibernateChanged(m_startMenuShowHibernate);
+        }
+
+        // Step 1.12: Desktop Customization Configuration (only if changed)
+        bool desktopSuccess = true;
+        if (desktopShowThisPCVal != origDesktopShowThisPCVal ||
+            desktopShowWidgetsVal != origDesktopShowWidgetsVal ||
+            desktopIconShadowsVal != origDesktopIconShadowsVal ||
+            desktopShowDesktopButtonVal != origDesktopShowDesktopButtonVal ||
+            desktopAeroShakeVal != origDesktopAeroShakeVal ||
+            desktopWallpaperQualityVal != origDesktopWallpaperQualityVal ||
+            force) 
+        {
+            emit systemStepReported(tr("Configuring Desktop settings..."), "INFO");
+            QThread::msleep(800);
+#ifdef Q_OS_WIN
+            bool success = true;
+            HKEY hKey = nullptr;
+
+            // 1. This PC icon ({20D04FE0-3AEA-1069-A2D8-08002B30309D}) -> 0 = show, 1 = hide
+            if (RegCreateKeyExW(HKEY_CURRENT_USER, L"Software\\Microsoft\\Windows\\CurrentVersion\\Explorer\\HideDesktopIcons\\NewStartPanel", 0, nullptr, REG_OPTION_NON_VOLATILE, KEY_WRITE, nullptr, &hKey, nullptr) == ERROR_SUCCESS) {
+                DWORD val = desktopShowThisPCVal ? 0 : 1;
+                RegSetValueExW(hKey, L"{20D04FE0-3AEA-1069-A2D8-08002B30309D}", 0, REG_DWORD, reinterpret_cast<const BYTE*>(&val), sizeof(val));
+                RegCloseKey(hKey);
+                SHChangeNotify(SHCNE_ASSOCCHANGED, SHCNF_FLUSHNOWAIT, NULL, NULL);
+            } else {
+                success = false;
+            }
+
+            // 2. Widgets (TaskbarDa), Drop Shadows (ListviewShadow), Show Desktop (TaskbarSd), Aero Shake (DisallowShaking)
+            if (RegCreateKeyExW(HKEY_CURRENT_USER, L"Software\\Microsoft\\Windows\\CurrentVersion\\Explorer\\Advanced", 0, nullptr, REG_OPTION_NON_VOLATILE, KEY_WRITE, nullptr, &hKey, nullptr) == ERROR_SUCCESS) {
+                DWORD val;
+
+                // Widgets
+                val = desktopShowWidgetsVal ? 1 : 0;
+                RegSetValueExW(hKey, L"TaskbarDa", 0, REG_DWORD, reinterpret_cast<const BYTE*>(&val), sizeof(val));
+
+                // Drop Shadows
+                val = desktopIconShadowsVal ? 1 : 0;
+                RegSetValueExW(hKey, L"ListviewShadow", 0, REG_DWORD, reinterpret_cast<const BYTE*>(&val), sizeof(val));
+
+                // Show Desktop
+                val = desktopShowDesktopButtonVal ? 1 : 0;
+                RegSetValueExW(hKey, L"TaskbarSd", 0, REG_DWORD, reinterpret_cast<const BYTE*>(&val), sizeof(val));
+
+                // Aero Shake
+                val = desktopAeroShakeVal ? 0 : 1; // 0 = allowed, 1 = disallowed
+                RegSetValueExW(hKey, L"DisallowShaking", 0, REG_DWORD, reinterpret_cast<const BYTE*>(&val), sizeof(val));
+
+                RegCloseKey(hKey);
+            } else {
+                success = false;
+            }
+
+            // 3. Wallpaper Quality (JPEGImportQuality)
+            if (RegCreateKeyExW(HKEY_CURRENT_USER, L"Control Panel\\Desktop", 0, nullptr, REG_OPTION_NON_VOLATILE, KEY_WRITE, nullptr, &hKey, nullptr) == ERROR_SUCCESS) {
+                DWORD val = static_cast<DWORD>(desktopWallpaperQualityVal);
+                RegSetValueExW(hKey, L"JPEGImportQuality", 0, REG_DWORD, reinterpret_cast<const BYTE*>(&val), sizeof(val));
+                RegCloseKey(hKey);
+            } else {
+                success = false;
+            }
+
+            if (success) {
+                emit systemStepReported(tr("Desktop settings applied successfully."), "SUCCESS");
+            } else {
+                desktopSuccess = false;
+                emit systemStepReported(tr("Failed to apply Desktop customization settings."), "ERROR");
+            }
+#else
+            emit systemStepReported(tr("[Simulation] Desktop settings configured."), "SUCCESS");
+#endif
+            m_desktopShowThisPC = desktopShowThisPCVal;
+            m_desktopShowWidgets = desktopShowWidgetsVal;
+            m_desktopIconShadows = desktopIconShadowsVal;
+            m_desktopShowDesktopButton = desktopShowDesktopButtonVal;
+            m_desktopAeroShake = desktopAeroShakeVal;
+            m_desktopWallpaperQuality = desktopWallpaperQualityVal;
+
+            emit desktopShowThisPCChanged(m_desktopShowThisPC);
+            emit desktopShowWidgetsChanged(m_desktopShowWidgets);
+            emit desktopIconShadowsChanged(m_desktopIconShadows);
+            emit desktopShowDesktopButtonChanged(m_desktopShowDesktopButton);
+            emit desktopAeroShakeChanged(m_desktopAeroShake);
+            emit desktopWallpaperQualityChanged(m_desktopWallpaperQuality);
         }
 
         // Step 1.5: Hibernation Configuration (only if changed)
@@ -8714,7 +9152,7 @@ void Optimizer::startSystemOptimization() {
 #endif
         }
 
-        bool overallSuccess = wSearchSuccess && classicContextMenuSuccess && shortcutArrowsSuccess && clipboardHistorySuccess && taskbarEndTaskSuccess && taskbarSecondsSuccess && hibernationSuccess && overlaySuccess && coreIsolationSuccess && hagsSuccess && mouseAccelSuccess && gameModeSuccess && firewallSuccess && notificationsSuccess && powerPlanSuccess && defenderSuccess && overallDrivesSuccess && usbSuccess && remoteAccessSuccess && telemetrySuccess && windowsUpdateSuccess && cs2Success && steamOverlaySuccess && cs2OverlaySuccess && steamFriendsSuccess && visualEffectsSuccess && pagefileSuccess && adsSuccess && superuserSuccess;
+        bool overallSuccess = wSearchSuccess && classicContextMenuSuccess && shortcutArrowsSuccess && clipboardHistorySuccess && taskbarEndTaskSuccess && taskbarSecondsSuccess && hibernationSuccess && overlaySuccess && coreIsolationSuccess && hagsSuccess && mouseAccelSuccess && gameModeSuccess && firewallSuccess && notificationsSuccess && powerPlanSuccess && defenderSuccess && overallDrivesSuccess && usbSuccess && remoteAccessSuccess && telemetrySuccess && windowsUpdateSuccess && cs2Success && steamOverlaySuccess && cs2OverlaySuccess && steamFriendsSuccess && visualEffectsSuccess && pagefileSuccess && adsSuccess && superuserSuccess && desktopSuccess;
         if (overallSuccess) {
             emit systemStepReported(tr("System optimization completed successfully!"), "SUCCESS");
             Logger::log("System optimization completed successfully!", "INFO");
@@ -8800,6 +9238,18 @@ void Optimizer::startSystemOptimization() {
         m_originalExplorerUseCheckboxes = explorerUseCheckboxesVal;
         m_originalExplorerSyncNotifications = explorerSyncNotificationsVal;
         m_originalExplorerLaunchTo = explorerLaunchToVal;
+
+        m_originalStartMenuWebResults = startMenuWebResultsVal;
+        m_originalStartMenuAutoinstall = startMenuAutoinstallVal;
+        m_originalStartMenuAccountNotifications = startMenuAccountNotificationsVal;
+        m_originalStartMenuShowHibernate = startMenuShowHibernateVal;
+
+        m_originalDesktopShowThisPC = desktopShowThisPCVal;
+        m_originalDesktopShowWidgets = desktopShowWidgetsVal;
+        m_originalDesktopIconShadows = desktopIconShadowsVal;
+        m_originalDesktopShowDesktopButton = desktopShowDesktopButtonVal;
+        m_originalDesktopAeroShake = desktopAeroShakeVal;
+        m_originalDesktopWallpaperQuality = desktopWallpaperQualityVal;
         
         loadSystemStates();
 
@@ -8845,6 +9295,18 @@ void Optimizer::startSystemOptimization() {
         emit originalExplorerUseCheckboxesChanged(m_originalExplorerUseCheckboxes);
         emit originalExplorerSyncNotificationsChanged(m_originalExplorerSyncNotifications);
         emit originalExplorerLaunchToChanged(m_originalExplorerLaunchTo);
+
+        emit originalStartMenuWebResultsChanged(m_originalStartMenuWebResults);
+        emit originalStartMenuAutoinstallChanged(m_originalStartMenuAutoinstall);
+        emit originalStartMenuAccountNotificationsChanged(m_originalStartMenuAccountNotifications);
+        emit originalStartMenuShowHibernateChanged(m_originalStartMenuShowHibernate);
+
+        emit originalDesktopShowThisPCChanged(m_originalDesktopShowThisPC);
+        emit originalDesktopShowWidgetsChanged(m_originalDesktopShowWidgets);
+        emit originalDesktopIconShadowsChanged(m_originalDesktopIconShadows);
+        emit originalDesktopShowDesktopButtonChanged(m_originalDesktopShowDesktopButton);
+        emit originalDesktopAeroShakeChanged(m_originalDesktopAeroShake);
+        emit originalDesktopWallpaperQualityChanged(m_originalDesktopWallpaperQuality);
 
         emit originalAdsTailoredExperiencesActiveChanged(m_originalAdsTailoredExperiencesActive);
         emit originalAdsAdvertisingIdActiveChanged(m_originalAdsAdvertisingIdActive);

@@ -152,6 +152,8 @@ Item {
         if (optimizerBackend.pagefileMax !== optimizerBackend.originalPagefileMax) return true;
         if (moreRightsChanged) return true;
         if (explorerChanged) return true;
+        if (startMenuChanged) return true;
+        if (desktopChanged) return true;
         if (!optimizerBackend.driveStates || !optimizerBackend.originalDriveStates) return false;
         var keys = Object.keys(optimizerBackend.driveStates);
         for (var i = 0; i < keys.length; i++) {
@@ -181,12 +183,32 @@ Item {
         if (optimizerBackend.explorerShowExtractFiles !== optimizerBackend.originalExplorerShowExtractFiles) return true;
         if (optimizerBackend.explorerClassicRibbon !== optimizerBackend.originalExplorerClassicRibbon) return true;
         if (optimizerBackend.explorerShowPreviewPane !== optimizerBackend.originalExplorerShowPreviewPane) return true;
-        if (optimizerBackend.explorerShowRecycleBin !== optimizerBackend.originalExplorerShowRecycleBin) return true;
         if (optimizerBackend.explorerPinHome !== optimizerBackend.originalExplorerPinHome) return true;
         if (optimizerBackend.explorerPinGallery !== optimizerBackend.originalExplorerPinGallery) return true;
         if (optimizerBackend.explorerUseCheckboxes !== optimizerBackend.originalExplorerUseCheckboxes) return true;
         if (optimizerBackend.explorerSyncNotifications !== optimizerBackend.originalExplorerSyncNotifications) return true;
         if (optimizerBackend.explorerLaunchTo !== optimizerBackend.originalExplorerLaunchTo) return true;
+        return false;
+    }
+
+    property bool desktopChanged: {
+        if (optimizerBackend.desktopShowThisPC !== optimizerBackend.originalDesktopShowThisPC) return true;
+        if (optimizerBackend.explorerShowRecycleBin !== optimizerBackend.originalExplorerShowRecycleBin) return true;
+        if (optimizerBackend.desktopShowWidgets !== optimizerBackend.originalDesktopShowWidgets) return true;
+        if (optimizerBackend.shortcutArrowsActive !== optimizerBackend.originalShortcutArrowsActive) return true;
+        if (optimizerBackend.desktopIconShadows !== optimizerBackend.originalDesktopIconShadows) return true;
+        if (optimizerBackend.desktopShowDesktopButton !== optimizerBackend.originalDesktopShowDesktopButton) return true;
+        if (optimizerBackend.desktopAeroShake !== optimizerBackend.originalDesktopAeroShake) return true;
+        if (optimizerBackend.classicContextMenuActive !== optimizerBackend.originalClassicContextMenuActive) return true;
+        if (optimizerBackend.desktopWallpaperQuality !== optimizerBackend.originalDesktopWallpaperQuality) return true;
+        return false;
+    }
+
+    property bool startMenuChanged: {
+        if (optimizerBackend.startMenuWebResults !== optimizerBackend.originalStartMenuWebResults) return true;
+        if (optimizerBackend.startMenuAutoinstall !== optimizerBackend.originalStartMenuAutoinstall) return true;
+        if (optimizerBackend.startMenuAccountNotifications !== optimizerBackend.originalStartMenuAccountNotifications) return true;
+        if (optimizerBackend.startMenuShowHibernate !== optimizerBackend.originalStartMenuShowHibernate) return true;
         return false;
     }
 
@@ -405,8 +427,7 @@ Item {
 
     property int pendingChangesCount: {
         var count = 0;
-        if (classicContextMenuChanged) count++;
-        if (shortcutArrowsChanged) count++;
+        if (desktopChanged) count++;
         if (clipboardHistoryChanged) count++;
         if (taskbarEndTaskChanged) count++;
         if (taskbarSecondsChanged) count++;
@@ -435,13 +456,12 @@ Item {
         if (adsChanged) count++;
         if (privacyChanged) count++;
         if (explorerChanged) count++;
+        if (startMenuChanged) count++;
         return count;
     }
 
     property int mainChangesCount: {
         var count = 0;
-        if (optimizerBackend.classicContextMenuActive !== optimizerBackend.originalClassicContextMenuActive) count++;
-        if (optimizerBackend.shortcutArrowsActive !== optimizerBackend.originalShortcutArrowsActive) count++;
         if (optimizerBackend.clipboardHistoryActive !== optimizerBackend.originalClipboardHistoryActive) count++;
         if (optimizerBackend.taskbarEndTaskActive !== optimizerBackend.originalTaskbarEndTaskActive) count++;
         if (optimizerBackend.taskbarSecondsActive !== optimizerBackend.originalTaskbarSecondsActive) count++;
@@ -558,26 +578,38 @@ Item {
         if (optimizerBackend.explorerUseCheckboxes !== optimizerBackend.originalExplorerUseCheckboxes) count++;
         if (optimizerBackend.explorerSyncNotifications !== optimizerBackend.originalExplorerSyncNotifications) count++;
         if (optimizerBackend.explorerLaunchTo !== optimizerBackend.originalExplorerLaunchTo) count++;
+        if (optimizerBackend.startMenuWebResults !== optimizerBackend.originalStartMenuWebResults) count++;
+        if (optimizerBackend.startMenuAutoinstall !== optimizerBackend.originalStartMenuAutoinstall) count++;
+        if (optimizerBackend.startMenuAccountNotifications !== optimizerBackend.originalStartMenuAccountNotifications) count++;
+        if (optimizerBackend.startMenuShowHibernate !== optimizerBackend.originalStartMenuShowHibernate) count++;
+        if (optimizerBackend.desktopShowThisPC !== optimizerBackend.originalDesktopShowThisPC) count++;
+        if (optimizerBackend.desktopShowWidgets !== optimizerBackend.originalDesktopShowWidgets) count++;
+        if (optimizerBackend.desktopIconShadows !== optimizerBackend.originalDesktopIconShadows) count++;
+        if (optimizerBackend.desktopShowDesktopButton !== optimizerBackend.originalDesktopShowDesktopButton) count++;
+        if (optimizerBackend.desktopAeroShake !== optimizerBackend.originalDesktopAeroShake) count++;
+        if (optimizerBackend.desktopWallpaperQuality !== optimizerBackend.originalDesktopWallpaperQuality) count++;
+        if (optimizerBackend.classicContextMenuActive !== optimizerBackend.originalClassicContextMenuActive) count++;
+        if (optimizerBackend.shortcutArrowsActive !== optimizerBackend.originalShortcutArrowsActive) count++;
         return count;
     }
 
     property var pendingChangesList: {
         var lang = settingsBackend.language;
         var list = [];
-        if (classicContextMenuChanged) list.push({
-            name: qsTr("Classic Context Menu"),
-            icon: "qrc:/MeguPackOptimizer/src/resources/settings.svg",
-            hasSidebar: false,
+        if (desktopChanged) list.push({
+            name: qsTr("Desktop Customization"),
+            icon: "qrc:/MeguPackOptimizer/src/resources/monitor.svg",
+            hasSidebar: true,
             revert: function() {
-                optimizerBackend.classicContextMenuActive = optimizerBackend.originalClassicContextMenuActive;
-            }
-        });
-        if (shortcutArrowsChanged) list.push({
-            name: qsTr("Shortcut Arrow Overlays"),
-            icon: "qrc:/MeguPackOptimizer/src/resources/arrow.svg",
-            hasSidebar: false,
-            revert: function() {
+                optimizerBackend.desktopShowThisPC = optimizerBackend.originalDesktopShowThisPC;
+                optimizerBackend.explorerShowRecycleBin = optimizerBackend.originalExplorerShowRecycleBin;
+                optimizerBackend.desktopShowWidgets = optimizerBackend.originalDesktopShowWidgets;
                 optimizerBackend.shortcutArrowsActive = optimizerBackend.originalShortcutArrowsActive;
+                optimizerBackend.desktopIconShadows = optimizerBackend.originalDesktopIconShadows;
+                optimizerBackend.desktopShowDesktopButton = optimizerBackend.originalDesktopShowDesktopButton;
+                optimizerBackend.desktopAeroShake = optimizerBackend.originalDesktopAeroShake;
+                optimizerBackend.classicContextMenuActive = optimizerBackend.originalClassicContextMenuActive;
+                optimizerBackend.desktopWallpaperQuality = optimizerBackend.originalDesktopWallpaperQuality;
             }
         });
         if (clipboardHistoryChanged) list.push({
@@ -739,12 +771,22 @@ Item {
                 optimizerBackend.explorerShowExtractFiles = optimizerBackend.originalExplorerShowExtractFiles;
                 optimizerBackend.explorerClassicRibbon = optimizerBackend.originalExplorerClassicRibbon;
                 optimizerBackend.explorerShowPreviewPane = optimizerBackend.originalExplorerShowPreviewPane;
-                optimizerBackend.explorerShowRecycleBin = optimizerBackend.originalExplorerShowRecycleBin;
                 optimizerBackend.explorerPinHome = optimizerBackend.originalExplorerPinHome;
                 optimizerBackend.explorerPinGallery = optimizerBackend.originalExplorerPinGallery;
                 optimizerBackend.explorerUseCheckboxes = optimizerBackend.originalExplorerUseCheckboxes;
                 optimizerBackend.explorerSyncNotifications = optimizerBackend.originalExplorerSyncNotifications;
                 optimizerBackend.explorerLaunchTo = optimizerBackend.originalExplorerLaunchTo;
+            }
+        });
+        if (startMenuChanged) list.push({
+            name: qsTr("Start Menu Customization"),
+            icon: "qrc:/MeguPackOptimizer/src/resources/settings.svg",
+            hasSidebar: true,
+            revert: function() {
+                optimizerBackend.startMenuWebResults = optimizerBackend.originalStartMenuWebResults;
+                optimizerBackend.startMenuAutoinstall = optimizerBackend.originalStartMenuAutoinstall;
+                optimizerBackend.startMenuAccountNotifications = optimizerBackend.originalStartMenuAccountNotifications;
+                optimizerBackend.startMenuShowHibernate = optimizerBackend.originalStartMenuShowHibernate;
             }
         });
         if (remoteAccessChanged) list.push({
@@ -1487,12 +1529,120 @@ Item {
                     }
                 });
             }
+        } else if (category === qsTr("Start Menu Customization") || category === "Start Menu Customization") {
+            if (optimizerBackend.startMenuWebResults !== optimizerBackend.originalStartMenuWebResults) {
+                subList.push({
+                    name: qsTr("Include web results when searching") + ": " + (optimizerBackend.originalStartMenuWebResults ? qsTr("Enabled") : qsTr("Disabled")) + " -> " + (optimizerBackend.startMenuWebResults ? qsTr("Enabled") : qsTr("Disabled")),
+                    revert: function() {
+                        optimizerBackend.startMenuWebResults = optimizerBackend.originalStartMenuWebResults;
+                    }
+                });
+            }
+            if (optimizerBackend.startMenuAutoinstall !== optimizerBackend.originalStartMenuAutoinstall) {
+                subList.push({
+                    name: qsTr("Autoinstall suggestions") + ": " + (optimizerBackend.originalStartMenuAutoinstall ? qsTr("Enabled") : qsTr("Disabled")) + " -> " + (optimizerBackend.startMenuAutoinstall ? qsTr("Enabled") : qsTr("Disabled")),
+                    revert: function() {
+                        optimizerBackend.startMenuAutoinstall = optimizerBackend.originalStartMenuAutoinstall;
+                    }
+                });
+            }
+            if (optimizerBackend.startMenuAccountNotifications !== optimizerBackend.originalStartMenuAccountNotifications) {
+                subList.push({
+                    name: qsTr("Account notifications") + ": " + (optimizerBackend.originalStartMenuAccountNotifications ? qsTr("Enabled") : qsTr("Disabled")) + " -> " + (optimizerBackend.startMenuAccountNotifications ? qsTr("Enabled") : qsTr("Disabled")),
+                    revert: function() {
+                        optimizerBackend.startMenuAccountNotifications = optimizerBackend.originalStartMenuAccountNotifications;
+                    }
+                });
+            }
+            if (optimizerBackend.startMenuShowHibernate !== optimizerBackend.originalStartMenuShowHibernate) {
+                subList.push({
+                    name: qsTr("Show hibernate in power menu") + ": " + (optimizerBackend.originalStartMenuShowHibernate ? qsTr("Enabled") : qsTr("Disabled")) + " -> " + (optimizerBackend.startMenuShowHibernate ? qsTr("Enabled") : qsTr("Disabled")),
+                    revert: function() {
+                        optimizerBackend.startMenuShowHibernate = optimizerBackend.originalStartMenuShowHibernate;
+                    }
+                });
+            }
+        } else if (category === qsTr("Desktop Customization") || category === "Desktop Customization") {
+            if (optimizerBackend.desktopShowThisPC !== optimizerBackend.originalDesktopShowThisPC) {
+                subList.push({
+                    name: qsTr("Show \"This PC\" icon") + ": " + (optimizerBackend.originalDesktopShowThisPC ? qsTr("Enabled") : qsTr("Disabled")) + " -> " + (optimizerBackend.desktopShowThisPC ? qsTr("Enabled") : qsTr("Disabled")),
+                    revert: function() {
+                        optimizerBackend.desktopShowThisPC = optimizerBackend.originalDesktopShowThisPC;
+                    }
+                });
+            }
+            if (optimizerBackend.explorerShowRecycleBin !== optimizerBackend.originalExplorerShowRecycleBin) {
+                subList.push({
+                    name: qsTr("Show Recycle Bin") + ": " + (optimizerBackend.originalExplorerShowRecycleBin ? qsTr("Enabled") : qsTr("Disabled")) + " -> " + (optimizerBackend.explorerShowRecycleBin ? qsTr("Enabled") : qsTr("Disabled")),
+                    revert: function() {
+                        optimizerBackend.explorerShowRecycleBin = optimizerBackend.originalExplorerShowRecycleBin;
+                    }
+                });
+            }
+            if (optimizerBackend.desktopShowWidgets !== optimizerBackend.originalDesktopShowWidgets) {
+                subList.push({
+                    name: qsTr("Show Widgets") + ": " + (optimizerBackend.originalDesktopShowWidgets ? qsTr("Enabled") : qsTr("Disabled")) + " -> " + (optimizerBackend.desktopShowWidgets ? qsTr("Enabled") : qsTr("Disabled")),
+                    revert: function() {
+                        optimizerBackend.desktopShowWidgets = optimizerBackend.originalDesktopShowWidgets;
+                    }
+                });
+            }
+            if (optimizerBackend.shortcutArrowsActive !== optimizerBackend.originalShortcutArrowsActive) {
+                subList.push({
+                    name: qsTr("Shortcut Arrow Overlays") + ": " + (optimizerBackend.originalShortcutArrowsActive ? qsTr("Enabled") : qsTr("Disabled")) + " -> " + (optimizerBackend.shortcutArrowsActive ? qsTr("Enabled") : qsTr("Disabled")),
+                    revert: function() {
+                        optimizerBackend.shortcutArrowsActive = optimizerBackend.originalShortcutArrowsActive;
+                    }
+                });
+            }
+            if (optimizerBackend.desktopIconShadows !== optimizerBackend.originalDesktopIconShadows) {
+                subList.push({
+                    name: qsTr("Drop shadows for icon labels") + ": " + (optimizerBackend.originalDesktopIconShadows ? qsTr("Enabled") : qsTr("Disabled")) + " -> " + (optimizerBackend.desktopIconShadows ? qsTr("Enabled") : qsTr("Disabled")),
+                    revert: function() {
+                        optimizerBackend.desktopIconShadows = optimizerBackend.originalDesktopIconShadows;
+                    }
+                });
+            }
+            if (optimizerBackend.desktopShowDesktopButton !== optimizerBackend.originalDesktopShowDesktopButton) {
+                subList.push({
+                    name: qsTr("Show desktop button") + ": " + (optimizerBackend.originalDesktopShowDesktopButton ? qsTr("Enabled") : qsTr("Disabled")) + " -> " + (optimizerBackend.desktopShowDesktopButton ? qsTr("Enabled") : qsTr("Disabled")),
+                    revert: function() {
+                        optimizerBackend.desktopShowDesktopButton = optimizerBackend.originalDesktopShowDesktopButton;
+                    }
+                });
+            }
+            if (optimizerBackend.desktopAeroShake !== optimizerBackend.originalDesktopAeroShake) {
+                subList.push({
+                    name: qsTr("Titlebar window shake (Aero Shake)") + ": " + (optimizerBackend.originalDesktopAeroShake ? qsTr("Enabled") : qsTr("Disabled")) + " -> " + (optimizerBackend.desktopAeroShake ? qsTr("Enabled") : qsTr("Disabled")),
+                    revert: function() {
+                        optimizerBackend.desktopAeroShake = optimizerBackend.originalDesktopAeroShake;
+                    }
+                });
+            }
+            if (optimizerBackend.classicContextMenuActive !== optimizerBackend.originalClassicContextMenuActive) {
+                subList.push({
+                    name: qsTr("Classic Context Menu") + ": " + (optimizerBackend.originalClassicContextMenuActive ? qsTr("Enabled") : qsTr("Disabled")) + " -> " + (optimizerBackend.classicContextMenuActive ? qsTr("Enabled") : qsTr("Disabled")),
+                    revert: function() {
+                        optimizerBackend.classicContextMenuActive = optimizerBackend.originalClassicContextMenuActive;
+                    }
+                });
+            }
+            if (optimizerBackend.desktopWallpaperQuality !== optimizerBackend.originalDesktopWallpaperQuality) {
+                subList.push({
+                    name: qsTr("Wallpaper quality") + ": " + optimizerBackend.originalDesktopWallpaperQuality + "% -> " + optimizerBackend.desktopWallpaperQuality + "%",
+                    revert: function() {
+                        optimizerBackend.desktopWallpaperQuality = optimizerBackend.originalDesktopWallpaperQuality;
+                    }
+                });
+            }
         }
         return subList;
     }
 
     function getParentCard(name) {
         if (name === qsTr("File Explorer Customization") || name === "File Explorer Customization") return explorerCustomizationPanel;
+        if (name === qsTr("Start Menu Customization") || name === "Start Menu Customization") return startMenuCustomizationPanel;
+        if (name === qsTr("Desktop Customization") || name === "Desktop Customization") return desktopCustomizationPanel;
         if (name === qsTr("Visual Effects") || name === "Visual Effects") return visualEffectsPanel;
         if (name === qsTr("Page File") || name === "Page File") return pageFilePanel;
         if (name === qsTr("Counter-Strike 2 Launch Options") || name === "Counter-Strike 2 Launch Options") return cs2Panel;
@@ -1515,8 +1665,8 @@ Item {
         if (name === qsTr("CS2 Steam Overlay") || name === "CS2 Steam Overlay") return cs2Panel;
         if (name === qsTr("More Privileges") || name === "More Privileges") return moreRightsPanel;
         if (name === qsTr("Steam Settings") || name === "Steam Settings") return steamSettingsPanel;
-        if (name === qsTr("Classic Context Menu") || name === "Classic Context Menu") return classicContextMenuPanel;
-        if (name === qsTr("Shortcut Arrow Overlays") || name === "Shortcut Arrow Overlays") return shortcutArrowsPanel;
+        if (name === qsTr("Classic Context Menu") || name === "Classic Context Menu") return desktopCustomizationPanel;
+        if (name === qsTr("Shortcut Arrow Overlays") || name === "Shortcut Arrow Overlays") return desktopCustomizationPanel;
         if (name === qsTr("Clipboard History") || name === "Clipboard History") return clipboardHistoryPanel;
         if (name === qsTr("Taskbar 'End task'") || name === "Taskbar 'End task'") return taskbarEndTaskPanel;
         if (name === qsTr("Clock with seconds") || name === "Clock with seconds") return taskbarSecondsPanel;
@@ -1530,7 +1680,7 @@ Item {
             root.currentSection = "telemetry";
         } else if (categoryName === qsTr("Counter-Strike 2 Launch Options") || categoryName === "Counter-Strike 2 Launch Options" || categoryName === qsTr("CS2 Steam Overlay") || categoryName === "CS2 Steam Overlay" || categoryName === qsTr("Steam Settings") || categoryName === "Steam Settings") {
             root.currentSection = "games";
-        } else if (categoryName === qsTr("Classic Context Menu") || categoryName === "Classic Context Menu" || categoryName === qsTr("Shortcut Arrow Overlays") || categoryName === "Shortcut Arrow Overlays" || categoryName === qsTr("Clipboard History") || categoryName === "Clipboard History" || categoryName === qsTr("Taskbar 'End task'") || categoryName === "Taskbar 'End task'" || categoryName === qsTr("Clock with seconds") || categoryName === "Clock with seconds" || categoryName === qsTr("More Privileges") || categoryName === "More Privileges") {
+        } else if (categoryName === qsTr("Classic Context Menu") || categoryName === "Classic Context Menu" || categoryName === qsTr("Shortcut Arrow Overlays") || categoryName === "Shortcut Arrow Overlays" || categoryName === qsTr("Clipboard History") || categoryName === "Clipboard History" || categoryName === qsTr("Taskbar 'End task'") || categoryName === "Taskbar 'End task'" || categoryName === qsTr("Clock with seconds") || categoryName === "Clock with seconds" || categoryName === qsTr("More Privileges") || categoryName === "More Privileges" || categoryName === qsTr("Start Menu Customization") || categoryName === "Start Menu Customization" || categoryName === qsTr("Desktop Customization") || categoryName === "Desktop Customization") {
             root.currentSection = "customization";
         } else {
             root.currentSection = "core";
@@ -5277,15 +5427,11 @@ Item {
 
 
 
-                // Classic Context Menu Panel
+                // Desktop Customization Panel
                 AcrylicPanel {
-                    id: classicContextMenuPanel
+                    id: desktopCustomizationPanel
                     width: parent.width
-                    height: optimizerBackend.classicContextMenuActive ? 138 : 84
-
-                    Behavior on height {
-                        NumberAnimation { duration: Theme.animNormal; easing.type: Easing.InOutQuad }
-                    }
+                    height: 84
 
                     Column {
                         anchors.left: parent.left
@@ -5301,7 +5447,6 @@ Item {
 
                             Row {
                                 anchors.left: parent.left
-                                anchors.leftMargin: 16
                                 anchors.verticalCenter: parent.verticalCenter
                                 spacing: 16
 
@@ -5317,16 +5462,16 @@ Item {
                                         height: 20
                                         anchors.centerIn: parent
                                         Image {
-                                            id: classicContextMenuPanel_iconImg
-                                            source: "qrc:/MeguPackOptimizer/src/resources/settings.svg"
+                                            id: desktopPanel_iconImg
+                                            source: "qrc:/MeguPackOptimizer/src/resources/monitor.svg"
                                             anchors.fill: parent
                                             sourceSize.width: 20
                                             sourceSize.height: 20
                                             visible: false
                                         }
                                         ColorOverlay {
-                                            anchors.fill: classicContextMenuPanel_iconImg
-                                            source: classicContextMenuPanel_iconImg
+                                            anchors.fill: desktopPanel_iconImg
+                                            source: desktopPanel_iconImg
                                             color: Theme.accent
                                         }
                                     }
@@ -5339,28 +5484,24 @@ Item {
                                     Row {
                                         spacing: 8
                                         Text {
-                                            text: qsTr("Classic Context Menu")
+                                            text: qsTr("Desktop Customization")
                                             color: Theme.textPrimary
                                             font.family: Theme.fontFamily
                                             font.pixelSize: 14
                                             font.bold: true
                                             anchors.verticalCenter: parent.verticalCenter
-                                        } 
-                                        ShowPathButton {
-                                            anchors.verticalCenter: parent.verticalCenter
-                                            onClicked: { optimizerBackend.showPath("classiccontextmenu"); }
                                         }
                                         Rectangle {
-                                            visible: root.classicContextMenuChanged
+                                            visible: root.desktopChanged
                                             height: 16
-                                            width: selectedTextClassicMenu.contentWidth + 10
+                                            width: selectedTextDesktop.contentWidth + 10
                                             radius: 4
                                             color: Qt.rgba(Theme.success.r, Theme.success.g, Theme.success.b, 0.15)
                                             border.color: Theme.success
                                             border.width: 1
                                             anchors.verticalCenter: parent.verticalCenter
                                             Text {
-                                                id: selectedTextClassicMenu
+                                                id: selectedTextDesktop
                                                 text: qsTr("Selected for application")
                                                 color: Theme.success
                                                 font.family: Theme.fontFamily
@@ -5372,7 +5513,7 @@ Item {
                                     }
 
                                     Text {
-                                        text: qsTr("Disables the modern Windows 11 Fluent context menu and restores the classic Windows 10 style context menu.")
+                                        text: qsTr("Customize desktop icons, taskbar elements, window shake, and wallpaper quality.")
                                         color: Theme.textMuted
                                         font.family: Theme.fontFamily
                                         font.pixelSize: 11
@@ -5382,225 +5523,47 @@ Item {
 
                             Row {
                                 anchors.right: parent.right
-                                anchors.rightMargin: 16
                                 anchors.verticalCenter: parent.verticalCenter
                                 spacing: 16
 
-                                MeguSwitch {
-                                    checked: optimizerBackend.classicContextMenuActive
-                                    anchors.verticalCenter: parent.verticalCenter
-                                    onToggled: (isChecked) => {
-                                        optimizerBackend.classicContextMenuActive = isChecked;
-                                    }
-                                }
-                            }
-                        }
-
-                        // Separator Line
-                        Rectangle {
-                            anchors.left: parent.left
-                            anchors.right: parent.right
-                            anchors.leftMargin: 16
-                            anchors.rightMargin: 16
-                            height: 1
-                            color: Theme.border
-                            opacity: 0.3
-                            visible: optimizerBackend.classicContextMenuActive
-                        }
-
-                        // Restart Explorer Section
-                        Row {
-                            anchors.left: parent.left
-                            anchors.right: parent.right
-                            anchors.leftMargin: 16
-                            anchors.rightMargin: 16
-                            visible: optimizerBackend.classicContextMenuActive
-                            spacing: 12
-
-                            Text {
-                                text: qsTr("Restart Windows Explorer to apply context menu changes.")
-                                color: Theme.textSecondary
-                                font.family: Theme.fontFamily
-                                font.pixelSize: 11
-                                font.bold: true
-                                anchors.verticalCenter: parent.verticalCenter
-                                width: parent.width - restartBtn.width - 28
-                                wrapMode: Text.Wrap
-                            }
-
-                            MeguButton {
-                                id: restartBtn
-                                text: qsTr("Restart Explorer")
-                                iconSource: "qrc:/MeguPackOptimizer/src/resources/play.svg"
-                                anchors.verticalCenter: parent.verticalCenter
-                                height: 28
-                                onClicked: {
-                                    optimizerBackend.restartExplorer();
-                                }
-                            }
-                        }
-                    }
-                }
-
-                // Shortcut Arrow Overlays Panel
-                AcrylicPanel {
-                    id: shortcutArrowsPanel
-                    width: parent.width
-                    height: !optimizerBackend.shortcutArrowsActive ? 138 : 84
-
-                    Behavior on height {
-                        NumberAnimation { duration: Theme.animNormal; easing.type: Easing.InOutQuad }
-                    }
-
-                    Column {
-                        anchors.left: parent.left
-                        anchors.right: parent.right
-                        anchors.top: parent.top
-                        spacing: 12
-
-                        // Main Row
-                        Item {
-                            anchors.left: parent.left
-                            anchors.right: parent.right
-                            height: 52
-
-                            Row {
-                                anchors.left: parent.left
-                                anchors.leftMargin: 16
-                                anchors.verticalCenter: parent.verticalCenter
-                                spacing: 16
-
+                                // Arrow button to open drawer
                                 Rectangle {
-                                    width: 40
-                                    height: 40
-                                    radius: 10
-                                    color: Qt.rgba(Theme.accent.r, Theme.accent.g, Theme.accent.b, 0.15)
+                                    width: 32
+                                    height: 32
+                                    radius: 8
+                                    color: desktopArrowMouse.containsMouse ? Theme.buttonBgHover : "transparent"
+                                    border.color: desktopArrowMouse.containsMouse ? Theme.borderHover : "transparent"
+                                    border.width: 1
                                     anchors.verticalCenter: parent.verticalCenter
+
+                                    Behavior on color { ColorAnimation { duration: Theme.animFast } }
 
                                     Item {
-                                        width: 20
-                                        height: 20
-                                        anchors.centerIn: parent
+                                        anchors.fill: parent
                                         Image {
-                                            id: shortcutArrowsPanel_iconImg
+                                            id: desktopArrowIcon
                                             source: "qrc:/MeguPackOptimizer/src/resources/arrow.svg"
-                                            anchors.fill: parent
-                                            sourceSize.width: 20
-                                            sourceSize.height: 20
+                                            anchors.centerIn: parent
+                                            width: 12
+                                            height: 12
                                             visible: false
                                         }
                                         ColorOverlay {
-                                            anchors.fill: shortcutArrowsPanel_iconImg
-                                            source: shortcutArrowsPanel_iconImg
-                                            color: Theme.accent
-                                        }
-                                    }
-                                }
-
-                                Column {
-                                    anchors.verticalCenter: parent.verticalCenter
-                                    spacing: 2
-
-                                    Row {
-                                        spacing: 8
-                                        Text {
-                                            text: qsTr("Shortcut Arrow Overlays")
-                                            color: Theme.textPrimary
-                                            font.family: Theme.fontFamily
-                                            font.pixelSize: 14
-                                            font.bold: true
-                                            anchors.verticalCenter: parent.verticalCenter
-                                        }
-                                        ShowPathButton {
-                                            anchors.verticalCenter: parent.verticalCenter
-                                            onClicked: { optimizerBackend.showPath("shortcutarrows"); }
-                                        }
-                                        Rectangle {
-                                            visible: root.shortcutArrowsChanged
-                                            height: 16
-                                            width: selectedTextShortcutArrows.contentWidth + 10
-                                            radius: 4
-                                            color: Qt.rgba(Theme.success.r, Theme.success.g, Theme.success.b, 0.15)
-                                            border.color: Theme.success
-                                            border.width: 1
-                                            anchors.verticalCenter: parent.verticalCenter
-                                            Text {
-                                                id: selectedTextShortcutArrows
-                                                text: qsTr("Selected for application")
-                                                color: Theme.success
-                                                font.family: Theme.fontFamily
-                                                font.pixelSize: 8
-                                                font.bold: true
-                                                anchors.centerIn: parent
-                                            }
+                                            anchors.fill: desktopArrowIcon
+                                            source: desktopArrowIcon
+                                            color: desktopArrowMouse.containsMouse ? Theme.accent : Theme.textSecondary
                                         }
                                     }
 
-                                    Text {
-                                        text: qsTr("Shows or hides the arrow overlay icon on Windows desktop and Explorer shortcuts.")
-                                        color: Theme.textMuted
-                                        font.family: Theme.fontFamily
-                                        font.pixelSize: 11
+                                    MouseArea {
+                                        id: desktopArrowMouse
+                                        anchors.fill: parent
+                                        hoverEnabled: true
+                                        cursorShape: Qt.PointingHandCursor
+                                        onClicked: {
+                                            root.activeDrawer = "desktopCustomization";
+                                        }
                                     }
-                                }
-                            }
-
-                            Row {
-                                anchors.right: parent.right
-                                anchors.rightMargin: 16
-                                anchors.verticalCenter: parent.verticalCenter
-                                spacing: 16
-
-                                MeguSwitch {
-                                    checked: optimizerBackend.shortcutArrowsActive
-                                    anchors.verticalCenter: parent.verticalCenter
-                                    onToggled: (isChecked) => {
-                                        optimizerBackend.shortcutArrowsActive = isChecked;
-                                    }
-                                }
-                            }
-                        }
-
-                        // Separator Line
-                        Rectangle {
-                            anchors.left: parent.left
-                            anchors.right: parent.right
-                            anchors.leftMargin: 16
-                            anchors.rightMargin: 16
-                            height: 1
-                            color: Theme.border
-                            opacity: 0.3
-                            visible: !optimizerBackend.shortcutArrowsActive
-                        }
-
-                        // Restart Explorer Section
-                        Row {
-                            anchors.left: parent.left
-                            anchors.right: parent.right
-                            anchors.leftMargin: 16
-                            anchors.rightMargin: 16
-                            visible: !optimizerBackend.shortcutArrowsActive
-                            spacing: 12
-
-                            Text {
-                                text: qsTr("Restart Windows Explorer to apply shortcut arrow changes.")
-                                color: Theme.textSecondary
-                                font.family: Theme.fontFamily
-                                font.pixelSize: 11
-                                font.bold: true
-                                anchors.verticalCenter: parent.verticalCenter
-                                width: parent.width - restartBtnShortcutArrows.width - 28
-                                wrapMode: Text.Wrap
-                            }
-
-                            MeguButton {
-                                id: restartBtnShortcutArrows
-                                text: qsTr("Restart Explorer")
-                                iconSource: "qrc:/MeguPackOptimizer/src/resources/play.svg"
-                                anchors.verticalCenter: parent.verticalCenter
-                                height: 28
-                                onClicked: {
-                                    optimizerBackend.restartExplorer();
                                 }
                             }
                         }
@@ -6353,6 +6316,149 @@ Item {
                                         cursorShape: Qt.PointingHandCursor
                                         onClicked: {
                                             root.activeDrawer = "explorerCustomization";
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+
+                // Start Menu Customization Panel
+                AcrylicPanel {
+                    id: startMenuCustomizationPanel
+                    width: parent.width
+                    height: 84
+
+                    Column {
+                        anchors.left: parent.left
+                        anchors.right: parent.right
+                        anchors.top: parent.top
+                        spacing: 12
+
+                        // Main Row
+                        Item {
+                            anchors.left: parent.left
+                            anchors.right: parent.right
+                            height: 52
+
+                            Row {
+                                anchors.left: parent.left
+                                anchors.verticalCenter: parent.verticalCenter
+                                spacing: 16
+
+                                Rectangle {
+                                    width: 40
+                                    height: 40
+                                    radius: 10
+                                    color: Qt.rgba(Theme.accent.r, Theme.accent.g, Theme.accent.b, 0.15)
+                                    anchors.verticalCenter: parent.verticalCenter
+
+                                    Item {
+                                        width: 20
+                                        height: 20
+                                        anchors.centerIn: parent
+                                        Image {
+                                            id: startMenuPanel_iconImg
+                                            source: "qrc:/MeguPackOptimizer/src/resources/settings.svg"
+                                            anchors.fill: parent
+                                            sourceSize.width: 20
+                                            sourceSize.height: 20
+                                            visible: false
+                                        }
+                                        ColorOverlay {
+                                            anchors.fill: startMenuPanel_iconImg
+                                            source: startMenuPanel_iconImg
+                                            color: Theme.accent
+                                        }
+                                    }
+                                }
+
+                                Column {
+                                    anchors.verticalCenter: parent.verticalCenter
+                                    spacing: 2
+
+                                    Row {
+                                        spacing: 8
+                                        Text {
+                                            text: qsTr("Start Menu Customization")
+                                            color: Theme.textPrimary
+                                            font.family: Theme.fontFamily
+                                            font.pixelSize: 14
+                                            font.bold: true
+                                            anchors.verticalCenter: parent.verticalCenter
+                                        }
+                                        Rectangle {
+                                            visible: root.startMenuChanged
+                                            height: 16
+                                            width: selectedTextStartMenu.contentWidth + 10
+                                            radius: 4
+                                            color: Qt.rgba(Theme.success.r, Theme.success.g, Theme.success.b, 0.15)
+                                            border.color: Theme.success
+                                            border.width: 1
+                                            anchors.verticalCenter: parent.verticalCenter
+                                            Text {
+                                                id: selectedTextStartMenu
+                                                text: qsTr("Selected for application")
+                                                color: Theme.success
+                                                font.family: Theme.fontFamily
+                                                font.pixelSize: 8
+                                                font.bold: true
+                                                anchors.centerIn: parent
+                                            }
+                                        }
+                                    }
+
+                                    Text {
+                                        text: qsTr("Customize Start Menu search web results, apps autoinstall, notifications, and power menu.")
+                                        color: Theme.textMuted
+                                        font.family: Theme.fontFamily
+                                        font.pixelSize: 11
+                                    }
+                                }
+                            }
+
+                            Row {
+                                anchors.right: parent.right
+                                anchors.verticalCenter: parent.verticalCenter
+                                spacing: 16
+
+                                // Arrow button to open drawer
+                                Rectangle {
+                                    width: 32
+                                    height: 32
+                                    radius: 8
+                                    color: startMenuArrowMouse.containsMouse ? Theme.buttonBgHover : "transparent"
+                                    border.color: startMenuArrowMouse.containsMouse ? Theme.borderHover : "transparent"
+                                    border.width: 1
+                                    anchors.verticalCenter: parent.verticalCenter
+
+                                    Behavior on color { ColorAnimation { duration: Theme.animFast } }
+
+                                    Item {
+                                        anchors.fill: parent
+                                        Image {
+                                            id: startMenuArrowIcon
+                                            source: "qrc:/MeguPackOptimizer/src/resources/arrow.svg"
+                                            anchors.centerIn: parent
+                                            width: 12
+                                            height: 12
+                                            visible: false
+                                        }
+                                        ColorOverlay {
+                                            anchors.fill: startMenuArrowIcon
+                                            source: startMenuArrowIcon
+                                            color: startMenuArrowMouse.containsMouse ? Theme.accent : Theme.textSecondary
+                                        }
+                                    }
+
+                                    MouseArea {
+                                        id: startMenuArrowMouse
+                                        anchors.fill: parent
+                                        hoverEnabled: true
+                                        cursorShape: Qt.PointingHandCursor
+                                        onClicked: {
+                                            root.activeDrawer = "startMenuCustomization";
                                         }
                                     }
                                 }
@@ -7498,6 +7604,8 @@ Item {
                             if (root.activeDrawer === "steamSettings") return qsTr("STEAM SETTINGS");
                             if (root.activeDrawer === "moreRights") return qsTr("More Privileges");
                             if (root.activeDrawer === "explorerCustomization") return qsTr("File Explorer Customization");
+                            if (root.activeDrawer === "startMenuCustomization") return qsTr("Start Menu Customization");
+                            if (root.activeDrawer === "desktopCustomization") return qsTr("Desktop Customization");
                             return "";
                         }
                         color: Theme.textPrimary
@@ -7571,6 +7679,8 @@ Item {
                         if (root.activeDrawer === "steamSettings") return steamSettingsDrawer.dynamicHeight;
                         if (root.activeDrawer === "moreRights") return moreRightsDrawer.implicitHeight;
                         if (root.activeDrawer === "explorerCustomization") return explorerDrawer.implicitHeight;
+                        if (root.activeDrawer === "startMenuCustomization") return startMenuDrawer.implicitHeight;
+                        if (root.activeDrawer === "desktopCustomization") return desktopDrawer.implicitHeight;
                         return height;
                     }
 
@@ -7673,6 +7783,22 @@ Item {
                     ExplorerDrawer {
                         id: explorerDrawer
                         visible: root.activeDrawer === "explorerCustomization"
+                        width: visible ? parent.width : 800
+                        height: visible ? implicitHeight : 0
+                    }
+
+                    // 15. Start Menu Customization Drawer Content
+                    StartMenuDrawer {
+                        id: startMenuDrawer
+                        visible: root.activeDrawer === "startMenuCustomization"
+                        width: visible ? parent.width : 800
+                        height: visible ? implicitHeight : 0
+                    }
+
+                    // 16. Desktop Customization Drawer Content
+                    DesktopDrawer {
+                        id: desktopDrawer
+                        visible: root.activeDrawer === "desktopCustomization"
                         width: visible ? parent.width : 800
                         height: visible ? implicitHeight : 0
                     }

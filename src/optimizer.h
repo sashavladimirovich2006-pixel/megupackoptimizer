@@ -180,6 +180,31 @@ class Optimizer : public QObject {
     Q_PROPERTY(int explorerLaunchTo READ explorerLaunchTo WRITE setExplorerLaunchTo NOTIFY explorerLaunchToChanged)
     Q_PROPERTY(int originalExplorerLaunchTo READ originalExplorerLaunchTo NOTIFY originalExplorerLaunchToChanged)
 
+    // Start Menu Customization properties
+    Q_PROPERTY(bool startMenuWebResults READ startMenuWebResults WRITE setStartMenuWebResults NOTIFY startMenuWebResultsChanged)
+    Q_PROPERTY(bool originalStartMenuWebResults READ originalStartMenuWebResults NOTIFY originalStartMenuWebResultsChanged)
+    Q_PROPERTY(bool startMenuAutoinstall READ startMenuAutoinstall WRITE setStartMenuAutoinstall NOTIFY startMenuAutoinstallChanged)
+    Q_PROPERTY(bool originalStartMenuAutoinstall READ originalStartMenuAutoinstall NOTIFY originalStartMenuAutoinstallChanged)
+    Q_PROPERTY(bool startMenuAccountNotifications READ startMenuAccountNotifications WRITE setStartMenuAccountNotifications NOTIFY startMenuAccountNotificationsChanged)
+    Q_PROPERTY(bool originalStartMenuAccountNotifications READ originalStartMenuAccountNotifications NOTIFY originalStartMenuAccountNotificationsChanged)
+    Q_PROPERTY(bool startMenuShowHibernate READ startMenuShowHibernate WRITE setStartMenuShowHibernate NOTIFY startMenuShowHibernateChanged)
+    Q_PROPERTY(bool originalStartMenuShowHibernate READ originalStartMenuShowHibernate NOTIFY originalStartMenuShowHibernateChanged)
+
+    // Desktop Customization properties
+    Q_PROPERTY(bool desktopShowThisPC READ desktopShowThisPC WRITE setDesktopShowThisPC NOTIFY desktopShowThisPCChanged)
+    Q_PROPERTY(bool originalDesktopShowThisPC READ originalDesktopShowThisPC NOTIFY originalDesktopShowThisPCChanged)
+    Q_PROPERTY(bool desktopShowWidgets READ desktopShowWidgets WRITE setDesktopShowWidgets NOTIFY desktopShowWidgetsChanged)
+    Q_PROPERTY(bool originalDesktopShowWidgets READ originalDesktopShowWidgets NOTIFY originalDesktopShowWidgetsChanged)
+    Q_PROPERTY(bool desktopIconShadows READ desktopIconShadows WRITE setDesktopIconShadows NOTIFY desktopIconShadowsChanged)
+    Q_PROPERTY(bool originalDesktopIconShadows READ originalDesktopIconShadows NOTIFY originalDesktopIconShadowsChanged)
+    Q_PROPERTY(bool desktopShowDesktopButton READ desktopShowDesktopButton WRITE setDesktopShowDesktopButton NOTIFY desktopShowDesktopButtonChanged)
+    Q_PROPERTY(bool originalDesktopShowDesktopButton READ originalDesktopShowDesktopButton NOTIFY originalDesktopShowDesktopButtonChanged)
+    Q_PROPERTY(bool desktopAeroShake READ desktopAeroShake WRITE setDesktopAeroShake NOTIFY desktopAeroShakeChanged)
+    Q_PROPERTY(bool originalDesktopAeroShake READ originalDesktopAeroShake NOTIFY originalDesktopAeroShakeChanged)
+    Q_PROPERTY(int desktopWallpaperQuality READ desktopWallpaperQuality WRITE setDesktopWallpaperQuality NOTIFY desktopWallpaperQualityChanged)
+    Q_PROPERTY(int originalDesktopWallpaperQuality READ originalDesktopWallpaperQuality NOTIFY originalDesktopWallpaperQualityChanged)
+
+
     Q_PROPERTY(int windowsUpdateMode READ windowsUpdateMode WRITE setWindowsUpdateMode NOTIFY windowsUpdateModeChanged)
     Q_PROPERTY(int originalWindowsUpdateMode READ originalWindowsUpdateMode NOTIFY originalWindowsUpdateModeChanged)
     Q_PROPERTY(QVariantMap cs2LaunchOptions READ cs2LaunchOptions WRITE setCs2LaunchOptions NOTIFY cs2LaunchOptionsChanged)
@@ -393,6 +418,31 @@ public:
     int explorerLaunchTo() const { return m_explorerLaunchTo; }
     int originalExplorerLaunchTo() const { return m_originalExplorerLaunchTo; }
 
+    // Start Menu Customization Getters
+    bool startMenuWebResults() const { return m_startMenuWebResults; }
+    bool originalStartMenuWebResults() const { return m_originalStartMenuWebResults; }
+    bool startMenuAutoinstall() const { return m_startMenuAutoinstall; }
+    bool originalStartMenuAutoinstall() const { return m_originalStartMenuAutoinstall; }
+    bool startMenuAccountNotifications() const { return m_startMenuAccountNotifications; }
+    bool originalStartMenuAccountNotifications() const { return m_originalStartMenuAccountNotifications; }
+    bool startMenuShowHibernate() const { return m_startMenuShowHibernate; }
+    bool originalStartMenuShowHibernate() const { return m_originalStartMenuShowHibernate; }
+
+    // Desktop Customization Getters
+    bool desktopShowThisPC() const { return m_desktopShowThisPC; }
+    bool originalDesktopShowThisPC() const { return m_originalDesktopShowThisPC; }
+    bool desktopShowWidgets() const { return m_desktopShowWidgets; }
+    bool originalDesktopShowWidgets() const { return m_originalDesktopShowWidgets; }
+    bool desktopIconShadows() const { return m_desktopIconShadows; }
+    bool originalDesktopIconShadows() const { return m_originalDesktopIconShadows; }
+    bool desktopShowDesktopButton() const { return m_desktopShowDesktopButton; }
+    bool originalDesktopShowDesktopButton() const { return m_originalDesktopShowDesktopButton; }
+    bool desktopAeroShake() const { return m_desktopAeroShake; }
+    bool originalDesktopAeroShake() const { return m_originalDesktopAeroShake; }
+    int desktopWallpaperQuality() const { return m_desktopWallpaperQuality; }
+    int originalDesktopWallpaperQuality() const { return m_originalDesktopWallpaperQuality; }
+
+
     int windowsUpdateMode() const { return m_windowsUpdateMode; }
     int originalWindowsUpdateMode() const { return m_originalWindowsUpdateMode; }
     QVariantMap cs2LaunchOptions() const { return m_cs2LaunchOptions; }
@@ -497,6 +547,21 @@ public:
     void setExplorerUseCheckboxes(bool val);
     void setExplorerSyncNotifications(bool val);
     void setExplorerLaunchTo(int val);
+
+    // Start Menu Customization Setters
+    void setStartMenuWebResults(bool val);
+    void setStartMenuAutoinstall(bool val);
+    void setStartMenuAccountNotifications(bool val);
+    void setStartMenuShowHibernate(bool val);
+
+    // Desktop Customization Setters
+    void setDesktopShowThisPC(bool val);
+    void setDesktopShowWidgets(bool val);
+    void setDesktopIconShadows(bool val);
+    void setDesktopShowDesktopButton(bool val);
+    void setDesktopAeroShake(bool val);
+    void setDesktopWallpaperQuality(int val);
+
 
     void setWindowsUpdateMode(int mode);
     void setCs2LaunchOptions(const QVariantMap &val);
@@ -719,6 +784,31 @@ signals:
     void explorerLaunchToChanged(int val);
     void originalExplorerLaunchToChanged(int val);
 
+    // Start Menu Customization Signals
+    void startMenuWebResultsChanged(bool val);
+    void originalStartMenuWebResultsChanged(bool val);
+    void startMenuAutoinstallChanged(bool val);
+    void originalStartMenuAutoinstallChanged(bool val);
+    void startMenuAccountNotificationsChanged(bool val);
+    void originalStartMenuAccountNotificationsChanged(bool val);
+    void startMenuShowHibernateChanged(bool val);
+    void originalStartMenuShowHibernateChanged(bool val);
+
+    // Desktop Customization Signals
+    void desktopShowThisPCChanged(bool val);
+    void originalDesktopShowThisPCChanged(bool val);
+    void desktopShowWidgetsChanged(bool val);
+    void originalDesktopShowWidgetsChanged(bool val);
+    void desktopIconShadowsChanged(bool val);
+    void originalDesktopIconShadowsChanged(bool val);
+    void desktopShowDesktopButtonChanged(bool val);
+    void originalDesktopShowDesktopButtonChanged(bool val);
+    void desktopAeroShakeChanged(bool val);
+    void originalDesktopAeroShakeChanged(bool val);
+    void desktopWallpaperQualityChanged(int val);
+    void originalDesktopWallpaperQualityChanged(int val);
+
+
     void windowsUpdateModeChanged(int mode);
     void originalWindowsUpdateModeChanged(int mode);
     void cs2LaunchOptionsChanged(const QVariantMap &val);
@@ -932,6 +1022,31 @@ private:
     bool m_originalExplorerSyncNotifications = true;
     int m_explorerLaunchTo = 1;
     int m_originalExplorerLaunchTo = 1;
+
+    // Start Menu Customization backing fields
+    bool m_startMenuWebResults = true;
+    bool m_originalStartMenuWebResults = true;
+    bool m_startMenuAutoinstall = true;
+    bool m_originalStartMenuAutoinstall = true;
+    bool m_startMenuAccountNotifications = true;
+    bool m_originalStartMenuAccountNotifications = true;
+    bool m_startMenuShowHibernate = false;
+    bool m_originalStartMenuShowHibernate = false;
+
+    // Desktop Customization backing fields
+    bool m_desktopShowThisPC = true;
+    bool m_originalDesktopShowThisPC = true;
+    bool m_desktopShowWidgets = true;
+    bool m_originalDesktopShowWidgets = true;
+    bool m_desktopIconShadows = true;
+    bool m_originalDesktopIconShadows = true;
+    bool m_desktopShowDesktopButton = true;
+    bool m_originalDesktopShowDesktopButton = true;
+    bool m_desktopAeroShake = true;
+    bool m_originalDesktopAeroShake = true;
+    int m_desktopWallpaperQuality = 85;
+    int m_originalDesktopWallpaperQuality = 85;
+
 
     int m_windowsUpdateMode = 0;
     int m_originalWindowsUpdateMode = 0;

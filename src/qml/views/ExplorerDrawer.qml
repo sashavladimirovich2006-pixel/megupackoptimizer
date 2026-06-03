@@ -286,50 +286,6 @@ Column {
         }
     }
 
-    // 6. Recycle bin (Desktop visibility)
-    Rectangle {
-        width: parent.width
-        height: Math.max(56, binCol.implicitHeight + 16)
-        radius: 8
-        color: "#05FFFFFF"
-        border.color: Theme.border
-        border.width: 1
-
-        Column {
-            id: binCol
-            anchors.verticalCenter: parent.verticalCenter
-            anchors.left: parent.left
-            anchors.leftMargin: 12
-            anchors.right: binSwitch.left
-            anchors.rightMargin: 12
-            spacing: 2
-
-            Text {
-                text: qsTr("Show Recycle Bin on Desktop")
-                color: Theme.textPrimary
-                font.family: Theme.fontFamily
-                font.pixelSize: 12
-                font.bold: true
-            }
-            Text {
-                text: qsTr("Show or hide the Recycle Bin icon on the desktop screen.")
-                color: Theme.textSecondary
-                font.family: Theme.fontFamily
-                font.pixelSize: 10
-                width: parent.width
-                wrapMode: Text.WordWrap
-            }
-        }
-
-        MeguSwitch {
-            id: binSwitch
-            anchors.right: parent.right
-            anchors.rightMargin: 12
-            anchors.verticalCenter: parent.verticalCenter
-            checked: optimizerBackend.explorerShowRecycleBin
-            onToggled: (isChecked) => { optimizerBackend.explorerShowRecycleBin = isChecked; }
-        }
-    }
 
     // 7. Home navigation pane item
     Rectangle {
