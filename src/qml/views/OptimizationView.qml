@@ -9153,7 +9153,7 @@ Item {
                                 anchors.horizontalCenter: parent.horizontalCenter
                                 horizontalAlignment: Text.AlignHCenter
                                 wrapMode: Text.WordWrap
-                                text: qsTr("Чтобы изменения в проводнике применились вам нужно обязательно перезапустить проводник, обратите внимание что все вкладки проводника закроются")
+                                text: qsTr("To apply changes, you must restart Windows Explorer. Note that all open File Explorer tabs and windows will be closed.")
                                 color: Theme.warning
                                 font.family: Theme.fontFamily
                                 font.pixelSize: 10
