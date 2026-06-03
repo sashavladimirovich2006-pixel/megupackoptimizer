@@ -172,14 +172,14 @@ Item {
 
             GridLayout {
                 columns: mainScroll.width > 1200 ? 4 : (mainScroll.width > 800 ? 3 : 2)
-                rowSpacing: 12
-                columnSpacing: 12
+                rowSpacing: 16
+                columnSpacing: 16
                 Layout.fillWidth: true
 
                 // OS Card (Accent Blue)
                 SpecCard {
                     Layout.fillWidth: true
-                    implicitHeight: 96
+                    implicitHeight: 120
                     category: "OS"
                     value: optimizerBackend.osName
                     subValue: qsTr("Windows NT Kernel")
@@ -191,7 +191,7 @@ Item {
                 // CPU Card (AMD Red/Intel Blue dynamic)
                 SpecCard {
                     Layout.fillWidth: true
-                    implicitHeight: 96
+                    implicitHeight: 120
                     category: "CPU"
                     value: cleanCpuName(optimizerBackend.cpuName)
                     subValue: getCpuCores(optimizerBackend.cpuName, optimizerBackend.logicalCores)
@@ -206,7 +206,7 @@ Item {
                 // Core Info Card (Crimson)
                 SpecCard {
                     Layout.fillWidth: true
-                    implicitHeight: 96
+                    implicitHeight: 120
                     category: "CORES"
                     value: optimizerBackend.logicalCores
                     subValue: qsTr("Hyper-Threading Active")
@@ -218,7 +218,7 @@ Item {
                 // RAM Card (Mockup Blue)
                 SpecCard {
                     Layout.fillWidth: true
-                    implicitHeight: 96
+                    implicitHeight: 120
                     category: "RAM"
                     value: optimizerBackend.ramSize
                     subValue: qsTr("DDR4 / Dual-Channel")
@@ -233,7 +233,7 @@ Item {
                 // GPU Card (GeForce/AMD Green/Intel Blue dynamic)
                 SpecCard {
                     Layout.fillWidth: true
-                    implicitHeight: 96
+                    implicitHeight: 120
                     category: "GPU"
                     value: optimizerBackend.gpuName
                     subValue: qsTr("PCIe x16 Gen 4.0")
@@ -248,7 +248,7 @@ Item {
                 // Motherboard Card (Deep Pink)
                 SpecCard {
                     Layout.fillWidth: true
-                    implicitHeight: 96
+                    implicitHeight: 120
                     category: "MOTHERBOARD"
                     value: optimizerBackend.motherboard
                     subValue: qsTr("UEFI Boot Mode Enabled")
@@ -260,7 +260,7 @@ Item {
                 // Storage Card (Orchid Purple)
                 SpecCard {
                     Layout.fillWidth: true
-                    implicitHeight: 96
+                    implicitHeight: 120
                     category: "DISK"
                     value: optimizerBackend.storage
                     subValue: qsTr("C: System Drive")
@@ -275,7 +275,7 @@ Item {
                 // Display Card (Teal Turquoise)
                 SpecCard {
                     Layout.fillWidth: true
-                    implicitHeight: 96
+                    implicitHeight: 120
                     category: "DISPLAY"
                     value: optimizerBackend.display
                     subValue: qsTr("DirectX 12 Compatible")

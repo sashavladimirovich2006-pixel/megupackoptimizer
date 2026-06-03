@@ -20,12 +20,12 @@ AcrylicPanel {
 
     Item {
         anchors.fill: parent
-        anchors.margins: 12
+        anchors.margins: 16
         
         Row {
             id: contentRow
             anchors.fill: parent
-            spacing: 12
+            spacing: 16
             
             // Subdued, clean elevation adjustment on hover
             y: card.containsMouse ? -1 : 0
@@ -39,9 +39,9 @@ AcrylicPanel {
             // Icon Container with clean, premium badge background
             Rectangle {
                 id: iconBg
-                width: 48
-                height: 48
-                radius: 24 // circular
+                width: 56
+                height: 56
+                radius: 28 // circular
                 color: card.containsMouse ? Qt.rgba(progressBarColor.r, progressBarColor.g, progressBarColor.b, 0.15) : badgeColor
                 border.color: card.showProgressBar ? "transparent" : (card.containsMouse ? progressBarColor : Theme.border)
                 border.width: card.showProgressBar ? 0 : 1
@@ -62,15 +62,15 @@ AcrylicPanel {
                     // Background track ring
                     ShapePath {
                         strokeColor: Qt.rgba(progressBarColor.r, progressBarColor.g, progressBarColor.b, 0.1)
-                        strokeWidth: 3
+                        strokeWidth: 3.5
                         fillColor: "transparent"
                         capStyle: ShapePath.RoundCap
                         
                         PathAngleArc {
-                            centerX: 24
-                            centerY: 24
-                            radiusX: 21
-                            radiusY: 21
+                            centerX: 28
+                            centerY: 28
+                            radiusX: 24
+                            radiusY: 24
                             startAngle: -90
                             sweepAngle: 360
                         }
@@ -79,15 +79,15 @@ AcrylicPanel {
                     // Active progress arc
                     ShapePath {
                         strokeColor: card.progressBarColor
-                        strokeWidth: 3
+                        strokeWidth: 3.5
                         fillColor: "transparent"
                         capStyle: ShapePath.RoundCap
                         
                         PathAngleArc {
-                            centerX: 24
-                            centerY: 24
-                            radiusX: 21
-                            radiusY: 21
+                            centerX: 28
+                            centerY: 28
+                            radiusX: 24
+                            radiusY: 24
                             startAngle: -90
                             sweepAngle: 360 * card.progressBarValue
                             
@@ -102,16 +102,16 @@ AcrylicPanel {
                 }
 
                 Item {
-                    width: 24
-                    height: 24
+                    width: 28
+                    height: 28
                     anchors.centerIn: parent
 
                     Image {
                         id: img
                         source: card.iconSource
                         anchors.fill: parent
-                        sourceSize.width: 24
-                        sourceSize.height: 24
+                        sourceSize.width: 28
+                        sourceSize.height: 28
                         visible: false
                     }
                     
@@ -128,13 +128,13 @@ AcrylicPanel {
             Column {
                 anchors.verticalCenter: parent.verticalCenter
                 width: parent.width - iconBg.width - parent.spacing - 10
-                spacing: 1
+                spacing: 3
 
                 Text {
                     text: card.showProgressBar ? card.category + " (" + Math.round(card.progressBarValue * 100) + "%)" : card.category
                     color: card.containsMouse ? progressBarColor : Theme.textSecondary
                     font.family: Theme.fontFamily
-                    font.pixelSize: 11
+                    font.pixelSize: 12
                     font.bold: true
                     font.letterSpacing: 0.5
                     elide: Text.ElideRight
@@ -147,7 +147,7 @@ AcrylicPanel {
                     text: card.value ? card.value : qsTr("Detecting...")
                     color: Theme.textPrimary
                     font.family: Theme.fontFamily
-                    font.pixelSize: 14
+                    font.pixelSize: 16
                     font.bold: true
                     elide: Text.ElideRight
                     width: parent.width
@@ -157,7 +157,7 @@ AcrylicPanel {
                     text: card.subValue
                     color: Theme.textMuted
                     font.family: Theme.fontFamily
-                    font.pixelSize: 11
+                    font.pixelSize: 12
                     elide: Text.ElideRight
                     width: parent.width
                     visible: text !== ""
