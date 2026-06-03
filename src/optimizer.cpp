@@ -4773,7 +4773,14 @@ void Optimizer::loadSystemStates() {
     bool driverUpdatesEnabledVal = true;
     bool appUpdatesEnabledVal = true;
 #ifdef Q_OS_WIN
-    driverUpdatesEnabledVal = (excludeDrivers == 0);
+    DWORD searchOrderConfig = 0;
+    HKEY hKeyDs = nullptr;
+    if (RegOpenKeyExW(HKEY_LOCAL_MACHINE, L"SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\DriverSearching", 0, KEY_READ, &hKeyDs) == ERROR_SUCCESS) {
+        DWORD size = sizeof(searchOrderConfig);
+        RegQueryValueExW(hKeyDs, L"SearchOrderConfig", NULL, NULL, (LPBYTE)&searchOrderConfig, &size);
+        RegCloseKey(hKeyDs);
+    }
+    driverUpdatesEnabledVal = (searchOrderConfig != 1 && excludeDrivers == 0);
 
     HKEY hKeyStore;
     if (RegOpenKeyExW(HKEY_LOCAL_MACHINE, L"SOFTWARE\\Policies\\Microsoft\\WindowsStore", 0, KEY_READ, &hKeyStore) == ERROR_SUCCESS) {
@@ -8955,10 +8962,25 @@ void Optimizer::startSystemOptimization() {
             QThread::msleep(800);
 #ifdef Q_OS_WIN
             HKEY hKeyWu = nullptr;
+            bool ok = true;
             if (RegCreateKeyExW(HKEY_LOCAL_MACHINE, L"SOFTWARE\\Policies\\Microsoft\\Windows\\WindowsUpdate", 0, nullptr, REG_OPTION_NON_VOLATILE, KEY_WRITE, nullptr, &hKeyWu, nullptr) == ERROR_SUCCESS) {
                 DWORD val = driverUpdatesVal ? 0 : 1;
                 RegSetValueExW(hKeyWu, L"ExcludeWUDriversInQualityUpdate", 0, REG_DWORD, reinterpret_cast<const BYTE*>(&val), sizeof(val));
                 RegCloseKey(hKeyWu);
+            } else {
+                ok = false;
+            }
+
+            HKEY hKeyDs = nullptr;
+            if (RegCreateKeyExW(HKEY_LOCAL_MACHINE, L"SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\DriverSearching", 0, nullptr, REG_OPTION_NON_VOLATILE, KEY_WRITE, nullptr, &hKeyDs, nullptr) == ERROR_SUCCESS) {
+                DWORD val = driverUpdatesVal ? 0 : 1;
+                RegSetValueExW(hKeyDs, L"SearchOrderConfig", 0, REG_DWORD, reinterpret_cast<const BYTE*>(&val), sizeof(val));
+                RegCloseKey(hKeyDs);
+            } else {
+                ok = false;
+            }
+
+            if (ok) {
                 emit systemStepReported(driverUpdatesVal ? tr("Driver updates enabled successfully.") : tr("Driver updates disabled successfully."), "SUCCESS");
             } else {
                 driverUpdatesSuccess = false;
