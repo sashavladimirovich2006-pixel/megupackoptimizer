@@ -64,6 +64,7 @@ qt_add_qml_module(megu_pack_optimizer
         src/qml/views/DesktopDrawer.qml
         src/qml/views/HealthDrawer.qml
         src/qml/views/SleepingPillDrawer.qml
+        src/qml/views/RepairDrawer.qml
     RESOURCES
         src/resources/settings.svg
         src/resources/steam.svg
@@ -94,6 +95,8 @@ qt_add_qml_module(megu_pack_optimizer
         src/resources/telemetry.svg
         src/resources/camera.svg
         src/resources/microphone.svg
+        src/resources/heart_outline.svg
+        src/resources/heart_filled.svg
         translations/megu_pack_optimizer_uk.qm
 )
 

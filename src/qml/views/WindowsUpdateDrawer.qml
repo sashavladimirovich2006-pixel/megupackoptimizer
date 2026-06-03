@@ -106,4 +106,163 @@ Column {
             }
         }
     }
+
+    Text {
+        text: qsTr("Additional update settings:")
+        color: Theme.textSecondary
+        font.family: Theme.fontFamily
+        font.pixelSize: 11
+        font.bold: true
+        topPadding: 10
+    }
+
+    // Driver updates
+    Rectangle {
+        width: parent.width
+        height: Math.max(56, driverRow.implicitHeight + 16)
+        radius: 8
+        color: "#05FFFFFF"
+        border.color: Theme.border
+        border.width: 1
+
+        RowLayout {
+            id: driverRow
+            anchors.fill: parent
+            anchors.leftMargin: 12
+            anchors.rightMargin: 12
+            spacing: 12
+
+            // Icon Badge
+            Rectangle {
+                width: 32
+                height: 32
+                radius: 8
+                color: Qt.rgba(Theme.accent.r, Theme.accent.g, Theme.accent.b, 0.1)
+                Layout.alignment: Qt.AlignVCenter
+
+                Item {
+                    width: 16
+                    height: 16
+                    anchors.centerIn: parent
+                    Image {
+                        id: driverIconImg
+                        source: "qrc:/MeguPackOptimizer/src/resources/monitor.svg"
+                        anchors.fill: parent
+                        sourceSize.width: 16
+                        sourceSize.height: 16
+                        visible: false
+                    }
+                    ColorOverlay {
+                        anchors.fill: driverIconImg
+                        source: driverIconImg
+                        color: Theme.accent
+                    }
+                }
+            }
+
+            Column {
+                Layout.fillWidth: true
+                Layout.alignment: Qt.AlignVCenter
+                spacing: 2
+
+                Text {
+                    text: qsTr("Driver updates")
+                    color: Theme.textPrimary
+                    font.family: Theme.fontFamily
+                    font.pixelSize: 12
+                    font.bold: true
+                }
+                Text {
+                    text: qsTr("Automatically update or search drivers as part of cumulative updates or when connecting new hardware")
+                    color: Theme.textSecondary
+                    font.family: Theme.fontFamily
+                    font.pixelSize: 10
+                    width: parent.width
+                    wrapMode: Text.WordWrap
+                }
+            }
+
+            MeguSwitch {
+                id: driverSwitch
+                Layout.alignment: Qt.AlignVCenter
+                checked: optimizerBackend.driverUpdatesEnabled
+                onToggled: (isChecked) => { optimizerBackend.driverUpdatesEnabled = isChecked; }
+            }
+        }
+    }
+
+    // App updates
+    Rectangle {
+        width: parent.width
+        height: Math.max(56, appRow.implicitHeight + 16)
+        radius: 8
+        color: "#05FFFFFF"
+        border.color: Theme.border
+        border.width: 1
+
+        RowLayout {
+            id: appRow
+            anchors.fill: parent
+            anchors.leftMargin: 12
+            anchors.rightMargin: 12
+            spacing: 12
+
+            // Icon Badge
+            Rectangle {
+                width: 32
+                height: 32
+                radius: 8
+                color: Qt.rgba(Theme.accent.r, Theme.accent.g, Theme.accent.b, 0.1)
+                Layout.alignment: Qt.AlignVCenter
+
+                Item {
+                    width: 16
+                    height: 16
+                    anchors.centerIn: parent
+                    Image {
+                        id: appIconImg
+                        source: "qrc:/MeguPackOptimizer/src/resources/bolt.svg"
+                        anchors.fill: parent
+                        sourceSize.width: 16
+                        sourceSize.height: 16
+                        visible: false
+                    }
+                    ColorOverlay {
+                        anchors.fill: appIconImg
+                        source: appIconImg
+                        color: Theme.accent
+                    }
+                }
+            }
+
+            Column {
+                Layout.fillWidth: true
+                Layout.alignment: Qt.AlignVCenter
+                spacing: 2
+
+                Text {
+                    text: qsTr("App updates")
+                    color: Theme.textPrimary
+                    font.family: Theme.fontFamily
+                    font.pixelSize: 12
+                    font.bold: true
+                }
+                Text {
+                    text: qsTr("Automatically download and install app updates")
+                    color: Theme.textSecondary
+                    font.family: Theme.fontFamily
+                    font.pixelSize: 10
+                    width: parent.width
+                    wrapMode: Text.WordWrap
+                }
+            }
+
+            MeguSwitch {
+                id: appSwitch
+                Layout.alignment: Qt.AlignVCenter
+                checked: optimizerBackend.appUpdatesEnabled
+                onToggled: (isChecked) => { optimizerBackend.appUpdatesEnabled = isChecked; }
+            }
+        }
+    }
 }

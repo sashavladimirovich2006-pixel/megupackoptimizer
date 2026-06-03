@@ -280,7 +280,12 @@ Item {
         if (optimizerBackend.privacyOnlineSpeechActive !== optimizerBackend.originalPrivacyOnlineSpeechActive) return true;
         return false;
     }
-    property bool windowsUpdateChanged: optimizerBackend.windowsUpdateMode !== optimizerBackend.originalWindowsUpdateMode
+    property bool windowsUpdateChanged: {
+        if (optimizerBackend.windowsUpdateMode !== optimizerBackend.originalWindowsUpdateMode) return true;
+        if (optimizerBackend.driverUpdatesEnabled !== optimizerBackend.originalDriverUpdatesEnabled) return true;
+        if (optimizerBackend.appUpdatesEnabled !== optimizerBackend.originalAppUpdatesEnabled) return true;
+        return false;
+    }
     property bool steamOverlayChanged: optimizerBackend.steamOverlayActive !== optimizerBackend.originalSteamOverlayActive
     property bool cs2OverlayChanged: optimizerBackend.cs2OverlayActive !== optimizerBackend.originalCs2OverlayActive
     property bool steamFriendsSettingsChanged: JSON.stringify(optimizerBackend.steamFriendsSettings) !== JSON.stringify(optimizerBackend.originalSteamFriendsSettings)
@@ -538,6 +543,8 @@ Item {
         if (optimizerBackend.telemetryWerActive !== optimizerBackend.originalTelemetryWerActive) count++;
         if (optimizerBackend.targetPowerSchemeGuid !== optimizerBackend.activePowerSchemeGuid) count++;
         if (optimizerBackend.windowsUpdateMode !== optimizerBackend.originalWindowsUpdateMode) count++;
+        if (optimizerBackend.driverUpdatesEnabled !== optimizerBackend.originalDriverUpdatesEnabled) count++;
+        if (optimizerBackend.appUpdatesEnabled !== optimizerBackend.originalAppUpdatesEnabled) count++;
         if (optimizerBackend.cs2LaunchOptions && optimizerBackend.originalCs2LaunchOptions) {
             var cs2Keys = Object.keys(optimizerBackend.cs2LaunchOptions);
             for (var c = 0; c < cs2Keys.length; c++) {
@@ -859,6 +866,8 @@ Item {
             hasSidebar: true,
             revert: function() {
                 optimizerBackend.windowsUpdateMode = optimizerBackend.originalWindowsUpdateMode;
+                optimizerBackend.driverUpdatesEnabled = optimizerBackend.originalDriverUpdatesEnabled;
+                optimizerBackend.appUpdatesEnabled = optimizerBackend.originalAppUpdatesEnabled;
             }
         });
         if (cs2Changed) list.push({
@@ -1156,6 +1165,22 @@ Item {
                     name: qsTr("Update Mode") + ": " + originalName + " -> " + targetName,
                     revert: function() {
                         optimizerBackend.windowsUpdateMode = optimizerBackend.originalWindowsUpdateMode;
+                    }
+                });
+            }
+            if (optimizerBackend.driverUpdatesEnabled !== optimizerBackend.originalDriverUpdatesEnabled) {
+                subList.push({
+                    name: qsTr("Driver Updates") + ": " + (optimizerBackend.originalDriverUpdatesEnabled ? qsTr("Enabled") : qsTr("Disabled")) + " -> " + (optimizerBackend.driverUpdatesEnabled ? qsTr("Enabled") : qsTr("Disabled")),
+                    revert: function() {
+                        optimizerBackend.driverUpdatesEnabled = optimizerBackend.originalDriverUpdatesEnabled;
+                    }
+                });
+            }
+            if (optimizerBackend.appUpdatesEnabled !== optimizerBackend.originalAppUpdatesEnabled) {
+                subList.push({
+                    name: qsTr("App Updates") + ": " + (optimizerBackend.originalAppUpdatesEnabled ? qsTr("Enabled") : qsTr("Disabled")) + " -> " + (optimizerBackend.appUpdatesEnabled ? qsTr("Enabled") : qsTr("Disabled")),
+                    revert: function() {
+                        optimizerBackend.appUpdatesEnabled = optimizerBackend.originalAppUpdatesEnabled;
                     }
                 });
             }
@@ -7867,6 +7892,121 @@ Item {
                         }
                     }
                 }
+
+                // Repair Card
+                AcrylicPanel {
+                    id: repairPanel
+                    width: parent.width
+                    height: 84
+
+                    Row {
+                        anchors.left: parent.left
+                        anchors.leftMargin: 16
+                        anchors.verticalCenter: parent.verticalCenter
+                        spacing: 12
+
+                        // Rounded square badge
+                        Rectangle {
+                            width: 40
+                            height: 40
+                            radius: 10
+                            color: Qt.rgba(Theme.accent.r, Theme.accent.g, Theme.accent.b, 0.15)
+                            anchors.verticalCenter: parent.verticalCenter
+
+                            Item {
+                                width: 20
+                                height: 20
+                                anchors.centerIn: parent
+
+                                Image {
+                                    id: repairIconImg
+                                    source: "qrc:/MeguPackOptimizer/src/resources/settings.svg"
+                                    anchors.fill: parent
+                                    sourceSize.width: 20
+                                    sourceSize.height: 20
+                                    visible: false
+                                }
+                                ColorOverlay {
+                                    anchors.fill: repairIconImg
+                                    source: repairIconImg
+                                    color: Theme.accent
+                                }
+                            }
+                        }
+
+                        Column {
+                            anchors.verticalCenter: parent.verticalCenter
+                            spacing: 2
+
+                            Text {
+                                text: qsTr("Repair")
+                                color: Theme.textPrimary
+                                font.family: Theme.fontFamily
+                                font.pixelSize: 14
+                                font.bold: true
+                            }
+
+                            Text {
+                                text: qsTr("Scan and repair system file corruption, windows image integrity, or filesystem errors.")
+                                color: Theme.textMuted
+                                font.family: Theme.fontFamily
+                                font.pixelSize: 11
+                            }
+                        }
+                    }
+
+                    Row {
+                        anchors.right: parent.right
+                        anchors.rightMargin: 16
+                        anchors.verticalCenter: parent.verticalCenter
+                        spacing: 16
+
+                        // Arrow button that opens drawer
+                        Rectangle {
+                            width: 32
+                            height: 32
+                            radius: 16
+                            color: repairArrowMouseArea.containsMouse ? Theme.accentDim : "transparent"
+                            border.color: repairArrowMouseArea.containsMouse ? Theme.accent : Theme.border
+                            border.width: 1
+                            anchors.verticalCenter: parent.verticalCenter
+
+                            Behavior on color { ColorAnimation { duration: Theme.animFast } }
+                            Behavior on border.color { ColorAnimation { duration: Theme.animFast } }
+
+                            Item {
+                                width: 14
+                                height: 14
+                                anchors.centerIn: parent
+                                x: repairArrowMouseArea.containsMouse ? (parent.width/2 - 5) : (parent.width/2 - 7)
+                                Behavior on x { NumberAnimation { duration: Theme.animNormal; easing.type: Easing.OutCubic } }
+                                Image {
+                                    id: repairArrowImg
+                                    source: "qrc:/MeguPackOptimizer/src/resources/arrow.svg"
+                                    anchors.fill: parent
+                                    sourceSize.width: 14
+                                    sourceSize.height: 14
+                                    visible: false
+                                }
+                                ColorOverlay {
+                                    anchors.fill: repairArrowImg
+                                    source: repairArrowImg
+                                    color: repairArrowMouseArea.containsMouse ? Theme.accent : Theme.textSecondary
+                                }
+                            }
+
+                            MouseArea {
+                                id: repairArrowMouseArea
+                                anchors.fill: parent
+                                hoverEnabled: true
+                                cursorShape: Qt.PointingHandCursor
+                                onClicked: {
+                                    root.activeDrawer = "repair";
+                                }
+                            }
+                        }
+                    }
+                }
             }
         }
     }
@@ -7983,6 +8123,7 @@ Item {
                             if (root.activeDrawer === "desktopCustomization") return qsTr("Desktop Customization");
                             if (root.activeDrawer === "health") return qsTr("HEALTH");
                             if (root.activeDrawer === "sleepingPill") return qsTr("SLEEPING PILL");
+                            if (root.activeDrawer === "repair") return qsTr("REPAIR SYSTEM");
                             return "";
                         }
                         color: Theme.textPrimary
@@ -8060,6 +8201,7 @@ Item {
                         if (root.activeDrawer === "desktopCustomization") return desktopDrawer.implicitHeight;
                         if (root.activeDrawer === "health") return healthDrawer.implicitHeight;
                         if (root.activeDrawer === "sleepingPill") return sleepingPillDrawer.implicitHeight;
+                        if (root.activeDrawer === "repair") return repairDrawer.implicitHeight;
                         return height;
                     }
 
@@ -8194,6 +8336,14 @@ Item {
                     SleepingPillDrawer {
                         id: sleepingPillDrawer
                         visible: root.activeDrawer === "sleepingPill"
+                        width: visible ? parent.width : 800
+                        height: visible ? implicitHeight : 0
+                    }
+
+                    // 19. Repair Drawer Content
+                    RepairDrawer {
+                        id: repairDrawer
+                        visible: root.activeDrawer === "repair"
                         width: visible ? parent.width : 800
                         height: visible ? implicitHeight : 0
                     }

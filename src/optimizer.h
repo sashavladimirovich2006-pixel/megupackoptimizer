@@ -207,6 +207,11 @@ class Optimizer : public QObject {
 
     Q_PROPERTY(int windowsUpdateMode READ windowsUpdateMode WRITE setWindowsUpdateMode NOTIFY windowsUpdateModeChanged)
     Q_PROPERTY(int originalWindowsUpdateMode READ originalWindowsUpdateMode NOTIFY originalWindowsUpdateModeChanged)
+    Q_PROPERTY(bool driverUpdatesEnabled READ driverUpdatesEnabled WRITE setDriverUpdatesEnabled NOTIFY driverUpdatesEnabledChanged)
+    Q_PROPERTY(bool originalDriverUpdatesEnabled READ originalDriverUpdatesEnabled NOTIFY originalDriverUpdatesEnabledChanged)
+    Q_PROPERTY(bool appUpdatesEnabled READ appUpdatesEnabled WRITE setAppUpdatesEnabled NOTIFY appUpdatesEnabledChanged)
+    Q_PROPERTY(bool originalAppUpdatesEnabled READ originalAppUpdatesEnabled NOTIFY originalAppUpdatesEnabledChanged)
+    Q_PROPERTY(int memoryDiagnosticStatus READ memoryDiagnosticStatus NOTIFY memoryDiagnosticStatusChanged)
     Q_PROPERTY(QVariantMap cs2LaunchOptions READ cs2LaunchOptions WRITE setCs2LaunchOptions NOTIFY cs2LaunchOptionsChanged)
     Q_PROPERTY(QVariantMap originalCs2LaunchOptions READ originalCs2LaunchOptions NOTIFY originalCs2LaunchOptionsChanged)
     Q_PROPERTY(bool steamOverlayActive READ steamOverlayActive WRITE setSteamOverlayActive NOTIFY steamOverlayActiveChanged)
@@ -235,6 +240,9 @@ class Optimizer : public QObject {
     Q_PROPERTY(bool coinstallersActive READ coinstallersActive WRITE setCoinstallersActive NOTIFY coinstallersActiveChanged)
     Q_PROPERTY(bool originalCoinstallersActive READ originalCoinstallersActive NOTIFY originalCoinstallersActiveChanged)
     Q_PROPERTY(int sleepingPillWakeCount READ sleepingPillWakeCount NOTIFY sleepingPillWakeCountChanged)
+    Q_PROPERTY(bool repairRunning READ repairRunning NOTIFY repairRunningChanged)
+    Q_PROPERTY(double repairProgress READ repairProgress NOTIFY repairProgressChanged)
+    Q_PROPERTY(QString repairStatusText READ repairStatusText NOTIFY repairStatusTextChanged)
 
 public:
     explicit Optimizer(QObject *parent = nullptr);
@@ -451,6 +459,11 @@ public:
 
     int windowsUpdateMode() const { return m_windowsUpdateMode; }
     int originalWindowsUpdateMode() const { return m_originalWindowsUpdateMode; }
+    bool driverUpdatesEnabled() const { return m_driverUpdatesEnabled; }
+    bool originalDriverUpdatesEnabled() const { return m_originalDriverUpdatesEnabled; }
+    bool appUpdatesEnabled() const { return m_appUpdatesEnabled; }
+    bool originalAppUpdatesEnabled() const { return m_originalAppUpdatesEnabled; }
+    int memoryDiagnosticStatus() const { return m_memoryDiagnosticStatus; }
     QVariantMap cs2LaunchOptions() const { return m_cs2LaunchOptions; }
     QVariantMap originalCs2LaunchOptions() const { return m_originalCs2LaunchOptions; }
     bool steamOverlayActive() const { return m_steamOverlayActive; }
@@ -470,6 +483,9 @@ public:
     bool isOptimizingSystem() const { return m_isOptimizingSystem; }
     double systemProgress() const { return m_systemProgress; }
     QVariantList backupList() const { return m_backupList; }
+    bool repairRunning() const { return m_repairRunning; }
+    double repairProgress() const { return m_repairProgress; }
+    QString repairStatusText() const { return m_repairStatusText; }
     int pagefileMin() const { return m_pagefileMin; }
     int originalPagefileMin() const { return m_originalPagefileMin; }
     int pagefileMax() const { return m_pagefileMax; }
@@ -571,6 +587,8 @@ public:
 
 
     void setWindowsUpdateMode(int mode);
+    void setDriverUpdatesEnabled(bool val);
+    void setAppUpdatesEnabled(bool val);
     void setCs2LaunchOptions(const QVariantMap &val);
     void setSteamOverlayActive(bool val);
     void setCs2OverlayActive(bool val);
@@ -612,7 +630,10 @@ public:
     Q_INVOKABLE void restartExplorer();
     Q_INVOKABLE void restartGraphicsDriver();
     Q_INVOKABLE void rebuildIconCache();
+    Q_INVOKABLE void runMemoryDiagnostic();
     Q_INVOKABLE void runSleepingPillScan();
+    Q_INVOKABLE void runRepairScan(bool runDism, bool runSfc, bool runChkdsk);
+    Q_INVOKABLE void runRepairFix(bool runDism, bool runSfc, bool runChkdsk);
     Q_INVOKABLE void stopWakeTasks();
     Q_INVOKABLE void scanSteamInstalledGames();
     Q_INVOKABLE QVariantMap getDriveInfo(const QString &path);
@@ -825,6 +846,14 @@ signals:
 
     void windowsUpdateModeChanged(int mode);
     void originalWindowsUpdateModeChanged(int mode);
+    void driverUpdatesEnabledChanged(bool val);
+    void originalDriverUpdatesEnabledChanged(bool val);
+    void appUpdatesEnabledChanged(bool val);
+    void originalAppUpdatesEnabledChanged(bool val);
+    void memoryDiagnosticStatusChanged(int val);
+    void repairRunningChanged(bool val);
+    void repairProgressChanged(double val);
+    void repairStatusTextChanged(const QString &val);
     void cs2LaunchOptionsChanged(const QVariantMap &val);
     void originalCs2LaunchOptionsChanged(const QVariantMap &val);
     void steamOverlayActiveChanged(bool val);
@@ -872,6 +901,7 @@ private:
     double m_cpuLoadPercent = 0.0;
     double m_ramLoadPercent = 0.0;
     void updateCpuAndRamLoad();
+    void updateMemoryDiagnosticStatus();
 #ifdef Q_OS_WIN
     void* m_prevIdleTime = nullptr;
     void* m_prevKernelTime = nullptr;
@@ -1068,6 +1098,11 @@ private:
 
     int m_windowsUpdateMode = 0;
     int m_originalWindowsUpdateMode = 0;
+    bool m_driverUpdatesEnabled = true;
+    bool m_originalDriverUpdatesEnabled = true;
+    bool m_appUpdatesEnabled = true;
+    bool m_originalAppUpdatesEnabled = true;
+    int m_memoryDiagnosticStatus = 0;
     QVariantMap m_cs2LaunchOptions;
     QVariantMap m_originalCs2LaunchOptions;
     bool m_steamOverlayActive = true;
@@ -1096,4 +1131,7 @@ private:
     void loadPagefileSettings();
     bool m_forceApplyAll = false;
     QVariantList m_backupList;
+    bool m_repairRunning = false;
+    double m_repairProgress = 0.0;
+    QString m_repairStatusText = "";
 };

@@ -37,6 +37,8 @@
 #pragma comment(lib, "propsys.lib")
 #pragma comment(lib, "taskschd.lib")
 #pragma comment(lib, "comsuppw.lib")
+#include <winevt.h>
+#pragma comment(lib, "wevtapi.lib")
 #endif
 
 namespace {
@@ -2849,6 +2851,20 @@ void Optimizer::setWindowsUpdateMode(int mode) {
     }
 }
 
+void Optimizer::setDriverUpdatesEnabled(bool val) {
+    if (m_driverUpdatesEnabled != val) {
+        m_driverUpdatesEnabled = val;
+        emit driverUpdatesEnabledChanged(m_driverUpdatesEnabled);
+    }
+}
+
+void Optimizer::setAppUpdatesEnabled(bool val) {
+    if (m_appUpdatesEnabled != val) {
+        m_appUpdatesEnabled = val;
+        emit appUpdatesEnabledChanged(m_appUpdatesEnabled);
+    }
+}
+
 void Optimizer::setCs2LaunchOptions(const QVariantMap &val) {
     if (m_cs2LaunchOptions != val) {
         m_cs2LaunchOptions = val;
@@ -4728,6 +4744,34 @@ void Optimizer::loadSystemStates() {
     emit windowsUpdateModeChanged(m_windowsUpdateMode);
     emit originalWindowsUpdateModeChanged(m_originalWindowsUpdateMode);
 
+    bool driverUpdatesEnabledVal = true;
+    bool appUpdatesEnabledVal = true;
+#ifdef Q_OS_WIN
+    driverUpdatesEnabledVal = (excludeDrivers == 0);
+
+    HKEY hKeyStore;
+    if (RegOpenKeyExW(HKEY_LOCAL_MACHINE, L"SOFTWARE\\Policies\\Microsoft\\WindowsStore", 0, KEY_READ, &hKeyStore) == ERROR_SUCCESS) {
+        DWORD dwAuto = 0;
+        DWORD dwSize = sizeof(dwAuto);
+        if (RegQueryValueExW(hKeyStore, L"AutoDownload", nullptr, nullptr, reinterpret_cast<LPBYTE>(&dwAuto), &dwSize) == ERROR_SUCCESS) {
+            if (dwAuto == 2) {
+                appUpdatesEnabledVal = false;
+            }
+        }
+        RegCloseKey(hKeyStore);
+    }
+#endif
+
+    m_driverUpdatesEnabled = driverUpdatesEnabledVal;
+    m_originalDriverUpdatesEnabled = driverUpdatesEnabledVal;
+    emit driverUpdatesEnabledChanged(m_driverUpdatesEnabled);
+    emit originalDriverUpdatesEnabledChanged(m_originalDriverUpdatesEnabled);
+
+    m_appUpdatesEnabled = appUpdatesEnabledVal;
+    m_originalAppUpdatesEnabled = appUpdatesEnabledVal;
+    emit appUpdatesEnabledChanged(m_appUpdatesEnabled);
+    emit originalAppUpdatesEnabledChanged(m_originalAppUpdatesEnabled);
+
     // ----------------------------------------------------
     // Load Counter-Strike 2 launch options
     // ----------------------------------------------------
@@ -5593,6 +5637,7 @@ void Optimizer::loadSystemStates() {
     emit sleepingPillWakeCountChanged(m_sleepingPillWakeCount);
 
     loadPagefileSettings();
+    updateMemoryDiagnosticStatus();
 }
 
 void Optimizer::startSystemOptimization() {
@@ -5640,6 +5685,10 @@ void Optimizer::startSystemOptimization() {
     bool telemetryCeipVal = m_telemetryCeipActive;
     bool telemetryWerVal = m_telemetryWerActive;
     int windowsUpdateModeVal = m_windowsUpdateMode;
+    bool driverUpdatesVal = m_driverUpdatesEnabled;
+    bool origDriverUpdatesVal = m_originalDriverUpdatesEnabled;
+    bool appUpdatesVal = m_appUpdatesEnabled;
+    bool origAppUpdatesVal = m_originalAppUpdatesEnabled;
 
     // Copy Ads targets
     bool adsTailoredExperiencesVal = m_adsTailoredExperiencesActive;
@@ -5833,7 +5882,7 @@ void Optimizer::startSystemOptimization() {
     bool forceVal = m_forceApplyAll;
     m_forceApplyAll = false;
 
-    QThread* worker = QThread::create([this, explorerShowExtensionsVal, origExplorerShowExtensionsVal, explorerShowHiddenVal, origExplorerShowHiddenVal, explorerShowExtractFilesVal, origExplorerShowExtractFilesVal, explorerClassicRibbonVal, origExplorerClassicRibbonVal, explorerShowPreviewPaneVal, origExplorerShowPreviewPaneVal, explorerShowRecycleBinVal, origExplorerShowRecycleBinVal, explorerPinHomeVal, origExplorerPinHomeVal, explorerPinGalleryVal, origExplorerPinGalleryVal, explorerUseCheckboxesVal, origExplorerUseCheckboxesVal, explorerSyncNotificationsVal, origExplorerSyncNotificationsVal, explorerLaunchToVal, origExplorerLaunchToVal, forceVal, searchVal, classicContextMenuVal, shortcutArrowsVal, clipboardHistoryVal, taskbarEndTaskVal, taskbarSecondsVal, hibernationVal, overlayVal, coreIsolationVal, hagsVal, mouseAccelVal, gameModeVal, firewallVal, bitlockerVal, discordOverlayVal, notificationsVal, notifGlobalVal, notifAppVal, notifSoundsVal, notifLockscreenVal, targetPowerSchemeVal, activePowerSchemeVal, deleteUltimateStagedVal, deleteDefenderStagedVal, defenderVal, defenderRegistryVal, defenderCmdVal, defenderServiceVal, remoteAccessVal, telemetryVal, telemetryDiagTrackVal, telemetryWapPushVal, telemetryCeipVal, telemetryWerVal, windowsUpdateModeVal, targets, originalTargets, origSearch, origClassicContextMenu, origShortcutArrows, origClipboardHistory, origTaskbarEndTask, origTaskbarSeconds, origHibernation, origOverlay, origCoreIsolation, origHags, origMouseAccel, origGameMode, origFirewall, origBitlocker, origDiscordOverlay, origNotifications, origNotifGlobal, origNotifApp, origNotifSounds, origNotifLockscreen, origDefender, origDefenderRegistry, origDefenderCmd, origDefenderService, origRemoteAccess, origTelemetry, origTelemetryDiagTrack, origTelemetryWapPush, origTelemetryCeip, origTelemetryWer, origWindowsUpdateMode, usbDevicesVal, origUsbDevicesVal, appNotificationSettingsVal, steamPathVal, cs2OptionsVal, origCs2OptionsVal, steamOverlayVal, origSteamOverlayVal, cs2OverlayVal, origCs2OverlayVal, visualEffectsVal, origVisualEffectsVal, steamFriendsSettingsVal, origSteamFriendsSettingsVal, steamFriendsChanged, pagefileMinVal, origPagefileMinVal, pagefileMaxVal, origPagefileMaxVal, adsTailoredExperiencesVal, origAdsTailored, adsAdvertisingIdVal, origAdsAdvertisingId, adsSuggestedContentVal, origAdsSuggestedContent, adsSettingsHomeVal, origAdsSettingsHome, adsSuggestedNotificationsVal, origAdsSuggestedNotifications, adsLockScreenTipsVal, origAdsLockScreenTips, adsWindowsTipsVal, origAdsWindowsTips, adsWelcomeExperienceVal, origAdsWelcomeExperience, adsFinishSetupVal, origAdsFinishSetup, privacyLocationVal, origPrivacyLocation, privacyTelemetryVal, origPrivacyTelemetry, privacyCeipVal, origPrivacyCeip, privacyAppsTelemetryVal, origPrivacyAppsTelemetry, privacyAppLaunchesVal, origPrivacyAppLaunches, privacyImproveInkingVal, origPrivacyImproveInking, privacyPersonalizeInkingVal, origPrivacyPersonalizeInking, privacyErrorReportingVal, origPrivacyErrorReporting, privacyLockScreenCameraVal, origPrivacyLockScreenCamera, privacyCameraIndicatorVal, origPrivacyCameraIndicator, privacyOnlineSpeechVal, origPrivacyOnlineSpeech, superuserGodModeVal, superuserDeveloperModeVal, superuserUacLevelVal, superuserUcpdVal, superuserGodModeOrig, superuserDeveloperModeOrig, superuserUacLevelOrig, superuserUcpdOrig, startMenuWebResultsVal, origStartMenuWebResultsVal, startMenuAutoinstallVal, origStartMenuAutoinstallVal, startMenuAccountNotificationsVal, origStartMenuAccountNotificationsVal, startMenuShowHibernateVal, origStartMenuShowHibernateVal, desktopShowThisPCVal, origDesktopShowThisPCVal, desktopShowWidgetsVal, origDesktopShowWidgetsVal, desktopIconShadowsVal, origDesktopIconShadowsVal, desktopShowDesktopButtonVal, origDesktopShowDesktopButtonVal, desktopAeroShakeVal, origDesktopAeroShakeVal, desktopWallpaperQualityVal, origDesktopWallpaperQualityVal, coinstallersActiveVal, origCoinstallersActiveVal]() {
+    QThread* worker = QThread::create([this, explorerShowExtensionsVal, origExplorerShowExtensionsVal, explorerShowHiddenVal, origExplorerShowHiddenVal, explorerShowExtractFilesVal, origExplorerShowExtractFilesVal, explorerClassicRibbonVal, origExplorerClassicRibbonVal, explorerShowPreviewPaneVal, origExplorerShowPreviewPaneVal, explorerShowRecycleBinVal, origExplorerShowRecycleBinVal, explorerPinHomeVal, origExplorerPinHomeVal, explorerPinGalleryVal, origExplorerPinGalleryVal, explorerUseCheckboxesVal, origExplorerUseCheckboxesVal, explorerSyncNotificationsVal, origExplorerSyncNotificationsVal, explorerLaunchToVal, origExplorerLaunchToVal, forceVal, searchVal, classicContextMenuVal, shortcutArrowsVal, clipboardHistoryVal, taskbarEndTaskVal, taskbarSecondsVal, hibernationVal, overlayVal, coreIsolationVal, hagsVal, mouseAccelVal, gameModeVal, firewallVal, bitlockerVal, discordOverlayVal, notificationsVal, notifGlobalVal, notifAppVal, notifSoundsVal, notifLockscreenVal, targetPowerSchemeVal, activePowerSchemeVal, deleteUltimateStagedVal, deleteDefenderStagedVal, defenderVal, defenderRegistryVal, defenderCmdVal, defenderServiceVal, remoteAccessVal, telemetryVal, telemetryDiagTrackVal, telemetryWapPushVal, telemetryCeipVal, telemetryWerVal, windowsUpdateModeVal, targets, originalTargets, origSearch, origClassicContextMenu, origShortcutArrows, origClipboardHistory, origTaskbarEndTask, origTaskbarSeconds, origHibernation, origOverlay, origCoreIsolation, origHags, origMouseAccel, origGameMode, origFirewall, origBitlocker, origDiscordOverlay, origNotifications, origNotifGlobal, origNotifApp, origNotifSounds, origNotifLockscreen, origDefender, origDefenderRegistry, origDefenderCmd, origDefenderService, origRemoteAccess, origTelemetry, origTelemetryDiagTrack, origTelemetryWapPush, origTelemetryCeip, origTelemetryWer, origWindowsUpdateMode, usbDevicesVal, origUsbDevicesVal, appNotificationSettingsVal, steamPathVal, cs2OptionsVal, origCs2OptionsVal, steamOverlayVal, origSteamOverlayVal, cs2OverlayVal, origCs2OverlayVal, visualEffectsVal, origVisualEffectsVal, steamFriendsSettingsVal, origSteamFriendsSettingsVal, steamFriendsChanged, pagefileMinVal, origPagefileMinVal, pagefileMaxVal, origPagefileMaxVal, adsTailoredExperiencesVal, origAdsTailored, adsAdvertisingIdVal, origAdsAdvertisingId, adsSuggestedContentVal, origAdsSuggestedContent, adsSettingsHomeVal, origAdsSettingsHome, adsSuggestedNotificationsVal, origAdsSuggestedNotifications, adsLockScreenTipsVal, origAdsLockScreenTips, adsWindowsTipsVal, origAdsWindowsTips, adsWelcomeExperienceVal, origAdsWelcomeExperience, adsFinishSetupVal, origAdsFinishSetup, privacyLocationVal, origPrivacyLocation, privacyTelemetryVal, origPrivacyTelemetry, privacyCeipVal, origPrivacyCeip, privacyAppsTelemetryVal, origPrivacyAppsTelemetry, privacyAppLaunchesVal, origPrivacyAppLaunches, privacyImproveInkingVal, origPrivacyImproveInking, privacyPersonalizeInkingVal, origPrivacyPersonalizeInking, privacyErrorReportingVal, origPrivacyErrorReporting, privacyLockScreenCameraVal, origPrivacyLockScreenCamera, privacyCameraIndicatorVal, origPrivacyCameraIndicator, privacyOnlineSpeechVal, origPrivacyOnlineSpeech, superuserGodModeVal, superuserDeveloperModeVal, superuserUacLevelVal, superuserUcpdVal, superuserGodModeOrig, superuserDeveloperModeOrig, superuserUacLevelOrig, superuserUcpdOrig, startMenuWebResultsVal, origStartMenuWebResultsVal, startMenuAutoinstallVal, origStartMenuAutoinstallVal, startMenuAccountNotificationsVal, origStartMenuAccountNotificationsVal, startMenuShowHibernateVal, origStartMenuShowHibernateVal, desktopShowThisPCVal, origDesktopShowThisPCVal, desktopShowWidgetsVal, origDesktopShowWidgetsVal, desktopIconShadowsVal, origDesktopIconShadowsVal, desktopShowDesktopButtonVal, origDesktopShowDesktopButtonVal, desktopAeroShakeVal, origDesktopAeroShakeVal, desktopWallpaperQualityVal, origDesktopWallpaperQualityVal, coinstallersActiveVal, origCoinstallersActiveVal, driverUpdatesVal, origDriverUpdatesVal, appUpdatesVal, origAppUpdatesVal]() {
         // Step 00: Auto-create backup before making changes
         if (!forceVal && Settings::instance()->createBackup()) {
             emit systemStepReported(tr("Creating automatic system backup..."), "INFO");
@@ -5929,6 +5978,8 @@ void Optimizer::startSystemOptimization() {
                           adsChanged ||
                           privacyChanged ||
                           windowsUpdateModeChanged ||
+                          (driverUpdatesVal != origDriverUpdatesVal) ||
+                          (appUpdatesVal != origAppUpdatesVal) ||
                           powerPlanChanged ||
                           usbChanged ||
                           cs2Changed ||
@@ -8584,6 +8635,48 @@ void Optimizer::startSystemOptimization() {
             }
         }
 
+        // Step 1.8: Driver Updates Configuration (only if changed)
+        bool driverUpdatesSuccess = true;
+        if (driverUpdatesVal != origDriverUpdatesVal || force) {
+            emit systemStepReported(tr("Configuring automatic driver updates..."), "INFO");
+            QThread::msleep(800);
+#ifdef Q_OS_WIN
+            HKEY hKeyWu = nullptr;
+            if (RegCreateKeyExW(HKEY_LOCAL_MACHINE, L"SOFTWARE\\Policies\\Microsoft\\Windows\\WindowsUpdate", 0, nullptr, REG_OPTION_NON_VOLATILE, KEY_WRITE, nullptr, &hKeyWu, nullptr) == ERROR_SUCCESS) {
+                DWORD val = driverUpdatesVal ? 0 : 1;
+                RegSetValueExW(hKeyWu, L"ExcludeWUDriversInQualityUpdate", 0, REG_DWORD, reinterpret_cast<const BYTE*>(&val), sizeof(val));
+                RegCloseKey(hKeyWu);
+                emit systemStepReported(driverUpdatesVal ? tr("Driver updates enabled successfully.") : tr("Driver updates disabled successfully."), "SUCCESS");
+            } else {
+                driverUpdatesSuccess = false;
+                emit systemStepReported(tr("Failed to configure driver updates. Administrator privileges required."), "ERROR");
+            }
+#else
+            emit systemStepReported(tr("[Simulation] Driver updates set to: %1").arg(driverUpdatesVal ? "Enabled" : "Disabled"), "SUCCESS");
+#endif
+        }
+
+        // Step 1.9: App Updates Configuration (only if changed)
+        bool appUpdatesSuccess = true;
+        if (appUpdatesVal != origAppUpdatesVal || force) {
+            emit systemStepReported(tr("Configuring automatic Microsoft Store app updates..."), "INFO");
+            QThread::msleep(800);
+#ifdef Q_OS_WIN
+            HKEY hKeyStore = nullptr;
+            if (RegCreateKeyExW(HKEY_LOCAL_MACHINE, L"SOFTWARE\\Policies\\Microsoft\\WindowsStore", 0, nullptr, REG_OPTION_NON_VOLATILE, KEY_WRITE, nullptr, &hKeyStore, nullptr) == ERROR_SUCCESS) {
+                DWORD val = appUpdatesVal ? 4 : 2; // 4 = enabled, 2 = disabled
+                RegSetValueExW(hKeyStore, L"AutoDownload", 0, REG_DWORD, reinterpret_cast<const BYTE*>(&val), sizeof(val));
+                RegCloseKey(hKeyStore);
+                emit systemStepReported(appUpdatesVal ? tr("App updates enabled successfully.") : tr("App updates disabled successfully."), "SUCCESS");
+            } else {
+                appUpdatesSuccess = false;
+                emit systemStepReported(tr("Failed to configure app updates. Administrator privileges required."), "ERROR");
+            }
+#else
+            emit systemStepReported(tr("[Simulation] App updates set to: %1").arg(appUpdatesVal ? "Enabled" : "Disabled"), "SUCCESS");
+#endif
+        }
+
         // Steps 2+: Iterate drives in target list (only if changed)
         int driveIndex = 0;
         int totalDrives = targets.keys().size();
@@ -9320,6 +9413,8 @@ void Optimizer::startSystemOptimization() {
         m_originalTelemetryCeipActive = telemetryCeipVal;
         m_originalTelemetryWerActive = telemetryWerVal;
         m_originalWindowsUpdateMode = windowsUpdateModeVal;
+        m_originalDriverUpdatesEnabled = driverUpdatesVal;
+        m_originalAppUpdatesEnabled = appUpdatesVal;
         m_originalCs2LaunchOptions = cs2OptionsVal;
         m_originalSteamOverlayActive = steamOverlayVal;
         m_originalCs2OverlayActive = cs2OverlayVal;
@@ -9413,6 +9508,8 @@ void Optimizer::startSystemOptimization() {
         emit originalTelemetryCeipActiveChanged(m_originalTelemetryCeipActive);
         emit originalTelemetryWerActiveChanged(m_originalTelemetryWerActive);
         emit originalWindowsUpdateModeChanged(m_originalWindowsUpdateMode);
+        emit originalDriverUpdatesEnabledChanged(m_originalDriverUpdatesEnabled);
+        emit originalAppUpdatesEnabledChanged(m_originalAppUpdatesEnabled);
 
         emit originalExplorerShowExtensionsChanged(m_originalExplorerShowExtensions);
         emit originalExplorerShowHiddenChanged(m_originalExplorerShowHidden);
@@ -10883,6 +10980,57 @@ void Optimizer::rebuildIconCache() {
 #endif
 }
 
+void Optimizer::runMemoryDiagnostic() {
+#ifdef Q_OS_WIN
+    Logger::log("Launching Windows Memory Diagnostic (mdsched.exe)...", "INFO");
+    QProcess::startDetached("C:\\Windows\\System32\\mdsched.exe");
+#endif
+}
+
+void Optimizer::updateMemoryDiagnosticStatus() {
+    int status = 0; // Default: Not Checked
+#ifdef Q_OS_WIN
+    // Query System log for Microsoft-Windows-MemoryDiagnostics-Results events, newest first
+    EVT_HANDLE hResults = EvtQuery(NULL, L"System", L"*[System[Provider[@Name='Microsoft-Windows-MemoryDiagnostics-Results']]]", EvtQueryChannelPath | EvtQueryReverseDirection);
+    if (hResults) {
+        EVT_HANDLE hEvent = NULL;
+        DWORD dwReturned = 0;
+        if (EvtNext(hResults, 1, &hEvent, INFINITE, 0, &dwReturned)) {
+            // Render Event XML to extract Event ID
+            DWORD dwBufferSize = 0;
+            DWORD dwBufferUsed = 0;
+            DWORD dwPropertyCount = 0;
+            EvtRender(NULL, hEvent, EvtRenderEventXml, 0, NULL, &dwBufferSize, &dwPropertyCount);
+            if (GetLastError() == ERROR_INSUFFICIENT_BUFFER) {
+                std::vector<wchar_t> buffer(dwBufferSize / sizeof(wchar_t) + 1);
+                if (EvtRender(NULL, hEvent, EvtRenderEventXml, dwBufferSize, &buffer[0], &dwBufferUsed, &dwPropertyCount)) {
+                    QString xmlStr = QString::fromWCharArray(&buffer[0]);
+                    int start = xmlStr.indexOf("<EventID>");
+                    if (start != -1) {
+                        int end = xmlStr.indexOf("</EventID>", start);
+                        if (end != -1) {
+                            QString idStr = xmlStr.mid(start + 9, end - start - 9);
+                            int eventId = idStr.toInt();
+                            if (eventId == 1101 || eventId == 1201) {
+                                status = 1; // Healthy
+                            } else if (eventId == 1102 || eventId == 1202) {
+                                status = 2; // Errors found
+                            }
+                        }
+                    }
+                }
+            }
+            EvtClose(hEvent);
+        }
+        EvtClose(hResults);
+    }
+#endif
+    if (m_memoryDiagnosticStatus != status) {
+        m_memoryDiagnosticStatus = status;
+        emit memoryDiagnosticStatusChanged(m_memoryDiagnosticStatus);
+    }
+}
+
 QString Optimizer::steamPath() const {
     QString path = "";
 #ifdef Q_OS_WIN
@@ -11603,5 +11751,233 @@ void Optimizer::stopWakeTasks() {
     emit sleepingPillWakeCountChanged(m_sleepingPillWakeCount);
     emit systemStepReported(tr("Success: Disabled wake-to-run triggers for %1 task(s).").arg(count), "SUCCESS");
 }
+
+void Optimizer::runRepairScan(bool runDism, bool runSfc, bool runChkdsk) {
+    if (m_repairRunning) return;
+
+    m_repairRunning = true;
+    emit repairRunningChanged(m_repairRunning);
+
+    m_repairProgress = 0.0;
+    m_repairStatusText = tr("Starting scan...");
+    emit repairProgressChanged(m_repairProgress);
+    emit repairStatusTextChanged(m_repairStatusText);
+
+    QThread* worker = QThread::create([this, runDism, runSfc, runChkdsk]() {
+        int totalSteps = (runDism ? 1 : 0) + (runSfc ? 1 : 0) + (runChkdsk ? 1 : 0);
+        if (totalSteps == 0) {
+            m_repairRunning = false;
+            emit repairRunningChanged(m_repairRunning);
+            return;
+        }
+
+        int currentStep = 0;
+
+        auto updateProgress = [this, &currentStep, totalSteps](double stepProgress, const QString &status) {
+            m_repairProgress = (double(currentStep) + stepProgress) / totalSteps;
+            m_repairStatusText = status;
+            emit repairProgressChanged(m_repairProgress);
+            emit repairStatusTextChanged(m_repairStatusText);
+        };
+
+        // 1. DISM Scan
+        if (runDism) {
+            emit systemStepReported(tr("Running DISM CheckHealth scan..."), "INFO");
+            updateProgress(0.1, tr("Running DISM Scan..."));
+#ifdef Q_OS_WIN
+            QProcess proc;
+            proc.start("cmd.exe", QStringList() << "/c" << "dism.exe /Online /Cleanup-Image /CheckHealth");
+            proc.waitForFinished(-1);
+            QString output = QString::fromLocal8Bit(proc.readAllStandardOutput()).trimmed();
+            if (!output.isEmpty()) {
+                emit systemStepReported(output, "INFO");
+            }
+            if (proc.exitCode() == 0) {
+                emit systemStepReported(tr("DISM scan completed successfully. No component store corruption detected."), "SUCCESS");
+            } else {
+                emit systemStepReported(tr("DISM scan finished with issues. Exit code: %1").arg(proc.exitCode()), "WARNING");
+            }
+#else
+            QThread::msleep(1500);
+            emit systemStepReported(tr("[Simulation] DISM Scan completed successfully."), "SUCCESS");
+#endif
+            currentStep++;
+            updateProgress(0.0, tr("DISM Scan completed."));
+        }
+
+        // 2. SFC Scan
+        if (runSfc) {
+            emit systemStepReported(tr("Running SFC VerifyOnly scan..."), "INFO");
+            updateProgress(0.1, tr("Running SFC Scan..."));
+#ifdef Q_OS_WIN
+            QProcess proc;
+            proc.start("cmd.exe", QStringList() << "/c" << "sfc.exe /verifyonly");
+            proc.waitForFinished(-1);
+            QString output = QString::fromLocal8Bit(proc.readAllStandardOutput()).trimmed();
+            if (!output.isEmpty()) {
+                emit systemStepReported(output, "INFO");
+            }
+            if (proc.exitCode() == 0) {
+                emit systemStepReported(tr("SFC verification completed. No integrity violations found."), "SUCCESS");
+            } else {
+                emit systemStepReported(tr("SFC verification detected integrity violations or failed. Exit code: %1").arg(proc.exitCode()), "WARNING");
+            }
+#else
+            QThread::msleep(1500);
+            emit systemStepReported(tr("[Simulation] SFC Scan completed successfully."), "SUCCESS");
+#endif
+            currentStep++;
+            updateProgress(0.0, tr("SFC Scan completed."));
+        }
+
+        // 3. CHKDSK Scan
+        if (runChkdsk) {
+            emit systemStepReported(tr("Running CHKDSK (read-only) scan on drive C:..."), "INFO");
+            updateProgress(0.1, tr("Running CHKDSK Scan..."));
+#ifdef Q_OS_WIN
+            QProcess proc;
+            proc.start("cmd.exe", QStringList() << "/c" << "chkdsk.exe C:");
+            proc.waitForFinished(-1);
+            QString output = QString::fromLocal8Bit(proc.readAllStandardOutput()).trimmed();
+            if (!output.isEmpty()) {
+                emit systemStepReported(output, "INFO");
+            }
+            if (proc.exitCode() == 0) {
+                emit systemStepReported(tr("CHKDSK completed successfully. No filesystem errors found."), "SUCCESS");
+            } else {
+                emit systemStepReported(tr("CHKDSK finished. Errors might have been found or run failed. Exit code: %1").arg(proc.exitCode()), "WARNING");
+            }
+#else
+            QThread::msleep(1500);
+            emit systemStepReported(tr("[Simulation] CHKDSK Scan completed successfully."), "SUCCESS");
+#endif
+            currentStep++;
+            updateProgress(0.0, tr("CHKDSK Scan completed."));
+        }
+
+        m_repairProgress = 1.0;
+        m_repairStatusText = tr("Scan finished.");
+        m_repairRunning = false;
+        emit repairProgressChanged(m_repairProgress);
+        emit repairStatusTextChanged(m_repairStatusText);
+        emit repairRunningChanged(m_repairRunning);
+    });
+
+    connect(worker, &QThread::finished, worker, &QThread::deleteLater);
+    worker->start();
+}
+
+void Optimizer::runRepairFix(bool runDism, bool runSfc, bool runChkdsk) {
+    if (m_repairRunning) return;
+
+    m_repairRunning = true;
+    emit repairRunningChanged(m_repairRunning);
+
+    m_repairProgress = 0.0;
+    m_repairStatusText = tr("Starting repair...");
+    emit repairProgressChanged(m_repairProgress);
+    emit repairStatusTextChanged(m_repairStatusText);
+
+    QThread* worker = QThread::create([this, runDism, runSfc, runChkdsk]() {
+        int totalSteps = (runDism ? 1 : 0) + (runSfc ? 1 : 0) + (runChkdsk ? 1 : 0);
+        if (totalSteps == 0) {
+            m_repairRunning = false;
+            emit repairRunningChanged(m_repairRunning);
+            return;
+        }
+
+        int currentStep = 0;
+
+        auto updateProgress = [this, &currentStep, totalSteps](double stepProgress, const QString &status) {
+            m_repairProgress = (double(currentStep) + stepProgress) / totalSteps;
+            m_repairStatusText = status;
+            emit repairProgressChanged(m_repairProgress);
+            emit repairStatusTextChanged(m_repairStatusText);
+        };
+
+        // 1. DISM Repair
+        if (runDism) {
+            emit systemStepReported(tr("Running DISM RestoreHealth repair..."), "INFO");
+            updateProgress(0.1, tr("Running DISM Repair..."));
+#ifdef Q_OS_WIN
+            QProcess proc;
+            proc.start("cmd.exe", QStringList() << "/c" << "dism.exe /Online /Cleanup-Image /RestoreHealth");
+            proc.waitForFinished(-1);
+            QString output = QString::fromLocal8Bit(proc.readAllStandardOutput()).trimmed();
+            if (!output.isEmpty()) {
+                emit systemStepReported(output, "INFO");
+            }
+            if (proc.exitCode() == 0) {
+                emit systemStepReported(tr("DISM repair completed successfully. Component store was repaired."), "SUCCESS");
+            } else {
+                emit systemStepReported(tr("DISM repair failed or finished with warnings. Exit code: %1").arg(proc.exitCode()), "WARNING");
+            }
+#else
+            QThread::msleep(1500);
+            emit systemStepReported(tr("[Simulation] DISM Repair completed successfully."), "SUCCESS");
+#endif
+            currentStep++;
+            updateProgress(0.0, tr("DISM Repair completed."));
+        }
+
+        // 2. SFC Repair
+        if (runSfc) {
+            emit systemStepReported(tr("Running SFC scannow repair..."), "INFO");
+            updateProgress(0.1, tr("Running SFC Repair..."));
+#ifdef Q_OS_WIN
+            QProcess proc;
+            proc.start("cmd.exe", QStringList() << "/c" << "sfc.exe /scannow");
+            proc.waitForFinished(-1);
+            QString output = QString::fromLocal8Bit(proc.readAllStandardOutput()).trimmed();
+            if (!output.isEmpty()) {
+                emit systemStepReported(output, "INFO");
+            }
+            if (proc.exitCode() == 0) {
+                emit systemStepReported(tr("SFC scan and repair completed successfully. Corrupted files repaired."), "SUCCESS");
+            } else {
+                emit systemStepReported(tr("SFC scan finished. Exit code: %1").arg(proc.exitCode()), "WARNING");
+            }
+#else
+            QThread::msleep(1500);
+            emit systemStepReported(tr("[Simulation] SFC Repair completed successfully."), "SUCCESS");
+#endif
+            currentStep++;
+            updateProgress(0.0, tr("SFC Repair completed."));
+        }
+
+        // 3. CHKDSK Repair
+        if (runChkdsk) {
+            emit systemStepReported(tr("Scheduling CHKDSK repair for next boot..."), "INFO");
+            updateProgress(0.1, tr("Scheduling CHKDSK..."));
+#ifdef Q_OS_WIN
+            QProcess proc;
+            proc.start("cmd.exe", QStringList() << "/c" << "echo Y | chkdsk C: /f");
+            proc.waitForFinished(-1);
+            QString output = QString::fromLocal8Bit(proc.readAllStandardOutput()).trimmed();
+            if (!output.isEmpty()) {
+                emit systemStepReported(output, "INFO");
+            }
+            emit systemStepReported(tr("CHKDSK repair scheduled successfully for drive C: on the next system reboot."), "SUCCESS");
+            emit systemStepReported(tr("Please reboot your computer to perform the disk check."), "WARNING");
+#else
+            QThread::msleep(1500);
+            emit systemStepReported(tr("[Simulation] CHKDSK Repair scheduled for next reboot."), "SUCCESS");
+#endif
+            currentStep++;
+            updateProgress(0.0, tr("CHKDSK Repair scheduled."));
+        }
+
+        m_repairProgress = 1.0;
+        m_repairStatusText = tr("Repair finished.");
+        m_repairRunning = false;
+        emit repairProgressChanged(m_repairProgress);
+        emit repairStatusTextChanged(m_repairStatusText);
+        emit repairRunningChanged(m_repairRunning);
+    });
+
+    connect(worker, &QThread::finished, worker, &QThread::deleteLater);
+    worker->start();
+}
+
 
 
