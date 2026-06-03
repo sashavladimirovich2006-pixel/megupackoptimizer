@@ -18,13 +18,29 @@ Column {
         width: parent.width
         spacing: 8
 
-        Text {
-            text: qsTr("Scan and restore Windows system files, image, and filesystem integrity.")
-            color: Theme.textSecondary
-            font.family: Theme.fontFamily
-            font.pixelSize: 11
-            font.bold: true
+        ColumnLayout {
             Layout.fillWidth: true
+            spacing: 2
+
+            Text {
+                text: qsTr("Scan and restore Windows system files, image, and filesystem integrity.")
+                color: Theme.textSecondary
+                font.family: Theme.fontFamily
+                font.pixelSize: 11
+                font.bold: true
+                Layout.fillWidth: true
+                wrapMode: Text.WordWrap
+            }
+
+            Text {
+                text: qsTr("Recommendation: Run diagnostics in the following order: DISM ➜ SFC ➜ CHKDSK")
+                color: Theme.accent
+                font.family: Theme.fontFamily
+                font.pixelSize: 10
+                font.bold: true
+                Layout.fillWidth: true
+                wrapMode: Text.WordWrap
+            }
         }
 
         // Info Button with Tooltip
