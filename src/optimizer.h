@@ -156,6 +156,30 @@ class Optimizer : public QObject {
     Q_PROPERTY(bool superuserUcpdActive READ superuserUcpdActive WRITE setSuperuserUcpdActive NOTIFY superuserUcpdActiveChanged)
     Q_PROPERTY(bool originalSuperuserUcpdActive READ originalSuperuserUcpdActive NOTIFY originalSuperuserUcpdActiveChanged)
 
+    // File Explorer Customization properties
+    Q_PROPERTY(bool explorerShowExtensions READ explorerShowExtensions WRITE setExplorerShowExtensions NOTIFY explorerShowExtensionsChanged)
+    Q_PROPERTY(bool originalExplorerShowExtensions READ originalExplorerShowExtensions NOTIFY originalExplorerShowExtensionsChanged)
+    Q_PROPERTY(bool explorerShowHidden READ explorerShowHidden WRITE setExplorerShowHidden NOTIFY explorerShowHiddenChanged)
+    Q_PROPERTY(bool originalExplorerShowHidden READ originalExplorerShowHidden NOTIFY originalExplorerShowHiddenChanged)
+    Q_PROPERTY(bool explorerShowExtractFiles READ explorerShowExtractFiles WRITE setExplorerShowExtractFiles NOTIFY explorerShowExtractFilesChanged)
+    Q_PROPERTY(bool originalExplorerShowExtractFiles READ originalExplorerShowExtractFiles NOTIFY originalExplorerShowExtractFilesChanged)
+    Q_PROPERTY(bool explorerClassicRibbon READ explorerClassicRibbon WRITE setExplorerClassicRibbon NOTIFY explorerClassicRibbonChanged)
+    Q_PROPERTY(bool originalExplorerClassicRibbon READ originalExplorerClassicRibbon NOTIFY originalExplorerClassicRibbonChanged)
+    Q_PROPERTY(bool explorerShowPreviewPane READ explorerShowPreviewPane WRITE setExplorerShowPreviewPane NOTIFY explorerShowPreviewPaneChanged)
+    Q_PROPERTY(bool originalExplorerShowPreviewPane READ originalExplorerShowPreviewPane NOTIFY originalExplorerShowPreviewPaneChanged)
+    Q_PROPERTY(bool explorerShowRecycleBin READ explorerShowRecycleBin WRITE setExplorerShowRecycleBin NOTIFY explorerShowRecycleBinChanged)
+    Q_PROPERTY(bool originalExplorerShowRecycleBin READ originalExplorerShowRecycleBin NOTIFY originalExplorerShowRecycleBinChanged)
+    Q_PROPERTY(bool explorerPinHome READ explorerPinHome WRITE setExplorerPinHome NOTIFY explorerPinHomeChanged)
+    Q_PROPERTY(bool originalExplorerPinHome READ originalExplorerPinHome NOTIFY originalExplorerPinHomeChanged)
+    Q_PROPERTY(bool explorerPinGallery READ explorerPinGallery WRITE setExplorerPinGallery NOTIFY explorerPinGalleryChanged)
+    Q_PROPERTY(bool originalExplorerPinGallery READ originalExplorerPinGallery NOTIFY originalExplorerPinGalleryChanged)
+    Q_PROPERTY(bool explorerUseCheckboxes READ explorerUseCheckboxes WRITE setExplorerUseCheckboxes NOTIFY explorerUseCheckboxesChanged)
+    Q_PROPERTY(bool originalExplorerUseCheckboxes READ originalExplorerUseCheckboxes NOTIFY originalExplorerUseCheckboxesChanged)
+    Q_PROPERTY(bool explorerSyncNotifications READ explorerSyncNotifications WRITE setExplorerSyncNotifications NOTIFY explorerSyncNotificationsChanged)
+    Q_PROPERTY(bool originalExplorerSyncNotifications READ originalExplorerSyncNotifications NOTIFY originalExplorerSyncNotificationsChanged)
+    Q_PROPERTY(int explorerLaunchTo READ explorerLaunchTo WRITE setExplorerLaunchTo NOTIFY explorerLaunchToChanged)
+    Q_PROPERTY(int originalExplorerLaunchTo READ originalExplorerLaunchTo NOTIFY originalExplorerLaunchToChanged)
+
     Q_PROPERTY(int windowsUpdateMode READ windowsUpdateMode WRITE setWindowsUpdateMode NOTIFY windowsUpdateModeChanged)
     Q_PROPERTY(int originalWindowsUpdateMode READ originalWindowsUpdateMode NOTIFY originalWindowsUpdateModeChanged)
     Q_PROPERTY(QVariantMap cs2LaunchOptions READ cs2LaunchOptions WRITE setCs2LaunchOptions NOTIFY cs2LaunchOptionsChanged)
@@ -345,6 +369,30 @@ public:
     bool superuserUcpdActive() const { return m_superuserUcpdActive; }
     bool originalSuperuserUcpdActive() const { return m_originalSuperuserUcpdActive; }
 
+    // File Explorer Customization Getters
+    bool explorerShowExtensions() const { return m_explorerShowExtensions; }
+    bool originalExplorerShowExtensions() const { return m_originalExplorerShowExtensions; }
+    bool explorerShowHidden() const { return m_explorerShowHidden; }
+    bool originalExplorerShowHidden() const { return m_originalExplorerShowHidden; }
+    bool explorerShowExtractFiles() const { return m_explorerShowExtractFiles; }
+    bool originalExplorerShowExtractFiles() const { return m_originalExplorerShowExtractFiles; }
+    bool explorerClassicRibbon() const { return m_explorerClassicRibbon; }
+    bool originalExplorerClassicRibbon() const { return m_originalExplorerClassicRibbon; }
+    bool explorerShowPreviewPane() const { return m_explorerShowPreviewPane; }
+    bool originalExplorerShowPreviewPane() const { return m_originalExplorerShowPreviewPane; }
+    bool explorerShowRecycleBin() const { return m_explorerShowRecycleBin; }
+    bool originalExplorerShowRecycleBin() const { return m_originalExplorerShowRecycleBin; }
+    bool explorerPinHome() const { return m_explorerPinHome; }
+    bool originalExplorerPinHome() const { return m_originalExplorerPinHome; }
+    bool explorerPinGallery() const { return m_explorerPinGallery; }
+    bool originalExplorerPinGallery() const { return m_originalExplorerPinGallery; }
+    bool explorerUseCheckboxes() const { return m_explorerUseCheckboxes; }
+    bool originalExplorerUseCheckboxes() const { return m_originalExplorerUseCheckboxes; }
+    bool explorerSyncNotifications() const { return m_explorerSyncNotifications; }
+    bool originalExplorerSyncNotifications() const { return m_originalExplorerSyncNotifications; }
+    int explorerLaunchTo() const { return m_explorerLaunchTo; }
+    int originalExplorerLaunchTo() const { return m_originalExplorerLaunchTo; }
+
     int windowsUpdateMode() const { return m_windowsUpdateMode; }
     int originalWindowsUpdateMode() const { return m_originalWindowsUpdateMode; }
     QVariantMap cs2LaunchOptions() const { return m_cs2LaunchOptions; }
@@ -436,6 +484,19 @@ public:
     void setSuperuserDeveloperModeActive(bool val);
     void setSuperuserUacLevel(int val);
     void setSuperuserUcpdActive(bool val);
+
+    // File Explorer Customization Setters
+    void setExplorerShowExtensions(bool val);
+    void setExplorerShowHidden(bool val);
+    void setExplorerShowExtractFiles(bool val);
+    void setExplorerClassicRibbon(bool val);
+    void setExplorerShowPreviewPane(bool val);
+    void setExplorerShowRecycleBin(bool val);
+    void setExplorerPinHome(bool val);
+    void setExplorerPinGallery(bool val);
+    void setExplorerUseCheckboxes(bool val);
+    void setExplorerSyncNotifications(bool val);
+    void setExplorerLaunchTo(int val);
 
     void setWindowsUpdateMode(int mode);
     void setCs2LaunchOptions(const QVariantMap &val);
@@ -634,6 +695,30 @@ signals:
     void superuserUcpdActiveChanged(bool val);
     void originalSuperuserUcpdActiveChanged(bool val);
 
+    // File Explorer Customization Signals
+    void explorerShowExtensionsChanged(bool val);
+    void originalExplorerShowExtensionsChanged(bool val);
+    void explorerShowHiddenChanged(bool val);
+    void originalExplorerShowHiddenChanged(bool val);
+    void explorerShowExtractFilesChanged(bool val);
+    void originalExplorerShowExtractFilesChanged(bool val);
+    void explorerClassicRibbonChanged(bool val);
+    void originalExplorerClassicRibbonChanged(bool val);
+    void explorerShowPreviewPaneChanged(bool val);
+    void originalExplorerShowPreviewPaneChanged(bool val);
+    void explorerShowRecycleBinChanged(bool val);
+    void originalExplorerShowRecycleBinChanged(bool val);
+    void explorerPinHomeChanged(bool val);
+    void originalExplorerPinHomeChanged(bool val);
+    void explorerPinGalleryChanged(bool val);
+    void originalExplorerPinGalleryChanged(bool val);
+    void explorerUseCheckboxesChanged(bool val);
+    void originalExplorerUseCheckboxesChanged(bool val);
+    void explorerSyncNotificationsChanged(bool val);
+    void originalExplorerSyncNotificationsChanged(bool val);
+    void explorerLaunchToChanged(int val);
+    void originalExplorerLaunchToChanged(int val);
+
     void windowsUpdateModeChanged(int mode);
     void originalWindowsUpdateModeChanged(int mode);
     void cs2LaunchOptionsChanged(const QVariantMap &val);
@@ -823,6 +908,30 @@ private:
     int m_originalSuperuserUacLevel = 1;
     bool m_superuserUcpdActive = true;
     bool m_originalSuperuserUcpdActive = true;
+
+    // File Explorer Customization member variables
+    bool m_explorerShowExtensions = true;
+    bool m_originalExplorerShowExtensions = true;
+    bool m_explorerShowHidden = false;
+    bool m_originalExplorerShowHidden = false;
+    bool m_explorerShowExtractFiles = true;
+    bool m_originalExplorerShowExtractFiles = true;
+    bool m_explorerClassicRibbon = false;
+    bool m_originalExplorerClassicRibbon = false;
+    bool m_explorerShowPreviewPane = false;
+    bool m_originalExplorerShowPreviewPane = false;
+    bool m_explorerShowRecycleBin = true;
+    bool m_originalExplorerShowRecycleBin = true;
+    bool m_explorerPinHome = true;
+    bool m_originalExplorerPinHome = true;
+    bool m_explorerPinGallery = true;
+    bool m_originalExplorerPinGallery = true;
+    bool m_explorerUseCheckboxes = false;
+    bool m_originalExplorerUseCheckboxes = false;
+    bool m_explorerSyncNotifications = true;
+    bool m_originalExplorerSyncNotifications = true;
+    int m_explorerLaunchTo = 1;
+    int m_originalExplorerLaunchTo = 1;
 
     int m_windowsUpdateMode = 0;
     int m_originalWindowsUpdateMode = 0;

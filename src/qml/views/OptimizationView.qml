@@ -151,6 +151,7 @@ Item {
         if (optimizerBackend.pagefileMin !== optimizerBackend.originalPagefileMin) return true;
         if (optimizerBackend.pagefileMax !== optimizerBackend.originalPagefileMax) return true;
         if (moreRightsChanged) return true;
+        if (explorerChanged) return true;
         if (!optimizerBackend.driveStates || !optimizerBackend.originalDriveStates) return false;
         var keys = Object.keys(optimizerBackend.driveStates);
         for (var i = 0; i < keys.length; i++) {
@@ -171,6 +172,21 @@ Item {
         if (optimizerBackend.superuserDeveloperModeActive !== optimizerBackend.originalSuperuserDeveloperModeActive) return true;
         if (optimizerBackend.superuserUacLevel !== optimizerBackend.originalSuperuserUacLevel) return true;
         if (optimizerBackend.superuserUcpdActive !== optimizerBackend.originalSuperuserUcpdActive) return true;
+        return false;
+    }
+
+    property bool explorerChanged: {
+        if (optimizerBackend.explorerShowExtensions !== optimizerBackend.originalExplorerShowExtensions) return true;
+        if (optimizerBackend.explorerShowHidden !== optimizerBackend.originalExplorerShowHidden) return true;
+        if (optimizerBackend.explorerShowExtractFiles !== optimizerBackend.originalExplorerShowExtractFiles) return true;
+        if (optimizerBackend.explorerClassicRibbon !== optimizerBackend.originalExplorerClassicRibbon) return true;
+        if (optimizerBackend.explorerShowPreviewPane !== optimizerBackend.originalExplorerShowPreviewPane) return true;
+        if (optimizerBackend.explorerShowRecycleBin !== optimizerBackend.originalExplorerShowRecycleBin) return true;
+        if (optimizerBackend.explorerPinHome !== optimizerBackend.originalExplorerPinHome) return true;
+        if (optimizerBackend.explorerPinGallery !== optimizerBackend.originalExplorerPinGallery) return true;
+        if (optimizerBackend.explorerUseCheckboxes !== optimizerBackend.originalExplorerUseCheckboxes) return true;
+        if (optimizerBackend.explorerSyncNotifications !== optimizerBackend.originalExplorerSyncNotifications) return true;
+        if (optimizerBackend.explorerLaunchTo !== optimizerBackend.originalExplorerLaunchTo) return true;
         return false;
     }
 
@@ -418,6 +434,7 @@ Item {
         if (pagefileChanged) count++;
         if (adsChanged) count++;
         if (privacyChanged) count++;
+        if (explorerChanged) count++;
         return count;
     }
 
@@ -530,6 +547,17 @@ Item {
         if (optimizerBackend.superuserDeveloperModeActive !== optimizerBackend.originalSuperuserDeveloperModeActive) count++;
         if (optimizerBackend.superuserUacLevel !== optimizerBackend.originalSuperuserUacLevel) count++;
         if (optimizerBackend.superuserUcpdActive !== optimizerBackend.originalSuperuserUcpdActive) count++;
+        if (optimizerBackend.explorerShowExtensions !== optimizerBackend.originalExplorerShowExtensions) count++;
+        if (optimizerBackend.explorerShowHidden !== optimizerBackend.originalExplorerShowHidden) count++;
+        if (optimizerBackend.explorerShowExtractFiles !== optimizerBackend.originalExplorerShowExtractFiles) count++;
+        if (optimizerBackend.explorerClassicRibbon !== optimizerBackend.originalExplorerClassicRibbon) count++;
+        if (optimizerBackend.explorerShowPreviewPane !== optimizerBackend.originalExplorerShowPreviewPane) count++;
+        if (optimizerBackend.explorerShowRecycleBin !== optimizerBackend.originalExplorerShowRecycleBin) count++;
+        if (optimizerBackend.explorerPinHome !== optimizerBackend.originalExplorerPinHome) count++;
+        if (optimizerBackend.explorerPinGallery !== optimizerBackend.originalExplorerPinGallery) count++;
+        if (optimizerBackend.explorerUseCheckboxes !== optimizerBackend.originalExplorerUseCheckboxes) count++;
+        if (optimizerBackend.explorerSyncNotifications !== optimizerBackend.originalExplorerSyncNotifications) count++;
+        if (optimizerBackend.explorerLaunchTo !== optimizerBackend.originalExplorerLaunchTo) count++;
         return count;
     }
 
@@ -699,6 +727,24 @@ Item {
                 optimizerBackend.superuserDeveloperModeActive = optimizerBackend.originalSuperuserDeveloperModeActive;
                 optimizerBackend.superuserUacLevel = optimizerBackend.originalSuperuserUacLevel;
                 optimizerBackend.superuserUcpdActive = optimizerBackend.originalSuperuserUcpdActive;
+            }
+        });
+        if (explorerChanged) list.push({
+            name: qsTr("File Explorer Customization"),
+            icon: "qrc:/MeguPackOptimizer/src/resources/folder.svg",
+            hasSidebar: true,
+            revert: function() {
+                optimizerBackend.explorerShowExtensions = optimizerBackend.originalExplorerShowExtensions;
+                optimizerBackend.explorerShowHidden = optimizerBackend.originalExplorerShowHidden;
+                optimizerBackend.explorerShowExtractFiles = optimizerBackend.originalExplorerShowExtractFiles;
+                optimizerBackend.explorerClassicRibbon = optimizerBackend.originalExplorerClassicRibbon;
+                optimizerBackend.explorerShowPreviewPane = optimizerBackend.originalExplorerShowPreviewPane;
+                optimizerBackend.explorerShowRecycleBin = optimizerBackend.originalExplorerShowRecycleBin;
+                optimizerBackend.explorerPinHome = optimizerBackend.originalExplorerPinHome;
+                optimizerBackend.explorerPinGallery = optimizerBackend.originalExplorerPinGallery;
+                optimizerBackend.explorerUseCheckboxes = optimizerBackend.originalExplorerUseCheckboxes;
+                optimizerBackend.explorerSyncNotifications = optimizerBackend.originalExplorerSyncNotifications;
+                optimizerBackend.explorerLaunchTo = optimizerBackend.originalExplorerLaunchTo;
             }
         });
         if (remoteAccessChanged) list.push({
@@ -1351,11 +1397,102 @@ Item {
                     }
                 });
             }
+        } else if (category === qsTr("File Explorer Customization") || category === "File Explorer Customization") {
+            if (optimizerBackend.explorerShowExtensions !== optimizerBackend.originalExplorerShowExtensions) {
+                subList.push({
+                    name: qsTr("Show file extensions") + ": " + (optimizerBackend.originalExplorerShowExtensions ? qsTr("Enabled") : qsTr("Disabled")) + " -> " + (optimizerBackend.explorerShowExtensions ? qsTr("Enabled") : qsTr("Disabled")),
+                    revert: function() {
+                        optimizerBackend.explorerShowExtensions = optimizerBackend.originalExplorerShowExtensions;
+                    }
+                });
+            }
+            if (optimizerBackend.explorerShowHidden !== optimizerBackend.originalExplorerShowHidden) {
+                subList.push({
+                    name: qsTr("Show hidden files") + ": " + (optimizerBackend.originalExplorerShowHidden ? qsTr("Enabled") : qsTr("Disabled")) + " -> " + (optimizerBackend.explorerShowHidden ? qsTr("Enabled") : qsTr("Disabled")),
+                    revert: function() {
+                        optimizerBackend.explorerShowHidden = optimizerBackend.originalExplorerShowHidden;
+                    }
+                });
+            }
+            if (optimizerBackend.explorerShowExtractFiles !== optimizerBackend.originalExplorerShowExtractFiles) {
+                subList.push({
+                    name: qsTr("Show extracted files") + ": " + (optimizerBackend.originalExplorerShowExtractFiles ? qsTr("Enabled") : qsTr("Disabled")) + " -> " + (optimizerBackend.explorerShowExtractFiles ? qsTr("Enabled") : qsTr("Disabled")),
+                    revert: function() {
+                        optimizerBackend.explorerShowExtractFiles = optimizerBackend.originalExplorerShowExtractFiles;
+                    }
+                });
+            }
+            if (optimizerBackend.explorerClassicRibbon !== optimizerBackend.originalExplorerClassicRibbon) {
+                subList.push({
+                    name: qsTr("Classic Windows 10 Ribbon") + ": " + (optimizerBackend.originalExplorerClassicRibbon ? qsTr("Enabled") : qsTr("Disabled")) + " -> " + (optimizerBackend.explorerClassicRibbon ? qsTr("Enabled") : qsTr("Disabled")),
+                    revert: function() {
+                        optimizerBackend.explorerClassicRibbon = optimizerBackend.originalExplorerClassicRibbon;
+                    }
+                });
+            }
+            if (optimizerBackend.explorerShowPreviewPane !== optimizerBackend.originalExplorerShowPreviewPane) {
+                subList.push({
+                    name: qsTr("Show preview pane") + ": " + (optimizerBackend.originalExplorerShowPreviewPane ? qsTr("Enabled") : qsTr("Disabled")) + " -> " + (optimizerBackend.explorerShowPreviewPane ? qsTr("Enabled") : qsTr("Disabled")),
+                    revert: function() {
+                        optimizerBackend.explorerShowPreviewPane = optimizerBackend.originalExplorerShowPreviewPane;
+                    }
+                });
+            }
+            if (optimizerBackend.explorerShowRecycleBin !== optimizerBackend.originalExplorerShowRecycleBin) {
+                subList.push({
+                    name: qsTr("Show Recycle Bin") + ": " + (optimizerBackend.originalExplorerShowRecycleBin ? qsTr("Enabled") : qsTr("Disabled")) + " -> " + (optimizerBackend.explorerShowRecycleBin ? qsTr("Enabled") : qsTr("Disabled")),
+                    revert: function() {
+                        optimizerBackend.explorerShowRecycleBin = optimizerBackend.originalExplorerShowRecycleBin;
+                    }
+                });
+            }
+            if (optimizerBackend.explorerPinHome !== optimizerBackend.originalExplorerPinHome) {
+                subList.push({
+                    name: qsTr("Show Home in navigation") + ": " + (optimizerBackend.originalExplorerPinHome ? qsTr("Enabled") : qsTr("Disabled")) + " -> " + (optimizerBackend.explorerPinHome ? qsTr("Enabled") : qsTr("Disabled")),
+                    revert: function() {
+                        optimizerBackend.explorerPinHome = optimizerBackend.originalExplorerPinHome;
+                    }
+                });
+            }
+            if (optimizerBackend.explorerPinGallery !== optimizerBackend.originalExplorerPinGallery) {
+                subList.push({
+                    name: qsTr("Show Gallery in navigation") + ": " + (optimizerBackend.originalExplorerPinGallery ? qsTr("Enabled") : qsTr("Disabled")) + " -> " + (optimizerBackend.explorerPinGallery ? qsTr("Enabled") : qsTr("Disabled")),
+                    revert: function() {
+                        optimizerBackend.explorerPinGallery = optimizerBackend.originalExplorerPinGallery;
+                    }
+                });
+            }
+            if (optimizerBackend.explorerUseCheckboxes !== optimizerBackend.originalExplorerUseCheckboxes) {
+                subList.push({
+                    name: qsTr("Use checkboxes") + ": " + (optimizerBackend.originalExplorerUseCheckboxes ? qsTr("Enabled") : qsTr("Disabled")) + " -> " + (optimizerBackend.explorerUseCheckboxes ? qsTr("Enabled") : qsTr("Disabled")),
+                    revert: function() {
+                        optimizerBackend.explorerUseCheckboxes = optimizerBackend.originalExplorerUseCheckboxes;
+                    }
+                });
+            }
+            if (optimizerBackend.explorerSyncNotifications !== optimizerBackend.originalExplorerSyncNotifications) {
+                subList.push({
+                    name: qsTr("Sync notifications") + ": " + (optimizerBackend.originalExplorerSyncNotifications ? qsTr("Enabled") : qsTr("Disabled")) + " -> " + (optimizerBackend.explorerSyncNotifications ? qsTr("Enabled") : qsTr("Disabled")),
+                    revert: function() {
+                        optimizerBackend.explorerSyncNotifications = optimizerBackend.originalExplorerSyncNotifications;
+                    }
+                });
+            }
+            if (optimizerBackend.explorerLaunchTo !== optimizerBackend.originalExplorerLaunchTo) {
+                var openLabels = { 1: qsTr("This PC"), 2: qsTr("Home"), 3: qsTr("Downloads") };
+                subList.push({
+                    name: qsTr("Open File Explorer to") + ": " + (openLabels[optimizerBackend.originalExplorerLaunchTo] || optimizerBackend.originalExplorerLaunchTo) + " -> " + (openLabels[optimizerBackend.explorerLaunchTo] || optimizerBackend.explorerLaunchTo),
+                    revert: function() {
+                        optimizerBackend.explorerLaunchTo = optimizerBackend.originalExplorerLaunchTo;
+                    }
+                });
+            }
         }
         return subList;
     }
 
     function getParentCard(name) {
+        if (name === qsTr("File Explorer Customization") || name === "File Explorer Customization") return explorerCustomizationPanel;
         if (name === qsTr("Visual Effects") || name === "Visual Effects") return visualEffectsPanel;
         if (name === qsTr("Page File") || name === "Page File") return pageFilePanel;
         if (name === qsTr("Counter-Strike 2 Launch Options") || name === "Counter-Strike 2 Launch Options") return cs2Panel;
@@ -6080,6 +6217,149 @@ Item {
                         }
                     }
                 }
+
+                // File Explorer Customization Panel
+                AcrylicPanel {
+                    id: explorerCustomizationPanel
+                    width: parent.width
+                    height: 84
+
+                    Column {
+                        anchors.left: parent.left
+                        anchors.right: parent.right
+                        anchors.top: parent.top
+                        spacing: 12
+
+                        // Main Row
+                        Item {
+                            anchors.left: parent.left
+                            anchors.right: parent.right
+                            height: 52
+
+                            Row {
+                                anchors.left: parent.left
+                                anchors.verticalCenter: parent.verticalCenter
+                                spacing: 16
+
+                                Rectangle {
+                                    width: 40
+                                    height: 40
+                                    radius: 10
+                                    color: Qt.rgba(Theme.accent.r, Theme.accent.g, Theme.accent.b, 0.15)
+                                    anchors.verticalCenter: parent.verticalCenter
+
+                                    Item {
+                                        width: 20
+                                        height: 20
+                                        anchors.centerIn: parent
+                                        Image {
+                                            id: explorerPanel_iconImg
+                                            source: "qrc:/MeguPackOptimizer/src/resources/folder.svg"
+                                            anchors.fill: parent
+                                            sourceSize.width: 20
+                                            sourceSize.height: 20
+                                            visible: false
+                                        }
+                                        ColorOverlay {
+                                            anchors.fill: explorerPanel_iconImg
+                                            source: explorerPanel_iconImg
+                                            color: Theme.accent
+                                        }
+                                    }
+                                }
+
+                                Column {
+                                    anchors.verticalCenter: parent.verticalCenter
+                                    spacing: 2
+
+                                    Row {
+                                        spacing: 8
+                                        Text {
+                                            text: qsTr("File Explorer Customization")
+                                            color: Theme.textPrimary
+                                            font.family: Theme.fontFamily
+                                            font.pixelSize: 14
+                                            font.bold: true
+                                            anchors.verticalCenter: parent.verticalCenter
+                                        }
+                                        Rectangle {
+                                            visible: root.explorerChanged
+                                            height: 16
+                                            width: selectedTextExplorer.contentWidth + 10
+                                            radius: 4
+                                            color: Qt.rgba(Theme.success.r, Theme.success.g, Theme.success.b, 0.15)
+                                            border.color: Theme.success
+                                            border.width: 1
+                                            anchors.verticalCenter: parent.verticalCenter
+                                            Text {
+                                                id: selectedTextExplorer
+                                                text: qsTr("Selected for application")
+                                                color: Theme.success
+                                                font.family: Theme.fontFamily
+                                                font.pixelSize: 8
+                                                font.bold: true
+                                                anchors.centerIn: parent
+                                            }
+                                        }
+                                    }
+
+                                    Text {
+                                        text: qsTr("Customize File Explorer settings, navigation pane, and system view defaults.")
+                                        color: Theme.textMuted
+                                        font.family: Theme.fontFamily
+                                        font.pixelSize: 11
+                                    }
+                                }
+                            }
+
+                            Row {
+                                anchors.right: parent.right
+                                anchors.verticalCenter: parent.verticalCenter
+                                spacing: 16
+
+                                // Arrow button to open drawer
+                                Rectangle {
+                                    width: 32
+                                    height: 32
+                                    radius: 8
+                                    color: explorerArrowMouse.containsMouse ? Theme.buttonBgHover : "transparent"
+                                    border.color: explorerArrowMouse.containsMouse ? Theme.borderHover : "transparent"
+                                    border.width: 1
+                                    anchors.verticalCenter: parent.verticalCenter
+
+                                    Behavior on color { ColorAnimation { duration: Theme.animFast } }
+
+                                    Item {
+                                        anchors.fill: parent
+                                        Image {
+                                            id: explorerArrowIcon
+                                            source: "qrc:/MeguPackOptimizer/src/resources/arrow.svg"
+                                            anchors.centerIn: parent
+                                            width: 12
+                                            height: 12
+                                            visible: false
+                                        }
+                                        ColorOverlay {
+                                            anchors.fill: explorerArrowIcon
+                                            source: explorerArrowIcon
+                                            color: explorerArrowMouse.containsMouse ? Theme.accent : Theme.textSecondary
+                                        }
+                                    }
+
+                                    MouseArea {
+                                        id: explorerArrowMouse
+                                        anchors.fill: parent
+                                        hoverEnabled: true
+                                        cursorShape: Qt.PointingHandCursor
+                                        onClicked: {
+                                            root.activeDrawer = "explorerCustomization";
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
             }
 
             // 3. HIBERNATION CATEGORY
@@ -7217,6 +7497,7 @@ Item {
                             if (root.activeDrawer === "visualEffects") return qsTr("VISUAL EFFECTS");
                             if (root.activeDrawer === "steamSettings") return qsTr("STEAM SETTINGS");
                             if (root.activeDrawer === "moreRights") return qsTr("More Privileges");
+                            if (root.activeDrawer === "explorerCustomization") return qsTr("File Explorer Customization");
                             return "";
                         }
                         color: Theme.textPrimary
@@ -7289,6 +7570,7 @@ Item {
                         if (root.activeDrawer === "visualEffects") return visualEffectsDrawer.implicitHeight;
                         if (root.activeDrawer === "steamSettings") return steamSettingsDrawer.dynamicHeight;
                         if (root.activeDrawer === "moreRights") return moreRightsDrawer.implicitHeight;
+                        if (root.activeDrawer === "explorerCustomization") return explorerDrawer.implicitHeight;
                         return height;
                     }
 
@@ -7383,6 +7665,14 @@ Item {
                     MoreRightsDrawer {
                         id: moreRightsDrawer
                         visible: root.activeDrawer === "moreRights"
+                        width: visible ? parent.width : 800
+                        height: visible ? implicitHeight : 0
+                    }
+
+                    // 14. File Explorer Customization Drawer Content
+                    ExplorerDrawer {
+                        id: explorerDrawer
+                        visible: root.activeDrawer === "explorerCustomization"
                         width: visible ? parent.width : 800
                         height: visible ? implicitHeight : 0
                     }

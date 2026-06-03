@@ -2610,6 +2610,83 @@ void Optimizer::setSuperuserUcpdActive(bool val) {
     }
 }
 
+void Optimizer::setExplorerShowExtensions(bool val) {
+    if (m_explorerShowExtensions != val) {
+        m_explorerShowExtensions = val;
+        emit explorerShowExtensionsChanged(m_explorerShowExtensions);
+    }
+}
+
+void Optimizer::setExplorerShowHidden(bool val) {
+    if (m_explorerShowHidden != val) {
+        m_explorerShowHidden = val;
+        emit explorerShowHiddenChanged(m_explorerShowHidden);
+    }
+}
+
+void Optimizer::setExplorerShowExtractFiles(bool val) {
+    if (m_explorerShowExtractFiles != val) {
+        m_explorerShowExtractFiles = val;
+        emit explorerShowExtractFilesChanged(m_explorerShowExtractFiles);
+    }
+}
+
+void Optimizer::setExplorerClassicRibbon(bool val) {
+    if (m_explorerClassicRibbon != val) {
+        m_explorerClassicRibbon = val;
+        emit explorerClassicRibbonChanged(m_explorerClassicRibbon);
+    }
+}
+
+void Optimizer::setExplorerShowPreviewPane(bool val) {
+    if (m_explorerShowPreviewPane != val) {
+        m_explorerShowPreviewPane = val;
+        emit explorerShowPreviewPaneChanged(m_explorerShowPreviewPane);
+    }
+}
+
+void Optimizer::setExplorerShowRecycleBin(bool val) {
+    if (m_explorerShowRecycleBin != val) {
+        m_explorerShowRecycleBin = val;
+        emit explorerShowRecycleBinChanged(m_explorerShowRecycleBin);
+    }
+}
+
+void Optimizer::setExplorerPinHome(bool val) {
+    if (m_explorerPinHome != val) {
+        m_explorerPinHome = val;
+        emit explorerPinHomeChanged(m_explorerPinHome);
+    }
+}
+
+void Optimizer::setExplorerPinGallery(bool val) {
+    if (m_explorerPinGallery != val) {
+        m_explorerPinGallery = val;
+        emit explorerPinGalleryChanged(m_explorerPinGallery);
+    }
+}
+
+void Optimizer::setExplorerUseCheckboxes(bool val) {
+    if (m_explorerUseCheckboxes != val) {
+        m_explorerUseCheckboxes = val;
+        emit explorerUseCheckboxesChanged(m_explorerUseCheckboxes);
+    }
+}
+
+void Optimizer::setExplorerSyncNotifications(bool val) {
+    if (m_explorerSyncNotifications != val) {
+        m_explorerSyncNotifications = val;
+        emit explorerSyncNotificationsChanged(m_explorerSyncNotifications);
+    }
+}
+
+void Optimizer::setExplorerLaunchTo(int val) {
+    if (m_explorerLaunchTo != val) {
+        m_explorerLaunchTo = val;
+        emit explorerLaunchToChanged(m_explorerLaunchTo);
+    }
+}
+
 void Optimizer::setWindowsUpdateMode(int mode) {
     if (m_windowsUpdateMode != mode) {
         m_windowsUpdateMode = mode;
@@ -4988,6 +5065,176 @@ void Optimizer::loadSystemStates() {
     emit superuserUcpdActiveChanged(m_superuserUcpdActive);
     emit originalSuperuserUcpdActiveChanged(m_originalSuperuserUcpdActive);
 
+    // ----------------------------------------------------
+    // Load File Explorer Customization States
+    // ----------------------------------------------------
+    bool explorerShowExtensions = true;
+    bool explorerShowHidden = false;
+    bool explorerShowExtractFiles = true;
+    bool explorerClassicRibbon = false;
+    bool explorerShowPreviewPane = false;
+    bool explorerShowRecycleBin = true;
+    bool explorerPinHome = true;
+    bool explorerPinGallery = true;
+    bool explorerUseCheckboxes = false;
+    bool explorerSyncNotifications = true;
+    int explorerLaunchTo = 1;
+
+#ifdef Q_OS_WIN
+    HKEY hKeyExp;
+    
+    // 1. Extensions, Hidden, PreviewPane, Checkboxes, SyncNotifications, LaunchTo (all under HKCU\Software\Microsoft\Windows\CurrentVersion\Explorer\Advanced)
+    if (RegOpenKeyExW(HKEY_CURRENT_USER, L"Software\\Microsoft\\Windows\\CurrentVersion\\Explorer\\Advanced", 0, KEY_READ, &hKeyExp) == ERROR_SUCCESS) {
+        DWORD dwVal = 0;
+        DWORD dwSize = sizeof(dwVal);
+        
+        // Extensions: HideFileExt (0 = show, 1 = hide)
+        if (RegQueryValueExW(hKeyExp, L"HideFileExt", nullptr, nullptr, reinterpret_cast<LPBYTE>(&dwVal), &dwSize) == ERROR_SUCCESS) {
+            explorerShowExtensions = (dwVal == 0);
+        }
+        
+        // Hidden (1 = show, 2 = hide)
+        dwSize = sizeof(dwVal);
+        DWORD dwSuperHidden = 0;
+        DWORD dwSuperSize = sizeof(dwSuperHidden);
+        if (RegQueryValueExW(hKeyExp, L"Hidden", nullptr, nullptr, reinterpret_cast<LPBYTE>(&dwVal), &dwSize) == ERROR_SUCCESS) {
+            RegQueryValueExW(hKeyExp, L"ShowSuperHidden", nullptr, nullptr, reinterpret_cast<LPBYTE>(&dwSuperHidden), &dwSuperSize);
+            explorerShowHidden = (dwVal == 1 && dwSuperHidden == 1);
+        }
+        
+        // PreviewPane: ShowPreviewHandlers (1 = enabled, 0 = disabled)
+        dwSize = sizeof(dwVal);
+        if (RegQueryValueExW(hKeyExp, L"ShowPreviewHandlers", nullptr, nullptr, reinterpret_cast<LPBYTE>(&dwVal), &dwSize) == ERROR_SUCCESS) {
+            explorerShowPreviewPane = (dwVal != 0);
+        }
+        
+        // Checkboxes: AutoCheckSelect (1 = enabled, 0 = disabled)
+        dwSize = sizeof(dwVal);
+        if (RegQueryValueExW(hKeyExp, L"AutoCheckSelect", nullptr, nullptr, reinterpret_cast<LPBYTE>(&dwVal), &dwSize) == ERROR_SUCCESS) {
+            explorerUseCheckboxes = (dwVal != 0);
+        }
+        
+        // Sync notifications: ShowSyncProviderNotifications (1 = enabled, 0 = disabled)
+        dwSize = sizeof(dwVal);
+        if (RegQueryValueExW(hKeyExp, L"ShowSyncProviderNotifications", nullptr, nullptr, reinterpret_cast<LPBYTE>(&dwVal), &dwSize) == ERROR_SUCCESS) {
+            explorerSyncNotifications = (dwVal != 0);
+        }
+        
+        // LaunchTo (1 = This PC, 2 = Home, 3 = Downloads)
+        dwSize = sizeof(dwVal);
+        if (RegQueryValueExW(hKeyExp, L"LaunchTo", nullptr, nullptr, reinterpret_cast<LPBYTE>(&dwVal), &dwSize) == ERROR_SUCCESS) {
+            explorerLaunchTo = static_cast<int>(dwVal);
+        }
+        
+        RegCloseKey(hKeyExp);
+    }
+    
+    // 2. ShowFiles: HKCU\Software\Microsoft\Windows\CurrentVersion\Explorer\ExtractionWizard
+    if (RegOpenKeyExW(HKEY_CURRENT_USER, L"Software\\Microsoft\\Windows\\CurrentVersion\\Explorer\\ExtractionWizard", 0, KEY_READ, &hKeyExp) == ERROR_SUCCESS) {
+        DWORD dwVal = 0;
+        DWORD dwSize = sizeof(dwVal);
+        if (RegQueryValueExW(hKeyExp, L"ShowFiles", nullptr, nullptr, reinterpret_cast<LPBYTE>(&dwVal), &dwSize) == ERROR_SUCCESS) {
+            explorerShowExtractFiles = (dwVal != 0);
+        }
+        RegCloseKey(hKeyExp);
+    }
+    
+    // 3. Classic Interface (Blocked GUID)
+    if (RegOpenKeyExW(HKEY_CURRENT_USER, L"Software\\Microsoft\\Windows\\CurrentVersion\\Shell Extensions\\Blocked", 0, KEY_READ, &hKeyExp) == ERROR_SUCCESS) {
+        wchar_t buf[64] = {0};
+        DWORD dwSize = sizeof(buf);
+        if (RegQueryValueExW(hKeyExp, L"{e2bf9676-5f8f-435c-97eb-11607a5bedf7}", nullptr, nullptr, reinterpret_cast<LPBYTE>(buf), &dwSize) == ERROR_SUCCESS) {
+            explorerClassicRibbon = true;
+        }
+        RegCloseKey(hKeyExp);
+    }
+    
+    // 4. Recycle Bin Desktop visibility
+    if (RegOpenKeyExW(HKEY_CURRENT_USER, L"Software\\Microsoft\\Windows\\CurrentVersion\\Explorer\\HideDesktopIcons\\NewStartPanel", 0, KEY_READ, &hKeyExp) == ERROR_SUCCESS) {
+        DWORD dwVal = 0;
+        DWORD dwSize = sizeof(dwVal);
+        if (RegQueryValueExW(hKeyExp, L"{645FF040-5081-101B-9F08-00AA002F954E}", nullptr, nullptr, reinterpret_cast<LPBYTE>(&dwVal), &dwSize) == ERROR_SUCCESS) {
+            explorerShowRecycleBin = (dwVal == 0); // 0 = show, 1 = hide
+        }
+        RegCloseKey(hKeyExp);
+    }
+    
+    // 5. Pin Home Navigation pane
+    if (RegOpenKeyExW(HKEY_CURRENT_USER, L"Software\\Classes\\CLSID\\{f874310e-b6b7-47dc-bc84-b9e6b38f5903}", 0, KEY_READ, &hKeyExp) == ERROR_SUCCESS) {
+        DWORD dwVal = 1;
+        DWORD dwSize = sizeof(dwVal);
+        if (RegQueryValueExW(hKeyExp, L"System.IsPinnedToNameSpaceTree", nullptr, nullptr, reinterpret_cast<LPBYTE>(&dwVal), &dwSize) == ERROR_SUCCESS) {
+            explorerPinHome = (dwVal != 0);
+        }
+        RegCloseKey(hKeyExp);
+    }
+    
+    // 6. Pin Gallery Navigation pane
+    if (RegOpenKeyExW(HKEY_CURRENT_USER, L"Software\\Classes\\CLSID\\{e88865ea-0e1c-4e20-9aa6-edcd0212c87c}", 0, KEY_READ, &hKeyExp) == ERROR_SUCCESS) {
+        DWORD dwVal = 1;
+        DWORD dwSize = sizeof(dwVal);
+        if (RegQueryValueExW(hKeyExp, L"System.IsPinnedToNameSpaceTree", nullptr, nullptr, reinterpret_cast<LPBYTE>(&dwVal), &dwSize) == ERROR_SUCCESS) {
+            explorerPinGallery = (dwVal != 0);
+        }
+        RegCloseKey(hKeyExp);
+    }
+#endif
+
+    m_explorerShowExtensions = explorerShowExtensions;
+    m_originalExplorerShowExtensions = explorerShowExtensions;
+    emit explorerShowExtensionsChanged(m_explorerShowExtensions);
+    emit originalExplorerShowExtensionsChanged(m_originalExplorerShowExtensions);
+
+    m_explorerShowHidden = explorerShowHidden;
+    m_originalExplorerShowHidden = explorerShowHidden;
+    emit explorerShowHiddenChanged(m_explorerShowHidden);
+    emit originalExplorerShowHiddenChanged(m_originalExplorerShowHidden);
+
+    m_explorerShowExtractFiles = explorerShowExtractFiles;
+    m_originalExplorerShowExtractFiles = explorerShowExtractFiles;
+    emit explorerShowExtractFilesChanged(m_explorerShowExtractFiles);
+    emit originalExplorerShowExtractFilesChanged(m_originalExplorerShowExtractFiles);
+
+    m_explorerClassicRibbon = explorerClassicRibbon;
+    m_originalExplorerClassicRibbon = explorerClassicRibbon;
+    emit explorerClassicRibbonChanged(m_explorerClassicRibbon);
+    emit originalExplorerClassicRibbonChanged(m_originalExplorerClassicRibbon);
+
+    m_explorerShowPreviewPane = explorerShowPreviewPane;
+    m_originalExplorerShowPreviewPane = explorerShowPreviewPane;
+    emit explorerShowPreviewPaneChanged(m_explorerShowPreviewPane);
+    emit originalExplorerShowPreviewPaneChanged(m_originalExplorerShowPreviewPane);
+
+    m_explorerShowRecycleBin = explorerShowRecycleBin;
+    m_originalExplorerShowRecycleBin = explorerShowRecycleBin;
+    emit explorerShowRecycleBinChanged(m_explorerShowRecycleBin);
+    emit originalExplorerShowRecycleBinChanged(m_originalExplorerShowRecycleBin);
+
+    m_explorerPinHome = explorerPinHome;
+    m_originalExplorerPinHome = explorerPinHome;
+    emit explorerPinHomeChanged(m_explorerPinHome);
+    emit originalExplorerPinHomeChanged(m_originalExplorerPinHome);
+
+    m_explorerPinGallery = explorerPinGallery;
+    m_originalExplorerPinGallery = explorerPinGallery;
+    emit explorerPinGalleryChanged(m_explorerPinGallery);
+    emit originalExplorerPinGalleryChanged(m_originalExplorerPinGallery);
+
+    m_explorerUseCheckboxes = explorerUseCheckboxes;
+    m_originalExplorerUseCheckboxes = explorerUseCheckboxes;
+    emit explorerUseCheckboxesChanged(m_explorerUseCheckboxes);
+    emit originalExplorerUseCheckboxesChanged(m_originalExplorerUseCheckboxes);
+
+    m_explorerSyncNotifications = explorerSyncNotifications;
+    m_originalExplorerSyncNotifications = explorerSyncNotifications;
+    emit explorerSyncNotificationsChanged(m_explorerSyncNotifications);
+    emit originalExplorerSyncNotificationsChanged(m_originalExplorerSyncNotifications);
+
+    m_explorerLaunchTo = explorerLaunchTo;
+    m_originalExplorerLaunchTo = explorerLaunchTo;
+    emit explorerLaunchToChanged(m_explorerLaunchTo);
+    emit originalExplorerLaunchToChanged(m_originalExplorerLaunchTo);
+
     loadPagefileSettings();
 }
 
@@ -5071,6 +5318,30 @@ void Optimizer::startSystemOptimization() {
     bool superuserDeveloperModeOrig = m_originalSuperuserDeveloperModeActive;
     int superuserUacLevelOrig = m_originalSuperuserUacLevel;
     bool superuserUcpdOrig = m_originalSuperuserUcpdActive;
+
+    // Copy Explorer targets
+    bool explorerShowExtensionsVal = m_explorerShowExtensions;
+    bool origExplorerShowExtensionsVal = m_originalExplorerShowExtensions;
+    bool explorerShowHiddenVal = m_explorerShowHidden;
+    bool origExplorerShowHiddenVal = m_originalExplorerShowHidden;
+    bool explorerShowExtractFilesVal = m_explorerShowExtractFiles;
+    bool origExplorerShowExtractFilesVal = m_originalExplorerShowExtractFiles;
+    bool explorerClassicRibbonVal = m_explorerClassicRibbon;
+    bool origExplorerClassicRibbonVal = m_originalExplorerClassicRibbon;
+    bool explorerShowPreviewPaneVal = m_explorerShowPreviewPane;
+    bool origExplorerShowPreviewPaneVal = m_originalExplorerShowPreviewPane;
+    bool explorerShowRecycleBinVal = m_explorerShowRecycleBin;
+    bool origExplorerShowRecycleBinVal = m_originalExplorerShowRecycleBin;
+    bool explorerPinHomeVal = m_explorerPinHome;
+    bool origExplorerPinHomeVal = m_originalExplorerPinHome;
+    bool explorerPinGalleryVal = m_explorerPinGallery;
+    bool origExplorerPinGalleryVal = m_originalExplorerPinGallery;
+    bool explorerUseCheckboxesVal = m_explorerUseCheckboxes;
+    bool origExplorerUseCheckboxesVal = m_originalExplorerUseCheckboxes;
+    bool explorerSyncNotificationsVal = m_explorerSyncNotifications;
+    bool origExplorerSyncNotificationsVal = m_originalExplorerSyncNotifications;
+    int explorerLaunchToVal = m_explorerLaunchTo;
+    int origExplorerLaunchToVal = m_originalExplorerLaunchTo;
 
     QString steamPathVal = "";
 #ifdef Q_OS_WIN
@@ -5179,7 +5450,7 @@ void Optimizer::startSystemOptimization() {
     bool forceVal = m_forceApplyAll;
     m_forceApplyAll = false;
 
-    QThread* worker = QThread::create([this, forceVal, searchVal, classicContextMenuVal, shortcutArrowsVal, clipboardHistoryVal, taskbarEndTaskVal, taskbarSecondsVal, hibernationVal, overlayVal, coreIsolationVal, hagsVal, mouseAccelVal, gameModeVal, firewallVal, bitlockerVal, discordOverlayVal, notificationsVal, notifGlobalVal, notifAppVal, notifSoundsVal, notifLockscreenVal, targetPowerSchemeVal, activePowerSchemeVal, deleteUltimateStagedVal, deleteDefenderStagedVal, defenderVal, defenderRegistryVal, defenderCmdVal, defenderServiceVal, remoteAccessVal, telemetryVal, telemetryDiagTrackVal, telemetryWapPushVal, telemetryCeipVal, telemetryWerVal, windowsUpdateModeVal, targets, originalTargets, origSearch, origClassicContextMenu, origShortcutArrows, origClipboardHistory, origTaskbarEndTask, origTaskbarSeconds, origHibernation, origOverlay, origCoreIsolation, origHags, origMouseAccel, origGameMode, origFirewall, origBitlocker, origDiscordOverlay, origNotifications, origNotifGlobal, origNotifApp, origNotifSounds, origNotifLockscreen, origDefender, origDefenderRegistry, origDefenderCmd, origDefenderService, origRemoteAccess, origTelemetry, origTelemetryDiagTrack, origTelemetryWapPush, origTelemetryCeip, origTelemetryWer, origWindowsUpdateMode, usbDevicesVal, origUsbDevicesVal, appNotificationSettingsVal, steamPathVal, cs2OptionsVal, origCs2OptionsVal, steamOverlayVal, origSteamOverlayVal, cs2OverlayVal, origCs2OverlayVal, visualEffectsVal, origVisualEffectsVal, steamFriendsSettingsVal, origSteamFriendsSettingsVal, steamFriendsChanged, pagefileMinVal, origPagefileMinVal, pagefileMaxVal, origPagefileMaxVal, adsTailoredExperiencesVal, origAdsTailored, adsAdvertisingIdVal, origAdsAdvertisingId, adsSuggestedContentVal, origAdsSuggestedContent, adsSettingsHomeVal, origAdsSettingsHome, adsSuggestedNotificationsVal, origAdsSuggestedNotifications, adsLockScreenTipsVal, origAdsLockScreenTips, adsWindowsTipsVal, origAdsWindowsTips, adsWelcomeExperienceVal, origAdsWelcomeExperience, adsFinishSetupVal, origAdsFinishSetup, privacyLocationVal, origPrivacyLocation, privacyTelemetryVal, origPrivacyTelemetry, privacyCeipVal, origPrivacyCeip, privacyAppsTelemetryVal, origPrivacyAppsTelemetry, privacyAppLaunchesVal, origPrivacyAppLaunches, privacyImproveInkingVal, origPrivacyImproveInking, privacyPersonalizeInkingVal, origPrivacyPersonalizeInking, privacyErrorReportingVal, origPrivacyErrorReporting, privacyLockScreenCameraVal, origPrivacyLockScreenCamera, privacyCameraIndicatorVal, origPrivacyCameraIndicator, privacyOnlineSpeechVal, origPrivacyOnlineSpeech, superuserGodModeVal, superuserDeveloperModeVal, superuserUacLevelVal, superuserUcpdVal, superuserGodModeOrig, superuserDeveloperModeOrig, superuserUacLevelOrig, superuserUcpdOrig]() {
+    QThread* worker = QThread::create([this, explorerShowExtensionsVal, origExplorerShowExtensionsVal, explorerShowHiddenVal, origExplorerShowHiddenVal, explorerShowExtractFilesVal, origExplorerShowExtractFilesVal, explorerClassicRibbonVal, origExplorerClassicRibbonVal, explorerShowPreviewPaneVal, origExplorerShowPreviewPaneVal, explorerShowRecycleBinVal, origExplorerShowRecycleBinVal, explorerPinHomeVal, origExplorerPinHomeVal, explorerPinGalleryVal, origExplorerPinGalleryVal, explorerUseCheckboxesVal, origExplorerUseCheckboxesVal, explorerSyncNotificationsVal, origExplorerSyncNotificationsVal, explorerLaunchToVal, origExplorerLaunchToVal, forceVal, searchVal, classicContextMenuVal, shortcutArrowsVal, clipboardHistoryVal, taskbarEndTaskVal, taskbarSecondsVal, hibernationVal, overlayVal, coreIsolationVal, hagsVal, mouseAccelVal, gameModeVal, firewallVal, bitlockerVal, discordOverlayVal, notificationsVal, notifGlobalVal, notifAppVal, notifSoundsVal, notifLockscreenVal, targetPowerSchemeVal, activePowerSchemeVal, deleteUltimateStagedVal, deleteDefenderStagedVal, defenderVal, defenderRegistryVal, defenderCmdVal, defenderServiceVal, remoteAccessVal, telemetryVal, telemetryDiagTrackVal, telemetryWapPushVal, telemetryCeipVal, telemetryWerVal, windowsUpdateModeVal, targets, originalTargets, origSearch, origClassicContextMenu, origShortcutArrows, origClipboardHistory, origTaskbarEndTask, origTaskbarSeconds, origHibernation, origOverlay, origCoreIsolation, origHags, origMouseAccel, origGameMode, origFirewall, origBitlocker, origDiscordOverlay, origNotifications, origNotifGlobal, origNotifApp, origNotifSounds, origNotifLockscreen, origDefender, origDefenderRegistry, origDefenderCmd, origDefenderService, origRemoteAccess, origTelemetry, origTelemetryDiagTrack, origTelemetryWapPush, origTelemetryCeip, origTelemetryWer, origWindowsUpdateMode, usbDevicesVal, origUsbDevicesVal, appNotificationSettingsVal, steamPathVal, cs2OptionsVal, origCs2OptionsVal, steamOverlayVal, origSteamOverlayVal, cs2OverlayVal, origCs2OverlayVal, visualEffectsVal, origVisualEffectsVal, steamFriendsSettingsVal, origSteamFriendsSettingsVal, steamFriendsChanged, pagefileMinVal, origPagefileMinVal, pagefileMaxVal, origPagefileMaxVal, adsTailoredExperiencesVal, origAdsTailored, adsAdvertisingIdVal, origAdsAdvertisingId, adsSuggestedContentVal, origAdsSuggestedContent, adsSettingsHomeVal, origAdsSettingsHome, adsSuggestedNotificationsVal, origAdsSuggestedNotifications, adsLockScreenTipsVal, origAdsLockScreenTips, adsWindowsTipsVal, origAdsWindowsTips, adsWelcomeExperienceVal, origAdsWelcomeExperience, adsFinishSetupVal, origAdsFinishSetup, privacyLocationVal, origPrivacyLocation, privacyTelemetryVal, origPrivacyTelemetry, privacyCeipVal, origPrivacyCeip, privacyAppsTelemetryVal, origPrivacyAppsTelemetry, privacyAppLaunchesVal, origPrivacyAppLaunches, privacyImproveInkingVal, origPrivacyImproveInking, privacyPersonalizeInkingVal, origPrivacyPersonalizeInking, privacyErrorReportingVal, origPrivacyErrorReporting, privacyLockScreenCameraVal, origPrivacyLockScreenCamera, privacyCameraIndicatorVal, origPrivacyCameraIndicator, privacyOnlineSpeechVal, origPrivacyOnlineSpeech, superuserGodModeVal, superuserDeveloperModeVal, superuserUacLevelVal, superuserUcpdVal, superuserGodModeOrig, superuserDeveloperModeOrig, superuserUacLevelOrig, superuserUcpdOrig]() {
         // Step 00: Auto-create backup before making changes
         if (!forceVal && Settings::instance()->createBackup()) {
             emit systemStepReported(tr("Creating automatic system backup..."), "INFO");
@@ -5601,6 +5872,133 @@ void Optimizer::startSystemOptimization() {
 #endif
             m_taskbarSecondsActive = taskbarSecondsVal;
             emit taskbarSecondsActiveChanged(m_taskbarSecondsActive);
+        }
+
+        // Step 1.10: File Explorer Customization Configuration (only if changed)
+        bool explorerCustomizationSuccess = true;
+        bool explorerNeedsRestart = false;
+        if (explorerShowExtensionsVal != origExplorerShowExtensionsVal ||
+            explorerShowHiddenVal != origExplorerShowHiddenVal ||
+            explorerShowExtractFilesVal != origExplorerShowExtractFilesVal ||
+            explorerClassicRibbonVal != origExplorerClassicRibbonVal ||
+            explorerShowPreviewPaneVal != origExplorerShowPreviewPaneVal ||
+            explorerShowRecycleBinVal != origExplorerShowRecycleBinVal ||
+            explorerPinHomeVal != origExplorerPinHomeVal ||
+            explorerPinGalleryVal != origExplorerPinGalleryVal ||
+            explorerUseCheckboxesVal != origExplorerUseCheckboxesVal ||
+            explorerSyncNotificationsVal != origExplorerSyncNotificationsVal ||
+            explorerLaunchToVal != origExplorerLaunchToVal ||
+            force) 
+        {
+            emit systemStepReported(tr("Configuring File Explorer settings..."), "INFO");
+            QThread::msleep(800);
+#ifdef Q_OS_WIN
+            bool success = true;
+            HKEY hKey = nullptr;
+            if (RegCreateKeyExW(HKEY_CURRENT_USER, L"Software\\Microsoft\\Windows\\CurrentVersion\\Explorer\\Advanced", 0, nullptr, REG_OPTION_NON_VOLATILE, KEY_WRITE, nullptr, &hKey, nullptr) == ERROR_SUCCESS) {
+                DWORD val = explorerShowExtensionsVal ? 0 : 1;
+                RegSetValueExW(hKey, L"HideFileExt", 0, REG_DWORD, reinterpret_cast<const BYTE*>(&val), sizeof(val));
+                val = explorerShowHiddenVal ? 1 : 2;
+                RegSetValueExW(hKey, L"Hidden", 0, REG_DWORD, reinterpret_cast<const BYTE*>(&val), sizeof(val));
+                val = explorerShowHiddenVal ? 1 : 0;
+                RegSetValueExW(hKey, L"ShowSuperHidden", 0, REG_DWORD, reinterpret_cast<const BYTE*>(&val), sizeof(val));
+                val = explorerShowPreviewPaneVal ? 1 : 0;
+                RegSetValueExW(hKey, L"ShowPreviewHandlers", 0, REG_DWORD, reinterpret_cast<const BYTE*>(&val), sizeof(val));
+                val = explorerUseCheckboxesVal ? 1 : 0;
+                RegSetValueExW(hKey, L"AutoCheckSelect", 0, REG_DWORD, reinterpret_cast<const BYTE*>(&val), sizeof(val));
+                val = explorerSyncNotificationsVal ? 1 : 0;
+                RegSetValueExW(hKey, L"ShowSyncProviderNotifications", 0, REG_DWORD, reinterpret_cast<const BYTE*>(&val), sizeof(val));
+                val = static_cast<DWORD>(explorerLaunchToVal);
+                RegSetValueExW(hKey, L"LaunchTo", 0, REG_DWORD, reinterpret_cast<const BYTE*>(&val), sizeof(val));
+                RegCloseKey(hKey);
+            } else {
+                success = false;
+            }
+            if (RegCreateKeyExW(HKEY_CURRENT_USER, L"Software\\Microsoft\\Windows\\CurrentVersion\\Explorer\\ExtractionWizard", 0, nullptr, REG_OPTION_NON_VOLATILE, KEY_WRITE, nullptr, &hKey, nullptr) == ERROR_SUCCESS) {
+                DWORD val = explorerShowExtractFilesVal ? 1 : 0;
+                RegSetValueExW(hKey, L"ShowFiles", 0, REG_DWORD, reinterpret_cast<const BYTE*>(&val), sizeof(val));
+                RegCloseKey(hKey);
+            } else {
+                success = false;
+            }
+            if (explorerClassicRibbonVal != origExplorerClassicRibbonVal || force) {
+                explorerNeedsRestart = true;
+                if (explorerClassicRibbonVal) {
+                    if (RegCreateKeyExW(HKEY_CURRENT_USER, L"Software\\Microsoft\\Windows\\CurrentVersion\\Shell Extensions\\Blocked", 0, nullptr, REG_OPTION_NON_VOLATILE, KEY_WRITE, nullptr, &hKey, nullptr) == ERROR_SUCCESS) {
+                        wchar_t empty[] = L"";
+                        RegSetValueExW(hKey, L"{e2bf9676-5f8f-435c-97eb-11607a5bedf7}", 0, REG_SZ, reinterpret_cast<const BYTE*>(empty), sizeof(empty));
+                        RegCloseKey(hKey);
+                    } else {
+                        success = false;
+                    }
+                } else {
+                    if (RegOpenKeyExW(HKEY_CURRENT_USER, L"Software\\Microsoft\\Windows\\CurrentVersion\\Shell Extensions\\Blocked", 0, KEY_SET_VALUE, &hKey) == ERROR_SUCCESS) {
+                        RegDeleteValueW(hKey, L"{e2bf9676-5f8f-435c-97eb-11607a5bedf7}");
+                        RegCloseKey(hKey);
+                    }
+                }
+            }
+            if (RegCreateKeyExW(HKEY_CURRENT_USER, L"Software\\Microsoft\\Windows\\CurrentVersion\\Explorer\\HideDesktopIcons\\NewStartPanel", 0, nullptr, REG_OPTION_NON_VOLATILE, KEY_WRITE, nullptr, &hKey, nullptr) == ERROR_SUCCESS) {
+                DWORD val = explorerShowRecycleBinVal ? 0 : 1;
+                RegSetValueExW(hKey, L"{645FF040-5081-101B-9F08-00AA002F954E}", 0, REG_DWORD, reinterpret_cast<const BYTE*>(&val), sizeof(val));
+                RegCloseKey(hKey);
+                SHChangeNotify(SHCNE_ASSOCCHANGED, SHCNF_FLUSHNOWAIT, NULL, NULL);
+            } else {
+                success = false;
+            }
+            if (explorerPinHomeVal != origExplorerPinHomeVal || force) {
+                explorerNeedsRestart = true;
+                if (RegCreateKeyExW(HKEY_CURRENT_USER, L"Software\\Classes\\CLSID\\{f874310e-b6b7-47dc-bc84-b9e6b38f5903}", 0, nullptr, REG_OPTION_NON_VOLATILE, KEY_WRITE, nullptr, &hKey, nullptr) == ERROR_SUCCESS) {
+                    DWORD val = explorerPinHomeVal ? 1 : 0;
+                    RegSetValueExW(hKey, L"System.IsPinnedToNameSpaceTree", 0, REG_DWORD, reinterpret_cast<const BYTE*>(&val), sizeof(val));
+                    RegCloseKey(hKey);
+                } else {
+                    success = false;
+                }
+            }
+            if (explorerPinGalleryVal != origExplorerPinGalleryVal || force) {
+                explorerNeedsRestart = true;
+                if (RegCreateKeyExW(HKEY_CURRENT_USER, L"Software\\Classes\\CLSID\\{e88865ea-0e1c-4e20-9aa6-edcd0212c87c}", 0, nullptr, REG_OPTION_NON_VOLATILE, KEY_WRITE, nullptr, &hKey, nullptr) == ERROR_SUCCESS) {
+                    DWORD val = explorerPinGalleryVal ? 1 : 0;
+                    RegSetValueExW(hKey, L"System.IsPinnedToNameSpaceTree", 0, REG_DWORD, reinterpret_cast<const BYTE*>(&val), sizeof(val));
+                    RegCloseKey(hKey);
+                } else {
+                    success = false;
+                }
+            }
+            if (success) {
+                QString logMsg = explorerNeedsRestart ? tr("File Explorer settings applied successfully. Some changes require a Windows Explorer restart.") : tr("File Explorer settings applied successfully.");
+                emit systemStepReported(logMsg, "SUCCESS");
+            } else {
+                explorerCustomizationSuccess = false;
+                emit systemStepReported(tr("Failed to apply File Explorer customization settings."), "ERROR");
+            }
+#else
+            emit systemStepReported(tr("[Simulation] File Explorer settings configured."), "SUCCESS");
+#endif
+            m_explorerShowExtensions = explorerShowExtensionsVal;
+            m_explorerShowHidden = explorerShowHiddenVal;
+            m_explorerShowExtractFiles = explorerShowExtractFilesVal;
+            m_explorerClassicRibbon = explorerClassicRibbonVal;
+            m_explorerShowPreviewPane = explorerShowPreviewPaneVal;
+            m_explorerShowRecycleBin = explorerShowRecycleBinVal;
+            m_explorerPinHome = explorerPinHomeVal;
+            m_explorerPinGallery = explorerPinGalleryVal;
+            m_explorerUseCheckboxes = explorerUseCheckboxesVal;
+            m_explorerSyncNotifications = explorerSyncNotificationsVal;
+            m_explorerLaunchTo = explorerLaunchToVal;
+
+            emit explorerShowExtensionsChanged(m_explorerShowExtensions);
+            emit explorerShowHiddenChanged(m_explorerShowHidden);
+            emit explorerShowExtractFilesChanged(m_explorerShowExtractFiles);
+            emit explorerClassicRibbonChanged(m_explorerClassicRibbon);
+            emit explorerShowPreviewPaneChanged(m_explorerShowPreviewPane);
+            emit explorerShowRecycleBinChanged(m_explorerShowRecycleBin);
+            emit explorerPinHomeChanged(m_explorerPinHome);
+            emit explorerPinGalleryChanged(m_explorerPinGallery);
+            emit explorerUseCheckboxesChanged(m_explorerUseCheckboxes);
+            emit explorerSyncNotificationsChanged(m_explorerSyncNotifications);
+            emit explorerLaunchToChanged(m_explorerLaunchTo);
         }
 
         // Step 1.5: Hibernation Configuration (only if changed)
@@ -8390,6 +8788,18 @@ void Optimizer::startSystemOptimization() {
         m_originalSuperuserDeveloperModeActive = superuserDeveloperModeVal;
         m_originalSuperuserUacLevel = superuserUacLevelVal;
         m_originalSuperuserUcpdActive = superuserUcpdVal;
+
+        m_originalExplorerShowExtensions = explorerShowExtensionsVal;
+        m_originalExplorerShowHidden = explorerShowHiddenVal;
+        m_originalExplorerShowExtractFiles = explorerShowExtractFilesVal;
+        m_originalExplorerClassicRibbon = explorerClassicRibbonVal;
+        m_originalExplorerShowPreviewPane = explorerShowPreviewPaneVal;
+        m_originalExplorerShowRecycleBin = explorerShowRecycleBinVal;
+        m_originalExplorerPinHome = explorerPinHomeVal;
+        m_originalExplorerPinGallery = explorerPinGalleryVal;
+        m_originalExplorerUseCheckboxes = explorerUseCheckboxesVal;
+        m_originalExplorerSyncNotifications = explorerSyncNotificationsVal;
+        m_originalExplorerLaunchTo = explorerLaunchToVal;
         
         loadSystemStates();
 
@@ -8423,6 +8833,18 @@ void Optimizer::startSystemOptimization() {
         emit originalTelemetryCeipActiveChanged(m_originalTelemetryCeipActive);
         emit originalTelemetryWerActiveChanged(m_originalTelemetryWerActive);
         emit originalWindowsUpdateModeChanged(m_originalWindowsUpdateMode);
+
+        emit originalExplorerShowExtensionsChanged(m_originalExplorerShowExtensions);
+        emit originalExplorerShowHiddenChanged(m_originalExplorerShowHidden);
+        emit originalExplorerShowExtractFilesChanged(m_originalExplorerShowExtractFiles);
+        emit originalExplorerClassicRibbonChanged(m_originalExplorerClassicRibbon);
+        emit originalExplorerShowPreviewPaneChanged(m_originalExplorerShowPreviewPane);
+        emit originalExplorerShowRecycleBinChanged(m_originalExplorerShowRecycleBin);
+        emit originalExplorerPinHomeChanged(m_originalExplorerPinHome);
+        emit originalExplorerPinGalleryChanged(m_originalExplorerPinGallery);
+        emit originalExplorerUseCheckboxesChanged(m_originalExplorerUseCheckboxes);
+        emit originalExplorerSyncNotificationsChanged(m_originalExplorerSyncNotifications);
+        emit originalExplorerLaunchToChanged(m_originalExplorerLaunchTo);
 
         emit originalAdsTailoredExperiencesActiveChanged(m_originalAdsTailoredExperiencesActive);
         emit originalAdsAdvertisingIdActiveChanged(m_originalAdsAdvertisingIdActive);
