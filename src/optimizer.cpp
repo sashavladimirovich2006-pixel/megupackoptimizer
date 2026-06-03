@@ -5680,6 +5680,19 @@ void Optimizer::loadSystemStates() {
             desktopShowWidgets = (dwVal != 0);
         }
 
+        // Check HKLM policy override as well (Dsh\AllowNewsAndInterests)
+        HKEY hKeyPolicy = nullptr;
+        if (RegOpenKeyExW(HKEY_LOCAL_MACHINE, L"SOFTWARE\\Policies\\Microsoft\\Dsh", 0, KEY_READ, &hKeyPolicy) == ERROR_SUCCESS) {
+            DWORD dwPolVal = 1;
+            DWORD dwPolSize = sizeof(dwPolVal);
+            if (RegQueryValueExW(hKeyPolicy, L"AllowNewsAndInterests", nullptr, nullptr, reinterpret_cast<LPBYTE>(&dwPolVal), &dwPolSize) == ERROR_SUCCESS) {
+                if (dwPolVal == 0) {
+                    desktopShowWidgets = false;
+                }
+            }
+            RegCloseKey(hKeyPolicy);
+        }
+
         // Drop Shadows
         dwSize = sizeof(dwVal);
         if (RegQueryValueExW(hKeyDesk, L"ListviewShadow", nullptr, nullptr, reinterpret_cast<LPBYTE>(&dwVal), &dwSize) == ERROR_SUCCESS) {
@@ -6817,9 +6830,32 @@ void Optimizer::startSystemOptimization() {
             if (RegCreateKeyExW(HKEY_CURRENT_USER, L"Software\\Microsoft\\Windows\\CurrentVersion\\Explorer\\Advanced", 0, nullptr, REG_OPTION_NON_VOLATILE, KEY_WRITE, nullptr, &hKey, nullptr) == ERROR_SUCCESS) {
                 DWORD val;
 
-                // Widgets
+                // Widgets (TaskbarDa)
                 val = desktopShowWidgetsVal ? 1 : 0;
                 RegSetValueExW(hKey, L"TaskbarDa", 0, REG_DWORD, reinterpret_cast<const BYTE*>(&val), sizeof(val));
+
+                RegCloseKey(hKey);
+            } else {
+                success = false;
+            }
+
+            // Write to Group Policy key HKLM\SOFTWARE\Policies\Microsoft\Dsh
+            HKEY hKeyPolicy = nullptr;
+            if (RegCreateKeyExW(HKEY_LOCAL_MACHINE, L"SOFTWARE\\Policies\\Microsoft\\Dsh", 0, nullptr, REG_OPTION_NON_VOLATILE, KEY_WRITE, nullptr, &hKeyPolicy, nullptr) == ERROR_SUCCESS) {
+                if (!desktopShowWidgetsVal) {
+                    DWORD val = 0;
+                    RegSetValueExW(hKeyPolicy, L"AllowNewsAndInterests", 0, REG_DWORD, reinterpret_cast<const BYTE*>(&val), sizeof(val));
+                } else {
+                    RegDeleteValueW(hKeyPolicy, L"AllowNewsAndInterests");
+                }
+                RegCloseKey(hKeyPolicy);
+            } else {
+                success = false;
+            }
+
+            // Re-open Advanced key for the rest of Desktop settings (Drop Shadows, Show Desktop, Aero Shake)
+            if (RegCreateKeyExW(HKEY_CURRENT_USER, L"Software\\Microsoft\\Windows\\CurrentVersion\\Explorer\\Advanced", 0, nullptr, REG_OPTION_NON_VOLATILE, KEY_WRITE, nullptr, &hKey, nullptr) == ERROR_SUCCESS) {
+                DWORD val;
 
                 // Drop Shadows
                 val = desktopIconShadowsVal ? 1 : 0;
