@@ -6309,18 +6309,39 @@ void Optimizer::startSystemOptimization() {
 #ifdef Q_OS_WIN
             bool success = false;
             if (!shortcutArrowsVal) {
-                // Hide shortcut arrows: set "29" under HKCU to "%windir%\System32\shell32.dll,-50"
+                // Hide shortcut arrows: set "29" under both HKCU and HKLM
+                std::wstring val = L"%windir%\\System32\\shell32.dll,-50";
+                if (QFile::exists("C:/Windows/blank.ico")) {
+                    val = L"C:\\Windows\\blank.ico";
+                }
+                
+                bool writtenToHkcu = false;
                 HKEY hKeyIcons = nullptr;
                 LSTATUS status = RegCreateKeyExW(HKEY_CURRENT_USER, 
                     L"Software\\Microsoft\\Windows\\CurrentVersion\\Explorer\\Shell Icons", 
                     0, nullptr, REG_OPTION_NON_VOLATILE, KEY_WRITE, nullptr, &hKeyIcons, nullptr);
                 if (status == ERROR_SUCCESS) {
-                    wchar_t val[] = L"%windir%\\System32\\shell32.dll,-50";
-                    status = RegSetValueExW(hKeyIcons, L"29", 0, REG_SZ, reinterpret_cast<const BYTE*>(val), (wcslen(val) + 1) * sizeof(wchar_t));
+                    status = RegSetValueExW(hKeyIcons, L"29", 0, REG_SZ, reinterpret_cast<const BYTE*>(val.c_str()), (val.length() + 1) * sizeof(wchar_t));
                     if (status == ERROR_SUCCESS) {
-                        success = true;
+                        writtenToHkcu = true;
                     }
                     RegCloseKey(hKeyIcons);
+                }
+
+                bool writtenToHklm = false;
+                status = RegCreateKeyExW(HKEY_LOCAL_MACHINE, 
+                    L"SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Explorer\\Shell Icons", 
+                    0, nullptr, REG_OPTION_NON_VOLATILE, KEY_WRITE, nullptr, &hKeyIcons, nullptr);
+                if (status == ERROR_SUCCESS) {
+                    status = RegSetValueExW(hKeyIcons, L"29", 0, REG_SZ, reinterpret_cast<const BYTE*>(val.c_str()), (val.length() + 1) * sizeof(wchar_t));
+                    if (status == ERROR_SUCCESS) {
+                        writtenToHklm = true;
+                    }
+                    RegCloseKey(hKeyIcons);
+                }
+
+                if (writtenToHkcu || writtenToHklm) {
+                    success = true;
                 }
             } else {
                 // Show shortcut arrows (default): delete value "29" from both HKCU and HKLM
