@@ -39,9 +39,9 @@ AcrylicPanel {
             // Icon Container with clean, premium badge background
             Rectangle {
                 id: iconBg
-                width: 40
-                height: 40
-                radius: 20 // circular
+                width: 48
+                height: 48
+                radius: 24 // circular
                 color: card.containsMouse ? Qt.rgba(progressBarColor.r, progressBarColor.g, progressBarColor.b, 0.15) : badgeColor
                 border.color: card.showProgressBar ? "transparent" : (card.containsMouse ? progressBarColor : Theme.border)
                 border.width: card.showProgressBar ? 0 : 1
@@ -67,10 +67,10 @@ AcrylicPanel {
                         capStyle: ShapePath.RoundCap
                         
                         PathAngleArc {
-                            centerX: 20
-                            centerY: 20
-                            radiusX: 17
-                            radiusY: 17
+                            centerX: 24
+                            centerY: 24
+                            radiusX: 21
+                            radiusY: 21
                             startAngle: -90
                             sweepAngle: 360
                         }
@@ -84,10 +84,10 @@ AcrylicPanel {
                         capStyle: ShapePath.RoundCap
                         
                         PathAngleArc {
-                            centerX: 20
-                            centerY: 20
-                            radiusX: 17
-                            radiusY: 17
+                            centerX: 24
+                            centerY: 24
+                            radiusX: 21
+                            radiusY: 21
                             startAngle: -90
                             sweepAngle: 360 * card.progressBarValue
                             
@@ -102,16 +102,16 @@ AcrylicPanel {
                 }
 
                 Item {
-                    width: 20
-                    height: 20
+                    width: 24
+                    height: 24
                     anchors.centerIn: parent
 
                     Image {
                         id: img
                         source: card.iconSource
                         anchors.fill: parent
-                        sourceSize.width: 20
-                        sourceSize.height: 20
+                        sourceSize.width: 24
+                        sourceSize.height: 24
                         visible: false
                     }
                     
@@ -131,10 +131,10 @@ AcrylicPanel {
                 spacing: 1
 
                 Text {
-                    text: card.category
+                    text: card.showProgressBar ? card.category + " (" + Math.round(card.progressBarValue * 100) + "%)" : card.category
                     color: card.containsMouse ? progressBarColor : Theme.textSecondary
                     font.family: Theme.fontFamily
-                    font.pixelSize: 10
+                    font.pixelSize: 11
                     font.bold: true
                     font.letterSpacing: 0.5
                     elide: Text.ElideRight
@@ -147,7 +147,7 @@ AcrylicPanel {
                     text: card.value ? card.value : qsTr("Detecting...")
                     color: Theme.textPrimary
                     font.family: Theme.fontFamily
-                    font.pixelSize: 13
+                    font.pixelSize: 14
                     font.bold: true
                     elide: Text.ElideRight
                     width: parent.width
@@ -157,7 +157,7 @@ AcrylicPanel {
                     text: card.subValue
                     color: Theme.textMuted
                     font.family: Theme.fontFamily
-                    font.pixelSize: 10
+                    font.pixelSize: 11
                     elide: Text.ElideRight
                     width: parent.width
                     visible: text !== ""
