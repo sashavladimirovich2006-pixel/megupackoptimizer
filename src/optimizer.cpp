@@ -5381,25 +5381,15 @@ void Optimizer::loadSystemStates() {
         RegCloseKey(hKeyExp);
     }
     
-    // 3. Classic Interface (Blocked GUID in HKCU & HKLM)
+    // 3. Classic Interface (Blocked GUID in HKLM only to match Wintoys)
     bool isClassicRibbonBlocked = false;
-    if (RegOpenKeyExW(HKEY_CURRENT_USER, L"Software\\Microsoft\\Windows\\CurrentVersion\\Shell Extensions\\Blocked", 0, KEY_READ, &hKeyExp) == ERROR_SUCCESS) {
+    if (RegOpenKeyExW(HKEY_LOCAL_MACHINE, L"SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Shell Extensions\\Blocked", 0, KEY_READ, &hKeyExp) == ERROR_SUCCESS) {
         wchar_t buf[64] = {0};
         DWORD dwSize = sizeof(buf);
         if (RegQueryValueExW(hKeyExp, L"{e2bf9676-5f8f-435c-97eb-11607a5bedf7}", nullptr, nullptr, reinterpret_cast<LPBYTE>(buf), &dwSize) == ERROR_SUCCESS) {
             isClassicRibbonBlocked = true;
         }
         RegCloseKey(hKeyExp);
-    }
-    if (!isClassicRibbonBlocked) {
-        if (RegOpenKeyExW(HKEY_LOCAL_MACHINE, L"SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Shell Extensions\\Blocked", 0, KEY_READ, &hKeyExp) == ERROR_SUCCESS) {
-            wchar_t buf[64] = {0};
-            DWORD dwSize = sizeof(buf);
-            if (RegQueryValueExW(hKeyExp, L"{e2bf9676-5f8f-435c-97eb-11607a5bedf7}", nullptr, nullptr, reinterpret_cast<LPBYTE>(buf), &dwSize) == ERROR_SUCCESS) {
-                isClassicRibbonBlocked = true;
-            }
-            RegCloseKey(hKeyExp);
-        }
     }
     explorerClassicRibbon = isClassicRibbonBlocked;
     
