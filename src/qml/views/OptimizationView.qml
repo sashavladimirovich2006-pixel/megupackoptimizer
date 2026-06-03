@@ -9122,7 +9122,7 @@ Item {
                     // Spacer/Bottom area container
                     Item {
                         width: parent.width
-                        height: 60
+                        height: (!optimizerBackend.isOptimizingSystem && optimizerBackend.explorerNeedsRestart) ? 96 : 60
                         
                         Column {
                             anchors.fill: parent
@@ -9145,6 +9145,20 @@ Item {
                                 font.bold: true
                                 font.italic: true
                                 elide: Text.ElideRight
+                            }
+
+                            // Warning text about restarting explorer
+                            Text {
+                                width: parent.width - 32
+                                anchors.horizontalCenter: parent.horizontalCenter
+                                horizontalAlignment: Text.AlignHCenter
+                                wrapMode: Text.WordWrap
+                                text: qsTr("Чтобы изменения в проводнике применились вам нужно обязательно перезапустить проводник, обратите внимание что все вкладки проводника закроются")
+                                color: Theme.warning
+                                font.family: Theme.fontFamily
+                                font.pixelSize: 10
+                                font.bold: true
+                                visible: !optimizerBackend.isOptimizingSystem && optimizerBackend.explorerNeedsRestart
                             }
 
                             Row {
