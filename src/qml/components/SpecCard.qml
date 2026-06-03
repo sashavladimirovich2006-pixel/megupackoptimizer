@@ -1,6 +1,7 @@
 import QtQuick
 import MeguPackOptimizer 1.0
 import Qt5Compat.GraphicalEffects
+import QtQuick.Shapes
 
 AcrylicPanel {
     id: card
@@ -17,14 +18,9 @@ AcrylicPanel {
     property color badgeColor: Qt.rgba(Theme.accent.r, Theme.accent.g, Theme.accent.b, 0.05)
     property color iconColor: Theme.textSecondary
 
-    radius: showProgressBar ? height / 2 : 8
-
     Item {
         anchors.fill: parent
-        anchors.leftMargin: card.showProgressBar ? 22 : 12
-        anchors.rightMargin: card.showProgressBar ? 22 : 12
-        anchors.topMargin: 12
-        anchors.bottomMargin: 12
+        anchors.margins: 12
         
         Row {
             id: contentRow
@@ -45,14 +41,65 @@ AcrylicPanel {
                 id: iconBg
                 width: 40
                 height: 40
-                radius: 10
-                color: card.containsMouse ? Qt.rgba(progressBarColor.r, progressBarColor.g, progressBarColor.b, 0.2) : badgeColor
-                border.color: card.containsMouse ? progressBarColor : Theme.border
-                border.width: 1
+                radius: 20 // circular
+                color: card.containsMouse ? Qt.rgba(progressBarColor.r, progressBarColor.g, progressBarColor.b, 0.15) : badgeColor
+                border.color: card.showProgressBar ? "transparent" : (card.containsMouse ? progressBarColor : Theme.border)
+                border.width: card.showProgressBar ? 0 : 1
                 anchors.verticalCenter: parent.verticalCenter
                 
                 Behavior on color { ColorAnimation { duration: Theme.animFast } }
                 Behavior on border.color { ColorAnimation { duration: Theme.animFast } }
+
+                // Speedometer Progress Ring (Circular progress)
+                Shape {
+                    id: progressShape
+                    anchors.fill: parent
+                    visible: card.showProgressBar
+                    
+                    layer.enabled: true
+                    layer.samples: 4
+
+                    // Background track ring
+                    ShapePath {
+                        strokeColor: Qt.rgba(progressBarColor.r, progressBarColor.g, progressBarColor.b, 0.1)
+                        strokeWidth: 3
+                        fillColor: "transparent"
+                        capStyle: ShapePath.RoundCap
+                        
+                        PathAngleArc {
+                            centerX: 20
+                            centerY: 20
+                            radiusX: 17
+                            radiusY: 17
+                            startAngle: -90
+                            sweepAngle: 360
+                        }
+                    }
+                    
+                    // Active progress arc
+                    ShapePath {
+                        strokeColor: card.progressBarColor
+                        strokeWidth: 3
+                        fillColor: "transparent"
+                        capStyle: ShapePath.RoundCap
+                        
+                        PathAngleArc {
+                            centerX: 20
+                            centerY: 20
+                            radiusX: 17
+                            radiusY: 17
+                            startAngle: -90
+                            sweepAngle: 360 * card.progressBarValue
+                            
+                            Behavior on sweepAngle {
+                                NumberAnimation {
+                                    duration: 300
+                                    easing.type: Easing.OutQuad
+                                }
+                            }
+                        }
+                    }
+                }
 
                 Item {
                     width: 20
@@ -114,26 +161,6 @@ AcrylicPanel {
                     elide: Text.ElideRight
                     width: parent.width
                     visible: text !== ""
-                }
-
-                // Mini-bar loading indicator
-                Rectangle {
-                    width: parent.width - 10
-                    height: 4
-                    radius: 2
-                    color: Qt.rgba(progressBarColor.r, progressBarColor.g, progressBarColor.b, 0.1)
-                    visible: card.showProgressBar
-                    
-                    Rectangle {
-                        width: parent.width * card.progressBarValue
-                        height: parent.height
-                        radius: 2
-                        color: card.progressBarColor
-
-                        Behavior on width {
-                            NumberAnimation { duration: 300; easing.type: Easing.OutQuad }
-                        }
-                    }
                 }
             }
         }
