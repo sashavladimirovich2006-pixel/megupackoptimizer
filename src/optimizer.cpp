@@ -9587,11 +9587,11 @@ void Optimizer::startSystemOptimization() {
                 HKEY hKeyUcpd = nullptr;
                 LONG res = RegOpenKeyExW(HKEY_LOCAL_MACHINE, L"SYSTEM\\CurrentControlSet\\Services\\Ucpd", 0, KEY_WRITE, &hKeyUcpd);
                 if (res == ERROR_SUCCESS) {
-                    DWORD dwStart = superuserUcpdVal ? 2 : 4;
+                    DWORD dwStart = superuserUcpdVal ? 1 : 4;
                     LONG res1 = RegSetValueExW(hKeyUcpd, L"Start", 0, REG_DWORD, reinterpret_cast<const BYTE*>(&dwStart), sizeof(dwStart));
                     RegCloseKey(hKeyUcpd);
                     if (res1 == ERROR_SUCCESS) {
-                        emit systemStepReported(superuserUcpdVal ? tr("UCPD Service registry updated to enabled (Automatic).") : tr("UCPD Service registry updated to disabled."), "SUCCESS");
+                        emit systemStepReported(superuserUcpdVal ? tr("UCPD Service registry updated to enabled (System).") : tr("UCPD Service registry updated to disabled."), "SUCCESS");
                     } else {
                         superuserSuccess = false;
                         emit systemStepReported(tr("Failed to update UCPD registry (Error code %1).").arg(res1), "ERROR");
