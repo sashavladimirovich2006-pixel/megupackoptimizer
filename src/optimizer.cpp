@@ -30,9 +30,13 @@
 #include <propkey.h>
 #include <propvarutil.h>
 #include <tlhelp32.h>
+#include <taskschd.h>
+#include <comdef.h>
 #pragma comment(lib, "winspool.lib")
 #pragma comment(lib, "powrprof.lib")
 #pragma comment(lib, "propsys.lib")
+#pragma comment(lib, "taskschd.lib")
+#pragma comment(lib, "comsuppw.lib")
 #endif
 
 namespace {
@@ -1126,6 +1130,79 @@ namespace {
         }
         return QString::fromUtf8(out.toHex());
     }
+
+#ifdef Q_OS_WIN
+    void scanFolderRecursively(ITaskFolder* pFolder, bool disable, int &count) {
+        if (!pFolder) return;
+
+        // Get tasks in this folder
+        IRegisteredTaskCollection* pTaskCollection = nullptr;
+        if (SUCCEEDED(pFolder->GetTasks(TASK_ENUM_HIDDEN, &pTaskCollection)) && pTaskCollection) {
+            LONG numTasks = 0;
+            pTaskCollection->get_Count(&numTasks);
+            for (LONG i = 1; i <= numTasks; i++) {
+                IRegisteredTask* pTask = nullptr;
+                if (SUCCEEDED(pTaskCollection->get_Item(_variant_t(i), &pTask)) && pTask) {
+                    VARIANT_BOOL isEnabled = VARIANT_FALSE;
+                    pTask->get_Enabled(&isEnabled);
+                    if (isEnabled == VARIANT_TRUE) {
+                        ITaskDefinition* pDefinition = nullptr;
+                        if (SUCCEEDED(pTask->get_Definition(&pDefinition)) && pDefinition) {
+                            ITaskSettings* pSettings = nullptr;
+                            if (SUCCEEDED(pDefinition->get_Settings(&pSettings)) && pSettings) {
+                                VARIANT_BOOL wakeToRun = VARIANT_FALSE;
+                                if (SUCCEEDED(pSettings->get_WakeToRun(&wakeToRun)) && wakeToRun == VARIANT_TRUE) {
+                                    count++;
+                                    if (disable) {
+                                        pSettings->put_WakeToRun(VARIANT_FALSE);
+                                        BSTR name = nullptr;
+                                        pTask->get_Name(&name);
+                                        
+                                        // Re-register the task definition
+                                        IRegisteredTask* pNewTask = nullptr;
+                                        pFolder->RegisterTaskDefinition(
+                                            name,
+                                            pDefinition,
+                                            TASK_CREATE_OR_UPDATE,
+                                            _variant_t(), // userId
+                                            _variant_t(), // password
+                                            TASK_LOGON_NONE,
+                                            _variant_t(), // sddl
+                                            &pNewTask
+                                        );
+                                        if (pNewTask) {
+                                            pNewTask->Release();
+                                        }
+                                        if (name) SysFreeString(name);
+                                    }
+                                }
+                                pSettings->Release();
+                            }
+                            pDefinition->Release();
+                        }
+                    }
+                    pTask->Release();
+                }
+            }
+            pTaskCollection->Release();
+        }
+
+        // Recurse into subfolders
+        ITaskFolderCollection* pSubFolders = nullptr;
+        if (SUCCEEDED(pFolder->GetFolders(0, &pSubFolders)) && pSubFolders) {
+            LONG numFolders = 0;
+            pSubFolders->get_Count(&numFolders);
+            for (LONG i = 1; i <= numFolders; i++) {
+                ITaskFolder* pSubFolder = nullptr;
+                if (SUCCEEDED(pSubFolders->get_Item(_variant_t(i), &pSubFolder)) && pSubFolder) {
+                    scanFolderRecursively(pSubFolder, disable, count);
+                    pSubFolder->Release();
+                }
+            }
+            pSubFolders->Release();
+        }
+    }
+#endif
 
 } // namespace
 
@@ -2311,6 +2388,13 @@ void Optimizer::setDesktopWallpaperQuality(int val) {
     if (m_desktopWallpaperQuality != val) {
         m_desktopWallpaperQuality = val;
         emit desktopWallpaperQualityChanged(m_desktopWallpaperQuality);
+    }
+}
+
+void Optimizer::setCoinstallersActive(bool val) {
+    if (m_coinstallersActive != val) {
+        m_coinstallersActive = val;
+        emit coinstallersActiveChanged(m_coinstallersActive);
     }
 }
 
@@ -5456,6 +5540,18 @@ void Optimizer::loadSystemStates() {
         }
         RegCloseKey(hKeyDesk);
     }
+
+    // 4. Co-installers
+    bool coinstallersActiveVal = true;
+    HKEY hKeyCoInst;
+    if (RegOpenKeyExW(HKEY_LOCAL_MACHINE, L"SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Device Installer", 0, KEY_READ, &hKeyCoInst) == ERROR_SUCCESS) {
+        DWORD dwVal = 0;
+        DWORD dwSize = sizeof(dwVal);
+        if (RegQueryValueExW(hKeyCoInst, L"DisableCoInstallers", nullptr, nullptr, reinterpret_cast<LPBYTE>(&dwVal), &dwSize) == ERROR_SUCCESS) {
+            coinstallersActiveVal = (dwVal == 0);
+        }
+        RegCloseKey(hKeyCoInst);
+    }
 #endif
 
     m_desktopShowThisPC = desktopShowThisPC;
@@ -5487,6 +5583,14 @@ void Optimizer::loadSystemStates() {
     m_originalDesktopWallpaperQuality = desktopWallpaperQuality;
     emit desktopWallpaperQualityChanged(m_desktopWallpaperQuality);
     emit originalDesktopWallpaperQualityChanged(m_originalDesktopWallpaperQuality);
+
+    m_coinstallersActive = coinstallersActiveVal;
+    m_originalCoinstallersActive = coinstallersActiveVal;
+    emit coinstallersActiveChanged(m_coinstallersActive);
+    emit originalCoinstallersActiveChanged(m_originalCoinstallersActive);
+
+    m_sleepingPillWakeCount = scanWakeTasksCount(false);
+    emit sleepingPillWakeCountChanged(m_sleepingPillWakeCount);
 
     loadPagefileSettings();
 }
@@ -5619,6 +5723,8 @@ void Optimizer::startSystemOptimization() {
     bool origDesktopAeroShakeVal = m_originalDesktopAeroShake;
     int desktopWallpaperQualityVal = m_desktopWallpaperQuality;
     int origDesktopWallpaperQualityVal = m_originalDesktopWallpaperQuality;
+    bool coinstallersActiveVal = m_coinstallersActive;
+    bool origCoinstallersActiveVal = m_originalCoinstallersActive;
 
     QString steamPathVal = "";
 #ifdef Q_OS_WIN
@@ -5727,7 +5833,7 @@ void Optimizer::startSystemOptimization() {
     bool forceVal = m_forceApplyAll;
     m_forceApplyAll = false;
 
-    QThread* worker = QThread::create([this, explorerShowExtensionsVal, origExplorerShowExtensionsVal, explorerShowHiddenVal, origExplorerShowHiddenVal, explorerShowExtractFilesVal, origExplorerShowExtractFilesVal, explorerClassicRibbonVal, origExplorerClassicRibbonVal, explorerShowPreviewPaneVal, origExplorerShowPreviewPaneVal, explorerShowRecycleBinVal, origExplorerShowRecycleBinVal, explorerPinHomeVal, origExplorerPinHomeVal, explorerPinGalleryVal, origExplorerPinGalleryVal, explorerUseCheckboxesVal, origExplorerUseCheckboxesVal, explorerSyncNotificationsVal, origExplorerSyncNotificationsVal, explorerLaunchToVal, origExplorerLaunchToVal, forceVal, searchVal, classicContextMenuVal, shortcutArrowsVal, clipboardHistoryVal, taskbarEndTaskVal, taskbarSecondsVal, hibernationVal, overlayVal, coreIsolationVal, hagsVal, mouseAccelVal, gameModeVal, firewallVal, bitlockerVal, discordOverlayVal, notificationsVal, notifGlobalVal, notifAppVal, notifSoundsVal, notifLockscreenVal, targetPowerSchemeVal, activePowerSchemeVal, deleteUltimateStagedVal, deleteDefenderStagedVal, defenderVal, defenderRegistryVal, defenderCmdVal, defenderServiceVal, remoteAccessVal, telemetryVal, telemetryDiagTrackVal, telemetryWapPushVal, telemetryCeipVal, telemetryWerVal, windowsUpdateModeVal, targets, originalTargets, origSearch, origClassicContextMenu, origShortcutArrows, origClipboardHistory, origTaskbarEndTask, origTaskbarSeconds, origHibernation, origOverlay, origCoreIsolation, origHags, origMouseAccel, origGameMode, origFirewall, origBitlocker, origDiscordOverlay, origNotifications, origNotifGlobal, origNotifApp, origNotifSounds, origNotifLockscreen, origDefender, origDefenderRegistry, origDefenderCmd, origDefenderService, origRemoteAccess, origTelemetry, origTelemetryDiagTrack, origTelemetryWapPush, origTelemetryCeip, origTelemetryWer, origWindowsUpdateMode, usbDevicesVal, origUsbDevicesVal, appNotificationSettingsVal, steamPathVal, cs2OptionsVal, origCs2OptionsVal, steamOverlayVal, origSteamOverlayVal, cs2OverlayVal, origCs2OverlayVal, visualEffectsVal, origVisualEffectsVal, steamFriendsSettingsVal, origSteamFriendsSettingsVal, steamFriendsChanged, pagefileMinVal, origPagefileMinVal, pagefileMaxVal, origPagefileMaxVal, adsTailoredExperiencesVal, origAdsTailored, adsAdvertisingIdVal, origAdsAdvertisingId, adsSuggestedContentVal, origAdsSuggestedContent, adsSettingsHomeVal, origAdsSettingsHome, adsSuggestedNotificationsVal, origAdsSuggestedNotifications, adsLockScreenTipsVal, origAdsLockScreenTips, adsWindowsTipsVal, origAdsWindowsTips, adsWelcomeExperienceVal, origAdsWelcomeExperience, adsFinishSetupVal, origAdsFinishSetup, privacyLocationVal, origPrivacyLocation, privacyTelemetryVal, origPrivacyTelemetry, privacyCeipVal, origPrivacyCeip, privacyAppsTelemetryVal, origPrivacyAppsTelemetry, privacyAppLaunchesVal, origPrivacyAppLaunches, privacyImproveInkingVal, origPrivacyImproveInking, privacyPersonalizeInkingVal, origPrivacyPersonalizeInking, privacyErrorReportingVal, origPrivacyErrorReporting, privacyLockScreenCameraVal, origPrivacyLockScreenCamera, privacyCameraIndicatorVal, origPrivacyCameraIndicator, privacyOnlineSpeechVal, origPrivacyOnlineSpeech, superuserGodModeVal, superuserDeveloperModeVal, superuserUacLevelVal, superuserUcpdVal, superuserGodModeOrig, superuserDeveloperModeOrig, superuserUacLevelOrig, superuserUcpdOrig, startMenuWebResultsVal, origStartMenuWebResultsVal, startMenuAutoinstallVal, origStartMenuAutoinstallVal, startMenuAccountNotificationsVal, origStartMenuAccountNotificationsVal, startMenuShowHibernateVal, origStartMenuShowHibernateVal, desktopShowThisPCVal, origDesktopShowThisPCVal, desktopShowWidgetsVal, origDesktopShowWidgetsVal, desktopIconShadowsVal, origDesktopIconShadowsVal, desktopShowDesktopButtonVal, origDesktopShowDesktopButtonVal, desktopAeroShakeVal, origDesktopAeroShakeVal, desktopWallpaperQualityVal, origDesktopWallpaperQualityVal]() {
+    QThread* worker = QThread::create([this, explorerShowExtensionsVal, origExplorerShowExtensionsVal, explorerShowHiddenVal, origExplorerShowHiddenVal, explorerShowExtractFilesVal, origExplorerShowExtractFilesVal, explorerClassicRibbonVal, origExplorerClassicRibbonVal, explorerShowPreviewPaneVal, origExplorerShowPreviewPaneVal, explorerShowRecycleBinVal, origExplorerShowRecycleBinVal, explorerPinHomeVal, origExplorerPinHomeVal, explorerPinGalleryVal, origExplorerPinGalleryVal, explorerUseCheckboxesVal, origExplorerUseCheckboxesVal, explorerSyncNotificationsVal, origExplorerSyncNotificationsVal, explorerLaunchToVal, origExplorerLaunchToVal, forceVal, searchVal, classicContextMenuVal, shortcutArrowsVal, clipboardHistoryVal, taskbarEndTaskVal, taskbarSecondsVal, hibernationVal, overlayVal, coreIsolationVal, hagsVal, mouseAccelVal, gameModeVal, firewallVal, bitlockerVal, discordOverlayVal, notificationsVal, notifGlobalVal, notifAppVal, notifSoundsVal, notifLockscreenVal, targetPowerSchemeVal, activePowerSchemeVal, deleteUltimateStagedVal, deleteDefenderStagedVal, defenderVal, defenderRegistryVal, defenderCmdVal, defenderServiceVal, remoteAccessVal, telemetryVal, telemetryDiagTrackVal, telemetryWapPushVal, telemetryCeipVal, telemetryWerVal, windowsUpdateModeVal, targets, originalTargets, origSearch, origClassicContextMenu, origShortcutArrows, origClipboardHistory, origTaskbarEndTask, origTaskbarSeconds, origHibernation, origOverlay, origCoreIsolation, origHags, origMouseAccel, origGameMode, origFirewall, origBitlocker, origDiscordOverlay, origNotifications, origNotifGlobal, origNotifApp, origNotifSounds, origNotifLockscreen, origDefender, origDefenderRegistry, origDefenderCmd, origDefenderService, origRemoteAccess, origTelemetry, origTelemetryDiagTrack, origTelemetryWapPush, origTelemetryCeip, origTelemetryWer, origWindowsUpdateMode, usbDevicesVal, origUsbDevicesVal, appNotificationSettingsVal, steamPathVal, cs2OptionsVal, origCs2OptionsVal, steamOverlayVal, origSteamOverlayVal, cs2OverlayVal, origCs2OverlayVal, visualEffectsVal, origVisualEffectsVal, steamFriendsSettingsVal, origSteamFriendsSettingsVal, steamFriendsChanged, pagefileMinVal, origPagefileMinVal, pagefileMaxVal, origPagefileMaxVal, adsTailoredExperiencesVal, origAdsTailored, adsAdvertisingIdVal, origAdsAdvertisingId, adsSuggestedContentVal, origAdsSuggestedContent, adsSettingsHomeVal, origAdsSettingsHome, adsSuggestedNotificationsVal, origAdsSuggestedNotifications, adsLockScreenTipsVal, origAdsLockScreenTips, adsWindowsTipsVal, origAdsWindowsTips, adsWelcomeExperienceVal, origAdsWelcomeExperience, adsFinishSetupVal, origAdsFinishSetup, privacyLocationVal, origPrivacyLocation, privacyTelemetryVal, origPrivacyTelemetry, privacyCeipVal, origPrivacyCeip, privacyAppsTelemetryVal, origPrivacyAppsTelemetry, privacyAppLaunchesVal, origPrivacyAppLaunches, privacyImproveInkingVal, origPrivacyImproveInking, privacyPersonalizeInkingVal, origPrivacyPersonalizeInking, privacyErrorReportingVal, origPrivacyErrorReporting, privacyLockScreenCameraVal, origPrivacyLockScreenCamera, privacyCameraIndicatorVal, origPrivacyCameraIndicator, privacyOnlineSpeechVal, origPrivacyOnlineSpeech, superuserGodModeVal, superuserDeveloperModeVal, superuserUacLevelVal, superuserUcpdVal, superuserGodModeOrig, superuserDeveloperModeOrig, superuserUacLevelOrig, superuserUcpdOrig, startMenuWebResultsVal, origStartMenuWebResultsVal, startMenuAutoinstallVal, origStartMenuAutoinstallVal, startMenuAccountNotificationsVal, origStartMenuAccountNotificationsVal, startMenuShowHibernateVal, origStartMenuShowHibernateVal, desktopShowThisPCVal, origDesktopShowThisPCVal, desktopShowWidgetsVal, origDesktopShowWidgetsVal, desktopIconShadowsVal, origDesktopIconShadowsVal, desktopShowDesktopButtonVal, origDesktopShowDesktopButtonVal, desktopAeroShakeVal, origDesktopAeroShakeVal, desktopWallpaperQualityVal, origDesktopWallpaperQualityVal, coinstallersActiveVal, origCoinstallersActiveVal]() {
         // Step 00: Auto-create backup before making changes
         if (!forceVal && Settings::instance()->createBackup()) {
             emit systemStepReported(tr("Creating automatic system backup..."), "INFO");
@@ -6437,6 +6543,29 @@ void Optimizer::startSystemOptimization() {
             emit desktopShowDesktopButtonChanged(m_desktopShowDesktopButton);
             emit desktopAeroShakeChanged(m_desktopAeroShake);
             emit desktopWallpaperQualityChanged(m_desktopWallpaperQuality);
+        }
+
+        // Step 1.4b: Co-installers Configuration (only if changed)
+        bool coinstallersSuccess = true;
+        if (coinstallersActiveVal != origCoinstallersActiveVal || force) {
+            emit systemStepReported(tr("Configuring device co-installers..."), "INFO");
+            QThread::msleep(800);
+#ifdef Q_OS_WIN
+            HKEY hKeyDev = nullptr;
+            if (RegCreateKeyExW(HKEY_LOCAL_MACHINE, L"SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Device Installer", 0, nullptr, REG_OPTION_NON_VOLATILE, KEY_WRITE, nullptr, &hKeyDev, nullptr) == ERROR_SUCCESS) {
+                DWORD val = coinstallersActiveVal ? 0 : 1;
+                RegSetValueExW(hKeyDev, L"DisableCoInstallers", 0, REG_DWORD, reinterpret_cast<const BYTE*>(&val), sizeof(val));
+                RegCloseKey(hKeyDev);
+                emit systemStepReported(tr("Co-installers configured successfully."), "SUCCESS");
+            } else {
+                coinstallersSuccess = false;
+                emit systemStepReported(tr("Failed to configure co-installers. Administrator privileges required."), "ERROR");
+            }
+#else
+            emit systemStepReported(tr("[Simulation] Co-installers configured."), "SUCCESS");
+#endif
+            m_coinstallersActive = coinstallersActiveVal;
+            emit coinstallersActiveChanged(m_coinstallersActive);
         }
 
         // Step 1.5: Hibernation Configuration (only if changed)
@@ -9250,6 +9379,7 @@ void Optimizer::startSystemOptimization() {
         m_originalDesktopShowDesktopButton = desktopShowDesktopButtonVal;
         m_originalDesktopAeroShake = desktopAeroShakeVal;
         m_originalDesktopWallpaperQuality = desktopWallpaperQualityVal;
+        m_originalCoinstallersActive = coinstallersActiveVal;
         
         loadSystemStates();
 
@@ -9307,6 +9437,7 @@ void Optimizer::startSystemOptimization() {
         emit originalDesktopShowDesktopButtonChanged(m_originalDesktopShowDesktopButton);
         emit originalDesktopAeroShakeChanged(m_originalDesktopAeroShake);
         emit originalDesktopWallpaperQualityChanged(m_originalDesktopWallpaperQuality);
+        emit originalCoinstallersActiveChanged(m_originalCoinstallersActive);
 
         emit originalAdsTailoredExperiencesActiveChanged(m_originalAdsTailoredExperiencesActive);
         emit originalAdsAdvertisingIdActiveChanged(m_originalAdsAdvertisingIdActive);
@@ -11420,6 +11551,57 @@ bool Optimizer::deleteBackup(const QString &backupId) {
 
 void Optimizer::refreshBackupList() {
     // Stub
+}
+
+int Optimizer::scanWakeTasksCount(bool disable) {
+    int count = 0;
+#ifdef Q_OS_WIN
+    HRESULT hr = CoInitializeEx(NULL, COINIT_APARTMENTTHREADED);
+    bool comInitialized = (hr == S_OK);
+
+    ITaskService* pService = nullptr;
+    hr = CoCreateInstance(CLSID_TaskScheduler,
+                           NULL,
+                           CLSCTX_INPROC_SERVER,
+                           IID_ITaskService,
+                           (void**)&pService);
+    if (SUCCEEDED(hr) && pService) {
+        hr = pService->Connect(_variant_t(), _variant_t(), _variant_t(), _variant_t());
+        if (SUCCEEDED(hr)) {
+            ITaskFolder* pRootFolder = nullptr;
+            hr = pService->GetFolder(_bstr_t(L"\\"), &pRootFolder);
+            if (SUCCEEDED(hr) && pRootFolder) {
+                scanFolderRecursively(pRootFolder, disable, count);
+                pRootFolder->Release();
+            }
+        }
+        pService->Release();
+    }
+
+    if (comInitialized) {
+        CoUninitialize();
+    }
+#else
+    Q_UNUSED(disable);
+    count = 12; // Simulation count
+#endif
+    return count;
+}
+
+void Optimizer::runSleepingPillScan() {
+    emit systemStepReported(tr("Scanning Task Scheduler for sleep wake-up tasks..."), "INFO");
+    int count = scanWakeTasksCount(false);
+    m_sleepingPillWakeCount = count;
+    emit sleepingPillWakeCountChanged(m_sleepingPillWakeCount);
+    emit systemStepReported(tr("Scan complete. Found %1 task(s) configured to wake the computer.").arg(count), "SUCCESS");
+}
+
+void Optimizer::stopWakeTasks() {
+    emit systemStepReported(tr("Disabling wake-to-run settings for all scheduled tasks..."), "INFO");
+    int count = scanWakeTasksCount(true);
+    m_sleepingPillWakeCount = 0;
+    emit sleepingPillWakeCountChanged(m_sleepingPillWakeCount);
+    emit systemStepReported(tr("Success: Disabled wake-to-run triggers for %1 task(s).").arg(count), "SUCCESS");
 }
 
 

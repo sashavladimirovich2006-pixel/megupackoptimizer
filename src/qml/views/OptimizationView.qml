@@ -236,6 +236,7 @@ Item {
         return false;
     }
     property bool hibernationChanged: optimizerBackend.hibernationActive !== optimizerBackend.originalHibernationActive
+    property bool coinstallersChanged: optimizerBackend.coinstallersActive !== optimizerBackend.originalCoinstallersActive
     property bool powerPlanChanged: optimizerBackend.targetPowerSchemeGuid !== optimizerBackend.activePowerSchemeGuid
     property bool bitlockerChanged: optimizerBackend.bitlockerActive !== optimizerBackend.originalBitlockerActive
     property bool discordOverlayChanged: optimizerBackend.discordOverlayActive !== optimizerBackend.originalDiscordOverlayActive
@@ -439,6 +440,7 @@ Item {
         if (firewallChanged) count++;
         if (notificationsChanged) count++;
         if (hibernationChanged) count++;
+        if (coinstallersChanged) count++;
         if (powerPlanChanged || optimizerBackend.deleteUltimateStaged) count++;
         if (bitlockerChanged) count++;
         if (discordOverlayChanged) count++;
@@ -703,6 +705,14 @@ Item {
             hasSidebar: false,
             revert: function() {
                 optimizerBackend.hibernationActive = optimizerBackend.originalHibernationActive;
+            }
+        });
+        if (coinstallersChanged) list.push({
+            name: qsTr("Co-installers"),
+            icon: "qrc:/MeguPackOptimizer/src/resources/settings.svg",
+            hasSidebar: false,
+            revert: function() {
+                optimizerBackend.coinstallersActive = optimizerBackend.originalCoinstallersActive;
             }
         });
         if (powerPlanChanged || optimizerBackend.deleteUltimateStaged) list.push({
@@ -1659,6 +1669,7 @@ Item {
         if (name === qsTr("BitLocker Drive Encryption") || name === "BitLocker Drive Encryption") return bitlockerPanel;
         if (name === qsTr("Windows Defender") || name === "Windows Defender") return defenderPanel;
         if (name === qsTr("USB 3.0 Power Saving") || name === "USB 3.0 Power Saving") return usbPanel;
+        if (name === qsTr("Co-installers") || name === "Co-installers") return coinstallersPanel;
         if (name === qsTr("Remote Access (RDP)") || name === "Remote Access (RDP)") return remoteAccessPanel;
         if (name === qsTr("Telemetry") || name === "Telemetry") return telemetryPanel;
         if (name === qsTr("Windows Update") || name === "Windows Update") return windowsUpdatePanel;
@@ -7492,6 +7503,226 @@ Item {
                         }
                     }
                 }
+
+                // Co-installers Panel
+                AcrylicPanel {
+                    id: coinstallersPanel
+                    width: parent.width
+                    height: 84
+
+                    Row {
+                        anchors.left: parent.left
+                        anchors.leftMargin: 16
+                        anchors.verticalCenter: parent.verticalCenter
+                        spacing: 12
+
+                        Rectangle {
+                            width: 40
+                            height: 40
+                            radius: 10
+                            color: Qt.rgba(Theme.accent.r, Theme.accent.g, Theme.accent.b, 0.15)
+                            anchors.verticalCenter: parent.verticalCenter
+
+                            Item {
+                                width: 20
+                                height: 20
+                                anchors.centerIn: parent
+                                Image {
+                                    id: coinstallersPanel_iconImg
+                                    source: "qrc:/MeguPackOptimizer/src/resources/settings.svg"
+                                    anchors.fill: parent
+                                    sourceSize.width: 20
+                                    sourceSize.height: 20
+                                    visible: false
+                                }
+                                ColorOverlay {
+                                    anchors.fill: coinstallersPanel_iconImg
+                                    source: coinstallersPanel_iconImg
+                                    color: Theme.accent
+                                }
+                            }
+                        }
+
+                        Column {
+                            anchors.verticalCenter: parent.verticalCenter
+                            spacing: 2
+
+                            Row {
+                                spacing: 8
+                                Text {
+                                    text: qsTr("Co-installers")
+                                    color: Theme.textPrimary
+                                    font.family: Theme.fontFamily
+                                    font.pixelSize: 14
+                                    font.bold: true
+                                    anchors.verticalCenter: parent.verticalCenter
+                                }
+                                ShowPathButton {
+                                    anchors.verticalCenter: parent.verticalCenter
+                                    onClicked: { optimizerBackend.showPath("coinstallers"); }
+                                }
+                                Rectangle {
+                                    visible: root.coinstallersChanged
+                                    height: 16
+                                    width: selectedTextCoinstallers.contentWidth + 10
+                                    radius: 4
+                                    color: Qt.rgba(Theme.success.r, Theme.success.g, Theme.success.b, 0.15)
+                                    border.color: Theme.success
+                                    border.width: 1
+                                    anchors.verticalCenter: parent.verticalCenter
+                                    Text {
+                                        id: selectedTextCoinstallers
+                                        text: qsTr("Selected for application")
+                                        color: Theme.success
+                                        font.family: Theme.fontFamily
+                                        font.pixelSize: 8
+                                        font.bold: true
+                                        anchors.centerIn: parent
+                                    }
+                                }
+                            }
+
+                            Text {
+                                text: qsTr("Disable co-installers to prevent third-party installers from launching during hardware installation.")
+                                color: Theme.textMuted
+                                font.family: Theme.fontFamily
+                                font.pixelSize: 11
+                            }
+                        }
+                    }
+
+                    Row {
+                        anchors.right: parent.right
+                        anchors.rightMargin: 16
+                        anchors.verticalCenter: parent.verticalCenter
+                        spacing: 16
+
+                        MeguSwitch {
+                            checked: !optimizerBackend.coinstallersActive
+                            anchors.verticalCenter: parent.verticalCenter
+                            onToggled: (isChecked) => {
+                                optimizerBackend.coinstallersActive = !isChecked;
+                            }
+                        }
+                    }
+                }
+
+                // Sleeping Pill Panel
+                AcrylicPanel {
+                    id: sleepingPillPanel
+                    width: parent.width
+                    height: 84
+
+                    Row {
+                        anchors.left: parent.left
+                        anchors.leftMargin: 16
+                        anchors.verticalCenter: parent.verticalCenter
+                        spacing: 12
+
+                        Rectangle {
+                            width: 40
+                            height: 40
+                            radius: 10
+                            color: Qt.rgba(Theme.accent.r, Theme.accent.g, Theme.accent.b, 0.15)
+                            anchors.verticalCenter: parent.verticalCenter
+
+                            Item {
+                                width: 20
+                                height: 20
+                                anchors.centerIn: parent
+                                Image {
+                                    id: sleepingPillPanel_iconImg
+                                    source: "qrc:/MeguPackOptimizer/src/resources/bolt.svg"
+                                    anchors.fill: parent
+                                    sourceSize.width: 20
+                                    sourceSize.height: 20
+                                    visible: false
+                                }
+                                ColorOverlay {
+                                    anchors.fill: sleepingPillPanel_iconImg
+                                    source: sleepingPillPanel_iconImg
+                                    color: Theme.accent
+                                }
+                            }
+                        }
+
+                        Column {
+                            anchors.verticalCenter: parent.verticalCenter
+                            spacing: 2
+
+                            Row {
+                                spacing: 8
+                                Text {
+                                    text: qsTr("Sleeping Pill")
+                                    color: Theme.textPrimary
+                                    font.family: Theme.fontFamily
+                                    font.pixelSize: 14
+                                    font.bold: true
+                                    anchors.verticalCenter: parent.verticalCenter
+                                }
+                            }
+
+                            Text {
+                                text: qsTr("Prevent background scheduled tasks from waking up your computer from sleep.")
+                                color: Theme.textMuted
+                                font.family: Theme.fontFamily
+                                font.pixelSize: 11
+                            }
+                        }
+                    }
+
+                    Row {
+                        anchors.right: parent.right
+                        anchors.rightMargin: 16
+                        anchors.verticalCenter: parent.verticalCenter
+                        spacing: 16
+
+                        // Arrow button that opens drawer
+                        Rectangle {
+                            width: 32
+                            height: 32
+                            radius: 16
+                            color: sleepingPillArrowMouseArea.containsMouse ? Theme.accentDim : "transparent"
+                            border.color: sleepingPillArrowMouseArea.containsMouse ? Theme.accent : Theme.border
+                            border.width: 1
+                            anchors.verticalCenter: parent.verticalCenter
+
+                            Behavior on color { ColorAnimation { duration: Theme.animFast } }
+                            Behavior on border.color { ColorAnimation { duration: Theme.animFast } }
+
+                            Item {
+                                width: 14
+                                height: 14
+                                anchors.centerIn: parent
+                                x: sleepingPillArrowMouseArea.containsMouse ? (parent.width/2 - 5) : (parent.width/2 - 7)
+                                Behavior on x { NumberAnimation { duration: Theme.animNormal; easing.type: Easing.OutCubic } }
+                                Image {
+                                    id: sleepingPillArrowImg
+                                    source: "qrc:/MeguPackOptimizer/src/resources/arrow.svg"
+                                    anchors.fill: parent
+                                    sourceSize.width: 14
+                                    sourceSize.height: 14
+                                    visible: false
+                                }
+                                ColorOverlay {
+                                    anchors.fill: sleepingPillArrowImg
+                                    source: sleepingPillArrowImg
+                                    color: sleepingPillArrowMouseArea.containsMouse ? Theme.accent : Theme.textSecondary
+                                }
+                            }
+
+                            MouseArea {
+                                id: sleepingPillArrowMouseArea
+                                anchors.fill: parent
+                                hoverEnabled: true
+                                cursorShape: Qt.PointingHandCursor
+                                onClicked: {
+                                    root.activeDrawer = "sleepingPill";
+                                }
+                            }
+                        }
+                    }
+                }
             }
 
             // 4. HEALTH CATEGORY
@@ -7751,6 +7982,7 @@ Item {
                             if (root.activeDrawer === "startMenuCustomization") return qsTr("Start Menu Customization");
                             if (root.activeDrawer === "desktopCustomization") return qsTr("Desktop Customization");
                             if (root.activeDrawer === "health") return qsTr("HEALTH");
+                            if (root.activeDrawer === "sleepingPill") return qsTr("SLEEPING PILL");
                             return "";
                         }
                         color: Theme.textPrimary
@@ -7827,6 +8059,7 @@ Item {
                         if (root.activeDrawer === "startMenuCustomization") return startMenuDrawer.implicitHeight;
                         if (root.activeDrawer === "desktopCustomization") return desktopDrawer.implicitHeight;
                         if (root.activeDrawer === "health") return healthDrawer.implicitHeight;
+                        if (root.activeDrawer === "sleepingPill") return sleepingPillDrawer.implicitHeight;
                         return height;
                     }
 
@@ -7953,6 +8186,14 @@ Item {
                     HealthDrawer {
                         id: healthDrawer
                         visible: root.activeDrawer === "health"
+                        width: visible ? parent.width : 800
+                        height: visible ? implicitHeight : 0
+                    }
+
+                    // 18. Sleeping Pill Drawer Content
+                    SleepingPillDrawer {
+                        id: sleepingPillDrawer
+                        visible: root.activeDrawer === "sleepingPill"
                         width: visible ? parent.width : 800
                         height: visible ? implicitHeight : 0
                     }

@@ -63,6 +63,7 @@ qt_add_qml_module(megu_pack_optimizer
         src/qml/views/StartMenuDrawer.qml
         src/qml/views/DesktopDrawer.qml
         src/qml/views/HealthDrawer.qml
+        src/qml/views/SleepingPillDrawer.qml
     RESOURCES
         src/resources/settings.svg
         src/resources/steam.svg

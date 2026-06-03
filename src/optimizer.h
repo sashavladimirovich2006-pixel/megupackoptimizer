@@ -232,6 +232,9 @@ class Optimizer : public QObject {
     Q_PROPERTY(bool isOptimizingSystem READ isOptimizingSystem NOTIFY isOptimizingSystemChanged)
     Q_PROPERTY(double systemProgress READ systemProgress NOTIFY systemProgressChanged)
     Q_PROPERTY(QVariantList backupList READ backupList NOTIFY backupListChanged)
+    Q_PROPERTY(bool coinstallersActive READ coinstallersActive WRITE setCoinstallersActive NOTIFY coinstallersActiveChanged)
+    Q_PROPERTY(bool originalCoinstallersActive READ originalCoinstallersActive NOTIFY originalCoinstallersActiveChanged)
+    Q_PROPERTY(int sleepingPillWakeCount READ sleepingPillWakeCount NOTIFY sleepingPillWakeCountChanged)
 
 public:
     explicit Optimizer(QObject *parent = nullptr);
@@ -441,6 +444,9 @@ public:
     bool originalDesktopAeroShake() const { return m_originalDesktopAeroShake; }
     int desktopWallpaperQuality() const { return m_desktopWallpaperQuality; }
     int originalDesktopWallpaperQuality() const { return m_originalDesktopWallpaperQuality; }
+    bool coinstallersActive() const { return m_coinstallersActive; }
+    bool originalCoinstallersActive() const { return m_originalCoinstallersActive; }
+    int sleepingPillWakeCount() const { return m_sleepingPillWakeCount; }
 
 
     int windowsUpdateMode() const { return m_windowsUpdateMode; }
@@ -561,6 +567,7 @@ public:
     void setDesktopShowDesktopButton(bool val);
     void setDesktopAeroShake(bool val);
     void setDesktopWallpaperQuality(int val);
+    void setCoinstallersActive(bool val);
 
 
     void setWindowsUpdateMode(int mode);
@@ -605,6 +612,8 @@ public:
     Q_INVOKABLE void restartExplorer();
     Q_INVOKABLE void restartGraphicsDriver();
     Q_INVOKABLE void rebuildIconCache();
+    Q_INVOKABLE void runSleepingPillScan();
+    Q_INVOKABLE void stopWakeTasks();
     Q_INVOKABLE void scanSteamInstalledGames();
     Q_INVOKABLE QVariantMap getDriveInfo(const QString &path);
     Q_INVOKABLE bool clearSteamDownloadCache();
@@ -809,6 +818,9 @@ signals:
     void originalDesktopAeroShakeChanged(bool val);
     void desktopWallpaperQualityChanged(int val);
     void originalDesktopWallpaperQualityChanged(int val);
+    void coinstallersActiveChanged(bool val);
+    void originalCoinstallersActiveChanged(bool val);
+    void sleepingPillWakeCountChanged(int val);
 
 
     void windowsUpdateModeChanged(int mode);
@@ -846,6 +858,7 @@ private:
     void scanDrives();
     bool checkIsDiscordOverlayActive();
     void setDiscordOverlayFilesActive(bool active);
+    int scanWakeTasksCount(bool disable = false);
 
     // System specs variables
     QString m_osName;
@@ -1048,6 +1061,9 @@ private:
     bool m_originalDesktopAeroShake = true;
     int m_desktopWallpaperQuality = 85;
     int m_originalDesktopWallpaperQuality = 85;
+    bool m_coinstallersActive = true;
+    bool m_originalCoinstallersActive = true;
+    int m_sleepingPillWakeCount = 0;
 
 
     int m_windowsUpdateMode = 0;
