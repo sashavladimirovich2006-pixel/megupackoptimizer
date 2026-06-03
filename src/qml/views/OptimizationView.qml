@@ -195,6 +195,7 @@ Item {
     }
 
     property bool pagefileChanged: optimizerBackend.pagefileMin !== optimizerBackend.originalPagefileMin || optimizerBackend.pagefileMax !== optimizerBackend.originalPagefileMax
+    property bool isPagefileInputValid: optimizerBackend.pagefileMin <= optimizerBackend.pagefileMax
     property bool classicContextMenuChanged: optimizerBackend.classicContextMenuActive !== optimizerBackend.originalClassicContextMenuActive
     property bool shortcutArrowsChanged: optimizerBackend.shortcutArrowsActive !== optimizerBackend.originalShortcutArrowsActive
     property bool clipboardHistoryChanged: optimizerBackend.clipboardHistoryActive !== optimizerBackend.originalClipboardHistoryActive
@@ -6769,10 +6770,11 @@ Item {
                             }
 
                             Text {
-                                text: qsTr("Configure system virtual memory limits (initial/maximum size in MB).")
-                                color: Theme.textMuted
+                                text: !root.isPagefileInputValid ? qsTr("Warning: Minimum size cannot be greater than maximum size!") : qsTr("Configure system virtual memory limits (initial/maximum size in MB).")
+                                color: !root.isPagefileInputValid ? Theme.error : Theme.textMuted
                                 font.family: Theme.fontFamily
                                 font.pixelSize: 11
+                                font.bold: !root.isPagefileInputValid
                             }
                         }
                     }
@@ -6799,7 +6801,7 @@ Item {
                                 height: 24
                                 color: Theme.panelBg
                                 radius: 4
-                                border.color: minInput.activeFocus ? Theme.accent : Qt.rgba(Theme.border.r, Theme.border.g, Theme.border.b, 0.4)
+                                border.color: !root.isPagefileInputValid ? Theme.error : (minInput.activeFocus ? Theme.accent : Qt.rgba(Theme.border.r, Theme.border.g, Theme.border.b, 0.4))
                                 border.width: 1
 
                                 TextInput {
@@ -6851,7 +6853,7 @@ Item {
                                 height: 24
                                 color: Theme.panelBg
                                 radius: 4
-                                border.color: maxInput.activeFocus ? Theme.accent : Qt.rgba(Theme.border.r, Theme.border.g, Theme.border.b, 0.4)
+                                border.color: !root.isPagefileInputValid ? Theme.error : (maxInput.activeFocus ? Theme.accent : Qt.rgba(Theme.border.r, Theme.border.g, Theme.border.b, 0.4))
                                 border.width: 1
 
                                 TextInput {
@@ -8072,6 +8074,90 @@ Item {
         anchors.right: parent.right
         height: 80
 
+        // Warning row when page file validation fails
+        RowLayout {
+            visible: !root.isPagefileInputValid
+            anchors.right: optimizeButton.left
+            anchors.rightMargin: 16
+            anchors.verticalCenter: parent.verticalCenter
+            spacing: 8
+
+            // Warning icon
+            Item {
+                width: 14
+                height: 14
+                Image {
+                    id: warnIconImg
+                    source: "qrc:/MeguPackOptimizer/src/resources/warning.svg"
+                    anchors.fill: parent
+                    sourceSize.width: 14
+                    sourceSize.height: 14
+                    visible: false
+                }
+                ColorOverlay {
+                    anchors.fill: warnIconImg
+                    source: warnIconImg
+                    color: Theme.error
+                }
+            }
+
+            Text {
+                text: qsTr("Invalid limits: Min size exceeds Max!")
+                color: Theme.error
+                font.family: Theme.fontFamily
+                font.pixelSize: 11
+                font.bold: true
+            }
+
+            // Clickable eye icon button to locate Page File option
+            Item {
+                width: 24
+                height: 24
+
+                Rectangle {
+                    anchors.fill: parent
+                    radius: 12
+                    color: eyeMouseArea.containsMouse ? "#1AFFFFFF" : "transparent"
+                    Behavior on color { ColorAnimation { duration: Theme.animFast } }
+                }
+
+                Item {
+                    width: 14
+                    height: 14
+                    anchors.centerIn: parent
+                    Image {
+                        id: eyeIconImg
+                        source: "qrc:/MeguPackOptimizer/src/resources/eye.svg"
+                        anchors.fill: parent
+                        sourceSize.width: 14
+                        sourceSize.height: 14
+                        visible: false
+                    }
+                    ColorOverlay {
+                        anchors.fill: eyeIconImg
+                        source: eyeIconImg
+                        color: eyeMouseArea.containsMouse ? Theme.accent : Theme.textSecondary
+                    }
+                }
+
+                MouseArea {
+                    id: eyeMouseArea
+                    anchors.fill: parent
+                    hoverEnabled: true
+                    cursorShape: Qt.PointingHandCursor
+                    onClicked: {
+                        root.locateFunction("Page File");
+                    }
+                }
+                
+                ToolTip {
+                    visible: eyeMouseArea.containsMouse
+                    delay: 200
+                    text: qsTr("Locate Page File option")
+                }
+            }
+        }
+
         MeguButton {
             id: optimizeButton
             text: qsTr("Optimize")
@@ -8080,7 +8166,7 @@ Item {
             anchors.centerIn: parent
             width: 180
             height: 40
-            enabled: !optimizerBackend.isOptimizingSystem && root.hasChanges
+            enabled: !optimizerBackend.isOptimizingSystem && root.hasChanges && root.isPagefileInputValid
             onClicked: {
                 if (root.discordOverlayChanged && optimizerBackend.isDiscordRunning()) {
                     discordCloseDialog.open();

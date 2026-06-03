@@ -10090,9 +10090,80 @@ void Optimizer::showPath(const QString &funcName) {
 #else
         Logger::log("[Simulation] Opening Registry Editor for Taskbar 'End task' option...", "INFO");
 #endif
-    } else if (funcName == "visualeffects" || funcName == "pagefile") {
+    } else if (funcName == "visualeffects") {
+        QProcess::startDetached("SystemPropertiesPerformance.exe");
+        Logger::log("Opening Windows Visual Effects settings (Performance Options)...", "INFO");
+    } else if (funcName == "pagefile") {
+#ifdef Q_OS_WIN
+        qint64 pid = 0;
+        if (QProcess::startDetached("SystemPropertiesPerformance.exe", QStringList(), QString(), &pid) && pid > 0) {
+            Logger::log(QString("Opening Performance Options (Page File) with PID: %1").arg(pid), "INFO");
+            // Run a worker thread to wait for the window and switch to Advanced tab (index 1)
+            QThread* worker = QThread::create([pid]() {
+                int attempts = 50; // 50 * 100ms = 5 seconds max wait
+                HWND targetHwnd = nullptr;
+                while (attempts > 0 && !targetHwnd) {
+                    QThread::msleep(100);
+                    attempts--;
+                    
+                    struct EnumData {
+                        qint64 targetPid;
+                        HWND hwnd;
+                    } data = { pid, nullptr };
+                    
+                    EnumWindows([](HWND hwnd, LPARAM lParam) -> BOOL {
+                        EnumData* pData = reinterpret_cast<EnumData*>(lParam);
+                        if (IsWindowVisible(hwnd)) {
+                            DWORD winPid = 0;
+                            GetWindowThreadProcessId(hwnd, &winPid);
+                            wchar_t className[256];
+                            if (GetClassNameW(hwnd, className, 256) > 0 && wcscmp(className, L"#32770") == 0) {
+                                if (winPid == pData->targetPid) {
+                                    pData->hwnd = hwnd;
+                                    return FALSE; // stop
+                                }
+                                // Fallback by window title
+                                wchar_t title[256];
+                                if (GetWindowTextW(hwnd, title, 256) > 0) {
+                                    if (wcsstr(title, L"Performance Options") != nullptr || 
+                                        wcsstr(title, L"Параметры быстродействия") != nullptr) {
+                                        pData->hwnd = hwnd;
+                                        return FALSE; // stop
+                                    }
+                                }
+                            }
+                        }
+                        return TRUE;
+                    }, reinterpret_cast<LPARAM>(&data));
+                    
+                    targetHwnd = data.hwnd;
+                }
+                
+                if (targetHwnd) {
+                    QThread::msleep(150); // Snappy delay to let UI draw
+                    HWND tabHwnd = FindWindowExW(targetHwnd, nullptr, L"SysTabControl32", nullptr);
+                    if (tabHwnd) {
+                        // Send message to select the second tab (index 1 = Advanced)
+                        SendMessageW(tabHwnd, 0x130C /* TCM_SETCURSEL */, 1, 0);
+                        
+                        // Notify the parent dialog of the tab change
+                        NMHDR nmhdr;
+                        nmhdr.hwndFrom = tabHwnd;
+                        nmhdr.idFrom = GetDlgCtrlID(tabHwnd);
+                        nmhdr.code = static_cast<UINT>(-551) /* TCN_SELCHANGE */;
+                        SendMessageW(targetHwnd, WM_NOTIFY, nmhdr.idFrom, reinterpret_cast<LPARAM>(&nmhdr));
+                    }
+                }
+            });
+            QObject::connect(worker, &QThread::finished, worker, &QThread::deleteLater);
+            worker->start();
+        } else {
+            QProcess::startDetached("SystemPropertiesPerformance.exe");
+        }
+#else
         QProcess::startDetached("SystemPropertiesPerformance.exe");
         Logger::log("Opening Windows Visual Effects / Page File settings (Performance Options)...", "INFO");
+#endif
     } else if (funcName == "powerplan") {
         QProcess::startDetached("control.exe", QStringList() << "powercfg.cpl");
         Logger::log("Opening Windows Power Options Control Panel...", "INFO");
