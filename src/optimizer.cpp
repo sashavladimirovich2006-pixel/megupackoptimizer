@@ -33,6 +33,8 @@
 #include <tlhelp32.h>
 #include <taskschd.h>
 #include <comdef.h>
+#include <shldisp.h>
+#include <exdisp.h>
 #pragma comment(lib, "winspool.lib")
 #pragma comment(lib, "powrprof.lib")
 #pragma comment(lib, "propsys.lib")
@@ -9943,6 +9945,94 @@ void Optimizer::startSystemOptimization() {
     worker->start();
 }
 
+#ifdef Q_OS_WIN
+static void launchNonElevated(const QString &file, const QString &params = "") {
+    bool launched = false;
+    HRESULT hr = CoInitializeEx(NULL, COINIT_APARTMENTTHREADED | COINIT_DISABLE_OLE1DDE);
+    bool comInitialized = (hr == S_OK || hr == S_FALSE);
+
+    IShellWindows* pShellWindows = nullptr;
+    hr = CoCreateInstance(CLSID_ShellWindows, NULL, CLSCTX_ALL, IID_IShellWindows, (void**)&pShellWindows);
+    if (SUCCEEDED(hr) && pShellWindows) {
+        VARIANT vtLoc;
+        VariantInit(&vtLoc);
+        vtLoc.vt = VT_I4;
+        vtLoc.lVal = CSIDL_DESKTOP;
+
+        VARIANT vtEmpty;
+        VariantInit(&vtEmpty);
+
+        long lhwnd = 0;
+        IDispatch* pdisp = nullptr;
+        
+        hr = pShellWindows->FindWindowSW(&vtLoc, &vtEmpty, SWC_DESKTOP, &lhwnd, SWFO_NEEDDISPATCH, &pdisp);
+        if (SUCCEEDED(hr) && pdisp) {
+            IShellFolderViewDual* pFolderView = nullptr;
+            hr = pdisp->QueryInterface(IID_IShellFolderViewDual, (void**)&pFolderView);
+            if (SUCCEEDED(hr) && pFolderView) {
+                IDispatch* pdispShell = nullptr;
+                hr = pFolderView->get_Application(&pdispShell);
+                if (SUCCEEDED(hr) && pdispShell) {
+                    IShellDispatch2* pShellDispatch = nullptr;
+                    hr = pdispShell->QueryInterface(IID_IShellDispatch2, (void**)&pShellDispatch);
+                    if (SUCCEEDED(hr) && pShellDispatch) {
+                        BSTR bstrFile = SysAllocString(file.toStdWString().c_str());
+                        
+                        VARIANT varParams;
+                        VariantInit(&varParams);
+                        if (!params.isEmpty()) {
+                            varParams.vt = VT_BSTR;
+                            varParams.bstrVal = SysAllocString(params.toStdWString().c_str());
+                        }
+
+                        VARIANT varDir;
+                        VariantInit(&varDir);
+
+                        VARIANT varOp;
+                        VariantInit(&varOp);
+                        varOp.vt = VT_BSTR;
+                        varOp.bstrVal = SysAllocString(L"open");
+
+                        VARIANT varShow;
+                        VariantInit(&varShow);
+                        varShow.vt = VT_I4;
+                        varShow.lVal = SW_SHOWNORMAL;
+
+                        hr = pShellDispatch->ShellExecute(bstrFile, varParams, varDir, varOp, varShow);
+                        if (SUCCEEDED(hr)) {
+                            launched = true;
+                        }
+
+                        SysFreeString(bstrFile);
+                        if (varParams.vt == VT_BSTR) {
+                            SysFreeString(varParams.bstrVal);
+                        }
+                        SysFreeString(varOp.bstrVal);
+                        pShellDispatch->Release();
+                    }
+                    pdispShell->Release();
+                }
+                pFolderView->Release();
+            }
+            pdisp->Release();
+        }
+        pShellWindows->Release();
+    }
+
+    if (comInitialized) {
+        CoUninitialize();
+    }
+
+    if (!launched) {
+        if (params.isEmpty()) {
+            QProcess::startDetached("explorer.exe", QStringList() << file);
+        } else {
+            QProcess::startDetached("explorer.exe", QStringList() << file << params);
+        }
+    }
+}
+#endif
+
 void Optimizer::showPath(const QString &funcName) {
     if (funcName == "Windows Search service" || funcName == "wsearch") {
         QProcess::startDetached("cmd.exe", QStringList() << "/c" << "start services.msc");
@@ -9951,28 +10041,52 @@ void Optimizer::showPath(const QString &funcName) {
         QProcess::startDetached("control.exe", QStringList() << "/name" << "Microsoft.PowerOptions" << "/page" << "pageGlobalSettings");
         Logger::log("Opening Power Options Global Settings...", "INFO");
     } else if (funcName == "coreisolation") {
+#ifdef Q_OS_WIN
+        launchNonElevated("windowsdefender://devicesecurity");
+#else
         QProcess::startDetached("explorer.exe", QStringList() << "windowsdefender://devicesecurity");
+#endif
         Logger::log("Opening Device Security (Core Isolation) settings...", "INFO");
     } else if (funcName == "hags") {
+#ifdef Q_OS_WIN
+        launchNonElevated("ms-settings:display-advancedgraphics");
+#else
         QProcess::startDetached("explorer.exe", QStringList() << "ms-settings:display-advancedgraphics");
+#endif
         Logger::log("Opening Graphics Settings (HAGS) page...", "INFO");
     } else if (funcName == "mouseacceleration") {
         QProcess::startDetached("control.exe", QStringList() << "main.cpl,,1");
         Logger::log("Opening Mouse Properties (Pointer Options)...", "INFO");
     } else if (funcName == "gamemode") {
+#ifdef Q_OS_WIN
+        launchNonElevated("ms-settings:gaming-gamemode");
+#else
         QProcess::startDetached("explorer.exe", QStringList() << "ms-settings:gaming-gamemode");
+#endif
         Logger::log("Opening Game Mode settings...", "INFO");
     } else if (funcName == "firewall") {
+#ifdef Q_OS_WIN
+        launchNonElevated("windowsdefender://network");
+#else
         QProcess::startDetached("explorer.exe", QStringList() << "windowsdefender://network");
+#endif
         Logger::log("Opening Firewall & Network Protection settings...", "INFO");
     } else if (funcName == "usb") {
         QProcess::startDetached("cmd.exe", QStringList() << "/c" << "start devmgmt.msc");
         Logger::log(QString("Opening Device Manager for %1...").arg(funcName), "INFO");
     } else if (funcName == "notifications") {
+#ifdef Q_OS_WIN
+        launchNonElevated("ms-settings:notifications");
+#else
         QProcess::startDetached("explorer.exe", QStringList() << "ms-settings:notifications");
+#endif
         Logger::log("Opening Windows Notifications Settings...", "INFO");
     } else if (funcName == "storagesense" || funcName == "storage") {
+#ifdef Q_OS_WIN
+        launchNonElevated("ms-settings:storagesense");
+#else
         QProcess::startDetached("explorer.exe", QStringList() << "ms-settings:storagesense");
+#endif
         Logger::log("Opening Windows Storage Sense Settings...", "INFO");
     } else if (funcName == "bitlocker") {
         QProcess::startDetached("control.exe", QStringList() << "/name" << "Microsoft.BitLockerDriveEncryption");
@@ -9983,13 +10097,25 @@ void Optimizer::showPath(const QString &funcName) {
         QProcess::startDetached("explorer.exe", QStringList() << path);
         Logger::log("Opening Discord AppData directory in File Explorer...", "INFO");
     } else if (funcName == "defender") {
+#ifdef Q_OS_WIN
+        launchNonElevated("windowsdefender://threatsettings");
+#else
         QProcess::startDetached("cmd.exe", QStringList() << "/c" << "start windowsdefender://threatsettings");
+#endif
         Logger::log("Opening Windows Defender Virus & threat protection settings...", "INFO");
     } else if (funcName == "remoteaccess" || funcName == "rdp") {
+#ifdef Q_OS_WIN
+        launchNonElevated("ms-settings:remotedesktop");
+#else
         QProcess::startDetached("cmd.exe", QStringList() << "/c" << "start ms-settings:remotedesktop");
+#endif
         Logger::log("Opening Remote Desktop settings...", "INFO");
     } else if (funcName == "telemetry") {
+#ifdef Q_OS_WIN
+        launchNonElevated("ms-settings:privacy-feedback");
+#else
         QProcess::startDetached("cmd.exe", QStringList() << "/c" << "start ms-settings:privacy-feedback");
+#endif
         Logger::log("Opening Windows Diagnostic & Feedback settings...", "INFO");
     } else if (funcName == "ads" || funcName == "ad") {
 #ifdef Q_OS_WIN
@@ -10018,7 +10144,11 @@ void Optimizer::showPath(const QString &funcName) {
         Logger::log("[Simulation] Opening Registry Editor for DataCollection...", "INFO");
 #endif
     } else if (funcName == "windowsupdate") {
+#ifdef Q_OS_WIN
+        launchNonElevated("ms-settings:windowsupdate");
+#else
         QProcess::startDetached("cmd.exe", QStringList() << "/c" << "start ms-settings:windowsupdate");
+#endif
         Logger::log("Opening Windows Update settings...", "INFO");
     } else if (funcName == "classiccontextmenu") {
         HKEY hKey;
