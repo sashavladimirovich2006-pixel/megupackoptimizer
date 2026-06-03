@@ -4,6 +4,7 @@
 #include <QUrl>
 #include <QFileInfo>
 #include <QDir>
+#include <QStandardPaths>
 #include <QStorageInfo>
 #include <QDirIterator>
 #include <QThread>
@@ -5219,6 +5220,19 @@ void Optimizer::loadSystemStates() {
         isGodModeActive = true;
         RegCloseKey(hKeyGod);
     }
+    if (!isGodModeActive) {
+        // Check if a physical God Mode folder exists on the Desktop
+        QString desktopPath = QStandardPaths::writableLocation(QStandardPaths::DesktopLocation);
+        if (!desktopPath.isEmpty()) {
+            QDir desktopDir(desktopPath);
+            QStringList filters;
+            filters << "*.{ED7BA470-8E54-465E-825C-99712043E01C}";
+            QStringList godModeFolders = desktopDir.entryList(filters, QDir::Dirs | QDir::NoDotAndDotDot);
+            if (!godModeFolders.isEmpty()) {
+                isGodModeActive = true;
+            }
+        }
+    }
 #endif
     m_superuserGodModeActive = isGodModeActive;
     m_originalSuperuserGodModeActive = isGodModeActive;
@@ -9459,24 +9473,54 @@ void Optimizer::startSystemOptimization() {
 #ifdef Q_OS_WIN
             // 1. God Mode
             if (superuserGodModeVal != superuserGodModeOrig || force) {
+                QString desktopPath = QStandardPaths::writableLocation(QStandardPaths::DesktopLocation);
                 if (superuserGodModeVal) {
+                    bool regOk = false;
                     HKEY hKeyGod = nullptr;
                     DWORD disp = 0;
                     LONG res = RegCreateKeyExW(HKEY_CURRENT_USER, L"Software\\Microsoft\\Windows\\CurrentVersion\\Explorer\\Desktop\\NameSpace\\{ED7BA470-8E54-465E-825C-99712043E01C}", 0, nullptr, REG_OPTION_NON_VOLATILE, KEY_WRITE, nullptr, &hKeyGod, &disp);
                     if (res == ERROR_SUCCESS) {
                         RegCloseKey(hKeyGod);
+                        regOk = true;
+                    }
+                    
+                    bool dirOk = false;
+                    if (!desktopPath.isEmpty()) {
+                        QDir desktopDir(desktopPath);
+                        QString folderName = "GodMode.{ED7BA470-8E54-465E-825C-99712043E01C}";
+                        if (desktopDir.exists(folderName) || desktopDir.mkdir(folderName)) {
+                            dirOk = true;
+                        }
+                    }
+                    
+                    if (regOk || dirOk) {
                         emit systemStepReported(tr("God Mode enabled successfully."), "SUCCESS");
                     } else {
                         superuserSuccess = false;
-                        emit systemStepReported(tr("Failed to enable God Mode (Error code %1).").arg(res), "ERROR");
+                        emit systemStepReported(tr("Failed to enable God Mode."), "ERROR");
                     }
                 } else {
                     LONG res = RegDeleteKeyW(HKEY_CURRENT_USER, L"Software\\Microsoft\\Windows\\CurrentVersion\\Explorer\\Desktop\\NameSpace\\{ED7BA470-8E54-465E-825C-99712043E01C}");
-                    if (res == ERROR_SUCCESS || res == ERROR_FILE_NOT_FOUND) {
+                    bool regDeleted = (res == ERROR_SUCCESS || res == ERROR_FILE_NOT_FOUND);
+                    
+                    bool dirDeleted = true;
+                    if (!desktopPath.isEmpty()) {
+                        QDir desktopDir(desktopPath);
+                        QStringList filters;
+                        filters << "*.{ED7BA470-8E54-465E-825C-99712043E01C}";
+                        QStringList godModeFolders = desktopDir.entryList(filters, QDir::Dirs | QDir::NoDotAndDotDot);
+                        for (const QString &folder : godModeFolders) {
+                            if (!desktopDir.rmdir(folder)) {
+                                dirDeleted = false;
+                            }
+                        }
+                    }
+                    
+                    if (regDeleted && dirDeleted) {
                         emit systemStepReported(tr("God Mode disabled successfully."), "SUCCESS");
                     } else {
                         superuserSuccess = false;
-                        emit systemStepReported(tr("Failed to disable God Mode (Error code %1).").arg(res), "ERROR");
+                        emit systemStepReported(tr("Failed to fully disable God Mode."), "ERROR");
                     }
                 }
             }
