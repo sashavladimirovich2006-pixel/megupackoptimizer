@@ -41,6 +41,15 @@ Column {
                 Layout.fillWidth: true
                 wrapMode: Text.WordWrap
             }
+
+            Text {
+                text: qsTr("First perform a Scan, and then use Repair only if errors are found.")
+                color: Theme.textSecondary
+                font.family: Theme.fontFamily
+                font.pixelSize: 10
+                Layout.fillWidth: true
+                wrapMode: Text.WordWrap
+            }
         }
 
         // Info Button with Tooltip
