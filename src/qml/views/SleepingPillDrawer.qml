@@ -10,6 +10,14 @@ Column {
     width: parent.width
     spacing: 16
 
+    property string lastScanResultText: ""
+
+    Timer {
+        id: feedbackTimer
+        interval: 3000
+        onTriggered: lastScanResultText = ""
+    }
+
     Text {
         text: qsTr("Sleeping Pill prevents background scheduled tasks from waking your PC from sleep mode.")
         color: Theme.textSecondary
@@ -104,6 +112,9 @@ Column {
                     id: statusText
                     Layout.fillWidth: true
                     text: {
+                        if (lastScanResultText !== "") {
+                            return lastScanResultText;
+                        }
                         if (optimizerBackend.sleepingPillWakeCount < 0) {
                             return qsTr("Status: Not scanned yet");
                         } else if (optimizerBackend.sleepingPillWakeCount === 0) {
@@ -112,7 +123,12 @@ Column {
                             return qsTr("Status: Found %1 task(s) configured to wake the computer.").arg(optimizerBackend.sleepingPillWakeCount);
                         }
                     }
-                    color: optimizerBackend.sleepingPillWakeCount > 0 ? Theme.warning : Theme.textSecondary
+                    color: {
+                        if (lastScanResultText !== "") {
+                            return optimizerBackend.sleepingPillWakeCount > 0 ? Theme.warning : Theme.success;
+                        }
+                        return optimizerBackend.sleepingPillWakeCount > 0 ? Theme.warning : Theme.textSecondary;
+                    }
                     font.family: Theme.fontFamily
                     font.pixelSize: 11
                     font.bold: true
@@ -141,6 +157,13 @@ Column {
                     onClicked: {
                         successLabel.visible = false;
                         optimizerBackend.runSleepingPillScan();
+                        var count = optimizerBackend.sleepingPillWakeCount;
+                        if (count === 0) {
+                            lastScanResultText = qsTr("Scan complete: No wake tasks found.");
+                        } else {
+                            lastScanResultText = qsTr("Scan complete: Found %1 wake tasks.").arg(count);
+                        }
+                        feedbackTimer.restart();
                     }
                 }
 
