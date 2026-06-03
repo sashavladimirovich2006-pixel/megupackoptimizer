@@ -239,6 +239,8 @@ class Optimizer : public QObject {
     Q_PROPERTY(QVariantList backupList READ backupList NOTIFY backupListChanged)
     Q_PROPERTY(bool coinstallersActive READ coinstallersActive WRITE setCoinstallersActive NOTIFY coinstallersActiveChanged)
     Q_PROPERTY(bool originalCoinstallersActive READ originalCoinstallersActive NOTIFY originalCoinstallersActiveChanged)
+    Q_PROPERTY(bool storageSenseActive READ storageSenseActive WRITE setStorageSenseActive NOTIFY storageSenseActiveChanged)
+    Q_PROPERTY(bool originalStorageSenseActive READ originalStorageSenseActive NOTIFY originalStorageSenseActiveChanged)
     Q_PROPERTY(int sleepingPillWakeCount READ sleepingPillWakeCount NOTIFY sleepingPillWakeCountChanged)
     Q_PROPERTY(bool repairRunning READ repairRunning NOTIFY repairRunningChanged)
     Q_PROPERTY(double repairProgress READ repairProgress NOTIFY repairProgressChanged)
@@ -486,6 +488,8 @@ public:
     bool repairRunning() const { return m_repairRunning; }
     double repairProgress() const { return m_repairProgress; }
     QString repairStatusText() const { return m_repairStatusText; }
+    bool storageSenseActive() const { return m_storageSenseActive; }
+    bool originalStorageSenseActive() const { return m_originalStorageSenseActive; }
     int pagefileMin() const { return m_pagefileMin; }
     int originalPagefileMin() const { return m_originalPagefileMin; }
     int pagefileMax() const { return m_pagefileMax; }
@@ -584,6 +588,7 @@ public:
     void setDesktopAeroShake(bool val);
     void setDesktopWallpaperQuality(int val);
     void setCoinstallersActive(bool val);
+    void setStorageSenseActive(bool val);
 
 
     void setWindowsUpdateMode(int mode);
@@ -850,6 +855,8 @@ signals:
     void originalDriverUpdatesEnabledChanged(bool val);
     void appUpdatesEnabledChanged(bool val);
     void originalAppUpdatesEnabledChanged(bool val);
+    void storageSenseActiveChanged(bool val);
+    void originalStorageSenseActiveChanged(bool val);
     void memoryDiagnosticStatusChanged(int val);
     void repairRunningChanged(bool val);
     void repairProgressChanged(double val);
@@ -1134,4 +1141,6 @@ private:
     bool m_repairRunning = false;
     double m_repairProgress = 0.0;
     QString m_repairStatusText = "";
+    bool m_storageSenseActive = true;
+    bool m_originalStorageSenseActive = true;
 };

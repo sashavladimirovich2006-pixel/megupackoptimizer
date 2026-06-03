@@ -2858,6 +2858,13 @@ void Optimizer::setDriverUpdatesEnabled(bool val) {
     }
 }
 
+void Optimizer::setStorageSenseActive(bool val) {
+    if (m_storageSenseActive != val) {
+        m_storageSenseActive = val;
+        emit storageSenseActiveChanged(m_storageSenseActive);
+    }
+}
+
 void Optimizer::setAppUpdatesEnabled(bool val) {
     if (m_appUpdatesEnabled != val) {
         m_appUpdatesEnabled = val;
@@ -4772,6 +4779,23 @@ void Optimizer::loadSystemStates() {
     emit appUpdatesEnabledChanged(m_appUpdatesEnabled);
     emit originalAppUpdatesEnabledChanged(m_originalAppUpdatesEnabled);
 
+    bool storageSenseVal = true;
+#ifdef Q_OS_WIN
+    HKEY hKeyStorageSense;
+    if (RegOpenKeyExW(HKEY_CURRENT_USER, L"Software\\Microsoft\\Windows\\CurrentVersion\\StorageSense\\Parameters\\StoragePolicy", 0, KEY_READ, &hKeyStorageSense) == ERROR_SUCCESS) {
+        DWORD dwVal = 0;
+        DWORD dwSize = sizeof(dwVal);
+        if (RegQueryValueExW(hKeyStorageSense, L"01", nullptr, nullptr, reinterpret_cast<LPBYTE>(&dwVal), &dwSize) == ERROR_SUCCESS) {
+            storageSenseVal = (dwVal != 0);
+        }
+        RegCloseKey(hKeyStorageSense);
+    }
+#endif
+    m_storageSenseActive = storageSenseVal;
+    m_originalStorageSenseActive = storageSenseVal;
+    emit storageSenseActiveChanged(m_storageSenseActive);
+    emit originalStorageSenseActiveChanged(m_originalStorageSenseActive);
+
     // ----------------------------------------------------
     // Load Counter-Strike 2 launch options
     // ----------------------------------------------------
@@ -5689,6 +5713,8 @@ void Optimizer::startSystemOptimization() {
     bool origDriverUpdatesVal = m_originalDriverUpdatesEnabled;
     bool appUpdatesVal = m_appUpdatesEnabled;
     bool origAppUpdatesVal = m_originalAppUpdatesEnabled;
+    bool storageSenseVal = m_storageSenseActive;
+    bool origStorageSenseVal = m_originalStorageSenseActive;
 
     // Copy Ads targets
     bool adsTailoredExperiencesVal = m_adsTailoredExperiencesActive;
@@ -5882,7 +5908,7 @@ void Optimizer::startSystemOptimization() {
     bool forceVal = m_forceApplyAll;
     m_forceApplyAll = false;
 
-    QThread* worker = QThread::create([this, explorerShowExtensionsVal, origExplorerShowExtensionsVal, explorerShowHiddenVal, origExplorerShowHiddenVal, explorerShowExtractFilesVal, origExplorerShowExtractFilesVal, explorerClassicRibbonVal, origExplorerClassicRibbonVal, explorerShowPreviewPaneVal, origExplorerShowPreviewPaneVal, explorerShowRecycleBinVal, origExplorerShowRecycleBinVal, explorerPinHomeVal, origExplorerPinHomeVal, explorerPinGalleryVal, origExplorerPinGalleryVal, explorerUseCheckboxesVal, origExplorerUseCheckboxesVal, explorerSyncNotificationsVal, origExplorerSyncNotificationsVal, explorerLaunchToVal, origExplorerLaunchToVal, forceVal, searchVal, classicContextMenuVal, shortcutArrowsVal, clipboardHistoryVal, taskbarEndTaskVal, taskbarSecondsVal, hibernationVal, overlayVal, coreIsolationVal, hagsVal, mouseAccelVal, gameModeVal, firewallVal, bitlockerVal, discordOverlayVal, notificationsVal, notifGlobalVal, notifAppVal, notifSoundsVal, notifLockscreenVal, targetPowerSchemeVal, activePowerSchemeVal, deleteUltimateStagedVal, deleteDefenderStagedVal, defenderVal, defenderRegistryVal, defenderCmdVal, defenderServiceVal, remoteAccessVal, telemetryVal, telemetryDiagTrackVal, telemetryWapPushVal, telemetryCeipVal, telemetryWerVal, windowsUpdateModeVal, targets, originalTargets, origSearch, origClassicContextMenu, origShortcutArrows, origClipboardHistory, origTaskbarEndTask, origTaskbarSeconds, origHibernation, origOverlay, origCoreIsolation, origHags, origMouseAccel, origGameMode, origFirewall, origBitlocker, origDiscordOverlay, origNotifications, origNotifGlobal, origNotifApp, origNotifSounds, origNotifLockscreen, origDefender, origDefenderRegistry, origDefenderCmd, origDefenderService, origRemoteAccess, origTelemetry, origTelemetryDiagTrack, origTelemetryWapPush, origTelemetryCeip, origTelemetryWer, origWindowsUpdateMode, usbDevicesVal, origUsbDevicesVal, appNotificationSettingsVal, steamPathVal, cs2OptionsVal, origCs2OptionsVal, steamOverlayVal, origSteamOverlayVal, cs2OverlayVal, origCs2OverlayVal, visualEffectsVal, origVisualEffectsVal, steamFriendsSettingsVal, origSteamFriendsSettingsVal, steamFriendsChanged, pagefileMinVal, origPagefileMinVal, pagefileMaxVal, origPagefileMaxVal, adsTailoredExperiencesVal, origAdsTailored, adsAdvertisingIdVal, origAdsAdvertisingId, adsSuggestedContentVal, origAdsSuggestedContent, adsSettingsHomeVal, origAdsSettingsHome, adsSuggestedNotificationsVal, origAdsSuggestedNotifications, adsLockScreenTipsVal, origAdsLockScreenTips, adsWindowsTipsVal, origAdsWindowsTips, adsWelcomeExperienceVal, origAdsWelcomeExperience, adsFinishSetupVal, origAdsFinishSetup, privacyLocationVal, origPrivacyLocation, privacyTelemetryVal, origPrivacyTelemetry, privacyCeipVal, origPrivacyCeip, privacyAppsTelemetryVal, origPrivacyAppsTelemetry, privacyAppLaunchesVal, origPrivacyAppLaunches, privacyImproveInkingVal, origPrivacyImproveInking, privacyPersonalizeInkingVal, origPrivacyPersonalizeInking, privacyErrorReportingVal, origPrivacyErrorReporting, privacyLockScreenCameraVal, origPrivacyLockScreenCamera, privacyCameraIndicatorVal, origPrivacyCameraIndicator, privacyOnlineSpeechVal, origPrivacyOnlineSpeech, superuserGodModeVal, superuserDeveloperModeVal, superuserUacLevelVal, superuserUcpdVal, superuserGodModeOrig, superuserDeveloperModeOrig, superuserUacLevelOrig, superuserUcpdOrig, startMenuWebResultsVal, origStartMenuWebResultsVal, startMenuAutoinstallVal, origStartMenuAutoinstallVal, startMenuAccountNotificationsVal, origStartMenuAccountNotificationsVal, startMenuShowHibernateVal, origStartMenuShowHibernateVal, desktopShowThisPCVal, origDesktopShowThisPCVal, desktopShowWidgetsVal, origDesktopShowWidgetsVal, desktopIconShadowsVal, origDesktopIconShadowsVal, desktopShowDesktopButtonVal, origDesktopShowDesktopButtonVal, desktopAeroShakeVal, origDesktopAeroShakeVal, desktopWallpaperQualityVal, origDesktopWallpaperQualityVal, coinstallersActiveVal, origCoinstallersActiveVal, driverUpdatesVal, origDriverUpdatesVal, appUpdatesVal, origAppUpdatesVal]() {
+    QThread* worker = QThread::create([this, explorerShowExtensionsVal, origExplorerShowExtensionsVal, explorerShowHiddenVal, origExplorerShowHiddenVal, explorerShowExtractFilesVal, origExplorerShowExtractFilesVal, explorerClassicRibbonVal, origExplorerClassicRibbonVal, explorerShowPreviewPaneVal, origExplorerShowPreviewPaneVal, explorerShowRecycleBinVal, origExplorerShowRecycleBinVal, explorerPinHomeVal, origExplorerPinHomeVal, explorerPinGalleryVal, origExplorerPinGalleryVal, explorerUseCheckboxesVal, origExplorerUseCheckboxesVal, explorerSyncNotificationsVal, origExplorerSyncNotificationsVal, explorerLaunchToVal, origExplorerLaunchToVal, forceVal, searchVal, classicContextMenuVal, shortcutArrowsVal, clipboardHistoryVal, taskbarEndTaskVal, taskbarSecondsVal, hibernationVal, overlayVal, coreIsolationVal, hagsVal, mouseAccelVal, gameModeVal, firewallVal, bitlockerVal, discordOverlayVal, notificationsVal, notifGlobalVal, notifAppVal, notifSoundsVal, notifLockscreenVal, targetPowerSchemeVal, activePowerSchemeVal, deleteUltimateStagedVal, deleteDefenderStagedVal, defenderVal, defenderRegistryVal, defenderCmdVal, defenderServiceVal, remoteAccessVal, telemetryVal, telemetryDiagTrackVal, telemetryWapPushVal, telemetryCeipVal, telemetryWerVal, windowsUpdateModeVal, targets, originalTargets, origSearch, origClassicContextMenu, origShortcutArrows, origClipboardHistory, origTaskbarEndTask, origTaskbarSeconds, origHibernation, origOverlay, origCoreIsolation, origHags, origMouseAccel, origGameMode, origFirewall, origBitlocker, origDiscordOverlay, origNotifications, origNotifGlobal, origNotifApp, origNotifSounds, origNotifLockscreen, origDefender, origDefenderRegistry, origDefenderCmd, origDefenderService, origRemoteAccess, origTelemetry, origTelemetryDiagTrack, origTelemetryWapPush, origTelemetryCeip, origTelemetryWer, origWindowsUpdateMode, usbDevicesVal, origUsbDevicesVal, appNotificationSettingsVal, steamPathVal, cs2OptionsVal, origCs2OptionsVal, steamOverlayVal, origSteamOverlayVal, cs2OverlayVal, origCs2OverlayVal, visualEffectsVal, origVisualEffectsVal, steamFriendsSettingsVal, origSteamFriendsSettingsVal, steamFriendsChanged, pagefileMinVal, origPagefileMinVal, pagefileMaxVal, origPagefileMaxVal, adsTailoredExperiencesVal, origAdsTailored, adsAdvertisingIdVal, origAdsAdvertisingId, adsSuggestedContentVal, origAdsSuggestedContent, adsSettingsHomeVal, origAdsSettingsHome, adsSuggestedNotificationsVal, origAdsSuggestedNotifications, adsLockScreenTipsVal, origAdsLockScreenTips, adsWindowsTipsVal, origAdsWindowsTips, adsWelcomeExperienceVal, origAdsWelcomeExperience, adsFinishSetupVal, origAdsFinishSetup, privacyLocationVal, origPrivacyLocation, privacyTelemetryVal, origPrivacyTelemetry, privacyCeipVal, origPrivacyCeip, privacyAppsTelemetryVal, origPrivacyAppsTelemetry, privacyAppLaunchesVal, origPrivacyAppLaunches, privacyImproveInkingVal, origPrivacyImproveInking, privacyPersonalizeInkingVal, origPrivacyPersonalizeInking, privacyErrorReportingVal, origPrivacyErrorReporting, privacyLockScreenCameraVal, origPrivacyLockScreenCamera, privacyCameraIndicatorVal, origPrivacyCameraIndicator, privacyOnlineSpeechVal, origPrivacyOnlineSpeech, superuserGodModeVal, superuserDeveloperModeVal, superuserUacLevelVal, superuserUcpdVal, superuserGodModeOrig, superuserDeveloperModeOrig, superuserUacLevelOrig, superuserUcpdOrig, startMenuWebResultsVal, origStartMenuWebResultsVal, startMenuAutoinstallVal, origStartMenuAutoinstallVal, startMenuAccountNotificationsVal, origStartMenuAccountNotificationsVal, startMenuShowHibernateVal, origStartMenuShowHibernateVal, desktopShowThisPCVal, origDesktopShowThisPCVal, desktopShowWidgetsVal, origDesktopShowWidgetsVal, desktopIconShadowsVal, origDesktopIconShadowsVal, desktopShowDesktopButtonVal, origDesktopShowDesktopButtonVal, desktopAeroShakeVal, origDesktopAeroShakeVal, desktopWallpaperQualityVal, origDesktopWallpaperQualityVal, coinstallersActiveVal, origCoinstallersActiveVal, driverUpdatesVal, origDriverUpdatesVal, appUpdatesVal, origAppUpdatesVal, storageSenseVal, origStorageSenseVal]() {
         // Step 00: Auto-create backup before making changes
         if (!forceVal && Settings::instance()->createBackup()) {
             emit systemStepReported(tr("Creating automatic system backup..."), "INFO");
@@ -5980,6 +6006,7 @@ void Optimizer::startSystemOptimization() {
                           windowsUpdateModeChanged ||
                           (driverUpdatesVal != origDriverUpdatesVal) ||
                           (appUpdatesVal != origAppUpdatesVal) ||
+                          (storageSenseVal != origStorageSenseVal) ||
                           powerPlanChanged ||
                           usbChanged ||
                           cs2Changed ||
@@ -8677,6 +8704,27 @@ void Optimizer::startSystemOptimization() {
 #endif
         }
 
+        // Step 1.95: Storage Sense Configuration (only if changed)
+        bool storageSenseSuccess = true;
+        if (storageSenseVal != origStorageSenseVal || force) {
+            emit systemStepReported(tr("Configuring Storage Sense..."), "INFO");
+            QThread::msleep(800);
+#ifdef Q_OS_WIN
+            HKEY hKeyStorage = nullptr;
+            if (RegCreateKeyExW(HKEY_CURRENT_USER, L"Software\\Microsoft\\Windows\\CurrentVersion\\StorageSense\\Parameters\\StoragePolicy", 0, nullptr, REG_OPTION_NON_VOLATILE, KEY_WRITE, nullptr, &hKeyStorage, nullptr) == ERROR_SUCCESS) {
+                DWORD val = storageSenseVal ? 1 : 0;
+                RegSetValueExW(hKeyStorage, L"01", 0, REG_DWORD, reinterpret_cast<const BYTE*>(&val), sizeof(val));
+                RegCloseKey(hKeyStorage);
+                emit systemStepReported(storageSenseVal ? tr("Storage Sense enabled successfully.") : tr("Storage Sense disabled successfully."), "SUCCESS");
+            } else {
+                storageSenseSuccess = false;
+                emit systemStepReported(tr("Failed to configure Storage Sense."), "ERROR");
+            }
+#else
+            emit systemStepReported(tr("[Simulation] Storage Sense set to: %1").arg(storageSenseVal ? "Enabled" : "Disabled"), "SUCCESS");
+#endif
+        }
+
         // Steps 2+: Iterate drives in target list (only if changed)
         int driveIndex = 0;
         int totalDrives = targets.keys().size();
@@ -9415,6 +9463,7 @@ void Optimizer::startSystemOptimization() {
         m_originalWindowsUpdateMode = windowsUpdateModeVal;
         m_originalDriverUpdatesEnabled = driverUpdatesVal;
         m_originalAppUpdatesEnabled = appUpdatesVal;
+        m_originalStorageSenseActive = storageSenseVal;
         m_originalCs2LaunchOptions = cs2OptionsVal;
         m_originalSteamOverlayActive = steamOverlayVal;
         m_originalCs2OverlayActive = cs2OverlayVal;
@@ -9510,6 +9559,7 @@ void Optimizer::startSystemOptimization() {
         emit originalWindowsUpdateModeChanged(m_originalWindowsUpdateMode);
         emit originalDriverUpdatesEnabledChanged(m_originalDriverUpdatesEnabled);
         emit originalAppUpdatesEnabledChanged(m_originalAppUpdatesEnabled);
+        emit originalStorageSenseActiveChanged(m_originalStorageSenseActive);
 
         emit originalExplorerShowExtensionsChanged(m_originalExplorerShowExtensions);
         emit originalExplorerShowHiddenChanged(m_originalExplorerShowHidden);
@@ -9605,6 +9655,9 @@ void Optimizer::showPath(const QString &funcName) {
     } else if (funcName == "notifications") {
         QProcess::startDetached("cmd.exe", QStringList() << "/c" << "start ms-settings:notifications");
         Logger::log("Opening Windows Notifications Settings...", "INFO");
+    } else if (funcName == "storagesense" || funcName == "storage") {
+        QProcess::startDetached("cmd.exe", QStringList() << "/c" << "start ms-settings:storagesense");
+        Logger::log("Opening Windows Storage Sense Settings...", "INFO");
     } else if (funcName == "bitlocker") {
         QProcess::startDetached("control.exe", QStringList() << "/name" << "Microsoft.BitLockerDriveEncryption");
         Logger::log("Opening BitLocker Drive Encryption Manager...", "INFO");

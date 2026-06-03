@@ -237,6 +237,7 @@ Item {
     }
     property bool hibernationChanged: optimizerBackend.hibernationActive !== optimizerBackend.originalHibernationActive
     property bool coinstallersChanged: optimizerBackend.coinstallersActive !== optimizerBackend.originalCoinstallersActive
+    property bool storageSenseChanged: optimizerBackend.storageSenseActive !== optimizerBackend.originalStorageSenseActive
     property bool powerPlanChanged: optimizerBackend.targetPowerSchemeGuid !== optimizerBackend.activePowerSchemeGuid
     property bool bitlockerChanged: optimizerBackend.bitlockerActive !== optimizerBackend.originalBitlockerActive
     property bool discordOverlayChanged: optimizerBackend.discordOverlayActive !== optimizerBackend.originalDiscordOverlayActive
@@ -446,6 +447,7 @@ Item {
         if (notificationsChanged) count++;
         if (hibernationChanged) count++;
         if (coinstallersChanged) count++;
+        if (storageSenseChanged) count++;
         if (powerPlanChanged || optimizerBackend.deleteUltimateStaged) count++;
         if (bitlockerChanged) count++;
         if (discordOverlayChanged) count++;
@@ -599,6 +601,7 @@ Item {
         if (optimizerBackend.desktopWallpaperQuality !== optimizerBackend.originalDesktopWallpaperQuality) count++;
         if (optimizerBackend.classicContextMenuActive !== optimizerBackend.originalClassicContextMenuActive) count++;
         if (optimizerBackend.shortcutArrowsActive !== optimizerBackend.originalShortcutArrowsActive) count++;
+        if (optimizerBackend.storageSenseActive !== optimizerBackend.originalStorageSenseActive) count++;
         return count;
     }
 
@@ -720,6 +723,14 @@ Item {
             hasSidebar: false,
             revert: function() {
                 optimizerBackend.coinstallersActive = optimizerBackend.originalCoinstallersActive;
+            }
+        });
+        if (storageSenseChanged) list.push({
+            name: qsTr("Storage sense"),
+            icon: "qrc:/MeguPackOptimizer/src/resources/storage.svg",
+            hasSidebar: false,
+            revert: function() {
+                optimizerBackend.storageSenseActive = optimizerBackend.originalStorageSenseActive;
             }
         });
         if (powerPlanChanged || optimizerBackend.deleteUltimateStaged) list.push({
