@@ -12476,8 +12476,12 @@ void Optimizer::runRepairFix(bool runDism, bool runSfc, bool runChkdsk) {
             if (!output.isEmpty()) {
                 emit systemStepReported(output, "INFO");
             }
-            emit systemStepReported(tr("CHKDSK repair scheduled successfully for drive C: on the next system reboot."), "SUCCESS");
-            emit systemStepReported(tr("Please reboot your computer to perform the disk check."), "WARNING");
+            if (proc.exitCode() == 0) {
+                emit systemStepReported(tr("CHKDSK repair scheduled successfully for drive C: on the next system reboot."), "SUCCESS");
+                emit systemStepReported(tr("Please reboot your computer to perform the disk check."), "WARNING");
+            } else {
+                emit systemStepReported(tr("Failed to schedule CHKDSK repair. Exit code: %1").arg(proc.exitCode()), "ERROR");
+            }
 #else
             QThread::msleep(1500);
             emit systemStepReported(tr("[Simulation] CHKDSK Repair scheduled for next reboot."), "SUCCESS");
