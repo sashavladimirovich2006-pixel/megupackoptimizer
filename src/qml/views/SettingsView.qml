@@ -481,6 +481,105 @@ Item {
                 }
             }
 
+            // 4. DANGEROUS ZONE SECTION
+            Column {
+                width: parent.width
+                spacing: 8
+
+                Row {
+                    spacing: 8
+                    height: 16
+
+                    Rectangle {
+                        width: 4
+                        height: 16
+                        radius: 2
+                        color: Theme.error
+                        anchors.verticalCenter: parent.verticalCenter
+                    }
+
+                    Text {
+                        text: qsTr("Dangerous Zone")
+                        color: Theme.error
+                        font.family: Theme.fontFamily
+                        font.pixelSize: 13
+                        font.bold: true
+                        anchors.verticalCenter: parent.verticalCenter
+                    }
+                }
+
+                AcrylicPanel {
+                    width: parent.width
+                    height: 84
+
+                    Row {
+                        anchors.left: parent.left
+                        anchors.leftMargin: 16
+                        anchors.verticalCenter: parent.verticalCenter
+                        spacing: 12
+
+                        Rectangle {
+                            width: 40
+                            height: 40
+                            radius: 10
+                            color: Qt.rgba(Theme.error.r, Theme.error.g, Theme.error.b, 0.15)
+                            anchors.verticalCenter: parent.verticalCenter
+
+                            Item {
+                                width: 20
+                                height: 20
+                                anchors.centerIn: parent
+                                Image {
+                                    id: dangerIconImg
+                                    source: "qrc:/MeguPackOptimizer/src/resources/warning.svg"
+                                    anchors.fill: parent
+                                    sourceSize.width: 20
+                                    sourceSize.height: 20
+                                    visible: false
+                                }
+                                ColorOverlay {
+                                    anchors.fill: dangerIconImg
+                                    source: dangerIconImg
+                                    color: Theme.error
+                                }
+                            }
+                        }
+
+                        Column {
+                            anchors.verticalCenter: parent.verticalCenter
+                            spacing: 2
+
+                            Text {
+                                text: qsTr("Advanced and risky configurations:")
+                                color: Theme.textPrimary
+                                font.family: Theme.fontFamily
+                                font.pixelSize: 14
+                                font.bold: true
+                            }
+
+                            Text {
+                                text: qsTr("Show or hide advanced features intended only for experienced users.")
+                                color: Theme.textMuted
+                                font.family: Theme.fontFamily
+                                font.pixelSize: 11
+                            }
+                        }
+                    }
+
+                    MeguButton {
+                        width: 160
+                        height: 32
+                        text: qsTr("Configure")
+                        anchors.right: parent.right
+                        anchors.rightMargin: 16
+                        anchors.verticalCenter: parent.verticalCenter
+                        onClicked: {
+                            dangerousZoneSidebar.isOpen = true;
+                        }
+                    }
+                }
+            }
+
             // Footnote tag
             Text {
                 text: qsTr("* Changes are automatically applied and saved to config in real-time.")
@@ -492,12 +591,12 @@ Item {
         }
     }
 
-    // Backdrop for theme sidebar
+    // Backdrop for sidebars
     Rectangle {
         id: backdrop
         anchors.fill: parent
         color: "#000000"
-        opacity: themeSidebar.isOpen ? 0.5 : 0.0
+        opacity: (themeSidebar.isOpen || dangerousZoneSidebar.isOpen) ? 0.5 : 0.0
         visible: opacity > 0.0
         
         Behavior on opacity {
@@ -508,6 +607,7 @@ Item {
             anchors.fill: parent
             onClicked: {
                 themeSidebar.isOpen = false;
+                dangerousZoneSidebar.isOpen = false;
                 slidingPages.showSubPage = false;
             }
         }
@@ -757,6 +857,159 @@ Item {
                             hoverEnabled: true
                             cursorShape: Qt.PointingHandCursor
                             onClicked: Theme.setTheme("Black pink")
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    // Sliding Sidebar Drawer for Dangerous Zone Settings
+    Rectangle {
+        id: dangerousZoneSidebar
+        width: 320
+        height: parent.height
+        anchors.right: parent.right
+        anchors.rightMargin: isOpen ? 0 : -width
+        color: Theme.sidebarBg
+        border.color: Theme.border
+        border.width: 1
+        z: 200
+
+        property bool isOpen: false
+
+        Behavior on color { ColorAnimation { duration: Theme.animNormal } }
+        Behavior on border.color { ColorAnimation { duration: Theme.animNormal } }
+        Behavior on anchors.rightMargin {
+            NumberAnimation { duration: Theme.animNormal; easing.type: Easing.OutCubic }
+        }
+
+        // Left highlight separator border
+        Rectangle {
+            width: 1
+            height: parent.height
+            anchors.left: parent.left
+            color: Theme.border
+            Behavior on color { ColorAnimation { duration: Theme.animNormal } }
+        }
+
+        Item {
+            anchors.fill: parent
+            anchors.margins: 20
+            clip: true
+
+            Column {
+                width: parent.width
+                spacing: 16
+
+                Row {
+                    spacing: 10
+                    width: parent.width
+
+                    MeguButton {
+                        text: qsTr("Back")
+                        iconSource: "qrc:/MeguPackOptimizer/src/resources/close.svg"
+                        width: 70
+                        onClicked: dangerousZoneSidebar.isOpen = false
+                    }
+
+                    Text {
+                        text: qsTr("DANGEROUS ZONE")
+                        color: Theme.error
+                        font.family: Theme.fontFamily
+                        font.pixelSize: 13
+                        font.bold: true
+                        font.letterSpacing: 1.5
+                        anchors.verticalCenter: parent.verticalCenter
+                    }
+                }
+
+                Rectangle {
+                    width: parent.width
+                    height: 1
+                    color: Theme.border
+                    Behavior on color { ColorAnimation { duration: Theme.animNormal } }
+                }
+
+                // Description warning box
+                Rectangle {
+                    width: parent.width
+                    height: Math.max(50, warningTextCol.implicitHeight + 16)
+                    radius: 8
+                    color: Qt.rgba(Theme.error.r, Theme.error.g, Theme.error.b, 0.1)
+                    border.color: Qt.rgba(Theme.error.r, Theme.error.g, Theme.error.b, 0.2)
+                    border.width: 1
+
+                    Column {
+                        id: warningTextCol
+                        anchors.verticalCenter: parent.verticalCenter
+                        anchors.left: parent.left
+                        anchors.leftMargin: 12
+                        anchors.right: parent.right
+                        anchors.rightMargin: 12
+                        spacing: 4
+
+                        Text {
+                            text: qsTr("⚠️ WARNING:")
+                            color: Theme.error
+                            font.family: Theme.fontFamily
+                            font.pixelSize: 11
+                            font.bold: true
+                        }
+                        Text {
+                            text: qsTr("Enabling expert settings can expose critical system controls. Ensure you know the consequences before activating them.")
+                            color: Theme.textSecondary
+                            font.family: Theme.fontFamily
+                            font.pixelSize: 10
+                            width: parent.width
+                            wrapMode: Text.WordWrap
+                        }
+                    }
+                }
+
+                // Card with Toggle
+                Rectangle {
+                    width: parent.width
+                    height: Math.max(72, expertToggleCol.implicitHeight + 16)
+                    radius: 8
+                    color: "#05FFFFFF"
+                    border.color: Theme.border
+                    border.width: 1
+
+                    Column {
+                        id: expertToggleCol
+                        anchors.verticalCenter: parent.verticalCenter
+                        anchors.left: parent.left
+                        anchors.leftMargin: 12
+                        anchors.right: expertSwitch.left
+                        anchors.rightMargin: 12
+                        spacing: 2
+
+                        Text {
+                            text: qsTr("Show expert features")
+                            color: Theme.textPrimary
+                            font.family: Theme.fontFamily
+                            font.pixelSize: 12
+                            font.bold: true
+                        }
+                        Text {
+                            text: qsTr("Toggle visibility of advanced features like More Privileges card in the optimization view.")
+                            color: Theme.textSecondary
+                            font.family: Theme.fontFamily
+                            font.pixelSize: 10
+                            width: parent.width
+                            wrapMode: Text.WordWrap
+                        }
+                    }
+
+                    MeguSwitch {
+                        id: expertSwitch
+                        anchors.right: parent.right
+                        anchors.rightMargin: 12
+                        anchors.verticalCenter: parent.verticalCenter
+                        checked: settingsBackend.showExpertFeatures
+                        onToggled: (isChecked) => {
+                            settingsBackend.showExpertFeatures = isChecked;
                         }
                     }
                 }

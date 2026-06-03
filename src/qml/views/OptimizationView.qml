@@ -691,7 +691,7 @@ Item {
             }
         });
         if (moreRightsChanged) list.push({
-            name: qsTr("Больше прав"),
+            name: qsTr("More Privileges"),
             icon: "qrc:/MeguPackOptimizer/src/resources/settings.svg",
             hasSidebar: true,
             revert: function() {
@@ -1317,7 +1317,7 @@ Item {
                     }
                 });
             }
-        } else if (category === qsTr("Больше прав") || category === "Больше прав") {
+        } else if (category === qsTr("More Privileges") || category === "More Privileges") {
             if (optimizerBackend.superuserGodModeActive !== optimizerBackend.originalSuperuserGodModeActive) {
                 subList.push({
                     name: qsTr("God Mode") + ": " + (optimizerBackend.originalSuperuserGodModeActive ? qsTr("Enabled") : qsTr("Disabled")) + " -> " + (optimizerBackend.superuserGodModeActive ? qsTr("Enabled") : qsTr("Disabled")),
@@ -1376,7 +1376,7 @@ Item {
         if (name === qsTr("Telemetry") || name === "Telemetry") return telemetryPanel;
         if (name === qsTr("Windows Update") || name === "Windows Update") return windowsUpdatePanel;
         if (name === qsTr("CS2 Steam Overlay") || name === "CS2 Steam Overlay") return cs2Panel;
-        if (name === qsTr("Больше прав") || name === "Больше прав") return moreRightsPanel;
+        if (name === qsTr("More Privileges") || name === "More Privileges") return moreRightsPanel;
         if (name === qsTr("Steam Settings") || name === "Steam Settings") return steamSettingsPanel;
         if (name === qsTr("Classic Context Menu") || name === "Classic Context Menu") return classicContextMenuPanel;
         if (name === qsTr("Shortcut Arrow Overlays") || name === "Shortcut Arrow Overlays") return shortcutArrowsPanel;
@@ -1393,7 +1393,7 @@ Item {
             root.currentSection = "telemetry";
         } else if (categoryName === qsTr("Counter-Strike 2 Launch Options") || categoryName === "Counter-Strike 2 Launch Options" || categoryName === qsTr("CS2 Steam Overlay") || categoryName === "CS2 Steam Overlay" || categoryName === qsTr("Steam Settings") || categoryName === "Steam Settings") {
             root.currentSection = "games";
-        } else if (categoryName === qsTr("Classic Context Menu") || categoryName === "Classic Context Menu" || categoryName === qsTr("Shortcut Arrow Overlays") || categoryName === "Shortcut Arrow Overlays" || categoryName === qsTr("Clipboard History") || categoryName === "Clipboard History" || categoryName === qsTr("Taskbar 'End task'") || categoryName === "Taskbar 'End task'" || categoryName === qsTr("Clock with seconds") || categoryName === "Clock with seconds" || categoryName === qsTr("Больше прав") || categoryName === "Больше прав") {
+        } else if (categoryName === qsTr("Classic Context Menu") || categoryName === "Classic Context Menu" || categoryName === qsTr("Shortcut Arrow Overlays") || categoryName === "Shortcut Arrow Overlays" || categoryName === qsTr("Clipboard History") || categoryName === "Clipboard History" || categoryName === qsTr("Taskbar 'End task'") || categoryName === "Taskbar 'End task'" || categoryName === qsTr("Clock with seconds") || categoryName === "Clock with seconds" || categoryName === qsTr("More Privileges") || categoryName === "More Privileges") {
             root.currentSection = "customization";
         } else {
             root.currentSection = "core";
@@ -5919,11 +5919,12 @@ Item {
                     }
                 }
 
-                // More Rights Panel (Больше прав)
+                // More Rights Panel (More Privileges)
                 AcrylicPanel {
                     id: moreRightsPanel
                     width: parent.width
-                    height: 84
+                    height: visible ? 84 : 0
+                    visible: settingsBackend.showExpertFeatures
 
                     Column {
                         anchors.left: parent.left
@@ -5976,12 +5977,30 @@ Item {
                                     Row {
                                         spacing: 8
                                         Text {
-                                            text: qsTr("Больше прав")
+                                            text: qsTr("More Privileges")
                                             color: Theme.textPrimary
                                             font.family: Theme.fontFamily
                                             font.pixelSize: 14
                                             font.bold: true
                                             anchors.verticalCenter: parent.verticalCenter
+                                        }
+                                        Rectangle {
+                                            height: 16
+                                            width: expertBadgeText.contentWidth + 10
+                                            radius: 4
+                                            color: Qt.rgba(Theme.warning.r, Theme.warning.g, Theme.warning.b, 0.15)
+                                            border.color: Theme.warning
+                                            border.width: 1
+                                            anchors.verticalCenter: parent.verticalCenter
+                                            Text {
+                                                id: expertBadgeText
+                                                text: qsTr("Expert feature")
+                                                color: Theme.warning
+                                                font.family: Theme.fontFamily
+                                                font.pixelSize: 8
+                                                font.bold: true
+                                                anchors.centerIn: parent
+                                            }
                                         }
                                         Rectangle {
                                             visible: root.moreRightsChanged
@@ -6005,7 +6024,7 @@ Item {
                                     }
 
                                     Text {
-                                        text: qsTr("Управление продвинутыми системными правами и параметрами безопасности Windows.")
+                                        text: qsTr("Manage advanced system privileges and Windows security settings.")
                                         color: Theme.textMuted
                                         font.family: Theme.fontFamily
                                         font.pixelSize: 11
@@ -7197,7 +7216,7 @@ Item {
                             if (root.activeDrawer === "windowsUpdate") return qsTr("WINDOWS UPDATE");
                             if (root.activeDrawer === "visualEffects") return qsTr("VISUAL EFFECTS");
                             if (root.activeDrawer === "steamSettings") return qsTr("STEAM SETTINGS");
-                            if (root.activeDrawer === "moreRights") return qsTr("Больше прав");
+                            if (root.activeDrawer === "moreRights") return qsTr("More Privileges");
                             return "";
                         }
                         color: Theme.textPrimary

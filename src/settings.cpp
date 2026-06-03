@@ -96,6 +96,14 @@ void Settings::setLanguage(const QString &val) {
     }
 }
 
+void Settings::setShowExpertFeatures(bool val) {
+    if (m_showExpertFeatures != val) {
+        m_showExpertFeatures = val;
+        emit showExpertFeaturesChanged(val);
+        save();
+    }
+}
+
 void Settings::save() {
     QJsonObject obj;
     obj["optimizeImages"] = m_optimizeImages;
@@ -107,6 +115,7 @@ void Settings::save() {
     obj["createBackup"] = m_createBackup;
     obj["deleteTempFiles"] = m_deleteTempFiles;
     obj["language"] = m_language;
+    obj["showExpertFeatures"] = m_showExpertFeatures;
 
     QJsonDocument doc(obj);
     QFile file(m_settingsFilePath);
@@ -144,6 +153,7 @@ void Settings::load() {
             if (obj.contains("createBackup")) m_createBackup = obj["createBackup"].toBool();
             if (obj.contains("deleteTempFiles")) m_deleteTempFiles = obj["deleteTempFiles"].toBool();
             if (obj.contains("language")) m_language = obj["language"].toString();
+            if (obj.contains("showExpertFeatures")) m_showExpertFeatures = obj["showExpertFeatures"].toBool();
 
             Logger::log("Settings loaded successfully from megu_settings.json", "INFO");
         } else {

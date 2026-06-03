@@ -38,14 +38,14 @@ Column {
             spacing: 2
 
             Text {
-                text: qsTr("God Mode (Режим Бога)")
+                text: qsTr("God Mode")
                 color: Theme.textPrimary
                 font.family: Theme.fontFamily
                 font.pixelSize: 12
                 font.bold: true
             }
             Text {
-                text: qsTr("Создает специальную папку со всеми ярлыками настроек Windows на рабочем столе.")
+                text: qsTr("Creates a special folder with all Windows settings shortcuts on the desktop.")
                 color: Theme.textSecondary
                 font.family: Theme.fontFamily
                 font.pixelSize: 10
@@ -84,14 +84,14 @@ Column {
             spacing: 2
 
             Text {
-                text: qsTr("Режим разработчика (Developer Mode)")
+                text: qsTr("Developer Mode")
                 color: Theme.textPrimary
                 font.family: Theme.fontFamily
                 font.pixelSize: 12
                 font.bold: true
             }
             Text {
-                text: qsTr("Разрешает установку и запуск приложений из любых источников (sideloading) без подписи.")
+                text: qsTr("Enables installation and running of applications from any sources (sideloading) without signatures.")
                 color: Theme.textSecondary
                 font.family: Theme.fontFamily
                 font.pixelSize: 10
@@ -102,7 +102,7 @@ Column {
             Text {
                 id: devWarning
                 visible: devModeSwitch.checked
-                text: qsTr("⚠️ Включение режима разработчика может снизить уровень безопасности системы.")
+                text: qsTr("⚠️ Enabling developer mode can reduce system security.")
                 color: "#ffc107"
                 font.family: Theme.fontFamily
                 font.pixelSize: 9
@@ -144,14 +144,14 @@ Column {
             spacing: 2
 
             Text {
-                text: qsTr("Контроль учетных записей (UAC)")
+                text: qsTr("User Account Control (UAC)")
                 color: Theme.textPrimary
                 font.family: Theme.fontFamily
                 font.pixelSize: 12
                 font.bold: true
             }
             Text {
-                text: qsTr("Уровень предупреждений о попытках программ внести изменения в компьютер.")
+                text: qsTr("The warning level for programs attempting to make changes to your computer.")
                 color: Theme.textSecondary
                 font.family: Theme.fontFamily
                 font.pixelSize: 10
@@ -162,7 +162,7 @@ Column {
             Text {
                 id: uacRebootInfo
                 visible: optimizerBackend.superuserUacLevel !== optimizerBackend.originalSuperuserUacLevel
-                text: qsTr("🔄 Требуется перезагрузка компьютера для применения изменений UAC.")
+                text: qsTr("🔄 A system reboot is required to apply UAC changes.")
                 color: Theme.accent
                 font.family: Theme.fontFamily
                 font.pixelSize: 9
@@ -190,17 +190,17 @@ Column {
             property int currentVal: optimizerBackend.superuserUacLevel
 
             readonly property var options: [
-                { id: 0, label: qsTr("Всегда уведомлять") },
-                { id: 1, label: qsTr("С затемнением") },
-                { id: 2, label: qsTr("Без затемнения") },
-                { id: 3, label: qsTr("Никогда") }
+                { id: 0, label: qsTr("Always notify") },
+                { id: 1, label: qsTr("With dimming") },
+                { id: 2, label: qsTr("Without dimming") },
+                { id: 3, label: qsTr("Never notify") }
             ]
 
             function getLabelForVal(v) {
                 for (var i = 0; i < options.length; i++) {
                     if (options[i].id === v) return options[i].label;
                 }
-                return qsTr("С затемнением");
+                return qsTr("With dimming");
             }
 
             Text {
@@ -299,14 +299,14 @@ Column {
             spacing: 2
 
             Text {
-                text: qsTr("Защитный драйвер UCPD")
+                text: qsTr("User Choice Protection Driver (UCPD)")
                 color: Theme.textPrimary
                 font.family: Theme.fontFamily
                 font.pixelSize: 12
                 font.bold: true
             }
             Text {
-                text: qsTr("Блокирует обход защиты Windows, сброс файловых ассоциаций и изменений по умолчанию другими утилитами.")
+                text: qsTr("Blocks the bypass of Windows protection, resetting file associations and default changes by other utilities.")
                 color: Theme.textSecondary
                 font.family: Theme.fontFamily
                 font.pixelSize: 10
@@ -317,7 +317,7 @@ Column {
             Text {
                 id: ucpdRebootInfo
                 visible: optimizerBackend.superuserUcpdActive !== optimizerBackend.originalSuperuserUcpdActive
-                text: qsTr("🔄 Требуется перезагрузка компьютера для применения изменений UCPD.")
+                text: qsTr("🔄 A system reboot is required to apply UCPD changes.")
                 color: Theme.accent
                 font.family: Theme.fontFamily
                 font.pixelSize: 9

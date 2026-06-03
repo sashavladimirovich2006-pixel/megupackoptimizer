@@ -14,6 +14,7 @@ class Settings : public QObject {
     Q_PROPERTY(bool createBackup READ createBackup WRITE setCreateBackup NOTIFY createBackupChanged)
     Q_PROPERTY(bool deleteTempFiles READ deleteTempFiles WRITE setDeleteTempFiles NOTIFY deleteTempFilesChanged)
     Q_PROPERTY(QString language READ language WRITE setLanguage NOTIFY languageChanged)
+    Q_PROPERTY(bool showExpertFeatures READ showExpertFeatures WRITE setShowExpertFeatures NOTIFY showExpertFeaturesChanged)
 
 public:
     explicit Settings(QObject *parent = nullptr);
@@ -31,6 +32,7 @@ public:
     bool createBackup() const { return m_createBackup; }
     bool deleteTempFiles() const { return m_deleteTempFiles; }
     QString language() const { return m_language; }
+    bool showExpertFeatures() const { return m_showExpertFeatures; }
 
     // Setters
     void setOptimizeImages(bool val);
@@ -42,6 +44,7 @@ public:
     void setCreateBackup(bool val);
     void setDeleteTempFiles(bool val);
     void setLanguage(const QString &val);
+    void setShowExpertFeatures(bool val);
 
     Q_INVOKABLE void save();
     Q_INVOKABLE void load();
@@ -56,6 +59,7 @@ signals:
     void createBackupChanged(bool val);
     void deleteTempFilesChanged(bool val);
     void languageChanged(const QString &val);
+    void showExpertFeaturesChanged(bool val);
 
 private:
     static Settings* s_instance;
@@ -70,4 +74,5 @@ private:
     bool m_createBackup = true;
     bool m_deleteTempFiles = true;
     QString m_language = "en";
+    bool m_showExpertFeatures = false;
 };
