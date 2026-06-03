@@ -17,9 +17,14 @@ AcrylicPanel {
     property color badgeColor: Qt.rgba(Theme.accent.r, Theme.accent.g, Theme.accent.b, 0.05)
     property color iconColor: Theme.textSecondary
 
+    radius: showProgressBar ? height / 2 : 8
+
     Item {
         anchors.fill: parent
-        anchors.margins: 12
+        anchors.leftMargin: card.showProgressBar ? 22 : 12
+        anchors.rightMargin: card.showProgressBar ? 22 : 12
+        anchors.topMargin: 12
+        anchors.bottomMargin: 12
         
         Row {
             id: contentRow
