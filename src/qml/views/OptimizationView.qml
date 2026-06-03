@@ -195,7 +195,22 @@ Item {
     }
 
     property bool pagefileChanged: optimizerBackend.pagefileMin !== optimizerBackend.originalPagefileMin || optimizerBackend.pagefileMax !== optimizerBackend.originalPagefileMax
-    property bool isPagefileInputValid: optimizerBackend.pagefileMin <= optimizerBackend.pagefileMax
+    property real estimatedFreeGBAfterPagefile: {
+        var originalMax = optimizerBackend.originalPagefileMax;
+        var currentMax = optimizerBackend.pagefileMax;
+        var deltaMB = currentMax - originalMax;
+        var info = optimizerBackend.getDriveInfo("C:");
+        var freeGB = info && info.freeSize !== undefined ? info.freeSize : 50.0;
+        return freeGB - (deltaMB / 1024.0);
+    }
+    property bool isPagefileInputValid: {
+        if (!pagefileChanged) return true;
+        return optimizerBackend.pagefileMin <= optimizerBackend.pagefileMax && estimatedFreeGBAfterPagefile >= 0;
+    }
+    property bool isPagefileSpaceLow: {
+        if (!pagefileChanged) return false;
+        return isPagefileInputValid && estimatedFreeGBAfterPagefile < 10.0;
+    }
     property bool classicContextMenuChanged: optimizerBackend.classicContextMenuActive !== optimizerBackend.originalClassicContextMenuActive
     property bool shortcutArrowsChanged: optimizerBackend.shortcutArrowsActive !== optimizerBackend.originalShortcutArrowsActive
     property bool clipboardHistoryChanged: optimizerBackend.clipboardHistoryActive !== optimizerBackend.originalClipboardHistoryActive
@@ -6770,11 +6785,19 @@ Item {
                             }
 
                             Text {
-                                text: !root.isPagefileInputValid ? qsTr("Warning: Minimum size cannot be greater than maximum size!") : qsTr("Configure system virtual memory limits (initial/maximum size in MB).")
-                                color: !root.isPagefileInputValid ? Theme.error : Theme.textMuted
+                                text: !root.isPagefileInputValid ? 
+                                          (optimizerBackend.pagefileMin > optimizerBackend.pagefileMax ? 
+                                              qsTr("Warning: Minimum size cannot be greater than maximum size!") : 
+                                              qsTr("Error: Not enough disk space! C: drive will be overfilled.")) :
+                                      root.isPagefileSpaceLow ? 
+                                          qsTr("Warning: C: drive will have less than 10 GB of free space left. Continue anyway?") :
+                                          qsTr("Configure system virtual memory limits (initial/maximum size in MB).")
+                                color: !root.isPagefileInputValid ? Theme.error : 
+                                       root.isPagefileSpaceLow ? Theme.warning : 
+                                       Theme.textMuted
                                 font.family: Theme.fontFamily
                                 font.pixelSize: 11
-                                font.bold: !root.isPagefileInputValid
+                                font.bold: !root.isPagefileInputValid || root.isPagefileSpaceLow
                             }
                         }
                     }
@@ -6801,7 +6824,7 @@ Item {
                                 height: 24
                                 color: Theme.panelBg
                                 radius: 4
-                                border.color: !root.isPagefileInputValid ? Theme.error : (minInput.activeFocus ? Theme.accent : Qt.rgba(Theme.border.r, Theme.border.g, Theme.border.b, 0.4))
+                                border.color: !root.isPagefileInputValid ? Theme.error : root.isPagefileSpaceLow ? Theme.warning : (minInput.activeFocus ? Theme.accent : Qt.rgba(Theme.border.r, Theme.border.g, Theme.border.b, 0.4))
                                 border.width: 1
 
                                 TextInput {
@@ -6853,7 +6876,7 @@ Item {
                                 height: 24
                                 color: Theme.panelBg
                                 radius: 4
-                                border.color: !root.isPagefileInputValid ? Theme.error : (maxInput.activeFocus ? Theme.accent : Qt.rgba(Theme.border.r, Theme.border.g, Theme.border.b, 0.4))
+                                border.color: !root.isPagefileInputValid ? Theme.error : root.isPagefileSpaceLow ? Theme.warning : (maxInput.activeFocus ? Theme.accent : Qt.rgba(Theme.border.r, Theme.border.g, Theme.border.b, 0.4))
                                 border.width: 1
 
                                 TextInput {
@@ -8076,7 +8099,7 @@ Item {
 
         // Warning row when page file validation fails
         RowLayout {
-            visible: !root.isPagefileInputValid
+            visible: !root.isPagefileInputValid || root.isPagefileSpaceLow
             anchors.right: optimizeButton.left
             anchors.rightMargin: 16
             anchors.verticalCenter: parent.verticalCenter
@@ -8097,13 +8120,17 @@ Item {
                 ColorOverlay {
                     anchors.fill: warnIconImg
                     source: warnIconImg
-                    color: Theme.error
+                    color: !root.isPagefileInputValid ? Theme.error : Theme.warning
                 }
             }
 
             Text {
-                text: qsTr("Invalid limits: Min size exceeds Max!")
-                color: Theme.error
+                text: !root.isPagefileInputValid ? 
+                          (optimizerBackend.pagefileMin > optimizerBackend.pagefileMax ? 
+                              qsTr("Invalid limits: Min size exceeds Max!") : 
+                              qsTr("Not enough disk space for page file!")) : 
+                          qsTr("C: drive space will be less than 10 GB. Continue?")
+                color: !root.isPagefileInputValid ? Theme.error : Theme.warning
                 font.family: Theme.fontFamily
                 font.pixelSize: 11
                 font.bold: true
