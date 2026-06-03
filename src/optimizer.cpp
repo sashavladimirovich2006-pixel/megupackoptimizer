@@ -5381,15 +5381,40 @@ void Optimizer::loadSystemStates() {
         RegCloseKey(hKeyExp);
     }
     
-    // 3. Classic Interface (Blocked GUID in HKLM only to match Wintoys)
+    // 3. Classic Interface (Blocked GUID in HKCU/HKLM, or modern Wintoys CLSID overrides)
     bool isClassicRibbonBlocked = false;
-    if (RegOpenKeyExW(HKEY_LOCAL_MACHINE, L"SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Shell Extensions\\Blocked", 0, KEY_READ, &hKeyExp) == ERROR_SUCCESS) {
+    // Check legacy blocked extension under HKCU and HKLM
+    if (RegOpenKeyExW(HKEY_CURRENT_USER, L"Software\\Microsoft\\Windows\\CurrentVersion\\Shell Extensions\\Blocked", 0, KEY_READ, &hKeyExp) == ERROR_SUCCESS) {
         wchar_t buf[64] = {0};
         DWORD dwSize = sizeof(buf);
         if (RegQueryValueExW(hKeyExp, L"{e2bf9676-5f8f-435c-97eb-11607a5bedf7}", nullptr, nullptr, reinterpret_cast<LPBYTE>(buf), &dwSize) == ERROR_SUCCESS) {
             isClassicRibbonBlocked = true;
         }
         RegCloseKey(hKeyExp);
+    }
+    if (!isClassicRibbonBlocked) {
+        if (RegOpenKeyExW(HKEY_LOCAL_MACHINE, L"SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Shell Extensions\\Blocked", 0, KEY_READ, &hKeyExp) == ERROR_SUCCESS) {
+            wchar_t buf[64] = {0};
+            DWORD dwSize = sizeof(buf);
+            if (RegQueryValueExW(hKeyExp, L"{e2bf9676-5f8f-435c-97eb-11607a5bedf7}", nullptr, nullptr, reinterpret_cast<LPBYTE>(buf), &dwSize) == ERROR_SUCCESS) {
+                isClassicRibbonBlocked = true;
+            }
+            RegCloseKey(hKeyExp);
+        }
+    }
+    // Check modern Wintoys CLSID override
+    if (!isClassicRibbonBlocked) {
+        HKEY hKeyClsid = nullptr;
+        if (RegOpenKeyExW(HKEY_CURRENT_USER, L"Software\\Classes\\CLSID\\{2aa9162e-c906-4dd9-ad0b-3d24a8eef5a0}\\InProcServer32", 0, KEY_READ, &hKeyClsid) == ERROR_SUCCESS) {
+            wchar_t buf[256] = {0};
+            DWORD dwSize = sizeof(buf);
+            if (RegQueryValueExW(hKeyClsid, L"", nullptr, nullptr, reinterpret_cast<LPBYTE>(buf), &dwSize) == ERROR_SUCCESS) {
+                if (wcscmp(buf, L"C:\\Windows\\System32\\Windows.UI.FileExplorer.dll_") == 0) {
+                    isClassicRibbonBlocked = true;
+                }
+            }
+            RegCloseKey(hKeyClsid);
+        }
     }
     explorerClassicRibbon = isClassicRibbonBlocked;
     
@@ -6452,6 +6477,7 @@ void Optimizer::startSystemOptimization() {
             if (explorerClassicRibbonVal != origExplorerClassicRibbonVal || force) {
                 explorerNeedsRestart = true;
                 if (explorerClassicRibbonVal) {
+                    // Legacy method: Block modern Command Bar GUID
                     if (RegCreateKeyExW(HKEY_CURRENT_USER, L"Software\\Microsoft\\Windows\\CurrentVersion\\Shell Extensions\\Blocked", 0, nullptr, REG_OPTION_NON_VOLATILE, KEY_WRITE, nullptr, &hKey, nullptr) == ERROR_SUCCESS) {
                         wchar_t empty[] = L"";
                         RegSetValueExW(hKey, L"{e2bf9676-5f8f-435c-97eb-11607a5bedf7}", 0, REG_SZ, reinterpret_cast<const BYTE*>(empty), sizeof(empty));
@@ -6464,7 +6490,29 @@ void Optimizer::startSystemOptimization() {
                         RegSetValueExW(hKey, L"{e2bf9676-5f8f-435c-97eb-11607a5bedf7}", 0, REG_SZ, reinterpret_cast<const BYTE*>(empty), sizeof(empty));
                         RegCloseKey(hKey);
                     }
+
+                    // Modern method (Wintoys keys): Override CLSIDs to Windows.UI.FileExplorer.dll_
+                    HKEY hKeyClsid = nullptr;
+                    if (RegCreateKeyExW(HKEY_CURRENT_USER, L"Software\\Classes\\CLSID\\{2aa9162e-c906-4dd9-ad0b-3d24a8eef5a0}\\InProcServer32", 0, nullptr, REG_OPTION_NON_VOLATILE, KEY_WRITE, nullptr, &hKeyClsid, nullptr) == ERROR_SUCCESS) {
+                        wchar_t dllPath[] = L"C:\\Windows\\System32\\Windows.UI.FileExplorer.dll_";
+                        wchar_t threadModel[] = L"Apartment";
+                        RegSetValueExW(hKeyClsid, L"", 0, REG_SZ, reinterpret_cast<const BYTE*>(dllPath), sizeof(dllPath));
+                        RegSetValueExW(hKeyClsid, L"ThreadingModel", 0, REG_SZ, reinterpret_cast<const BYTE*>(threadModel), sizeof(threadModel));
+                        RegCloseKey(hKeyClsid);
+                    } else {
+                        success = false;
+                    }
+                    if (RegCreateKeyExW(HKEY_CURRENT_USER, L"Software\\Classes\\CLSID\\{6480100b-5a83-4d1e-9f69-8ae5a88e9a33}\\InProcServer32", 0, nullptr, REG_OPTION_NON_VOLATILE, KEY_WRITE, nullptr, &hKeyClsid, nullptr) == ERROR_SUCCESS) {
+                        wchar_t dllPath[] = L"C:\\Windows\\System32\\Windows.UI.FileExplorer.dll_";
+                        wchar_t threadModel[] = L"Apartment";
+                        RegSetValueExW(hKeyClsid, L"", 0, REG_SZ, reinterpret_cast<const BYTE*>(dllPath), sizeof(dllPath));
+                        RegSetValueExW(hKeyClsid, L"ThreadingModel", 0, REG_SZ, reinterpret_cast<const BYTE*>(threadModel), sizeof(threadModel));
+                        RegCloseKey(hKeyClsid);
+                    } else {
+                        success = false;
+                    }
                 } else {
+                    // Remove legacy blocked GUID
                     if (RegOpenKeyExW(HKEY_CURRENT_USER, L"Software\\Microsoft\\Windows\\CurrentVersion\\Shell Extensions\\Blocked", 0, KEY_SET_VALUE, &hKey) == ERROR_SUCCESS) {
                         RegDeleteValueW(hKey, L"{e2bf9676-5f8f-435c-97eb-11607a5bedf7}");
                         RegCloseKey(hKey);
@@ -6473,6 +6521,13 @@ void Optimizer::startSystemOptimization() {
                         RegDeleteValueW(hKey, L"{e2bf9676-5f8f-435c-97eb-11607a5bedf7}");
                         RegCloseKey(hKey);
                     }
+
+                    // Remove modern Wintoys keys
+                    RegDeleteKeyW(HKEY_CURRENT_USER, L"Software\\Classes\\CLSID\\{2aa9162e-c906-4dd9-ad0b-3d24a8eef5a0}\\InProcServer32");
+                    RegDeleteKeyW(HKEY_CURRENT_USER, L"Software\\Classes\\CLSID\\{2aa9162e-c906-4dd9-ad0b-3d24a8eef5a0}");
+
+                    RegDeleteKeyW(HKEY_CURRENT_USER, L"Software\\Classes\\CLSID\\{6480100b-5a83-4d1e-9f69-8ae5a88e9a33}\\InProcServer32");
+                    RegDeleteKeyW(HKEY_CURRENT_USER, L"Software\\Classes\\CLSID\\{6480100b-5a83-4d1e-9f69-8ae5a88e9a33}");
                 }
             }
             if (explorerShowPreviewPaneVal != origExplorerShowPreviewPaneVal || force) {
