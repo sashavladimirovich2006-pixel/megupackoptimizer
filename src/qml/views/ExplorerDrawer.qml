@@ -29,7 +29,9 @@ Column {
         border.width: 1
         visible: (optimizerBackend.explorerClassicRibbon !== optimizerBackend.originalExplorerClassicRibbon) ||
                  (optimizerBackend.explorerPinHome !== optimizerBackend.originalExplorerPinHome) ||
-                 (optimizerBackend.explorerPinGallery !== optimizerBackend.originalExplorerPinGallery)
+                 (optimizerBackend.explorerPinGallery !== optimizerBackend.originalExplorerPinGallery) ||
+                 (optimizerBackend.explorerPinRecycleBin !== optimizerBackend.originalExplorerPinRecycleBin) ||
+                 (optimizerBackend.explorerShowPreviewPane !== optimizerBackend.originalExplorerShowPreviewPane)
         clip: true
 
         Behavior on height { NumberAnimation { duration: Theme.animNormal; easing.type: Easing.OutCubic } }
@@ -43,7 +45,7 @@ Column {
 
             Text {
                 Layout.fillWidth: true
-                text: qsTr("🔄 Some changes (Classic Ribbon, Home, Gallery) require restarting Windows Explorer to take effect.")
+                text: qsTr("🔄 Some changes (Classic Ribbon, Preview Pane, Recycle Bin, Home, Gallery) require restarting Windows Explorer to take effect.")
                 color: Theme.accent
                 font.family: Theme.fontFamily
                 font.pixelSize: 11
@@ -286,6 +288,50 @@ Column {
         }
     }
 
+    // 6. Recycle Bin navigation pane item
+    Rectangle {
+        width: parent.width
+        height: Math.max(56, recycleNavCol.implicitHeight + 16)
+        radius: 8
+        color: "#05FFFFFF"
+        border.color: Theme.border
+        border.width: 1
+
+        Column {
+            id: recycleNavCol
+            anchors.verticalCenter: parent.verticalCenter
+            anchors.left: parent.left
+            anchors.leftMargin: 12
+            anchors.right: recycleNavSwitch.left
+            anchors.rightMargin: 12
+            spacing: 2
+
+            Text {
+                text: qsTr("Show Recycle Bin in navigation pane")
+                color: Theme.textPrimary
+                font.family: Theme.fontFamily
+                font.pixelSize: 12
+                font.bold: true
+            }
+            Text {
+                text: qsTr("Pin the 'Recycle Bin' navigation link to the left sidebar of File Explorer (requires restart).")
+                color: Theme.textSecondary
+                font.family: Theme.fontFamily
+                font.pixelSize: 10
+                width: parent.width
+                wrapMode: Text.WordWrap
+            }
+        }
+
+        MeguSwitch {
+            id: recycleNavSwitch
+            anchors.right: parent.right
+            anchors.rightMargin: 12
+            anchors.verticalCenter: parent.verticalCenter
+            checked: optimizerBackend.explorerPinRecycleBin
+            onToggled: (isChecked) => { optimizerBackend.explorerPinRecycleBin = isChecked; }
+        }
+    }
 
     // 7. Home navigation pane item
     Rectangle {

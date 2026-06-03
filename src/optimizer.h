@@ -169,6 +169,8 @@ class Optimizer : public QObject {
     Q_PROPERTY(bool originalExplorerShowPreviewPane READ originalExplorerShowPreviewPane NOTIFY originalExplorerShowPreviewPaneChanged)
     Q_PROPERTY(bool explorerShowRecycleBin READ explorerShowRecycleBin WRITE setExplorerShowRecycleBin NOTIFY explorerShowRecycleBinChanged)
     Q_PROPERTY(bool originalExplorerShowRecycleBin READ originalExplorerShowRecycleBin NOTIFY originalExplorerShowRecycleBinChanged)
+    Q_PROPERTY(bool explorerPinRecycleBin READ explorerPinRecycleBin WRITE setExplorerPinRecycleBin NOTIFY explorerPinRecycleBinChanged)
+    Q_PROPERTY(bool originalExplorerPinRecycleBin READ originalExplorerPinRecycleBin NOTIFY originalExplorerPinRecycleBinChanged)
     Q_PROPERTY(bool explorerPinHome READ explorerPinHome WRITE setExplorerPinHome NOTIFY explorerPinHomeChanged)
     Q_PROPERTY(bool originalExplorerPinHome READ originalExplorerPinHome NOTIFY originalExplorerPinHomeChanged)
     Q_PROPERTY(bool explorerPinGallery READ explorerPinGallery WRITE setExplorerPinGallery NOTIFY explorerPinGalleryChanged)
@@ -420,6 +422,8 @@ public:
     bool originalExplorerShowPreviewPane() const { return m_originalExplorerShowPreviewPane; }
     bool explorerShowRecycleBin() const { return m_explorerShowRecycleBin; }
     bool originalExplorerShowRecycleBin() const { return m_originalExplorerShowRecycleBin; }
+    bool explorerPinRecycleBin() const { return m_explorerPinRecycleBin; }
+    bool originalExplorerPinRecycleBin() const { return m_originalExplorerPinRecycleBin; }
     bool explorerPinHome() const { return m_explorerPinHome; }
     bool originalExplorerPinHome() const { return m_originalExplorerPinHome; }
     bool explorerPinGallery() const { return m_explorerPinGallery; }
@@ -568,6 +572,7 @@ public:
     void setExplorerClassicRibbon(bool val);
     void setExplorerShowPreviewPane(bool val);
     void setExplorerShowRecycleBin(bool val);
+    void setExplorerPinRecycleBin(bool val);
     void setExplorerPinHome(bool val);
     void setExplorerPinGallery(bool val);
     void setExplorerUseCheckboxes(bool val);
@@ -810,6 +815,8 @@ signals:
     void originalExplorerShowPreviewPaneChanged(bool val);
     void explorerShowRecycleBinChanged(bool val);
     void originalExplorerShowRecycleBinChanged(bool val);
+    void explorerPinRecycleBinChanged(bool val);
+    void originalExplorerPinRecycleBinChanged(bool val);
     void explorerPinHomeChanged(bool val);
     void originalExplorerPinHomeChanged(bool val);
     void explorerPinGalleryChanged(bool val);
@@ -1064,6 +1071,8 @@ private:
     bool m_originalExplorerShowPreviewPane = false;
     bool m_explorerShowRecycleBin = true;
     bool m_originalExplorerShowRecycleBin = true;
+    bool m_explorerPinRecycleBin = false;
+    bool m_originalExplorerPinRecycleBin = false;
     bool m_explorerPinHome = true;
     bool m_originalExplorerPinHome = true;
     bool m_explorerPinGallery = true;

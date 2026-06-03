@@ -20,6 +20,22 @@ Item {
 
     property string currentSection: "core"
 
+    onCurrentSectionChanged: {
+        var flick = mainScroll.contentItem;
+        if (flick) {
+            flick.contentY = 0;
+        }
+    }
+
+    onVisibleChanged: {
+        if (visible) {
+            var flick = mainScroll.contentItem;
+            if (flick) {
+                flick.contentY = 0;
+            }
+        }
+    }
+
     // Premium reactive entry transition (runs butter-smooth on every tab switch!)
     property bool isActive: opacity > 0.1
     property real yTranslation: isActive ? 0 : 15
@@ -99,68 +115,83 @@ Item {
 
     // Reactive computation of changes between current live states and original states
     property bool hasChanges: {
-        if (optimizerBackend.classicContextMenuActive !== optimizerBackend.originalClassicContextMenuActive) return true;
-        if (optimizerBackend.shortcutArrowsActive !== optimizerBackend.originalShortcutArrowsActive) return true;
-        if (optimizerBackend.clipboardHistoryActive !== optimizerBackend.originalClipboardHistoryActive) return true;
-        if (optimizerBackend.taskbarEndTaskActive !== optimizerBackend.originalTaskbarEndTaskActive) return true;
-        if (optimizerBackend.taskbarSecondsActive !== optimizerBackend.originalTaskbarSecondsActive) return true;
-        if (optimizerBackend.winSearchActive !== optimizerBackend.originalWinSearchActive) return true;
-        if (optimizerBackend.hibernationActive !== optimizerBackend.originalHibernationActive) return true;
-        if (optimizerBackend.gamingOverlayActive !== optimizerBackend.originalGamingOverlayActive) return true;
-        if (optimizerBackend.coreIsolationActive !== optimizerBackend.originalCoreIsolationActive) return true;
-        if (optimizerBackend.mouseAccelerationActive !== optimizerBackend.originalMouseAccelerationActive) return true;
-        if (optimizerBackend.gameModeActive !== optimizerBackend.originalGameModeActive) return true;
-        if (optimizerBackend.firewallActive !== optimizerBackend.originalFirewallActive) return true;
-        if (optimizerBackend.bitlockerActive !== optimizerBackend.originalBitlockerActive) return true;
-        if (optimizerBackend.discordOverlayActive !== optimizerBackend.originalDiscordOverlayActive) return true;
-        if (optimizerBackend.notificationsActive !== optimizerBackend.originalNotificationsActive) return true;
-        if (optimizerBackend.notifGlobalActive !== optimizerBackend.originalNotifGlobalActive) return true;
-        if (optimizerBackend.notifAppActive !== optimizerBackend.originalNotifAppActive) return true;
-        if (optimizerBackend.notifSoundsActive !== optimizerBackend.originalNotifSoundsActive) return true;
-        if (optimizerBackend.notifLockscreenActive !== optimizerBackend.originalNotifLockscreenActive) return true;
-        if (optimizerBackend.targetPowerSchemeGuid !== optimizerBackend.activePowerSchemeGuid) return true;
-        if (optimizerBackend.deleteUltimateStaged) return true;
-        if (optimizerBackend.deleteDefenderStaged) return true;
-        if (optimizerBackend.defenderActive !== optimizerBackend.originalDefenderActive) return true;
-        if (optimizerBackend.defenderRegistryActive !== optimizerBackend.originalDefenderRegistryActive) return true;
-        if (optimizerBackend.defenderCmdActive !== optimizerBackend.originalDefenderCmdActive) return true;
-        if (optimizerBackend.defenderServiceActive !== optimizerBackend.originalDefenderServiceActive) return true;
-        if (optimizerBackend.remoteAccessActive !== optimizerBackend.originalRemoteAccessActive) return true;
-        if (optimizerBackend.usbChanged) return true;
-        if (optimizerBackend.telemetryActive !== optimizerBackend.originalTelemetryActive) return true;
-        if (optimizerBackend.telemetryDiagTrackActive !== optimizerBackend.originalTelemetryDiagTrackActive) return true;
-        if (optimizerBackend.telemetryWapPushActive !== optimizerBackend.originalTelemetryWapPushActive) return true;
-        if (optimizerBackend.telemetryCeipActive !== optimizerBackend.originalTelemetryCeipActive) return true;
-        if (optimizerBackend.telemetryWerActive !== optimizerBackend.originalTelemetryWerActive) return true;
-        if (optimizerBackend.adsTailoredExperiencesActive !== optimizerBackend.originalAdsTailoredExperiencesActive) return true;
-        if (optimizerBackend.adsAdvertisingIdActive !== optimizerBackend.originalAdsAdvertisingIdActive) return true;
-        if (optimizerBackend.adsSuggestedContentActive !== optimizerBackend.originalAdsSuggestedContentActive) return true;
-        if (optimizerBackend.adsSettingsHomeActive !== optimizerBackend.originalAdsSettingsHomeActive) return true;
-        if (optimizerBackend.adsSuggestedNotificationsActive !== optimizerBackend.originalAdsSuggestedNotificationsActive) return true;
-        if (optimizerBackend.adsLockScreenTipsActive !== optimizerBackend.originalAdsLockScreenTipsActive) return true;
-        if (optimizerBackend.adsWindowsTipsActive !== optimizerBackend.originalAdsWindowsTipsActive) return true;
-        if (optimizerBackend.adsWelcomeExperienceActive !== optimizerBackend.originalAdsWelcomeExperienceActive) return true;
-        if (optimizerBackend.adsFinishSetupActive !== optimizerBackend.originalAdsFinishSetupActive) return true;
-        if (privacyChanged) return true;
-        if (optimizerBackend.windowsUpdateMode !== optimizerBackend.originalWindowsUpdateMode) return true;
-        if (cs2Changed) return true;
-        if (optimizerBackend.steamOverlayActive !== optimizerBackend.originalSteamOverlayActive) return true;
-        if (optimizerBackend.cs2OverlayActive !== optimizerBackend.originalCs2OverlayActive) return true;
-        if (steamFriendsSettingsChanged) return true;
-        if (visualEffectsChanged) return true;
-        if (optimizerBackend.pagefileMin !== optimizerBackend.originalPagefileMin) return true;
-        if (optimizerBackend.pagefileMax !== optimizerBackend.originalPagefileMax) return true;
-        if (moreRightsChanged) return true;
-        if (explorerChanged) return true;
-        if (startMenuChanged) return true;
-        if (desktopChanged) return true;
-        if (!optimizerBackend.driveStates || !optimizerBackend.originalDriveStates) return false;
-        var keys = Object.keys(optimizerBackend.driveStates);
-        for (var i = 0; i < keys.length; i++) {
-            var key = keys[i];
-            if (optimizerBackend.driveStates[key] !== optimizerBackend.originalDriveStates[key]) return true;
+        var mismatchFound = false;
+        var checks = [
+            { name: "classicContextMenuActive", cur: optimizerBackend.classicContextMenuActive, orig: optimizerBackend.originalClassicContextMenuActive },
+            { name: "shortcutArrowsActive", cur: optimizerBackend.shortcutArrowsActive, orig: optimizerBackend.originalShortcutArrowsActive },
+            { name: "clipboardHistoryActive", cur: optimizerBackend.clipboardHistoryActive, orig: optimizerBackend.originalClipboardHistoryActive },
+            { name: "taskbarEndTaskActive", cur: optimizerBackend.taskbarEndTaskActive, orig: optimizerBackend.originalTaskbarEndTaskActive },
+            { name: "taskbarSecondsActive", cur: optimizerBackend.taskbarSecondsActive, orig: optimizerBackend.originalTaskbarSecondsActive },
+            { name: "winSearchActive", cur: optimizerBackend.winSearchActive, orig: optimizerBackend.originalWinSearchActive },
+            { name: "hibernationActive", cur: optimizerBackend.hibernationActive, orig: optimizerBackend.originalHibernationActive },
+            { name: "gamingOverlayActive", cur: optimizerBackend.gamingOverlayActive, orig: optimizerBackend.originalGamingOverlayActive },
+            { name: "coreIsolationActive", cur: optimizerBackend.coreIsolationActive, orig: optimizerBackend.originalCoreIsolationActive },
+            { name: "mouseAccelerationActive", cur: optimizerBackend.mouseAccelerationActive, orig: optimizerBackend.originalMouseAccelerationActive },
+            { name: "gameModeActive", cur: optimizerBackend.gameModeActive, orig: optimizerBackend.originalGameModeActive },
+            { name: "firewallActive", cur: optimizerBackend.firewallActive, orig: optimizerBackend.originalFirewallActive },
+            { name: "bitlockerActive", cur: optimizerBackend.bitlockerActive, orig: optimizerBackend.originalBitlockerActive },
+            { name: "discordOverlayActive", cur: optimizerBackend.discordOverlayActive, orig: optimizerBackend.originalDiscordOverlayActive },
+            { name: "notificationsActive", cur: optimizerBackend.notificationsActive, orig: optimizerBackend.originalNotificationsActive },
+            { name: "notifGlobalActive", cur: optimizerBackend.notifGlobalActive, orig: optimizerBackend.originalNotifGlobalActive },
+            { name: "notifAppActive", cur: optimizerBackend.notifAppActive, orig: optimizerBackend.originalNotifAppActive },
+            { name: "notifSoundsActive", cur: optimizerBackend.notifSoundsActive, orig: optimizerBackend.originalNotifSoundsActive },
+            { name: "notifLockscreenActive", cur: optimizerBackend.notifLockscreenActive, orig: optimizerBackend.originalNotifLockscreenActive },
+            { name: "targetPowerSchemeGuid vs activePowerSchemeGuid", cur: optimizerBackend.targetPowerSchemeGuid, orig: optimizerBackend.activePowerSchemeGuid },
+            { name: "deleteUltimateStaged", cur: optimizerBackend.deleteUltimateStaged, orig: false },
+            { name: "deleteDefenderStaged", cur: optimizerBackend.deleteDefenderStaged, orig: false },
+            { name: "defenderActive", cur: optimizerBackend.defenderActive, orig: optimizerBackend.originalDefenderActive },
+            { name: "defenderRegistryActive", cur: optimizerBackend.defenderRegistryActive, orig: optimizerBackend.originalDefenderRegistryActive },
+            { name: "defenderCmdActive", cur: optimizerBackend.defenderCmdActive, orig: optimizerBackend.originalDefenderCmdActive },
+            { name: "defenderServiceActive", cur: optimizerBackend.defenderServiceActive, orig: optimizerBackend.originalDefenderServiceActive },
+            { name: "remoteAccessActive", cur: optimizerBackend.remoteAccessActive, orig: optimizerBackend.originalRemoteAccessActive },
+            { name: "usbChanged", cur: optimizerBackend.usbChanged, orig: false },
+            { name: "telemetryActive", cur: optimizerBackend.telemetryActive, orig: optimizerBackend.originalTelemetryActive },
+            { name: "telemetryDiagTrackActive", cur: optimizerBackend.telemetryDiagTrackActive, orig: optimizerBackend.originalTelemetryDiagTrackActive },
+            { name: "telemetryWapPushActive", cur: optimizerBackend.telemetryWapPushActive, orig: optimizerBackend.originalTelemetryWapPushActive },
+            { name: "telemetryCeipActive", cur: optimizerBackend.telemetryCeipActive, orig: optimizerBackend.originalTelemetryCeipActive },
+            { name: "telemetryWerActive", cur: optimizerBackend.telemetryWerActive, orig: optimizerBackend.originalTelemetryWerActive },
+            { name: "adsTailoredExperiencesActive", cur: optimizerBackend.adsTailoredExperiencesActive, orig: optimizerBackend.originalAdsTailoredExperiencesActive },
+            { name: "adsAdvertisingIdActive", cur: optimizerBackend.adsAdvertisingIdActive, orig: optimizerBackend.originalAdsAdvertisingIdActive },
+            { name: "adsSuggestedContentActive", cur: optimizerBackend.adsSuggestedContentActive, orig: optimizerBackend.originalAdsSuggestedContentActive },
+            { name: "adsSettingsHomeActive", cur: optimizerBackend.adsSettingsHomeActive, orig: optimizerBackend.originalAdsSettingsHomeActive },
+            { name: "adsSuggestedNotificationsActive", cur: optimizerBackend.adsSuggestedNotificationsActive, orig: optimizerBackend.originalAdsSuggestedNotificationsActive },
+            { name: "adsLockScreenTipsActive", cur: optimizerBackend.adsLockScreenTipsActive, orig: optimizerBackend.originalAdsLockScreenTipsActive },
+            { name: "adsWindowsTipsActive", cur: optimizerBackend.adsWindowsTipsActive, orig: optimizerBackend.originalAdsWindowsTipsActive },
+            { name: "adsWelcomeExperienceActive", cur: optimizerBackend.adsWelcomeExperienceActive, orig: optimizerBackend.originalAdsWelcomeExperienceActive },
+            { name: "adsFinishSetupActive", cur: optimizerBackend.adsFinishSetupActive, orig: optimizerBackend.originalAdsFinishSetupActive },
+            { name: "privacyChanged", cur: privacyChanged, orig: false },
+            { name: "windowsUpdateChanged", cur: windowsUpdateChanged, orig: false },
+            { name: "storageSenseChanged", cur: storageSenseChanged, orig: false },
+            { name: "cs2Changed", cur: cs2Changed, orig: false },
+            { name: "steamOverlayActive", cur: optimizerBackend.steamOverlayActive, orig: optimizerBackend.originalSteamOverlayActive },
+            { name: "cs2OverlayActive", cur: optimizerBackend.cs2OverlayActive, orig: optimizerBackend.originalCs2OverlayActive },
+            { name: "steamFriendsSettingsChanged", cur: steamFriendsSettingsChanged, orig: false },
+            { name: "visualEffectsChanged", cur: visualEffectsChanged, orig: false },
+            { name: "pagefileMin", cur: optimizerBackend.pagefileMin, orig: optimizerBackend.originalPagefileMin },
+            { name: "pagefileMax", cur: optimizerBackend.pagefileMax, orig: optimizerBackend.originalPagefileMax },
+            { name: "moreRightsChanged", cur: moreRightsChanged, orig: false },
+            { name: "explorerChanged", cur: explorerChanged, orig: false },
+            { name: "startMenuChanged", cur: startMenuChanged, orig: false },
+            { name: "desktopChanged", cur: desktopChanged, orig: false }
+        ];
+        
+        for (var i = 0; i < checks.length; i++) {
+            if (checks[i].cur !== checks[i].orig) {
+                mismatchFound = true;
+            }
         }
-        return false;
+        
+        if (optimizerBackend.driveStates && optimizerBackend.originalDriveStates) {
+            var keys = Object.keys(optimizerBackend.driveStates);
+            for (var d = 0; d < keys.length; d++) {
+                var key = keys[d];
+                if (optimizerBackend.driveStates[key] !== optimizerBackend.originalDriveStates[key]) {
+                    mismatchFound = true;
+                }
+            }
+        }
+        
+        return mismatchFound;
     }
 
     property bool pagefileChanged: optimizerBackend.pagefileMin !== optimizerBackend.originalPagefileMin || optimizerBackend.pagefileMax !== optimizerBackend.originalPagefileMax
@@ -183,6 +214,7 @@ Item {
         if (optimizerBackend.explorerShowExtractFiles !== optimizerBackend.originalExplorerShowExtractFiles) return true;
         if (optimizerBackend.explorerClassicRibbon !== optimizerBackend.originalExplorerClassicRibbon) return true;
         if (optimizerBackend.explorerShowPreviewPane !== optimizerBackend.originalExplorerShowPreviewPane) return true;
+        if (optimizerBackend.explorerPinRecycleBin !== optimizerBackend.originalExplorerPinRecycleBin) return true;
         if (optimizerBackend.explorerPinHome !== optimizerBackend.originalExplorerPinHome) return true;
         if (optimizerBackend.explorerPinGallery !== optimizerBackend.originalExplorerPinGallery) return true;
         if (optimizerBackend.explorerUseCheckboxes !== optimizerBackend.originalExplorerUseCheckboxes) return true;
@@ -584,6 +616,7 @@ Item {
         if (optimizerBackend.explorerClassicRibbon !== optimizerBackend.originalExplorerClassicRibbon) count++;
         if (optimizerBackend.explorerShowPreviewPane !== optimizerBackend.originalExplorerShowPreviewPane) count++;
         if (optimizerBackend.explorerShowRecycleBin !== optimizerBackend.originalExplorerShowRecycleBin) count++;
+        if (optimizerBackend.explorerPinRecycleBin !== optimizerBackend.originalExplorerPinRecycleBin) count++;
         if (optimizerBackend.explorerPinHome !== optimizerBackend.originalExplorerPinHome) count++;
         if (optimizerBackend.explorerPinGallery !== optimizerBackend.originalExplorerPinGallery) count++;
         if (optimizerBackend.explorerUseCheckboxes !== optimizerBackend.originalExplorerUseCheckboxes) count++;
@@ -799,6 +832,7 @@ Item {
                 optimizerBackend.explorerShowExtractFiles = optimizerBackend.originalExplorerShowExtractFiles;
                 optimizerBackend.explorerClassicRibbon = optimizerBackend.originalExplorerClassicRibbon;
                 optimizerBackend.explorerShowPreviewPane = optimizerBackend.originalExplorerShowPreviewPane;
+                optimizerBackend.explorerPinRecycleBin = optimizerBackend.originalExplorerPinRecycleBin;
                 optimizerBackend.explorerPinHome = optimizerBackend.originalExplorerPinHome;
                 optimizerBackend.explorerPinGallery = optimizerBackend.originalExplorerPinGallery;
                 optimizerBackend.explorerUseCheckboxes = optimizerBackend.originalExplorerUseCheckboxes;
@@ -1534,6 +1568,14 @@ Item {
                     }
                 });
             }
+            if (optimizerBackend.explorerPinRecycleBin !== optimizerBackend.originalExplorerPinRecycleBin) {
+                subList.push({
+                    name: qsTr("Show Recycle Bin in navigation") + ": " + (optimizerBackend.originalExplorerPinRecycleBin ? qsTr("Enabled") : qsTr("Disabled")) + " -> " + (optimizerBackend.explorerPinRecycleBin ? qsTr("Enabled") : qsTr("Disabled")),
+                    revert: function() {
+                        optimizerBackend.explorerPinRecycleBin = optimizerBackend.originalExplorerPinRecycleBin;
+                    }
+                });
+            }
             if (optimizerBackend.explorerPinHome !== optimizerBackend.originalExplorerPinHome) {
                 subList.push({
                     name: qsTr("Show Home in navigation") + ": " + (optimizerBackend.originalExplorerPinHome ? qsTr("Enabled") : qsTr("Disabled")) + " -> " + (optimizerBackend.explorerPinHome ? qsTr("Enabled") : qsTr("Disabled")),
@@ -1814,7 +1856,7 @@ Item {
 
         Column {
             id: mainColumn
-            width: mainScroll.width - 20
+            width: mainScroll.width > 20 ? mainScroll.width - 20 : 800
             spacing: 24
 
             Row {
