@@ -603,6 +603,8 @@ public:
     Q_INVOKABLE void setAppNotificationEnabled(const QString &appKey, bool enabled);
     Q_INVOKABLE void revertUsbDevices();
     Q_INVOKABLE void restartExplorer();
+    Q_INVOKABLE void restartGraphicsDriver();
+    Q_INVOKABLE void rebuildIconCache();
     Q_INVOKABLE void scanSteamInstalledGames();
     Q_INVOKABLE QVariantMap getDriveInfo(const QString &path);
     Q_INVOKABLE bool clearSteamDownloadCache();

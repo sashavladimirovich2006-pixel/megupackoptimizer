@@ -7493,6 +7493,150 @@ Item {
                     }
                 }
             }
+
+            // 4. HEALTH CATEGORY
+            Column {
+                visible: root.currentSection === "core"
+                width: parent.width
+                spacing: 8
+
+                Row {
+                    spacing: 8
+                    height: 16
+
+                    Rectangle {
+                        width: 4
+                        height: 16
+                        radius: 2
+                        color: Theme.accent
+                        anchors.verticalCenter: parent.verticalCenter
+                    }
+
+                    Text {
+                        text: qsTr("System Health")
+                        color: Theme.textPrimary
+                        font.family: Theme.fontFamily
+                        font.pixelSize: 13
+                        font.bold: true
+                        anchors.verticalCenter: parent.verticalCenter
+                    }
+                }
+
+                // Health Card
+                AcrylicPanel {
+                    id: healthPanel
+                    width: parent.width
+                    height: 84
+
+                    Row {
+                        anchors.left: parent.left
+                        anchors.leftMargin: 16
+                        anchors.verticalCenter: parent.verticalCenter
+                        spacing: 12
+
+                        // Rounded square badge
+                        Rectangle {
+                            width: 40
+                            height: 40
+                            radius: 10
+                            color: Qt.rgba(0.1, 0.8, 0.4, 0.15)
+                            anchors.verticalCenter: parent.verticalCenter
+
+                            Item {
+                                width: 20
+                                height: 20
+                                anchors.centerIn: parent
+
+                                Image {
+                                    id: healthIconImg
+                                    source: "qrc:/MeguPackOptimizer/src/resources/bolt.svg"
+                                    anchors.fill: parent
+                                    sourceSize.width: 20
+                                    sourceSize.height: 20
+                                    visible: false
+                                }
+                                ColorOverlay {
+                                    anchors.fill: healthIconImg
+                                    source: healthIconImg
+                                    color: "#00E676"
+                                }
+                            }
+                        }
+
+                        Column {
+                            anchors.verticalCenter: parent.verticalCenter
+                            spacing: 2
+
+                            Text {
+                                text: qsTr("Health")
+                                color: Theme.textPrimary
+                                font.family: Theme.fontFamily
+                                font.pixelSize: 14
+                                font.bold: true
+                            }
+
+                            Text {
+                                text: qsTr("Restart graphics driver or rebuild icon cache to fix display issues.")
+                                color: Theme.textMuted
+                                font.family: Theme.fontFamily
+                                font.pixelSize: 11
+                            }
+                        }
+                    }
+
+                    Row {
+                        anchors.right: parent.right
+                        anchors.rightMargin: 16
+                        anchors.verticalCenter: parent.verticalCenter
+                        spacing: 16
+
+                        // Arrow button that opens drawer
+                        Rectangle {
+                            width: 32
+                            height: 32
+                            radius: 16
+                            color: healthArrowMouseArea.containsMouse ? Theme.accentDim : "transparent"
+                            border.color: healthArrowMouseArea.containsMouse ? Theme.accent : Theme.border
+                            border.width: 1
+                            anchors.verticalCenter: parent.verticalCenter
+
+                            Behavior on color { ColorAnimation { duration: Theme.animFast } }
+                            Behavior on border.color { ColorAnimation { duration: Theme.animFast } }
+
+                            Item {
+                                width: 14
+                                height: 14
+                                anchors.centerIn: parent
+                                x: healthArrowMouseArea.containsMouse ? (parent.width/2 - 5) : (parent.width/2 - 7)
+                                Behavior on x { NumberAnimation { duration: Theme.animNormal; easing.type: Easing.OutCubic } }
+                                Image {
+                                    id: healthArrowImg
+                                    source: "qrc:/MeguPackOptimizer/src/resources/arrow.svg"
+                                    anchors.fill: parent
+                                    sourceSize.width: 14
+                                    sourceSize.height: 14
+                                    visible: false
+                                }
+                                ColorOverlay {
+                                    anchors.fill: healthArrowImg
+                                    source: healthArrowImg
+                                    color: healthArrowMouseArea.containsMouse ? Theme.accent : Theme.textSecondary
+                                }
+                            }
+
+                            MouseArea {
+                                id: healthArrowMouseArea
+                                anchors.fill: parent
+                                hoverEnabled: true
+                                cursorShape: Qt.PointingHandCursor
+                                onClicked: {
+                                    root.activeDrawer = "health";
+                                }
+                            }
+                        }
+                    }
+                }
+            }
         }
     }
 
@@ -7606,6 +7750,7 @@ Item {
                             if (root.activeDrawer === "explorerCustomization") return qsTr("File Explorer Customization");
                             if (root.activeDrawer === "startMenuCustomization") return qsTr("Start Menu Customization");
                             if (root.activeDrawer === "desktopCustomization") return qsTr("Desktop Customization");
+                            if (root.activeDrawer === "health") return qsTr("HEALTH");
                             return "";
                         }
                         color: Theme.textPrimary
@@ -7681,6 +7826,7 @@ Item {
                         if (root.activeDrawer === "explorerCustomization") return explorerDrawer.implicitHeight;
                         if (root.activeDrawer === "startMenuCustomization") return startMenuDrawer.implicitHeight;
                         if (root.activeDrawer === "desktopCustomization") return desktopDrawer.implicitHeight;
+                        if (root.activeDrawer === "health") return healthDrawer.implicitHeight;
                         return height;
                     }
 
@@ -7799,6 +7945,14 @@ Item {
                     DesktopDrawer {
                         id: desktopDrawer
                         visible: root.activeDrawer === "desktopCustomization"
+                        width: visible ? parent.width : 800
+                        height: visible ? implicitHeight : 0
+                    }
+
+                    // 17. Health Drawer Content
+                    HealthDrawer {
+                        id: healthDrawer
+                        visible: root.activeDrawer === "health"
                         width: visible ? parent.width : 800
                         height: visible ? implicitHeight : 0
                     }

@@ -10673,6 +10673,85 @@ void Optimizer::restartExplorer() {
 #endif
 }
 
+
+void Optimizer::restartGraphicsDriver() {
+#ifdef Q_OS_WIN
+    INPUT inputs[8] = {};
+    
+    // Press Win
+    inputs[0].type = INPUT_KEYBOARD;
+    inputs[0].ki.wVk = VK_LWIN;
+    
+    // Press Ctrl
+    inputs[1].type = INPUT_KEYBOARD;
+    inputs[1].ki.wVk = VK_CONTROL;
+    
+    // Press Shift
+    inputs[2].type = INPUT_KEYBOARD;
+    inputs[2].ki.wVk = VK_SHIFT;
+    
+    // Press B
+    inputs[3].type = INPUT_KEYBOARD;
+    inputs[3].ki.wVk = 'B';
+    
+    // Release B
+    inputs[4].type = INPUT_KEYBOARD;
+    inputs[4].ki.wVk = 'B';
+    inputs[4].ki.dwFlags = KEYEVENTF_KEYUP;
+    
+    // Release Shift
+    inputs[5].type = INPUT_KEYBOARD;
+    inputs[5].ki.wVk = VK_SHIFT;
+    inputs[5].ki.dwFlags = KEYEVENTF_KEYUP;
+    
+    // Release Ctrl
+    inputs[6].type = INPUT_KEYBOARD;
+    inputs[6].ki.wVk = VK_CONTROL;
+    inputs[6].ki.dwFlags = KEYEVENTF_KEYUP;
+    
+    // Release Win
+    inputs[7].type = INPUT_KEYBOARD;
+    inputs[7].ki.wVk = VK_LWIN;
+    inputs[7].ki.dwFlags = KEYEVENTF_KEYUP;
+    
+    SendInput(8, inputs, sizeof(INPUT));
+    Logger::log("Graphics driver restart shortcut simulated successfully.", "INFO");
+#endif
+}
+
+
+void Optimizer::rebuildIconCache() {
+#ifdef Q_OS_WIN
+    Logger::log("Starting icon and thumbnail cache rebuild...", "INFO");
+    QProcess proc;
+    proc.start("taskkill.exe", QStringList() << "/f" << "/im" << "explorer.exe");
+    proc.waitForFinished(5000);
+    
+    QString localAppData = QString::fromLocal8Bit(qgetenv("LOCALAPPDATA"));
+    if (!localAppData.isEmpty()) {
+        bool cacheDeleted = QFile::remove(localAppData + "/IconCache.db");
+        if (cacheDeleted) {
+            Logger::log("Deleted: " + localAppData + "/IconCache.db", "INFO");
+        }
+        
+        QDir explorerDir(localAppData + "/Microsoft/Windows/Explorer");
+        if (explorerDir.exists()) {
+            QStringList filters;
+            filters << "iconcache*" << "thumbcache*";
+            QStringList files = explorerDir.entryList(filters, QDir::Files);
+            for (const QString &file : files) {
+                if (explorerDir.remove(file)) {
+                    Logger::log("Deleted: " + file, "INFO");
+                }
+            }
+        }
+    }
+    
+    QProcess::startDetached("explorer.exe");
+    Logger::log("Icon cache rebuild completed. Explorer restarted.", "INFO");
+#endif
+}
+
 QString Optimizer::steamPath() const {
     QString path = "";
 #ifdef Q_OS_WIN
