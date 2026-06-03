@@ -10,9 +10,9 @@ Column {
     width: parent.width
     spacing: 16
 
-    property bool dismChecked: true
-    property bool sfcChecked: true
-    property bool chkdskChecked: true
+    property bool dismChecked: false
+    property bool sfcChecked: false
+    property bool chkdskChecked: false
 
     RowLayout {
         width: parent.width
@@ -94,9 +94,23 @@ Column {
         width: parent.width
         height: Math.max(56, dismCol.implicitHeight + 16)
         radius: 8
-        color: "#05FFFFFF"
-        border.color: Theme.border
+        color: dismMouseArea.containsMouse ? "#0AFFFFFF" : "#05FFFFFF"
+        border.color: dismMouseArea.containsMouse ? Theme.accentDim : Theme.border
         border.width: 1
+
+        Behavior on color { ColorAnimation { duration: Theme.animFast } }
+        Behavior on border.color { ColorAnimation { duration: Theme.animFast } }
+
+        MouseArea {
+            id: dismMouseArea
+            anchors.fill: parent
+            hoverEnabled: true
+            cursorShape: Qt.PointingHandCursor
+            enabled: !optimizerBackend.repairRunning
+            onClicked: {
+                repairColumn.dismChecked = !repairColumn.dismChecked;
+            }
+        }
 
         RowLayout {
             anchors.fill: parent
@@ -121,15 +135,6 @@ Column {
                     font.bold: true
                     anchors.centerIn: parent
                     visible: repairColumn.dismChecked
-                }
-
-                MouseArea {
-                    anchors.fill: parent
-                    cursorShape: Qt.PointingHandCursor
-                    enabled: !optimizerBackend.repairRunning
-                    onClicked: {
-                        repairColumn.dismChecked = !repairColumn.dismChecked;
-                    }
                 }
             }
 
@@ -163,9 +168,23 @@ Column {
         width: parent.width
         height: Math.max(56, sfcCol.implicitHeight + 16)
         radius: 8
-        color: "#05FFFFFF"
-        border.color: Theme.border
+        color: sfcMouseArea.containsMouse ? "#0AFFFFFF" : "#05FFFFFF"
+        border.color: sfcMouseArea.containsMouse ? Theme.accentDim : Theme.border
         border.width: 1
+
+        Behavior on color { ColorAnimation { duration: Theme.animFast } }
+        Behavior on border.color { ColorAnimation { duration: Theme.animFast } }
+
+        MouseArea {
+            id: sfcMouseArea
+            anchors.fill: parent
+            hoverEnabled: true
+            cursorShape: Qt.PointingHandCursor
+            enabled: !optimizerBackend.repairRunning
+            onClicked: {
+                repairColumn.sfcChecked = !repairColumn.sfcChecked;
+            }
+        }
 
         RowLayout {
             anchors.fill: parent
@@ -190,15 +209,6 @@ Column {
                     font.bold: true
                     anchors.centerIn: parent
                     visible: repairColumn.sfcChecked
-                }
-
-                MouseArea {
-                    anchors.fill: parent
-                    cursorShape: Qt.PointingHandCursor
-                    enabled: !optimizerBackend.repairRunning
-                    onClicked: {
-                        repairColumn.sfcChecked = !repairColumn.sfcChecked;
-                    }
                 }
             }
 
@@ -232,9 +242,23 @@ Column {
         width: parent.width
         height: Math.max(56, chkdskCol.implicitHeight + 16)
         radius: 8
-        color: "#05FFFFFF"
-        border.color: Theme.border
+        color: chkdskMouseArea.containsMouse ? "#0AFFFFFF" : "#05FFFFFF"
+        border.color: chkdskMouseArea.containsMouse ? Theme.accentDim : Theme.border
         border.width: 1
+
+        Behavior on color { ColorAnimation { duration: Theme.animFast } }
+        Behavior on border.color { ColorAnimation { duration: Theme.animFast } }
+
+        MouseArea {
+            id: chkdskMouseArea
+            anchors.fill: parent
+            hoverEnabled: true
+            cursorShape: Qt.PointingHandCursor
+            enabled: !optimizerBackend.repairRunning
+            onClicked: {
+                repairColumn.chkdskChecked = !repairColumn.chkdskChecked;
+            }
+        }
 
         RowLayout {
             anchors.fill: parent
@@ -259,15 +283,6 @@ Column {
                     font.bold: true
                     anchors.centerIn: parent
                     visible: repairColumn.chkdskChecked
-                }
-
-                MouseArea {
-                    anchors.fill: parent
-                    cursorShape: Qt.PointingHandCursor
-                    enabled: !optimizerBackend.repairRunning
-                    onClicked: {
-                        repairColumn.chkdskChecked = !repairColumn.chkdskChecked;
-                    }
                 }
             }
 
