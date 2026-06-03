@@ -525,6 +525,7 @@ Column {
                 id: logText
                 readOnly: true
                 selectByMouse: true
+                cursorVisible: false
                 color: Theme.textPrimary
                 font.family: "Consolas, Monaco, Courier New, monospace"
                 font.pixelSize: 11
