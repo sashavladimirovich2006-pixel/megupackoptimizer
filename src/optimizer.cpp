@@ -11719,11 +11719,20 @@ QVariantMap Optimizer::getDriveInfo(const QString &path) {
             }
         }
         result["letter"] = letter;
+
+        double pagefileGB = 0.0;
+        QString pagefilePath = letter + ":\\pagefile.sys";
+        QFileInfo pagefileInfo(pagefilePath);
+        if (pagefileInfo.exists()) {
+            pagefileGB = (double)pagefileInfo.size() / (1024.0 * 1024.0 * 1024.0);
+        }
+        result["pagefileSize"] = pagefileGB;
     } else {
         result["name"] = tr("Local Disk");
         result["totalSize"] = 0.0;
         result["freeSize"] = 0.0;
         result["letter"] = "C";
+        result["pagefileSize"] = 0.0;
     }
 
     return result;

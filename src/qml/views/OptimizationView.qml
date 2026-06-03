@@ -196,12 +196,12 @@ Item {
 
     property bool pagefileChanged: optimizerBackend.pagefileMin !== optimizerBackend.originalPagefileMin || optimizerBackend.pagefileMax !== optimizerBackend.originalPagefileMax
     property real estimatedFreeGBAfterPagefile: {
-        var originalMax = optimizerBackend.originalPagefileMax;
         var currentMax = optimizerBackend.pagefileMax;
-        var deltaMB = currentMax - originalMax;
         var info = optimizerBackend.getDriveInfo("C:");
         var freeGB = info && info.freeSize !== undefined ? info.freeSize : 50.0;
-        return freeGB - (deltaMB / 1024.0);
+        var pagefileGB = info && info.pagefileSize !== undefined ? info.pagefileSize : 0.0;
+        var totalSpaceWithoutPagefile = freeGB + pagefileGB;
+        return totalSpaceWithoutPagefile - (currentMax / 1024.0);
     }
     property bool isPagefileInputValid: {
         if (!pagefileChanged) return true;
@@ -209,7 +209,11 @@ Item {
     }
     property bool isPagefileSpaceLow: {
         if (!pagefileChanged) return false;
-        return isPagefileInputValid && estimatedFreeGBAfterPagefile < 10.0;
+        var currentMax = optimizerBackend.pagefileMax;
+        var info = optimizerBackend.getDriveInfo("C:");
+        var freeGB = info && info.freeSize !== undefined ? info.freeSize : 50.0;
+        var conservativeSpaceLeft = freeGB - (currentMax / 1024.0);
+        return isPagefileInputValid && conservativeSpaceLeft < 10.0;
     }
     property bool classicContextMenuChanged: optimizerBackend.classicContextMenuActive !== optimizerBackend.originalClassicContextMenuActive
     property bool shortcutArrowsChanged: optimizerBackend.shortcutArrowsActive !== optimizerBackend.originalShortcutArrowsActive
