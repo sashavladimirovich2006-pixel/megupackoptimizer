@@ -9951,28 +9951,28 @@ void Optimizer::showPath(const QString &funcName) {
         QProcess::startDetached("control.exe", QStringList() << "/name" << "Microsoft.PowerOptions" << "/page" << "pageGlobalSettings");
         Logger::log("Opening Power Options Global Settings...", "INFO");
     } else if (funcName == "coreisolation") {
-        QProcess::startDetached("cmd.exe", QStringList() << "/c" << "start windowsdefender://devicesecurity");
+        QProcess::startDetached("explorer.exe", QStringList() << "windowsdefender://devicesecurity");
         Logger::log("Opening Device Security (Core Isolation) settings...", "INFO");
     } else if (funcName == "hags") {
-        QProcess::startDetached("cmd.exe", QStringList() << "/c" << "start ms-settings:display-advancedgraphics");
+        QProcess::startDetached("explorer.exe", QStringList() << "ms-settings:display-advancedgraphics");
         Logger::log("Opening Graphics Settings (HAGS) page...", "INFO");
     } else if (funcName == "mouseacceleration") {
         QProcess::startDetached("control.exe", QStringList() << "main.cpl,,1");
         Logger::log("Opening Mouse Properties (Pointer Options)...", "INFO");
     } else if (funcName == "gamemode") {
-        QProcess::startDetached("cmd.exe", QStringList() << "/c" << "start ms-settings:gaming-gamemode");
+        QProcess::startDetached("explorer.exe", QStringList() << "ms-settings:gaming-gamemode");
         Logger::log("Opening Game Mode settings...", "INFO");
     } else if (funcName == "firewall") {
-        QProcess::startDetached("cmd.exe", QStringList() << "/c" << "start windowsdefender://network");
+        QProcess::startDetached("explorer.exe", QStringList() << "windowsdefender://network");
         Logger::log("Opening Firewall & Network Protection settings...", "INFO");
     } else if (funcName == "usb") {
         QProcess::startDetached("cmd.exe", QStringList() << "/c" << "start devmgmt.msc");
         Logger::log(QString("Opening Device Manager for %1...").arg(funcName), "INFO");
     } else if (funcName == "notifications") {
-        QProcess::startDetached("cmd.exe", QStringList() << "/c" << "start ms-settings:notifications");
+        QProcess::startDetached("explorer.exe", QStringList() << "ms-settings:notifications");
         Logger::log("Opening Windows Notifications Settings...", "INFO");
     } else if (funcName == "storagesense" || funcName == "storage") {
-        QProcess::startDetached("cmd.exe", QStringList() << "/c" << "start ms-settings:storagesense");
+        QProcess::startDetached("explorer.exe", QStringList() << "ms-settings:storagesense");
         Logger::log("Opening Windows Storage Sense Settings...", "INFO");
     } else if (funcName == "bitlocker") {
         QProcess::startDetached("control.exe", QStringList() << "/name" << "Microsoft.BitLockerDriveEncryption");
