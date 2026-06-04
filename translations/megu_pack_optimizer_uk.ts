@@ -2052,7 +2052,7 @@ Would you like to close Discord now and proceed?</source>
         <source>Disables the modern Windows 11 Fluent context menu and restores the classic Windows 10 style context menu.</source>
         <translation>Вимкнення сучасного контекстного меню Windows 11 і відновлення класичного стилю Windows 10.</translation>
     </message>
-<message><source>OPTIMIZATION</source><translation>ОПТИМІЗАЦІЯ</translation></message><message><source>CURRENT LEVEL</source><translation>ПОТОЧНИЙ РІВЕНЬ</translation></message></context>
+<message><source>OPTIMIZATION</source><translation>ОПТИМІЗАЦІЯ</translation></message><message><source>CURRENT LEVEL</source><translation>ПОТОЧНИЙ РІВЕНЬ</translation></message><message><source>Good luck in games!</source><translation>Удачі в іграх!</translation></message></context>
 <context>
     <name>Optimizer</name>
     <message>

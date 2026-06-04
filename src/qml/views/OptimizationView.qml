@@ -36520,6 +36520,47 @@ Item {
                         anchors.fill: parent
                         visible: !optimizerBackend.isOptimizingSystem
 
+                        // Logo + Delta header row (matching BoosterX)
+                        Row {
+                            id: completedHeaderRow
+                            anchors.top: parent.top
+                            anchors.topMargin: 40
+                            anchors.horizontalCenter: parent.horizontalCenter
+                            spacing: 8
+
+                            Image {
+                                source: "qrc:/MeguPackOptimizer/src/resources/bolt.svg"
+                                width: 22
+                                height: 22
+                                fillMode: Image.PreserveAspectFit
+                                smooth: true
+                                anchors.verticalCenter: parent.verticalCenter
+                                sourceSize.width: 22
+                                sourceSize.height: 22
+                            }
+
+                            Text {
+                                text: "MEGU BOOST"
+                                color: "#FFFFFF"
+                                font.family: Theme.fontFamily
+                                font.pixelSize: 20
+                                font.bold: true
+                                font.italic: true
+                                anchors.verticalCenter: parent.verticalCenter
+                            }
+
+                            Text {
+                                visible: window.showDelta && window.optimizationDelta !== 0
+                                text: (window.optimizationDelta > 0 ? "+" : "") + window.optimizationDelta + "%"
+                                color: window.optimizationDelta > 0 ? "#3b82f6" : Theme.error // Neon cyan-blue for positive, red for negative
+                                font.family: Theme.fontFamily
+                                font.pixelSize: 22
+                                font.bold: true
+                                anchors.verticalCenter: parent.verticalCenter
+                                opacity: progressOverlay.completedProgress
+                            }
+                        }
+
                         // Circular Speedometer Gauge
                         Item {
                             id: gaugeContainer
@@ -36568,88 +36609,25 @@ Item {
                             }
 
                             // Inner score text
-                            Column {
+                            Text {
+                                text: Math.round(progressOverlay.completedProgress * window.optimizationPercentage) + "%"
+                                color: Theme.accent
+                                font.family: Theme.fontFamily
+                                font.pixelSize: 32
+                                font.bold: true
                                 anchors.centerIn: parent
-                                spacing: 2
-
-                                Row {
-                                    anchors.horizontalCenter: parent.horizontalCenter
-                                    spacing: 4
-                                    
-                                    Text {
-                                        text: Math.round(progressOverlay.completedProgress * window.optimizationPercentage) + "%"
-                                        color: "#FFFFFF"
-                                        font.family: Theme.fontFamily
-                                        font.pixelSize: 28
-                                        font.bold: true
-                                    }
-                                    
-                                    // Premium glassmorphism pill badge for delta percentage
-                                    Rectangle {
-                                        visible: window.showDelta && window.optimizationDelta !== 0
-                                        height: 18
-                                        width: deltaTextOverlay.implicitWidth + 10
-                                        radius: 9
-                                        color: window.optimizationDelta > 0 ? Qt.rgba(Theme.success.r, Theme.success.g, Theme.success.b, 0.15) : Qt.rgba(Theme.error.r, Theme.error.g, Theme.error.b, 0.15)
-                                        border.color: window.optimizationDelta > 0 ? Qt.rgba(Theme.success.r, Theme.success.g, Theme.success.b, 0.3) : Qt.rgba(Theme.error.r, Theme.error.g, Theme.error.b, 0.3)
-                                        border.width: 1
-                                        anchors.verticalCenter: parent.verticalCenter
-                                        opacity: progressOverlay.completedProgress
-
-                                        Text {
-                                            id: deltaTextOverlay
-                                            anchors.centerIn: parent
-                                            text: (window.optimizationDelta > 0 ? "+" : "") + window.optimizationDelta + "%"
-                                            color: window.optimizationDelta > 0 ? Theme.success : Theme.error
-                                            font.family: Theme.fontFamily
-                                            font.pixelSize: 10
-                                            font.bold: true
-                                        }
-                                    }
-                                }
-
-                                Text {
-                                    text: qsTr("OPTIMIZATION")
-                                    color: Theme.accent
-                                    font.family: Theme.fontFamily
-                                    font.pixelSize: 10
-                                    font.bold: true
-                                    font.letterSpacing: 1.0
-                                    horizontalAlignment: Text.AlignHCenter
-                                    anchors.horizontalCenter: parent.horizontalCenter
-                                }
-
-                                Text {
-                                    text: qsTr("CURRENT LEVEL")
-                                    color: Theme.textMuted
-                                    font.family: Theme.fontFamily
-                                    font.pixelSize: 8
-                                    horizontalAlignment: Text.AlignHCenter
-                                    anchors.horizontalCenter: parent.horizontalCenter
-                                }
                             }
                         }
 
                         Text {
                             anchors.top: gaugeContainer.bottom
-                            anchors.topMargin: 20
+                            anchors.topMargin: 36
                             anchors.horizontalCenter: parent.horizontalCenter
-                            text: qsTr("SYSTEM OPTIMIZED")
+                            text: qsTr("Good luck in games!")
                             color: "#FFFFFF"
                             font.family: Theme.fontFamily
-                            font.pixelSize: 16
+                            font.pixelSize: 18
                             font.bold: true
-                            font.letterSpacing: 1.5
-                        }
-
-                        Text {
-                            anchors.top: gaugeContainer.bottom
-                            anchors.topMargin: 40
-                            anchors.horizontalCenter: parent.horizontalCenter
-                            text: qsTr("All selected tweaks applied.")
-                            color: Theme.textMuted
-                            font.family: Theme.fontFamily
-                            font.pixelSize: 12
                         }
                     }
                 }
