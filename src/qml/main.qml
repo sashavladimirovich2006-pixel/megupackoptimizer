@@ -124,11 +124,11 @@ ApplicationWindow {
         // Left Island (Brand Logo + Real-Time Logs button)
         Rectangle {
             id: leftIsland
-            height: 48
+            height: 56
             anchors.left: parent.left
             anchors.leftMargin: 16
             anchors.top: parent.top
-            anchors.topMargin: leftIslandHover.containsMouse ? 11 : 12
+            anchors.topMargin: leftIslandHover.containsMouse ? 15 : 16
             width: leftIslandRow.width + 24
             color: Theme.panelBg
             border.color: leftIslandHover.containsMouse ? Theme.borderHover : Theme.border
@@ -292,10 +292,10 @@ ApplicationWindow {
         // Center Island (Navigation Tab Container)
         Rectangle {
             id: centerIsland
-            height: 48
+            height: 56
             anchors.horizontalCenter: parent.horizontalCenter
             anchors.top: parent.top
-            anchors.topMargin: centerIslandHover.containsMouse ? 11 : 12
+            anchors.topMargin: centerIslandHover.containsMouse ? 15 : 16
             width: tabsRow.width + 24
             color: Theme.panelBg
             border.color: centerIslandHover.containsMouse ? Theme.borderHover : Theme.border
@@ -380,11 +380,11 @@ ApplicationWindow {
         // Right Island (Version Label + Window Custom Controls)
         Rectangle {
             id: rightIsland
-            height: 48
+            height: 56
             anchors.right: parent.right
             anchors.rightMargin: 16
             anchors.top: parent.top
-            anchors.topMargin: rightIslandHover.containsMouse ? 11 : 12
+            anchors.topMargin: rightIslandHover.containsMouse ? 15 : 16
             width: rightInfoRow.implicitWidth + 32 + windowControls.implicitWidth
             color: Theme.panelBg
             border.color: rightIslandHover.containsMouse ? Theme.borderHover : Theme.border
@@ -598,10 +598,10 @@ ApplicationWindow {
 
         LogViewer {
             id: logsView
-            x: 20
-            y: 20
-            width: visible ? (parent.width - 40) : 760
-            height: visible ? (parent.height - 40) : 520
+            x: 24
+            y: 92
+            width: visible ? (parent.width - 48) : 752
+            height: visible ? (parent.height - 92 - 24) : 444
             opacity: window.activeTab === 2 ? 1.0 : 0.0
             visible: opacity > 0.0
             enabled: opacity === 1.0

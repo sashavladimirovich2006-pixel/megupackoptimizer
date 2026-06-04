@@ -7200,7 +7200,13 @@ Item {
 
 
 
-        anchors.margins: 24
+        anchors.topMargin: 92
+
+        anchors.bottomMargin: 24
+
+        anchors.leftMargin: 24
+
+        anchors.rightMargin: 24
 
 
 
