@@ -470,7 +470,7 @@ Item {
         if (optimizerBackend.taskbarEndTaskActive !== optimizerBackend.originalTaskbarEndTaskActive) return true;
         if (optimizerBackend.taskbarSecondsActive !== optimizerBackend.originalTaskbarSecondsActive) return true;
         if (optimizerBackend.winSearchActive !== optimizerBackend.originalWinSearchActive) return true;
-        if (optimizerBackend.hibernationActive !== optimizerBackend.originalHibernationActive) return true;
+        if (root.hibernationChanged) return true;
         if (optimizerBackend.gamingOverlayActive !== optimizerBackend.originalGamingOverlayActive) return true;
         if (optimizerBackend.coreIsolationActive !== optimizerBackend.originalCoreIsolationActive) return true;
         if (optimizerBackend.mouseAccelerationActive !== optimizerBackend.originalMouseAccelerationActive) return true;
@@ -913,7 +913,7 @@ Item {
 
 
 
-    property bool hibernationChanged: optimizerBackend.hibernationActive !== optimizerBackend.originalHibernationActive
+    property bool hibernationChanged: (optimizerBackend.hibernationActive !== optimizerBackend.originalHibernationActive) || (optimizerBackend.hibernationActive && (optimizerBackend.hibernationSize !== optimizerBackend.originalHibernationSize))
 
 
 
@@ -2836,6 +2836,7 @@ Item {
 
 
                 optimizerBackend.hibernationActive = optimizerBackend.originalHibernationActive;
+                optimizerBackend.hibernationSize = optimizerBackend.originalHibernationSize;
 
 
 
@@ -26568,57 +26569,63 @@ Item {
 
 
                     Row {
-
-
-
                         anchors.right: parent.right
-
-
-
                         anchors.rightMargin: 16
-
-
-
                         anchors.verticalCenter: parent.verticalCenter
-
-
-
                         spacing: 16
 
-
-
-
-
-
-
-                        MeguSwitch {
-
-
-
-                            checked: optimizerBackend.hibernationActive
-
-
-
+                        // Hibernation Size Button
+                        Rectangle {
+                            id: hiberSizeBtn
+                            width: 52
+                            height: 28
+                            radius: 6
+                            color: isEnabled ? (hiberSizeMouse.containsMouse ? "#1AFFFFFF" : "#0AFFFFFF") : "#03FFFFFF"
+                            border.color: isEnabled ? (hiberSizeMouse.containsMouse ? Theme.accent : Theme.border) : Theme.border
+                            border.width: 1
+                            opacity: isEnabled ? 1.0 : 0.4
                             anchors.verticalCenter: parent.verticalCenter
+                            
+                            property bool isEnabled: optimizerBackend.hibernationActive
 
+                            Behavior on color { ColorAnimation { duration: Theme.animFast } }
+                            Behavior on border.color { ColorAnimation { duration: Theme.animFast } }
+                            Behavior on opacity { NumberAnimation { duration: Theme.animFast } }
 
-
-                            onToggled: (isChecked) => {
-
-
-
-                                optimizerBackend.hibernationActive = isChecked;
-
-
-
+                            Text {
+                                anchors.centerIn: parent
+                                text: hiberSizeBtn.isEnabled ? (optimizerBackend.hibernationSize + "%") : "0%"
+                                color: hiberSizeBtn.isEnabled ? Theme.textPrimary : Theme.textMuted
+                                font.family: Theme.fontFamily
+                                font.pixelSize: 11
+                                font.bold: true
                             }
 
-
-
+                            MouseArea {
+                                id: hiberSizeMouse
+                                anchors.fill: parent
+                                hoverEnabled: true
+                                enabled: hiberSizeBtn.isEnabled
+                                cursorShape: enabled ? Qt.PointingHandCursor : Qt.ArrowCursor
+                                onClicked: {
+                                    var current = optimizerBackend.hibernationSize;
+                                    var next = 40;
+                                    if (current === 40) next = 50;
+                                    else if (current === 50) next = 75;
+                                    else if (current === 75) next = 100;
+                                    else next = 40;
+                                    optimizerBackend.hibernationSize = next;
+                                }
+                            }
                         }
 
-
-
+                        MeguSwitch {
+                            checked: optimizerBackend.hibernationActive
+                            anchors.verticalCenter: parent.verticalCenter
+                            onToggled: (isChecked) => {
+                                optimizerBackend.hibernationActive = isChecked;
+                            }
+                        }
                     }
 
 
