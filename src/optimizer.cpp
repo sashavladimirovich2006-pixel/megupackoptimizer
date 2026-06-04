@@ -1,6 +1,8 @@
 #include "optimizer.h"
 #include "logger.h"
 #include "settings.h"
+#include <vector>
+#include <string>
 #include <QUrl>
 #include <QFileInfo>
 #include <QDir>
@@ -2867,6 +2869,9 @@ void Optimizer::setWindowsUpdateMode(int mode) {
     if (m_windowsUpdateMode != mode) {
         m_windowsUpdateMode = mode;
         emit windowsUpdateModeChanged(m_windowsUpdateMode);
+        if (mode == 3) {
+            setDriverUpdatesEnabled(false);
+        }
     }
 }
 
@@ -4732,11 +4737,19 @@ void Optimizer::loadSystemStates() {
     }
     
     DWORD wuauservStart = 3; // default Manual
+    wchar_t wuauservObjName[256] = {0};
+    DWORD wuauservObjNameSize = sizeof(wuauservObjName);
+    bool isGuestLogon = false;
     HKEY hKeySvc;
     if (RegOpenKeyExW(HKEY_LOCAL_MACHINE, L"SYSTEM\\CurrentControlSet\\Services\\wuauserv", 0, KEY_READ, &hKeySvc) == ERROR_SUCCESS) {
         DWORD size = sizeof(wuauservStart);
         if (RegQueryValueExW(hKeySvc, L"Start", NULL, NULL, (LPBYTE)&wuauservStart, &size) != ERROR_SUCCESS) {
             wuauservStart = 3;
+        }
+        if (RegQueryValueExW(hKeySvc, L"ObjectName", NULL, NULL, (LPBYTE)wuauservObjName, &wuauservObjNameSize) == ERROR_SUCCESS) {
+            if (wcsstr(wuauservObjName, L"Guest") != nullptr) {
+                isGuestLogon = true;
+            }
         }
         RegCloseKey(hKeySvc);
     }
@@ -4745,19 +4758,30 @@ void Optimizer::loadSystemStates() {
     DWORD excludeDrivers = 0;
     HKEY hKeyWu;
     if (RegOpenKeyExW(HKEY_LOCAL_MACHINE, L"SOFTWARE\\Policies\\Microsoft\\Windows\\WindowsUpdate", 0, KEY_READ, &hKeyWu) == ERROR_SUCCESS) {
-        DWORD size = sizeof(targetReleaseVersion);
-        RegQueryValueExW(hKeyWu, L"TargetReleaseVersion", NULL, NULL, (LPBYTE)&targetReleaseVersion, &size);
+        DWORD type = 0;
+        BYTE buf[256] = {0};
+        DWORD size = sizeof(buf);
+        if (RegQueryValueExW(hKeyWu, L"TargetReleaseVersion", NULL, &type, buf, &size) == ERROR_SUCCESS) {
+            if (type == REG_DWORD) {
+                targetReleaseVersion = *reinterpret_cast<DWORD*>(buf);
+            } else if (type == REG_SZ || type == REG_EXPAND_SZ) {
+                wchar_t* strVal = reinterpret_cast<wchar_t*>(buf);
+                if (wcscmp(strVal, L"1") == 0) {
+                    targetReleaseVersion = 1;
+                }
+            }
+        }
         size = sizeof(excludeDrivers);
         RegQueryValueExW(hKeyWu, L"ExcludeWUDriversInQualityUpdate", NULL, NULL, (LPBYTE)&excludeDrivers, &size);
         RegCloseKey(hKeyWu);
     }
 
-    if (noAutoUpdate == 1 || wuauservStart == 4) {
-        updateMode = 3; // Disabled
-    } else if (auOptions == 2 && wuauservStart == 3) {
-        updateMode = 2; // Manual
-    } else if (targetReleaseVersion == 1 && excludeDrivers == 1) {
+    if (targetReleaseVersion == 1) {
         updateMode = 1; // Security updates only
+    } else if (noAutoUpdate == 1 || wuauservStart == 4 || isGuestLogon) {
+        updateMode = 3; // Disabled
+    } else if (auOptions == 2) {
+        updateMode = 2; // Manual
     } else {
         updateMode = 0; // Default
     }
@@ -4780,7 +4804,10 @@ void Optimizer::loadSystemStates() {
         RegQueryValueExW(hKeyDs, L"SearchOrderConfig", NULL, NULL, (LPBYTE)&searchOrderConfig, &size);
         RegCloseKey(hKeyDs);
     }
-    driverUpdatesEnabledVal = (searchOrderConfig != 1 && excludeDrivers == 0);
+    driverUpdatesEnabledVal = (searchOrderConfig != 0 && excludeDrivers != 1);
+    if (updateMode == 3) {
+        driverUpdatesEnabledVal = false;
+    }
 
     HKEY hKeyStore;
     if (RegOpenKeyExW(HKEY_LOCAL_MACHINE, L"SOFTWARE\\Policies\\Microsoft\\WindowsStore", 0, KEY_READ, &hKeyStore) == ERROR_SUCCESS) {
@@ -4797,6 +4824,13 @@ void Optimizer::loadSystemStates() {
 
     m_driverUpdatesEnabled = driverUpdatesEnabledVal;
     m_originalDriverUpdatesEnabled = driverUpdatesEnabledVal;
+#ifdef Q_OS_WIN
+    Logger::log("loadSystemStates: driverUpdatesEnabledVal = " + QString(driverUpdatesEnabledVal ? "true" : "false") + 
+                " (searchOrderConfig = " + QString::number(searchOrderConfig) + 
+                ", excludeDrivers = " + QString::number(excludeDrivers) + ")", "INFO");
+#else
+    Logger::log("loadSystemStates: driverUpdatesEnabledVal = " + QString(driverUpdatesEnabledVal ? "true" : "false") + " (non-Windows simulation)", "INFO");
+#endif
     emit driverUpdatesEnabledChanged(m_driverUpdatesEnabled);
     emit originalDriverUpdatesEnabledChanged(m_originalDriverUpdatesEnabled);
 
@@ -6049,6 +6083,7 @@ void Optimizer::startSystemOptimization() {
 
         // Step 0: Check if anything actually changed
         bool force = forceVal;
+        bool localDriverUpdatesVal = (windowsUpdateModeVal == 3) ? false : driverUpdatesVal;
         bool powerPlanChanged = force || (targetPowerSchemeVal != activePowerSchemeVal) || deleteUltimateStagedVal;
         bool usbChanged = force;
         if (usbDevicesVal.size() == origUsbDevicesVal.size()) {
@@ -6161,7 +6196,7 @@ void Optimizer::startSystemOptimization() {
                           adsChanged ||
                           privacyChanged ||
                           windowsUpdateModeChanged ||
-                          (driverUpdatesVal != origDriverUpdatesVal) ||
+                          (localDriverUpdatesVal != origDriverUpdatesVal) ||
                           (appUpdatesVal != origAppUpdatesVal) ||
                           (storageSenseVal != origStorageSenseVal) ||
                           powerPlanChanged ||
@@ -8675,6 +8710,57 @@ void Optimizer::startSystemOptimization() {
 #ifdef Q_OS_WIN
             SC_HANDLE hSCM = OpenSCManagerW(NULL, NULL, SC_MANAGER_ALL_ACCESS);
             
+            // Helper lambdas to manage DCOM / AppID
+            auto getServiceAppID = [](const wchar_t* serviceName) -> std::wstring {
+                std::wstring appID;
+                HKEY hKeyAppID;
+                if (RegOpenKeyExW(HKEY_LOCAL_MACHINE, L"SOFTWARE\\Classes\\AppID", 0, KEY_READ, &hKeyAppID) == ERROR_SUCCESS) {
+                    wchar_t subkeyName[256];
+                    DWORD index = 0;
+                    while (true) {
+                        DWORD subkeyNameSize = 256;
+                        if (RegEnumKeyExW(hKeyAppID, index++, subkeyName, &subkeyNameSize, nullptr, nullptr, nullptr, nullptr) != ERROR_SUCCESS) {
+                            break;
+                        }
+                        HKEY hSubKey;
+                        if (RegOpenKeyExW(hKeyAppID, subkeyName, 0, KEY_READ, &hSubKey) == ERROR_SUCCESS) {
+                            wchar_t localService[256] = {0};
+                            DWORD localServiceSize = sizeof(localService);
+                            if (RegQueryValueExW(hSubKey, L"LocalService", nullptr, nullptr, (LPBYTE)localService, &localServiceSize) == ERROR_SUCCESS) {
+                                if (_wcsicmp(localService, serviceName) == 0) {
+                                    appID = subkeyName;
+                                    RegCloseKey(hSubKey);
+                                    break;
+                                }
+                            }
+                            RegCloseKey(hSubKey);
+                        }
+                    }
+                    RegCloseKey(hKeyAppID);
+                }
+                return appID;
+            };
+
+            auto setClsidsAppID = [](const std::vector<const wchar_t*>& clsids, const std::wstring& appID, bool remove) {
+                for (const wchar_t* clsid : clsids) {
+                    std::wstring subkeyPath = L"SOFTWARE\\Classes\\CLSID\\" + std::wstring(clsid);
+                    HKEY hKey;
+                    if (RegOpenKeyExW(HKEY_LOCAL_MACHINE, subkeyPath.c_str(), 0, KEY_SET_VALUE, &hKey) == ERROR_SUCCESS) {
+                        if (remove) {
+                            RegDeleteValueW(hKey, L"AppID");
+                        } else if (!appID.empty()) {
+                            RegSetValueExW(hKey, L"AppID", 0, REG_SZ, (const BYTE*)appID.c_str(), (appID.length() + 1) * sizeof(wchar_t));
+                        }
+                        RegCloseKey(hKey);
+                    }
+                }
+            };
+
+            std::wstring usoAppID = getServiceAppID(L"UsoSvc");
+            std::wstring medicAppID = getServiceAppID(L"WaaSMedicSvc");
+            std::vector<const wchar_t*> usoClsids = { L"{8E9EA6F1-9D60-443D-A00F-4136C34D46DC}", L"{52A07B34-A5EF-4020-96FE-C4CA5B38FE4C}" };
+            std::vector<const wchar_t*> medicClsids = { L"{BCDA7B12-1A91-4212-BAE7-1F9B800E004A}", L"{7148B7F2-22E3-4A2E-88FA-78C760394CA7}" };
+
             if (windowsUpdateModeVal == 0) {
                 // DEFAULT
                 emit systemStepReported(tr("Setting Windows Update to Default mode..."), "INFO");
@@ -8684,7 +8770,9 @@ void Optimizer::startSystemOptimization() {
                     RegDeleteValueW(hKeyWu, L"TargetReleaseVersion");
                     RegDeleteValueW(hKeyWu, L"TargetReleaseVersionInfo");
                     RegDeleteValueW(hKeyWu, L"ProductVersion");
-                    RegDeleteValueW(hKeyWu, L"ExcludeWUDriversInQualityUpdate");
+                    RegDeleteValueW(hKeyWu, L"DisableOSUpgrade");
+                    RegDeleteValueW(hKeyWu, L"SetUpdateNotificationLevel");
+                    RegDeleteValueW(hKeyWu, L"UpdateNotificationLevel");
                     RegCloseKey(hKeyWu);
                 }
                 
@@ -8694,25 +8782,41 @@ void Optimizer::startSystemOptimization() {
                     RegDeleteValueW(hKeyAu, L"AUOptions");
                     RegCloseKey(hKeyAu);
                 }
+
+                HKEY hKeyStore;
+                if (RegOpenKeyExW(HKEY_LOCAL_MACHINE, L"SOFTWARE\\Policies\\Microsoft\\WindowsStore", 0, KEY_SET_VALUE, &hKeyStore) == ERROR_SUCCESS) {
+                    RegDeleteValueW(hKeyStore, L"DisableOSUpgrade");
+                    RegCloseKey(hKeyStore);
+                }
                 
                 HKEY hKeyWuauserv;
                 if (RegOpenKeyExW(HKEY_LOCAL_MACHINE, L"SYSTEM\\CurrentControlSet\\Services\\wuauserv", 0, KEY_SET_VALUE, &hKeyWuauserv) == ERROR_SUCCESS) {
                     DWORD val = 3; // Manual
                     RegSetValueExW(hKeyWuauserv, L"Start", 0, REG_DWORD, (const BYTE*)&val, sizeof(val));
+                    const wchar_t* localSystem = L"LocalSystem";
+                    RegSetValueExW(hKeyWuauserv, L"ObjectName", 0, REG_SZ, (const BYTE*)localSystem, (wcslen(localSystem) + 1) * sizeof(wchar_t));
                     RegCloseKey(hKeyWuauserv);
                 }
                 HKEY hKeyUsoSvc;
                 if (RegOpenKeyExW(HKEY_LOCAL_MACHINE, L"SYSTEM\\CurrentControlSet\\Services\\UsoSvc", 0, KEY_SET_VALUE, &hKeyUsoSvc) == ERROR_SUCCESS) {
                     DWORD val = 2; // Automatic
                     RegSetValueExW(hKeyUsoSvc, L"Start", 0, REG_DWORD, (const BYTE*)&val, sizeof(val));
+                    const wchar_t* localSystem = L"LocalSystem";
+                    RegSetValueExW(hKeyUsoSvc, L"ObjectName", 0, REG_SZ, (const BYTE*)localSystem, (wcslen(localSystem) + 1) * sizeof(wchar_t));
                     RegCloseKey(hKeyUsoSvc);
                 }
                 HKEY hKeyMedic;
                 if (RegOpenKeyExW(HKEY_LOCAL_MACHINE, L"SYSTEM\\CurrentControlSet\\Services\\WaaSMedicSvc", 0, KEY_SET_VALUE, &hKeyMedic) == ERROR_SUCCESS) {
                     DWORD val = 3; // Manual
                     RegSetValueExW(hKeyMedic, L"Start", 0, REG_DWORD, (const BYTE*)&val, sizeof(val));
+                    const wchar_t* localSystem = L"LocalSystem";
+                    RegSetValueExW(hKeyMedic, L"ObjectName", 0, REG_SZ, (const BYTE*)localSystem, (wcslen(localSystem) + 1) * sizeof(wchar_t));
                     RegCloseKey(hKeyMedic);
                 }
+
+                // Restore COM Action Handlers
+                setClsidsAppID(usoClsids, usoAppID, false);
+                setClsidsAppID(medicClsids, medicAppID, false);
                 
                 if (hSCM) {
                     SC_HANDLE hSvcWu = OpenServiceW(hSCM, L"wuauserv", SERVICE_START | SERVICE_QUERY_STATUS);
@@ -8760,12 +8864,24 @@ void Optimizer::startSystemOptimization() {
                         }
                     }
                     size = sizeof(buf);
-                    if (RegQueryValueExW(hKeyVer, L"ProductName", NULL, NULL, (LPBYTE)buf, &size) == ERROR_SUCCESS) {
-                        QString prodName = QString::fromWCharArray(buf);
-                        if (prodName.contains("Windows 11", Qt::CaseInsensitive)) {
+                    if (RegQueryValueExW(hKeyVer, L"CurrentBuild", NULL, NULL, (LPBYTE)buf, &size) == ERROR_SUCCESS) {
+                        QString buildStr = QString::fromWCharArray(buf);
+                        bool ok = false;
+                        int buildNum = buildStr.toInt(&ok);
+                        if (ok && buildNum >= 22000) {
                             productVersion = "Windows 11";
                         } else {
                             productVersion = "Windows 10";
+                        }
+                    } else {
+                        size = sizeof(buf);
+                        if (RegQueryValueExW(hKeyVer, L"ProductName", NULL, NULL, (LPBYTE)buf, &size) == ERROR_SUCCESS) {
+                            QString prodName = QString::fromWCharArray(buf);
+                            if (prodName.contains("Windows 11", Qt::CaseInsensitive)) {
+                                productVersion = "Windows 11";
+                            } else {
+                                productVersion = "Windows 10";
+                            }
                         }
                     }
                     RegCloseKey(hKeyVer);
@@ -8786,17 +8902,25 @@ void Optimizer::startSystemOptimization() {
                     wProd[productVersion.length()] = L'\0';
                     RegSetValueExW(hKeyWu, L"ProductVersion", 0, REG_SZ, (const BYTE*)wProd.data(), (wProd.size()) * sizeof(wchar_t));
                     
-                    RegSetValueExW(hKeyWu, L"ExcludeWUDriversInQualityUpdate", 0, REG_DWORD, (const BYTE*)&one, sizeof(one));
+                    RegSetValueExW(hKeyWu, L"DisableOSUpgrade", 0, REG_DWORD, (const BYTE*)&one, sizeof(one));
+                    RegDeleteValueW(hKeyWu, L"SetUpdateNotificationLevel");
+                    RegDeleteValueW(hKeyWu, L"UpdateNotificationLevel");
                     
                     RegCloseKey(hKeyWu);
                 } else {
                     ok = false;
                 }
                 
+                HKEY hKeyStore;
+                if (RegCreateKeyExW(HKEY_LOCAL_MACHINE, L"SOFTWARE\\Policies\\Microsoft\\WindowsStore", 0, NULL, REG_OPTION_NON_VOLATILE, KEY_WRITE, NULL, &hKeyStore, NULL) == ERROR_SUCCESS) {
+                    DWORD one = 1;
+                    RegSetValueExW(hKeyStore, L"DisableOSUpgrade", 0, REG_DWORD, (const BYTE*)&one, sizeof(one));
+                    RegCloseKey(hKeyStore);
+                }
+
                 HKEY hKeyAu;
                 if (RegCreateKeyExW(HKEY_LOCAL_MACHINE, L"SOFTWARE\\Policies\\Microsoft\\Windows\\WindowsUpdate\\AU", 0, NULL, REG_OPTION_NON_VOLATILE, KEY_WRITE, NULL, &hKeyAu, NULL) == ERROR_SUCCESS) {
-                    DWORD zero = 0;
-                    RegSetValueExW(hKeyAu, L"NoAutoUpdate", 0, REG_DWORD, (const BYTE*)&zero, sizeof(zero));
+                    RegDeleteValueW(hKeyAu, L"NoAutoUpdate");
                     RegDeleteValueW(hKeyAu, L"AUOptions");
                     RegCloseKey(hKeyAu);
                 }
@@ -8805,14 +8929,30 @@ void Optimizer::startSystemOptimization() {
                 if (RegOpenKeyExW(HKEY_LOCAL_MACHINE, L"SYSTEM\\CurrentControlSet\\Services\\wuauserv", 0, KEY_SET_VALUE, &hKeyWuauserv) == ERROR_SUCCESS) {
                     DWORD val = 3; // Manual
                     RegSetValueExW(hKeyWuauserv, L"Start", 0, REG_DWORD, (const BYTE*)&val, sizeof(val));
+                    const wchar_t* localSystem = L"LocalSystem";
+                    RegSetValueExW(hKeyWuauserv, L"ObjectName", 0, REG_SZ, (const BYTE*)localSystem, (wcslen(localSystem) + 1) * sizeof(wchar_t));
                     RegCloseKey(hKeyWuauserv);
                 }
                 HKEY hKeyUsoSvc;
                 if (RegOpenKeyExW(HKEY_LOCAL_MACHINE, L"SYSTEM\\CurrentControlSet\\Services\\UsoSvc", 0, KEY_SET_VALUE, &hKeyUsoSvc) == ERROR_SUCCESS) {
                     DWORD val = 2; // Automatic
                     RegSetValueExW(hKeyUsoSvc, L"Start", 0, REG_DWORD, (const BYTE*)&val, sizeof(val));
+                    const wchar_t* localSystem = L"LocalSystem";
+                    RegSetValueExW(hKeyUsoSvc, L"ObjectName", 0, REG_SZ, (const BYTE*)localSystem, (wcslen(localSystem) + 1) * sizeof(wchar_t));
                     RegCloseKey(hKeyUsoSvc);
                 }
+                HKEY hKeyMedic;
+                if (RegOpenKeyExW(HKEY_LOCAL_MACHINE, L"SYSTEM\\CurrentControlSet\\Services\\WaaSMedicSvc", 0, KEY_SET_VALUE, &hKeyMedic) == ERROR_SUCCESS) {
+                    DWORD val = 3; // Manual
+                    RegSetValueExW(hKeyMedic, L"Start", 0, REG_DWORD, (const BYTE*)&val, sizeof(val));
+                    const wchar_t* localSystem = L"LocalSystem";
+                    RegSetValueExW(hKeyMedic, L"ObjectName", 0, REG_SZ, (const BYTE*)localSystem, (wcslen(localSystem) + 1) * sizeof(wchar_t));
+                    RegCloseKey(hKeyMedic);
+                }
+
+                // Restore COM Action Handlers
+                setClsidsAppID(usoClsids, usoAppID, false);
+                setClsidsAppID(medicClsids, medicAppID, false);
                 
                 if (ok) {
                     emit systemStepReported(tr("Windows Update set to Security Updates Only mode successfully (Feature & Driver updates disabled)."), "SUCCESS");
@@ -8829,10 +8969,22 @@ void Optimizer::startSystemOptimization() {
                     RegDeleteValueW(hKeyWu, L"TargetReleaseVersion");
                     RegDeleteValueW(hKeyWu, L"TargetReleaseVersionInfo");
                     RegDeleteValueW(hKeyWu, L"ProductVersion");
-                    RegDeleteValueW(hKeyWu, L"ExcludeWUDriversInQualityUpdate");
+                    
+                    DWORD one = 1;
+                    DWORD two = 2;
+                    RegSetValueExW(hKeyWu, L"SetUpdateNotificationLevel", 0, REG_DWORD, (const BYTE*)&one, sizeof(one));
+                    RegSetValueExW(hKeyWu, L"UpdateNotificationLevel", 0, REG_DWORD, (const BYTE*)&two, sizeof(two));
                     RegCloseKey(hKeyWu);
+                } else {
+                    ok = false;
                 }
                 
+                HKEY hKeyStore;
+                if (RegOpenKeyExW(HKEY_LOCAL_MACHINE, L"SOFTWARE\\Policies\\Microsoft\\WindowsStore", 0, KEY_SET_VALUE, &hKeyStore) == ERROR_SUCCESS) {
+                    RegDeleteValueW(hKeyStore, L"DisableOSUpgrade");
+                    RegCloseKey(hKeyStore);
+                }
+
                 HKEY hKeyAu;
                 if (RegCreateKeyExW(HKEY_LOCAL_MACHINE, L"SOFTWARE\\Policies\\Microsoft\\Windows\\WindowsUpdate\\AU", 0, NULL, REG_OPTION_NON_VOLATILE, KEY_WRITE, NULL, &hKeyAu, NULL) == ERROR_SUCCESS) {
                     DWORD zero = 0;
@@ -8848,14 +9000,30 @@ void Optimizer::startSystemOptimization() {
                 if (RegOpenKeyExW(HKEY_LOCAL_MACHINE, L"SYSTEM\\CurrentControlSet\\Services\\wuauserv", 0, KEY_SET_VALUE, &hKeyWuauserv) == ERROR_SUCCESS) {
                     DWORD val = 3; // Manual
                     RegSetValueExW(hKeyWuauserv, L"Start", 0, REG_DWORD, (const BYTE*)&val, sizeof(val));
+                    const wchar_t* localSystem = L"LocalSystem";
+                    RegSetValueExW(hKeyWuauserv, L"ObjectName", 0, REG_SZ, (const BYTE*)localSystem, (wcslen(localSystem) + 1) * sizeof(wchar_t));
                     RegCloseKey(hKeyWuauserv);
                 }
                 HKEY hKeyUsoSvc;
                 if (RegOpenKeyExW(HKEY_LOCAL_MACHINE, L"SYSTEM\\CurrentControlSet\\Services\\UsoSvc", 0, KEY_SET_VALUE, &hKeyUsoSvc) == ERROR_SUCCESS) {
-                    DWORD val = 3; // Manual
+                    DWORD val = 2; // Automatic
                     RegSetValueExW(hKeyUsoSvc, L"Start", 0, REG_DWORD, (const BYTE*)&val, sizeof(val));
+                    const wchar_t* localSystem = L"LocalSystem";
+                    RegSetValueExW(hKeyUsoSvc, L"ObjectName", 0, REG_SZ, (const BYTE*)localSystem, (wcslen(localSystem) + 1) * sizeof(wchar_t));
                     RegCloseKey(hKeyUsoSvc);
                 }
+                HKEY hKeyMedic;
+                if (RegOpenKeyExW(HKEY_LOCAL_MACHINE, L"SYSTEM\\CurrentControlSet\\Services\\WaaSMedicSvc", 0, KEY_SET_VALUE, &hKeyMedic) == ERROR_SUCCESS) {
+                    DWORD val = 3; // Manual
+                    RegSetValueExW(hKeyMedic, L"Start", 0, REG_DWORD, (const BYTE*)&val, sizeof(val));
+                    const wchar_t* localSystem = L"LocalSystem";
+                    RegSetValueExW(hKeyMedic, L"ObjectName", 0, REG_SZ, (const BYTE*)localSystem, (wcslen(localSystem) + 1) * sizeof(wchar_t));
+                    RegCloseKey(hKeyMedic);
+                }
+
+                // Restore COM Action Handlers
+                setClsidsAppID(usoClsids, usoAppID, false);
+                setClsidsAppID(medicClsids, medicAppID, false);
                 
                 if (ok) {
                     emit systemStepReported(tr("Windows Update set to Manual mode successfully (automatic background checking disabled)."), "SUCCESS");
@@ -8867,10 +9035,28 @@ void Optimizer::startSystemOptimization() {
                 // DISABLED
                 emit systemStepReported(tr("Disabling Windows Update services and policies..."), "INFO");
                 
+                HKEY hKeyWu;
+                if (RegOpenKeyExW(HKEY_LOCAL_MACHINE, L"SOFTWARE\\Policies\\Microsoft\\Windows\\WindowsUpdate", 0, KEY_SET_VALUE, &hKeyWu) == ERROR_SUCCESS) {
+                    RegDeleteValueW(hKeyWu, L"TargetReleaseVersion");
+                    RegDeleteValueW(hKeyWu, L"TargetReleaseVersionInfo");
+                    RegDeleteValueW(hKeyWu, L"ProductVersion");
+                    RegDeleteValueW(hKeyWu, L"DisableOSUpgrade");
+                    RegDeleteValueW(hKeyWu, L"SetUpdateNotificationLevel");
+                    RegDeleteValueW(hKeyWu, L"UpdateNotificationLevel");
+                    RegCloseKey(hKeyWu);
+                }
+
+                HKEY hKeyStore;
+                if (RegOpenKeyExW(HKEY_LOCAL_MACHINE, L"SOFTWARE\\Policies\\Microsoft\\WindowsStore", 0, KEY_SET_VALUE, &hKeyStore) == ERROR_SUCCESS) {
+                    RegDeleteValueW(hKeyStore, L"DisableOSUpgrade");
+                    RegCloseKey(hKeyStore);
+                }
+
                 HKEY hKeyAu;
                 if (RegCreateKeyExW(HKEY_LOCAL_MACHINE, L"SOFTWARE\\Policies\\Microsoft\\Windows\\WindowsUpdate\\AU", 0, NULL, REG_OPTION_NON_VOLATILE, KEY_WRITE, NULL, &hKeyAu, NULL) == ERROR_SUCCESS) {
                     DWORD one = 1;
                     RegSetValueExW(hKeyAu, L"NoAutoUpdate", 0, REG_DWORD, (const BYTE*)&one, sizeof(one));
+                    RegDeleteValueW(hKeyAu, L"AUOptions");
                     RegCloseKey(hKeyAu);
                 } else {
                     ok = false;
@@ -8880,20 +9066,30 @@ void Optimizer::startSystemOptimization() {
                 if (RegOpenKeyExW(HKEY_LOCAL_MACHINE, L"SYSTEM\\CurrentControlSet\\Services\\wuauserv", 0, KEY_SET_VALUE, &hKeyWuauserv) == ERROR_SUCCESS) {
                     DWORD val = 4; // Disabled
                     RegSetValueExW(hKeyWuauserv, L"Start", 0, REG_DWORD, (const BYTE*)&val, sizeof(val));
+                    const wchar_t* guest = L".\\Guest";
+                    RegSetValueExW(hKeyWuauserv, L"ObjectName", 0, REG_SZ, (const BYTE*)guest, (wcslen(guest) + 1) * sizeof(wchar_t));
                     RegCloseKey(hKeyWuauserv);
                 }
                 HKEY hKeyUsoSvc;
                 if (RegOpenKeyExW(HKEY_LOCAL_MACHINE, L"SYSTEM\\CurrentControlSet\\Services\\UsoSvc", 0, KEY_SET_VALUE, &hKeyUsoSvc) == ERROR_SUCCESS) {
                     DWORD val = 4; // Disabled
                     RegSetValueExW(hKeyUsoSvc, L"Start", 0, REG_DWORD, (const BYTE*)&val, sizeof(val));
+                    const wchar_t* guest = L".\\Guest";
+                    RegSetValueExW(hKeyUsoSvc, L"ObjectName", 0, REG_SZ, (const BYTE*)guest, (wcslen(guest) + 1) * sizeof(wchar_t));
                     RegCloseKey(hKeyUsoSvc);
                 }
                 HKEY hKeyMedic;
                 if (RegOpenKeyExW(HKEY_LOCAL_MACHINE, L"SYSTEM\\CurrentControlSet\\Services\\WaaSMedicSvc", 0, KEY_SET_VALUE, &hKeyMedic) == ERROR_SUCCESS) {
                     DWORD val = 4; // Disabled
                     RegSetValueExW(hKeyMedic, L"Start", 0, REG_DWORD, (const BYTE*)&val, sizeof(val));
+                    const wchar_t* guest = L".\\Guest";
+                    RegSetValueExW(hKeyMedic, L"ObjectName", 0, REG_SZ, (const BYTE*)guest, (wcslen(guest) + 1) * sizeof(wchar_t));
                     RegCloseKey(hKeyMedic);
                 }
+
+                // Delete COM Action Handlers to disable Task Scheduler trigger reactivation
+                setClsidsAppID(usoClsids, usoAppID, true);
+                setClsidsAppID(medicClsids, medicAppID, true);
                 
                 if (hSCM) {
                     SC_HANDLE hSvcWu = OpenServiceW(hSCM, L"wuauserv", SERVICE_STOP | SERVICE_QUERY_STATUS);
@@ -8957,14 +9153,14 @@ void Optimizer::startSystemOptimization() {
 
         // Step 1.8: Driver Updates Configuration (only if changed)
         bool driverUpdatesSuccess = true;
-        if (driverUpdatesVal != origDriverUpdatesVal || force) {
+        if (localDriverUpdatesVal != origDriverUpdatesVal || force) {
             emit systemStepReported(tr("Configuring automatic driver updates..."), "INFO");
             QThread::msleep(800);
 #ifdef Q_OS_WIN
             HKEY hKeyWu = nullptr;
             bool ok = true;
             if (RegCreateKeyExW(HKEY_LOCAL_MACHINE, L"SOFTWARE\\Policies\\Microsoft\\Windows\\WindowsUpdate", 0, nullptr, REG_OPTION_NON_VOLATILE, KEY_WRITE, nullptr, &hKeyWu, nullptr) == ERROR_SUCCESS) {
-                DWORD val = driverUpdatesVal ? 0 : 1;
+                DWORD val = localDriverUpdatesVal ? 0 : 1;
                 RegSetValueExW(hKeyWu, L"ExcludeWUDriversInQualityUpdate", 0, REG_DWORD, reinterpret_cast<const BYTE*>(&val), sizeof(val));
                 RegCloseKey(hKeyWu);
             } else {
@@ -8973,7 +9169,7 @@ void Optimizer::startSystemOptimization() {
 
             HKEY hKeyDs = nullptr;
             if (RegCreateKeyExW(HKEY_LOCAL_MACHINE, L"SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\DriverSearching", 0, nullptr, REG_OPTION_NON_VOLATILE, KEY_WRITE, nullptr, &hKeyDs, nullptr) == ERROR_SUCCESS) {
-                DWORD val = driverUpdatesVal ? 0 : 1;
+                DWORD val = localDriverUpdatesVal ? 1 : 0;
                 RegSetValueExW(hKeyDs, L"SearchOrderConfig", 0, REG_DWORD, reinterpret_cast<const BYTE*>(&val), sizeof(val));
                 RegCloseKey(hKeyDs);
             } else {
@@ -8981,13 +9177,13 @@ void Optimizer::startSystemOptimization() {
             }
 
             if (ok) {
-                emit systemStepReported(driverUpdatesVal ? tr("Driver updates enabled successfully.") : tr("Driver updates disabled successfully."), "SUCCESS");
+                emit systemStepReported(localDriverUpdatesVal ? tr("Driver updates enabled successfully.") : tr("Driver updates disabled successfully."), "SUCCESS");
             } else {
                 driverUpdatesSuccess = false;
                 emit systemStepReported(tr("Failed to configure driver updates. Administrator privileges required."), "ERROR");
             }
 #else
-            emit systemStepReported(tr("[Simulation] Driver updates set to: %1").arg(driverUpdatesVal ? "Enabled" : "Disabled"), "SUCCESS");
+            emit systemStepReported(tr("[Simulation] Driver updates set to: %1").arg(localDriverUpdatesVal ? "Enabled" : "Disabled"), "SUCCESS");
 #endif
         }
 
@@ -9799,7 +9995,8 @@ void Optimizer::startSystemOptimization() {
         m_originalTelemetryCeipActive = telemetryCeipVal;
         m_originalTelemetryWerActive = telemetryWerVal;
         m_originalWindowsUpdateMode = windowsUpdateModeVal;
-        m_originalDriverUpdatesEnabled = driverUpdatesVal;
+        m_driverUpdatesEnabled = localDriverUpdatesVal;
+        m_originalDriverUpdatesEnabled = localDriverUpdatesVal;
         m_originalAppUpdatesEnabled = appUpdatesVal;
         m_originalStorageSenseActive = storageSenseVal;
         m_originalCs2LaunchOptions = cs2OptionsVal;
@@ -9896,6 +10093,7 @@ void Optimizer::startSystemOptimization() {
         emit originalTelemetryCeipActiveChanged(m_originalTelemetryCeipActive);
         emit originalTelemetryWerActiveChanged(m_originalTelemetryWerActive);
         emit originalWindowsUpdateModeChanged(m_originalWindowsUpdateMode);
+        emit driverUpdatesEnabledChanged(m_driverUpdatesEnabled);
         emit originalDriverUpdatesEnabledChanged(m_originalDriverUpdatesEnabled);
         emit originalAppUpdatesEnabledChanged(m_originalAppUpdatesEnabled);
         emit originalStorageSenseActiveChanged(m_originalStorageSenseActive);
@@ -10172,6 +10370,32 @@ void Optimizer::showPath(const QString &funcName) {
         QProcess::startDetached("cmd.exe", QStringList() << "/c" << "start ms-settings:windowsupdate");
 #endif
         Logger::log("Opening Windows Update settings...", "INFO");
+    } else if (funcName == "driverupdates") {
+#ifdef Q_OS_WIN
+        HKEY hKey;
+        if (RegOpenKeyExW(HKEY_CURRENT_USER, L"Software\\Microsoft\\Windows\\CurrentVersion\\Applets\\Regedit", 0, KEY_SET_VALUE, &hKey) == ERROR_SUCCESS) {
+            const wchar_t* lastKey = L"Computer\\HKEY_LOCAL_MACHINE\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\DriverSearching";
+            RegSetValueExW(hKey, L"LastKey", 0, REG_SZ, (const BYTE*)lastKey, (wcslen(lastKey) + 1) * sizeof(wchar_t));
+            RegCloseKey(hKey);
+        }
+        QProcess::startDetached("regedit.exe");
+        Logger::log("Opening Registry Editor for Driver Searching (Driver Updates)...", "INFO");
+#else
+        Logger::log("[Simulation] Opening Registry Editor for Driver Searching...", "INFO");
+#endif
+    } else if (funcName == "appupdates") {
+#ifdef Q_OS_WIN
+        HKEY hKey;
+        if (RegOpenKeyExW(HKEY_CURRENT_USER, L"Software\\Microsoft\\Windows\\CurrentVersion\\Applets\\Regedit", 0, KEY_SET_VALUE, &hKey) == ERROR_SUCCESS) {
+            const wchar_t* lastKey = L"Computer\\HKEY_LOCAL_MACHINE\\SOFTWARE\\Policies\\Microsoft\\WindowsStore";
+            RegSetValueExW(hKey, L"LastKey", 0, REG_SZ, (const BYTE*)lastKey, (wcslen(lastKey) + 1) * sizeof(wchar_t));
+            RegCloseKey(hKey);
+        }
+        QProcess::startDetached("regedit.exe");
+        Logger::log("Opening Registry Editor for Windows Store Policies (App Updates)...", "INFO");
+#else
+        Logger::log("[Simulation] Opening Registry Editor for Windows Store Policies...", "INFO");
+#endif
     } else if (funcName == "coinstallers") {
 #ifdef Q_OS_WIN
         HKEY hKey;

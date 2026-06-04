@@ -165,12 +165,20 @@ Column {
                 Layout.alignment: Qt.AlignVCenter
                 spacing: 2
 
-                Text {
-                    text: qsTr("Driver updates")
-                    color: Theme.textPrimary
-                    font.family: Theme.fontFamily
-                    font.pixelSize: 12
-                    font.bold: true
+                Row {
+                    spacing: 8
+                    Text {
+                        text: qsTr("Driver updates")
+                        color: Theme.textPrimary
+                        font.family: Theme.fontFamily
+                        font.pixelSize: 12
+                        font.bold: true
+                        anchors.verticalCenter: parent.verticalCenter
+                    }
+                    ShowPathButton {
+                        anchors.verticalCenter: parent.verticalCenter
+                        onClicked: { optimizerBackend.showPath("driverupdates"); }
+                    }
                 }
                 Text {
                     text: qsTr("Automatically update or search drivers as part of cumulative updates or when connecting new hardware")
@@ -186,6 +194,7 @@ Column {
                 id: driverSwitch
                 Layout.alignment: Qt.AlignVCenter
                 checked: optimizerBackend.driverUpdatesEnabled
+                enabled: optimizerBackend.windowsUpdateMode !== 3
                 onToggled: (isChecked) => { optimizerBackend.driverUpdatesEnabled = isChecked; }
             }
         }
@@ -240,12 +249,20 @@ Column {
                 Layout.alignment: Qt.AlignVCenter
                 spacing: 2
 
-                Text {
-                    text: qsTr("App updates")
-                    color: Theme.textPrimary
-                    font.family: Theme.fontFamily
-                    font.pixelSize: 12
-                    font.bold: true
+                Row {
+                    spacing: 8
+                    Text {
+                        text: qsTr("App updates")
+                        color: Theme.textPrimary
+                        font.family: Theme.fontFamily
+                        font.pixelSize: 12
+                        font.bold: true
+                        anchors.verticalCenter: parent.verticalCenter
+                    }
+                    ShowPathButton {
+                        anchors.verticalCenter: parent.verticalCenter
+                        onClicked: { optimizerBackend.showPath("appupdates"); }
+                    }
                 }
                 Text {
                     text: qsTr("Automatically download and install app updates")
