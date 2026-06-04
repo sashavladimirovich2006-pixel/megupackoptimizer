@@ -6420,7 +6420,6 @@ Recommendation: If scans and repairs do not solve your system problems, we recom
     </message>
     <message>
         <location filename="../src/qml/views/SteamSettingsDrawer.qml" line="3698" />
-        <location filename="../src/qml/views/SteamSettingsDrawer.qml" line="7878" />
         <source>Pair Steam Link</source>
         <translation>Прив'язати Steam Link</translation>
     </message>
@@ -6677,12 +6676,31 @@ Recommendation: If scans and repairs do not solve your system problems, we recom
         <translation>Кастомізація</translation>
     </message>
     <message>
-        <location filename="../src/qml/views/SteamSettingsDrawer.qml" line="7888" />
-        <source>To pair a new device (like a phone, tablet, or VR headset) with Steam Remote Play, please open the official Steam client, go to Settings -&gt; Remote Play, and click "Pair Steam Link". This handles the secure live network authorization protocol.</source>
-        <translation>Щоб прив’язати новий пристрій (наприклад, телефон, планшет або VR-шолом) до Steam Remote Play, будь ласка, відкрийте офіційний клієнт Steam, перейдіть до Налаштування -&gt; Remote Play і натисніть «Прив’язати Steam Link». Це запускає безпечний протокол авторизації в реальному часі.</translation>
+        <location filename="../src/qml/views/SteamSettingsDrawer.qml" line="7902" />
+        <source>Authorize Device</source>
+        <translation>Авторизувати пристрій</translation>
     </message>
     <message>
-        <location filename="../src/qml/views/SteamSettingsDrawer.qml" line="7902" />
+        <location filename="../src/qml/views/SteamSettingsDrawer.qml" line="7910" />
+        <source>Enter the 4 digit authorization code showing on your device to allow it to connect and play games.</source>
+        <translation>Введіть 4-значний код авторизації, що відображається на вашому пристрої, щоб дозволити йому підключитися та запускати ігри.</translation>
+    </message>
+    <message>
+        <location filename="../src/qml/views/SteamSettingsDrawer.qml" line="8000" />
+        <source>Redirecting to Steam...</source>
+        <translation>Перенаправлення в Steam...</translation>
+    </message>
+    <message>
+        <location filename="../src/qml/views/SteamSettingsDrawer.qml" line="8010" />
+        <source>Device pairing requires a live network connection managed by the Steam client. We have launched Steam and opened its Settings window for you. Please click "Pair Steam Link" inside Steam and enter your code (%1) there.</source>
+        <translation>Для прив’язки пристрою потрібне живе мережеве з’єднання, яке контролюється клієнтом Steam. Ми запустили Steam і відкрили для вас вікно налаштувань. Будь ласка, натисніть «Прив’язати Steam Link» всередині Steam і введіть свій код (%1) туди.</translation>
+    </message>
+    <message>
+        <source>To pair a new device (like a phone, tablet, or VR headset) with Steam Remote Play, please open the official Steam client, go to Settings -&gt; Remote Play, and click "Pair Steam Link". This handles the secure live network authorization protocol.</source>
+        <translation type="vanished">Щоб прив’язати новий пристрій (наприклад, телефон, планшет або VR-шолом) до Steam Remote Play, будь ласка, відкрийте офіційний клієнт Steam, перейдіть до Налаштування -&gt; Remote Play і натисніть «Прив’язати Steam Link». Це запускає безпечний протокол авторизації в реальному часі.</translation>
+    </message>
+    <message>
+        <location filename="../src/qml/views/SteamSettingsDrawer.qml" line="8024" />
         <source>Got it</source>
         <translation>Зрозуміло</translation>
     </message>
@@ -7050,12 +7068,14 @@ Recommendation: If scans and repairs do not solve your system problems, we recom
     <message>
         <location filename="../src/qml/views/SteamSettingsDrawer.qml" line="7674" />
         <location filename="../src/qml/views/SteamSettingsDrawer.qml" line="7795" />
+        <location filename="../src/qml/views/SteamSettingsDrawer.qml" line="7958" />
         <source>Confirm</source>
         <translation>Підтвердити</translation>
     </message>
     <message>
         <location filename="../src/qml/views/SteamSettingsDrawer.qml" line="7685" />
         <location filename="../src/qml/views/SteamSettingsDrawer.qml" line="7806" />
+        <location filename="../src/qml/views/SteamSettingsDrawer.qml" line="7972" />
         <source>Cancel</source>
         <translation>Скасувати</translation>
     </message>

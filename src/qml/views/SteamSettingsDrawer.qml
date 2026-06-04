@@ -7816,7 +7816,7 @@ Item {
         }
     }
 
-    // STEAM PAIR STEAM LINK INFO DIALOG
+    // STEAM PAIR STEAM LINK INFO DIALOG (AUTHORIZE DEVICE)
     Rectangle {
         id: pairSteamLinkDialog
         anchors.fill: parent
@@ -7824,12 +7824,17 @@ Item {
         z: 9999
         visible: false
         opacity: 0.0
+
+        property bool showInstructions: false
         
         Behavior on opacity { NumberAnimation { duration: Theme.animNormal } }
         
         function open() {
+            showInstructions = false;
+            pinTextInput.text = "";
             visible = true;
             opacity = 1.0;
+            pinTextInput.forceActiveFocus();
         }
         
         function close() {
@@ -7850,8 +7855,8 @@ Item {
 
         AcrylicPanel {
             anchors.centerIn: parent
-            width: 360
-            height: 200
+            width: 400
+            height: 250
             radius: 12
             
             MouseArea {
@@ -7859,52 +7864,170 @@ Item {
                 acceptedButtons: Qt.AllButtons
             }
 
+            // Hidden text input for handling keyboard entry
+            TextInput {
+                id: pinTextInput
+                width: 1
+                height: 1
+                opacity: 0
+                maximumLength: 4
+                inputMethodHints: Qt.ImhDigitsOnly
+                validator: RegularExpressionValidator { regularExpression: /[0-9]*/ }
+                activeFocusOnTab: true
+                onTextEdited: {
+                    var cleaned = text.replace(/[^0-9]/g, '');
+                    if (cleaned !== text) {
+                        text = cleaned;
+                    }
+                }
+                Keys.onReturnPressed: {
+                    if (text.length === 4) {
+                        pairConfirmBtn.clicked();
+                    }
+                }
+            }
+
             Column {
                 anchors.fill: parent
                 anchors.margins: 20
                 spacing: 16
 
-                Row {
-                    spacing: 10
+                // STATE 1: Enter PIN code
+                Column {
                     width: parent.width
-                    
-                    Text {
-                        text: "🔗"
-                        font.pixelSize: 18
-                        anchors.verticalCenter: parent.verticalCenter
-                    }
+                    spacing: 16
+                    visible: !pairSteamLinkDialog.showInstructions
 
                     Text {
-                        text: qsTr("Pair Steam Link")
+                        text: qsTr("Authorize Device")
                         color: Theme.textPrimary
                         font.family: Theme.fontFamily
-                        font.pixelSize: 14
+                        font.pixelSize: 15
                         font.bold: true
-                        anchors.verticalCenter: parent.verticalCenter
+                    }
+
+                    Text {
+                        text: qsTr("Enter the 4 digit authorization code showing on your device to allow it to connect and play games.")
+                        color: Theme.textSecondary
+                        font.family: Theme.fontFamily
+                        font.pixelSize: 11
+                        width: parent.width
+                        wrapMode: Text.WordWrap
+                    }
+
+                    // 4 Styled digit boxes
+                    Row {
+                        spacing: 12
+                        anchors.horizontalCenter: parent.horizontalCenter
+
+                        Repeater {
+                            model: 4
+                            delegate: Rectangle {
+                                width: 54
+                                height: 54
+                                radius: 8
+                                color: "#08FFFFFF"
+                                border.color: pinTextInput.activeFocus && pinTextInput.text.length === index ? Theme.accent : Theme.border
+                                border.width: 1
+
+                                Text {
+                                    text: pinTextInput.text.length > index ? pinTextInput.text.charAt(index) : ""
+                                    color: Theme.textPrimary
+                                    font.family: Theme.fontFamily
+                                    font.pixelSize: 22
+                                    font.bold: true
+                                    anchors.centerIn: parent
+                                }
+                            }
+                        }
+
+                        MouseArea {
+                            anchors.fill: parent
+                            cursorShape: Qt.IBeamCursor
+                            onClicked: pinTextInput.forceActiveFocus()
+                        }
+                    }
+
+                    Row {
+                        width: parent.width
+                        spacing: 10
+                        layoutDirection: Qt.RightToLeft
+
+                        MeguButton {
+                            id: pairConfirmBtn
+                            text: qsTr("Confirm")
+                            accented: true
+                            width: 90
+                            height: 32
+                            enabled: pinTextInput.text.length === 4
+                            opacity: enabled ? 1.0 : 0.5
+                            onClicked: {
+                                pairSteamLinkDialog.showInstructions = true;
+                                optimizerBackend.launchSteam();
+                                Qt.openUrlExternally("steam://open/settings");
+                            }
+                        }
+
+                        MeguButton {
+                            text: qsTr("Cancel")
+                            accented: false
+                            width: 90
+                            height: 32
+                            onClicked: {
+                                pairSteamLinkDialog.close();
+                            }
+                        }
                     }
                 }
 
-                Text {
-                    text: qsTr("To pair a new device (like a phone, tablet, or VR headset) with Steam Remote Play, please open the official Steam client, go to Settings -> Remote Play, and click \"Pair Steam Link\". This handles the secure live network authorization protocol.")
-                    color: Theme.textSecondary
-                    font.family: Theme.fontFamily
-                    font.pixelSize: 11
+                // STATE 2: Instructions
+                Column {
                     width: parent.width
-                    wrapMode: Text.WordWrap
-                }
+                    spacing: 16
+                    visible: pairSteamLinkDialog.showInstructions
 
-                Row {
-                    width: parent.width
-                    spacing: 10
-                    layoutDirection: Qt.RightToLeft
+                    Row {
+                        spacing: 10
+                        width: parent.width
+                        
+                        Text {
+                            text: "🔗"
+                            font.pixelSize: 18
+                            anchors.verticalCenter: parent.verticalCenter
+                        }
 
-                    MeguButton {
-                        text: qsTr("Got it")
-                        accented: true
-                        width: 90
-                        height: 30
-                        onClicked: {
-                            pairSteamLinkDialog.close();
+                        Text {
+                            text: qsTr("Redirecting to Steam...")
+                            color: Theme.textPrimary
+                            font.family: Theme.fontFamily
+                            font.pixelSize: 14
+                            font.bold: true
+                            anchors.verticalCenter: parent.verticalCenter
+                        }
+                    }
+
+                    Text {
+                        text: qsTr("Device pairing requires a live network connection managed by the Steam client. We have launched Steam and opened its Settings window for you. Please click \"Pair Steam Link\" inside Steam and enter your code (%1) there.").arg(pinTextInput.text)
+                        color: Theme.textSecondary
+                        font.family: Theme.fontFamily
+                        font.pixelSize: 11
+                        width: parent.width
+                        wrapMode: Text.WordWrap
+                    }
+
+                    Row {
+                        width: parent.width
+                        spacing: 10
+                        layoutDirection: Qt.RightToLeft
+
+                        MeguButton {
+                            text: qsTr("Got it")
+                            accented: true
+                            width: 90
+                            height: 32
+                            onClicked: {
+                                pairSteamLinkDialog.close();
+                            }
                         }
                     }
                 }
