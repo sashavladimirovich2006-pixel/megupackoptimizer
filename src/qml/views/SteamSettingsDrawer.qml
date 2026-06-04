@@ -3570,6 +3570,144 @@ Item {
                     color: Theme.border
                 }
 
+                // Section: Computers & Devices
+                Text {
+                    text: qsTr("Computers & Devices")
+                    color: Theme.accent
+                    font.family: Theme.fontFamily
+                    font.pixelSize: 11
+                    font.bold: true
+                    font.letterSpacing: 1.0
+                }
+
+                // Device List Box
+                Rectangle {
+                    width: parent.width
+                    height: deviceRepeater.count > 0 ? (deviceRepeater.count * 52) + 8 : 72
+                    radius: 8
+                    color: "#05FFFFFF"
+                    border.color: Theme.border
+                    border.width: 1
+                    clip: true
+
+                    Column {
+                        anchors.centerIn: parent
+                        spacing: 6
+                        visible: deviceRepeater.count === 0
+
+                        Row {
+                            spacing: 8
+                            anchors.horizontalCenter: parent.horizontalCenter
+                            
+                            Text {
+                                text: "🖥"
+                                color: Theme.textSecondary
+                                font.pixelSize: 16
+                                anchors.verticalCenter: parent.verticalCenter
+                            }
+                            Text {
+                                text: qsTr("No devices available")
+                                color: Theme.textSecondary
+                                font.family: Theme.fontFamily
+                                font.pixelSize: 11
+                                anchors.verticalCenter: parent.verticalCenter
+                            }
+                        }
+                    }
+
+                    Column {
+                        width: parent.width
+                        anchors.top: parent.top
+                        anchors.topMargin: 4
+                        anchors.bottomMargin: 4
+                        spacing: 0
+
+                        Repeater {
+                            id: deviceRepeater
+                            model: optimizerBackend.steamFriendsSettings ? optimizerBackend.steamFriendsSettings["RemotePlay_Devices"] : []
+                            
+                            delegate: Item {
+                                width: parent.width
+                                height: 50
+
+                                Row {
+                                    anchors.left: parent.left
+                                    anchors.leftMargin: 16
+                                    anchors.right: unpairBtn.left
+                                    anchors.rightMargin: 16
+                                    anchors.verticalCenter: parent.verticalCenter
+                                    spacing: 12
+
+                                    Text {
+                                        text: "📱"
+                                        color: Theme.textPrimary
+                                        font.pixelSize: 16
+                                        anchors.verticalCenter: parent.verticalCenter
+                                    }
+
+                                    Column {
+                                        anchors.verticalCenter: parent.verticalCenter
+                                        spacing: 2
+                                        Text {
+                                            text: modelData.hostname || "Device"
+                                            color: Theme.textPrimary
+                                            font.family: Theme.fontFamily
+                                            font.pixelSize: 11
+                                            font.bold: true
+                                        }
+                                        Text {
+                                            text: modelData.ippublic ? "IP: " + modelData.ippublic : qsTr("Authorized")
+                                            color: Theme.textSecondary
+                                            font.family: Theme.fontFamily
+                                            font.pixelSize: 9
+                                        }
+                                    }
+                                }
+
+                                MeguButton {
+                                    id: unpairBtn
+                                    text: qsTr("Unpair")
+                                    anchors.right: parent.right
+                                    anchors.rightMargin: 12
+                                    anchors.verticalCenter: parent.verticalCenter
+                                    width: 80
+                                    height: 28
+                                    onClicked: {
+                                        optimizerBackend.unpairSteamDevice(modelData.id);
+                                    }
+                                }
+
+                                Rectangle {
+                                    width: parent.width - 24
+                                    height: 1
+                                    color: Theme.border
+                                    anchors.bottom: parent.bottom
+                                    anchors.horizontalCenter: parent.horizontalCenter
+                                    visible: index < deviceRepeater.count - 1
+                                }
+                            }
+                        }
+                    }
+                }
+
+                Row {
+                    width: parent.width
+                    layoutDirection: Qt.RightToLeft
+
+                    MeguButton {
+                        text: qsTr("Pair Steam Link")
+                        width: 140
+                        height: 32
+                        onClicked: pairSteamLinkDialog.open()
+                    }
+                }
+
+                Rectangle {
+                    width: parent.width
+                    height: 1
+                    color: Theme.border
+                }
+
                 // Section: Connection Security
                 Text {
                     text: qsTr("Connection Security")
@@ -7671,6 +7809,102 @@ Item {
                         height: 30
                         onClicked: {
                             steamBrowserDeleteConfirmDialog.close();
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    // STEAM PAIR STEAM LINK INFO DIALOG
+    Rectangle {
+        id: pairSteamLinkDialog
+        anchors.fill: parent
+        color: "#CC05070B"
+        z: 9999
+        visible: false
+        opacity: 0.0
+        
+        Behavior on opacity { NumberAnimation { duration: Theme.animNormal } }
+        
+        function open() {
+            visible = true;
+            opacity = 1.0;
+        }
+        
+        function close() {
+            opacity = 0.0;
+            pairCloseTimer.start();
+        }
+        
+        Timer {
+            id: pairCloseTimer
+            interval: Theme.animNormal
+            onTriggered: pairSteamLinkDialog.visible = false;
+        }
+
+        MouseArea {
+            anchors.fill: parent
+            onClicked: pairSteamLinkDialog.close();
+        }
+
+        AcrylicPanel {
+            anchors.centerIn: parent
+            width: 360
+            height: 200
+            radius: 12
+            
+            MouseArea {
+                anchors.fill: parent
+                acceptedButtons: Qt.AllButtons
+            }
+
+            Column {
+                anchors.fill: parent
+                anchors.margins: 20
+                spacing: 16
+
+                Row {
+                    spacing: 10
+                    width: parent.width
+                    
+                    Text {
+                        text: "🔗"
+                        font.pixelSize: 18
+                        anchors.verticalCenter: parent.verticalCenter
+                    }
+
+                    Text {
+                        text: qsTr("Pair Steam Link")
+                        color: Theme.textPrimary
+                        font.family: Theme.fontFamily
+                        font.pixelSize: 14
+                        font.bold: true
+                        anchors.verticalCenter: parent.verticalCenter
+                    }
+                }
+
+                Text {
+                    text: qsTr("To pair a new device (like a phone, tablet, or VR headset) with Steam Remote Play, please open the official Steam client, go to Settings -> Remote Play, and click \"Pair Steam Link\". This handles the secure live network authorization protocol.")
+                    color: Theme.textSecondary
+                    font.family: Theme.fontFamily
+                    font.pixelSize: 11
+                    width: parent.width
+                    wrapMode: Text.WordWrap
+                }
+
+                Row {
+                    width: parent.width
+                    spacing: 10
+                    layoutDirection: Qt.RightToLeft
+
+                    MeguButton {
+                        text: qsTr("Got it")
+                        accented: true
+                        width: 90
+                        height: 30
+                        onClicked: {
+                            pairSteamLinkDialog.close();
                         }
                     }
                 }

@@ -634,6 +634,7 @@ public:
     Q_INVOKABLE QString getSteamActiveUserId();
     Q_INVOKABLE void killSteam();
     Q_INVOKABLE void launchSteam();
+    Q_INVOKABLE bool unpairSteamDevice(const QString &deviceId);
 
 
 

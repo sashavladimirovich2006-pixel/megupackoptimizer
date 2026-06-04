@@ -51,6 +51,122 @@
 #endif
 
 namespace {
+    QVariantList parseRemoteClients(const QString &filePath) {
+        QVariantList list;
+        QFile file(filePath);
+        if (!file.open(QIODevice::ReadOnly | QIODevice::Text)) {
+            return list;
+        }
+        QTextStream in(&file);
+        int level = 0;
+        QString currentClientId = "";
+        QVariantMap currentDevice;
+        while (!in.atEnd()) {
+            QString line = in.readLine().trimmed();
+            if (line == "{") {
+                level++;
+                continue;
+            }
+            if (line == "}") {
+                level--;
+                if (level == 1) {
+                    if (!currentClientId.isEmpty()) {
+                        currentDevice["id"] = currentClientId;
+                        list.append(currentDevice);
+                        currentDevice.clear();
+                        currentClientId.clear();
+                    }
+                }
+                continue;
+            }
+            if (line.isEmpty()) continue;
+
+            QStringList tokens;
+            int lastQuoteIdx = -1;
+            for (int i = 0; i < line.length(); ++i) {
+                if (line.at(i) == '"') {
+                    if (lastQuoteIdx == -1) {
+                        lastQuoteIdx = i;
+                    } else {
+                        tokens.append(line.mid(lastQuoteIdx + 1, i - lastQuoteIdx - 1));
+                        lastQuoteIdx = -1;
+                    }
+                }
+            }
+            if (tokens.isEmpty()) continue;
+
+            if (level == 1) {
+                currentClientId = tokens[0];
+            } else if (level == 2) {
+                if (tokens.size() >= 2) {
+                    QString key = tokens[0];
+                    QString val = tokens[1];
+                    if (key == "hostname" || key == "ippublic" || key == "LastUpdated") {
+                        currentDevice[key] = val;
+                    }
+                }
+            }
+        }
+        return list;
+    }
+
+    bool unpairRemoteClient(const QString &filePath, const QString &clientId) {
+        QFile file(filePath);
+        if (!file.open(QIODevice::ReadOnly | QIODevice::Text)) {
+            return false;
+        }
+        QStringList lines;
+        QTextStream in(&file);
+        while (!in.atEnd()) {
+            lines.append(in.readLine());
+        }
+        file.close();
+
+        int startIdx = -1;
+        for (int i = 0; i < lines.size(); ++i) {
+            if (lines[i].contains(clientId)) {
+                startIdx = i;
+                break;
+            }
+        }
+        if (startIdx == -1) return false;
+
+        int braceCount = 0;
+        int endIdx = -1;
+        bool foundStartBrace = false;
+        for (int i = startIdx; i < lines.size(); ++i) {
+            if (lines[i].contains("{")) {
+                braceCount++;
+                foundStartBrace = true;
+            }
+            if (lines[i].contains("}")) {
+                braceCount--;
+            }
+            if (foundStartBrace && braceCount == 0) {
+                endIdx = i;
+                break;
+            }
+        }
+
+        if (endIdx != -1) {
+            for (int i = 0; i <= (endIdx - startIdx); ++i) {
+                lines.removeAt(startIdx);
+            }
+        } else {
+            return false;
+        }
+
+        if (!file.open(QIODevice::WriteOnly | QIODevice::Text | QIODevice::Truncate)) {
+            return false;
+        }
+        QTextStream out(&file);
+        for (const auto &line : lines) {
+            out << line << "\n";
+        }
+        file.close();
+        return true;
+    }
+
     QString cleanAppName(const QString& appKey) {
         if (appKey == "com.squirrel.Discord.Discord") return "Discord";
         if (appKey == "com.nvidia.nvapp") return "NVIDIA App";
@@ -1707,6 +1823,16 @@ bool Optimizer::getVdfFriendsSettings(const QString &filePath, const QString &ac
                 else if (f.fieldNum == 15) settings["RemotePlay_AV1"] = (f.varintVal != 0);
                 else if (f.fieldNum == 16) settings["RemotePlay_ControllerButton"] = QString::fromUtf8(f.bytesVal);
                 else if (f.fieldNum == 19) settings["RemotePlay_ControllerVisibility"] = int(f.varintVal);
+            }
+        }
+        int userdataIdx = filePath.indexOf("/userdata/", 0, Qt::CaseInsensitive);
+        if (userdataIdx == -1) {
+            userdataIdx = filePath.indexOf("\\userdata\\", 0, Qt::CaseInsensitive);
+        }
+        if (userdataIdx != -1) {
+            QString remoteClientsPath = filePath.left(userdataIdx) + "/config/remoteclients.vdf";
+            if (QFile::exists(remoteClientsPath)) {
+                settings["RemotePlay_Devices"] = parseRemoteClients(remoteClientsPath);
             }
         }
     }
@@ -12312,6 +12438,29 @@ void Optimizer::launchSteam() {
         Logger::log("Steam path registry lookup returned empty.", "WARNING");
     }
 #endif
+}
+
+bool Optimizer::unpairSteamDevice(const QString &deviceId) {
+    Logger::log("unpairSteamDevice: Requested to unpair device with ID: " + deviceId, "INFO");
+    QString path = steamPath();
+    if (path.isEmpty() || !QDir(path).exists()) {
+        Logger::log("unpairSteamDevice: Steam path is invalid or does not exist", "WARNING");
+        return false;
+    }
+    QString remoteClientsPath = path + "/config/remoteclients.vdf";
+    if (!QFile::exists(remoteClientsPath)) {
+        Logger::log("unpairSteamDevice: remoteclients.vdf not found at: " + remoteClientsPath, "WARNING");
+        return false;
+    }
+    bool success = unpairRemoteClient(remoteClientsPath, deviceId);
+    if (success) {
+        Logger::log("unpairSteamDevice: Successfully unpaired device ID: " + deviceId, "INFO");
+        loadSystemStates();
+        return true;
+    } else {
+        Logger::log("unpairSteamDevice: Failed to unpair device ID: " + deviceId, "WARNING");
+        return false;
+    }
 }
 
 
