@@ -14,6 +14,18 @@ Item {
     property bool steamIsRunning: window.steamIsRunning
     property string steamActiveUserId: window.steamActiveUserId
 
+    onSteamIsRunningChanged: {
+        if (!steamIsRunning) {
+            subPage = "main";
+        }
+    }
+
+    onSteamActiveUserIdChanged: {
+        if (steamActiveUserId === "") {
+            subPage = "main";
+        }
+    }
+
     Component.onCompleted: {
         optimizerBackend.scanSteamInstalledGames();
         populateGamesModel();
