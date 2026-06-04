@@ -54,6 +54,73 @@ ApplicationWindow {
     property bool steamIsRunning: false
     property string steamActiveUserId: ""
 
+    property int optimizationPercentage: {
+        var count = 0;
+        var total = 0;
+        
+        function checkOff(val) {
+            total++;
+            if (!val) count++;
+        }
+        function checkOn(val) {
+            total++;
+            if (val) count++;
+        }
+        
+        // Bindings to all optimization toggles in the program
+        checkOff(optimizerBackend.telemetryActive);
+        checkOff(optimizerBackend.telemetryDiagTrackActive);
+        checkOff(optimizerBackend.telemetryWapPushActive);
+        checkOff(optimizerBackend.telemetryCeipActive);
+        checkOff(optimizerBackend.telemetryWerActive);
+
+        checkOff(optimizerBackend.defenderRegistryActive);
+        checkOff(optimizerBackend.defenderCmdActive);
+        checkOff(optimizerBackend.defenderServiceActive);
+
+        checkOff(optimizerBackend.adsTailoredExperiencesActive);
+        checkOff(optimizerBackend.adsAdvertisingIdActive);
+        checkOff(optimizerBackend.adsSuggestedContentActive);
+        checkOff(optimizerBackend.adsSettingsHomeActive);
+        checkOff(optimizerBackend.adsSuggestedNotificationsActive);
+        checkOff(optimizerBackend.adsLockScreenTipsActive);
+        checkOff(optimizerBackend.adsWindowsTipsActive);
+        checkOff(optimizerBackend.adsWelcomeExperienceActive);
+        checkOff(optimizerBackend.adsFinishSetupActive);
+
+        checkOff(optimizerBackend.privacyLocationActive);
+        checkOff(optimizerBackend.privacyTelemetryActive);
+        checkOff(optimizerBackend.privacyCeipActive);
+        checkOff(optimizerBackend.privacyAppsTelemetryActive);
+        checkOff(optimizerBackend.privacyAppLaunchesActive);
+        checkOff(optimizerBackend.privacyImproveInkingActive);
+        checkOff(optimizerBackend.privacyPersonalizeInkingActive);
+        checkOff(optimizerBackend.privacyErrorReportingActive);
+        checkOff(optimizerBackend.privacyLockScreenCameraActive);
+        checkOff(optimizerBackend.privacyOnlineSpeechActive);
+
+        checkOn(optimizerBackend.classicContextMenuActive);
+        checkOff(optimizerBackend.shortcutArrowsActive);
+        checkOff(optimizerBackend.hibernationActive);
+        checkOff(optimizerBackend.gamingOverlayActive);
+        checkOff(optimizerBackend.mouseAccelerationActive);
+        checkOn(optimizerBackend.gameModeActive);
+        checkOff(optimizerBackend.discordOverlayActive);
+        checkOff(optimizerBackend.superuserUcpdActive);
+        checkOff(optimizerBackend.startMenuWebResults);
+        checkOff(optimizerBackend.startMenuAutoinstall);
+        checkOff(optimizerBackend.startMenuAccountNotifications);
+        checkOff(optimizerBackend.desktopShowWidgets);
+        checkOff(optimizerBackend.desktopAeroShake);
+        checkOff(optimizerBackend.coinstallersActive);
+        checkOff(optimizerBackend.driverUpdatesEnabled);
+        checkOff(optimizerBackend.appUpdatesEnabled);
+        checkOn(optimizerBackend.storageSenseActive);
+        
+        return total > 0 ? Math.round((count / total) * 100) : 0;
+    }
+
+
     onVisibilityChanged: {
         if (visibility !== Window.Maximized) {
             headerDragArea.isRestoring = false;
@@ -209,6 +276,135 @@ ApplicationWindow {
                         font.bold: true
                         font.letterSpacing: 2.0
                     }
+                }
+
+                // Vertical Divider 1
+                Rectangle {
+                    width: 1
+                    height: 16
+                    color: Theme.border
+                    anchors.verticalCenter: parent.verticalCenter
+                    opacity: 0.5
+                }
+
+                // Optimization Speedometer Widget
+                Row {
+                    spacing: 8
+                    anchors.verticalCenter: parent.verticalCenter
+
+                    Item {
+                        id: speedometerCircle
+                        width: 36
+                        height: 36
+                        anchors.verticalCenter: parent.verticalCenter
+
+                        property real percentage: window.optimizationPercentage
+                        property real animPercentage: 0
+                        
+                        Behavior on animPercentage {
+                            NumberAnimation {
+                                duration: Theme.animSlow
+                                easing.type: Easing.OutCubic
+                            }
+                        }
+                        
+                        onPercentageChanged: {
+                            animPercentage = percentage;
+                        }
+                        
+                        Component.onCompleted: {
+                            animPercentage = percentage;
+                        }
+
+                        property color levelColor: {
+                            if (percentage < 45) return Theme.error;
+                            if (percentage < 75) return Theme.warning;
+                            return Theme.success;
+                        }
+
+                        // Background track
+                        Shape {
+                            anchors.fill: parent
+                            smooth: true
+                            ShapePath {
+                                fillColor: "transparent"
+                                strokeColor: Theme.currentTheme === "Blackout полностью черная" ? "#222" : Qt.rgba(Theme.border.r, Theme.border.g, Theme.border.b, 0.25)
+                                strokeWidth: 2
+                                PathAngleArc {
+                                    centerX: 18
+                                    centerY: 18
+                                    radiusX: 16
+                                    radiusY: 16
+                                    startAngle: 0
+                                    sweepAngle: 360
+                                }
+                            }
+                        }
+
+                        // Active arc with glow
+                        Shape {
+                            anchors.fill: parent
+                            smooth: true
+                            layer.enabled: true
+                            layer.effect: DropShadow {
+                                transparentBorder: true
+                                horizontalOffset: 0
+                                verticalOffset: 0
+                                radius: 4
+                                color: speedometerCircle.levelColor
+                            }
+                            ShapePath {
+                                fillColor: "transparent"
+                                strokeColor: speedometerCircle.levelColor
+                                strokeWidth: 2
+                                capStyle: ShapePath.RoundCap
+                                PathAngleArc {
+                                    centerX: 18
+                                    centerY: 18
+                                    radiusX: 16
+                                    radiusY: 16
+                                    startAngle: -90
+                                    sweepAngle: (speedometerCircle.animPercentage / 100) * 360
+                                }
+                            }
+                        }
+
+                        // Inner Percentage Text
+                        Text {
+                            text: Math.round(speedometerCircle.animPercentage) + "%"
+                            color: speedometerCircle.levelColor
+                            font.family: Theme.fontFamily
+                            font.pixelSize: 10
+                            font.bold: true
+                            anchors.centerIn: parent
+                        }
+                    }
+
+                    // Level status text
+                    Text {
+                        id: levelLabel
+                        visible: window.width >= 900
+                        text: {
+                            var pct = window.optimizationPercentage;
+                            if (pct < 45) return qsTr("Poor Level");
+                            if (pct < 75) return qsTr("Average Level");
+                            return qsTr("Optimal Level");
+                        }
+                        color: speedometerCircle.levelColor
+                        font.family: Theme.fontFamily
+                        font.pixelSize: 11
+                        font.bold: true
+                        anchors.verticalCenter: parent.verticalCenter
+                    }
+                }
+
+                // Vertical Divider 2
+                Rectangle {
+                    width: 1
+                    height: 16
+                    color: Theme.border
+                    anchors.verticalCenter: parent.verticalCenter
+                    opacity: 0.5
                 }
 
                 // Circular Real-Time Logs button inside left island

@@ -5248,5 +5248,5 @@ Would you like to close Discord now and proceed?</source>
         <source>Customization</source>
         <translation>Кастомізація</translation>
     </message>
-</context>
+<message><source>Poor Level</source><translation>Поганий рівень</translation></message><message><source>Average Level</source><translation>Середній рівень</translation></message><message><source>Optimal Level</source><translation>Оптимальний рівень</translation></message></context>
 </TS>
