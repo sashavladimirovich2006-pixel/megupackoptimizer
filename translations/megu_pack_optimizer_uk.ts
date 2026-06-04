@@ -2093,6 +2093,10 @@ Would you like to close Discord now and proceed?</source>
         <source>Allows the device to open faster after a shutdown, reducing up to 50% of boot-time</source>
         <translation>Дозволяє пристрою відкриватися швидше після вимкнення, скорочуючи час завантаження до 50%</translation>
     </message>
+    <message>
+        <source>To enable Fast startup, system hibernation must be enabled.</source>
+        <translation>Щоб увімкнути швидкий запуск, необхідно увімкнути гібернацію системи.</translation>
+    </message>
 </context>
     <context>
         <name>Optimizer</name>

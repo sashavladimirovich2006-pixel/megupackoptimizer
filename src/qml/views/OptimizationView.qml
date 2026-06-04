@@ -26646,14 +26646,11 @@ Item {
 
 
                 // Fast Startup Card
+                // Fast Startup Card
                 AcrylicPanel {
                     id: fastStartupPanel
                     width: parent.width
                     height: 104
-                    enabled: optimizerBackend.hibernationActive
-                    opacity: enabled ? 1.0 : 0.4
-                    
-                    Behavior on opacity { NumberAnimation { duration: Theme.animFast } }
 
                     Row {
                         anchors.left: parent.left
@@ -26667,6 +26664,9 @@ Item {
                             radius: 10
                             color: Qt.rgba(Theme.accent.r, Theme.accent.g, Theme.accent.b, 0.15)
                             anchors.verticalCenter: parent.verticalCenter
+                            opacity: optimizerBackend.hibernationActive ? 1.0 : 0.4
+                            Behavior on opacity { NumberAnimation { duration: Theme.animFast } }
+
                             Item {
                                 width: 20
                                 height: 20
@@ -26700,9 +26700,14 @@ Item {
                                     font.pixelSize: 16
                                     font.bold: true
                                     anchors.verticalCenter: parent.verticalCenter
+                                    opacity: optimizerBackend.hibernationActive ? 1.0 : 0.4
+                                    Behavior on opacity { NumberAnimation { duration: Theme.animFast } }
                                 }
                                 ShowPathButton {
                                     anchors.verticalCenter: parent.verticalCenter
+                                    enabled: optimizerBackend.hibernationActive
+                                    opacity: enabled ? 1.0 : 0.4
+                                    Behavior on opacity { NumberAnimation { duration: Theme.animFast } }
                                     onClicked: { optimizerBackend.showPath("fastStartup"); }
                                 }
                                 Rectangle {
@@ -26726,11 +26731,104 @@ Item {
                                 }
                             }
 
+                            // Description when Hibernation is enabled
                             Text {
                                 text: qsTr("Allows the device to open faster after a shutdown, reducing up to 50% of boot-time")
                                 color: Theme.textMuted
                                 font.family: Theme.fontFamily
                                 font.pixelSize: 12
+                                visible: optimizerBackend.hibernationActive
+                            }
+
+                            // Warning and Eye when Hibernation is disabled
+                            Row {
+                                spacing: 8
+                                visible: !optimizerBackend.hibernationActive
+
+                                Row {
+                                    spacing: 6
+                                    anchors.verticalCenter: parent.verticalCenter
+                                    Image {
+                                        id: warningIcon
+                                        source: "qrc:/MeguPackOptimizer/src/resources/warning.svg"
+                                        width: 14
+                                        height: 14
+                                        anchors.verticalCenter: parent.verticalCenter
+                                        visible: false
+                                    }
+                                    ColorOverlay {
+                                        anchors.fill: warningIcon
+                                        source: warningIcon
+                                        color: Theme.warning
+                                        width: 14
+                                        height: 14
+                                    }
+
+                                    Text {
+                                        text: qsTr("To enable Fast startup, system hibernation must be enabled.")
+                                        color: Theme.warning
+                                        font.family: Theme.fontFamily
+                                        font.pixelSize: 12
+                                        anchors.verticalCenter: parent.verticalCenter
+                                    }
+                                }
+
+                                // Eye / Locate button
+                                Rectangle {
+                                    width: 24
+                                    height: 20
+                                    radius: 4
+                                    color: eyeMouse.containsMouse ? Qt.rgba(Theme.accent.r, Theme.accent.g, Theme.accent.b, 0.15) : "transparent"
+                                    border.color: eyeMouse.containsMouse ? Theme.accent : "transparent"
+                                    border.width: 1
+                                    anchors.verticalCenter: parent.verticalCenter
+                                    Behavior on color { ColorAnimation { duration: Theme.animFast } }
+                                    Behavior on border.color { ColorAnimation { duration: Theme.animFast } }
+
+                                    Item {
+                                        width: 14
+                                        height: 14
+                                        anchors.centerIn: parent
+                                        Image {
+                                            id: eyeIconImg
+                                            source: "qrc:/MeguPackOptimizer/src/resources/eye.svg"
+                                            anchors.fill: parent
+                                            sourceSize.width: 14
+                                            sourceSize.height: 14
+                                            visible: false
+                                        }
+                                        ColorOverlay {
+                                            anchors.fill: eyeIconImg
+                                            source: eyeIconImg
+                                            color: eyeMouse.containsMouse ? Theme.accent : Theme.textSecondary
+                                        }
+                                    }
+
+                                    MouseArea {
+                                        id: eyeMouse
+                                        anchors.fill: parent
+                                        hoverEnabled: true
+                                        cursorShape: Qt.PointingHandCursor
+                                        onClicked: {
+                                            // Scroll to and highlight hibernationPanel
+                                            var panel = hibernationPanel;
+                                            if (!panel) return;
+                                            var flick = mainScroll.contentItem;
+                                            if (!flick) return;
+                                            scrollAnimation.stop();
+                                            var targetY = panel.mapToItem(mainColumn, 0, 0).y - (mainScroll.height - panel.height) / 2;
+                                            var maxScroll = flick.contentHeight - mainScroll.height;
+                                            if (maxScroll < 0) maxScroll = 0;
+                                            targetY = Math.max(0, Math.min(targetY, maxScroll));
+                                            scrollAnimation.target = flick;
+                                            scrollAnimation.to = targetY;
+                                            scrollAnimation.start();
+                                            if (typeof panel.triggerLocateFlash === "function") {
+                                                panel.triggerLocateFlash();
+                                            }
+                                        }
+                                    }
+                                }
                             }
                         }
                     }
@@ -26743,7 +26841,9 @@ Item {
 
                         MeguSwitch {
                             checked: optimizerBackend.fastStartupActive
-                            enabled: fastStartupPanel.enabled
+                            enabled: optimizerBackend.hibernationActive
+                            opacity: enabled ? 1.0 : 0.4
+                            Behavior on opacity { NumberAnimation { duration: Theme.animFast } }
                             anchors.verticalCenter: parent.verticalCenter
                             onToggled: (isChecked) => {
                                 optimizerBackend.fastStartupActive = isChecked;
@@ -37727,5 +37827,4 @@ Item {
 
 
 }
-
 
