@@ -5013,10 +5013,6 @@ Item {
 
 
 
-                    "bStartInBigPicture": qsTr("Start Steam in Big Picture Mode"),
-
-
-
                     "bSmoothScrolling": qsTr("Enable smooth scrolling in web views (requires restart)"),
 
 

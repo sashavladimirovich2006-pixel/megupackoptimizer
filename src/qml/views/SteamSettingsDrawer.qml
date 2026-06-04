@@ -54,6 +54,7 @@ Item {
         if (subPage === "voice") return steamVoicePage.implicitHeight;
         if (subPage === "remoteplay") return steamRemotePlayPage.implicitHeight;
         if (subPage === "music") return steamMusicPage.implicitHeight;
+        if (subPage === "broadcast") return steamBroadcastPage.implicitHeight;
         return steamMainPage.implicitHeight;
     }
 
@@ -890,6 +891,62 @@ Item {
                 hoverEnabled: true
                 cursorShape: Qt.PointingHandCursor
                 onClicked: steamSettingsDrawer.subPage = "music"
+            }
+        }
+
+        // Broadcasting Menu Option
+        Rectangle {
+            width: parent.width
+            height: 48
+            radius: Theme.radiusSmall
+            color: broadcastMouse.containsMouse ? Theme.accentDim : "transparent"
+            border.color: broadcastMouse.containsMouse ? Theme.accent : Theme.border
+            border.width: 1
+
+            Behavior on color { ColorAnimation { duration: Theme.animFast } }
+            Behavior on border.color { ColorAnimation { duration: Theme.animFast } }
+
+            Row {
+                anchors.fill: parent
+                anchors.leftMargin: 12
+                anchors.rightMargin: 12
+                spacing: 8
+
+                Column {
+                    anchors.verticalCenter: parent.verticalCenter
+                    width: parent.width - 32
+
+                    Text {
+                        text: qsTr("Broadcasting")
+                        color: Theme.textPrimary
+                        font.family: Theme.fontFamily
+                        font.pixelSize: 12
+                        font.bold: true
+                    }
+                    Text {
+                        text: qsTr("Configure game broadcasting and stream preferences")
+                        color: Theme.textMuted
+                        font.family: Theme.fontFamily
+                        font.pixelSize: 9
+                    }
+                }
+
+                Text {
+                    text: "→"
+                    color: Theme.accent
+                    font.family: Theme.fontFamily
+                    font.pixelSize: 14
+                    font.bold: true
+                    anchors.verticalCenter: parent.verticalCenter
+                }
+            }
+
+            MouseArea {
+                id: broadcastMouse
+                anchors.fill: parent
+                hoverEnabled: true
+                cursorShape: Qt.PointingHandCursor
+                onClicked: steamSettingsDrawer.subPage = "broadcast"
             }
         }
         }
@@ -3471,7 +3528,6 @@ Item {
                     anchors.fill: parent
                     spacing: 12
                     MeguSwitch {
-
                         steamStyle: true
                         checked: optimizerBackend.steamFriendsSettings ? !!optimizerBackend.steamFriendsSettings["EnableStreaming"] : true
                         anchors.verticalCenter: parent.verticalCenter
@@ -3495,6 +3551,1607 @@ Item {
                             font.pixelSize: 10
                             width: parent.width
                             wrapMode: Text.WordWrap
+                        }
+                    }
+                }
+            }
+
+            // Advanced sections - only enabled if Enable Remote Play is true
+            Column {
+                width: parent.width
+                spacing: 16
+                enabled: optimizerBackend.steamFriendsSettings ? !!optimizerBackend.steamFriendsSettings["EnableStreaming"] : true
+                opacity: enabled ? 1.0 : 0.4
+                Behavior on opacity { NumberAnimation { duration: Theme.animNormal } }
+
+                Rectangle {
+                    width: parent.width
+                    height: 1
+                    color: Theme.border
+                }
+
+                // Section: Connection Security
+                Text {
+                    text: qsTr("Connection Security")
+                    color: Theme.accent
+                    font.family: Theme.fontFamily
+                    font.pixelSize: 11
+                    font.bold: true
+                    font.letterSpacing: 1.0
+                }
+
+                // Dropdown: Allow Direct Connection (P2PScope)
+                Rectangle {
+                    width: parent.width
+                    height: 50
+                    color: "transparent"
+                    Text {
+                        text: qsTr("Allow Direct Connection (IP sharing)")
+                        color: Theme.textPrimary
+                        font.family: Theme.fontFamily
+                        font.pixelSize: 12
+                        font.bold: true
+                        anchors.left: parent.left
+                        anchors.verticalCenter: parent.verticalCenter
+                    }
+                    Rectangle {
+                        id: p2pScopeDropdown
+                        width: 180
+                        height: 32
+                        radius: 6
+                        color: "#05FFFFFF"
+                        border.color: Theme.border
+                        border.width: 1
+                        anchors.right: parent.right
+                        anchors.verticalCenter: parent.verticalCenter
+
+                        property int currentVal: optimizerBackend.steamFriendsSettings ? optimizerBackend.steamFriendsSettings["RemotePlay_P2PScope"] !== undefined ? optimizerBackend.steamFriendsSettings["RemotePlay_P2PScope"] : 2 : 2
+
+                        readonly property var options: [
+                            { id: 0, label: qsTr("Never") },
+                            { id: 1, label: qsTr("Friends Only") },
+                            { id: 2, label: qsTr("Anyone") }
+                        ]
+
+                        function getLabelForVal(v) {
+                            for (var i = 0; i < options.length; i++) {
+                                if (options[i].id === v) return options[i].label;
+                            }
+                            return qsTr("Anyone");
+                        }
+
+                        Text {
+                            anchors.left: parent.left
+                            anchors.leftMargin: 12
+                            anchors.verticalCenter: parent.verticalCenter
+                            text: p2pScopeDropdown.getLabelForVal(p2pScopeDropdown.currentVal)
+                            color: Theme.textPrimary
+                            font.family: Theme.fontFamily
+                            font.pixelSize: 11
+                        }
+                        Text {
+                            anchors.right: parent.right
+                            anchors.rightMargin: 12
+                            anchors.verticalCenter: parent.verticalCenter
+                            text: "\u2304"
+                            color: Theme.textSecondary
+                            font.family: Theme.fontFamily
+                            font.pixelSize: 12
+                            font.bold: true
+                        }
+                        MouseArea {
+                            anchors.fill: parent
+                            hoverEnabled: true
+                            cursorShape: Qt.PointingHandCursor
+                            onClicked: p2pScopeMenu.open()
+                            onEntered: p2pScopeDropdown.border.color = Theme.accent
+                            onExited: p2pScopeDropdown.border.color = Theme.border
+                        }
+                        Menu {
+                            id: p2pScopeMenu
+                            y: p2pScopeDropdown.height + 4
+                            width: p2pScopeDropdown.width
+                            background: Rectangle {
+                                color: Theme.sidebarBg
+                                border.color: Theme.border
+                                border.width: 1
+                                radius: 6
+                            }
+                            Instantiator {
+                                model: p2pScopeDropdown.options
+                                onObjectAdded: (index, object) => p2pScopeMenu.insertItem(index, object)
+                                onObjectRemoved: (index, object) => p2pScopeMenu.removeItem(object)
+                                delegate: MenuItem {
+                                    text: modelData.label
+                                    width: p2pScopeMenu.width
+                                    height: 32
+                                    contentItem: Text {
+                                        text: parent.text
+                                        font.family: Theme.fontFamily
+                                        font.pixelSize: 11
+                                        color: parent.highlighted ? Theme.accent : Theme.textPrimary
+                                        verticalAlignment: Text.AlignVCenter
+                                        leftPadding: 12
+                                    }
+                                    background: Rectangle {
+                                        color: parent.highlighted ? Qt.rgba(Theme.accent.r, Theme.accent.g, Theme.accent.b, 0.1) : "transparent"
+                                    }
+                                    onTriggered: {
+                                        root.toggleSteamFriendsSetting("RemotePlay_P2PScope", modelData.id);
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+
+                // PIN pairing code input row
+                Rectangle {
+                    width: parent.width
+                    height: 50
+                    color: "transparent"
+                    Text {
+                        text: qsTr("Connection security PIN")
+                        color: Theme.textPrimary
+                        font.family: Theme.fontFamily
+                        font.pixelSize: 12
+                        font.bold: true
+                        anchors.left: parent.left
+                        anchors.verticalCenter: parent.verticalCenter
+                    }
+                    Row {
+                        anchors.right: parent.right
+                        anchors.verticalCenter: parent.verticalCenter
+                        spacing: 8
+
+                        Rectangle {
+                            width: 120
+                            height: 32
+                            radius: 6
+                            color: "#05FFFFFF"
+                            border.color: Theme.border
+                            border.width: 1
+
+                            TextInput {
+                                id: pinInput
+                                anchors.fill: parent
+                                anchors.leftMargin: 8
+                                anchors.rightMargin: 8
+                                verticalAlignment: TextInput.AlignVCenter
+                                color: Theme.textPrimary
+                                font.family: Theme.fontFamily
+                                font.pixelSize: 12
+                                echoMode: TextInput.Normal
+                                validator: IntValidator { bottom: 0; top: 9999 }
+                            }
+
+                            Text {
+                                anchors.fill: parent
+                                anchors.leftMargin: 8
+                                verticalAlignment: Text.AlignVCenter
+                                color: Theme.textSecondary
+                                font.family: Theme.fontFamily
+                                font.pixelSize: 11
+                                text: (optimizerBackend.steamFriendsSettings && optimizerBackend.steamFriendsSettings["RemotePlay_PIN_enabled"]) ? qsTr("PIN is active (***)") : qsTr("Not set")
+                                visible: pinInput.text === ""
+                            }
+                        }
+
+                        MeguButton {
+                            text: qsTr("Set PIN")
+                            width: 80
+                            height: 32
+                            onClicked: {
+                                if (pinInput.text !== "") {
+                                    root.toggleSteamFriendsSetting("RemotePlay_PIN", pinInput.text);
+                                    pinInput.text = "";
+                                }
+                            }
+                        }
+
+                        MeguButton {
+                            text: qsTr("Clear")
+                            width: 60
+                            height: 32
+                            onClicked: {
+                                root.toggleSteamFriendsSetting("RemotePlay_PIN", "");
+                                pinInput.text = "";
+                            }
+                        }
+                    }
+                }
+
+                Rectangle {
+                    width: parent.width
+                    height: 1
+                    color: Theme.border
+                }
+
+                // Section: Advanced Client Options
+                Text {
+                    text: qsTr("Advanced Client Options")
+                    color: Theme.accent
+                    font.family: Theme.fontFamily
+                    font.pixelSize: 11
+                    font.bold: true
+                    font.letterSpacing: 1.0
+                }
+
+                // Dropdown: Video Quality (Quality)
+                Rectangle {
+                    width: parent.width
+                    height: 50
+                    color: "transparent"
+                    Text {
+                        text: qsTr("Video Quality")
+                        color: Theme.textPrimary
+                        font.family: Theme.fontFamily
+                        font.pixelSize: 12
+                        font.bold: true
+                        anchors.left: parent.left
+                        anchors.verticalCenter: parent.verticalCenter
+                    }
+                    Rectangle {
+                        id: videoQualityDropdown
+                        width: 150
+                        height: 32
+                        radius: 6
+                        color: "#05FFFFFF"
+                        border.color: Theme.border
+                        border.width: 1
+                        anchors.right: parent.right
+                        anchors.verticalCenter: parent.verticalCenter
+
+                        property int currentVal: optimizerBackend.steamFriendsSettings ? optimizerBackend.steamFriendsSettings["RemotePlay_VideoQuality"] !== undefined ? optimizerBackend.steamFriendsSettings["RemotePlay_VideoQuality"] : 2 : 2
+
+                        readonly property var options: [
+                            { id: 1, label: qsTr("Fast") },
+                            { id: 2, label: qsTr("Balanced") },
+                            { id: 3, label: qsTr("Beautiful") }
+                        ]
+
+                        function getLabelForVal(v) {
+                            for (var i = 0; i < options.length; i++) {
+                                if (options[i].id === v) return options[i].label;
+                            }
+                            return qsTr("Balanced");
+                        }
+
+                        Text {
+                            anchors.left: parent.left
+                            anchors.leftMargin: 12
+                            anchors.verticalCenter: parent.verticalCenter
+                            text: videoQualityDropdown.getLabelForVal(videoQualityDropdown.currentVal)
+                            color: Theme.textPrimary
+                            font.family: Theme.fontFamily
+                            font.pixelSize: 11
+                        }
+                        Text {
+                            anchors.right: parent.right
+                            anchors.rightMargin: 12
+                            anchors.verticalCenter: parent.verticalCenter
+                            text: "\u2304"
+                            color: Theme.textSecondary
+                            font.family: Theme.fontFamily
+                            font.pixelSize: 12
+                            font.bold: true
+                        }
+                        MouseArea {
+                            anchors.fill: parent
+                            hoverEnabled: true
+                            cursorShape: Qt.PointingHandCursor
+                            onClicked: videoQualityMenu.open()
+                            onEntered: videoQualityDropdown.border.color = Theme.accent
+                            onExited: videoQualityDropdown.border.color = Theme.border
+                        }
+                        Menu {
+                            id: videoQualityMenu
+                            y: videoQualityDropdown.height + 4
+                            width: videoQualityDropdown.width
+                            background: Rectangle {
+                                color: Theme.sidebarBg
+                                border.color: Theme.border
+                                border.width: 1
+                                radius: 6
+                            }
+                            Instantiator {
+                                model: videoQualityDropdown.options
+                                onObjectAdded: (index, object) => videoQualityMenu.insertItem(index, object)
+                                onObjectRemoved: (index, object) => videoQualityMenu.removeItem(object)
+                                delegate: MenuItem {
+                                    text: modelData.label
+                                    width: videoQualityMenu.width
+                                    height: 32
+                                    contentItem: Text {
+                                        text: parent.text
+                                        font.family: Theme.fontFamily
+                                        font.pixelSize: 11
+                                        color: parent.highlighted ? Theme.accent : Theme.textPrimary
+                                        verticalAlignment: Text.AlignVCenter
+                                        leftPadding: 12
+                                    }
+                                    background: Rectangle {
+                                        color: parent.highlighted ? Qt.rgba(Theme.accent.r, Theme.accent.g, Theme.accent.b, 0.1) : "transparent"
+                                    }
+                                    onTriggered: {
+                                        root.toggleSteamFriendsSetting("RemotePlay_VideoQuality", modelData.id);
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+
+                // Dropdown: Resolution Limit
+                Rectangle {
+                    width: parent.width
+                    height: 50
+                    color: "transparent"
+                    Text {
+                        text: qsTr("Resolution Limit")
+                        color: Theme.textPrimary
+                        font.family: Theme.fontFamily
+                        font.pixelSize: 12
+                        font.bold: true
+                        anchors.left: parent.left
+                        anchors.verticalCenter: parent.verticalCenter
+                    }
+                    Rectangle {
+                        id: resolutionLimitDropdown
+                        width: 180
+                        height: 32
+                        radius: 6
+                        color: "#05FFFFFF"
+                        border.color: Theme.border
+                        border.width: 1
+                        anchors.right: parent.right
+                        anchors.verticalCenter: parent.verticalCenter
+
+                        property int currentW: optimizerBackend.steamFriendsSettings ? optimizerBackend.steamFriendsSettings["RemotePlay_ResolutionWidth"] || 0 : 0
+                        property int currentH: optimizerBackend.steamFriendsSettings ? optimizerBackend.steamFriendsSettings["RemotePlay_ResolutionHeight"] || 0 : 0
+
+                        readonly property var options: [
+                            { width: 0, height: 0, label: qsTr("Display Resolution") },
+                            { width: 1280, height: 720, label: "1280x720" },
+                            { width: 1920, height: 1080, label: "1920x1080" },
+                            { width: 2560, height: 1440, label: "2560x1440" },
+                            { width: 3840, height: 2160, label: "3840x2160" }
+                        ]
+
+                        function getLabelForVal(w, h) {
+                            for (var i = 0; i < options.length; i++) {
+                                if (options[i].width === w && options[i].height === h) return options[i].label;
+                            }
+                            return qsTr("Display Resolution");
+                        }
+
+                        Text {
+                            anchors.left: parent.left
+                            anchors.leftMargin: 12
+                            anchors.verticalCenter: parent.verticalCenter
+                            text: resolutionLimitDropdown.getLabelForVal(resolutionLimitDropdown.currentW, resolutionLimitDropdown.currentH)
+                            color: Theme.textPrimary
+                            font.family: Theme.fontFamily
+                            font.pixelSize: 11
+                        }
+                        Text {
+                            anchors.right: parent.right
+                            anchors.rightMargin: 12
+                            anchors.verticalCenter: parent.verticalCenter
+                            text: "\u2304"
+                            color: Theme.textSecondary
+                            font.family: Theme.fontFamily
+                            font.pixelSize: 12
+                            font.bold: true
+                        }
+                        MouseArea {
+                            anchors.fill: parent
+                            hoverEnabled: true
+                            cursorShape: Qt.PointingHandCursor
+                            onClicked: resolutionLimitMenu.open()
+                            onEntered: resolutionLimitDropdown.border.color = Theme.accent
+                            onExited: resolutionLimitDropdown.border.color = Theme.border
+                        }
+                        Menu {
+                            id: resolutionLimitMenu
+                            y: resolutionLimitDropdown.height + 4
+                            width: resolutionLimitDropdown.width
+                            background: Rectangle {
+                                color: Theme.sidebarBg
+                                border.color: Theme.border
+                                border.width: 1
+                                radius: 6
+                            }
+                            Instantiator {
+                                model: resolutionLimitDropdown.options
+                                onObjectAdded: (index, object) => resolutionLimitMenu.insertItem(index, object)
+                                onObjectRemoved: (index, object) => resolutionLimitMenu.removeItem(object)
+                                delegate: MenuItem {
+                                    text: modelData.label
+                                    width: resolutionLimitMenu.width
+                                    height: 32
+                                    contentItem: Text {
+                                        text: parent.text
+                                        font.family: Theme.fontFamily
+                                        font.pixelSize: 11
+                                        color: parent.highlighted ? Theme.accent : Theme.textPrimary
+                                        verticalAlignment: Text.AlignVCenter
+                                        leftPadding: 12
+                                    }
+                                    background: Rectangle {
+                                        color: parent.highlighted ? Qt.rgba(Theme.accent.r, Theme.accent.g, Theme.accent.b, 0.1) : "transparent"
+                                    }
+                                    onTriggered: {
+                                        root.toggleSteamFriendsSetting("RemotePlay_ResolutionWidth", modelData.width);
+                                        root.toggleSteamFriendsSetting("RemotePlay_ResolutionHeight", modelData.height);
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+
+                // Dropdown: Framerate Limit
+                Rectangle {
+                    width: parent.width
+                    height: 50
+                    color: "transparent"
+                    Text {
+                        text: qsTr("Framerate Limit")
+                        color: Theme.textPrimary
+                        font.family: Theme.fontFamily
+                        font.pixelSize: 12
+                        font.bold: true
+                        anchors.left: parent.left
+                        anchors.verticalCenter: parent.verticalCenter
+                    }
+                    Rectangle {
+                        id: framerateLimitDropdown
+                        width: 150
+                        height: 32
+                        radius: 6
+                        color: "#05FFFFFF"
+                        border.color: Theme.border
+                        border.width: 1
+                        anchors.right: parent.right
+                        anchors.verticalCenter: parent.verticalCenter
+
+                        property int currentVal: optimizerBackend.steamFriendsSettings ? optimizerBackend.steamFriendsSettings["RemotePlay_FramerateLimit"] || 0 : 0
+
+                        readonly property var options: [
+                            { id: 0, label: qsTr("Automatic") },
+                            { id: 3000, label: "30 FPS" },
+                            { id: 5975, label: "60 FPS" },
+                            { id: 9000, label: "90 FPS" },
+                            { id: 12000, label: "120 FPS" }
+                        ]
+
+                        function getLabelForVal(v) {
+                            for (var i = 0; i < options.length; i++) {
+                                if (options[i].id === v) return options[i].label;
+                            }
+                            return qsTr("Automatic");
+                        }
+
+                        Text {
+                            anchors.left: parent.left
+                            anchors.leftMargin: 12
+                            anchors.verticalCenter: parent.verticalCenter
+                            text: framerateLimitDropdown.getLabelForVal(framerateLimitDropdown.currentVal)
+                            color: Theme.textPrimary
+                            font.family: Theme.fontFamily
+                            font.pixelSize: 11
+                        }
+                        Text {
+                            anchors.right: parent.right
+                            anchors.rightMargin: 12
+                            anchors.verticalCenter: parent.verticalCenter
+                            text: "\u2304"
+                            color: Theme.textSecondary
+                            font.family: Theme.fontFamily
+                            font.pixelSize: 12
+                            font.bold: true
+                        }
+                        MouseArea {
+                            anchors.fill: parent
+                            hoverEnabled: true
+                            cursorShape: Qt.PointingHandCursor
+                            onClicked: framerateLimitMenu.open()
+                            onEntered: framerateLimitDropdown.border.color = Theme.accent
+                            onExited: framerateLimitDropdown.border.color = Theme.border
+                        }
+                        Menu {
+                            id: framerateLimitMenu
+                            y: framerateLimitDropdown.height + 4
+                            width: framerateLimitDropdown.width
+                            background: Rectangle {
+                                color: Theme.sidebarBg
+                                border.color: Theme.border
+                                border.width: 1
+                                radius: 6
+                            }
+                            Instantiator {
+                                model: framerateLimitDropdown.options
+                                onObjectAdded: (index, object) => framerateLimitMenu.insertItem(index, object)
+                                onObjectRemoved: (index, object) => framerateLimitMenu.removeItem(object)
+                                delegate: MenuItem {
+                                    text: modelData.label
+                                    width: framerateLimitMenu.width
+                                    height: 32
+                                    contentItem: Text {
+                                        text: parent.text
+                                        font.family: Theme.fontFamily
+                                        font.pixelSize: 11
+                                        color: parent.highlighted ? Theme.accent : Theme.textPrimary
+                                        verticalAlignment: Text.AlignVCenter
+                                        leftPadding: 12
+                                    }
+                                    background: Rectangle {
+                                        color: parent.highlighted ? Qt.rgba(Theme.accent.r, Theme.accent.g, Theme.accent.b, 0.1) : "transparent"
+                                    }
+                                    onTriggered: {
+                                        root.toggleSteamFriendsSetting("RemotePlay_FramerateLimit", modelData.id);
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+
+                // Dropdown: Bandwidth Limit
+                Rectangle {
+                    width: parent.width
+                    height: 50
+                    color: "transparent"
+                    Text {
+                        text: qsTr("Bandwidth Limit")
+                        color: Theme.textPrimary
+                        font.family: Theme.fontFamily
+                        font.pixelSize: 12
+                        font.bold: true
+                        anchors.left: parent.left
+                        anchors.verticalCenter: parent.verticalCenter
+                    }
+                    Rectangle {
+                        id: bandwidthLimitDropdown
+                        width: 150
+                        height: 32
+                        radius: 6
+                        color: "#05FFFFFF"
+                        border.color: Theme.border
+                        border.width: 1
+                        anchors.right: parent.right
+                        anchors.verticalCenter: parent.verticalCenter
+
+                        property int currentVal: optimizerBackend.steamFriendsSettings ? optimizerBackend.steamFriendsSettings["RemotePlay_BandwidthLimit"] || 0 : 0
+
+                        readonly property var options: [
+                            { id: 0, label: qsTr("Automatic") },
+                            { id: 3000, label: "3 Mbps" },
+                            { id: 5000, label: "5 Mbps" },
+                            { id: 10000, label: "10 Mbps" },
+                            { id: 15000, label: "15 Mbps" },
+                            { id: 20000, label: "20 Mbps" },
+                            { id: 25000, label: "25 Mbps" },
+                            { id: 30000, label: "30 Mbps" },
+                            { id: 50000, label: "50 Mbps" },
+                            { id: 75000, label: "75 Mbps" },
+                            { id: -1, label: qsTr("Unlimited") }
+                        ]
+
+                        function getLabelForVal(v) {
+                            for (var i = 0; i < options.length; i++) {
+                                if (options[i].id === v) return options[i].label;
+                            }
+                            return qsTr("Automatic");
+                        }
+
+                        Text {
+                            anchors.left: parent.left
+                            anchors.leftMargin: 12
+                            anchors.verticalCenter: parent.verticalCenter
+                            text: bandwidthLimitDropdown.getLabelForVal(bandwidthLimitDropdown.currentVal)
+                            color: Theme.textPrimary
+                            font.family: Theme.fontFamily
+                            font.pixelSize: 11
+                        }
+                        Text {
+                            anchors.right: parent.right
+                            anchors.rightMargin: 12
+                            anchors.verticalCenter: parent.verticalCenter
+                            text: "\u2304"
+                            color: Theme.textSecondary
+                            font.family: Theme.fontFamily
+                            font.pixelSize: 12
+                            font.bold: true
+                        }
+                        MouseArea {
+                            anchors.fill: parent
+                            hoverEnabled: true
+                            cursorShape: Qt.PointingHandCursor
+                            onClicked: bandwidthLimitMenu.open()
+                            onEntered: bandwidthLimitDropdown.border.color = Theme.accent
+                            onExited: bandwidthLimitDropdown.border.color = Theme.border
+                        }
+                        Menu {
+                            id: bandwidthLimitMenu
+                            y: bandwidthLimitDropdown.height + 4
+                            width: bandwidthLimitDropdown.width
+                            background: Rectangle {
+                                color: Theme.sidebarBg
+                                border.color: Theme.border
+                                border.width: 1
+                                radius: 6
+                            }
+                            Instantiator {
+                                model: bandwidthLimitDropdown.options
+                                onObjectAdded: (index, object) => bandwidthLimitMenu.insertItem(index, object)
+                                onObjectRemoved: (index, object) => bandwidthLimitMenu.removeItem(object)
+                                delegate: MenuItem {
+                                    text: modelData.label
+                                    width: bandwidthLimitMenu.width
+                                    height: 32
+                                    contentItem: Text {
+                                        text: parent.text
+                                        font.family: Theme.fontFamily
+                                        font.pixelSize: 11
+                                        color: parent.highlighted ? Theme.accent : Theme.textPrimary
+                                        verticalAlignment: Text.AlignVCenter
+                                        leftPadding: 12
+                                    }
+                                    background: Rectangle {
+                                        color: parent.highlighted ? Qt.rgba(Theme.accent.r, Theme.accent.g, Theme.accent.b, 0.1) : "transparent"
+                                    }
+                                    onTriggered: {
+                                        root.toggleSteamFriendsSetting("RemotePlay_BandwidthLimit", modelData.id);
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+
+                // Volume Slider
+                Rectangle {
+                    width: parent.width
+                    height: 80
+                    radius: 8
+                    color: "#05FFFFFF"
+                    border.color: Theme.border
+                    border.width: 1
+
+                    Column {
+                        anchors.verticalCenter: parent.verticalCenter
+                        anchors.left: parent.left
+                        anchors.leftMargin: 12
+                        anchors.right: parent.right
+                        anchors.rightMargin: 12
+                        spacing: 8
+
+                        RowLayout {
+                            width: parent.width
+                            Text {
+                                text: qsTr("Volume")
+                                color: Theme.textPrimary
+                                font.family: Theme.fontFamily
+                                font.pixelSize: 12
+                                font.bold: true
+                                Layout.fillWidth: true
+                            }
+                            Text {
+                                text: Math.round(audioVolumeSlider.value) + "%"
+                                color: Theme.accent
+                                font.family: Theme.fontFamily
+                                font.pixelSize: 14
+                                font.bold: true
+                                Layout.alignment: Qt.AlignVCenter
+                            }
+                        }
+
+                        Slider {
+                            id: audioVolumeSlider
+                            width: parent.width
+                            from: 0
+                            to: 100
+                            value: optimizerBackend.steamFriendsSettings ? (optimizerBackend.steamFriendsSettings["RemotePlay_AudioVolume"] !== undefined ? optimizerBackend.steamFriendsSettings["RemotePlay_AudioVolume"] : 100) : 100
+                            stepSize: 1
+                            live: true
+                            onMoved: {
+                                root.toggleSteamFriendsSetting("RemotePlay_AudioVolume", Math.round(value));
+                            }
+
+                            background: Rectangle {
+                                x: audioVolumeSlider.leftPadding
+                                y: audioVolumeSlider.topPadding + audioVolumeSlider.availableHeight / 2 - height / 2
+                                implicitWidth: 200
+                                implicitHeight: 4
+                                width: audioVolumeSlider.availableWidth
+                                height: implicitHeight
+                                radius: 2
+                                color: Theme.border
+
+                                Rectangle {
+                                    width: audioVolumeSlider.visualPosition * parent.width
+                                    height: parent.height
+                                    color: Theme.accent
+                                    radius: 2
+                                }
+                            }
+
+                            handle: Rectangle {
+                                x: audioVolumeSlider.leftPadding + audioVolumeSlider.visualPosition * (audioVolumeSlider.availableWidth - width)
+                                y: audioVolumeSlider.topPadding + audioVolumeSlider.availableHeight / 2 - height / 2
+                                implicitWidth: 16
+                                implicitHeight: 16
+                                radius: 8
+                                color: audioVolumeSlider.pressed ? Theme.accent : Theme.textPrimary
+                                border.color: Theme.accent
+                                border.width: audioVolumeSlider.hovered ? 2 : 0
+
+                                Behavior on color { ColorAnimation { duration: Theme.animFast } }
+                                Behavior on scale { NumberAnimation { duration: Theme.animFast } }
+                                scale: audioVolumeSlider.pressed ? 1.2 : (audioVolumeSlider.hovered ? 1.1 : 1.0)
+                            }
+                        }
+                    }
+                }
+
+                // Dropdown: Performance Overlay
+                Rectangle {
+                    width: parent.width
+                    height: 50
+                    color: "transparent"
+                    Text {
+                        text: qsTr("Performance Overlay")
+                        color: Theme.textPrimary
+                        font.family: Theme.fontFamily
+                        font.pixelSize: 12
+                        font.bold: true
+                        anchors.left: parent.left
+                        anchors.verticalCenter: parent.verticalCenter
+                    }
+                    Rectangle {
+                        id: perfOverlayDropdown
+                        width: 150
+                        height: 32
+                        radius: 6
+                        color: "#05FFFFFF"
+                        border.color: Theme.border
+                        border.width: 1
+                        anchors.right: parent.right
+                        anchors.verticalCenter: parent.verticalCenter
+
+                        property int currentVal: optimizerBackend.steamFriendsSettings ? optimizerBackend.steamFriendsSettings["RemotePlay_PerformanceOverlay"] || 0 : 0
+
+                        readonly property var options: [
+                            { id: 0, label: qsTr("Off") },
+                            { id: 8, label: qsTr("On") }
+                        ]
+
+                        function getLabelForVal(v) {
+                            for (var i = 0; i < options.length; i++) {
+                                if (options[i].id === v) return options[i].label;
+                            }
+                            return qsTr("Off");
+                        }
+
+                        Text {
+                            anchors.left: parent.left
+                            anchors.leftMargin: 12
+                            anchors.verticalCenter: parent.verticalCenter
+                            text: perfOverlayDropdown.getLabelForVal(perfOverlayDropdown.currentVal)
+                            color: Theme.textPrimary
+                            font.family: Theme.fontFamily
+                            font.pixelSize: 11
+                        }
+                        Text {
+                            anchors.right: parent.right
+                            anchors.rightMargin: 12
+                            anchors.verticalCenter: parent.verticalCenter
+                            text: "\u2304"
+                            color: Theme.textSecondary
+                            font.family: Theme.fontFamily
+                            font.pixelSize: 12
+                            font.bold: true
+                        }
+                        MouseArea {
+                            anchors.fill: parent
+                            hoverEnabled: true
+                            cursorShape: Qt.PointingHandCursor
+                            onClicked: perfOverlayMenu.open()
+                            onEntered: perfOverlayDropdown.border.color = Theme.accent
+                            onExited: perfOverlayDropdown.border.color = Theme.border
+                        }
+                        Menu {
+                            id: perfOverlayMenu
+                            y: perfOverlayDropdown.height + 4
+                            width: perfOverlayDropdown.width
+                            background: Rectangle {
+                                color: Theme.sidebarBg
+                                border.color: Theme.border
+                                border.width: 1
+                                radius: 6
+                            }
+                            Instantiator {
+                                model: perfOverlayDropdown.options
+                                onObjectAdded: (index, object) => perfOverlayMenu.insertItem(index, object)
+                                onObjectRemoved: (index, object) => perfOverlayMenu.removeItem(object)
+                                delegate: MenuItem {
+                                    text: modelData.label
+                                    width: perfOverlayMenu.width
+                                    height: 32
+                                    contentItem: Text {
+                                        text: parent.text
+                                        font.family: Theme.fontFamily
+                                        font.pixelSize: 11
+                                        color: parent.highlighted ? Theme.accent : Theme.textPrimary
+                                        verticalAlignment: Text.AlignVCenter
+                                        leftPadding: 12
+                                    }
+                                    background: Rectangle {
+                                        color: parent.highlighted ? Qt.rgba(Theme.accent.r, Theme.accent.g, Theme.accent.b, 0.1) : "transparent"
+                                    }
+                                    onTriggered: {
+                                        root.toggleSteamFriendsSetting("RemotePlay_PerformanceOverlay", modelData.id);
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+
+                // Dropdown: Controller Activation Button (Field 16)
+                Rectangle {
+                    width: parent.width
+                    height: 50
+                    color: "transparent"
+                    Text {
+                        text: qsTr("Overlay activation button")
+                        color: Theme.textPrimary
+                        font.family: Theme.fontFamily
+                        font.pixelSize: 12
+                        font.bold: true
+                        anchors.left: parent.left
+                        anchors.verticalCenter: parent.verticalCenter
+                    }
+                    Rectangle {
+                        id: controllerButtonDropdown
+                        width: 150
+                        height: 32
+                        radius: 6
+                        color: "#05FFFFFF"
+                        border.color: Theme.border
+                        border.width: 1
+                        anchors.right: parent.right
+                        anchors.verticalCenter: parent.verticalCenter
+
+                        property string currentVal: optimizerBackend.steamFriendsSettings ? optimizerBackend.steamFriendsSettings["RemotePlay_ControllerButton"] || "guide" : "guide"
+
+                        readonly property var options: [
+                            { id: "guide", label: qsTr("Steam / Guide") },
+                            { id: "back", label: qsTr("Back / View") },
+                            { id: "start", label: qsTr("Start / Menu") }
+                        ]
+
+                        function getLabelForVal(v) {
+                            for (var i = 0; i < options.length; i++) {
+                                if (options[i].id === v) return options[i].label;
+                            }
+                            return qsTr("Steam / Guide");
+                        }
+
+                        Text {
+                            anchors.left: parent.left
+                            anchors.leftMargin: 12
+                            anchors.verticalCenter: parent.verticalCenter
+                            text: controllerButtonDropdown.getLabelForVal(controllerButtonDropdown.currentVal)
+                            color: Theme.textPrimary
+                            font.family: Theme.fontFamily
+                            font.pixelSize: 11
+                        }
+                        Text {
+                            anchors.right: parent.right
+                            anchors.rightMargin: 12
+                            anchors.verticalCenter: parent.verticalCenter
+                            text: "\u2304"
+                            color: Theme.textSecondary
+                            font.family: Theme.fontFamily
+                            font.pixelSize: 12
+                            font.bold: true
+                        }
+                        MouseArea {
+                            anchors.fill: parent
+                            hoverEnabled: true
+                            cursorShape: Qt.PointingHandCursor
+                            onClicked: controllerButtonMenu.open()
+                            onEntered: controllerButtonDropdown.border.color = Theme.accent
+                            onExited: controllerButtonDropdown.border.color = Theme.border
+                        }
+                        Menu {
+                            id: controllerButtonMenu
+                            y: controllerButtonDropdown.height + 4
+                            width: controllerButtonDropdown.width
+                            background: Rectangle {
+                                color: Theme.sidebarBg
+                                border.color: Theme.border
+                                border.width: 1
+                                radius: 6
+                            }
+                            Instantiator {
+                                model: controllerButtonDropdown.options
+                                onObjectAdded: (index, object) => controllerButtonMenu.insertItem(index, object)
+                                onObjectRemoved: (index, object) => controllerButtonMenu.removeItem(object)
+                                delegate: MenuItem {
+                                    text: modelData.label
+                                    width: controllerButtonMenu.width
+                                    height: 32
+                                    contentItem: Text {
+                                        text: parent.text
+                                        font.family: Theme.fontFamily
+                                        font.pixelSize: 11
+                                        color: parent.highlighted ? Theme.accent : Theme.textPrimary
+                                        verticalAlignment: Text.AlignVCenter
+                                        leftPadding: 12
+                                    }
+                                    background: Rectangle {
+                                        color: parent.highlighted ? Qt.rgba(Theme.accent.r, Theme.accent.g, Theme.accent.b, 0.1) : "transparent"
+                                    }
+                                    onTriggered: {
+                                        root.toggleSteamFriendsSetting("RemotePlay_ControllerButton", modelData.id);
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+
+                // Dropdown: Controller Visibility (Field 19)
+                Rectangle {
+                    width: parent.width
+                    height: 50
+                    color: "transparent"
+                    Text {
+                        text: qsTr("Overlay visibility")
+                        color: Theme.textPrimary
+                        font.family: Theme.fontFamily
+                        font.pixelSize: 12
+                        font.bold: true
+                        anchors.left: parent.left
+                        anchors.verticalCenter: parent.verticalCenter
+                    }
+                    Rectangle {
+                        id: controllerVisDropdown
+                        width: 150
+                        height: 32
+                        radius: 6
+                        color: "#05FFFFFF"
+                        border.color: Theme.border
+                        border.width: 1
+                        anchors.right: parent.right
+                        anchors.verticalCenter: parent.verticalCenter
+
+                        property int currentVal: optimizerBackend.steamFriendsSettings ? optimizerBackend.steamFriendsSettings["RemotePlay_ControllerVisibility"] || 2 : 2
+
+                        readonly property var options: [
+                            { id: 2, label: qsTr("Default Button") },
+                            { id: 0, label: qsTr("Off") }
+                        ]
+
+                        function getLabelForVal(v) {
+                            for (var i = 0; i < options.length; i++) {
+                                if (options[i].id === v) return options[i].label;
+                            }
+                            return qsTr("Default Button");
+                        }
+
+                        Text {
+                            anchors.left: parent.left
+                            anchors.leftMargin: 12
+                            anchors.verticalCenter: parent.verticalCenter
+                            text: controllerVisDropdown.getLabelForVal(controllerVisDropdown.currentVal)
+                            color: Theme.textPrimary
+                            font.family: Theme.fontFamily
+                            font.pixelSize: 11
+                        }
+                        Text {
+                            anchors.right: parent.right
+                            anchors.rightMargin: 12
+                            anchors.verticalCenter: parent.verticalCenter
+                            text: "\u2304"
+                            color: Theme.textSecondary
+                            font.family: Theme.fontFamily
+                            font.pixelSize: 12
+                            font.bold: true
+                        }
+                        MouseArea {
+                            anchors.fill: parent
+                            hoverEnabled: true
+                            cursorShape: Qt.PointingHandCursor
+                            onClicked: controllerVisMenu.open()
+                            onEntered: controllerVisDropdown.border.color = Theme.accent
+                            onExited: controllerVisDropdown.border.color = Theme.border
+                        }
+                        Menu {
+                            id: controllerVisMenu
+                            y: controllerVisDropdown.height + 4
+                            width: controllerVisDropdown.width
+                            background: Rectangle {
+                                color: Theme.sidebarBg
+                                border.color: Theme.border
+                                border.width: 1
+                                radius: 6
+                            }
+                            Instantiator {
+                                model: controllerVisDropdown.options
+                                onObjectAdded: (index, object) => controllerVisMenu.insertItem(index, object)
+                                onObjectRemoved: (index, object) => controllerVisMenu.removeItem(object)
+                                delegate: MenuItem {
+                                    text: modelData.label
+                                    width: controllerVisMenu.width
+                                    height: 32
+                                    contentItem: Text {
+                                        text: parent.text
+                                        font.family: Theme.fontFamily
+                                        font.pixelSize: 11
+                                        color: parent.highlighted ? Theme.accent : Theme.textPrimary
+                                        verticalAlignment: Text.AlignVCenter
+                                        leftPadding: 12
+                                    }
+                                    background: Rectangle {
+                                        color: parent.highlighted ? Qt.rgba(Theme.accent.r, Theme.accent.g, Theme.accent.b, 0.1) : "transparent"
+                                    }
+                                    onTriggered: {
+                                        root.toggleSteamFriendsSetting("RemotePlay_ControllerVisibility", modelData.id);
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+
+                // Switch: Record my microphone
+                Rectangle {
+                    width: parent.width
+                    height: 50
+                    color: "transparent"
+                    Row {
+                        anchors.fill: parent
+                        spacing: 12
+                        MeguSwitch {
+                            steamStyle: true
+                            checked: optimizerBackend.steamFriendsSettings ? !!optimizerBackend.steamFriendsSettings["RemotePlay_Microphone"] : false
+                            anchors.verticalCenter: parent.verticalCenter
+                            onToggled: (isChecked) => { root.toggleSteamFriendsSetting("RemotePlay_Microphone", isChecked ? 1 : 0); }
+                        }
+                        Column {
+                            anchors.verticalCenter: parent.verticalCenter
+                            spacing: 2
+                            width: parent.width - 50
+                            Text {
+                                text: qsTr("Record my microphone")
+                                color: Theme.textPrimary
+                                font.family: Theme.fontFamily
+                                font.pixelSize: 12
+                                font.bold: true
+                            }
+                        }
+                    }
+                }
+
+                // Switch: Play in window
+                Rectangle {
+                    width: parent.width
+                    height: 50
+                    color: "transparent"
+                    Row {
+                        anchors.fill: parent
+                        spacing: 12
+                        MeguSwitch {
+                            steamStyle: true
+                            checked: optimizerBackend.steamFriendsSettings ? !!optimizerBackend.steamFriendsSettings["RemotePlay_WindowedMode"] : false
+                            anchors.verticalCenter: parent.verticalCenter
+                            onToggled: (isChecked) => { root.toggleSteamFriendsSetting("RemotePlay_WindowedMode", isChecked); }
+                        }
+                        Column {
+                            anchors.verticalCenter: parent.verticalCenter
+                            spacing: 2
+                            width: parent.width - 50
+                            Text {
+                                text: qsTr("Play in window")
+                                color: Theme.textPrimary
+                                font.family: Theme.fontFamily
+                                font.pixelSize: 12
+                                font.bold: true
+                            }
+                        }
+                    }
+                }
+
+                // Switch: Enable hardware decoding
+                Rectangle {
+                    width: parent.width
+                    height: 50
+                    color: "transparent"
+                    Row {
+                        anchors.fill: parent
+                        spacing: 12
+                        MeguSwitch {
+                            steamStyle: true
+                            checked: optimizerBackend.steamFriendsSettings ? !!optimizerBackend.steamFriendsSettings["RemotePlay_HardwareDecoding"] : true
+                            anchors.verticalCenter: parent.verticalCenter
+                            onToggled: (isChecked) => { root.toggleSteamFriendsSetting("RemotePlay_HardwareDecoding", isChecked); }
+                        }
+                        Column {
+                            anchors.verticalCenter: parent.verticalCenter
+                            spacing: 2
+                            width: parent.width - 50
+                            Text {
+                                text: qsTr("Enable hardware decoding")
+                                color: Theme.textPrimary
+                                font.family: Theme.fontFamily
+                                font.pixelSize: 12
+                                font.bold: true
+                            }
+                        }
+                    }
+                }
+
+                // Switch: Low Latency Networking
+                Rectangle {
+                    width: parent.width
+                    height: 50
+                    color: "transparent"
+                    Row {
+                        anchors.fill: parent
+                        spacing: 12
+                        MeguSwitch {
+                            steamStyle: true
+                            checked: optimizerBackend.steamFriendsSettings ? !!optimizerBackend.steamFriendsSettings["RemotePlay_LowLatencyNetworking"] : true
+                            anchors.verticalCenter: parent.verticalCenter
+                            onToggled: (isChecked) => { root.toggleSteamFriendsSetting("RemotePlay_LowLatencyNetworking", isChecked); }
+                        }
+                        Column {
+                            anchors.verticalCenter: parent.verticalCenter
+                            spacing: 2
+                            width: parent.width - 50
+                            Text {
+                                text: qsTr("Low latency networking")
+                                color: Theme.textPrimary
+                                font.family: Theme.fontFamily
+                                font.pixelSize: 12
+                                font.bold: true
+                            }
+                        }
+                    }
+                }
+
+                // Switch: HEVC Video
+                Rectangle {
+                    width: parent.width
+                    height: 50
+                    color: "transparent"
+                    Row {
+                        anchors.fill: parent
+                        spacing: 12
+                        MeguSwitch {
+                            steamStyle: true
+                            checked: optimizerBackend.steamFriendsSettings ? !!optimizerBackend.steamFriendsSettings["RemotePlay_HEVC"] : true
+                            anchors.verticalCenter: parent.verticalCenter
+                            onToggled: (isChecked) => { root.toggleSteamFriendsSetting("RemotePlay_HEVC", isChecked); }
+                        }
+                        Column {
+                            anchors.verticalCenter: parent.verticalCenter
+                            spacing: 2
+                            width: parent.width - 50
+                            Text {
+                                text: qsTr("HEVC video")
+                                color: Theme.textPrimary
+                                font.family: Theme.fontFamily
+                                font.pixelSize: 12
+                                font.bold: true
+                            }
+                        }
+                    }
+                }
+
+                // Switch: AV1 Video
+                Rectangle {
+                    width: parent.width
+                    height: 50
+                    color: "transparent"
+                    Row {
+                        anchors.fill: parent
+                        spacing: 12
+                        MeguSwitch {
+                            steamStyle: true
+                            checked: optimizerBackend.steamFriendsSettings ? !!optimizerBackend.steamFriendsSettings["RemotePlay_AV1"] : true
+                            anchors.verticalCenter: parent.verticalCenter
+                            onToggled: (isChecked) => { root.toggleSteamFriendsSetting("RemotePlay_AV1", isChecked); }
+                        }
+                        Column {
+                            anchors.verticalCenter: parent.verticalCenter
+                            spacing: 2
+                            width: parent.width - 50
+                            Text {
+                                text: qsTr("AV1 video")
+                                color: Theme.textPrimary
+                                font.family: Theme.fontFamily
+                                font.pixelSize: 12
+                                font.bold: true
+                            }
+                        }
+                    }
+                }
+
+                Rectangle {
+                    width: parent.width
+                    height: 1
+                    color: Theme.border
+                }
+
+                // Section: Advanced Host Options
+                Text {
+                    text: qsTr("Advanced Host Options")
+                    color: Theme.accent
+                    font.family: Theme.fontFamily
+                    font.pixelSize: 11
+                    font.bold: true
+                    font.letterSpacing: 1.0
+                }
+
+                // Switch: Change desktop resolution to match streaming client
+                Rectangle {
+                    width: parent.width
+                    height: 50
+                    color: "transparent"
+                    Row {
+                        anchors.fill: parent
+                        spacing: 12
+                        MeguSwitch {
+                            steamStyle: true
+                            checked: optimizerBackend.steamFriendsSettings ? !!optimizerBackend.steamFriendsSettings["Host_ServerConfigEnabled"] : false
+                            anchors.verticalCenter: parent.verticalCenter
+                            onToggled: (isChecked) => { root.toggleSteamFriendsSetting("Host_ServerConfigEnabled", isChecked); }
+                        }
+                        Column {
+                            anchors.verticalCenter: parent.verticalCenter
+                            spacing: 2
+                            width: parent.width - 50
+                            Text {
+                                text: qsTr("Change desktop resolution to match streaming client")
+                                color: Theme.textPrimary
+                                font.family: Theme.fontFamily
+                                font.pixelSize: 12
+                                font.bold: true
+                            }
+                        }
+                    }
+                }
+
+                // Switch: Play audio on host
+                Rectangle {
+                    width: parent.width
+                    height: 50
+                    color: "transparent"
+                    Row {
+                        anchors.fill: parent
+                        spacing: 12
+                        MeguSwitch {
+                            steamStyle: true
+                            checked: optimizerBackend.steamFriendsSettings ? !!optimizerBackend.steamFriendsSettings["Host_PlayAudio"] : true
+                            anchors.verticalCenter: parent.verticalCenter
+                            onToggled: (isChecked) => { root.toggleSteamFriendsSetting("Host_PlayAudio", isChecked); }
+                        }
+                        Column {
+                            anchors.verticalCenter: parent.verticalCenter
+                            spacing: 2
+                            width: parent.width - 50
+                            Text {
+                                text: qsTr("Play audio on host")
+                                color: Theme.textPrimary
+                                font.family: Theme.fontFamily
+                                font.pixelSize: 12
+                                font.bold: true
+                            }
+                        }
+                    }
+                }
+
+                // Dropdown: Display Resolution Limit (Host_DisplayResolutionSetting)
+                Rectangle {
+                    width: parent.width
+                    height: 50
+                    color: "transparent"
+                    Text {
+                        text: qsTr("Display Resolution Limit")
+                        color: Theme.textPrimary
+                        font.family: Theme.fontFamily
+                        font.pixelSize: 12
+                        font.bold: true
+                        anchors.left: parent.left
+                        anchors.verticalCenter: parent.verticalCenter
+                    }
+                    Rectangle {
+                        id: hostResolutionDropdown
+                        width: 250
+                        height: 32
+                        radius: 6
+                        color: "#05FFFFFF"
+                        border.color: Theme.border
+                        border.width: 1
+                        anchors.right: parent.right
+                        anchors.verticalCenter: parent.verticalCenter
+
+                        property int currentVal: optimizerBackend.steamFriendsSettings ? optimizerBackend.steamFriendsSettings["Host_DisplayResolutionSetting"] || 0 : 0
+
+                        readonly property var options: [
+                            { id: 0, label: qsTr("Display Resolution") },
+                            { id: 2, label: qsTr("Limit to client resolution") }
+                        ]
+
+                        function getLabelForVal(v) {
+                            for (var i = 0; i < options.length; i++) {
+                                if (options[i].id === v) return options[i].label;
+                            }
+                            return qsTr("Display Resolution");
+                        }
+
+                        Text {
+                            anchors.left: parent.left
+                            anchors.leftMargin: 12
+                            anchors.verticalCenter: parent.verticalCenter
+                            text: hostResolutionDropdown.getLabelForVal(hostResolutionDropdown.currentVal)
+                            color: Theme.textPrimary
+                            font.family: Theme.fontFamily
+                            font.pixelSize: 11
+                        }
+                        Text {
+                            anchors.right: parent.right
+                            anchors.rightMargin: 12
+                            anchors.verticalCenter: parent.verticalCenter
+                            text: "\u2304"
+                            color: Theme.textSecondary
+                            font.family: Theme.fontFamily
+                            font.pixelSize: 12
+                            font.bold: true
+                        }
+                        MouseArea {
+                            anchors.fill: parent
+                            hoverEnabled: true
+                            cursorShape: Qt.PointingHandCursor
+                            onClicked: hostResolutionMenu.open()
+                            onEntered: hostResolutionDropdown.border.color = Theme.accent
+                            onExited: hostResolutionDropdown.border.color = Theme.border
+                        }
+                        Menu {
+                            id: hostResolutionMenu
+                            y: hostResolutionDropdown.height + 4
+                            width: hostResolutionDropdown.width
+                            background: Rectangle {
+                                color: Theme.sidebarBg
+                                border.color: Theme.border
+                                border.width: 1
+                                radius: 6
+                            }
+                            Instantiator {
+                                model: hostResolutionDropdown.options
+                                onObjectAdded: (index, object) => hostResolutionMenu.insertItem(index, object)
+                                onObjectRemoved: (index, object) => hostResolutionMenu.removeItem(object)
+                                delegate: MenuItem {
+                                    text: modelData.label
+                                    width: hostResolutionMenu.width
+                                    height: 32
+                                    contentItem: Text {
+                                        text: parent.text
+                                        font.family: Theme.fontFamily
+                                        font.pixelSize: 11
+                                        color: parent.highlighted ? Theme.accent : Theme.textPrimary
+                                        verticalAlignment: Text.AlignVCenter
+                                        leftPadding: 12
+                                    }
+                                    background: Rectangle {
+                                        color: parent.highlighted ? Qt.rgba(Theme.accent.r, Theme.accent.g, Theme.accent.b, 0.1) : "transparent"
+                                    }
+                                    onTriggered: {
+                                        root.toggleSteamFriendsSetting("Host_DisplayResolutionSetting", modelData.id);
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+
+                // Switch: Enable NVFBC Capture
+                Rectangle {
+                    width: parent.width
+                    height: 50
+                    color: "transparent"
+                    Row {
+                        anchors.fill: parent
+                        spacing: 12
+                        MeguSwitch {
+                            steamStyle: true
+                            checked: optimizerBackend.steamFriendsSettings ? !!optimizerBackend.steamFriendsSettings["Host_EnableCaptureNVFBC"] : true
+                            anchors.verticalCenter: parent.verticalCenter
+                            onToggled: (isChecked) => { root.toggleSteamFriendsSetting("Host_EnableCaptureNVFBC", isChecked); }
+                        }
+                        Column {
+                            anchors.verticalCenter: parent.verticalCenter
+                            spacing: 2
+                            width: parent.width - 50
+                            Text {
+                                text: qsTr("Enable NVFBC capture on NVIDIA GPU")
+                                color: Theme.textPrimary
+                                font.family: Theme.fontFamily
+                                font.pixelSize: 12
+                                font.bold: true
+                            }
+                        }
+                    }
+                }
+
+                // Switch: Enable hardware encoding
+                Rectangle {
+                    width: parent.width
+                    height: 50
+                    color: "transparent"
+                    Row {
+                        anchors.fill: parent
+                        spacing: 12
+                        MeguSwitch {
+                            steamStyle: true
+                            checked: optimizerBackend.steamFriendsSettings ? !!optimizerBackend.steamFriendsSettings["Host_EnableHardwareEncoding"] : true
+                            anchors.verticalCenter: parent.verticalCenter
+                            onToggled: (isChecked) => { root.toggleSteamFriendsSetting("Host_EnableHardwareEncoding", isChecked); }
+                        }
+                        Column {
+                            anchors.verticalCenter: parent.verticalCenter
+                            spacing: 2
+                            width: parent.width - 50
+                            Text {
+                                text: qsTr("Enable hardware encoding")
+                                color: Theme.textPrimary
+                                font.family: Theme.fontFamily
+                                font.pixelSize: 12
+                                font.bold: true
+                            }
+                        }
+                    }
+                }
+
+                // Dropdown: Software encoding threads (Host_SoftwareEncodingThreadCount)
+                Rectangle {
+                    width: parent.width
+                    height: 50
+                    color: "transparent"
+                    Text {
+                        text: qsTr("Number of software encoding threads")
+                        color: Theme.textPrimary
+                        font.family: Theme.fontFamily
+                        font.pixelSize: 12
+                        font.bold: true
+                        anchors.left: parent.left
+                        anchors.verticalCenter: parent.verticalCenter
+                    }
+                    Rectangle {
+                        id: hostThreadsDropdown
+                        width: 150
+                        height: 32
+                        radius: 6
+                        color: "#05FFFFFF"
+                        border.color: Theme.border
+                        border.width: 1
+                        anchors.right: parent.right
+                        anchors.verticalCenter: parent.verticalCenter
+
+                        property int currentVal: optimizerBackend.steamFriendsSettings ? optimizerBackend.steamFriendsSettings["Host_SoftwareEncodingThreadCount"] !== undefined ? optimizerBackend.steamFriendsSettings["Host_SoftwareEncodingThreadCount"] : -1 : -1
+
+                        readonly property var options: [
+                            { id: -1, label: qsTr("Automatic") },
+                            { id: 2, label: "2" },
+                            { id: 3, label: "3" },
+                            { id: 4, label: "4" },
+                            { id: 6, label: "6" },
+                            { id: 8, label: "8" }
+                        ]
+
+                        function getLabelForVal(v) {
+                            for (var i = 0; i < options.length; i++) {
+                                if (options[i].id === v) return options[i].label;
+                            }
+                            return qsTr("Automatic");
+                        }
+
+                        Text {
+                            anchors.left: parent.left
+                            anchors.leftMargin: 12
+                            anchors.verticalCenter: parent.verticalCenter
+                            text: hostThreadsDropdown.getLabelForVal(hostThreadsDropdown.currentVal)
+                            color: Theme.textPrimary
+                            font.family: Theme.fontFamily
+                            font.pixelSize: 11
+                        }
+                        Text {
+                            anchors.right: parent.right
+                            anchors.rightMargin: 12
+                            anchors.verticalCenter: parent.verticalCenter
+                            text: "\u2304"
+                            color: Theme.textSecondary
+                            font.family: Theme.fontFamily
+                            font.pixelSize: 12
+                            font.bold: true
+                        }
+                        MouseArea {
+                            anchors.fill: parent
+                            hoverEnabled: true
+                            cursorShape: Qt.PointingHandCursor
+                            onClicked: hostThreadsMenu.open()
+                            onEntered: hostThreadsDropdown.border.color = Theme.accent
+                            onExited: hostThreadsDropdown.border.color = Theme.border
+                        }
+                        Menu {
+                            id: hostThreadsMenu
+                            y: hostThreadsDropdown.height + 4
+                            width: hostThreadsDropdown.width
+                            background: Rectangle {
+                                color: Theme.sidebarBg
+                                border.color: Theme.border
+                                border.width: 1
+                                radius: 6
+                            }
+                            Instantiator {
+                                model: hostThreadsDropdown.options
+                                onObjectAdded: (index, object) => hostThreadsMenu.insertItem(index, object)
+                                onObjectRemoved: (index, object) => hostThreadsMenu.removeItem(object)
+                                delegate: MenuItem {
+                                    text: modelData.label
+                                    width: hostThreadsMenu.width
+                                    height: 32
+                                    contentItem: Text {
+                                        text: parent.text
+                                        font.family: Theme.fontFamily
+                                        font.pixelSize: 11
+                                        color: parent.highlighted ? Theme.accent : Theme.textPrimary
+                                        verticalAlignment: Text.AlignVCenter
+                                        leftPadding: 12
+                                    }
+                                    background: Rectangle {
+                                        color: parent.highlighted ? Qt.rgba(Theme.accent.r, Theme.accent.g, Theme.accent.b, 0.1) : "transparent"
+                                    }
+                                    onTriggered: {
+                                        root.toggleSteamFriendsSetting("Host_SoftwareEncodingThreadCount", modelData.id);
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+
+                // Switch: Prioritize network traffic
+                Rectangle {
+                    width: parent.width
+                    height: 50
+                    color: "transparent"
+                    Row {
+                        anchors.fill: parent
+                        spacing: 12
+                        MeguSwitch {
+                            steamStyle: true
+                            checked: optimizerBackend.steamFriendsSettings ? !!optimizerBackend.steamFriendsSettings["Host_EnableTrafficPriority"] : true
+                            anchors.verticalCenter: parent.verticalCenter
+                            onToggled: (isChecked) => { root.toggleSteamFriendsSetting("Host_EnableTrafficPriority", isChecked); }
+                        }
+                        Column {
+                            anchors.verticalCenter: parent.verticalCenter
+                            spacing: 2
+                            width: parent.width - 50
+                            Text {
+                                text: qsTr("Prioritize network traffic")
+                                color: Theme.textPrimary
+                                font.family: Theme.fontFamily
+                                font.pixelSize: 12
+                                font.bold: true
+                            }
                         }
                     }
                 }
@@ -3543,6 +5200,90 @@ Item {
             width: parent.width
             spacing: 16
 
+            // Header: Optimization
+            Text {
+                text: qsTr("Optimization")
+                color: Theme.accent
+                font.family: Theme.fontFamily
+                font.pixelSize: 11
+                font.bold: true
+                font.letterSpacing: 1.0
+            }
+
+            // Toggle: Pause music when starting an application
+            Rectangle {
+                width: parent.width
+                height: 64
+                color: "transparent"
+                Row {
+                    anchors.fill: parent
+                    spacing: 12
+                    MeguSwitch {
+                        steamStyle: true
+                        checked: optimizerBackend.steamFriendsSettings ? !!optimizerBackend.steamFriendsSettings["PauseOnAppStartedProcess"] : true
+                        anchors.verticalCenter: parent.verticalCenter
+                        onToggled: (isChecked) => { root.toggleSteamFriendsSetting("PauseOnAppStartedProcess", isChecked); }
+                    }
+                    Column {
+                        anchors.verticalCenter: parent.verticalCenter
+                        spacing: 2
+                        width: parent.width - 50
+                        Text {
+                            text: qsTr("Pause music when starting an application")
+                            color: Theme.textPrimary
+                            font.family: Theme.fontFamily
+                            font.pixelSize: 12
+                            font.bold: true
+                        }
+                        Text {
+                            text: qsTr("Pause music playback automatically when starting a game or application.")
+                            color: Theme.textSecondary
+                            font.family: Theme.fontFamily
+                            font.pixelSize: 10
+                            width: parent.width
+                            wrapMode: Text.WordWrap
+                        }
+                    }
+                }
+            }
+
+            // Toggle: Pause music when voice chatting
+            Rectangle {
+                width: parent.width
+                height: 64
+                color: "transparent"
+                Row {
+                    anchors.fill: parent
+                    spacing: 12
+                    MeguSwitch {
+                        steamStyle: true
+                        checked: optimizerBackend.steamFriendsSettings ? !!optimizerBackend.steamFriendsSettings["PauseOnVoiceChat"] : true
+                        anchors.verticalCenter: parent.verticalCenter
+                        onToggled: (isChecked) => { root.toggleSteamFriendsSetting("PauseOnVoiceChat", isChecked); }
+                    }
+                    Column {
+                        anchors.verticalCenter: parent.verticalCenter
+                        spacing: 2
+                        width: parent.width - 50
+                        Text {
+                            text: qsTr("Pause music when voice chatting")
+                            color: Theme.textPrimary
+                            font.family: Theme.fontFamily
+                            font.pixelSize: 12
+                            font.bold: true
+                        }
+                        Text {
+                            text: qsTr("Pause music playback automatically when starting or joining a voice chat.")
+                            color: Theme.textSecondary
+                            font.family: Theme.fontFamily
+                            font.pixelSize: 10
+                            width: parent.width
+                            wrapMode: Text.WordWrap
+                        }
+                    }
+                }
+            }
+
             // Toggle: Download high quality audio files
             Rectangle {
                 width: parent.width
@@ -3552,7 +5293,6 @@ Item {
                     anchors.fill: parent
                     spacing: 12
                     MeguSwitch {
-
                         steamStyle: true
                         checked: optimizerBackend.steamFriendsSettings ? !!optimizerBackend.steamFriendsSettings["DownloadHighQualityAudio"] : false
                         anchors.verticalCenter: parent.verticalCenter
@@ -3576,6 +5316,103 @@ Item {
                             font.pixelSize: 10
                             width: parent.width
                             wrapMode: Text.WordWrap
+                        }
+                    }
+                }
+            }
+
+            // Header: Customization
+            Text {
+                text: qsTr("Customization")
+                color: Theme.accent
+                font.family: Theme.fontFamily
+                font.pixelSize: 11
+                font.bold: true
+                font.letterSpacing: 1.0
+            }
+
+            // Volume Slider
+            Rectangle {
+                width: parent.width
+                height: 80
+                radius: 8
+                color: "#05FFFFFF"
+                border.color: Theme.border
+                border.width: 1
+
+                Column {
+                    anchors.verticalCenter: parent.verticalCenter
+                    anchors.left: parent.left
+                    anchors.leftMargin: 12
+                    anchors.right: parent.right
+                    anchors.rightMargin: 12
+                    spacing: 8
+
+                    RowLayout {
+                        width: parent.width
+
+                        Text {
+                            text: qsTr("Volume")
+                            color: Theme.textPrimary
+                            font.family: Theme.fontFamily
+                            font.pixelSize: 12
+                            font.bold: true
+                            Layout.fillWidth: true
+                        }
+
+                        Text {
+                            text: Math.round(musicVolumeSlider.value)
+                            color: Theme.accent
+                            font.family: Theme.fontFamily
+                            font.pixelSize: 14
+                            font.bold: true
+                            Layout.alignment: Qt.AlignVCenter
+                        }
+                    }
+
+                    Slider {
+                        id: musicVolumeSlider
+                        width: parent.width
+                        from: 0
+                        to: 100
+                        value: optimizerBackend.steamFriendsSettings ? (optimizerBackend.steamFriendsSettings["MusicVolume"] !== undefined ? optimizerBackend.steamFriendsSettings["MusicVolume"] : 10) : 10
+                        stepSize: 1
+                        live: true
+                        onMoved: {
+                            root.toggleSteamFriendsSetting("MusicVolume", Math.round(value));
+                        }
+
+                        background: Rectangle {
+                            x: musicVolumeSlider.leftPadding
+                            y: musicVolumeSlider.topPadding + musicVolumeSlider.availableHeight / 2 - height / 2
+                            implicitWidth: 200
+                            implicitHeight: 4
+                            width: musicVolumeSlider.availableWidth
+                            height: implicitHeight
+                            radius: 2
+                            color: Theme.border
+
+                            Rectangle {
+                                width: musicVolumeSlider.visualPosition * parent.width
+                                height: parent.height
+                                color: Theme.accent
+                                radius: 2
+                            }
+                        }
+
+                        handle: Rectangle {
+                            x: musicVolumeSlider.leftPadding + musicVolumeSlider.visualPosition * (musicVolumeSlider.availableWidth - width)
+                            y: musicVolumeSlider.topPadding + musicVolumeSlider.availableHeight / 2 - height / 2
+                            implicitWidth: 16
+                            implicitHeight: 16
+                            radius: 8
+                            color: musicVolumeSlider.pressed ? Theme.accent : Theme.textPrimary
+                            border.color: Theme.accent
+                            border.width: musicVolumeSlider.hovered ? 2 : 0
+
+                            Behavior on color { ColorAnimation { duration: Theme.animFast } }
+                            Behavior on scale { NumberAnimation { duration: Theme.animFast } }
+                            scale: musicVolumeSlider.pressed ? 1.2 : (musicVolumeSlider.hovered ? 1.1 : 1.0)
                         }
                     }
                 }
@@ -4705,6 +6542,899 @@ Item {
         // Close nested Column container
     }
     } // Close outer Column container
+
+    // PAGE 15: Broadcasting Sub-Page
+    Column {
+        id: steamBroadcastPage
+        width: parent.width
+        spacing: 20
+        visible: steamSettingsDrawer.subPage === "broadcast"
+
+        Row {
+            spacing: 10
+            width: parent.width
+
+            MeguButton {
+                text: qsTr("Back")
+                iconRotation: 180
+                iconSource: "qrc:/MeguPackOptimizer/src/resources/arrow.svg"
+                width: 80
+                onClicked: steamSettingsDrawer.subPage = "main"
+            }
+
+            Text {
+                text: qsTr("BROADCASTING")
+                color: Theme.textPrimary
+                font.family: Theme.fontFamily
+                font.pixelSize: 16
+                font.bold: true
+                anchors.verticalCenter: parent.verticalCenter
+            }
+        }
+
+        // Global Overlay Disabled Warning
+        Rectangle {
+            width: parent.width
+            height: warningRow.implicitHeight + 20
+            radius: Theme.radiusSmall
+            color: Qt.rgba(Theme.accent.r, Theme.accent.g, Theme.accent.b, 0.05)
+            border.color: Theme.accent
+            border.width: 1
+            visible: !optimizerBackend.steamOverlayActive
+
+            Row {
+                id: warningRow
+                anchors.fill: parent
+                anchors.margins: 10
+                spacing: 12
+
+                Item {
+                    width: 24
+                    height: 24
+                    anchors.verticalCenter: parent.verticalCenter
+                    Image {
+                        id: warnImg
+                        source: "qrc:/MeguPackOptimizer/src/resources/warning.svg"
+                        anchors.fill: parent
+                        sourceSize.width: 24
+                        sourceSize.height: 24
+                        visible: false
+                    }
+                    ColorOverlay {
+                        anchors.fill: warnImg
+                        source: warnImg
+                        color: Theme.accent
+                    }
+                }
+
+                Text {
+                    text: qsTr("Steam Overlay is globally disabled. Broadcasting settings are locked until it is enabled.")
+                    color: Theme.textPrimary
+                    font.family: Theme.fontFamily
+                    font.pixelSize: 11
+                    width: parent.width - 80
+                    wrapMode: Text.WordWrap
+                    anchors.verticalCenter: parent.verticalCenter
+                }
+
+                Item {
+                    width: 24
+                    height: 24
+                    anchors.verticalCenter: parent.verticalCenter
+                    Image {
+                        id: eyeImg
+                        source: "qrc:/MeguPackOptimizer/src/resources/eye.svg"
+                        anchors.fill: parent
+                        sourceSize.width: 24
+                        sourceSize.height: 24
+                        visible: false
+                    }
+                    ColorOverlay {
+                        anchors.fill: eyeImg
+                        source: eyeImg
+                        color: eyeMouse.containsMouse ? Theme.accent : Theme.textSecondary
+                    }
+                    MouseArea {
+                        id: eyeMouse
+                        anchors.fill: parent
+                        hoverEnabled: true
+                        cursorShape: Qt.PointingHandCursor
+                        onClicked: {
+                            steamSettingsDrawer.subPage = "ingame"
+                        }
+                    }
+                }
+            }
+        }
+
+        // Settings items
+        Column {
+            width: parent.width
+            spacing: 12
+            enabled: optimizerBackend.steamOverlayActive
+            opacity: enabled ? 1.0 : 0.4
+
+            Behavior on opacity { NumberAnimation { duration: Theme.animNormal } }
+
+            // 1. Privacy setting (Permissions)
+            Rectangle {
+                width: parent.width
+                height: 50
+                color: "transparent"
+
+                Text {
+                    text: qsTr("Privacy setting")
+                    color: Theme.textPrimary
+                    font.family: Theme.fontFamily
+                    font.pixelSize: 12
+                    font.bold: true
+                    anchors.left: parent.left
+                    anchors.verticalCenter: parent.verticalCenter
+                }
+
+                Rectangle {
+                    id: privacyDropdown
+                    width: 250
+                    height: 32
+                    radius: 6
+                    color: "#05FFFFFF"
+                    border.color: Theme.border
+                    border.width: 1
+                    anchors.right: parent.right
+                    anchors.verticalCenter: parent.verticalCenter
+
+                    property int currentVal: optimizerBackend.steamFriendsSettings ? optimizerBackend.steamFriendsSettings["BroadcastPermissions"] !== undefined ? optimizerBackend.steamFriendsSettings["BroadcastPermissions"] : 1 : 1
+
+                    readonly property var options: [
+                        { id: 0, label: qsTr("Broadcasting disabled") },
+                        { id: 1, label: qsTr("Friends can request to watch my games") },
+                        { id: 2, label: qsTr("Friends can watch my games") },
+                        { id: 3, label: qsTr("Anyone can watch my games") }
+                    ]
+
+                    function getLabelForVal(v) {
+                        for (var i = 0; i < options.length; i++) {
+                            if (options[i].id === v) return options[i].label;
+                        }
+                        return qsTr("Friends can request to watch my games");
+                    }
+
+                    Text {
+                        anchors.left: parent.left
+                        anchors.leftMargin: 12
+                        anchors.verticalCenter: parent.verticalCenter
+                        text: privacyDropdown.getLabelForVal(privacyDropdown.currentVal)
+                        color: Theme.textPrimary
+                        font.family: Theme.fontFamily
+                        font.pixelSize: 11
+                    }
+
+                    Text {
+                        anchors.right: parent.right
+                        anchors.rightMargin: 12
+                        anchors.verticalCenter: parent.verticalCenter
+                        text: "⌵"
+                        color: Theme.textSecondary
+                        font.family: Theme.fontFamily
+                        font.pixelSize: 12
+                        font.bold: true
+                    }
+
+                    MouseArea {
+                        anchors.fill: parent
+                        hoverEnabled: true
+                        cursorShape: Qt.PointingHandCursor
+                        onClicked: privacyMenu.open()
+                        onEntered: privacyDropdown.border.color = Theme.accent
+                        onExited: privacyDropdown.border.color = Theme.border
+                    }
+
+                    Menu {
+                        id: privacyMenu
+                        y: privacyDropdown.height + 4
+                        width: privacyDropdown.width
+                        background: Rectangle {
+                            color: Theme.sidebarBg
+                            border.color: Theme.border
+                            border.width: 1
+                            radius: 6
+                        }
+                        Instantiator {
+                            model: privacyDropdown.options
+                            onObjectAdded: (index, object) => privacyMenu.insertItem(index, object)
+                            onObjectRemoved: (index, object) => privacyMenu.removeItem(object)
+                            delegate: MenuItem {
+                                text: modelData.label
+                                width: privacyMenu.width
+                                height: 32
+                                contentItem: Text {
+                                    text: parent.text
+                                    font.family: Theme.fontFamily
+                                    font.pixelSize: 11
+                                    color: parent.highlighted ? Theme.accent : Theme.textPrimary
+                                    verticalAlignment: Text.AlignVCenter
+                                    leftPadding: 12
+                                }
+                                background: Rectangle {
+                                    color: parent.highlighted ? Qt.rgba(Theme.accent.r, Theme.accent.g, Theme.accent.b, 0.1) : "transparent"
+                                }
+                                onTriggered: {
+                                    root.toggleSteamFriendsSetting("BroadcastPermissions", modelData.id);
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+
+            Rectangle {
+                width: parent.width
+                height: 1
+                color: Theme.border
+            }
+
+            // Always show Live status (Visible only when Anyone can watch my games, i.e., BroadcastPermissions = 3)
+            Rectangle {
+                width: parent.width
+                height: Math.max(50, steamToggleCol_b1.implicitHeight + 12)
+                color: "transparent"
+                visible: (optimizerBackend.steamFriendsSettings && optimizerBackend.steamFriendsSettings["BroadcastPermissions"] === 3)
+
+                Column {
+                    id: steamToggleCol_b1
+                    anchors.verticalCenter: parent.verticalCenter
+                    spacing: 2
+                    anchors.left: parent.left
+                    anchors.right: steamToggleSwitch_b1.left
+                    anchors.rightMargin: 12
+                    Text {
+                        text: qsTr("Always show Live status")
+                        color: Theme.textPrimary
+                        font.family: Theme.fontFamily
+                        font.pixelSize: 12
+                        font.bold: true
+                    }
+                }
+
+                MeguSwitch {
+                    id: steamToggleSwitch_b1
+                    anchors.right: parent.right
+                    steamStyle: true
+                    checked: optimizerBackend.steamFriendsSettings ? !!optimizerBackend.steamFriendsSettings["BroadcastShowReminder"] : false
+                    anchors.verticalCenter: parent.verticalCenter
+                    onToggled: (isChecked) => { root.toggleSteamFriendsSetting("BroadcastShowReminder", isChecked); }
+                }
+            }
+
+            Rectangle {
+                width: parent.width
+                height: 1
+                color: Theme.border
+                visible: (optimizerBackend.steamFriendsSettings && optimizerBackend.steamFriendsSettings["BroadcastPermissions"] === 3)
+            }
+
+            // 2. Video Dimensions
+            Rectangle {
+                width: parent.width
+                height: 50
+                color: "transparent"
+
+                Text {
+                    text: qsTr("Video Dimensions")
+                    color: Theme.textPrimary
+                    font.family: Theme.fontFamily
+                    font.pixelSize: 12
+                    font.bold: true
+                    anchors.left: parent.left
+                    anchors.verticalCenter: parent.verticalCenter
+                }
+
+                Rectangle {
+                    id: dimsDropdown
+                    width: 250
+                    height: 32
+                    radius: 6
+                    color: "#05FFFFFF"
+                    border.color: Theme.border
+                    border.width: 1
+                    anchors.right: parent.right
+                    anchors.verticalCenter: parent.verticalCenter
+
+                    property int currentW: optimizerBackend.steamFriendsSettings ? optimizerBackend.steamFriendsSettings["BroadcastOutputWidth"] !== undefined ? optimizerBackend.steamFriendsSettings["BroadcastOutputWidth"] : 854 : 854
+                    property int currentH: optimizerBackend.steamFriendsSettings ? optimizerBackend.steamFriendsSettings["BroadcastOutputHeight"] !== undefined ? optimizerBackend.steamFriendsSettings["BroadcastOutputHeight"] : 480 : 480
+
+                    readonly property var options: [
+                        { w: 1920, h: 1080, label: qsTr("1920x1080 (1080p)") },
+                        { w: 1280, h: 720, label: qsTr("1280x720 (720p)") },
+                        { w: 854, h: 480, label: qsTr("854x480 (480p)") },
+                        { w: 640, h: 360, label: qsTr("640x360 (360p)") }
+                    ]
+
+                    function getLabelForVal(w, h) {
+                        for (var i = 0; i < options.length; i++) {
+                            if (options[i].w === w && options[i].h === h) return options[i].label;
+                        }
+                        return w + "x" + h;
+                    }
+
+                    Text {
+                        anchors.left: parent.left
+                        anchors.leftMargin: 12
+                        anchors.verticalCenter: parent.verticalCenter
+                        text: dimsDropdown.getLabelForVal(dimsDropdown.currentW, dimsDropdown.currentH)
+                        color: Theme.textPrimary
+                        font.family: Theme.fontFamily
+                        font.pixelSize: 11
+                    }
+
+                    Text {
+                        anchors.right: parent.right
+                        anchors.rightMargin: 12
+                        anchors.verticalCenter: parent.verticalCenter
+                        text: "⌵"
+                        color: Theme.textSecondary
+                        font.family: Theme.fontFamily
+                        font.pixelSize: 12
+                        font.bold: true
+                    }
+
+                    MouseArea {
+                        anchors.fill: parent
+                        hoverEnabled: true
+                        cursorShape: Qt.PointingHandCursor
+                        onClicked: dimsMenu.open()
+                        onEntered: dimsDropdown.border.color = Theme.accent
+                        onExited: dimsDropdown.border.color = Theme.border
+                    }
+
+                    Menu {
+                        id: dimsMenu
+                        y: dimsDropdown.height + 4
+                        width: dimsDropdown.width
+                        background: Rectangle {
+                            color: Theme.sidebarBg
+                            border.color: Theme.border
+                            border.width: 1
+                            radius: 6
+                        }
+                        Instantiator {
+                            model: dimsDropdown.options
+                            onObjectAdded: (index, object) => dimsMenu.insertItem(index, object)
+                            onObjectRemoved: (index, object) => dimsMenu.removeItem(object)
+                            delegate: MenuItem {
+                                text: modelData.label
+                                width: dimsMenu.width
+                                height: 32
+                                contentItem: Text {
+                                    text: parent.text
+                                    font.family: Theme.fontFamily
+                                    font.pixelSize: 11
+                                    color: parent.highlighted ? Theme.accent : Theme.textPrimary
+                                    verticalAlignment: Text.AlignVCenter
+                                    leftPadding: 12
+                                }
+                                background: Rectangle {
+                                    color: parent.highlighted ? Qt.rgba(Theme.accent.r, Theme.accent.g, Theme.accent.b, 0.1) : "transparent"
+                                }
+                                onTriggered: {
+                                    root.toggleSteamFriendsSetting("BroadcastOutputWidth", modelData.w);
+                                    root.toggleSteamFriendsSetting("BroadcastOutputHeight", modelData.h);
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+
+            Rectangle {
+                width: parent.width
+                height: 1
+                color: Theme.border
+            }
+
+            // 3. Maximum Bitrate
+            Rectangle {
+                width: parent.width
+                height: 50
+                color: "transparent"
+
+                Text {
+                    text: qsTr("Maximum Bitrate")
+                    color: Theme.textPrimary
+                    font.family: Theme.fontFamily
+                    font.pixelSize: 12
+                    font.bold: true
+                    anchors.left: parent.left
+                    anchors.verticalCenter: parent.verticalCenter
+                }
+
+                Rectangle {
+                    id: bitrateDropdown
+                    width: 250
+                    height: 32
+                    radius: 6
+                    color: "#05FFFFFF"
+                    border.color: Theme.border
+                    border.width: 1
+                    anchors.right: parent.right
+                    anchors.verticalCenter: parent.verticalCenter
+
+                    property int currentVal: optimizerBackend.steamFriendsSettings ? optimizerBackend.steamFriendsSettings["BroadcastMaxKbps"] !== undefined ? optimizerBackend.steamFriendsSettings["BroadcastMaxKbps"] : 1000 : 1000
+
+                    readonly property var options: [
+                        { id: 3500, label: qsTr("3500 Kbps") },
+                        { id: 3000, label: qsTr("3000 Kbps") },
+                        { id: 2500, label: qsTr("2500 Kbps") },
+                        { id: 2000, label: qsTr("2000 Kbps") },
+                        { id: 1500, label: qsTr("1500 Kbps") },
+                        { id: 1000, label: qsTr("1000 Kbps") },
+                        { id: 750, label: qsTr("750 Kbps") }
+                    ]
+
+                    function getLabelForVal(v) {
+                        for (var i = 0; i < options.length; i++) {
+                            if (options[i].id === v) return options[i].label;
+                        }
+                        return v + " Kbps";
+                    }
+
+                    Text {
+                        anchors.left: parent.left
+                        anchors.leftMargin: 12
+                        anchors.verticalCenter: parent.verticalCenter
+                        text: bitrateDropdown.getLabelForVal(bitrateDropdown.currentVal)
+                        color: Theme.textPrimary
+                        font.family: Theme.fontFamily
+                        font.pixelSize: 11
+                    }
+
+                    Text {
+                        anchors.right: parent.right
+                        anchors.rightMargin: 12
+                        anchors.verticalCenter: parent.verticalCenter
+                        text: "⌵"
+                        color: Theme.textSecondary
+                        font.family: Theme.fontFamily
+                        font.pixelSize: 12
+                        font.bold: true
+                    }
+
+                    MouseArea {
+                        anchors.fill: parent
+                        hoverEnabled: true
+                        cursorShape: Qt.PointingHandCursor
+                        onClicked: bitrateMenu.open()
+                        onEntered: bitrateDropdown.border.color = Theme.accent
+                        onExited: bitrateDropdown.border.color = Theme.border
+                    }
+
+                    Menu {
+                        id: bitrateMenu
+                        y: bitrateDropdown.height + 4
+                        width: bitrateDropdown.width
+                        background: Rectangle {
+                            color: Theme.sidebarBg
+                            border.color: Theme.border
+                            border.width: 1
+                            radius: 6
+                        }
+                        Instantiator {
+                            model: bitrateDropdown.options
+                            onObjectAdded: (index, object) => bitrateMenu.insertItem(index, object)
+                            onObjectRemoved: (index, object) => bitrateMenu.removeItem(object)
+                            delegate: MenuItem {
+                                text: modelData.label
+                                width: bitrateMenu.width
+                                height: 32
+                                contentItem: Text {
+                                    text: parent.text
+                                    font.family: Theme.fontFamily
+                                    font.pixelSize: 11
+                                    color: parent.highlighted ? Theme.accent : Theme.textPrimary
+                                    verticalAlignment: Text.AlignVCenter
+                                    leftPadding: 12
+                                }
+                                background: Rectangle {
+                                    color: parent.highlighted ? Qt.rgba(Theme.accent.r, Theme.accent.g, Theme.accent.b, 0.1) : "transparent"
+                                }
+                                onTriggered: {
+                                    root.toggleSteamFriendsSetting("BroadcastMaxKbps", modelData.id);
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+
+            Rectangle {
+                width: parent.width
+                height: 1
+                color: Theme.border
+            }
+
+            // 4. Optimize encoding for
+            Rectangle {
+                width: parent.width
+                height: 50
+                color: "transparent"
+
+                Text {
+                    text: qsTr("Optimize encoding for")
+                    color: Theme.textPrimary
+                    font.family: Theme.fontFamily
+                    font.pixelSize: 12
+                    font.bold: true
+                    anchors.left: parent.left
+                    anchors.verticalCenter: parent.verticalCenter
+                }
+
+                Rectangle {
+                    id: encoderDropdown
+                    width: 250
+                    height: 32
+                    radius: 6
+                    color: "#05FFFFFF"
+                    border.color: Theme.border
+                    border.width: 1
+                    anchors.right: parent.right
+                    anchors.verticalCenter: parent.verticalCenter
+
+                    property int currentVal: optimizerBackend.steamFriendsSettings ? optimizerBackend.steamFriendsSettings["BroadcastEncoderSetting"] !== undefined ? optimizerBackend.steamFriendsSettings["BroadcastEncoderSetting"] : 0 : 0
+
+                    readonly property var options: [
+                        { id: 0, label: qsTr("Best Quality") },
+                        { id: 1, label: qsTr("Best Performance") }
+                    ]
+
+                    function getLabelForVal(v) {
+                        for (var i = 0; i < options.length; i++) {
+                            if (options[i].id === v) return options[i].label;
+                        }
+                        return qsTr("Best Quality");
+                    }
+
+                    Text {
+                        anchors.left: parent.left
+                        anchors.leftMargin: 12
+                        anchors.verticalCenter: parent.verticalCenter
+                        text: encoderDropdown.getLabelForVal(encoderDropdown.currentVal)
+                        color: Theme.textPrimary
+                        font.family: Theme.fontFamily
+                        font.pixelSize: 11
+                    }
+
+                    Text {
+                        anchors.right: parent.right
+                        anchors.rightMargin: 12
+                        anchors.verticalCenter: parent.verticalCenter
+                        text: "⌵"
+                        color: Theme.textSecondary
+                        font.family: Theme.fontFamily
+                        font.pixelSize: 12
+                        font.bold: true
+                    }
+
+                    MouseArea {
+                        anchors.fill: parent
+                        hoverEnabled: true
+                        cursorShape: Qt.PointingHandCursor
+                        onClicked: encoderMenu.open()
+                        onEntered: encoderDropdown.border.color = Theme.accent
+                        onExited: encoderDropdown.border.color = Theme.border
+                    }
+
+                    Menu {
+                        id: encoderMenu
+                        y: encoderDropdown.height + 4
+                        width: encoderDropdown.width
+                        background: Rectangle {
+                            color: Theme.sidebarBg
+                            border.color: Theme.border
+                            border.width: 1
+                            radius: 6
+                        }
+                        Instantiator {
+                            model: encoderDropdown.options
+                            onObjectAdded: (index, object) => encoderMenu.insertItem(index, object)
+                            onObjectRemoved: (index, object) => encoderMenu.removeItem(object)
+                            delegate: MenuItem {
+                                text: modelData.label
+                                width: encoderMenu.width
+                                height: 32
+                                contentItem: Text {
+                                    text: parent.text
+                                    font.family: Theme.fontFamily
+                                    font.pixelSize: 11
+                                    color: parent.highlighted ? Theme.accent : Theme.textPrimary
+                                    verticalAlignment: Text.AlignVCenter
+                                    leftPadding: 12
+                                }
+                                background: Rectangle {
+                                    color: parent.highlighted ? Qt.rgba(Theme.accent.r, Theme.accent.g, Theme.accent.b, 0.1) : "transparent"
+                                }
+                                onTriggered: {
+                                    root.toggleSteamFriendsSetting("BroadcastEncoderSetting", modelData.id);
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+
+            Rectangle {
+                width: parent.width
+                height: 1
+                color: Theme.border
+            }
+
+            // 5. Show viewers' chat in game
+            Rectangle {
+                width: parent.width
+                height: 50
+                color: "transparent"
+
+                Text {
+                    text: qsTr("Show viewers' chat in game")
+                    color: Theme.textPrimary
+                    font.family: Theme.fontFamily
+                    font.pixelSize: 12
+                    font.bold: true
+                    anchors.left: parent.left
+                    anchors.verticalCenter: parent.verticalCenter
+                }
+
+                Rectangle {
+                    id: showChatDropdown
+                    width: 250
+                    height: 32
+                    radius: 6
+                    color: "#05FFFFFF"
+                    border.color: Theme.border
+                    border.width: 1
+                    anchors.right: parent.right
+                    anchors.verticalCenter: parent.verticalCenter
+
+                    property int currentVal: optimizerBackend.steamFriendsSettings ? optimizerBackend.steamFriendsSettings["BroadcastShowChat"] !== undefined ? optimizerBackend.steamFriendsSettings["BroadcastShowChat"] : 3 : 3
+
+                    readonly property var options: [
+                        { id: 0, label: qsTr("Off") },
+                        { id: 1, label: qsTr("Top-left") },
+                        { id: 2, label: qsTr("Top-center") },
+                        { id: 3, label: qsTr("Top-right") },
+                        { id: 4, label: qsTr("Bottom-right") },
+                        { id: 5, label: qsTr("Bottom-center") },
+                        { id: 6, label: qsTr("Bottom-left") }
+                    ]
+
+                    function getLabelForVal(v) {
+                        for (var i = 0; i < options.length; i++) {
+                            if (options[i].id === v) return options[i].label;
+                        }
+                        return qsTr("Top-right");
+                    }
+
+                    Text {
+                        anchors.left: parent.left
+                        anchors.leftMargin: 12
+                        anchors.verticalCenter: parent.verticalCenter
+                        text: showChatDropdown.getLabelForVal(showChatDropdown.currentVal)
+                        color: Theme.textPrimary
+                        font.family: Theme.fontFamily
+                        font.pixelSize: 11
+                    }
+
+                    Text {
+                        anchors.right: parent.right
+                        anchors.rightMargin: 12
+                        anchors.verticalCenter: parent.verticalCenter
+                        text: "⌵"
+                        color: Theme.textSecondary
+                        font.family: Theme.fontFamily
+                        font.pixelSize: 12
+                        font.bold: true
+                    }
+
+                    MouseArea {
+                        anchors.fill: parent
+                        hoverEnabled: true
+                        cursorShape: Qt.PointingHandCursor
+                        onClicked: showChatMenu.open()
+                        onEntered: showChatDropdown.border.color = Theme.accent
+                        onExited: showChatDropdown.border.color = Theme.border
+                    }
+
+                    Menu {
+                        id: showChatMenu
+                        y: showChatDropdown.height + 4
+                        width: showChatDropdown.width
+                        background: Rectangle {
+                            color: Theme.sidebarBg
+                            border.color: Theme.border
+                            border.width: 1
+                            radius: 6
+                        }
+                        Instantiator {
+                            model: showChatDropdown.options
+                            onObjectAdded: (index, object) => showChatMenu.insertItem(index, object)
+                            onObjectRemoved: (index, object) => showChatMenu.removeItem(object)
+                            delegate: MenuItem {
+                                text: modelData.label
+                                width: showChatMenu.width
+                                height: 32
+                                contentItem: Text {
+                                    text: parent.text
+                                    font.family: Theme.fontFamily
+                                    font.pixelSize: 11
+                                    color: parent.highlighted ? Theme.accent : Theme.textPrimary
+                                    verticalAlignment: Text.AlignVCenter
+                                    leftPadding: 12
+                                }
+                                background: Rectangle {
+                                    color: parent.highlighted ? Qt.rgba(Theme.accent.r, Theme.accent.g, Theme.accent.b, 0.1) : "transparent"
+                                }
+                                onTriggered: {
+                                    root.toggleSteamFriendsSetting("BroadcastShowChat", modelData.id);
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+
+            Rectangle {
+                width: parent.width
+                height: 1
+                color: Theme.border
+            }
+
+            // Toggles
+            // Toggle 1: Record video from all applications on this machine
+            Rectangle {
+                width: parent.width
+                height: Math.max(50, steamToggleCol_b2.implicitHeight + 12)
+                color: "transparent"
+
+                Column {
+                    id: steamToggleCol_b2
+                    anchors.verticalCenter: parent.verticalCenter
+                    spacing: 2
+                    anchors.left: parent.left
+                    anchors.right: steamToggleSwitch_b2.left
+                    anchors.rightMargin: 12
+                    Text {
+                        text: qsTr("Record video from all applications on this machine")
+                        color: Theme.textPrimary
+                        font.family: Theme.fontFamily
+                        font.pixelSize: 12
+                        font.bold: true
+                    }
+                }
+
+                MeguSwitch {
+                    id: steamToggleSwitch_b2
+                    anchors.right: parent.right
+                    steamStyle: true
+                    checked: optimizerBackend.steamFriendsSettings ? !!optimizerBackend.steamFriendsSettings["BroadcastIncludeDesktop"] : false
+                    anchors.verticalCenter: parent.verticalCenter
+                    onToggled: (isChecked) => { root.toggleSteamFriendsSetting("BroadcastIncludeDesktop", isChecked); }
+                }
+            }
+
+            Rectangle {
+                width: parent.width
+                height: 1
+                color: Theme.border
+            }
+
+            // Toggle 2: Record audio from all applications on this machine
+            Rectangle {
+                width: parent.width
+                height: Math.max(50, steamToggleCol_b3.implicitHeight + 12)
+                color: "transparent"
+
+                Column {
+                    id: steamToggleCol_b3
+                    anchors.verticalCenter: parent.verticalCenter
+                    spacing: 2
+                    anchors.left: parent.left
+                    anchors.right: steamToggleSwitch_b3.left
+                    anchors.rightMargin: 12
+                    Text {
+                        text: qsTr("Record audio from all applications on this machine")
+                        color: Theme.textPrimary
+                        font.family: Theme.fontFamily
+                        font.pixelSize: 12
+                        font.bold: true
+                    }
+                }
+
+                MeguSwitch {
+                    id: steamToggleSwitch_b3
+                    anchors.right: parent.right
+                    steamStyle: true
+                    checked: optimizerBackend.steamFriendsSettings ? !!optimizerBackend.steamFriendsSettings["BroadcastRecordSystemAudio"] : false
+                    anchors.verticalCenter: parent.verticalCenter
+                    onToggled: (isChecked) => { root.toggleSteamFriendsSetting("BroadcastRecordSystemAudio", isChecked); }
+                }
+            }
+
+            Rectangle {
+                width: parent.width
+                height: 1
+                color: Theme.border
+            }
+
+            // Toggle 3: Record my microphone
+            Rectangle {
+                width: parent.width
+                height: Math.max(50, steamToggleCol_b4.implicitHeight + 12)
+                color: "transparent"
+
+                Column {
+                    id: steamToggleCol_b4
+                    anchors.verticalCenter: parent.verticalCenter
+                    spacing: 2
+                    anchors.left: parent.left
+                    anchors.right: steamToggleSwitch_b4.left
+                    anchors.rightMargin: 12
+                    Text {
+                        text: qsTr("Record my microphone")
+                        color: Theme.textPrimary
+                        font.family: Theme.fontFamily
+                        font.pixelSize: 12
+                        font.bold: true
+                    }
+                }
+
+                MeguSwitch {
+                    id: steamToggleSwitch_b4
+                    anchors.right: parent.right
+                    steamStyle: true
+                    checked: optimizerBackend.steamFriendsSettings ? !!optimizerBackend.steamFriendsSettings["BroadcastRecordMic"] : false
+                    anchors.verticalCenter: parent.verticalCenter
+                    onToggled: (isChecked) => { root.toggleSteamFriendsSetting("BroadcastRecordMic", isChecked); }
+                }
+            }
+
+            Rectangle {
+                width: parent.width
+                height: 1
+                color: Theme.border
+            }
+
+            // Toggle 4: Show upload stats
+            Rectangle {
+                width: parent.width
+                height: Math.max(50, steamToggleCol_b5.implicitHeight + 12)
+                color: "transparent"
+
+                Column {
+                    id: steamToggleCol_b5
+                    anchors.verticalCenter: parent.verticalCenter
+                    spacing: 2
+                    anchors.left: parent.left
+                    anchors.right: steamToggleSwitch_b5.left
+                    anchors.rightMargin: 12
+                    Text {
+                        text: qsTr("Show upload stats")
+                        color: Theme.textPrimary
+                        font.family: Theme.fontFamily
+                        font.pixelSize: 12
+                        font.bold: true
+                    }
+                }
+
+                MeguSwitch {
+                    id: steamToggleSwitch_b5
+                    anchors.right: parent.right
+                    steamStyle: true
+                    checked: optimizerBackend.steamFriendsSettings ? !!optimizerBackend.steamFriendsSettings["BroadcastShowDebugInfo"] : false
+                    anchors.verticalCenter: parent.verticalCenter
+                    onToggled: (isChecked) => { root.toggleSteamFriendsSetting("BroadcastShowDebugInfo", isChecked); }
+                }
+            }
+        }
+    }
 
     // STEAM CACHE CLEAR WARNING DIALOG
     Rectangle {

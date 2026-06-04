@@ -1109,6 +1109,118 @@ namespace {
         return out;
     }
 
+    struct ProtobufField {
+        int fieldNum;
+        int wireType;
+        quint64 varintVal = 0;
+        QByteArray bytesVal;
+    };
+
+    QList<ProtobufField> parseProtobuf(const QByteArray &data) {
+        QList<ProtobufField> fields;
+        int idx = 0;
+        while (idx < data.length()) {
+            quint64 key = decodeVarint(data, idx);
+            int fieldNum = key >> 3;
+            int wireType = key & 0x07;
+            ProtobufField f;
+            f.fieldNum = fieldNum;
+            f.wireType = wireType;
+            if (wireType == 0) {
+                f.varintVal = decodeVarint(data, idx);
+                fields.append(f);
+            } else if (wireType == 1) { // 64-bit
+                if (idx + 8 <= data.length()) {
+                    f.bytesVal = data.mid(idx, 8);
+                    idx += 8;
+                    fields.append(f);
+                } else {
+                    break;
+                }
+            } else if (wireType == 2) { // Length-delimited
+                quint64 len = decodeVarint(data, idx);
+                if (idx + len <= data.length()) {
+                    f.bytesVal = data.mid(idx, len);
+                    idx += len;
+                    fields.append(f);
+                } else {
+                    break;
+                }
+            } else if (wireType == 5) { // 32-bit
+                if (idx + 4 <= data.length()) {
+                    f.bytesVal = data.mid(idx, 4);
+                    idx += 4;
+                    fields.append(f);
+                } else {
+                    break;
+                }
+            } else {
+                break;
+            }
+        }
+        return fields;
+    }
+
+    QByteArray serializeProtobuf(const QList<ProtobufField> &fields) {
+        QByteArray data;
+        for (const auto &f : fields) {
+            quint64 key = (quint64(f.fieldNum) << 3) | quint64(f.wireType);
+            data.append(encodeVarint(key));
+            if (f.wireType == 0) {
+                data.append(encodeVarint(f.varintVal));
+            } else if (f.wireType == 2) {
+                data.append(encodeVarint(f.bytesVal.length()));
+                data.append(f.bytesVal);
+            } else { // wireType 1 or 5
+                data.append(f.bytesVal);
+            }
+        }
+        return data;
+    }
+
+    void setOrUpdateFieldVarint(QList<ProtobufField> &fields, int fieldNum, quint64 value) {
+        for (int i = 0; i < fields.size(); ++i) {
+            if (fields[i].fieldNum == fieldNum) {
+                fields[i].wireType = 0;
+                fields[i].varintVal = value;
+                fields[i].bytesVal.clear();
+                return;
+            }
+        }
+        ProtobufField f;
+        f.fieldNum = fieldNum;
+        f.wireType = 0;
+        f.varintVal = value;
+        fields.append(f);
+    }
+
+    void setOrUpdateFieldString(QList<ProtobufField> &fields, int fieldNum, const QString &value) {
+        QByteArray bytes = value.toUtf8();
+        for (int i = 0; i < fields.size(); ++i) {
+            if (fields[i].fieldNum == fieldNum) {
+                fields[i].wireType = 2;
+                fields[i].bytesVal = bytes;
+                fields[i].varintVal = 0;
+                return;
+            }
+        }
+        ProtobufField f;
+        f.fieldNum = fieldNum;
+        f.wireType = 2;
+        f.bytesVal = bytes;
+        f.varintVal = 0;
+        fields.append(f);
+    }
+
+    void removeField(QList<ProtobufField> &fields, int fieldNum) {
+        for (int i = 0; i < fields.size(); ++i) {
+            if (fields[i].fieldNum == fieldNum) {
+                fields.removeAt(i);
+                return;
+            }
+        }
+    }
+
     QString updateCommunityPreferencesHex(const QString &oldHex, bool val) {
         QByteArray data = QByteArray::fromHex(oldHex.toUtf8());
         QMap<int, quint64> fields;
@@ -1526,11 +1638,86 @@ bool Optimizer::getVdfFriendsSettings(const QString &filePath, const QString &ac
         if (!enableStreaming.isEmpty()) {
             settings["EnableStreaming"] = (enableStreaming != "0");
         }
+
+        // Host settings (Advanced Host Options)
+        QString serverConfig = getVdfBlockSetting(filePath, "streaming_v2", "ServerConfigEnabled");
+        if (!serverConfig.isEmpty()) settings["Host_ServerConfigEnabled"] = (serverConfig != "0");
+        
+        QString hostPlayAudio = getVdfBlockSetting(filePath, "streaming_v2", "HostPlayAudio");
+        if (!hostPlayAudio.isEmpty()) settings["Host_PlayAudio"] = (hostPlayAudio != "0");
+
+        QString customDisplayDevice = getVdfBlockSetting(filePath, "streaming_v2", "CustomDisplayDevice");
+        if (!customDisplayDevice.isEmpty()) settings["Host_CustomDisplayDevice"] = customDisplayDevice;
+
+        QString dispRes = getVdfBlockSetting(filePath, "streaming_v2", "DisplayResolutionSetting");
+        if (!dispRes.isEmpty()) settings["Host_DisplayResolutionSetting"] = dispRes.toInt();
+
+        QString dispRefresh = getVdfBlockSetting(filePath, "streaming_v2", "DisplayRefreshRateSetting");
+        if (!dispRefresh.isEmpty()) settings["Host_DisplayRefreshRateSetting"] = dispRefresh.toInt();
+
+        QString dispHDR = getVdfBlockSetting(filePath, "streaming_v2", "DisplayHDRSetting");
+        if (!dispHDR.isEmpty()) settings["Host_DisplayHDRSetting"] = dispHDR.toInt();
+
+        QString nvfbc = getVdfBlockSetting(filePath, "streaming_v2", "EnableCaptureNVFBC");
+        if (!nvfbc.isEmpty()) settings["Host_EnableCaptureNVFBC"] = (nvfbc != "0");
+
+        QString hwEnc = getVdfBlockSetting(filePath, "streaming_v2", "EnableHardwareEncoding");
+        if (!hwEnc.isEmpty()) settings["Host_EnableHardwareEncoding"] = (hwEnc != "0");
+
+        QString threads = getVdfBlockSetting(filePath, "streaming_v2", "SoftwareEncodingThreadCount");
+        if (!threads.isEmpty()) settings["Host_SoftwareEncodingThreadCount"] = threads.toInt();
+
+        QString trafficPriority = getVdfBlockSetting(filePath, "streaming_v2", "EnableTrafficPriority");
+        if (!trafficPriority.isEmpty()) settings["Host_EnableTrafficPriority"] = (trafficPriority != "0");
+
+        // P2P Scope (Allow Direct Connection)
+        QString p2p = getVdfBlockSetting(filePath, "streaming_v2", "P2PScopeV2");
+        if (!p2p.isEmpty()) settings["RemotePlay_P2PScope"] = p2p.toInt();
+
+        // PIN
+        QString pin = getVdfBlockSetting(filePath, "streaming", "PIN");
+        if (!pin.isEmpty()) {
+            settings["RemotePlay_PIN_hash"] = pin;
+            settings["RemotePlay_PIN_enabled"] = true;
+        } else {
+            settings["RemotePlay_PIN_enabled"] = false;
+        }
+        QString pinSize = getVdfBlockSetting(filePath, "streaming", "PINSize");
+        if (!pinSize.isEmpty()) settings["RemotePlay_PINSize"] = pinSize.toInt();
+
+        // Client config (Protobuf)
+        QString clientConfigHex = getVdfBlockSetting(filePath, "streaming_v2", "ClientConfig");
+        if (!clientConfigHex.isEmpty()) {
+            QByteArray clientConfigBytes = QByteArray::fromHex(clientConfigHex.toUtf8());
+            QList<ProtobufField> fields = parseProtobuf(clientConfigBytes);
+            for (const auto &f : fields) {
+                if (f.fieldNum == 1) settings["RemotePlay_VideoQuality"] = int(f.varintVal);
+                else if (f.fieldNum == 2) settings["RemotePlay_ResolutionWidth"] = int(f.varintVal);
+                else if (f.fieldNum == 3) settings["RemotePlay_ResolutionHeight"] = int(f.varintVal);
+                else if (f.fieldNum == 4) settings["RemotePlay_FramerateLimit"] = int(f.varintVal);
+                else if (f.fieldNum == 5) settings["RemotePlay_AudioVolume"] = int(f.varintVal);
+                else if (f.fieldNum == 6) settings["RemotePlay_BandwidthLimit"] = int(f.varintVal);
+                else if (f.fieldNum == 7) settings["RemotePlay_Microphone"] = int(f.varintVal);
+                else if (f.fieldNum == 8) settings["RemotePlay_AudioMode"] = int(f.varintVal);
+                else if (f.fieldNum == 9) settings["RemotePlay_WindowedMode"] = (f.varintVal != 0);
+                else if (f.fieldNum == 10) settings["RemotePlay_HardwareDecoding"] = (f.varintVal != 0);
+                else if (f.fieldNum == 12) settings["RemotePlay_PerformanceOverlay"] = int(f.varintVal);
+                else if (f.fieldNum == 13) settings["RemotePlay_LowLatencyNetworking"] = (f.varintVal != 0);
+                else if (f.fieldNum == 14) settings["RemotePlay_HEVC"] = (f.varintVal != 0);
+                else if (f.fieldNum == 15) settings["RemotePlay_AV1"] = (f.varintVal != 0);
+                else if (f.fieldNum == 16) settings["RemotePlay_ControllerButton"] = QString::fromUtf8(f.bytesVal);
+                else if (f.fieldNum == 19) settings["RemotePlay_ControllerVisibility"] = int(f.varintVal);
+            }
+        }
     }
 
     // 7. music settings (always prioritize native block)
     {
         bool foundMusicSetting = false;
+        bool foundPauseAppSetting = false;
+        bool foundPauseVoiceSetting = false;
+        bool foundVolumeSetting = false;
+
         QString configVdfPath = filePath;
         int userdataIdx = configVdfPath.indexOf("/userdata/", 0, Qt::CaseInsensitive);
         if (userdataIdx == -1) {
@@ -1544,6 +1731,21 @@ bool Optimizer::getVdfFriendsSettings(const QString &filePath, const QString &ac
                     settings["DownloadHighQualityAudio"] = (soundtracksVal != "0");
                     foundMusicSetting = true;
                 }
+                QString pauseAppVal = getVdfBlockSetting(configVdfPath, "Music", "PauseOnAppStartedProcess");
+                if (!pauseAppVal.isEmpty()) {
+                    settings["PauseOnAppStartedProcess"] = (pauseAppVal != "0");
+                    foundPauseAppSetting = true;
+                }
+                QString pauseVoiceVal = getVdfBlockSetting(configVdfPath, "Music", "PauseOnVoiceChat");
+                if (!pauseVoiceVal.isEmpty()) {
+                    settings["PauseOnVoiceChat"] = (pauseVoiceVal != "0");
+                    foundPauseVoiceSetting = true;
+                }
+                QString volVal = getVdfBlockSetting(configVdfPath, "Music", "MusicVolume");
+                if (!volVal.isEmpty()) {
+                    settings["MusicVolume"] = qRound(volVal.toFloat() * 10.0);
+                    foundVolumeSetting = true;
+                }
             }
         }
         if (!foundMusicSetting) {
@@ -1551,6 +1753,34 @@ bool Optimizer::getVdfFriendsSettings(const QString &filePath, const QString &ac
             if (!downloadHighQualityAudio.isEmpty()) {
                 settings["DownloadHighQualityAudio"] = (downloadHighQualityAudio != "0");
             }
+        }
+        if (!foundPauseAppSetting) {
+            QString pauseApp = getVdfBlockSetting(filePath, "Music", "PauseOnAppStartedProcess");
+            if (!pauseApp.isEmpty()) {
+                settings["PauseOnAppStartedProcess"] = (pauseApp != "0");
+            }
+        }
+        if (!foundPauseVoiceSetting) {
+            QString pauseVoice = getVdfBlockSetting(filePath, "Music", "PauseOnVoiceChat");
+            if (!pauseVoice.isEmpty()) {
+                settings["PauseOnVoiceChat"] = (pauseVoice != "0");
+            }
+        }
+        if (!foundVolumeSetting) {
+            QString vol = getVdfBlockSetting(filePath, "Music", "MusicVolume");
+            if (!vol.isEmpty()) {
+                settings["MusicVolume"] = qRound(vol.toFloat() * 10.0);
+            }
+        }
+
+        if (!settings.contains("PauseOnAppStartedProcess")) {
+            settings["PauseOnAppStartedProcess"] = true;
+        }
+        if (!settings.contains("PauseOnVoiceChat")) {
+            settings["PauseOnVoiceChat"] = true;
+        }
+        if (!settings.contains("MusicVolume")) {
+            settings["MusicVolume"] = 10;
         }
     }
 
@@ -1560,13 +1790,60 @@ bool Optimizer::getVdfFriendsSettings(const QString &filePath, const QString &ac
         settings["bNotifyGameAdditions"] = (notifyGameAdditions != "0");
     }
 
+    // 11. broadcast settings
+    {
+        QString perm = getVdfBlockSetting(filePath, "Broadcast", "Permissions");
+        if (!perm.isEmpty()) {
+            settings["BroadcastPermissions"] = perm.toInt();
+        }
+        QString recMic = getVdfBlockSetting(filePath, "Broadcast", "RecordMic");
+        if (!recMic.isEmpty()) {
+            settings["BroadcastRecordMic"] = (recMic != "0");
+        }
+        QString showDebug = getVdfBlockSetting(filePath, "Broadcast", "ShowDebugInfo");
+        if (!showDebug.isEmpty()) {
+            settings["BroadcastShowDebugInfo"] = (showDebug != "0");
+        }
+        QString recSysAudio = getVdfBlockSetting(filePath, "Broadcast", "RecordSystemAudio");
+        if (!recSysAudio.isEmpty()) {
+            settings["BroadcastRecordSystemAudio"] = (recSysAudio != "0");
+        }
+        QString incDesktop = getVdfBlockSetting(filePath, "Broadcast", "IncludeDesktop");
+        if (!incDesktop.isEmpty()) {
+            settings["BroadcastIncludeDesktop"] = (incDesktop != "0");
+        }
+        QString showChat = getVdfBlockSetting(filePath, "Broadcast", "ShowChat");
+        if (!showChat.isEmpty()) {
+            settings["BroadcastShowChat"] = showChat.toInt();
+        }
+        QString encSet = getVdfBlockSetting(filePath, "Broadcast", "EncoderSetting");
+        if (!encSet.isEmpty()) {
+            settings["BroadcastEncoderSetting"] = encSet.toInt();
+        }
+        QString maxKbps = getVdfBlockSetting(filePath, "Broadcast", "MaxKbps");
+        if (!maxKbps.isEmpty()) {
+            settings["BroadcastMaxKbps"] = maxKbps.toInt();
+        }
+        QString outWidth = getVdfBlockSetting(filePath, "Broadcast", "OutputWidth");
+        if (!outWidth.isEmpty()) {
+            settings["BroadcastOutputWidth"] = outWidth.toInt();
+        }
+        QString outHeight = getVdfBlockSetting(filePath, "Broadcast", "OutputHeight");
+        if (!outHeight.isEmpty()) {
+            settings["BroadcastOutputHeight"] = outHeight.toInt();
+        }
+        QString showReminder = getVdfBlockSetting(filePath, "Broadcast", "ShowReminder");
+        if (!showReminder.isEmpty()) {
+            settings["BroadcastShowReminder"] = (showReminder != "0");
+        }
+    }
+
 #ifdef Q_OS_WIN
     // 9. interface settings from Registry
     settings["bGPUAcceleratedRendering"] = readSteamRegistryDword("GPUAccelWebViewsV3", true);
     settings["bHardwareVideoDecoding"] = readSteamRegistryDword("H264HWAccel", true);
     settings["bSmoothScrolling"] = readSteamRegistryDword("SmoothScrollWebViews", true);
     settings["bScaleTextAndIcons"] = readSteamRegistryDword("DPIScaling", true);
-    settings["bStartInBigPicture"] = readSteamRegistryDword("StartupMode", false);
 #endif
 
     // 10. config.vdf loading (downloads & chooser)
@@ -1707,7 +1984,41 @@ bool Optimizer::updateVdfFriendsSettings(const QString &filePath, const QString 
     
     QJsonObject incomingObj = QJsonObject::fromVariantMap(settings);
     incomingObj.remove("DownloadHighQualityAudio");
+    incomingObj.remove("PauseOnAppStartedProcess");
+    incomingObj.remove("PauseOnVoiceChat");
+    incomingObj.remove("MusicVolume");
     incomingObj.remove("EnableStreaming");
+    incomingObj.remove("Host_ServerConfigEnabled");
+    incomingObj.remove("Host_PlayAudio");
+    incomingObj.remove("Host_CustomDisplayDevice");
+    incomingObj.remove("Host_DisplayResolutionSetting");
+    incomingObj.remove("Host_DisplayRefreshRateSetting");
+    incomingObj.remove("Host_DisplayHDRSetting");
+    incomingObj.remove("Host_EnableCaptureNVFBC");
+    incomingObj.remove("Host_EnableHardwareEncoding");
+    incomingObj.remove("Host_SoftwareEncodingThreadCount");
+    incomingObj.remove("Host_EnableTrafficPriority");
+    incomingObj.remove("RemotePlay_P2PScope");
+    incomingObj.remove("RemotePlay_PIN");
+    incomingObj.remove("RemotePlay_PINSize");
+    incomingObj.remove("RemotePlay_PIN_hash");
+    incomingObj.remove("RemotePlay_PIN_enabled");
+    incomingObj.remove("RemotePlay_VideoQuality");
+    incomingObj.remove("RemotePlay_ResolutionWidth");
+    incomingObj.remove("RemotePlay_ResolutionHeight");
+    incomingObj.remove("RemotePlay_FramerateLimit");
+    incomingObj.remove("RemotePlay_AudioVolume");
+    incomingObj.remove("RemotePlay_BandwidthLimit");
+    incomingObj.remove("RemotePlay_Microphone");
+    incomingObj.remove("RemotePlay_AudioMode");
+    incomingObj.remove("RemotePlay_WindowedMode");
+    incomingObj.remove("RemotePlay_HardwareDecoding");
+    incomingObj.remove("RemotePlay_PerformanceOverlay");
+    incomingObj.remove("RemotePlay_LowLatencyNetworking");
+    incomingObj.remove("RemotePlay_HEVC");
+    incomingObj.remove("RemotePlay_AV1");
+    incomingObj.remove("RemotePlay_ControllerButton");
+    incomingObj.remove("RemotePlay_ControllerVisibility");
     incomingObj.remove("noiseGateLevel");
     incomingObj.remove("echoCancellation");
     incomingObj.remove("noiseCancellation");
@@ -1726,6 +2037,17 @@ bool Optimizer::updateVdfFriendsSettings(const QString &filePath, const QString 
     incomingObj.remove("bLibraryDisplayGameIconsInSidebar");
     incomingObj.remove("bLibraryReadyToPlayIncludesStreaming");
     incomingObj.remove("bLibraryShowSteamDeckCompatibility");
+    incomingObj.remove("BroadcastPermissions");
+    incomingObj.remove("BroadcastRecordMic");
+    incomingObj.remove("BroadcastShowDebugInfo");
+    incomingObj.remove("BroadcastRecordSystemAudio");
+    incomingObj.remove("BroadcastIncludeDesktop");
+    incomingObj.remove("BroadcastShowChat");
+    incomingObj.remove("BroadcastEncoderSetting");
+    incomingObj.remove("BroadcastMaxKbps");
+    incomingObj.remove("BroadcastOutputWidth");
+    incomingObj.remove("BroadcastOutputHeight");
+    incomingObj.remove("BroadcastShowReminder");
     
     for (auto it = incomingObj.constBegin(); it != incomingObj.constEnd(); ++it) {
         friendsObj[it.key()] = it.value();
@@ -1901,6 +2223,128 @@ bool Optimizer::updateVdfFriendsSettings(const QString &filePath, const QString 
     if (settings.contains("EnableStreaming")) {
         updateVdfBlockSetting(filePath, "streaming_v2", "EnableStreaming", settings.value("EnableStreaming").toBool() ? "1" : "0");
     }
+    if (settings.contains("Host_ServerConfigEnabled")) {
+        updateVdfBlockSetting(filePath, "streaming_v2", "ServerConfigEnabled", settings.value("Host_ServerConfigEnabled").toBool() ? "1" : "0");
+    }
+    if (settings.contains("Host_PlayAudio")) {
+        updateVdfBlockSetting(filePath, "streaming_v2", "HostPlayAudio", settings.value("Host_PlayAudio").toBool() ? "1" : "0");
+    }
+    if (settings.contains("Host_CustomDisplayDevice")) {
+        updateVdfBlockSetting(filePath, "streaming_v2", "CustomDisplayDevice", settings.value("Host_CustomDisplayDevice").toString());
+    }
+    if (settings.contains("Host_DisplayResolutionSetting")) {
+        updateVdfBlockSetting(filePath, "streaming_v2", "DisplayResolutionSetting", QString::number(settings.value("Host_DisplayResolutionSetting").toInt()));
+    }
+    if (settings.contains("Host_DisplayRefreshRateSetting")) {
+        updateVdfBlockSetting(filePath, "streaming_v2", "DisplayRefreshRateSetting", QString::number(settings.value("Host_DisplayRefreshRateSetting").toInt()));
+    }
+    if (settings.contains("Host_DisplayHDRSetting")) {
+        updateVdfBlockSetting(filePath, "streaming_v2", "DisplayHDRSetting", QString::number(settings.value("Host_DisplayHDRSetting").toInt()));
+    }
+    if (settings.contains("Host_EnableCaptureNVFBC")) {
+        updateVdfBlockSetting(filePath, "streaming_v2", "EnableCaptureNVFBC", settings.value("Host_EnableCaptureNVFBC").toBool() ? "1" : "0");
+    }
+    if (settings.contains("Host_EnableHardwareEncoding")) {
+        updateVdfBlockSetting(filePath, "streaming_v2", "EnableHardwareEncoding", settings.value("Host_EnableHardwareEncoding").toBool() ? "1" : "0");
+    }
+    if (settings.contains("Host_SoftwareEncodingThreadCount")) {
+        updateVdfBlockSetting(filePath, "streaming_v2", "SoftwareEncodingThreadCount", QString::number(settings.value("Host_SoftwareEncodingThreadCount").toInt()));
+    }
+    if (settings.contains("Host_EnableTrafficPriority")) {
+        updateVdfBlockSetting(filePath, "streaming_v2", "EnableTrafficPriority", settings.value("Host_EnableTrafficPriority").toBool() ? "1" : "0");
+    }
+    if (settings.contains("RemotePlay_P2PScope")) {
+        updateVdfBlockSetting(filePath, "streaming_v2", "P2PScopeV2", QString::number(settings.value("RemotePlay_P2PScope").toInt()));
+    }
+    if (settings.contains("RemotePlay_PIN")) {
+        QString rawPin = settings.value("RemotePlay_PIN").toString();
+        if (!rawPin.isEmpty()) {
+            QByteArray hash = QCryptographicHash::hash(rawPin.toUtf8(), QCryptographicHash::Md5);
+            updateVdfBlockSetting(filePath, "streaming", "PIN", QString::fromUtf8(hash.toHex()));
+            updateVdfBlockSetting(filePath, "streaming", "PINSize", QString::number(rawPin.length()));
+        } else {
+            updateVdfBlockSetting(filePath, "streaming", "PIN", "");
+            updateVdfBlockSetting(filePath, "streaming", "PINSize", "0");
+        }
+    }
+
+    // Client config protobuf update
+    bool updateClient = false;
+    QList<int> clientKeys = {
+        1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 12, 13, 14, 15, 16, 19
+    };
+    for (int k : clientKeys) {
+        QString sKey;
+        if (k == 1) sKey = "RemotePlay_VideoQuality";
+        else if (k == 2) sKey = "RemotePlay_ResolutionWidth";
+        else if (k == 3) sKey = "RemotePlay_ResolutionHeight";
+        else if (k == 4) sKey = "RemotePlay_FramerateLimit";
+        else if (k == 5) sKey = "RemotePlay_AudioVolume";
+        else if (k == 6) sKey = "RemotePlay_BandwidthLimit";
+        else if (k == 7) sKey = "RemotePlay_Microphone";
+        else if (k == 8) sKey = "RemotePlay_AudioMode";
+        else if (k == 9) sKey = "RemotePlay_WindowedMode";
+        else if (k == 10) sKey = "RemotePlay_HardwareDecoding";
+        else if (k == 12) sKey = "RemotePlay_PerformanceOverlay";
+        else if (k == 13) sKey = "RemotePlay_LowLatencyNetworking";
+        else if (k == 14) sKey = "RemotePlay_HEVC";
+        else if (k == 15) sKey = "RemotePlay_AV1";
+        else if (k == 16) sKey = "RemotePlay_ControllerButton";
+        else if (k == 19) sKey = "RemotePlay_ControllerVisibility";
+
+        if (settings.contains(sKey)) {
+            updateClient = true;
+        }
+    }
+
+    if (updateClient) {
+        QString oldHex = getVdfBlockSetting(filePath, "streaming_v2", "ClientConfig");
+        QByteArray clientConfigBytes = QByteArray::fromHex(oldHex.toUtf8());
+        QList<ProtobufField> fields = parseProtobuf(clientConfigBytes);
+
+        if (settings.contains("RemotePlay_VideoQuality")) setOrUpdateFieldVarint(fields, 1, settings.value("RemotePlay_VideoQuality").toUInt());
+        
+        if (settings.contains("RemotePlay_ResolutionWidth") && settings.contains("RemotePlay_ResolutionHeight")) {
+            quint64 w = settings.value("RemotePlay_ResolutionWidth").toUInt();
+            quint64 h = settings.value("RemotePlay_ResolutionHeight").toUInt();
+            if (w == 0 || h == 0) {
+                removeField(fields, 2);
+                removeField(fields, 3);
+            } else {
+                setOrUpdateFieldVarint(fields, 2, w);
+                setOrUpdateFieldVarint(fields, 3, h);
+            }
+        }
+        
+        if (settings.contains("RemotePlay_FramerateLimit")) {
+            quint64 limit = settings.value("RemotePlay_FramerateLimit").toUInt();
+            if (limit == 0) removeField(fields, 4);
+            else setOrUpdateFieldVarint(fields, 4, limit);
+        }
+        
+        if (settings.contains("RemotePlay_AudioVolume")) setOrUpdateFieldVarint(fields, 5, settings.value("RemotePlay_AudioVolume").toUInt());
+        
+        if (settings.contains("RemotePlay_BandwidthLimit")) {
+            quint64 limit = settings.value("RemotePlay_BandwidthLimit").toUInt();
+            if (limit == 0) removeField(fields, 6);
+            else setOrUpdateFieldVarint(fields, 6, limit);
+        }
+        
+        if (settings.contains("RemotePlay_Microphone")) setOrUpdateFieldVarint(fields, 7, settings.value("RemotePlay_Microphone").toUInt());
+        if (settings.contains("RemotePlay_AudioMode")) setOrUpdateFieldVarint(fields, 8, settings.value("RemotePlay_AudioMode").toUInt());
+        if (settings.contains("RemotePlay_WindowedMode")) setOrUpdateFieldVarint(fields, 9, settings.value("RemotePlay_WindowedMode").toBool() ? 1 : 0);
+        if (settings.contains("RemotePlay_HardwareDecoding")) setOrUpdateFieldVarint(fields, 10, settings.value("RemotePlay_HardwareDecoding").toBool() ? 1 : 0);
+        if (settings.contains("RemotePlay_PerformanceOverlay")) setOrUpdateFieldVarint(fields, 12, settings.value("RemotePlay_PerformanceOverlay").toUInt());
+        if (settings.contains("RemotePlay_LowLatencyNetworking")) setOrUpdateFieldVarint(fields, 13, settings.value("RemotePlay_LowLatencyNetworking").toBool() ? 1 : 0);
+        if (settings.contains("RemotePlay_HEVC")) setOrUpdateFieldVarint(fields, 14, settings.value("RemotePlay_HEVC").toBool() ? 1 : 0);
+        if (settings.contains("RemotePlay_AV1")) setOrUpdateFieldVarint(fields, 15, settings.value("RemotePlay_AV1").toBool() ? 1 : 0);
+        if (settings.contains("RemotePlay_ControllerButton")) setOrUpdateFieldString(fields, 16, settings.value("RemotePlay_ControllerButton").toString());
+        if (settings.contains("RemotePlay_ControllerVisibility")) setOrUpdateFieldVarint(fields, 19, settings.value("RemotePlay_ControllerVisibility").toUInt());
+
+        QByteArray newBytes = serializeProtobuf(fields);
+        updateVdfBlockSetting(filePath, "streaming_v2", "ClientConfig", QString::fromUtf8(newBytes.toHex()));
+        updateVdfBlockSetting(filePath, "streaming_v2", "ClientConfigEnabled", "1");
+    }
     if (settings.contains("DownloadHighQualityAudio")) {
         // Update localconfig.vdf (filePath)
         updateVdfBlockSetting(filePath, "Music", "DownloadHighQualityAudio", settings.value("DownloadHighQualityAudio").toBool() ? "1" : "0");
@@ -1915,6 +2359,50 @@ bool Optimizer::updateVdfFriendsSettings(const QString &filePath, const QString 
             configVdfPath = configVdfPath.left(userdataIdx) + "/config/config.vdf";
             if (QFile::exists(configVdfPath)) {
                 updateVdfBlockSetting(configVdfPath, "Music", "DownloadHighQualityAudioSoundtracks", settings.value("DownloadHighQualityAudio").toBool() ? "1" : "0");
+            }
+        }
+    }
+    if (settings.contains("PauseOnAppStartedProcess")) {
+        updateVdfBlockSetting(filePath, "Music", "PauseOnAppStartedProcess", settings.value("PauseOnAppStartedProcess").toBool() ? "1" : "0");
+        QString configVdfPath = filePath;
+        int userdataIdx = configVdfPath.indexOf("/userdata/", 0, Qt::CaseInsensitive);
+        if (userdataIdx == -1) {
+            userdataIdx = configVdfPath.indexOf("\\userdata\\", 0, Qt::CaseInsensitive);
+        }
+        if (userdataIdx != -1) {
+            configVdfPath = configVdfPath.left(userdataIdx) + "/config/config.vdf";
+            if (QFile::exists(configVdfPath)) {
+                updateVdfBlockSetting(configVdfPath, "Music", "PauseOnAppStartedProcess", settings.value("PauseOnAppStartedProcess").toBool() ? "1" : "0");
+            }
+        }
+    }
+    if (settings.contains("PauseOnVoiceChat")) {
+        updateVdfBlockSetting(filePath, "Music", "PauseOnVoiceChat", settings.value("PauseOnVoiceChat").toBool() ? "1" : "0");
+        QString configVdfPath = filePath;
+        int userdataIdx = configVdfPath.indexOf("/userdata/", 0, Qt::CaseInsensitive);
+        if (userdataIdx == -1) {
+            userdataIdx = configVdfPath.indexOf("\\userdata\\", 0, Qt::CaseInsensitive);
+        }
+        if (userdataIdx != -1) {
+            configVdfPath = configVdfPath.left(userdataIdx) + "/config/config.vdf";
+            if (QFile::exists(configVdfPath)) {
+                updateVdfBlockSetting(configVdfPath, "Music", "PauseOnVoiceChat", settings.value("PauseOnVoiceChat").toBool() ? "1" : "0");
+            }
+        }
+    }
+    if (settings.contains("MusicVolume")) {
+        double volFloat = settings.value("MusicVolume").toDouble() / 10.0;
+        QString volStr = QString::number(volFloat, 'f', 6);
+        updateVdfBlockSetting(filePath, "Music", "MusicVolume", volStr);
+        QString configVdfPath = filePath;
+        int userdataIdx = configVdfPath.indexOf("/userdata/", 0, Qt::CaseInsensitive);
+        if (userdataIdx == -1) {
+            userdataIdx = configVdfPath.indexOf("\\userdata\\", 0, Qt::CaseInsensitive);
+        }
+        if (userdataIdx != -1) {
+            configVdfPath = configVdfPath.left(userdataIdx) + "/config/config.vdf";
+            if (QFile::exists(configVdfPath)) {
+                updateVdfBlockSetting(configVdfPath, "Music", "MusicVolume", volStr);
             }
         }
     }
@@ -2058,9 +2546,6 @@ bool Optimizer::updateVdfFriendsSettings(const QString &filePath, const QString 
     }
     if (settings.contains("bScaleTextAndIcons")) {
         writeSteamRegistryDword("DPIScaling", settings.value("bScaleTextAndIcons").toBool());
-    }
-    if (settings.contains("bStartInBigPicture")) {
-        writeSteamRegistryDword("StartupMode", settings.value("bStartInBigPicture").toBool());
     }
 #endif
 
@@ -2226,6 +2711,41 @@ bool Optimizer::updateVdfFriendsSettings(const QString &filePath, const QString 
                 }
             }
         }
+    }
+
+    // 12. broadcast settings
+    if (settings.contains("BroadcastPermissions")) {
+        updateVdfBlockSetting(filePath, "Broadcast", "Permissions", QString::number(settings.value("BroadcastPermissions").toInt()));
+    }
+    if (settings.contains("BroadcastRecordMic")) {
+        updateVdfBlockSetting(filePath, "Broadcast", "RecordMic", settings.value("BroadcastRecordMic").toBool() ? "1" : "0");
+    }
+    if (settings.contains("BroadcastShowDebugInfo")) {
+        updateVdfBlockSetting(filePath, "Broadcast", "ShowDebugInfo", settings.value("BroadcastShowDebugInfo").toBool() ? "1" : "0");
+    }
+    if (settings.contains("BroadcastRecordSystemAudio")) {
+        updateVdfBlockSetting(filePath, "Broadcast", "RecordSystemAudio", settings.value("BroadcastRecordSystemAudio").toBool() ? "1" : "0");
+    }
+    if (settings.contains("BroadcastIncludeDesktop")) {
+        updateVdfBlockSetting(filePath, "Broadcast", "IncludeDesktop", settings.value("BroadcastIncludeDesktop").toBool() ? "1" : "0");
+    }
+    if (settings.contains("BroadcastShowChat")) {
+        updateVdfBlockSetting(filePath, "Broadcast", "ShowChat", QString::number(settings.value("BroadcastShowChat").toInt()));
+    }
+    if (settings.contains("BroadcastEncoderSetting")) {
+        updateVdfBlockSetting(filePath, "Broadcast", "EncoderSetting", QString::number(settings.value("BroadcastEncoderSetting").toInt()));
+    }
+    if (settings.contains("BroadcastMaxKbps")) {
+        updateVdfBlockSetting(filePath, "Broadcast", "MaxKbps", QString::number(settings.value("BroadcastMaxKbps").toInt()));
+    }
+    if (settings.contains("BroadcastOutputWidth")) {
+        updateVdfBlockSetting(filePath, "Broadcast", "OutputWidth", QString::number(settings.value("BroadcastOutputWidth").toInt()));
+    }
+    if (settings.contains("BroadcastOutputHeight")) {
+        updateVdfBlockSetting(filePath, "Broadcast", "OutputHeight", QString::number(settings.value("BroadcastOutputHeight").toInt()));
+    }
+    if (settings.contains("BroadcastShowReminder")) {
+        updateVdfBlockSetting(filePath, "Broadcast", "ShowReminder", settings.value("BroadcastShowReminder").toBool() ? "1" : "0");
     }
 
     return true;
@@ -5104,12 +5624,58 @@ void Optimizer::loadSystemStates() {
     defaultFriendsSettings["autoGainControl"] = true;
     defaultFriendsSettings["EnableStreaming"] = true;
     defaultFriendsSettings["DownloadHighQualityAudio"] = false;
+    defaultFriendsSettings["PauseOnAppStartedProcess"] = true;
+    defaultFriendsSettings["PauseOnVoiceChat"] = true;
+    defaultFriendsSettings["MusicVolume"] = 10;
     defaultFriendsSettings["bAskAccountOnStart"] = false;
-    defaultFriendsSettings["bStartInBigPicture"] = false;
     defaultFriendsSettings["bSmoothScrolling"] = true;
     defaultFriendsSettings["bGPUAcceleratedRendering"] = true;
     defaultFriendsSettings["bHardwareVideoDecoding"] = true;
     defaultFriendsSettings["bNotifyGameAdditions"] = true;
+
+    // Broadcast defaults
+    defaultFriendsSettings["BroadcastPermissions"] = 1;
+    defaultFriendsSettings["BroadcastRecordMic"] = false;
+    defaultFriendsSettings["BroadcastShowDebugInfo"] = false;
+    defaultFriendsSettings["BroadcastRecordSystemAudio"] = false;
+    defaultFriendsSettings["BroadcastIncludeDesktop"] = false;
+    defaultFriendsSettings["BroadcastShowChat"] = 3;
+    defaultFriendsSettings["BroadcastEncoderSetting"] = 0;
+    defaultFriendsSettings["BroadcastMaxKbps"] = 1000;
+    defaultFriendsSettings["BroadcastOutputWidth"] = 854;
+    defaultFriendsSettings["BroadcastOutputHeight"] = 480;
+    defaultFriendsSettings["BroadcastShowReminder"] = false;
+
+    // Remote Play defaults
+    defaultFriendsSettings["Host_ServerConfigEnabled"] = false;
+    defaultFriendsSettings["Host_PlayAudio"] = true;
+    defaultFriendsSettings["Host_CustomDisplayDevice"] = "";
+    defaultFriendsSettings["Host_DisplayResolutionSetting"] = 0;
+    defaultFriendsSettings["Host_DisplayRefreshRateSetting"] = 0;
+    defaultFriendsSettings["Host_DisplayHDRSetting"] = 0;
+    defaultFriendsSettings["Host_EnableCaptureNVFBC"] = true;
+    defaultFriendsSettings["Host_EnableHardwareEncoding"] = true;
+    defaultFriendsSettings["Host_SoftwareEncodingThreadCount"] = -1;
+    defaultFriendsSettings["Host_EnableTrafficPriority"] = true;
+    defaultFriendsSettings["RemotePlay_P2PScope"] = 2;
+    defaultFriendsSettings["RemotePlay_PIN_enabled"] = false;
+    defaultFriendsSettings["RemotePlay_PINSize"] = 0;
+    defaultFriendsSettings["RemotePlay_VideoQuality"] = 2;
+    defaultFriendsSettings["RemotePlay_ResolutionWidth"] = 0;
+    defaultFriendsSettings["RemotePlay_ResolutionHeight"] = 0;
+    defaultFriendsSettings["RemotePlay_FramerateLimit"] = 0;
+    defaultFriendsSettings["RemotePlay_AudioVolume"] = 100;
+    defaultFriendsSettings["RemotePlay_BandwidthLimit"] = 0;
+    defaultFriendsSettings["RemotePlay_Microphone"] = 0;
+    defaultFriendsSettings["RemotePlay_AudioMode"] = 1;
+    defaultFriendsSettings["RemotePlay_WindowedMode"] = false;
+    defaultFriendsSettings["RemotePlay_HardwareDecoding"] = true;
+    defaultFriendsSettings["RemotePlay_PerformanceOverlay"] = 0;
+    defaultFriendsSettings["RemotePlay_LowLatencyNetworking"] = true;
+    defaultFriendsSettings["RemotePlay_HEVC"] = true;
+    defaultFriendsSettings["RemotePlay_AV1"] = true;
+    defaultFriendsSettings["RemotePlay_ControllerButton"] = "guide";
+    defaultFriendsSettings["RemotePlay_ControllerVisibility"] = 2;
 
     m_steamFriendsSettings.clear();
     if (m_steamInstalled) {
