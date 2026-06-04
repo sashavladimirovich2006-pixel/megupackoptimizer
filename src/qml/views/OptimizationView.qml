@@ -36337,6 +36337,9 @@ Item {
             function onIsOptimizingSystemChanged(val) {
                 if (val) {
                     // Capture changes count before baselines are synced by C++
+                    window.optimizationPercentageBeforeRun = window.optimizationPercentage;
+                    window.showDelta = false;
+
                     progressOverlay.settingsAppliedCount = root.mainChangesCount + root.sidebarChangesCount;
                     
                     var svcCount = 0;
@@ -36377,6 +36380,9 @@ Item {
                     progressOverlay.completedProgress = 0.0;
                     progressOverlay.showFinishedOverlay = true;
                 } else {
+                    var delta = window.optimizationPercentage - window.optimizationPercentageBeforeRun;
+                    window.optimizationDelta = delta;
+                    window.showDelta = true;
                     completedProgressAnim.start();
                 }
             }
@@ -36556,7 +36562,7 @@ Item {
                                         radiusX: 75
                                         radiusY: 75
                                         startAngle: -210
-                                        sweepAngle: 240 * progressOverlay.completedProgress
+                                        sweepAngle: (240 * (window.optimizationPercentage / 100)) * progressOverlay.completedProgress
                                     }
                                 }
                             }
@@ -36566,18 +36572,32 @@ Item {
                                 anchors.centerIn: parent
                                 spacing: 2
 
-                                Text {
-                                    text: "+" + Math.round(progressOverlay.completedProgress * (progressOverlay.totalTasksCount > 0 ? Math.min(progressOverlay.totalTasksCount * 2 + 10, 45) : 25)) + "%"
-                                    color: "#FFFFFF"
-                                    font.family: Theme.fontFamily
-                                    font.pixelSize: 28
-                                    font.bold: true
-                                    horizontalAlignment: Text.AlignHCenter
+                                Row {
                                     anchors.horizontalCenter: parent.horizontalCenter
+                                    spacing: 4
+                                    
+                                    Text {
+                                        text: Math.round(progressOverlay.completedProgress * window.optimizationPercentage) + "%"
+                                        color: "#FFFFFF"
+                                        font.family: Theme.fontFamily
+                                        font.pixelSize: 28
+                                        font.bold: true
+                                    }
+                                    
+                                    Text {
+                                        visible: window.showDelta && window.optimizationDelta !== 0
+                                        text: (window.optimizationDelta > 0 ? "+" : "") + window.optimizationDelta + "%"
+                                        color: window.optimizationDelta > 0 ? Theme.success : Theme.error
+                                        font.family: Theme.fontFamily
+                                        font.pixelSize: 12
+                                        font.bold: true
+                                        anchors.bottom: parent.bottom
+                                        anchors.bottomMargin: 4
+                                    }
                                 }
 
                                 Text {
-                                    text: qsTr("PERFORMANCE")
+                                    text: qsTr("OPTIMIZATION")
                                     color: Theme.accent
                                     font.family: Theme.fontFamily
                                     font.pixelSize: 10
@@ -36588,7 +36608,7 @@ Item {
                                 }
 
                                 Text {
-                                    text: qsTr("EST. BOOST")
+                                    text: qsTr("CURRENT LEVEL")
                                     color: Theme.textMuted
                                     font.family: Theme.fontFamily
                                     font.pixelSize: 8
