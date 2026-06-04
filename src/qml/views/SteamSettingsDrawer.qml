@@ -7916,27 +7916,33 @@ Item {
                     }
 
                     // 4 Styled digit boxes
-                    Row {
-                        spacing: 12
+                    Item {
+                        width: digitsRow.width
+                        height: 54
                         anchors.horizontalCenter: parent.horizontalCenter
 
-                        Repeater {
-                            model: 4
-                            delegate: Rectangle {
-                                width: 54
-                                height: 54
-                                radius: 8
-                                color: "#08FFFFFF"
-                                border.color: pinTextInput.activeFocus && pinTextInput.text.length === index ? Theme.accent : Theme.border
-                                border.width: 1
+                        Row {
+                            id: digitsRow
+                            spacing: 12
 
-                                Text {
-                                    text: pinTextInput.text.length > index ? pinTextInput.text.charAt(index) : ""
-                                    color: Theme.textPrimary
-                                    font.family: Theme.fontFamily
-                                    font.pixelSize: 22
-                                    font.bold: true
-                                    anchors.centerIn: parent
+                            Repeater {
+                                model: 4
+                                delegate: Rectangle {
+                                    width: 54
+                                    height: 54
+                                    radius: 8
+                                    color: "#08FFFFFF"
+                                    border.color: pinTextInput.activeFocus && pinTextInput.text.length === index ? Theme.accent : Theme.border
+                                    border.width: 1
+
+                                    Text {
+                                        text: pinTextInput.text.length > index ? pinTextInput.text.charAt(index) : ""
+                                        color: Theme.textPrimary
+                                        font.family: Theme.fontFamily
+                                        font.pixelSize: 22
+                                        font.bold: true
+                                        anchors.centerIn: parent
+                                    }
                                 }
                             }
                         }
