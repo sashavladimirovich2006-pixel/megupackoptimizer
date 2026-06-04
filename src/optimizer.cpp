@@ -110,6 +110,94 @@ namespace {
         return list;
     }
 
+    QVariantList parseLocalConfigDevices(const QString &filePath) {
+        QVariantList list;
+        QFile file(filePath);
+        if (!file.open(QIODevice::ReadOnly | QIODevice::Text)) {
+            return list;
+        }
+        QTextStream in(&file);
+        int state = 0; // 0 = searching for "streaming", 1 = inside streaming, 2 = inside Devices, 3 = inside a device block
+        int braceLevel = 0;
+        int streamingBraceLevel = -1;
+        int devicesBraceLevel = -1;
+        int deviceBraceLevel = -1;
+        
+        QString currentDeviceId = "";
+        QVariantMap currentDevice;
+        
+        while (!in.atEnd()) {
+            QString line = in.readLine().trimmed();
+            if (line.isEmpty()) continue;
+            
+            if (line == "{") {
+                braceLevel++;
+                continue;
+            }
+            if (line == "}") {
+                braceLevel--;
+                if (state == 3 && braceLevel < deviceBraceLevel) {
+                    if (!currentDeviceId.isEmpty()) {
+                        currentDevice["id"] = currentDeviceId;
+                        list.append(currentDevice);
+                        currentDevice.clear();
+                        currentDeviceId.clear();
+                    }
+                    state = 2;
+                    deviceBraceLevel = -1;
+                } else if (state == 2 && braceLevel < devicesBraceLevel) {
+                    state = 1;
+                    devicesBraceLevel = -1;
+                } else if (state == 1 && braceLevel < streamingBraceLevel) {
+                    state = 0;
+                    streamingBraceLevel = -1;
+                }
+                continue;
+            }
+            
+            QStringList tokens;
+            int lastQuoteIdx = -1;
+            for (int i = 0; i < line.length(); ++i) {
+                if (line.at(i) == '"') {
+                    if (lastQuoteIdx == -1) {
+                        lastQuoteIdx = i;
+                    } else {
+                        tokens.append(line.mid(lastQuoteIdx + 1, i - lastQuoteIdx - 1));
+                        lastQuoteIdx = -1;
+                    }
+                }
+            }
+            if (tokens.isEmpty()) continue;
+            
+            QString key = tokens[0];
+            
+            if (state == 0) {
+                if (key.compare("streaming", Qt::CaseInsensitive) == 0 || key.compare("streaming_v2", Qt::CaseInsensitive) == 0) {
+                    state = 1;
+                    streamingBraceLevel = braceLevel + 1;
+                }
+            } else if (state == 1) {
+                if (key.compare("Devices", Qt::CaseInsensitive) == 0) {
+                    state = 2;
+                    devicesBraceLevel = braceLevel + 1;
+                }
+            } else if (state == 2) {
+                currentDeviceId = key;
+                state = 3;
+                deviceBraceLevel = braceLevel + 1;
+                currentDevice.clear();
+            } else if (state == 3) {
+                if (tokens.size() >= 2) {
+                    QString val = tokens[1];
+                    if (key.compare("DeviceName", Qt::CaseInsensitive) == 0) {
+                        currentDevice["hostname"] = val;
+                    }
+                }
+            }
+        }
+        return list;
+    }
+
     bool unpairRemoteClient(const QString &filePath, const QString &clientId) {
         QFile file(filePath);
         if (!file.open(QIODevice::ReadOnly | QIODevice::Text)) {
@@ -1825,6 +1913,7 @@ bool Optimizer::getVdfFriendsSettings(const QString &filePath, const QString &ac
                 else if (f.fieldNum == 19) settings["RemotePlay_ControllerVisibility"] = int(f.varintVal);
             }
         }
+        QVariantList devices = parseLocalConfigDevices(filePath);
         int userdataIdx = filePath.indexOf("/userdata/", 0, Qt::CaseInsensitive);
         if (userdataIdx == -1) {
             userdataIdx = filePath.indexOf("\\userdata\\", 0, Qt::CaseInsensitive);
@@ -1832,9 +1921,24 @@ bool Optimizer::getVdfFriendsSettings(const QString &filePath, const QString &ac
         if (userdataIdx != -1) {
             QString remoteClientsPath = filePath.left(userdataIdx) + "/config/remoteclients.vdf";
             if (QFile::exists(remoteClientsPath)) {
-                settings["RemotePlay_Devices"] = parseRemoteClients(remoteClientsPath);
+                QVariantList activeClients = parseRemoteClients(remoteClientsPath);
+                for (const QVariant &clientVar : activeClients) {
+                    QVariantMap clientMap = clientVar.toMap();
+                    QString clientId = clientMap.value("id").toString();
+                    bool exists = false;
+                    for (const QVariant &dVar : devices) {
+                        if (dVar.toMap().value("id").toString() == clientId) {
+                            exists = true;
+                            break;
+                        }
+                    }
+                    if (!exists) {
+                        devices.append(clientMap);
+                    }
+                }
             }
         }
+        settings["RemotePlay_Devices"] = devices;
     }
 
     // 7. music settings (always prioritize native block)
@@ -12447,18 +12551,39 @@ bool Optimizer::unpairSteamDevice(const QString &deviceId) {
         Logger::log("unpairSteamDevice: Steam path is invalid or does not exist", "WARNING");
         return false;
     }
+    
+    bool anySuccess = false;
+    
+    // 1. Try remoteclients.vdf
     QString remoteClientsPath = path + "/config/remoteclients.vdf";
-    if (!QFile::exists(remoteClientsPath)) {
-        Logger::log("unpairSteamDevice: remoteclients.vdf not found at: " + remoteClientsPath, "WARNING");
-        return false;
+    if (QFile::exists(remoteClientsPath)) {
+        if (unpairRemoteClient(remoteClientsPath, deviceId)) {
+            Logger::log("unpairSteamDevice: Unpaired device from remoteclients.vdf", "INFO");
+            anySuccess = true;
+        }
     }
-    bool success = unpairRemoteClient(remoteClientsPath, deviceId);
-    if (success) {
-        Logger::log("unpairSteamDevice: Successfully unpaired device ID: " + deviceId, "INFO");
+    
+    // 2. Try all localconfig.vdf files in userdata
+    QString userdataPath = path + "/userdata";
+    QDir userdataDir(userdataPath);
+    if (userdataDir.exists()) {
+        QStringList subdirs = userdataDir.entryList(QDir::Dirs | QDir::NoDotAndDotDot);
+        for (const QString &subdir : subdirs) {
+            QString vdfPath = userdataPath + "/" + subdir + "/config/localconfig.vdf";
+            if (QFile::exists(vdfPath)) {
+                if (unpairRemoteClient(vdfPath, deviceId)) {
+                    Logger::log("unpairSteamDevice: Unpaired device from localconfig.vdf for user: " + subdir, "INFO");
+                    anySuccess = true;
+                }
+            }
+        }
+    }
+    
+    if (anySuccess) {
         loadSystemStates();
         return true;
     } else {
-        Logger::log("unpairSteamDevice: Failed to unpair device ID: " + deviceId, "WARNING");
+        Logger::log("unpairSteamDevice: Failed to unpair device ID " + deviceId + " from any configs", "WARNING");
         return false;
     }
 }
