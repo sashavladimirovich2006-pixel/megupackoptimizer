@@ -648,6 +648,11 @@ public:
     Q_INVOKABLE void restartExplorer();
     Q_INVOKABLE void restartGraphicsDriver();
     Q_INVOKABLE void rebuildIconCache();
+    Q_INVOKABLE bool cleanStorage();
+    Q_INVOKABLE bool cleanFileExplorer();
+    Q_INVOKABLE bool cleanMicrosoftStore();
+    Q_INVOKABLE bool cleanNetwork();
+    Q_INVOKABLE bool cleanSystemRestore();
     Q_INVOKABLE void runMemoryDiagnostic();
     Q_INVOKABLE void runSleepingPillScan();
     Q_INVOKABLE void runRepairScan(bool runDism, bool runSfc, bool runChkdsk);

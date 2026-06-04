@@ -65,8 +65,12 @@ qt_add_qml_module(megu_pack_optimizer
         src/qml/views/HealthDrawer.qml
         src/qml/views/SleepingPillDrawer.qml
         src/qml/views/RepairDrawer.qml
+        src/qml/views/CleanupDrawer.qml
     RESOURCES
         src/resources/settings.svg
+        src/resources/trash.svg
+        src/resources/broom.svg
+        src/resources/reset.svg
         src/resources/steam.svg
         src/resources/development.svg
         src/resources/folder.svg

@@ -31695,6 +31695,119 @@ Item {
 
 
 
+                // Cleanup Card
+                AcrylicPanel {
+                    id: cleanupPanel
+                    width: parent.width
+                    height: 104
+
+                    Row {
+                        anchors.left: parent.left
+                        anchors.leftMargin: 16
+                        anchors.verticalCenter: parent.verticalCenter
+                        spacing: 12
+
+                        // Rounded square badge
+                        Rectangle {
+                            width: 40
+                            height: 40
+                            radius: 10
+                            color: Qt.rgba(Theme.accent.r, Theme.accent.g, Theme.accent.b, 0.15)
+                            anchors.verticalCenter: parent.verticalCenter
+                            Item {
+                                width: 20
+                                height: 20
+                                anchors.centerIn: parent
+                                Image {
+                                    id: cleanupIconImg
+                                    source: "qrc:/MeguPackOptimizer/src/resources/broom.svg"
+                                    anchors.fill: parent
+                                    sourceSize.width: 20
+                                    sourceSize.height: 20
+                                    visible: false
+                                }
+                                ColorOverlay {
+                                    anchors.fill: cleanupIconImg
+                                    source: cleanupIconImg
+                                    color: Theme.accent
+                                }
+                            }
+                        }
+
+                        Column {
+                            anchors.verticalCenter: parent.verticalCenter
+                            spacing: 2
+                            Text {
+                                text: qsTr("Cleanup")
+                                color: Theme.textPrimary
+                                font.family: Theme.fontFamily
+                                font.pixelSize: 16
+                                font.bold: true
+                            }
+                            Text {
+                                text: qsTr("Free up storage space, clear cache, delete system restore points and more.")
+                                color: Theme.textMuted
+                                font.family: Theme.fontFamily
+                                font.pixelSize: 12
+                            }
+                        }
+                    }
+
+                    Row {
+                        anchors.right: parent.right
+                        anchors.rightMargin: 16
+                        anchors.verticalCenter: parent.verticalCenter
+                        spacing: 16
+
+                        // Arrow button that opens drawer
+                        Rectangle {
+                            width: 32
+                            height: 32
+                            radius: 16
+                            color: cleanupArrowMouseArea.containsMouse ? Theme.accentDim : "transparent"
+                            border.color: cleanupArrowMouseArea.containsMouse ? Theme.accent : Theme.border
+                            border.width: 1
+                            anchors.verticalCenter: parent.verticalCenter
+
+                            Behavior on color { ColorAnimation { duration: Theme.animFast } }
+                            Behavior on border.color { ColorAnimation { duration: Theme.animFast } }
+
+                            Item {
+                                width: 14
+                                height: 14
+                                anchors.centerIn: parent
+                                x: cleanupArrowMouseArea.containsMouse ? (parent.width/2 - 5) : (parent.width/2 - 7)
+                                Behavior on x { NumberAnimation { duration: Theme.animNormal; easing.type: Easing.OutCubic } }
+                                Image {
+                                    id: cleanupArrowImg
+                                    source: "qrc:/MeguPackOptimizer/src/resources/arrow.svg"
+                                    anchors.fill: parent
+                                    sourceSize.width: 14
+                                    sourceSize.height: 14
+                                    visible: false
+                                }
+                                ColorOverlay {
+                                    anchors.fill: cleanupArrowImg
+                                    source: cleanupArrowImg
+                                    color: cleanupArrowMouseArea.containsMouse ? Theme.accent : Theme.textSecondary
+                                    }
+                            }
+
+                            MouseArea {
+                                id: cleanupArrowMouseArea
+                                anchors.fill: parent
+                                hoverEnabled: true
+                                cursorShape: Qt.PointingHandCursor
+                                onClicked: {
+                                    root.activeDrawer = "cleanup";
+                                }
+                            }
+                        }
+                    }
+                }
+
+
+
                 // Repair Card
 
 
@@ -32968,6 +33081,10 @@ Item {
 
 
                             if (root.activeDrawer === "health") return qsTr("HEALTH");
+                            if (root.activeDrawer === "cleanup") return qsTr("CLEANUP");
+
+
+
 
 
 
@@ -33340,6 +33457,10 @@ Item {
 
 
                         if (root.activeDrawer === "health") return healthDrawer.implicitHeight;
+                        if (root.activeDrawer === "cleanup") return cleanupDrawer.implicitHeight;
+
+
+
 
 
 
@@ -33863,6 +33984,17 @@ Item {
 
 
 
+                    }
+
+
+
+
+                    // Cleanup Drawer Content
+                    CleanupDrawer {
+                        id: cleanupDrawer
+                        visible: root.activeDrawer === "cleanup"
+                        width: visible ? parent.width : 800
+                        height: visible ? implicitHeight : 0
                     }
 
 

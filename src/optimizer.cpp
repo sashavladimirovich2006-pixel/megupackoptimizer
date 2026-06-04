@@ -30,6 +30,7 @@
 #include <winspool.h>
 #include <powrprof.h>
 #include <shlobj.h>
+#include <shellapi.h>
 #include <propkey.h>
 #include <propvarutil.h>
 #include <tlhelp32.h>
@@ -43,6 +44,7 @@
 #pragma comment(lib, "taskschd.lib")
 #pragma comment(lib, "comsuppw.lib")
 #pragma comment(lib, "advapi32.lib")
+#pragma comment(lib, "shell32.lib")
 #pragma comment(lib, "user32.lib")
 #include <winevt.h>
 #pragma comment(lib, "wevtapi.lib")
@@ -13074,6 +13076,158 @@ void Optimizer::rebootSystem() {
 #else
     Logger::log("[Simulation] System reboot simulated.", "INFO");
 #endif
+}
+
+void deleteDirectoryContents(const QString &dirPath) {
+    QDir dir(dirPath);
+    if (!dir.exists()) return;
+    for (const QFileInfo &info : dir.entryInfoList(QDir::NoDotAndDotDot | QDir::AllEntries)) {
+        if (info.isDir()) {
+            QDir subDir(info.absoluteFilePath());
+            subDir.removeRecursively();
+        } else {
+            QFile::remove(info.absoluteFilePath());
+        }
+    }
+}
+
+bool Optimizer::cleanStorage() {
+    Logger::log("Starting Storage Cleanup...", "INFO");
+    
+    // 1. User Temp
+    QString userTemp = QDir::tempPath();
+    Logger::log("Cleaning User Temp: " + userTemp, "INFO");
+    deleteDirectoryContents(userTemp);
+    
+    // 2. System Temp
+#ifdef Q_OS_WIN
+    wchar_t windir[MAX_PATH];
+    if (GetWindowsDirectoryW(windir, MAX_PATH)) {
+        QString winPath = QString::fromWCharArray(windir);
+        QString sysTemp = winPath + "\\Temp";
+        Logger::log("Cleaning System Temp: " + sysTemp, "INFO");
+        deleteDirectoryContents(sysTemp);
+        
+        // 3. Prefetch
+        QString prefetch = winPath + "\\Prefetch";
+        Logger::log("Cleaning Prefetch: " + prefetch, "INFO");
+        deleteDirectoryContents(prefetch);
+
+        // 4. SoftwareDistribution\Download
+        QString swDist = winPath + "\\SoftwareDistribution\\Download";
+        Logger::log("Cleaning Windows Update Cache: " + swDist, "INFO");
+        deleteDirectoryContents(swDist);
+    }
+    
+    // 5. Empty Recycle Bin
+    Logger::log("Emptying Recycle Bin...", "INFO");
+    SHEmptyRecycleBinW(NULL, NULL, SHERB_NOCONFIRMATION | SHERB_NOPROGRESSUI | SHERB_NOSOUND);
+#else
+    Logger::log("[Simulation] Windows temp directories and Recycle Bin cleared.", "INFO");
+#endif
+    
+    Logger::log("Storage Cleanup completed.", "INFO");
+    return true;
+}
+
+bool Optimizer::cleanFileExplorer() {
+    Logger::log("Starting File Explorer Cleanup...", "INFO");
+#ifdef Q_OS_WIN
+    // 1. Clear TypedPaths
+    HKEY hKey;
+    if (RegOpenKeyExW(HKEY_CURRENT_USER, L"Software\\Microsoft\\Windows\\CurrentVersion\\Explorer\\TypedPaths", 0, KEY_SET_VALUE | KEY_QUERY_VALUE, &hKey) == ERROR_SUCCESS) {
+        wchar_t valueName[16384];
+        DWORD valueNameSize = 16384;
+        while (true) {
+            valueNameSize = 16384;
+            if (RegEnumValueW(hKey, 0, valueName, &valueNameSize, NULL, NULL, NULL, NULL) == ERROR_SUCCESS) {
+                RegDeleteValueW(hKey, valueName);
+            } else {
+                break;
+            }
+        }
+        RegCloseKey(hKey);
+    }
+    
+    // 2. Clear RunMRU
+    if (RegOpenKeyExW(HKEY_CURRENT_USER, L"Software\\Microsoft\\Windows\\CurrentVersion\\Explorer\\RunMRU", 0, KEY_SET_VALUE | KEY_QUERY_VALUE, &hKey) == ERROR_SUCCESS) {
+        wchar_t valueName[16384];
+        DWORD valueNameSize = 16384;
+        while (true) {
+            valueNameSize = 16384;
+            if (RegEnumValueW(hKey, 0, valueName, &valueNameSize, NULL, NULL, NULL, NULL) == ERROR_SUCCESS) {
+                RegDeleteValueW(hKey, valueName);
+            } else {
+                break;
+            }
+        }
+        RegCloseKey(hKey);
+    }
+
+    // 3. Clear RecentDocs
+    RegDeleteKeyW(HKEY_CURRENT_USER, L"Software\\Microsoft\\Windows\\CurrentVersion\\Explorer\\RecentDocs");
+
+    // 4. Delete recent folders files
+    QString appData = QDir::toNativeSeparators(QDir::homePath() + "\\AppData\\Roaming\\Microsoft\\Windows\\Recent");
+    deleteDirectoryContents(appData);
+    deleteDirectoryContents(appData + "\\AutomaticDestinations");
+    deleteDirectoryContents(appData + "\\CustomDestinations");
+#else
+    Logger::log("[Simulation] File Explorer history and recent items cleared.", "INFO");
+#endif
+    Logger::log("File Explorer Cleanup completed.", "INFO");
+    return true;
+}
+
+bool Optimizer::cleanMicrosoftStore() {
+    Logger::log("Starting Microsoft Store Cleanup...", "INFO");
+#ifdef Q_OS_WIN
+    // 1. Run wsreset.exe in background
+    QProcess::startDetached("wsreset.exe");
+    
+    // 2. Clean LocalCache folder
+    QString localAppData = QDir::toNativeSeparators(QDir::homePath() + "\\AppData\\Local\\Packages\\Microsoft.WindowsStore_8wekyb3d8bbwe\\LocalCache");
+    deleteDirectoryContents(localAppData);
+#else
+    Logger::log("[Simulation] Microsoft Store cache cleared.", "INFO");
+#endif
+    Logger::log("Microsoft Store Cleanup completed.", "INFO");
+    return true;
+}
+
+bool Optimizer::cleanNetwork() {
+    Logger::log("Starting Network Cleanup (Flush DNS & Reset)...", "INFO");
+#ifdef Q_OS_WIN
+    QProcess proc;
+    proc.start("ipconfig", QStringList() << "/flushdns");
+    proc.waitForFinished(5000);
+    
+    proc.start("netsh", QStringList() << "winsock" << "reset");
+    proc.waitForFinished(5000);
+    
+    proc.start("netsh", QStringList() << "int" << "ip" << "reset");
+    proc.waitForFinished(5000);
+#else
+    Logger::log("[Simulation] Network DNS cache flushed and winsock reset.", "INFO");
+#endif
+    Logger::log("Network Cleanup completed.", "INFO");
+    return true;
+}
+
+bool Optimizer::cleanSystemRestore() {
+    Logger::log("Starting System Restore Points Cleanup...", "INFO");
+#ifdef Q_OS_WIN
+    QProcess proc;
+    proc.start("vssadmin", QStringList() << "delete" << "shadows" << "/for=C:" << "/all" << "/quiet");
+    proc.waitForFinished(10000);
+    
+    proc.start("powershell", QStringList() << "-Command" << "Disable-ComputerRestore -Drive 'C:'; Enable-ComputerRestore -Drive 'C:'");
+    proc.waitForFinished(15000);
+#else
+    Logger::log("[Simulation] System Restore shadow copies deleted.", "INFO");
+#endif
+    Logger::log("System Restore Points Cleanup completed.", "INFO");
+    return true;
 }
 
 
