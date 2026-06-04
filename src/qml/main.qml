@@ -55,6 +55,7 @@ ApplicationWindow {
     property string steamActiveUserId: ""
 
     property int optimizationPercentage: {
+        if (typeof optimizerBackend === "undefined" || !optimizerBackend) return 0;
         var count = 0;
         var total = 0;
         
@@ -119,6 +120,10 @@ ApplicationWindow {
         
         return total > 0 ? Math.round((count / total) * 100) : 0;
     }
+
+    property int optimizationPercentageBeforeRun: 0
+    property int optimizationDelta: 0
+    property bool showDelta: false
 
 
     onVisibilityChanged: {
@@ -378,6 +383,17 @@ ApplicationWindow {
                             font.bold: true
                             anchors.centerIn: parent
                         }
+                    }
+
+                    // Delta text (change from last optimization)
+                    Text {
+                        visible: window.showDelta && window.optimizationDelta !== 0
+                        text: (window.optimizationDelta > 0 ? "+" : "") + window.optimizationDelta + "%"
+                        color: window.optimizationDelta > 0 ? Theme.success : Theme.error
+                        font.family: Theme.fontFamily
+                        font.pixelSize: 11
+                        font.bold: true
+                        anchors.verticalCenter: parent.verticalCenter
                     }
 
                     // Level status text
