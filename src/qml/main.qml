@@ -124,11 +124,11 @@ ApplicationWindow {
         // Left Island (Brand Logo + Real-Time Logs button)
         Rectangle {
             id: leftIsland
-            height: 56
+            height: 64
             anchors.left: parent.left
             anchors.leftMargin: 16
             anchors.top: parent.top
-            anchors.topMargin: leftIslandHover.containsMouse ? 15 : 16
+            anchors.topMargin: leftIslandHover.containsMouse ? 19 : 20
             width: leftIslandRow.width + 24
             color: Theme.panelBg
             border.color: leftIslandHover.containsMouse ? Theme.borderHover : Theme.border
@@ -292,10 +292,10 @@ ApplicationWindow {
         // Center Island (Navigation Tab Container)
         Rectangle {
             id: centerIsland
-            height: 56
+            height: 64
             anchors.horizontalCenter: parent.horizontalCenter
             anchors.top: parent.top
-            anchors.topMargin: centerIslandHover.containsMouse ? 15 : 16
+            anchors.topMargin: centerIslandHover.containsMouse ? 19 : 20
             width: tabsRow.width + 24
             color: Theme.panelBg
             border.color: centerIslandHover.containsMouse ? Theme.borderHover : Theme.border
@@ -340,7 +340,7 @@ ApplicationWindow {
                     enabled: !optimizerBackend.isOptimizingSystem
                     onClicked: window.activeTab = 0
                     anchors.verticalCenter: parent.verticalCenter
-                    height: 32
+                    height: 40
                 }
                 
                 MeguButton {
@@ -360,7 +360,7 @@ ApplicationWindow {
                         optDropdown.open();
                     }
                     anchors.verticalCenter: parent.verticalCenter
-                    height: 32
+                    height: 40
                 }
                 
                 MeguButton {
@@ -372,7 +372,7 @@ ApplicationWindow {
                     enabled: !optimizerBackend.isOptimizingSystem
                     onClicked: window.activeTab = 1
                     anchors.verticalCenter: parent.verticalCenter
-                    height: 32
+                    height: 40
                 }
             }
         }
@@ -380,11 +380,11 @@ ApplicationWindow {
         // Right Island (Version Label + Window Custom Controls)
         Rectangle {
             id: rightIsland
-            height: 56
+            height: 64
             anchors.right: parent.right
             anchors.rightMargin: 16
             anchors.top: parent.top
-            anchors.topMargin: rightIslandHover.containsMouse ? 15 : 16
+            anchors.topMargin: rightIslandHover.containsMouse ? 19 : 20
             width: rightInfoRow.implicitWidth + 32 + windowControls.implicitWidth
             color: Theme.panelBg
             border.color: rightIslandHover.containsMouse ? Theme.borderHover : Theme.border
@@ -599,9 +599,9 @@ ApplicationWindow {
         LogViewer {
             id: logsView
             x: 24
-            y: 92
+            y: 112
             width: visible ? (parent.width - 48) : 752
-            height: visible ? (parent.height - 92 - 24) : 444
+            height: visible ? (parent.height - 112 - 24) : 424
             opacity: window.activeTab === 2 ? 1.0 : 0.0
             visible: opacity > 0.0
             enabled: opacity === 1.0

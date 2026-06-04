@@ -36,7 +36,7 @@ Item {
     ScrollView {
         id: mainScroll
         anchors.fill: parent
-        anchors.topMargin: 92
+        anchors.topMargin: 112
         anchors.bottomMargin: 24
         anchors.leftMargin: 24
         anchors.rightMargin: 24
@@ -95,7 +95,7 @@ Item {
 
                 AcrylicPanel {
                     width: parent.width
-                    height: 84
+                    height: 104
 
                     Row {
                         anchors.left: parent.left
@@ -104,22 +104,22 @@ Item {
                         spacing: 12
 
                         Rectangle {
-                            width: 40
-                            height: 40
-                            radius: 10
+                            width: 46
+                            height: 46
+                            radius: 12
                             color: Qt.rgba(Theme.accent.r, Theme.accent.g, Theme.accent.b, 0.15)
                             anchors.verticalCenter: parent.verticalCenter
 
                             Item {
-                                width: 20
-                                height: 20
+                                width: 24
+                                height: 24
                                 anchors.centerIn: parent
                                 Image {
                                     id: themeIconImg
                                     source: "qrc:/MeguPackOptimizer/src/resources/settings.svg"
                                     anchors.fill: parent
-                                    sourceSize.width: 20
-                                    sourceSize.height: 20
+                                    sourceSize.width: 24
+                                    sourceSize.height: 24
                                     visible: false
                                 }
                                 ColorOverlay {
@@ -193,7 +193,7 @@ Item {
                                 text: (settingsBackend.language, getTranslatedThemeName(Theme.currentTheme))
                                 color: Theme.textPrimary
                                 font.family: Theme.fontFamily
-                                font.pixelSize: 12
+                                font.pixelSize: 15
                                 font.bold: true
                                 anchors.verticalCenter: parent.verticalCenter
                             }
@@ -248,7 +248,7 @@ Item {
 
                 AcrylicPanel {
                     width: parent.width
-                    height: 84
+                    height: 104
 
                     Row {
                         anchors.left: parent.left
@@ -257,9 +257,9 @@ Item {
                         spacing: 12
 
                         Rectangle {
-                            width: 40
-                            height: 40
-                            radius: 10
+                            width: 46
+                            height: 46
+                            radius: 12
                             color: Qt.rgba(Theme.textSecondary.r, Theme.textSecondary.g, Theme.textSecondary.b, 0.15)
                             anchors.verticalCenter: parent.verticalCenter
 
@@ -359,7 +359,7 @@ Item {
 
                 AcrylicPanel {
                     width: parent.width
-                    height: 84
+                    height: 104
 
                     Row {
                         anchors.left: parent.left
@@ -368,9 +368,9 @@ Item {
                         spacing: 12
 
                         Rectangle {
-                            width: 40
-                            height: 40
-                            radius: 10
+                            width: 46
+                            height: 46
+                            radius: 12
                             color: Qt.rgba(0.9, 0.3, 0.1, 0.15)
                             anchors.verticalCenter: parent.verticalCenter
 
@@ -428,7 +428,7 @@ Item {
 
                 AcrylicPanel {
                     width: parent.width
-                    height: 84
+                    height: 104
 
                     Row {
                         anchors.left: parent.left
@@ -437,9 +437,9 @@ Item {
                         spacing: 12
 
                         Rectangle {
-                            width: 40
-                            height: 40
-                            radius: 10
+                            width: 46
+                            height: 46
+                            radius: 12
                             color: Qt.rgba(0.1, 0.8, 0.5, 0.15)
                             anchors.verticalCenter: parent.verticalCenter
 
@@ -527,7 +527,7 @@ Item {
 
                 AcrylicPanel {
                     width: parent.width
-                    height: 84
+                    height: 104
 
                     Row {
                         anchors.left: parent.left
@@ -536,9 +536,9 @@ Item {
                         spacing: 12
 
                         Rectangle {
-                            width: 40
-                            height: 40
-                            radius: 10
+                            width: 46
+                            height: 46
+                            radius: 12
                             color: Qt.rgba(Theme.error.r, Theme.error.g, Theme.error.b, 0.15)
                             anchors.verticalCenter: parent.verticalCenter
 
@@ -602,7 +602,7 @@ Item {
                 text: qsTr("* Changes are automatically applied and saved to config in real-time.")
                 color: Theme.textMuted
                 font.family: Theme.fontFamily
-                font.pixelSize: 10
+                font.pixelSize: 12
                 font.italic: true
             }
         }
@@ -750,7 +750,7 @@ Item {
                                             text: (settingsBackend.language, getTranslatedThemeName(modelData.name))
                                             color: Theme.currentTheme === modelData.name ? Theme.accent : Theme.textPrimary
                                             font.family: Theme.fontFamily
-                                            font.pixelSize: 12
+                                            font.pixelSize: 15
                                             font.bold: true
                                         }
                                         Text {
@@ -857,7 +857,7 @@ Item {
                                 text: (settingsBackend.language, getTranslatedThemeName("Black pink"))
                                 color: Theme.currentTheme === "Black pink" ? Theme.accent : Theme.textPrimary
                                 font.family: Theme.fontFamily
-                                font.pixelSize: 12
+                                font.pixelSize: 15
                                 font.bold: true
                             }
                             Text {
@@ -977,7 +977,7 @@ Item {
                             text: qsTr("Enabling expert settings can expose critical system controls. Ensure you know the consequences before activating them.")
                             color: Theme.textSecondary
                             font.family: Theme.fontFamily
-                            font.pixelSize: 10
+                            font.pixelSize: 12
                             width: parent.width
                             wrapMode: Text.WordWrap
                         }
@@ -1006,14 +1006,14 @@ Item {
                             text: qsTr("Show expert features")
                             color: Theme.textPrimary
                             font.family: Theme.fontFamily
-                            font.pixelSize: 12
+                            font.pixelSize: 15
                             font.bold: true
                         }
                         Text {
                             text: qsTr("Toggle visibility of advanced features like More Privileges card in the optimization view.")
                             color: Theme.textSecondary
                             font.family: Theme.fontFamily
-                            font.pixelSize: 10
+                            font.pixelSize: 12
                             width: parent.width
                             wrapMode: Text.WordWrap
                         }

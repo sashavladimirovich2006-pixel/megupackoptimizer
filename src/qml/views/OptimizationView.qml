@@ -7200,7 +7200,7 @@ Item {
 
 
 
-        anchors.topMargin: 92
+        anchors.topMargin: 112
 
         anchors.bottomMargin: 24
 
@@ -7430,7 +7430,7 @@ Item {
 
 
 
-                    height: detailsExpanded ? 76 + detailsContainer.implicitHeight + 24 : 76
+                    height: detailsExpanded ? 94 + detailsContainer.implicitHeight + 24 : 94
 
 
 
@@ -7662,7 +7662,7 @@ Item {
 
 
 
-                                        font.pixelSize: 14
+                                        font.pixelSize: 16
 
 
 
@@ -7778,7 +7778,7 @@ Item {
 
 
 
-                                    font.pixelSize: 11
+                                    font.pixelSize: 12
 
 
 
@@ -8622,7 +8622,7 @@ Item {
 
 
 
-                                    font.pixelSize: 11
+                                    font.pixelSize: 12
 
 
 
@@ -9114,7 +9114,7 @@ Item {
 
 
 
-                    height: 76
+                    height: 94
 
 
 
@@ -9322,7 +9322,7 @@ Item {
 
 
 
-                                    font.pixelSize: 14
+                                    font.pixelSize: 16
 
 
 
@@ -9438,7 +9438,7 @@ Item {
 
 
 
-                                font.pixelSize: 11
+                                font.pixelSize: 12
 
 
 
@@ -9654,7 +9654,7 @@ Item {
 
 
 
-                    height: 84
+                    height: 104
 
 
 
@@ -9834,7 +9834,7 @@ Item {
 
 
 
-                                    font.pixelSize: 14
+                                    font.pixelSize: 16
 
 
 
@@ -9946,7 +9946,7 @@ Item {
 
 
 
-                                font.pixelSize: 11
+                                font.pixelSize: 12
 
 
 
@@ -10362,7 +10362,7 @@ Item {
 
 
 
-                    height: 84
+                    height: 104
 
 
 
@@ -10542,7 +10542,7 @@ Item {
 
 
 
-                                    font.pixelSize: 14
+                                    font.pixelSize: 16
 
 
 
@@ -10654,7 +10654,7 @@ Item {
 
 
 
-                                font.pixelSize: 11
+                                font.pixelSize: 12
 
 
 
@@ -10986,7 +10986,7 @@ Item {
 
 
 
-                    height: 84
+                    height: 104
 
 
 
@@ -11166,7 +11166,7 @@ Item {
 
 
 
-                                    font.pixelSize: 14
+                                    font.pixelSize: 16
 
 
 
@@ -11222,7 +11222,7 @@ Item {
 
 
 
-                                font.pixelSize: 11
+                                font.pixelSize: 12
 
 
 
@@ -11586,7 +11586,7 @@ Item {
 
 
 
-                    height: 84
+                    height: 104
 
 
 
@@ -11766,7 +11766,7 @@ Item {
 
 
 
-                                    font.pixelSize: 14
+                                    font.pixelSize: 16
 
 
 
@@ -11898,7 +11898,7 @@ Item {
 
 
 
-                                font.pixelSize: 11
+                                font.pixelSize: 12
 
 
 
@@ -12034,7 +12034,7 @@ Item {
 
 
 
-                    height: (optimizerBackend.coreIsolationActive !== optimizerBackend.bootCoreIsolationActive) ? 128 : 84
+                    height: (optimizerBackend.coreIsolationActive !== optimizerBackend.bootCoreIsolationActive) ? 152 : 104
 
 
 
@@ -12278,7 +12278,7 @@ Item {
 
 
 
-                                    font.pixelSize: 14
+                                    font.pixelSize: 16
 
 
 
@@ -12410,7 +12410,7 @@ Item {
 
 
 
-                                font.pixelSize: 11
+                                font.pixelSize: 12
 
 
 
@@ -12642,7 +12642,7 @@ Item {
 
 
 
-                                font.pixelSize: 11
+                                font.pixelSize: 12
 
 
 
@@ -12694,7 +12694,7 @@ Item {
 
 
 
-                    height: 84
+                    height: 104
 
 
 
@@ -12874,7 +12874,7 @@ Item {
 
 
 
-                                    font.pixelSize: 14
+                                    font.pixelSize: 16
 
 
 
@@ -13006,7 +13006,7 @@ Item {
 
 
 
-                                font.pixelSize: 11
+                                font.pixelSize: 12
 
 
 
@@ -13110,7 +13110,7 @@ Item {
 
 
 
-                    height: 84
+                    height: 104
 
 
 
@@ -13290,7 +13290,7 @@ Item {
 
 
 
-                                    font.pixelSize: 14
+                                    font.pixelSize: 16
 
 
 
@@ -13422,7 +13422,7 @@ Item {
 
 
 
-                                font.pixelSize: 11
+                                font.pixelSize: 12
 
 
 
@@ -13526,7 +13526,7 @@ Item {
 
 
 
-                    height: root.isDiscordOpen ? 92 : 84
+                    height: root.isDiscordOpen ? 116 : 104
 
 
 
@@ -13718,7 +13718,7 @@ Item {
 
 
 
-                                    font.pixelSize: 14
+                                    font.pixelSize: 16
 
 
 
@@ -13850,7 +13850,7 @@ Item {
 
 
 
-                                font.pixelSize: 11
+                                font.pixelSize: 12
 
 
 
@@ -13994,7 +13994,7 @@ Item {
 
 
 
-                    height: 84
+                    height: 104
 
 
 
@@ -14174,7 +14174,7 @@ Item {
 
 
 
-                                    font.pixelSize: 14
+                                    font.pixelSize: 16
 
 
 
@@ -14306,7 +14306,7 @@ Item {
 
 
 
-                                font.pixelSize: 11
+                                font.pixelSize: 12
 
 
 
@@ -14414,7 +14414,7 @@ Item {
 
 
 
-                    height: 84
+                    height: 104
 
 
 
@@ -14594,7 +14594,7 @@ Item {
 
 
 
-                                    font.pixelSize: 14
+                                    font.pixelSize: 16
 
 
 
@@ -14726,7 +14726,7 @@ Item {
 
 
 
-                                font.pixelSize: 11
+                                font.pixelSize: 12
 
 
 
@@ -14830,7 +14830,7 @@ Item {
 
 
 
-                    height: 84
+                    height: 104
 
 
 
@@ -15010,7 +15010,7 @@ Item {
 
 
 
-                                    font.pixelSize: 14
+                                    font.pixelSize: 16
 
 
 
@@ -15142,7 +15142,7 @@ Item {
 
 
 
-                                font.pixelSize: 11
+                                font.pixelSize: 12
 
 
 
@@ -15418,7 +15418,7 @@ Item {
 
 
 
-                    height: detailsExpanded ? adsColumn.implicitHeight + 16 : 84
+                    height: detailsExpanded ? adsColumn.implicitHeight + 16 : 104
 
 
 
@@ -15502,7 +15502,7 @@ Item {
 
 
 
-                            height: 84
+                            height: 104
 
 
 
@@ -15686,7 +15686,7 @@ Item {
 
 
 
-                                        font.pixelSize: 14
+                                        font.pixelSize: 16
 
 
 
@@ -15818,7 +15818,7 @@ Item {
 
 
 
-                                    font.pixelSize: 11
+                                    font.pixelSize: 12
 
 
 
@@ -17822,7 +17822,7 @@ Item {
 
 
 
-                    height: detailsExpanded ? privacyColumn.implicitHeight + 16 : 84
+                    height: detailsExpanded ? privacyColumn.implicitHeight + 16 : 104
 
 
 
@@ -17906,7 +17906,7 @@ Item {
 
 
 
-                            height: 84
+                            height: 104
 
 
 
@@ -18090,7 +18090,7 @@ Item {
 
 
 
-                                        font.pixelSize: 14
+                                        font.pixelSize: 16
 
 
 
@@ -18222,7 +18222,7 @@ Item {
 
 
 
-                                    font.pixelSize: 11
+                                    font.pixelSize: 12
 
 
 
@@ -20594,7 +20594,7 @@ Item {
 
 
 
-                    height: 84
+                    height: 104
 
 
 
@@ -20774,7 +20774,7 @@ Item {
 
 
 
-                                    font.pixelSize: 14
+                                    font.pixelSize: 16
 
 
 
@@ -20906,7 +20906,7 @@ Item {
 
 
 
-                                font.pixelSize: 11
+                                font.pixelSize: 12
 
 
 
@@ -21282,7 +21282,7 @@ Item {
 
 
 
-                    height: 84
+                    height: 104
 
 
 
@@ -21462,7 +21462,7 @@ Item {
 
 
 
-                                    font.pixelSize: 14
+                                    font.pixelSize: 16
 
 
 
@@ -21594,7 +21594,7 @@ Item {
 
 
 
-                                font.pixelSize: 11
+                                font.pixelSize: 12
 
 
 
@@ -21930,7 +21930,7 @@ Item {
 
 
 
-                    height: 84
+                    height: 104
 
 
 
@@ -22154,7 +22154,7 @@ Item {
 
 
 
-                                            font.pixelSize: 14
+                                            font.pixelSize: 16
 
 
 
@@ -22270,7 +22270,7 @@ Item {
 
 
 
-                                        font.pixelSize: 11
+                                        font.pixelSize: 12
 
 
 
@@ -22502,7 +22502,7 @@ Item {
 
 
 
-                    height: 84
+                    height: 104
 
 
 
@@ -22730,7 +22730,7 @@ Item {
 
 
 
-                                            font.pixelSize: 14
+                                            font.pixelSize: 16
 
 
 
@@ -22862,7 +22862,7 @@ Item {
 
 
 
-                                        font.pixelSize: 11
+                                        font.pixelSize: 12
 
 
 
@@ -22970,7 +22970,7 @@ Item {
 
 
 
-                    height: 84
+                    height: 104
 
 
 
@@ -23210,7 +23210,7 @@ Item {
 
 
 
-                                            font.pixelSize: 14
+                                            font.pixelSize: 16
 
 
 
@@ -23342,7 +23342,7 @@ Item {
 
 
 
-                                        font.pixelSize: 11
+                                        font.pixelSize: 12
 
 
 
@@ -23522,7 +23522,7 @@ Item {
 
 
 
-                                    font.pixelSize: 11
+                                    font.pixelSize: 12
 
 
 
@@ -23634,7 +23634,7 @@ Item {
 
 
 
-                    height: 84
+                    height: 104
 
 
 
@@ -23874,7 +23874,7 @@ Item {
 
 
 
-                                            font.pixelSize: 14
+                                            font.pixelSize: 16
 
 
 
@@ -24006,7 +24006,7 @@ Item {
 
 
 
-                                        font.pixelSize: 11
+                                        font.pixelSize: 12
 
 
 
@@ -24186,7 +24186,7 @@ Item {
 
 
 
-                                    font.pixelSize: 11
+                                    font.pixelSize: 12
 
 
 
@@ -24526,7 +24526,7 @@ Item {
 
 
 
-                                            font.pixelSize: 14
+                                            font.pixelSize: 16
 
 
 
@@ -24714,7 +24714,7 @@ Item {
 
 
 
-                                        font.pixelSize: 11
+                                        font.pixelSize: 12
 
 
 
@@ -24946,7 +24946,7 @@ Item {
 
 
 
-                    height: 84
+                    height: 104
 
 
 
@@ -25170,7 +25170,7 @@ Item {
 
 
 
-                                            font.pixelSize: 14
+                                            font.pixelSize: 16
 
 
 
@@ -25286,7 +25286,7 @@ Item {
 
 
 
-                                        font.pixelSize: 11
+                                        font.pixelSize: 12
 
 
 
@@ -25518,7 +25518,7 @@ Item {
 
 
 
-                    height: 84
+                    height: 104
 
 
 
@@ -25742,7 +25742,7 @@ Item {
 
 
 
-                                            font.pixelSize: 14
+                                            font.pixelSize: 16
 
 
 
@@ -25858,7 +25858,7 @@ Item {
 
 
 
-                                        font.pixelSize: 11
+                                        font.pixelSize: 12
 
 
 
@@ -26202,7 +26202,7 @@ Item {
 
 
 
-                    height: 84
+                    height: 104
 
 
 
@@ -26382,7 +26382,7 @@ Item {
 
 
 
-                                    font.pixelSize: 14
+                                    font.pixelSize: 16
 
 
 
@@ -26514,7 +26514,7 @@ Item {
 
 
 
-                                font.pixelSize: 11
+                                font.pixelSize: 12
 
 
 
@@ -26614,7 +26614,7 @@ Item {
 
 
 
-                    height: 84
+                    height: 104
 
 
 
@@ -26806,7 +26806,7 @@ Item {
 
 
 
-                                    font.pixelSize: 14
+                                    font.pixelSize: 16
 
 
 
@@ -26978,7 +26978,7 @@ Item {
 
 
 
-                                font.pixelSize: 11
+                                font.pixelSize: 12
 
 
 
@@ -27654,7 +27654,7 @@ Item {
 
 
 
-                    height: 100
+                    height: 120
 
 
 
@@ -27834,7 +27834,7 @@ Item {
 
 
 
-                                    font.pixelSize: 14
+                                    font.pixelSize: 16
 
 
 
@@ -27966,7 +27966,7 @@ Item {
 
 
 
-                                font.pixelSize: 11
+                                font.pixelSize: 12
 
 
 
@@ -28110,7 +28110,7 @@ Item {
 
 
 
-                    height: !optimizerBackend.defenderActive ? 96 : 84
+                    height: !optimizerBackend.defenderActive ? 120 : 104
 
 
 
@@ -28294,7 +28294,7 @@ Item {
 
 
 
-                                    font.pixelSize: 14
+                                    font.pixelSize: 16
 
 
 
@@ -28498,7 +28498,7 @@ Item {
 
 
 
-                                font.pixelSize: 11
+                                font.pixelSize: 12
 
 
 
@@ -28790,7 +28790,7 @@ Item {
 
 
 
-                    height: 84
+                    height: 104
 
 
 
@@ -28970,7 +28970,7 @@ Item {
 
 
 
-                                    font.pixelSize: 14
+                                    font.pixelSize: 16
 
 
 
@@ -29102,7 +29102,7 @@ Item {
 
 
 
-                                font.pixelSize: 11
+                                font.pixelSize: 12
 
 
 
@@ -29626,7 +29626,7 @@ Item {
 
 
 
-                    height: 84
+                    height: 104
 
 
 
@@ -29806,7 +29806,7 @@ Item {
 
 
 
-                                    font.pixelSize: 14
+                                    font.pixelSize: 16
 
 
 
@@ -29938,7 +29938,7 @@ Item {
 
 
 
-                                font.pixelSize: 11
+                                font.pixelSize: 12
 
 
 
@@ -30222,7 +30222,7 @@ Item {
 
 
 
-                    height: 84
+                    height: 104
 
 
 
@@ -30402,7 +30402,7 @@ Item {
 
 
 
-                                    font.pixelSize: 14
+                                    font.pixelSize: 16
 
 
 
@@ -30534,7 +30534,7 @@ Item {
 
 
 
-                                font.pixelSize: 11
+                                font.pixelSize: 12
 
 
 
@@ -30634,7 +30634,7 @@ Item {
 
 
 
-                    height: 84
+                    height: 104
 
 
 
@@ -30814,7 +30814,7 @@ Item {
 
 
 
-                                    font.pixelSize: 14
+                                    font.pixelSize: 16
 
 
 
@@ -30854,7 +30854,7 @@ Item {
 
 
 
-                                font.pixelSize: 11
+                                font.pixelSize: 12
 
 
 
@@ -31218,7 +31218,7 @@ Item {
 
 
 
-                    height: 84
+                    height: 104
 
 
 
@@ -31398,7 +31398,7 @@ Item {
 
 
 
-                                font.pixelSize: 14
+                                font.pixelSize: 16
 
 
 
@@ -31430,7 +31430,7 @@ Item {
 
 
 
-                                font.pixelSize: 11
+                                font.pixelSize: 12
 
 
 
@@ -31678,7 +31678,7 @@ Item {
 
 
 
-                    height: 84
+                    height: 104
 
 
 
@@ -31858,7 +31858,7 @@ Item {
 
 
 
-                                font.pixelSize: 14
+                                font.pixelSize: 16
 
 
 
@@ -31890,7 +31890,7 @@ Item {
 
 
 
-                                font.pixelSize: 11
+                                font.pixelSize: 12
 
 
 
@@ -32314,7 +32314,7 @@ Item {
 
 
 
-                font.pixelSize: 11
+                font.pixelSize: 12
 
 
 
@@ -34414,7 +34414,7 @@ Item {
 
 
 
-                            font.pixelSize: 11
+                            font.pixelSize: 12
 
 
 
@@ -35518,7 +35518,7 @@ Item {
 
 
 
-                            font.pixelSize: 11
+                            font.pixelSize: 12
 
 
 
@@ -36273,7 +36273,7 @@ Item {
                     text: statCardRoot.title
                     color: Theme.textMuted
                     font.family: Theme.fontFamily
-                    font.pixelSize: 11
+                    font.pixelSize: 12
                     elide: Text.ElideRight
                     width: parent.width
                 }
@@ -36605,7 +36605,7 @@ Item {
                             text: qsTr("SYSTEM OPTIMIZED")
                             color: "#FFFFFF"
                             font.family: Theme.fontFamily
-                            font.pixelSize: 14
+                            font.pixelSize: 16
                             font.bold: true
                             font.letterSpacing: 1.5
                         }
@@ -36617,7 +36617,7 @@ Item {
                             text: qsTr("All selected tweaks applied.")
                             color: Theme.textMuted
                             font.family: Theme.fontFamily
-                            font.pixelSize: 11
+                            font.pixelSize: 12
                         }
                     }
                 }
@@ -36711,7 +36711,7 @@ Item {
                                             return "#E0E0E0";
                                         }
                                         font.family: Theme.fontFamily
-                                        font.pixelSize: 11
+                                        font.pixelSize: 12
                                         wrapMode: Text.WordWrap
                                     }
                                 }
@@ -36728,7 +36728,7 @@ Item {
                         text: stepLogModel.count > 0 ? stepLogModel.get(stepLogModel.count - 1).message : qsTr("Analyzing system configuration...")
                         color: Theme.accent
                         font.family: Theme.fontFamily
-                        font.pixelSize: 11
+                        font.pixelSize: 12
                         font.bold: true
                         font.italic: true
                         elide: Text.ElideRight
@@ -36834,7 +36834,7 @@ Item {
                                         text: qsTr("A Windows Explorer restart is required to apply the taskbar/shell customizations.")
                                         color: Theme.warning
                                         font.family: Theme.fontFamily
-                                        font.pixelSize: 11
+                                        font.pixelSize: 12
                                         wrapMode: Text.WordWrap
                                         anchors.verticalCenter: parent.verticalCenter
                                     }
@@ -37184,7 +37184,7 @@ Item {
 
 
 
-                        font.pixelSize: 14
+                        font.pixelSize: 16
 
 
 
@@ -37224,7 +37224,7 @@ Item {
 
 
 
-                    font.pixelSize: 11
+                    font.pixelSize: 12
 
 
 
