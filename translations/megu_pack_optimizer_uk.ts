@@ -2081,7 +2081,19 @@ Would you like to close Discord now and proceed?</source>
             <source>CLEANUP</source>
             <translation>ОЧИЩЕННЯ</translation>
         </message>
-    </context>
+        <message>
+        <source>Fast Startup</source>
+        <translation>Швидкий запуск</translation>
+    </message>
+    <message>
+        <source>Fast startup</source>
+        <translation>Швидкий запуск</translation>
+    </message>
+    <message>
+        <source>Allows the device to open faster after a shutdown, reducing up to 50% of boot-time</source>
+        <translation>Дозволяє пристрою відкриватися швидше після вимкнення, скорочуючи час завантаження до 50%</translation>
+    </message>
+</context>
     <context>
         <name>Optimizer</name>
         <message>
@@ -3493,7 +3505,27 @@ Would you like to close Discord now and proceed?</source>
             <source>Failed</source>
             <translation>Помилка</translation>
         </message>
-    </context>
+        <message>
+        <source>Configuring Fast Startup...</source>
+        <translation>Налаштування швидкого запуску...</translation>
+    </message>
+    <message>
+        <source>Fast Startup is now ENABLED.</source>
+        <translation>Швидкий запуск тепер УВІМКНЕНО.</translation>
+    </message>
+    <message>
+        <source>Fast Startup is now DISABLED.</source>
+        <translation>Швидкий запуск тепер ВИМКНЕНО.</translation>
+    </message>
+    <message>
+        <source>Failed to update Fast Startup registry value.</source>
+        <translation>Не вдалося оновити значення реєстру швидкого запуску.</translation>
+    </message>
+    <message>
+        <source>Failed to open Session Manager\Power registry key.</source>
+        <translation>Не вдалося відкрити розділ реєстру Session Manager\Power.</translation>
+    </message>
+</context>
     <context>
         <name>PowerDrawer</name>
         <message>

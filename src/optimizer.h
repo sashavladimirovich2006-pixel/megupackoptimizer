@@ -34,6 +34,8 @@ class Optimizer : public QObject {
     Q_PROPERTY(bool originalWinSearchActive READ originalWinSearchActive NOTIFY originalWinSearchActiveChanged)
     Q_PROPERTY(bool hibernationActive READ hibernationActive WRITE setHibernationActive NOTIFY hibernationActiveChanged)
     Q_PROPERTY(bool originalHibernationActive READ originalHibernationActive NOTIFY originalHibernationActiveChanged)
+    Q_PROPERTY(bool fastStartupActive READ fastStartupActive WRITE setFastStartupActive NOTIFY fastStartupActiveChanged)
+    Q_PROPERTY(bool originalFastStartupActive READ originalFastStartupActive NOTIFY originalFastStartupActiveChanged)
     Q_PROPERTY(int hibernationSize READ hibernationSize WRITE setHibernationSize NOTIFY hibernationSizeChanged)
     Q_PROPERTY(int originalHibernationSize READ originalHibernationSize NOTIFY originalHibernationSizeChanged)
     Q_PROPERTY(bool xboxInstalled READ xboxInstalled NOTIFY xboxInstalledChanged)
@@ -284,6 +286,8 @@ public:
     bool originalWinSearchActive() const { return m_originalWinSearchActive; }
     bool hibernationActive() const { return m_hibernationActive; }
     bool originalHibernationActive() const { return m_originalHibernationActive; }
+    bool fastStartupActive() const { return m_fastStartupActive; }
+    bool originalFastStartupActive() const { return m_originalFastStartupActive; }
     int hibernationSize() const { return m_hibernationSize; }
     int originalHibernationSize() const { return m_originalHibernationSize; }
     bool xboxInstalled() const { return m_xboxInstalled; }
@@ -519,6 +523,7 @@ public:
     void setTaskbarSecondsActive(bool val);
     void setWinSearchActive(bool val);
     void setHibernationActive(bool val);
+    void setFastStartupActive(bool val);
     void setHibernationSize(int val);
     void setGamingOverlayActive(bool val);
     void setCoreIsolationActive(bool val);
@@ -705,6 +710,8 @@ signals:
     void originalWinSearchActiveChanged(bool val);
     void hibernationActiveChanged(bool val);
     void originalHibernationActiveChanged(bool val);
+    void fastStartupActiveChanged(bool val);
+    void originalFastStartupActiveChanged(bool val);
     void hibernationSizeChanged(int val);
     void originalHibernationSizeChanged(int val);
     void xboxInstalledChanged(bool val);
@@ -961,6 +968,8 @@ private:
     bool m_originalWinSearchActive = true;
     bool m_hibernationActive = false;
     bool m_originalHibernationActive = false;
+    bool m_fastStartupActive = false;
+    bool m_originalFastStartupActive = false;
     int m_hibernationSize = 40;
     int m_originalHibernationSize = 40;
     bool m_xboxInstalled = false;

@@ -471,6 +471,7 @@ Item {
         if (optimizerBackend.taskbarSecondsActive !== optimizerBackend.originalTaskbarSecondsActive) return true;
         if (optimizerBackend.winSearchActive !== optimizerBackend.originalWinSearchActive) return true;
         if (root.hibernationChanged) return true;
+        if (root.fastStartupChanged) return true;
         if (optimizerBackend.gamingOverlayActive !== optimizerBackend.originalGamingOverlayActive) return true;
         if (optimizerBackend.coreIsolationActive !== optimizerBackend.originalCoreIsolationActive) return true;
         if (optimizerBackend.mouseAccelerationActive !== optimizerBackend.originalMouseAccelerationActive) return true;
@@ -914,6 +915,7 @@ Item {
 
 
     property bool hibernationChanged: (optimizerBackend.hibernationActive !== optimizerBackend.originalHibernationActive) || (optimizerBackend.hibernationActive && (optimizerBackend.hibernationSize !== optimizerBackend.originalHibernationSize))
+    property bool fastStartupChanged: optimizerBackend.fastStartupActive !== optimizerBackend.originalFastStartupActive
 
 
 
@@ -2814,6 +2816,15 @@ Item {
         });
 
 
+
+        if (fastStartupChanged) list.push({
+            name: qsTr("Fast Startup"),
+            icon: "qrc:/MeguPackOptimizer/src/resources/power.svg",
+            hasSidebar: false,
+            revert: function() {
+                optimizerBackend.fastStartupActive = optimizerBackend.originalFastStartupActive;
+            }
+        });
 
         if (hibernationChanged) list.push({
 
@@ -6847,6 +6858,7 @@ Item {
 
 
         if (name === qsTr("System Hibernation") || name === "System Hibernation") return hibernationPanel;
+        if (name === qsTr("Fast Startup") || name === "Fast Startup") return fastStartupPanel;
 
 
 
@@ -26633,6 +26645,114 @@ Item {
                 }
 
 
+                // Fast Startup Card
+                AcrylicPanel {
+                    id: fastStartupPanel
+                    width: parent.width
+                    height: 104
+                    enabled: optimizerBackend.hibernationActive
+                    opacity: enabled ? 1.0 : 0.4
+                    
+                    Behavior on opacity { NumberAnimation { duration: Theme.animFast } }
+
+                    Row {
+                        anchors.left: parent.left
+                        anchors.leftMargin: 16
+                        anchors.verticalCenter: parent.verticalCenter
+                        spacing: 12
+
+                        Rectangle {
+                            width: 40
+                            height: 40
+                            radius: 10
+                            color: Qt.rgba(Theme.accent.r, Theme.accent.g, Theme.accent.b, 0.15)
+                            anchors.verticalCenter: parent.verticalCenter
+                            Item {
+                                width: 20
+                                height: 20
+                                anchors.centerIn: parent
+                                Image {
+                                    id: fastStartupPanel_iconImg
+                                    source: "qrc:/MeguPackOptimizer/src/resources/power.svg"
+                                    anchors.fill: parent
+                                    sourceSize.width: 20
+                                    sourceSize.height: 20
+                                    visible: false
+                                }
+                                ColorOverlay {
+                                    anchors.fill: fastStartupPanel_iconImg
+                                    source: fastStartupPanel_iconImg
+                                    color: Theme.accent
+                                }
+                            }
+                        }
+
+                        Column {
+                            anchors.verticalCenter: parent.verticalCenter
+                            spacing: 2
+
+                            Row {
+                                spacing: 8
+                                Text {
+                                    text: qsTr("Fast startup")
+                                    color: Theme.textPrimary
+                                    font.family: Theme.fontFamily
+                                    font.pixelSize: 16
+                                    font.bold: true
+                                    anchors.verticalCenter: parent.verticalCenter
+                                }
+                                ShowPathButton {
+                                    anchors.verticalCenter: parent.verticalCenter
+                                    onClicked: { optimizerBackend.showPath("fastStartup"); }
+                                }
+                                Rectangle {
+                                    visible: root.fastStartupChanged
+                                    height: 16
+                                    width: selectedTextFastStart.contentWidth + 10
+                                    radius: 4
+                                    color: Qt.rgba(Theme.success.r, Theme.success.g, Theme.success.b, 0.15)
+                                    border.color: Theme.success
+                                    border.width: 1
+                                    anchors.verticalCenter: parent.verticalCenter
+                                    Text {
+                                        id: selectedTextFastStart
+                                        text: qsTr("Selected for application")
+                                        color: Theme.success
+                                        font.family: Theme.fontFamily
+                                        font.pixelSize: 8
+                                        font.bold: true
+                                        anchors.centerIn: parent
+                                    }
+                                }
+                            }
+
+                            Text {
+                                text: qsTr("Allows the device to open faster after a shutdown, reducing up to 50% of boot-time")
+                                color: Theme.textMuted
+                                font.family: Theme.fontFamily
+                                font.pixelSize: 12
+                            }
+                        }
+                    }
+
+                    Row {
+                        anchors.right: parent.right
+                        anchors.rightMargin: 16
+                        anchors.verticalCenter: parent.verticalCenter
+                        spacing: 16
+
+                        MeguSwitch {
+                            checked: optimizerBackend.fastStartupActive
+                            enabled: fastStartupPanel.enabled
+                            anchors.verticalCenter: parent.verticalCenter
+                            onToggled: (isChecked) => {
+                                optimizerBackend.fastStartupActive = isChecked;
+                            }
+                        }
+                    }
+                }
+
+
 
 
 
@@ -37607,6 +37727,5 @@ Item {
 
 
 }
-
 
 

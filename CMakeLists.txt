@@ -68,6 +68,7 @@ qt_add_qml_module(megu_pack_optimizer
         src/qml/views/CleanupDrawer.qml
     RESOURCES
         src/resources/settings.svg
+        src/resources/power.svg
         src/resources/trash.svg
         src/resources/broom.svg
         src/resources/reset.svg

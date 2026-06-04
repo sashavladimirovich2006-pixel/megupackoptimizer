@@ -2459,6 +2459,13 @@ void Optimizer::setHibernationActive(bool val) {
     }
 }
 
+void Optimizer::setFastStartupActive(bool val) {
+    if (m_fastStartupActive != val) {
+        m_fastStartupActive = val;
+        emit fastStartupActiveChanged(m_fastStartupActive);
+    }
+}
+
 void Optimizer::setHibernationSize(int val) {
     if (m_hibernationSize != val) {
         m_hibernationSize = val;
@@ -3413,6 +3420,26 @@ void Optimizer::loadSystemStates() {
     m_originalHibernationActive = m_hibernationActive;
     emit hibernationActiveChanged(m_hibernationActive);
     emit originalHibernationActiveChanged(m_originalHibernationActive);
+
+    // Read HiberbootEnabled Registry Key on Windows
+    bool isFastStartupActive = false;
+#ifdef Q_OS_WIN
+    HKEY hKeyHiberboot;
+    if (RegOpenKeyExW(HKEY_LOCAL_MACHINE, L"SYSTEM\\CurrentControlSet\\Control\\Session Manager\\Power", 0, KEY_READ, &hKeyHiberboot) == ERROR_SUCCESS) {
+        DWORD value = 0;
+        DWORD size = sizeof(value);
+        if (RegQueryValueExW(hKeyHiberboot, L"HiberbootEnabled", NULL, NULL, (LPBYTE)&value, &size) == ERROR_SUCCESS) {
+            isFastStartupActive = (value == 1);
+        }
+        RegCloseKey(hKeyHiberboot);
+    }
+#else
+    isFastStartupActive = true; // Simulation default
+#endif
+    m_fastStartupActive = isFastStartupActive;
+    m_originalFastStartupActive = m_fastStartupActive;
+    emit fastStartupActiveChanged(m_fastStartupActive);
+    emit originalFastStartupActiveChanged(m_originalFastStartupActive);
 
     int hiberSize = 40;
 #ifdef Q_OS_WIN
@@ -6067,6 +6094,8 @@ void Optimizer::startSystemOptimization() {
     bool origTaskbarEndTask = m_originalTaskbarEndTaskActive;
     bool origTaskbarSeconds = m_originalTaskbarSecondsActive;
     bool origHibernation = m_originalHibernationActive;
+    bool origFastStartup = m_originalFastStartupActive;
+    bool fastStartupVal = m_fastStartupActive;
     int hibernationSizeVal = m_hibernationSize;
     int origHibernationSize = m_originalHibernationSize;
     bool origOverlay = m_originalGamingOverlayActive;
@@ -6144,7 +6173,7 @@ void Optimizer::startSystemOptimization() {
     m_explorerNeedsRestart = false;
     emit explorerNeedsRestartChanged(m_explorerNeedsRestart);
 
-    QThread* worker = QThread::create([this, explorerShowExtensionsVal, origExplorerShowExtensionsVal, explorerShowHiddenVal, origExplorerShowHiddenVal, explorerShowExtractFilesVal, origExplorerShowExtractFilesVal, explorerClassicRibbonVal, origExplorerClassicRibbonVal, explorerShowPreviewPaneVal, origExplorerShowPreviewPaneVal, explorerShowRecycleBinVal, origExplorerShowRecycleBinVal, explorerPinRecycleBinVal, origExplorerPinRecycleBinVal, explorerPinHomeVal, origExplorerPinHomeVal, explorerPinGalleryVal, origExplorerPinGalleryVal, explorerUseCheckboxesVal, origExplorerUseCheckboxesVal, explorerSyncNotificationsVal, origExplorerSyncNotificationsVal, explorerLaunchToVal, origExplorerLaunchToVal, forceVal, searchVal, classicContextMenuVal, shortcutArrowsVal, clipboardHistoryVal, taskbarEndTaskVal, taskbarSecondsVal, hibernationVal, overlayVal, coreIsolationVal, hagsVal, mouseAccelVal, gameModeVal, firewallVal, bitlockerVal, discordOverlayVal, notificationsVal, notifGlobalVal, notifAppVal, notifSoundsVal, notifLockscreenVal, targetPowerSchemeVal, activePowerSchemeVal, deleteUltimateStagedVal, deleteDefenderStagedVal, defenderVal, defenderRegistryVal, defenderCmdVal, defenderServiceVal, remoteAccessVal, telemetryVal, telemetryDiagTrackVal, telemetryWapPushVal, telemetryCeipVal, telemetryWerVal, windowsUpdateModeVal, targets, originalTargets, origSearch, origClassicContextMenu, origShortcutArrows, origClipboardHistory, origTaskbarEndTask, origTaskbarSeconds, origHibernation, origOverlay, origCoreIsolation, origHags, origMouseAccel, origGameMode, origFirewall, origBitlocker, origDiscordOverlay, origNotifications, origNotifGlobal, origNotifApp, origNotifSounds, origNotifLockscreen, origDefender, origDefenderRegistry, origDefenderCmd, origDefenderService, origRemoteAccess, origTelemetry, origTelemetryDiagTrack, origTelemetryWapPush, origTelemetryCeip, origTelemetryWer, origWindowsUpdateMode, usbDevicesVal, origUsbDevicesVal, appNotificationSettingsVal, steamPathVal, cs2OptionsVal, origCs2OptionsVal, steamOverlayVal, origSteamOverlayVal, cs2OverlayVal, origCs2OverlayVal, visualEffectsVal, origVisualEffectsVal, steamFriendsSettingsVal, origSteamFriendsSettingsVal, steamFriendsChanged, pagefileMinVal, origPagefileMinVal, pagefileMaxVal, origPagefileMaxVal, adsTailoredExperiencesVal, origAdsTailored, adsAdvertisingIdVal, origAdsAdvertisingId, adsSuggestedContentVal, origAdsSuggestedContent, adsSettingsHomeVal, origAdsSettingsHome, adsSuggestedNotificationsVal, origAdsSuggestedNotifications, adsLockScreenTipsVal, origAdsLockScreenTips, adsWindowsTipsVal, origAdsWindowsTips, adsWelcomeExperienceVal, origAdsWelcomeExperience, adsFinishSetupVal, origAdsFinishSetup, privacyLocationVal, origPrivacyLocation, privacyTelemetryVal, origPrivacyTelemetry, privacyCeipVal, origPrivacyCeip, privacyAppsTelemetryVal, origPrivacyAppsTelemetry, privacyAppLaunchesVal, origPrivacyAppLaunches, privacyImproveInkingVal, origPrivacyImproveInking, privacyPersonalizeInkingVal, origPrivacyPersonalizeInking, privacyErrorReportingVal, origPrivacyErrorReporting, privacyLockScreenCameraVal, origPrivacyLockScreenCamera, privacyCameraIndicatorVal, origPrivacyCameraIndicator, privacyOnlineSpeechVal, origPrivacyOnlineSpeech, superuserGodModeVal, superuserDeveloperModeVal, superuserUacLevelVal, superuserUcpdVal, superuserGodModeOrig, superuserDeveloperModeOrig, superuserUacLevelOrig, superuserUcpdOrig, startMenuWebResultsVal, origStartMenuWebResultsVal, startMenuAutoinstallVal, origStartMenuAutoinstallVal, startMenuAccountNotificationsVal, origStartMenuAccountNotificationsVal, startMenuShowHibernateVal, origStartMenuShowHibernateVal, desktopShowThisPCVal, origDesktopShowThisPCVal, desktopShowWidgetsVal, origDesktopShowWidgetsVal, desktopIconShadowsVal, origDesktopIconShadowsVal, desktopShowDesktopButtonVal, origDesktopShowDesktopButtonVal, desktopAeroShakeVal, origDesktopAeroShakeVal, desktopWallpaperQualityVal, origDesktopWallpaperQualityVal, coinstallersActiveVal, origCoinstallersActiveVal, driverUpdatesVal, origDriverUpdatesVal, appUpdatesVal, origAppUpdatesVal, storageSenseVal, origStorageSenseVal, driveOptimizationVal, origDriveOptimizationVal, hibernationSizeVal, origHibernationSize]() {
+    QThread* worker = QThread::create([this, explorerShowExtensionsVal, origExplorerShowExtensionsVal, explorerShowHiddenVal, origExplorerShowHiddenVal, explorerShowExtractFilesVal, origExplorerShowExtractFilesVal, explorerClassicRibbonVal, origExplorerClassicRibbonVal, explorerShowPreviewPaneVal, origExplorerShowPreviewPaneVal, explorerShowRecycleBinVal, origExplorerShowRecycleBinVal, explorerPinRecycleBinVal, origExplorerPinRecycleBinVal, explorerPinHomeVal, origExplorerPinHomeVal, explorerPinGalleryVal, origExplorerPinGalleryVal, explorerUseCheckboxesVal, origExplorerUseCheckboxesVal, explorerSyncNotificationsVal, origExplorerSyncNotificationsVal, explorerLaunchToVal, origExplorerLaunchToVal, forceVal, searchVal, classicContextMenuVal, shortcutArrowsVal, clipboardHistoryVal, taskbarEndTaskVal, taskbarSecondsVal, hibernationVal, overlayVal, coreIsolationVal, hagsVal, mouseAccelVal, gameModeVal, firewallVal, bitlockerVal, discordOverlayVal, notificationsVal, notifGlobalVal, notifAppVal, notifSoundsVal, notifLockscreenVal, targetPowerSchemeVal, activePowerSchemeVal, deleteUltimateStagedVal, deleteDefenderStagedVal, defenderVal, defenderRegistryVal, defenderCmdVal, defenderServiceVal, remoteAccessVal, telemetryVal, telemetryDiagTrackVal, telemetryWapPushVal, telemetryCeipVal, telemetryWerVal, windowsUpdateModeVal, targets, originalTargets, origSearch, origClassicContextMenu, origShortcutArrows, origClipboardHistory, origTaskbarEndTask, origTaskbarSeconds, origHibernation, origOverlay, origCoreIsolation, origHags, origMouseAccel, origGameMode, origFirewall, origBitlocker, origDiscordOverlay, origNotifications, origNotifGlobal, origNotifApp, origNotifSounds, origNotifLockscreen, origDefender, origDefenderRegistry, origDefenderCmd, origDefenderService, origRemoteAccess, origTelemetry, origTelemetryDiagTrack, origTelemetryWapPush, origTelemetryCeip, origTelemetryWer, origWindowsUpdateMode, usbDevicesVal, origUsbDevicesVal, appNotificationSettingsVal, steamPathVal, cs2OptionsVal, origCs2OptionsVal, steamOverlayVal, origSteamOverlayVal, cs2OverlayVal, origCs2OverlayVal, visualEffectsVal, origVisualEffectsVal, steamFriendsSettingsVal, origSteamFriendsSettingsVal, steamFriendsChanged, pagefileMinVal, origPagefileMinVal, pagefileMaxVal, origPagefileMaxVal, adsTailoredExperiencesVal, origAdsTailored, adsAdvertisingIdVal, origAdsAdvertisingId, adsSuggestedContentVal, origAdsSuggestedContent, adsSettingsHomeVal, origAdsSettingsHome, adsSuggestedNotificationsVal, origAdsSuggestedNotifications, adsLockScreenTipsVal, origAdsLockScreenTips, adsWindowsTipsVal, origAdsWindowsTips, adsWelcomeExperienceVal, origAdsWelcomeExperience, adsFinishSetupVal, origAdsFinishSetup, privacyLocationVal, origPrivacyLocation, privacyTelemetryVal, origPrivacyTelemetry, privacyCeipVal, origPrivacyCeip, privacyAppsTelemetryVal, origPrivacyAppsTelemetry, privacyAppLaunchesVal, origPrivacyAppLaunches, privacyImproveInkingVal, origPrivacyImproveInking, privacyPersonalizeInkingVal, origPrivacyPersonalizeInking, privacyErrorReportingVal, origPrivacyErrorReporting, privacyLockScreenCameraVal, origPrivacyLockScreenCamera, privacyCameraIndicatorVal, origPrivacyCameraIndicator, privacyOnlineSpeechVal, origPrivacyOnlineSpeech, superuserGodModeVal, superuserDeveloperModeVal, superuserUacLevelVal, superuserUcpdVal, superuserGodModeOrig, superuserDeveloperModeOrig, superuserUacLevelOrig, superuserUcpdOrig, startMenuWebResultsVal, origStartMenuWebResultsVal, startMenuAutoinstallVal, origStartMenuAutoinstallVal, startMenuAccountNotificationsVal, origStartMenuAccountNotificationsVal, startMenuShowHibernateVal, origStartMenuShowHibernateVal, desktopShowThisPCVal, origDesktopShowThisPCVal, desktopShowWidgetsVal, origDesktopShowWidgetsVal, desktopIconShadowsVal, origDesktopIconShadowsVal, desktopShowDesktopButtonVal, origDesktopShowDesktopButtonVal, desktopAeroShakeVal, origDesktopAeroShakeVal, desktopWallpaperQualityVal, origDesktopWallpaperQualityVal, coinstallersActiveVal, origCoinstallersActiveVal, driverUpdatesVal, origDriverUpdatesVal, appUpdatesVal, origAppUpdatesVal, storageSenseVal, origStorageSenseVal, driveOptimizationVal, origDriveOptimizationVal, hibernationSizeVal, origHibernationSize, fastStartupVal, origFastStartup]() {
         // Step 00: Auto-create backup before making changes
         if (!forceVal && Settings::instance()->createBackup()) {
             emit systemStepReported(tr("Creating automatic system backup..."), "INFO");
@@ -7116,6 +7145,34 @@ void Optimizer::startSystemOptimization() {
 #endif
             m_hibernationSize = hibernationSizeVal;
             emit hibernationSizeChanged(m_hibernationSize);
+        }
+
+        // Step 1.7: Fast Startup Configuration (only if changed)
+        bool fastStartupSuccess = true;
+        if (fastStartupVal != origFastStartup || forceVal) {
+            emit systemStepReported(tr("Configuring Fast Startup..."), "INFO");
+            QThread::msleep(800);
+#ifdef Q_OS_WIN
+            HKEY hKeyHiberboot;
+            if (RegOpenKeyExW(HKEY_LOCAL_MACHINE, L"SYSTEM\\CurrentControlSet\\Control\\Session Manager\\Power", 0, KEY_WRITE, &hKeyHiberboot) == ERROR_SUCCESS) {
+                DWORD val = fastStartupVal ? 1 : 0;
+                if (RegSetValueExW(hKeyHiberboot, L"HiberbootEnabled", 0, REG_DWORD, reinterpret_cast<const BYTE*>(&val), sizeof(val)) == ERROR_SUCCESS) {
+                    QString logMsg = fastStartupVal ? tr("Fast Startup is now ENABLED.") : tr("Fast Startup is now DISABLED.");
+                    emit systemStepReported(logMsg, "SUCCESS");
+                } else {
+                    fastStartupSuccess = false;
+                    emit systemStepReported(tr("Failed to update Fast Startup registry value."), "ERROR");
+                }
+                RegCloseKey(hKeyHiberboot);
+            } else {
+                fastStartupSuccess = false;
+                emit systemStepReported(tr("Failed to open Session Manager\\Power registry key."), "ERROR");
+            }
+#else
+            emit systemStepReported(tr("[Simulation] Fast Startup set to: %1").arg(fastStartupVal ? "Enabled" : "Disabled"), "SUCCESS");
+#endif
+            m_fastStartupActive = fastStartupVal;
+            emit fastStartupActiveChanged(m_fastStartupActive);
         }
         
         m_systemProgress = 0.35;
@@ -10113,7 +10170,7 @@ void Optimizer::startSystemOptimization() {
 #endif
         }
 
-        bool overallSuccess = wSearchSuccess && classicContextMenuSuccess && shortcutArrowsSuccess && clipboardHistorySuccess && taskbarEndTaskSuccess && taskbarSecondsSuccess && hibernationSuccess && hibernationSizeSuccess && overlaySuccess && coreIsolationSuccess && hagsSuccess && mouseAccelSuccess && gameModeSuccess && firewallSuccess && notificationsSuccess && powerPlanSuccess && defenderSuccess && overallDrivesSuccess && usbSuccess && remoteAccessSuccess && telemetrySuccess && windowsUpdateSuccess && cs2Success && steamOverlaySuccess && cs2OverlaySuccess && steamFriendsSuccess && visualEffectsSuccess && pagefileSuccess && adsSuccess && superuserSuccess && desktopSuccess && explorerCustomizationSuccess && startMenuSuccess && storageSenseSuccess && driveOptimizationSuccess && coinstallersSuccess && bitlockerSuccess && privacySuccess && driverUpdatesSuccess && appUpdatesSuccess;
+        bool overallSuccess = wSearchSuccess && classicContextMenuSuccess && shortcutArrowsSuccess && clipboardHistorySuccess && taskbarEndTaskSuccess && taskbarSecondsSuccess && hibernationSuccess && hibernationSizeSuccess && fastStartupSuccess && overlaySuccess && coreIsolationSuccess && hagsSuccess && mouseAccelSuccess && gameModeSuccess && firewallSuccess && notificationsSuccess && powerPlanSuccess && defenderSuccess && overallDrivesSuccess && usbSuccess && remoteAccessSuccess && telemetrySuccess && windowsUpdateSuccess && cs2Success && steamOverlaySuccess && cs2OverlaySuccess && steamFriendsSuccess && visualEffectsSuccess && pagefileSuccess && adsSuccess && superuserSuccess && desktopSuccess && explorerCustomizationSuccess && startMenuSuccess && storageSenseSuccess && driveOptimizationSuccess && coinstallersSuccess && bitlockerSuccess && privacySuccess && driverUpdatesSuccess && appUpdatesSuccess;
         if (overallSuccess) {
             emit systemStepReported(tr("System optimization completed successfully!"), "SUCCESS");
             Logger::log("System optimization completed successfully!", "INFO");
@@ -10130,6 +10187,7 @@ void Optimizer::startSystemOptimization() {
         m_originalTaskbarEndTaskActive = taskbarEndTaskVal;
         m_originalTaskbarSecondsActive = taskbarSecondsVal;
         m_originalHibernationActive = hibernationVal;
+        m_originalFastStartupActive = fastStartupVal;
         m_originalHibernationSize = hibernationSizeVal;
         m_originalGamingOverlayActive = overlayVal;
         m_originalCoreIsolationActive = coreIsolationVal;
@@ -10417,6 +10475,9 @@ void Optimizer::showPath(const QString &funcName) {
     if (funcName == "Windows Search service" || funcName == "wsearch") {
         QProcess::startDetached("cmd.exe", QStringList() << "/c" << "start services.msc");
         Logger::log("Opening Services Manager for Windows Search...", "INFO");
+    } else if (funcName == "fastStartup") {
+        QProcess::startDetached("control.exe", QStringList() << "/name" << "Microsoft.PowerOptions" << "/page" << "pageGlobalSettings");
+        Logger::log("Opening Power Options Global Settings for Fast Startup...", "INFO");
     } else if (funcName == "hibernation") {
         QProcess::startDetached("control.exe", QStringList() << "/name" << "Microsoft.PowerOptions" << "/page" << "pageGlobalSettings");
         Logger::log("Opening Power Options Global Settings...", "INFO");
