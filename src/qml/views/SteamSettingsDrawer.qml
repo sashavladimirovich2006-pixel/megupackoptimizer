@@ -7970,7 +7970,7 @@ Item {
                             onClicked: {
                                 pairSteamLinkDialog.showInstructions = true;
                                 optimizerBackend.launchSteam();
-                                Qt.openUrlExternally("steam://open/settings");
+                                Qt.openUrlExternally("steam://settings/remoteplay");
                             }
                         }
 
