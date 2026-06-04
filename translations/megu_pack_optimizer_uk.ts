@@ -2052,7 +2052,7 @@ Would you like to close Discord now and proceed?</source>
         <source>Disables the modern Windows 11 Fluent context menu and restores the classic Windows 10 style context menu.</source>
         <translation>Вимкнення сучасного контекстного меню Windows 11 і відновлення класичного стилю Windows 10.</translation>
     </message>
-<message><source>OPTIMIZATION</source><translation>ОПТИМІЗАЦІЯ</translation></message><message><source>CURRENT LEVEL</source><translation>ПОТОЧНИЙ РІВЕНЬ</translation></message><message><source>Good luck in games!</source><translation>Удачі в іграх!</translation></message></context>
+<message><source>OPTIMIZATION</source><translation>ОПТИМІЗАЦІЯ</translation></message><message><source>CURRENT LEVEL</source><translation>ПОТОЧНИЙ РІВЕНЬ</translation></message><message><source>Good luck in games!</source><translation>Удачі в іграх!</translation></message><message><source>Drive optimization</source><translation>Оптимізація дисків</translation></message></context>
 <context>
     <name>Optimizer</name>
     <message>
@@ -3440,7 +3440,7 @@ Would you like to close Discord now and proceed?</source>
         <source>[Simulation] Classic Context Menu set to: %1</source>
         <translation>[Симуляція] Класичне контекстне меню встановлено на: %1</translation>
     </message>
-</context>
+<message><source>Configuring Drive Optimization...</source><translation>Налаштування оптимізації дисків...</translation></message><message><source>Drive optimization enabled successfully.</source><translation>Оптимізація дисків успішно увімкнена.</translation></message><message><source>Drive optimization disabled successfully.</source><translation>Оптимізація дисків успішно вимкнена.</translation></message><message><source>Failed to configure Drive Optimization completely (Service: %1, Task: %2).</source><translation>Не вдалося повністю налаштувати оптимізацію дисків (Служба: %1, Завдання: %2).</translation></message><message><source>Success</source><translation>Успішно</translation></message><message><source>Failed</source><translation>Помилка</translation></message></context>
 <context>
     <name>PowerDrawer</name>
     <message>
@@ -5249,4 +5249,4 @@ Would you like to close Discord now and proceed?</source>
         <translation>Кастомізація</translation>
     </message>
 <message><source>Poor Level</source><translation>Поганий рівень</translation></message><message><source>Average Level</source><translation>Середній рівень</translation></message><message><source>Optimal Level</source><translation>Оптимальний рівень</translation></message></context>
-</TS>
+<context><name>HealthDrawer</name><message><source>Drive optimization</source><translation>Оптимізація дисків</translation></message><message><source>Helps your device run more efficiently</source><translation>Допомагає вашому пристрою працювати більш ефективно</translation></message></context></TS>

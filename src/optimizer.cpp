@@ -2889,6 +2889,13 @@ void Optimizer::setStorageSenseActive(bool val) {
     }
 }
 
+void Optimizer::setDriveOptimizationActive(bool val) {
+    if (m_driveOptimizationActive != val) {
+        m_driveOptimizationActive = val;
+        emit driveOptimizationActiveChanged(m_driveOptimizationActive);
+    }
+}
+
 void Optimizer::setAppUpdatesEnabled(bool val) {
     if (m_appUpdatesEnabled != val) {
         m_appUpdatesEnabled = val;
@@ -4856,6 +4863,38 @@ void Optimizer::loadSystemStates() {
     emit storageSenseActiveChanged(m_storageSenseActive);
     emit originalStorageSenseActiveChanged(m_originalStorageSenseActive);
 
+    bool driveOptimizationActive = true;
+#ifdef Q_OS_WIN
+    // 1. Check defragsvc startup type
+    HKEY hKeyDefrag = nullptr;
+    if (RegOpenKeyExW(HKEY_LOCAL_MACHINE, L"SYSTEM\\CurrentControlSet\\Services\\defragsvc", 0, KEY_READ, &hKeyDefrag) == ERROR_SUCCESS) {
+        DWORD startVal = 3;
+        DWORD size = sizeof(startVal);
+        if (RegQueryValueExW(hKeyDefrag, L"Start", nullptr, nullptr, reinterpret_cast<LPBYTE>(&startVal), &size) == ERROR_SUCCESS) {
+            if (startVal == 4) {
+                driveOptimizationActive = false;
+            }
+        }
+        RegCloseKey(hKeyDefrag);
+    }
+
+    // 2. Check scheduled task state if service is not disabled
+    if (driveOptimizationActive) {
+        QProcess proc;
+        proc.start("schtasks.exe", QStringList() << "/query" << "/tn" << "\\Microsoft\\Windows\\Defrag\\ScheduledDefrag" << "/fo" << "LIST");
+        if (proc.waitForFinished(2000)) {
+            QString output = QString::fromLocal8Bit(proc.readAllStandardOutput());
+            if (output.contains("Status:        Disabled") || output.contains("Disabled")) {
+                driveOptimizationActive = false;
+            }
+        }
+    }
+#endif
+    m_driveOptimizationActive = driveOptimizationActive;
+    m_originalDriveOptimizationActive = driveOptimizationActive;
+    emit driveOptimizationActiveChanged(m_driveOptimizationActive);
+    emit originalDriveOptimizationActiveChanged(m_originalDriveOptimizationActive);
+
     // ----------------------------------------------------
     // Load Counter-Strike 2 launch options
     // ----------------------------------------------------
@@ -5875,6 +5914,8 @@ void Optimizer::startSystemOptimization() {
     bool origAppUpdatesVal = m_originalAppUpdatesEnabled;
     bool storageSenseVal = m_storageSenseActive;
     bool origStorageSenseVal = m_originalStorageSenseActive;
+    bool driveOptimizationVal = m_driveOptimizationActive;
+    bool origDriveOptimizationVal = m_originalDriveOptimizationActive;
 
     // Copy Ads targets
     bool adsTailoredExperiencesVal = m_adsTailoredExperiencesActive;
@@ -6073,7 +6114,7 @@ void Optimizer::startSystemOptimization() {
     m_explorerNeedsRestart = false;
     emit explorerNeedsRestartChanged(m_explorerNeedsRestart);
 
-    QThread* worker = QThread::create([this, explorerShowExtensionsVal, origExplorerShowExtensionsVal, explorerShowHiddenVal, origExplorerShowHiddenVal, explorerShowExtractFilesVal, origExplorerShowExtractFilesVal, explorerClassicRibbonVal, origExplorerClassicRibbonVal, explorerShowPreviewPaneVal, origExplorerShowPreviewPaneVal, explorerShowRecycleBinVal, origExplorerShowRecycleBinVal, explorerPinRecycleBinVal, origExplorerPinRecycleBinVal, explorerPinHomeVal, origExplorerPinHomeVal, explorerPinGalleryVal, origExplorerPinGalleryVal, explorerUseCheckboxesVal, origExplorerUseCheckboxesVal, explorerSyncNotificationsVal, origExplorerSyncNotificationsVal, explorerLaunchToVal, origExplorerLaunchToVal, forceVal, searchVal, classicContextMenuVal, shortcutArrowsVal, clipboardHistoryVal, taskbarEndTaskVal, taskbarSecondsVal, hibernationVal, overlayVal, coreIsolationVal, hagsVal, mouseAccelVal, gameModeVal, firewallVal, bitlockerVal, discordOverlayVal, notificationsVal, notifGlobalVal, notifAppVal, notifSoundsVal, notifLockscreenVal, targetPowerSchemeVal, activePowerSchemeVal, deleteUltimateStagedVal, deleteDefenderStagedVal, defenderVal, defenderRegistryVal, defenderCmdVal, defenderServiceVal, remoteAccessVal, telemetryVal, telemetryDiagTrackVal, telemetryWapPushVal, telemetryCeipVal, telemetryWerVal, windowsUpdateModeVal, targets, originalTargets, origSearch, origClassicContextMenu, origShortcutArrows, origClipboardHistory, origTaskbarEndTask, origTaskbarSeconds, origHibernation, origOverlay, origCoreIsolation, origHags, origMouseAccel, origGameMode, origFirewall, origBitlocker, origDiscordOverlay, origNotifications, origNotifGlobal, origNotifApp, origNotifSounds, origNotifLockscreen, origDefender, origDefenderRegistry, origDefenderCmd, origDefenderService, origRemoteAccess, origTelemetry, origTelemetryDiagTrack, origTelemetryWapPush, origTelemetryCeip, origTelemetryWer, origWindowsUpdateMode, usbDevicesVal, origUsbDevicesVal, appNotificationSettingsVal, steamPathVal, cs2OptionsVal, origCs2OptionsVal, steamOverlayVal, origSteamOverlayVal, cs2OverlayVal, origCs2OverlayVal, visualEffectsVal, origVisualEffectsVal, steamFriendsSettingsVal, origSteamFriendsSettingsVal, steamFriendsChanged, pagefileMinVal, origPagefileMinVal, pagefileMaxVal, origPagefileMaxVal, adsTailoredExperiencesVal, origAdsTailored, adsAdvertisingIdVal, origAdsAdvertisingId, adsSuggestedContentVal, origAdsSuggestedContent, adsSettingsHomeVal, origAdsSettingsHome, adsSuggestedNotificationsVal, origAdsSuggestedNotifications, adsLockScreenTipsVal, origAdsLockScreenTips, adsWindowsTipsVal, origAdsWindowsTips, adsWelcomeExperienceVal, origAdsWelcomeExperience, adsFinishSetupVal, origAdsFinishSetup, privacyLocationVal, origPrivacyLocation, privacyTelemetryVal, origPrivacyTelemetry, privacyCeipVal, origPrivacyCeip, privacyAppsTelemetryVal, origPrivacyAppsTelemetry, privacyAppLaunchesVal, origPrivacyAppLaunches, privacyImproveInkingVal, origPrivacyImproveInking, privacyPersonalizeInkingVal, origPrivacyPersonalizeInking, privacyErrorReportingVal, origPrivacyErrorReporting, privacyLockScreenCameraVal, origPrivacyLockScreenCamera, privacyCameraIndicatorVal, origPrivacyCameraIndicator, privacyOnlineSpeechVal, origPrivacyOnlineSpeech, superuserGodModeVal, superuserDeveloperModeVal, superuserUacLevelVal, superuserUcpdVal, superuserGodModeOrig, superuserDeveloperModeOrig, superuserUacLevelOrig, superuserUcpdOrig, startMenuWebResultsVal, origStartMenuWebResultsVal, startMenuAutoinstallVal, origStartMenuAutoinstallVal, startMenuAccountNotificationsVal, origStartMenuAccountNotificationsVal, startMenuShowHibernateVal, origStartMenuShowHibernateVal, desktopShowThisPCVal, origDesktopShowThisPCVal, desktopShowWidgetsVal, origDesktopShowWidgetsVal, desktopIconShadowsVal, origDesktopIconShadowsVal, desktopShowDesktopButtonVal, origDesktopShowDesktopButtonVal, desktopAeroShakeVal, origDesktopAeroShakeVal, desktopWallpaperQualityVal, origDesktopWallpaperQualityVal, coinstallersActiveVal, origCoinstallersActiveVal, driverUpdatesVal, origDriverUpdatesVal, appUpdatesVal, origAppUpdatesVal, storageSenseVal, origStorageSenseVal]() {
+    QThread* worker = QThread::create([this, explorerShowExtensionsVal, origExplorerShowExtensionsVal, explorerShowHiddenVal, origExplorerShowHiddenVal, explorerShowExtractFilesVal, origExplorerShowExtractFilesVal, explorerClassicRibbonVal, origExplorerClassicRibbonVal, explorerShowPreviewPaneVal, origExplorerShowPreviewPaneVal, explorerShowRecycleBinVal, origExplorerShowRecycleBinVal, explorerPinRecycleBinVal, origExplorerPinRecycleBinVal, explorerPinHomeVal, origExplorerPinHomeVal, explorerPinGalleryVal, origExplorerPinGalleryVal, explorerUseCheckboxesVal, origExplorerUseCheckboxesVal, explorerSyncNotificationsVal, origExplorerSyncNotificationsVal, explorerLaunchToVal, origExplorerLaunchToVal, forceVal, searchVal, classicContextMenuVal, shortcutArrowsVal, clipboardHistoryVal, taskbarEndTaskVal, taskbarSecondsVal, hibernationVal, overlayVal, coreIsolationVal, hagsVal, mouseAccelVal, gameModeVal, firewallVal, bitlockerVal, discordOverlayVal, notificationsVal, notifGlobalVal, notifAppVal, notifSoundsVal, notifLockscreenVal, targetPowerSchemeVal, activePowerSchemeVal, deleteUltimateStagedVal, deleteDefenderStagedVal, defenderVal, defenderRegistryVal, defenderCmdVal, defenderServiceVal, remoteAccessVal, telemetryVal, telemetryDiagTrackVal, telemetryWapPushVal, telemetryCeipVal, telemetryWerVal, windowsUpdateModeVal, targets, originalTargets, origSearch, origClassicContextMenu, origShortcutArrows, origClipboardHistory, origTaskbarEndTask, origTaskbarSeconds, origHibernation, origOverlay, origCoreIsolation, origHags, origMouseAccel, origGameMode, origFirewall, origBitlocker, origDiscordOverlay, origNotifications, origNotifGlobal, origNotifApp, origNotifSounds, origNotifLockscreen, origDefender, origDefenderRegistry, origDefenderCmd, origDefenderService, origRemoteAccess, origTelemetry, origTelemetryDiagTrack, origTelemetryWapPush, origTelemetryCeip, origTelemetryWer, origWindowsUpdateMode, usbDevicesVal, origUsbDevicesVal, appNotificationSettingsVal, steamPathVal, cs2OptionsVal, origCs2OptionsVal, steamOverlayVal, origSteamOverlayVal, cs2OverlayVal, origCs2OverlayVal, visualEffectsVal, origVisualEffectsVal, steamFriendsSettingsVal, origSteamFriendsSettingsVal, steamFriendsChanged, pagefileMinVal, origPagefileMinVal, pagefileMaxVal, origPagefileMaxVal, adsTailoredExperiencesVal, origAdsTailored, adsAdvertisingIdVal, origAdsAdvertisingId, adsSuggestedContentVal, origAdsSuggestedContent, adsSettingsHomeVal, origAdsSettingsHome, adsSuggestedNotificationsVal, origAdsSuggestedNotifications, adsLockScreenTipsVal, origAdsLockScreenTips, adsWindowsTipsVal, origAdsWindowsTips, adsWelcomeExperienceVal, origAdsWelcomeExperience, adsFinishSetupVal, origAdsFinishSetup, privacyLocationVal, origPrivacyLocation, privacyTelemetryVal, origPrivacyTelemetry, privacyCeipVal, origPrivacyCeip, privacyAppsTelemetryVal, origPrivacyAppsTelemetry, privacyAppLaunchesVal, origPrivacyAppLaunches, privacyImproveInkingVal, origPrivacyImproveInking, privacyPersonalizeInkingVal, origPrivacyPersonalizeInking, privacyErrorReportingVal, origPrivacyErrorReporting, privacyLockScreenCameraVal, origPrivacyLockScreenCamera, privacyCameraIndicatorVal, origPrivacyCameraIndicator, privacyOnlineSpeechVal, origPrivacyOnlineSpeech, superuserGodModeVal, superuserDeveloperModeVal, superuserUacLevelVal, superuserUcpdVal, superuserGodModeOrig, superuserDeveloperModeOrig, superuserUacLevelOrig, superuserUcpdOrig, startMenuWebResultsVal, origStartMenuWebResultsVal, startMenuAutoinstallVal, origStartMenuAutoinstallVal, startMenuAccountNotificationsVal, origStartMenuAccountNotificationsVal, startMenuShowHibernateVal, origStartMenuShowHibernateVal, desktopShowThisPCVal, origDesktopShowThisPCVal, desktopShowWidgetsVal, origDesktopShowWidgetsVal, desktopIconShadowsVal, origDesktopIconShadowsVal, desktopShowDesktopButtonVal, origDesktopShowDesktopButtonVal, desktopAeroShakeVal, origDesktopAeroShakeVal, desktopWallpaperQualityVal, origDesktopWallpaperQualityVal, coinstallersActiveVal, origCoinstallersActiveVal, driverUpdatesVal, origDriverUpdatesVal, appUpdatesVal, origAppUpdatesVal, storageSenseVal, origStorageSenseVal, driveOptimizationVal, origDriveOptimizationVal]() {
         // Step 00: Auto-create backup before making changes
         if (!forceVal && Settings::instance()->createBackup()) {
             emit systemStepReported(tr("Creating automatic system backup..."), "INFO");
@@ -6199,6 +6240,7 @@ void Optimizer::startSystemOptimization() {
                           (localDriverUpdatesVal != origDriverUpdatesVal) ||
                           (appUpdatesVal != origAppUpdatesVal) ||
                           (storageSenseVal != origStorageSenseVal) ||
+                          (driveOptimizationVal != origDriveOptimizationVal) ||
                           powerPlanChanged ||
                           usbChanged ||
                           cs2Changed ||
@@ -9229,6 +9271,55 @@ void Optimizer::startSystemOptimization() {
 #endif
         }
 
+        // Step 1.96: Drive Optimization Configuration (only if changed)
+        bool driveOptimizationSuccess = true;
+        if (driveOptimizationVal != origDriveOptimizationVal || force) {
+            emit systemStepReported(tr("Configuring Drive Optimization..."), "INFO");
+            QThread::msleep(800);
+#ifdef Q_OS_WIN
+            // 1. Configure defragsvc service startup type
+            SC_HANDLE hSCM = OpenSCManagerW(NULL, NULL, SC_MANAGER_ALL_ACCESS);
+            bool svcSuccess = false;
+            if (hSCM) {
+                SC_HANDLE hService = OpenServiceW(hSCM, L"defragsvc", SERVICE_CHANGE_CONFIG);
+                if (hService) {
+                    DWORD startType = driveOptimizationVal ? SERVICE_DEMAND_START : SERVICE_DISABLED;
+                    if (ChangeServiceConfigW(hService, SERVICE_NO_CHANGE, startType, SERVICE_NO_CHANGE, NULL, NULL, NULL, NULL, NULL, NULL, NULL)) {
+                        svcSuccess = true;
+                    }
+                    CloseServiceHandle(hService);
+                }
+                CloseServiceHandle(hSCM);
+            }
+
+            // 2. Configure scheduled task
+            QString taskAction = driveOptimizationVal ? "/enable" : "/disable";
+            QString taskName = "\\Microsoft\\Windows\\Defrag\\ScheduledDefrag";
+            QProcess proc;
+            proc.start("schtasks.exe", QStringList() << "/change" << taskAction << "/tn" << taskName);
+            bool taskSuccess = false;
+            if (proc.waitForFinished(10000)) {
+                if (proc.exitCode() == 0) {
+                    taskSuccess = true;
+                } else {
+                    QString errOut = proc.readAllStandardError();
+                    Logger::log(QString("Drive optimization task change failed with code %1: %2").arg(proc.exitCode()).arg(errOut), "WARNING");
+                }
+            }
+
+            if (svcSuccess && taskSuccess) {
+                emit systemStepReported(driveOptimizationVal ? tr("Drive optimization enabled successfully.") : tr("Drive optimization disabled successfully."), "SUCCESS");
+            } else {
+                driveOptimizationSuccess = false;
+                emit systemStepReported(tr("Failed to configure Drive Optimization completely (Service: %1, Task: %2).")
+                                        .arg(svcSuccess ? tr("Success") : tr("Failed"))
+                                        .arg(taskSuccess ? tr("Success") : tr("Failed")), "WARNING");
+            }
+#else
+            emit systemStepReported(tr("[Simulation] Drive optimization set to: %1").arg(driveOptimizationVal ? "Enabled" : "Disabled"), "SUCCESS");
+#endif
+        }
+
         // Steps 2+: Iterate drives in target list (only if changed)
         int driveIndex = 0;
         int totalDrives = targets.keys().size();
@@ -9956,7 +10047,7 @@ void Optimizer::startSystemOptimization() {
 #endif
         }
 
-        bool overallSuccess = wSearchSuccess && classicContextMenuSuccess && shortcutArrowsSuccess && clipboardHistorySuccess && taskbarEndTaskSuccess && taskbarSecondsSuccess && hibernationSuccess && overlaySuccess && coreIsolationSuccess && hagsSuccess && mouseAccelSuccess && gameModeSuccess && firewallSuccess && notificationsSuccess && powerPlanSuccess && defenderSuccess && overallDrivesSuccess && usbSuccess && remoteAccessSuccess && telemetrySuccess && windowsUpdateSuccess && cs2Success && steamOverlaySuccess && cs2OverlaySuccess && steamFriendsSuccess && visualEffectsSuccess && pagefileSuccess && adsSuccess && superuserSuccess && desktopSuccess && explorerCustomizationSuccess && startMenuSuccess && storageSenseSuccess && coinstallersSuccess && bitlockerSuccess && privacySuccess && driverUpdatesSuccess && appUpdatesSuccess;
+        bool overallSuccess = wSearchSuccess && classicContextMenuSuccess && shortcutArrowsSuccess && clipboardHistorySuccess && taskbarEndTaskSuccess && taskbarSecondsSuccess && hibernationSuccess && overlaySuccess && coreIsolationSuccess && hagsSuccess && mouseAccelSuccess && gameModeSuccess && firewallSuccess && notificationsSuccess && powerPlanSuccess && defenderSuccess && overallDrivesSuccess && usbSuccess && remoteAccessSuccess && telemetrySuccess && windowsUpdateSuccess && cs2Success && steamOverlaySuccess && cs2OverlaySuccess && steamFriendsSuccess && visualEffectsSuccess && pagefileSuccess && adsSuccess && superuserSuccess && desktopSuccess && explorerCustomizationSuccess && startMenuSuccess && storageSenseSuccess && driveOptimizationSuccess && coinstallersSuccess && bitlockerSuccess && privacySuccess && driverUpdatesSuccess && appUpdatesSuccess;
         if (overallSuccess) {
             emit systemStepReported(tr("System optimization completed successfully!"), "SUCCESS");
             Logger::log("System optimization completed successfully!", "INFO");
@@ -9999,6 +10090,7 @@ void Optimizer::startSystemOptimization() {
         m_originalDriverUpdatesEnabled = localDriverUpdatesVal;
         m_originalAppUpdatesEnabled = appUpdatesVal;
         m_originalStorageSenseActive = storageSenseVal;
+        m_originalDriveOptimizationActive = driveOptimizationVal;
         m_originalCs2LaunchOptions = cs2OptionsVal;
         m_originalSteamOverlayActive = steamOverlayVal;
         m_originalCs2OverlayActive = cs2OverlayVal;
@@ -10097,6 +10189,7 @@ void Optimizer::startSystemOptimization() {
         emit originalDriverUpdatesEnabledChanged(m_originalDriverUpdatesEnabled);
         emit originalAppUpdatesEnabledChanged(m_originalAppUpdatesEnabled);
         emit originalStorageSenseActiveChanged(m_originalStorageSenseActive);
+        emit originalDriveOptimizationActiveChanged(m_originalDriveOptimizationActive);
 
         emit originalExplorerShowExtensionsChanged(m_originalExplorerShowExtensions);
         emit originalExplorerShowHiddenChanged(m_originalExplorerShowHidden);
@@ -10308,6 +10401,9 @@ void Optimizer::showPath(const QString &funcName) {
         QProcess::startDetached("explorer.exe", QStringList() << "ms-settings:storagesense");
 #endif
         Logger::log("Opening Windows Storage Sense Settings...", "INFO");
+    } else if (funcName == "driveoptimization" || funcName == "defrag") {
+        QProcess::startDetached("dfrgui.exe");
+        Logger::log("Opening Windows Drive Optimization (Disk Defragmenter)...", "INFO");
     } else if (funcName == "bitlocker") {
         QProcess::startDetached("control.exe", QStringList() << "/name" << "Microsoft.BitLockerDriveEncryption");
         Logger::log("Opening BitLocker Drive Encryption Manager...", "INFO");

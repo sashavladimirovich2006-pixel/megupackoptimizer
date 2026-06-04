@@ -497,6 +497,7 @@ Item {
         if (privacyChanged) return true;
         if (windowsUpdateChanged) return true;
         if (storageSenseChanged) return true;
+        if (driveOptimizationChanged) return true;
         if (cs2Changed) return true;
         if (optimizerBackend.steamOverlayActive !== optimizerBackend.originalSteamOverlayActive) return true;
         if (optimizerBackend.cs2OverlayActive !== optimizerBackend.originalCs2OverlayActive) return true;
@@ -921,6 +922,7 @@ Item {
 
 
     property bool storageSenseChanged: optimizerBackend.storageSenseActive !== optimizerBackend.originalStorageSenseActive
+    property bool driveOptimizationChanged: optimizerBackend.driveOptimizationActive !== optimizerBackend.originalDriveOptimizationActive
 
 
 
@@ -1761,6 +1763,7 @@ Item {
 
 
         if (storageSenseChanged) count++;
+        if (driveOptimizationChanged) count++;
 
 
 
@@ -2897,6 +2900,36 @@ Item {
 
 
                 optimizerBackend.storageSenseActive = optimizerBackend.originalStorageSenseActive;
+
+
+
+            }
+
+
+
+        });
+
+        if (driveOptimizationChanged) list.push({
+
+
+
+            name: qsTr("Drive optimization"),
+
+
+
+            icon: "qrc:/MeguPackOptimizer/src/resources/storage.svg",
+
+
+
+            hasSidebar: false,
+
+
+
+            revert: function() {
+
+
+
+                optimizerBackend.driveOptimizationActive = optimizerBackend.originalDriveOptimizationActive;
 
 
 
