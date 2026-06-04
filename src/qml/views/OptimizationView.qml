@@ -26745,32 +26745,31 @@ Item {
                                 spacing: 8
                                 visible: !optimizerBackend.hibernationActive
 
-                                Row {
-                                    spacing: 6
+                                Item {
+                                    width: 14
+                                    height: 14
                                     anchors.verticalCenter: parent.verticalCenter
                                     Image {
                                         id: fastStartupWarningIcon
                                         source: "qrc:/MeguPackOptimizer/src/resources/warning.svg"
-                                        width: 14
-                                        height: 14
-                                        anchors.verticalCenter: parent.verticalCenter
+                                        anchors.fill: parent
+                                        sourceSize.width: 14
+                                        sourceSize.height: 14
                                         visible: false
                                     }
                                     ColorOverlay {
                                         anchors.fill: fastStartupWarningIcon
                                         source: fastStartupWarningIcon
                                         color: Theme.warning
-                                        width: 14
-                                        height: 14
                                     }
+                                }
 
-                                    Text {
-                                        text: qsTr("To enable Fast startup, system hibernation must be enabled.")
-                                        color: Theme.warning
-                                        font.family: Theme.fontFamily
-                                        font.pixelSize: 12
-                                        anchors.verticalCenter: parent.verticalCenter
-                                    }
+                                Text {
+                                    text: qsTr("To enable Fast startup, system hibernation must be enabled.")
+                                    color: Theme.warning
+                                    font.family: Theme.fontFamily
+                                    font.pixelSize: 12
+                                    anchors.verticalCenter: parent.verticalCenter
                                 }
 
                                 // Eye / Locate button
