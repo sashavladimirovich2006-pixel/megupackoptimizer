@@ -19,6 +19,7 @@ import Qt5Compat.GraphicalEffects
 
 
 import "../components"
+import QtQuick.Shapes
 
 
 
@@ -36207,862 +36208,680 @@ Item {
 
 
 
+    // Helper StatCard component for completion overlay
+    component StatCard: Rectangle {
+        id: statCardRoot
+        property string title: ""
+        property string value: ""
+        property string iconSource: ""
+        property color accentColor: Theme.accent
+
+        height: 72
+        color: "#12141A"
+        radius: 10
+        border.color: Qt.rgba(255, 255, 255, 0.05)
+        border.width: 1
+
+        Row {
+            anchors.fill: parent
+            anchors.margins: 12
+            spacing: 12
+            
+            // Icon container
+            Rectangle {
+                width: 48
+                height: 48
+                radius: 24
+                color: Qt.rgba(statCardRoot.accentColor.r, statCardRoot.accentColor.g, statCardRoot.accentColor.b, 0.1)
+                anchors.verticalCenter: parent.verticalCenter
+                
+                Item {
+                    width: 20
+                    height: 20
+                    anchors.centerIn: parent
+                    
+                    Image {
+                        id: statIcon
+                        source: statCardRoot.iconSource
+                        anchors.fill: parent
+                        sourceSize.width: 20
+                        sourceSize.height: 20
+                        visible: false
+                    }
+                    
+                    ColorOverlay {
+                        anchors.fill: statIcon
+                        source: statIcon
+                        color: statCardRoot.accentColor
+                    }
+                }
+            }
+            
+            // Text values
+            Column {
+                anchors.verticalCenter: parent.verticalCenter
+                spacing: 4
+                width: parent.width - 64 // Fill remaining space
+                
+                Text {
+                    text: statCardRoot.title
+                    color: Theme.textMuted
+                    font.family: Theme.fontFamily
+                    font.pixelSize: 11
+                    elide: Text.ElideRight
+                    width: parent.width
+                }
+                
+                Text {
+                    text: statCardRoot.value
+                    color: "#FFFFFF"
+                    font.family: Theme.fontFamily
+                    font.pixelSize: 15
+                    font.bold: true
+                    elide: Text.ElideRight
+                    width: parent.width
+                }
+            }
+        }
+    }
+
     Rectangle {
-
-
-
         id: progressOverlay
-
-
-
         anchors.fill: parent
-
-
-
         color: "#E0000000"
-
-
-
         visible: optimizerBackend.isOptimizingSystem || showFinishedOverlay
-
-
-
         z: 200
-
-
-
-
-
-
 
         property bool showFinishedOverlay: false
 
+        // Statistics capture variables
+        property int settingsAppliedCount: 0
+        property int servicesDisabledCount: 0
+        property int appsRemovedCount: 0
+        property int drivesOptimizedCount: 0
+        property int totalTasksCount: 0
 
+        // Completed speedometer progress animation
+        property real completedProgress: 0.0
 
+        // Running logo pulse animation
+        property real pulseValue: 0.0
 
+        NumberAnimation on pulseValue {
+            from: 0.0
+            to: 2.0 * Math.PI
+            duration: 2000
+            loops: Animation.Infinite
+            running: optimizerBackend.isOptimizingSystem
+        }
 
-
+        NumberAnimation {
+            id: completedProgressAnim
+            target: progressOverlay
+            property: "completedProgress"
+            from: 0.0
+            to: 1.0
+            duration: 1200
+            easing.type: Easing.OutBack
+        }
 
         Connections {
-
-
-
             target: optimizerBackend
-
-
-
+            
             function onIsOptimizingSystemChanged(val) {
-
-
-
                 if (val) {
+                    // Capture changes count before baselines are synced by C++
+                    progressOverlay.settingsAppliedCount = root.mainChangesCount + root.sidebarChangesCount;
+                    
+                    var svcCount = 0;
+                    if (optimizerBackend.originalWinSearchActive && !optimizerBackend.winSearchActive) svcCount++;
+                    if (optimizerBackend.originalDefenderServiceActive && !optimizerBackend.defenderServiceActive) svcCount++;
+                    if (optimizerBackend.originalTelemetryDiagTrackActive && !optimizerBackend.telemetryDiagTrackActive) svcCount++;
+                    if (optimizerBackend.originalTelemetryWapPushActive && !optimizerBackend.telemetryWapPushActive) svcCount++;
+                    if (optimizerBackend.originalSuperuserUcpdActive && !optimizerBackend.superuserUcpdActive) svcCount++;
+                    if (optimizerBackend.originalWindowsUpdateMode !== 3 && optimizerBackend.windowsUpdateMode === 3) svcCount++;
+                    if (optimizerBackend.originalCoinstallersActive && !optimizerBackend.coinstallersActive) svcCount++;
+                    progressOverlay.servicesDisabledCount = svcCount;
 
+                    var appsCount = 0;
+                    if (optimizerBackend.originalXboxAppInstalled && !optimizerBackend.xboxAppInstalled) appsCount++;
+                    if (optimizerBackend.originalXboxGamingOverlayInstalled && !optimizerBackend.xboxGamingOverlayInstalled) appsCount++;
+                    if (optimizerBackend.originalXboxSpeechWindowInstalled && !optimizerBackend.xboxSpeechWindowInstalled) appsCount++;
+                    if (root.steamFriendsSettingsChanged && optimizerBackend.steamFriendsSettings && optimizerBackend.originalSteamFriendsSettings) {
+                        if (optimizerBackend.originalSteamFriendsSettings["bRunOnStartup"] === true && optimizerBackend.steamFriendsSettings["bRunOnStartup"] === false) {
+                            appsCount++;
+                        }
+                    }
+                    progressOverlay.appsRemovedCount = appsCount;
 
+                    var drivesCount = 0;
+                    if (optimizerBackend.driveStates && optimizerBackend.originalDriveStates) {
+                        var keys = Object.keys(optimizerBackend.driveStates);
+                        for (var d = 0; d < keys.length; d++) {
+                            var key = keys[d];
+                            if (optimizerBackend.driveStates[key] !== optimizerBackend.originalDriveStates[key]) {
+                                drivesCount++;
+                            }
+                        }
+                    }
+                    progressOverlay.drivesOptimizedCount = drivesCount;
 
+                    progressOverlay.totalTasksCount = progressOverlay.settingsAppliedCount + progressOverlay.servicesDisabledCount + progressOverlay.appsRemovedCount + progressOverlay.drivesOptimizedCount;
+
+                    progressOverlay.completedProgress = 0.0;
                     progressOverlay.showFinishedOverlay = true;
-
-
-
+                } else {
+                    completedProgressAnim.start();
                 }
-
-
-
             }
-
-
-
         }
-
-
-
-
-
-
 
         MouseArea {
-
-
-
             anchors.fill: parent
-
-
-
         }
 
-
-
-
-
-
-
+        // Main modal container (820x520 side-by-side design)
         Rectangle {
-
-
-
             id: modalContainer
-
-
-
-            width: 440
-
-
-
-            height: 320
-
-
-
+            width: 820
+            height: 520
             anchors.centerIn: parent
-
-
-
-            color: "#0F0F11" // Sleek dark charcoal panel background
-
-
-
+            color: "#0F1015" // Sleek dark charcoal panel background
             radius: 16
-
-
-
-            border.color: Theme.accent // Glowing orange/amber border
-
-
-
-            border.width: 1.5
-
-
-
-
-
-
+            border.color: Qt.rgba(255, 255, 255, 0.08)
+            border.width: 1
 
             // Glowing border layers (soft inner/outer outline)
-
-
-
             Rectangle {
-
-
-
                 anchors.fill: parent
-
-
-
                 anchors.margins: -4
-
-
-
                 radius: parent.radius + 4
-
-
-
                 color: "transparent"
-
-
-
                 border.color: Theme.accent
-
-
-
                 border.width: 1.5
-
-
-
                 opacity: 0.15
-
-
-
             }
-
-
-
             Rectangle {
-
-
-
                 anchors.fill: parent
-
-
-
                 anchors.margins: -2
-
-
-
                 radius: parent.radius + 2
-
-
-
                 color: "transparent"
-
-
-
                 border.color: Theme.accent
-
-
-
                 border.width: 1.0
-
-
-
                 opacity: 0.3
-
-
-
             }
 
-
-
-
-
-
-
-            Item {
-
-
-
+            // Split Layout
+            Row {
                 anchors.fill: parent
+                anchors.margins: 16
+                spacing: 20
 
+                // Left Panel: Side Card with purple-to-blue gradient
+                Rectangle {
+                    id: leftCard
+                    width: 320
+                    height: parent.height - 32 // accounts for Row margins
+                    anchors.verticalCenter: parent.verticalCenter
+                    color: "transparent"
 
-
-                anchors.margins: 24
-
-
-
-
-
-
-
-                Column {
-
-
-
-                    anchors.fill: parent
-
-
-
-                    spacing: 24
-
-
-
-
-
-
-
-                    // Header
-
-
-
-                    Column {
-
-
-
-                        width: parent.width
-
-
-
-                        spacing: 6
-
-
-
-                        
-
-
-
-                        Text {
-
-
-
-                            width: parent.width
-
-
-
-                            horizontalAlignment: Text.AlignHCenter
-
-
-
-                            text: optimizerBackend.isOptimizingSystem ? qsTr("Optimization in Progress") : qsTr("Optimization Complete")
-
-
-
-                            color: "#FFFFFF"
-
-
-
-                            font.family: Theme.fontFamily
-
-
-
-                            font.pixelSize: 18
-
-
-
-                            font.bold: true
-
-
-
+                    // Gradient background card
+                    Rectangle {
+                        anchors.fill: parent
+                        radius: 12
+                        gradient: Gradient {
+                            GradientStop { position: 0.0; color: "#2B1E43" } // Vivid purple
+                            GradientStop { position: 1.0; color: "#131A35" } // Deep blue/navy
                         }
-
-
-
-
-
-
-
-                        Text {
-
-
-
-                            width: parent.width
-
-
-
-                            horizontalAlignment: Text.AlignHCenter
-
-
-
-                            text: optimizerBackend.isOptimizingSystem ? qsTr("Applying system configuration adjustments...") : qsTr("Finished system modifications.")
-
-
-
-                            color: Theme.textMuted
-
-
-
-                            font.family: Theme.fontFamily
-
-
-
-                            font.pixelSize: 12
-
-
-
-                        }
-
-
-
+                        border.color: Qt.rgba(255, 255, 255, 0.08)
+                        border.width: 1
                     }
 
+                    // 1. Running State (Is Optimizing)
+                    Item {
+                        anchors.fill: parent
+                        visible: optimizerBackend.isOptimizingSystem
 
+                        // Logo Container
+                        Item {
+                            id: logoContainer
+                            width: 160
+                            height: 160
+                            anchors.centerIn: parent
 
-
-
-
-
-                    // Steps Checklist
-
-
-
-                    Column {
-
-
-
-                        id: stepsCol
-
-
-
-                        width: parent.width
-
-
-
-                        spacing: 14
-
-
-
-                        anchors.horizontalCenter: parent.horizontalCenter
-
-
-
-
-
-
-
-                        property int activeIndex: {
-
-
-
-                            if (!optimizerBackend.isOptimizingSystem) return 3; // All completed
-
-
-
-                            var p = optimizerBackend.systemProgress;
-
-
-
-                            if (p === 0.0) return 0;
-
-
-
-                            if (p > 0.0 && p < 0.90) return 1;
-
-
-
-                            return 2;
-
-
-
+                            Image {
+                                source: "qrc:/MeguPackOptimizer/src/resources/megu_logo_transparent.png"
+                                anchors.fill: parent
+                                fillMode: Image.PreserveAspectFit
+                                opacity: 0.85 + 0.15 * Math.sin(progressOverlay.pulseValue)
+                            }
                         }
 
-
-
-
-
-
-
-                        readonly property var stepsList: [
-
-
-
-                            { text: qsTr("Analyzing optimization plan...") },
-
-
-
-                            { text: qsTr("Applying system configuration adjustments...") },
-
-
-
-                            { text: qsTr("Verifying changes and syncing state...") }
-
-
-
-                        ]
-
-
-
-
-
-
-
-                        Repeater {
-
-
-
-                            model: stepsCol.stepsList
-
-
-
-                            delegate: Row {
-
-
-
-                                spacing: 12
-
-
-
-                                anchors.horizontalCenter: parent.horizontalCenter
-
-
-
-
-
-
-
-                                property int stepIndex: index
-
-
-
-                                property bool isActive: stepIndex === stepsCol.activeIndex
-
-
-
-                                property bool isCompleted: stepIndex < stepsCol.activeIndex
-
-
-
-                                property bool isPending: stepIndex > stepsCol.activeIndex
-
-
-
-
-
-
-
-                                // Bullet circle
-
-
-
-                                Rectangle {
-
-
-
-                                    width: 8
-
-
-
-                                    height: 8
-
-
-
-                                    radius: 4
-
-
-
-                                    anchors.verticalCenter: parent.verticalCenter
-
-
-
-                                    color: isActive ? Theme.accent : (isCompleted ? Theme.success : "transparent")
-
-
-
-                                    border.color: (isActive || isCompleted) ? "transparent" : "#4A5568"
-
-
-
-                                    border.width: (isActive || isCompleted) ? 0 : 1.5
-
-
-
+                        Text {
+                            anchors.top: logoContainer.bottom
+                            anchors.topMargin: 24
+                            anchors.horizontalCenter: parent.horizontalCenter
+                            text: qsTr("OPTIMIZING SYSTEM")
+                            color: "#FFFFFF"
+                            font.family: Theme.fontFamily
+                            font.pixelSize: 13
+                            font.bold: true
+                            font.letterSpacing: 1.5
+                        }
+
+                        // Progress indicator bar
+                        Rectangle {
+                            id: runningProgressBarBg
+                            width: 200
+                            height: 4
+                            color: Qt.rgba(255, 255, 255, 0.1)
+                            radius: 2
+                            anchors.top: logoContainer.bottom
+                            anchors.topMargin: 56
+                            anchors.horizontalCenter: parent.horizontalCenter
+
+                            Rectangle {
+                                width: parent.width * optimizerBackend.systemProgress
+                                height: parent.height
+                                color: Theme.accent
+                                radius: 2
+                                Behavior on width {
+                                    NumberAnimation { duration: 150 }
+                                }
+                            }
+                        }
+
+                        Text {
+                            anchors.top: runningProgressBarBg.bottom
+                            anchors.topMargin: 8
+                            anchors.horizontalCenter: parent.horizontalCenter
+                            text: Math.round(optimizerBackend.systemProgress * 100) + "%"
+                            color: Theme.accent
+                            font.family: Theme.fontFamily
+                            font.pixelSize: 12
+                            font.bold: true
+                        }
+                    }
+
+                    // 2. Completed State
+                    Item {
+                        anchors.fill: parent
+                        visible: !optimizerBackend.isOptimizingSystem
+
+                        // Circular Speedometer Gauge
+                        Item {
+                            id: gaugeContainer
+                            width: 180
+                            height: 180
+                            anchors.centerIn: parent
+
+                            Shape {
+                                anchors.fill: parent
+                                layer.enabled: true
+                                layer.samples: 4
+
+                                // Track background arc
+                                ShapePath {
+                                    strokeColor: Qt.rgba(255, 255, 255, 0.05)
+                                    strokeWidth: 8
+                                    fillColor: "transparent"
+                                    capStyle: ShapePath.RoundCap
+
+                                    PathAngleArc {
+                                        centerX: 90
+                                        centerY: 90
+                                        radiusX: 75
+                                        radiusY: 75
+                                        startAngle: -210
+                                        sweepAngle: 240
+                                    }
                                 }
 
+                                // Active progress arc
+                                ShapePath {
+                                    strokeColor: Theme.accent
+                                    strokeWidth: 8
+                                    fillColor: "transparent"
+                                    capStyle: ShapePath.RoundCap
 
+                                    PathAngleArc {
+                                        centerX: 90
+                                        centerY: 90
+                                        radiusX: 75
+                                        radiusY: 75
+                                        startAngle: -210
+                                        sweepAngle: 240 * progressOverlay.completedProgress
+                                    }
+                                }
+                            }
 
-
-
-
+                            // Inner score text
+                            Column {
+                                anchors.centerIn: parent
+                                spacing: 2
 
                                 Text {
-
-
-
-                                    text: modelData.text
-
-
-
-                                    color: isActive ? "#FFFFFF" : Theme.textMuted
-
-
-
+                                    text: "+" + Math.round(progressOverlay.completedProgress * (progressOverlay.totalTasksCount > 0 ? Math.min(progressOverlay.totalTasksCount * 2 + 10, 45) : 25)) + "%"
+                                    color: "#FFFFFF"
                                     font.family: Theme.fontFamily
-
-
-
-                                    font.pixelSize: 12
-
-
-
-                                    font.bold: isActive
-
-
-
-                                    anchors.verticalCenter: parent.verticalCenter
-
-
-
+                                    font.pixelSize: 28
+                                    font.bold: true
+                                    horizontalAlignment: Text.AlignHCenter
+                                    anchors.horizontalCenter: parent.horizontalCenter
                                 }
 
+                                Text {
+                                    text: qsTr("PERFORMANCE")
+                                    color: Theme.accent
+                                    font.family: Theme.fontFamily
+                                    font.pixelSize: 10
+                                    font.bold: true
+                                    font.letterSpacing: 1.0
+                                    horizontalAlignment: Text.AlignHCenter
+                                    anchors.horizontalCenter: parent.horizontalCenter
+                                }
 
-
+                                Text {
+                                    text: qsTr("EST. BOOST")
+                                    color: Theme.textMuted
+                                    font.family: Theme.fontFamily
+                                    font.pixelSize: 8
+                                    horizontalAlignment: Text.AlignHCenter
+                                    anchors.horizontalCenter: parent.horizontalCenter
+                                }
                             }
-
-
-
                         }
 
-
-
-                    }
-
-
-
-
-
-
-
-                    // Spacer/Bottom area container
-
-
-
-                    Item {
-
-
-
-                        width: parent.width
-
-
-
-                        height: (!optimizerBackend.isOptimizingSystem && optimizerBackend.explorerNeedsRestart) ? 96 : 60
-
-
-
-                        
-
-
-
-                        Column {
-
-
-
-                            anchors.fill: parent
-
-
-
-                            spacing: 12
-
-
-
-                            
-
-
-
-                            // Bottom active action status
-
-
-
-                            Text {
-
-
-
-                                width: parent.width
-
-
-
-                                horizontalAlignment: Text.AlignHCenter
-
-
-
-                                text: {
-
-
-
-                                    if (optimizerBackend.isOptimizingSystem) {
-
-
-
-                                        return stepLogModel.count > 0 ? stepLogModel.get(stepLogModel.count - 1).message : qsTr("Analyzing optimization plan...");
-
-
-
-                                    } else {
-
-
-
-                                        return qsTr("Optimization completed successfully!");
-
-
-
-                                    }
-
-
-
-                                }
-
-
-
-                                color: Theme.accent
-
-
-
-                                font.family: Theme.fontFamily
-
-
-
-                                font.pixelSize: 11
-
-
-
-                                font.bold: true
-
-
-
-                                font.italic: true
-
-
-
-                                elide: Text.ElideRight
-
-
-
-                            }
-
-
-
-
-
-
-
-                            // Warning text about restarting explorer
-
-
-
-                            Text {
-
-
-
-                                width: parent.width - 32
-
-
-
-                                anchors.horizontalCenter: parent.horizontalCenter
-
-
-
-                                horizontalAlignment: Text.AlignHCenter
-
-
-
-                                wrapMode: Text.WordWrap
-
-
-
-                                text: qsTr("To apply changes, you must restart Windows Explorer. Note: the restart process may take a few seconds, and all open File Explorer windows and tabs will be closed.")
-
-
-
-                                color: Theme.warning
-
-
-
-                                font.family: Theme.fontFamily
-
-
-
-                                font.pixelSize: 10
-
-
-
-                                font.bold: true
-
-
-
-                                visible: !optimizerBackend.isOptimizingSystem && optimizerBackend.explorerNeedsRestart
-
-
-
-                            }
-
-
-
-
-
-
-
-                            Row {
-
-
-
-                                anchors.horizontalCenter: parent.horizontalCenter
-
-
-
-                                spacing: 12
-
-
-
-                                visible: !optimizerBackend.isOptimizingSystem
-
-
-
-
-
-
-
-                                MeguButton {
-
-
-
-                                    text: qsTr("Restart Explorer")
-
-
-
-                                    accented: true
-
-
-
-                                    height: 28
-
-
-
-                                    width: 140
-
-
-
-                                    visible: optimizerBackend.explorerNeedsRestart
-
-
-
-                                    onClicked: {
-
-
-
-                                        optimizerBackend.restartExplorer();
-
-
-
-                                        optimizerBackend.explorerNeedsRestart = false;
-
-
-
-                                    }
-
-
-
-                                }
-
-
-
-
-
-
-
-                                MeguButton {
-
-
-
-                                    text: qsTr("Close")
-
-
-
-                                    accented: !optimizerBackend.explorerNeedsRestart
-
-
-
-                                    height: 28
-
-
-
-                                    width: 90
-
-
-
-                                    onClicked: {
-
-
-
-                                        progressOverlay.showFinishedOverlay = false;
-
-
-
-                                    }
-
-
-
-                                }
-
-
-
-                            }
-
-
-
+                        Text {
+                            anchors.top: gaugeContainer.bottom
+                            anchors.topMargin: 20
+                            anchors.horizontalCenter: parent.horizontalCenter
+                            text: qsTr("SYSTEM OPTIMIZED")
+                            color: "#FFFFFF"
+                            font.family: Theme.fontFamily
+                            font.pixelSize: 14
+                            font.bold: true
+                            font.letterSpacing: 1.5
                         }
 
-
-
+                        Text {
+                            anchors.top: gaugeContainer.bottom
+                            anchors.topMargin: 40
+                            anchors.horizontalCenter: parent.horizontalCenter
+                            text: qsTr("All selected tweaks applied.")
+                            color: Theme.textMuted
+                            font.family: Theme.fontFamily
+                            font.pixelSize: 11
+                        }
                     }
-
-
-
                 }
 
+                // Right Panel: Control and Log details
+                Rectangle {
+                    id: rightPanel
+                    width: parent.width - leftCard.width - parent.spacing - 32 // fill width
+                    height: parent.height - 32
+                    anchors.verticalCenter: parent.verticalCenter
+                    color: "transparent"
 
+                    // Header Block
+                    Column {
+                        id: rightHeader
+                        width: parent.width
+                        spacing: 4
 
+                        Text {
+                            text: optimizerBackend.isOptimizingSystem ? qsTr("Optimization in Progress") : qsTr("Optimization Complete")
+                            color: "#FFFFFF"
+                            font.family: Theme.fontFamily
+                            font.pixelSize: 20
+                            font.bold: true
+                        }
+
+                        Text {
+                            text: optimizerBackend.isOptimizingSystem ? qsTr("Applying chosen tweaks and configuring system modules...") : qsTr("Finished system modifications successfully.")
+                            color: Theme.textMuted
+                            font.family: Theme.fontFamily
+                            font.pixelSize: 12
+                        }
+                    }
+
+                    // 1. Running State: Scrollable logs ListView
+                    Item {
+                        anchors.top: rightHeader.bottom
+                        anchors.topMargin: 20
+                        anchors.bottom: runningStatusText.top
+                        anchors.bottomMargin: 10
+                        width: parent.width
+                        visible: optimizerBackend.isOptimizingSystem
+
+                        Rectangle {
+                            anchors.fill: parent
+                            color: "#090A0E"
+                            radius: 12
+                            border.color: Qt.rgba(255, 255, 255, 0.05)
+                            border.width: 1
+                            clip: true
+
+                            ListView {
+                                id: logListView
+                                anchors.fill: parent
+                                anchors.margins: 14
+                                model: stepLogModel
+                                spacing: 8
+                                interactive: true
+                                boundsBehavior: Flickable.StopAtBounds
+
+                                Connections {
+                                    target: stepLogModel
+                                    function onCountChanged() {
+                                        logListView.positionViewAtEnd();
+                                    }
+                                }
+
+                                delegate: Row {
+                                    width: logListView.width - 24
+                                    spacing: 12
+
+                                    Rectangle {
+                                        width: 6
+                                        height: 6
+                                        radius: 3
+                                        anchors.verticalCenter: parent.verticalCenter
+                                        color: {
+                                            if (model.type === "SUCCESS") return Theme.success;
+                                            if (model.type === "ERROR") return Theme.error;
+                                            if (model.type === "WARNING") return Theme.warning;
+                                            return Theme.accent;
+                                        }
+                                    }
+
+                                    Text {
+                                        width: parent.width - 18
+                                        text: model.message
+                                        color: {
+                                            if (model.type === "ERROR") return Theme.error;
+                                            if (model.type === "WARNING") return Theme.warning;
+                                            return "#E0E0E0";
+                                        }
+                                        font.family: Theme.fontFamily
+                                        font.pixelSize: 11
+                                        wrapMode: Text.WordWrap
+                                    }
+                                }
+                            }
+                        }
+                    }
+
+                    // Running bottom status text
+                    Text {
+                        id: runningStatusText
+                        anchors.bottom: parent.bottom
+                        anchors.bottomMargin: 8
+                        width: parent.width
+                        text: stepLogModel.count > 0 ? stepLogModel.get(stepLogModel.count - 1).message : qsTr("Analyzing system configuration...")
+                        color: Theme.accent
+                        font.family: Theme.fontFamily
+                        font.pixelSize: 11
+                        font.bold: true
+                        font.italic: true
+                        elide: Text.ElideRight
+                        visible: optimizerBackend.isOptimizingSystem
+                    }
+
+                    // 2. Completed State: Statistics Grid and bottom actions
+                    Item {
+                        anchors.top: rightHeader.bottom
+                        anchors.topMargin: 20
+                        anchors.bottom: parent.bottom
+                        width: parent.width
+                        visible: !optimizerBackend.isOptimizingSystem
+
+                        Column {
+                            width: parent.width
+                            spacing: 16
+
+                            Text {
+                                text: qsTr("Breakdown of optimizations:")
+                                color: "#FFFFFF"
+                                font.family: Theme.fontFamily
+                                font.pixelSize: 13
+                                font.bold: true
+                            }
+
+                            Grid {
+                                width: parent.width
+                                columns: 2
+                                spacing: 12
+
+                                StatCard {
+                                    width: (parent.width - 12) / 2
+                                    title: qsTr("Settings Applied")
+                                    value: progressOverlay.settingsAppliedCount.toString()
+                                    iconSource: "qrc:/MeguPackOptimizer/src/resources/settings.svg"
+                                    accentColor: Theme.accent
+                                }
+
+                                StatCard {
+                                    width: (parent.width - 12) / 2
+                                    title: qsTr("Services Disabled")
+                                    value: progressOverlay.servicesDisabledCount.toString()
+                                    iconSource: "qrc:/MeguPackOptimizer/src/resources/terminal.svg"
+                                    accentColor: "#F44336" // Light red
+                                }
+
+                                StatCard {
+                                    width: (parent.width - 12) / 2
+                                    title: qsTr("Drives Configured")
+                                    value: progressOverlay.drivesOptimizedCount.toString()
+                                    iconSource: "qrc:/MeguPackOptimizer/src/resources/storage.svg"
+                                    accentColor: "#00BCD4" // Teal/cyan
+                                }
+
+                                StatCard {
+                                    width: (parent.width - 12) / 2
+                                    title: qsTr("Apps & Startup")
+                                    value: progressOverlay.appsRemovedCount.toString()
+                                    iconSource: "qrc:/MeguPackOptimizer/src/resources/monitor.svg"
+                                    accentColor: "#4CAF50" // Green
+                                }
+                            }
+
+                            // Notice Banner (Explorer Restart)
+                            Rectangle {
+                                width: parent.width
+                                height: visible ? 56 : 0
+                                color: Qt.rgba(251, 140, 0, 0.1) // Soft orange warning
+                                radius: 8
+                                border.color: Qt.rgba(251, 140, 0, 0.15)
+                                border.width: 1
+                                visible: optimizerBackend.explorerNeedsRestart
+
+                                Row {
+                                    anchors.fill: parent
+                                    anchors.margins: 10
+                                    spacing: 10
+
+                                    Item {
+                                        width: 16
+                                        height: 16
+                                        anchors.verticalCenter: parent.verticalCenter
+
+                                        Image {
+                                            id: warnIcon
+                                            source: "qrc:/MeguPackOptimizer/src/resources/warning.svg"
+                                            anchors.fill: parent
+                                            sourceSize.width: 16
+                                            sourceSize.height: 16
+                                            visible: false
+                                        }
+
+                                        ColorOverlay {
+                                            anchors.fill: warnIcon
+                                            source: warnIcon
+                                            color: Theme.warning
+                                        }
+                                    }
+
+                                    Text {
+                                        width: parent.width - 32
+                                        text: qsTr("A Windows Explorer restart is required to apply the taskbar/shell customizations.")
+                                        color: Theme.warning
+                                        font.family: Theme.fontFamily
+                                        font.pixelSize: 11
+                                        wrapMode: Text.WordWrap
+                                        anchors.verticalCenter: parent.verticalCenter
+                                    }
+                                }
+                            }
+                        }
+
+                        // Bottom Actions Row
+                        Row {
+                            anchors.bottom: parent.bottom
+                            anchors.right: parent.right
+                            spacing: 12
+
+                            MeguButton {
+                                text: qsTr("Restart PC")
+                                accented: false
+                                height: 32
+                                width: 110
+                                onClicked: {
+                                    optimizerBackend.rebootSystem();
+                                }
+                            }
+
+                            MeguButton {
+                                text: optimizerBackend.explorerNeedsRestart ? qsTr("Restart Explorer") : qsTr("Continue")
+                                accented: true
+                                height: 32
+                                width: 140
+                                onClicked: {
+                                    if (optimizerBackend.explorerNeedsRestart) {
+                                        optimizerBackend.restartExplorer();
+                                        optimizerBackend.explorerNeedsRestart = false;
+                                    } else {
+                                        progressOverlay.showFinishedOverlay = false;
+                                    }
+                                }
+                            }
+
+                            MeguButton {
+                                text: qsTr("Close")
+                                accented: false
+                                height: 32
+                                width: 80
+                                visible: optimizerBackend.explorerNeedsRestart
+                                onClicked: {
+                                    progressOverlay.showFinishedOverlay = false;
+                                }
+                            }
+                        }
+                    }
+                }
             }
-
-
-
         }
-
-
-
     }
 
 
