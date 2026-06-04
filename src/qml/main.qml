@@ -385,15 +385,26 @@ ApplicationWindow {
                         }
                     }
 
-                    // Delta text (change from last optimization)
-                    Text {
+                    // Delta badge (change from last optimization)
+                    Rectangle {
                         visible: window.showDelta && window.optimizationDelta !== 0
-                        text: (window.optimizationDelta > 0 ? "+" : "") + window.optimizationDelta + "%"
-                        color: window.optimizationDelta > 0 ? Theme.success : Theme.error
-                        font.family: Theme.fontFamily
-                        font.pixelSize: 11
-                        font.bold: true
+                        height: 18
+                        width: deltaTextTop.implicitWidth + 10
+                        radius: 9
+                        color: window.optimizationDelta > 0 ? Qt.rgba(Theme.success.r, Theme.success.g, Theme.success.b, 0.15) : Qt.rgba(Theme.error.r, Theme.error.g, Theme.error.b, 0.15)
+                        border.color: window.optimizationDelta > 0 ? Qt.rgba(Theme.success.r, Theme.success.g, Theme.success.b, 0.3) : Qt.rgba(Theme.error.r, Theme.error.g, Theme.error.b, 0.3)
+                        border.width: 1
                         anchors.verticalCenter: parent.verticalCenter
+
+                        Text {
+                            id: deltaTextTop
+                            anchors.centerIn: parent
+                            text: (window.optimizationDelta > 0 ? "+" : "") + window.optimizationDelta + "%"
+                            color: window.optimizationDelta > 0 ? Theme.success : Theme.error
+                            font.family: Theme.fontFamily
+                            font.pixelSize: 10
+                            font.bold: true
+                        }
                     }
 
                     // Level status text

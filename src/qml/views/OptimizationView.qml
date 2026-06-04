@@ -36584,15 +36584,27 @@ Item {
                                         font.bold: true
                                     }
                                     
-                                    Text {
+                                    // Premium glassmorphism pill badge for delta percentage
+                                    Rectangle {
                                         visible: window.showDelta && window.optimizationDelta !== 0
-                                        text: (window.optimizationDelta > 0 ? "+" : "") + window.optimizationDelta + "%"
-                                        color: window.optimizationDelta > 0 ? Theme.success : Theme.error
-                                        font.family: Theme.fontFamily
-                                        font.pixelSize: 12
-                                        font.bold: true
-                                        anchors.bottom: parent.bottom
-                                        anchors.bottomMargin: 4
+                                        height: 18
+                                        width: deltaTextOverlay.implicitWidth + 10
+                                        radius: 9
+                                        color: window.optimizationDelta > 0 ? Qt.rgba(Theme.success.r, Theme.success.g, Theme.success.b, 0.15) : Qt.rgba(Theme.error.r, Theme.error.g, Theme.error.b, 0.15)
+                                        border.color: window.optimizationDelta > 0 ? Qt.rgba(Theme.success.r, Theme.success.g, Theme.success.b, 0.3) : Qt.rgba(Theme.error.r, Theme.error.g, Theme.error.b, 0.3)
+                                        border.width: 1
+                                        anchors.verticalCenter: parent.verticalCenter
+                                        opacity: progressOverlay.completedProgress
+
+                                        Text {
+                                            id: deltaTextOverlay
+                                            anchors.centerIn: parent
+                                            text: (window.optimizationDelta > 0 ? "+" : "") + window.optimizationDelta + "%"
+                                            color: window.optimizationDelta > 0 ? Theme.success : Theme.error
+                                            font.family: Theme.fontFamily
+                                            font.pixelSize: 10
+                                            font.bold: true
+                                        }
                                     }
                                 }
 
