@@ -26749,7 +26749,7 @@ Item {
                                     spacing: 6
                                     anchors.verticalCenter: parent.verticalCenter
                                     Image {
-                                        id: warningIcon
+                                        id: fastStartupWarningIcon
                                         source: "qrc:/MeguPackOptimizer/src/resources/warning.svg"
                                         width: 14
                                         height: 14
@@ -26757,8 +26757,8 @@ Item {
                                         visible: false
                                     }
                                     ColorOverlay {
-                                        anchors.fill: warningIcon
-                                        source: warningIcon
+                                        anchors.fill: fastStartupWarningIcon
+                                        source: fastStartupWarningIcon
                                         color: Theme.warning
                                         width: 14
                                         height: 14
@@ -26778,8 +26778,8 @@ Item {
                                     width: 24
                                     height: 20
                                     radius: 4
-                                    color: eyeMouse.containsMouse ? Qt.rgba(Theme.accent.r, Theme.accent.g, Theme.accent.b, 0.15) : "transparent"
-                                    border.color: eyeMouse.containsMouse ? Theme.accent : "transparent"
+                                    color: fastStartupEyeMouse.containsMouse ? Qt.rgba(Theme.accent.r, Theme.accent.g, Theme.accent.b, 0.15) : "transparent"
+                                    border.color: fastStartupEyeMouse.containsMouse ? Theme.accent : "transparent"
                                     border.width: 1
                                     anchors.verticalCenter: parent.verticalCenter
                                     Behavior on color { ColorAnimation { duration: Theme.animFast } }
@@ -26790,7 +26790,7 @@ Item {
                                         height: 14
                                         anchors.centerIn: parent
                                         Image {
-                                            id: eyeIconImg
+                                            id: fastStartupEyeIconImg
                                             source: "qrc:/MeguPackOptimizer/src/resources/eye.svg"
                                             anchors.fill: parent
                                             sourceSize.width: 14
@@ -26798,14 +26798,14 @@ Item {
                                             visible: false
                                         }
                                         ColorOverlay {
-                                            anchors.fill: eyeIconImg
-                                            source: eyeIconImg
-                                            color: eyeMouse.containsMouse ? Theme.accent : Theme.textSecondary
+                                            anchors.fill: fastStartupEyeIconImg
+                                            source: fastStartupEyeIconImg
+                                            color: fastStartupEyeMouse.containsMouse ? Theme.accent : Theme.textSecondary
                                         }
                                     }
 
                                     MouseArea {
-                                        id: eyeMouse
+                                        id: fastStartupEyeMouse
                                         anchors.fill: parent
                                         hoverEnabled: true
                                         cursorShape: Qt.PointingHandCursor
