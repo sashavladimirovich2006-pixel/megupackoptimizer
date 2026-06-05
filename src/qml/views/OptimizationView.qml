@@ -7242,6 +7242,32 @@ Item {
                             drawerScrollAnimation.to = targetScrollY;
                             drawerScrollAnimation.start();
                             
+                            // Walk up the parent chain to find the container card/wrapper to highlight
+                            var container = targetControl;
+                            while (container && container.parent && container.parent !== drawerObj) {
+                                var typeStr = container.toString();
+                                if (typeStr.indexOf("MeguSwitch") !== -1 || 
+                                    typeStr.indexOf("MeguButton") !== -1 || 
+                                    typeStr.indexOf("MeguPanel") !== -1 ||
+                                    typeStr.indexOf("AcrylicPanel") !== -1 ||
+                                    typeStr.indexOf("QQuickRectangle") !== -1) {
+                                    break;
+                                }
+                                container = container.parent;
+                            }
+                            
+                            if (container) {
+                                var highlightPt = container.mapToItem(drawerScroll.contentItem, 0, 0);
+                                drawerLocatorHighlight.x = highlightPt.x - 4;
+                                drawerLocatorHighlight.y = highlightPt.y - 4;
+                                drawerLocatorHighlight.width = container.width + 8;
+                                drawerLocatorHighlight.height = container.height + 8;
+                                drawerLocatorHighlight.radius = container.radius !== undefined ? container.radius + 4 : 8;
+                                
+                                drawerHighlightAnim.stop();
+                                drawerHighlightAnim.start();
+                            }
+                            
                             if (typeof targetControl.triggerLocateFlash === "function") {
                                 targetControl.triggerLocateFlash();
                             }
@@ -34468,6 +34494,33 @@ Item {
 
 
 
+                    }
+
+                    Rectangle {
+                        id: drawerLocatorHighlight
+                        color: "transparent"
+                        border.color: Theme.accent
+                        border.width: 2
+                        radius: 8
+                        visible: opacity > 0.0
+                        opacity: 0.0
+                        z: 9999
+
+                        Behavior on opacity {
+                            NumberAnimation { duration: Theme.animNormal }
+                        }
+
+                        SequentialAnimation {
+                            id: drawerHighlightAnim
+                            
+                            NumberAnimation { target: drawerLocatorHighlight; property: "opacity"; to: 1.0; duration: 200 }
+                            NumberAnimation { target: drawerLocatorHighlight; property: "opacity"; to: 0.2; duration: 200 }
+                            NumberAnimation { target: drawerLocatorHighlight; property: "opacity"; to: 1.0; duration: 200 }
+                            NumberAnimation { target: drawerLocatorHighlight; property: "opacity"; to: 0.2; duration: 200 }
+                            NumberAnimation { target: drawerLocatorHighlight; property: "opacity"; to: 1.0; duration: 200 }
+                            PauseAnimation { duration: 2000 }
+                            NumberAnimation { target: drawerLocatorHighlight; property: "opacity"; to: 0.0; duration: 1000 }
+                        }
                     }
 
 
