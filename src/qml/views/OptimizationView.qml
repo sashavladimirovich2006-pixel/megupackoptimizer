@@ -6793,6 +6793,209 @@ Item {
 
 
 
+        function getDrawerName(name) {
+        name = name.toLowerCase();
+        if (name.indexOf("explorer") !== -1 || name.indexOf("classic context menu") !== -1 || name.indexOf("shortcut arrow") !== -1) {
+            return "explorerCustomization";
+        }
+        if (name.indexOf("start menu") !== -1) {
+            return "startMenuCustomization";
+        }
+        if (name.indexOf("desktop") !== -1) {
+            return "desktopCustomization";
+        }
+        if (name.indexOf("visual effects") !== -1 || name.indexOf("visualeffects") !== -1) {
+            return "visualEffects";
+        }
+        if (name.indexOf("indexing") !== -1) {
+            return "indexing";
+        }
+        if (name.indexOf("xbox") !== -1) {
+            return "xbox";
+        }
+        if (name.indexOf("notification") !== -1) {
+            return "notifications";
+        }
+        if (name.indexOf("power plan") !== -1 || name.indexOf("powerplan") !== -1) {
+            return "power";
+        }
+        if (name.indexOf("defender") !== -1) {
+            return "defender";
+        }
+        if (name.indexOf("usb") !== -1) {
+            return "usb";
+        }
+        if (name.indexOf("telemetry") !== -1) {
+            return "telemetry";
+        }
+        if (name.indexOf("windows update") !== -1 || name.indexOf("windowsupdate") !== -1) {
+            return "windowsUpdate";
+        }
+        if (name.indexOf("privileges") !== -1 || name.indexOf("more rights") !== -1 || name.indexOf("morerights") !== -1) {
+            return "moreRights";
+        }
+        if (name.indexOf("steam") !== -1 || name.indexOf("cs2") !== -1 || name.indexOf("counter-strike") !== -1 || name.indexOf("remote play") !== -1 || name.indexOf("remoteplay") !== -1) {
+            return "steamSettings";
+        }
+        if (name.indexOf("sleeping pill") !== -1 || name.indexOf("sleepingpill") !== -1) {
+            return "sleepingPill";
+        }
+        if (name.indexOf("health") !== -1) {
+            return "health";
+        }
+        if (name.indexOf("cleanup") !== -1) {
+            return "cleanup";
+        }
+        if (name.indexOf("repair") !== -1) {
+            return "repair";
+        }
+        if (name.indexOf("mpo") !== -1) {
+            return "mpo";
+        }
+        return "";
+    }
+
+    function getDrawerObject(drawerName) {
+        if (drawerName === "explorerCustomization") return explorerDrawer;
+        if (drawerName === "startMenuCustomization") return startMenuDrawer;
+        if (drawerName === "desktopCustomization") return desktopDrawer;
+        if (drawerName === "visualEffects") return visualEffectsDrawer;
+        if (drawerName === "indexing") return indexingDrawer;
+        if (drawerName === "xbox") return xboxDrawer;
+        if (drawerName === "notifications") return notificationsDrawer;
+        if (drawerName === "power") return powerDrawer;
+        if (drawerName === "defender") return defenderDrawer;
+        if (drawerName === "usb") return usbDrawer;
+        if (drawerName === "telemetry") return telemetryDrawer;
+        if (drawerName === "windowsUpdate") return windowsUpdateDrawer;
+        if (drawerName === "moreRights") return moreRightsDrawer;
+        if (drawerName === "steamSettings") return steamSettingsDrawer;
+        if (drawerName === "sleepingPill") return sleepingPillDrawer;
+        if (drawerName === "health") return healthDrawer;
+        if (drawerName === "cleanup") return cleanupDrawer;
+        if (drawerName === "repair") return repairDrawer;
+        if (drawerName === "mpo") return mpoDrawer;
+        return null;
+    }
+
+    function getParentCardForDrawer(drawerName) {
+        if (drawerName === "explorerCustomization") return explorerCustomizationPanel;
+        if (drawerName === "startMenuCustomization") return startMenuCustomizationPanel;
+        if (drawerName === "desktopCustomization") return desktopCustomizationPanel;
+        if (drawerName === "visualEffects") return visualEffectsPanel;
+        if (drawerName === "indexing") return indexingPanel;
+        if (drawerName === "xbox") return xboxPanel;
+        if (drawerName === "notifications") return notificationsPanel;
+        if (drawerName === "power") return powerPlanPanel;
+        if (drawerName === "defender") return defenderPanel;
+        if (drawerName === "usb") return usbPanel;
+        if (drawerName === "telemetry") return telemetryPanel;
+        if (drawerName === "windowsUpdate") return windowsUpdatePanel;
+        if (drawerName === "moreRights") return moreRightsPanel;
+        if (drawerName === "steamSettings") return steamSettingsPanel;
+        if (drawerName === "mpo") return mpoPanel;
+        return null;
+    }
+
+    function getSteamSubPageForName(name) {
+        name = name.toLowerCase();
+        if (name.indexOf("remote play") !== -1 || name.indexOf("remoteplay") !== -1 || name.indexOf("pairing") !== -1) {
+            return "remoteplay";
+        }
+        if (name.indexOf("friend") !== -1 || name.indexOf("avatar") !== -1 || name.indexOf("profile name") !== -1 || name.indexOf("profilename") !== -1) {
+            return "friends";
+        }
+        if (name.indexOf("chat") !== -1) {
+            return "chat";
+        }
+        if (name.indexOf("broadcast") !== -1) {
+            return "broadcast";
+        }
+        if (name.indexOf("interface") !== -1 || name.indexOf("language") !== -1 || name.indexOf("start page") !== -1 || name.indexOf("run on startup") !== -1) {
+            return "interface";
+        }
+        if (name.indexOf("in-game") !== -1 || name.indexOf("ingame") !== -1 || name.indexOf("overlay") !== -1) {
+            return "ingame";
+        }
+        if (name.indexOf("notification") !== -1) {
+            return "notifications";
+        }
+        if (name.indexOf("library") !== -1) {
+            return "library";
+        }
+        if (name.indexOf("download") !== -1) {
+            return "download";
+        }
+        if (name.indexOf("storage") !== -1) {
+            return "storage";
+        }
+        if (name.indexOf("toolbar") !== -1) {
+            return "toolbarPrefs";
+        }
+        if (name.indexOf("accessibility") !== -1) {
+            return "accessibility";
+        }
+        if (name.indexOf("recording") !== -1 || name.indexOf("record") !== -1) {
+            return "gamerecording";
+        }
+        if (name.indexOf("voice") !== -1) {
+            return "voice";
+        }
+        if (name.indexOf("music") !== -1) {
+            return "music";
+        }
+        return "main";
+    }
+
+    function getSectionForDrawerOrCategory(name) {
+        name = name.toLowerCase();
+        if (name.indexOf("explorer") !== -1 ||
+            name.indexOf("classic context menu") !== -1 ||
+            name.indexOf("shortcut arrow") !== -1 ||
+            name.indexOf("clipboard") !== -1 ||
+            name.indexOf("end task") !== -1 ||
+            name.indexOf("clock") !== -1 ||
+            name.indexOf("privileges") !== -1 ||
+            name.indexOf("start menu") !== -1 ||
+            name.indexOf("desktop") !== -1) {
+            return "customization";
+        }
+        if (name.indexOf("telemetry") !== -1 ||
+            name.indexOf("ads") !== -1 ||
+            name.indexOf("privacy") !== -1 ||
+            name.indexOf("location") !== -1 ||
+            name.indexOf("speech") !== -1 ||
+            name.indexOf("camera") !== -1) {
+            return "telemetry";
+        }
+        if (name.indexOf("steam") !== -1 ||
+            name.indexOf("cs2") !== -1 ||
+            name.indexOf("counter-strike") !== -1 ||
+            name.indexOf("remote play") !== -1 ||
+            name.indexOf("remoteplay") !== -1) {
+            return "games";
+        }
+        return "core";
+    }
+
+    function findDrawerChild(item, searchText) {
+        if (!item) return null;
+        if (item.text !== undefined && typeof item.text === "string") {
+            var cleanItemText = item.text.replace(/\r?\n|\r/g, " ").trim().toLowerCase();
+            var cleanSearch = searchText.toLowerCase();
+            if (cleanItemText === cleanSearch || cleanItemText.indexOf(cleanSearch) !== -1 || cleanSearch.indexOf(cleanItemText) !== -1) {
+                return item;
+            }
+        }
+        if (item.children) {
+            for (var i = 0; i < item.children.length; i++) {
+                var found = findDrawerChild(item.children[i], searchText);
+                if (found) return found;
+            }
+        }
+        return null;
+    }
+
     function getParentCard(name) {
 
 
@@ -6942,134 +7145,111 @@ Item {
 
 
 
-    function locateFunction(categoryName) {
-
-
-
-        if (categoryName === qsTr("Telemetry") || categoryName === "Telemetry" || categoryName === qsTr("Ads & Privacy") || categoryName === "Ads & Privacy" || categoryName === "Ads" || categoryName === "Ad" || categoryName === qsTr("Ads") || categoryName === qsTr("Ad") || categoryName === qsTr("Privacy") || categoryName === "Privacy" || categoryName === "Location" || categoryName === "Speech" || categoryName === "Camera") {
-
-
-
-            root.currentSection = "telemetry";
-
-
-
-        } else if (categoryName === qsTr("Counter-Strike 2 Launch Options") || categoryName === "Counter-Strike 2 Launch Options" || categoryName === qsTr("CS2 Steam Overlay") || categoryName === "CS2 Steam Overlay" || categoryName === qsTr("Steam Settings") || categoryName === "Steam Settings") {
-
-
-
-            root.currentSection = "games";
-
-
-
-        } else if (categoryName === qsTr("Classic Context Menu") || categoryName === "Classic Context Menu" || categoryName === qsTr("Shortcut Arrow Overlays") || categoryName === "Shortcut Arrow Overlays" || categoryName === qsTr("Clipboard History") || categoryName === "Clipboard History" || categoryName === qsTr("Taskbar 'End task'") || categoryName === "Taskbar 'End task'" || categoryName === qsTr("Clock with seconds") || categoryName === "Clock with seconds" || categoryName === qsTr("More Privileges") || categoryName === "More Privileges" || categoryName === qsTr("Start Menu Customization") || categoryName === "Start Menu Customization" || categoryName === qsTr("Desktop Customization") || categoryName === "Desktop Customization") {
-
-
-
-            root.currentSection = "customization";
-
-
-
-        } else {
-
-
-
-            root.currentSection = "core";
-
-
-
-        }
-
-
-
-
-
-
-
-        Qt.callLater(function() {
-
-
-
-            var panel = getParentCard(categoryName);
-
-
-
-            if (!panel) return;
-
-
-
-
-
-
-
-            var flick = mainScroll.contentItem;
-
-
-
-            if (!flick) return;
-
-
-
-
-
-
-
-            scrollAnimation.stop();
-
-
-
-            var targetY = panel.mapToItem(mainColumn, 0, 0).y - (mainScroll.height - panel.height) / 2;
-
-
-
-            var maxScroll = flick.contentHeight - mainScroll.height;
-
-
-
-            if (maxScroll < 0) maxScroll = 0;
-
-
-
-            targetY = Math.max(0, Math.min(targetY, maxScroll));
-
-
-
-            
-
-
-
-            scrollAnimation.target = flick;
-
-
-
-            scrollAnimation.to = targetY;
-
-
-
-            scrollAnimation.start();
-
-
-
-
-
-
-
-            if (typeof panel.triggerLocateFlash === "function") {
-
-
-
-                panel.triggerLocateFlash();
-
-
-
+        function locateFunction(categoryName) {
+        var cleanName = categoryName.split(":")[0].trim();
+        
+        var section = getSectionForDrawerOrCategory(cleanName);
+        if (section === "core" && cleanName !== categoryName) {
+            var targetDrawerName = "";
+            var allDrawers = [
+                "explorerCustomization", "startMenuCustomization", "desktopCustomization",
+                "visualEffects", "indexing", "xbox", "notifications", "power", "defender",
+                "usb", "telemetry", "windowsUpdate", "moreRights", "steamSettings",
+                "sleepingPill", "health", "cleanup", "repair", "mpo"
+            ];
+            for (var i = 0; i < allDrawers.length; i++) {
+                var drObj = getDrawerObject(allDrawers[i]);
+                if (drObj && findDrawerChild(drObj, cleanName)) {
+                    targetDrawerName = allDrawers[i];
+                    break;
+                }
             }
-
-
-
+            if (targetDrawerName) {
+                section = getSectionForDrawerOrCategory(targetDrawerName);
+            }
+        }
+        
+        root.currentSection = section;
+        
+        Qt.callLater(function() {
+            var targetDrawerName = "";
+            var directDrawer = getDrawerName(cleanName);
+            if (directDrawer) {
+                targetDrawerName = directDrawer;
+            } else {
+                var allDrawers = [
+                    "explorerCustomization", "startMenuCustomization", "desktopCustomization",
+                    "visualEffects", "indexing", "xbox", "notifications", "power", "defender",
+                    "usb", "telemetry", "windowsUpdate", "moreRights", "steamSettings",
+                    "sleepingPill", "health", "cleanup", "repair", "mpo"
+                ];
+                for (var i = 0; i < allDrawers.length; i++) {
+                    var drObj = getDrawerObject(allDrawers[i]);
+                    if (drObj && findDrawerChild(drObj, cleanName)) {
+                        targetDrawerName = allDrawers[i];
+                        break;
+                    }
+                }
+            }
+            
+            var panel = getParentCard(cleanName);
+            if (!panel && targetDrawerName) {
+                panel = getParentCardForDrawer(targetDrawerName);
+            }
+            
+            if (panel) {
+                var flick = mainScroll.contentItem;
+                if (flick) {
+                    scrollAnimation.stop();
+                    var targetY = panel.mapToItem(mainColumn, 0, 0).y - (mainScroll.height - panel.height) / 2;
+                    var maxScroll = flick.contentHeight - mainScroll.height;
+                    if (maxScroll < 0) maxScroll = 0;
+                    targetY = Math.max(0, Math.min(targetY, maxScroll));
+                    
+                    scrollAnimation.target = flick;
+                    scrollAnimation.to = targetY;
+                    scrollAnimation.start();
+                    
+                    if (typeof panel.triggerLocateFlash === "function") {
+                        panel.triggerLocateFlash();
+                    }
+                }
+            }
+            
+            if (targetDrawerName) {
+                root.activeDrawer = targetDrawerName;
+                
+                Qt.callLater(function() {
+                    var drawerObj = getDrawerObject(targetDrawerName);
+                    if (!drawerObj) return;
+                    
+                    if (targetDrawerName === "steamSettings") {
+                        var steamSubPage = getSteamSubPageForName(cleanName);
+                        drawerObj.subPage = steamSubPage;
+                    }
+                    
+                    Qt.callLater(function() {
+                        var targetControl = findDrawerChild(drawerObj, cleanName);
+                        if (targetControl) {
+                            var pt = targetControl.mapToItem(drawerObj, 0, 0);
+                            var targetScrollY = pt.y - (drawerScroll.height - targetControl.height) / 2;
+                            var maxScrollY = drawerScroll.contentItem.contentHeight - drawerScroll.height;
+                            if (maxScrollY < 0) maxScrollY = 0;
+                            targetScrollY = Math.max(0, Math.min(targetScrollY, maxScrollY));
+                            
+                            drawerScrollAnimation.stop();
+                            drawerScrollAnimation.target = drawerScroll.contentItem;
+                            drawerScrollAnimation.to = targetScrollY;
+                            drawerScrollAnimation.start();
+                            
+                            if (typeof targetControl.triggerLocateFlash === "function") {
+                                targetControl.triggerLocateFlash();
+                            }
+                        }
+                    });
+                });
+            }
         });
-
-
-
     }
 
 
@@ -7098,6 +7278,13 @@ Item {
 
 
 
+    }
+
+    NumberAnimation {
+        id: drawerScrollAnimation
+        property: "contentY"
+        duration: 500
+        easing.type: Easing.InOutQuad
     }
 
 
@@ -36509,7 +36696,7 @@ Item {
 
 
 
-                                            root.locateFunction(root.islandDetailCategory);
+                                            root.locateFunction(modelData.name);
 
 
 
