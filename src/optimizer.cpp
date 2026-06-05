@@ -2589,7 +2589,8 @@ bool Optimizer::updateVdfFriendsSettings(const QString &filePath, const QString 
 
         QByteArray newBytes = serializeProtobuf(fields);
         updateVdfBlockSetting(filePath, "streaming_v2", "ClientConfig", QString::fromUtf8(newBytes.toHex()));
-        updateVdfBlockSetting(filePath, "streaming_v2", "ClientConfigEnabled", "1");
+        bool clientEnabledVal = settings.contains("RemotePlay_ClientConfigEnabled") ? settings.value("RemotePlay_ClientConfigEnabled").toBool() : true;
+        updateVdfBlockSetting(filePath, "streaming_v2", "ClientConfigEnabled", clientEnabledVal ? "1" : "0");
     }
     if (settings.contains("DownloadHighQualityAudio")) {
         // Update localconfig.vdf (filePath)
