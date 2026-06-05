@@ -2347,12 +2347,33 @@ bool Optimizer::updateVdfFriendsSettings(const QString &filePath, const QString 
         friendsObj[it.key()] = it.value();
     }
     
+    // Clean up any corrupt "\\" key-value lines inside WebStorage block
+    {
+        QRegularExpression corruptKeyRegex("\"\\\\\\\\\"\\s*\"(?:[^\"\\\\]|\\\\.)*\"\\s*\\r?\\n?");
+        int searchPos = start;
+        while (searchPos < end) {
+            QRegularExpressionMatch m = corruptKeyRegex.match(content, searchPos);
+            if (m.hasMatch() && m.capturedStart() < end) {
+                int matchLen = m.capturedLength();
+                content.remove(m.capturedStart(), matchLen);
+                end -= matchLen;
+            } else {
+                break;
+            }
+        }
+    }
+
     QString cleanFriendsJson = QString::fromUtf8(QJsonDocument(friendsObj).toJson(QJsonDocument::Compact));
     QString escapedFriendsJson = cleanFriendsJson;
     escapedFriendsJson.replace(QLatin1String("\\"), QLatin1String("\\\\"));
     escapedFriendsJson.replace(QLatin1String("\""), QLatin1String("\\\""));
     
-    updateValueInBlockBody(content, start, end, QString("FriendsUIWebSettings_%1").arg(accountId), escapedFriendsJson);
+    QString friendsKey = QString("FriendsUIWebSettings_%1").arg(accountId);
+    if (!updateValueInBlockBody(content, start, end, friendsKey, escapedFriendsJson)) {
+        QString insertStr = QString("\t\t\"%1\"\t\t\"%2\"\n").arg(friendsKey, escapedFriendsJson);
+        content.insert(end, insertStr);
+        end += insertStr.length();
+    }
 
     // B. Read existing SteamVoiceSettings and update keys
     QString currentVoice = getValueFromBlockBody(content, start, end, QString("SteamVoiceSettings_%1").arg(accountId));
@@ -2417,7 +2438,12 @@ bool Optimizer::updateVdfFriendsSettings(const QString &filePath, const QString 
     escapedVoiceJson.replace(QLatin1String("\\"), QLatin1String("\\\\"));
     escapedVoiceJson.replace(QLatin1String("\""), QLatin1String("\\\""));
 
-    updateValueInBlockBody(content, start, end, QString("SteamVoiceSettings_%1").arg(accountId), escapedVoiceJson);
+    QString voiceKey = QString("SteamVoiceSettings_%1").arg(accountId);
+    if (!updateValueInBlockBody(content, start, end, voiceKey, escapedVoiceJson)) {
+        QString insertStr = QString("\t\t\"%1\"\t\t\"%2\"\n").arg(voiceKey, escapedVoiceJson);
+        content.insert(end, insertStr);
+        end += insertStr.length();
+    }
 
     if (!file.open(QIODevice::WriteOnly | QIODevice::Text)) {
         return false;
