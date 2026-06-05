@@ -5887,7 +5887,7 @@ void Optimizer::loadSystemStates() {
     defaultFriendsSettings["Host_EnableHardwareEncoding"] = true;
     defaultFriendsSettings["Host_SoftwareEncodingThreadCount"] = -1;
     defaultFriendsSettings["Host_EnableTrafficPriority"] = true;
-    defaultFriendsSettings["RemotePlay_P2PScope"] = 2;
+    defaultFriendsSettings["RemotePlay_P2PScope"] = 0;
     defaultFriendsSettings["RemotePlay_PIN_enabled"] = false;
     defaultFriendsSettings["RemotePlay_PINSize"] = 0;
     defaultFriendsSettings["RemotePlay_VideoQuality"] = 2;

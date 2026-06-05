@@ -3752,19 +3752,20 @@ Item {
                         anchors.right: parent.right
                         anchors.verticalCenter: parent.verticalCenter
 
-                        property int currentVal: optimizerBackend.steamFriendsSettings ? optimizerBackend.steamFriendsSettings["RemotePlay_P2PScope"] !== undefined ? optimizerBackend.steamFriendsSettings["RemotePlay_P2PScope"] : 2 : 2
+                        property int currentVal: optimizerBackend.steamFriendsSettings ? optimizerBackend.steamFriendsSettings["RemotePlay_P2PScope"] !== undefined ? optimizerBackend.steamFriendsSettings["RemotePlay_P2PScope"] : 0 : 0
 
                         readonly property var options: [
-                            { id: 0, label: qsTr("Never") },
-                            { id: 1, label: qsTr("Friends Only") },
-                            { id: 2, label: qsTr("Anyone") }
+                            { id: 0, label: qsTr("Automatic (enabled)") },
+                            { id: 1, label: qsTr("Disabled") },
+                            { id: 2, label: qsTr("My Devices") },
+                            { id: 4, label: qsTr("All Devices") }
                         ]
 
                         function getLabelForVal(v) {
                             for (var i = 0; i < options.length; i++) {
                                 if (options[i].id === v) return options[i].label;
                             }
-                            return qsTr("Anyone");
+                            return qsTr("Automatic (enabled)");
                         }
 
                         Text {

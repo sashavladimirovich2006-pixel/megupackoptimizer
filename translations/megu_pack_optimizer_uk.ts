@@ -5862,6 +5862,26 @@ Recommendation: If scans and repairs do not solve your system problems, we recom
 <context>
     <name>SteamSettingsDrawer</name>
     <message>
+        <location filename="../src/qml/views/SteamSettingsDrawer.qml" line="3758" />
+        <source>Automatic (enabled)</source>
+        <translation>Автоматично (увімкнено)</translation>
+    </message>
+    <message>
+        <location filename="../src/qml/views/SteamSettingsDrawer.qml" line="3759" />
+        <source>Disabled</source>
+        <translation>Вимкнено</translation>
+    </message>
+    <message>
+        <location filename="../src/qml/views/SteamSettingsDrawer.qml" line="3760" />
+        <source>My Devices</source>
+        <translation>Мої пристрої</translation>
+    </message>
+    <message>
+        <location filename="../src/qml/views/SteamSettingsDrawer.qml" line="3761" />
+        <source>All Devices</source>
+        <translation>Усі пристрої</translation>
+    </message>
+    <message>
         <location filename="../src/qml/views/SteamSettingsDrawer.qml" line="73" />
         <source>STEAM CONFIGURATION</source>
         <translation>КОНФІГУРАЦІЯ STEAM</translation>
