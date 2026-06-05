@@ -7248,11 +7248,12 @@ Item {
                             var container = targetControl;
                             while (container && container.parent && container.parent !== drawerObj) {
                                 var typeStr = container.toString();
-                                if (typeStr.indexOf("MeguSwitch") !== -1 || 
-                                    typeStr.indexOf("MeguButton") !== -1 || 
-                                    typeStr.indexOf("MeguPanel") !== -1 ||
-                                    typeStr.indexOf("AcrylicPanel") !== -1 ||
-                                    typeStr.indexOf("QQuickRectangle") !== -1) {
+                                if (typeStr.indexOf("Switch") !== -1 || 
+                                    typeStr.indexOf("Button") !== -1 || 
+                                    typeStr.indexOf("ComboBox") !== -1 || 
+                                    typeStr.indexOf("CheckBox") !== -1 || 
+                                    typeStr.indexOf("Panel") !== -1 || 
+                                    typeStr.indexOf("Rectangle") !== -1) {
                                     break;
                                 }
                                 container = container.parent;
