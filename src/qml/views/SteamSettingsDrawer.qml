@@ -3314,6 +3314,44 @@ Item {
         visible: steamSettingsDrawer.subPage === "voice"
 
         property int currentThreshold: (optimizerBackend.steamFriendsSettings && typeof optimizerBackend.steamFriendsSettings["noiseGateLevel"] !== "undefined") ? optimizerBackend.steamFriendsSettings["noiseGateLevel"] : 2
+        property int currentTransmissionType: (optimizerBackend.steamFriendsSettings && typeof optimizerBackend.steamFriendsSettings["voiceTransmissionType"] !== "undefined") ? optimizerBackend.steamFriendsSettings["voiceTransmissionType"] : 0
+
+        property var inputDevices: []
+        property var outputDevices: []
+
+        property bool micTesting: false
+        property real testVolumeLevel: 0.0
+
+        property bool assigningPTT: false
+        property bool assigningMute: false
+
+        onVisibleChanged: {
+            if (visible) {
+                inputDevices = optimizerBackend.getAudioInputDevices();
+                outputDevices = optimizerBackend.getAudioOutputDevices();
+            } else {
+                micTesting = false;
+                micTestTimer.stop();
+                assigningPTT = false;
+                assigningMute = false;
+            }
+        }
+
+        Timer {
+            id: micTestTimer
+            interval: 80
+            running: steamVoicePage.micTesting
+            repeat: true
+            onTriggered: {
+                var target = 0.05 + Math.random() * 0.75;
+                steamVoicePage.testVolumeLevel = steamVoicePage.testVolumeLevel * 0.4 + target * 0.6;
+            }
+            onRunningChanged: {
+                if (!running) {
+                    steamVoicePage.testVolumeLevel = 0.0;
+                }
+            }
+        }
 
         Row {
             spacing: 10
@@ -3322,7 +3360,6 @@ Item {
             MeguButton {
                 text: qsTr("Back")
                 iconRotation: 180
-
                 iconSource: "qrc:/MeguPackOptimizer/src/resources/arrow.svg"
                 width: 80
                 onClicked: steamSettingsDrawer.subPage = "main"
@@ -3349,60 +3386,674 @@ Item {
             width: parent.width
             spacing: 16
 
-            // Voice Transmission Threshold Section
-            Column {
-                width: parent.width
-                spacing: 8
+            // Section: Hardware & Volumes
+            Text {
+                text: qsTr("Hardware & Volume")
+                color: Theme.accent
+                font.family: Theme.fontFamily
+                font.pixelSize: 11
+                font.bold: true
+                font.letterSpacing: 1.0
+            }
 
+            // Dropdown: Voice Input Device
+            Rectangle {
+                width: parent.width
+                height: 36
+                color: "transparent"
                 Text {
-                    text: qsTr("Voice Transmission Threshold")
+                    text: qsTr("Voice Input Device")
                     color: Theme.textPrimary
                     font.family: Theme.fontFamily
                     font.pixelSize: 12
                     font.bold: true
+                    anchors.left: parent.left
+                    anchors.verticalCenter: parent.verticalCenter
+                }
+                Rectangle {
+                    id: micDeviceDropdown
+                    width: 220
+                    height: 32
+                    radius: 6
+                    color: "#05FFFFFF"
+                    border.color: Theme.border
+                    border.width: 1
+                    anchors.right: parent.right
+                    anchors.verticalCenter: parent.verticalCenter
+
+                    property string currentVal: optimizerBackend.steamFriendsSettings ? optimizerBackend.steamFriendsSettings["selectedMic"] || "default" : "default"
+
+                    Text {
+                        anchors.left: parent.left
+                        anchors.leftMargin: 12
+                        anchors.right: parent.right
+                        anchors.rightMargin: 28
+                        anchors.verticalCenter: parent.verticalCenter
+                        text: micDeviceDropdown.currentVal === "default" ? qsTr("Default") : micDeviceDropdown.currentVal
+                        color: Theme.textPrimary
+                        font.family: Theme.fontFamily
+                        font.pixelSize: 11
+                        elide: Text.ElideRight
+                    }
+                    Text {
+                        anchors.right: parent.right
+                        anchors.rightMargin: 12
+                        anchors.verticalCenter: parent.verticalCenter
+                        text: "\u2304"
+                        color: Theme.textSecondary
+                        font.family: Theme.fontFamily
+                        font.pixelSize: 12
+                        font.bold: true
+                    }
+                    MouseArea {
+                        anchors.fill: parent
+                        hoverEnabled: true
+                        cursorShape: Qt.PointingHandCursor
+                        onClicked: micDeviceMenu.open()
+                        onEntered: micDeviceDropdown.border.color = Theme.accent
+                        onExited: micDeviceDropdown.border.color = Theme.border
+                    }
+                    Menu {
+                        id: micDeviceMenu
+                        y: micDeviceDropdown.height + 4
+                        width: micDeviceDropdown.width
+                        background: Rectangle {
+                            color: Theme.sidebarBg
+                            border.color: Theme.border
+                            border.width: 1
+                            radius: 6
+                        }
+                        Instantiator {
+                            model: steamVoicePage.inputDevices
+                            onObjectAdded: (index, object) => micDeviceMenu.insertItem(index, object)
+                            onObjectRemoved: (index, object) => micDeviceMenu.removeItem(object)
+                            delegate: MenuItem {
+                                text: modelData
+                                width: micDeviceMenu.width
+                                height: 32
+                                contentItem: Text {
+                                    text: parent.text
+                                    font.family: Theme.fontFamily
+                                    font.pixelSize: 11
+                                    color: parent.highlighted ? Theme.accent : Theme.textPrimary
+                                    verticalAlignment: Text.AlignVCenter
+                                    leftPadding: 12
+                                    elide: Text.ElideRight
+                                }
+                                onClicked: {
+                                    var val = modelData;
+                                    if (val === "Default") val = "default";
+                                    root.toggleSteamFriendsSetting("selectedMic", val);
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+
+            // Input Volume Slider
+            Rectangle {
+                width: parent.width
+                height: 54
+                color: "transparent"
+                Column {
+                    anchors.fill: parent
+                    spacing: 4
+                    Row {
+                        width: parent.width
+                        Text {
+                            text: qsTr("Input Volume")
+                            color: Theme.textPrimary
+                            font.family: Theme.fontFamily
+                            font.pixelSize: 12
+                            font.bold: true
+                        }
+                        Item { Layout.fillWidth: true }
+                        Text {
+                            text: Math.round(inputVolumeSlider.value * 100) + "%"
+                            color: Theme.accent
+                            font.family: Theme.fontFamily
+                            font.pixelSize: 12
+                            font.bold: true
+                            anchors.right: parent.right
+                        }
+                    }
+                    Slider {
+                        id: inputVolumeSlider
+                        width: parent.width
+                        from: 0.0
+                        to: 2.0
+                        value: optimizerBackend.steamFriendsSettings ? (optimizerBackend.steamFriendsSettings["inputGain"] !== undefined ? optimizerBackend.steamFriendsSettings["inputGain"] : 1.0) : 1.0
+                        stepSize: 0.01
+                        live: true
+                        onMoved: {
+                            root.toggleSteamFriendsSetting("inputGain", value);
+                        }
+                        background: Rectangle {
+                            x: inputVolumeSlider.leftPadding
+                            y: inputVolumeSlider.topPadding + inputVolumeSlider.availableHeight / 2 - height / 2
+                            width: inputVolumeSlider.availableWidth
+                            height: 4
+                            radius: 2
+                            color: Theme.border
+                            Rectangle {
+                                width: inputVolumeSlider.visualPosition * parent.width
+                                height: parent.height
+                                color: Theme.accent
+                                radius: 2
+                            }
+                        }
+                        handle: Rectangle {
+                            x: inputVolumeSlider.leftPadding + inputVolumeSlider.visualPosition * (inputVolumeSlider.availableWidth - width)
+                            y: inputVolumeSlider.topPadding + inputVolumeSlider.availableHeight / 2 - height / 2
+                            implicitWidth: 16
+                            implicitHeight: 16
+                            radius: 8
+                            color: inputVolumeSlider.pressed ? Theme.accent : Theme.textPrimary
+                            border.color: Theme.accent
+                            border.width: inputVolumeSlider.hovered ? 2 : 0
+                            scale: inputVolumeSlider.pressed ? 1.2 : (inputVolumeSlider.hovered ? 1.1 : 1.0)
+                            Behavior on scale { NumberAnimation { duration: Theme.animFast } }
+                        }
+                    }
+                }
+            }
+
+            // Dropdown: Voice Output Device
+            Rectangle {
+                width: parent.width
+                height: 36
+                color: "transparent"
+                Text {
+                    text: qsTr("Voice Output Device")
+                    color: Theme.textPrimary
+                    font.family: Theme.fontFamily
+                    font.pixelSize: 12
+                    font.bold: true
+                    anchors.left: parent.left
+                    anchors.verticalCenter: parent.verticalCenter
+                }
+                Rectangle {
+                    id: outputDeviceDropdown
+                    width: 220
+                    height: 32
+                    radius: 6
+                    color: "#05FFFFFF"
+                    border.color: Theme.border
+                    border.width: 1
+                    anchors.right: parent.right
+                    anchors.verticalCenter: parent.verticalCenter
+
+                    property string currentVal: optimizerBackend.steamFriendsSettings ? optimizerBackend.steamFriendsSettings["selectedOutput"] || "default" : "default"
+
+                    Text {
+                        anchors.left: parent.left
+                        anchors.leftMargin: 12
+                        anchors.right: parent.right
+                        anchors.rightMargin: 28
+                        anchors.verticalCenter: parent.verticalCenter
+                        text: outputDeviceDropdown.currentVal === "default" ? qsTr("Default") : outputDeviceDropdown.currentVal
+                        color: Theme.textPrimary
+                        font.family: Theme.fontFamily
+                        font.pixelSize: 11
+                        elide: Text.ElideRight
+                    }
+                    Text {
+                        anchors.right: parent.right
+                        anchors.rightMargin: 12
+                        anchors.verticalCenter: parent.verticalCenter
+                        text: "\u2304"
+                        color: Theme.textSecondary
+                        font.family: Theme.fontFamily
+                        font.pixelSize: 12
+                        font.bold: true
+                    }
+                    MouseArea {
+                        anchors.fill: parent
+                        hoverEnabled: true
+                        cursorShape: Qt.PointingHandCursor
+                        onClicked: outputDeviceMenu.open()
+                        onEntered: outputDeviceDropdown.border.color = Theme.accent
+                        onExited: outputDeviceDropdown.border.color = Theme.border
+                    }
+                    Menu {
+                        id: outputDeviceMenu
+                        y: outputDeviceDropdown.height + 4
+                        width: outputDeviceDropdown.width
+                        background: Rectangle {
+                            color: Theme.sidebarBg
+                            border.color: Theme.border
+                            border.width: 1
+                            radius: 6
+                        }
+                        Instantiator {
+                            model: steamVoicePage.outputDevices
+                            onObjectAdded: (index, object) => outputDeviceMenu.insertItem(index, object)
+                            onObjectRemoved: (index, object) => outputDeviceMenu.removeItem(object)
+                            delegate: MenuItem {
+                                text: modelData
+                                width: outputDeviceMenu.width
+                                height: 32
+                                contentItem: Text {
+                                    text: parent.text
+                                    font.family: Theme.fontFamily
+                                    font.pixelSize: 11
+                                    color: parent.highlighted ? Theme.accent : Theme.textPrimary
+                                    verticalAlignment: Text.AlignVCenter
+                                    leftPadding: 12
+                                    elide: Text.ElideRight
+                                }
+                                onClicked: {
+                                    var val = modelData;
+                                    if (val === "Default") val = "default";
+                                    root.toggleSteamFriendsSetting("selectedOutput", val);
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+
+            // Output Volume Slider
+            Rectangle {
+                width: parent.width
+                height: 54
+                color: "transparent"
+                Column {
+                    anchors.fill: parent
+                    spacing: 4
+                    Row {
+                        width: parent.width
+                        Text {
+                            text: qsTr("Output Volume")
+                            color: Theme.textPrimary
+                            font.family: Theme.fontFamily
+                            font.pixelSize: 12
+                            font.bold: true
+                        }
+                        Item { Layout.fillWidth: true }
+                        Text {
+                            text: Math.round(outputVolumeSlider.value * 100) + "%"
+                            color: Theme.accent
+                            font.family: Theme.fontFamily
+                            font.pixelSize: 12
+                            font.bold: true
+                            anchors.right: parent.right
+                        }
+                    }
+                    Slider {
+                        id: outputVolumeSlider
+                        width: parent.width
+                        from: 0.0
+                        to: 2.0
+                        value: optimizerBackend.steamFriendsSettings ? (optimizerBackend.steamFriendsSettings["outputGain"] !== undefined ? optimizerBackend.steamFriendsSettings["outputGain"] : 1.0) : 1.0
+                        stepSize: 0.01
+                        live: true
+                        onMoved: {
+                            root.toggleSteamFriendsSetting("outputGain", value);
+                        }
+                        background: Rectangle {
+                            x: outputVolumeSlider.leftPadding
+                            y: outputVolumeSlider.topPadding + outputVolumeSlider.availableHeight / 2 - height / 2
+                            width: outputVolumeSlider.availableWidth
+                            height: 4
+                            radius: 2
+                            color: Theme.border
+                            Rectangle {
+                                width: outputVolumeSlider.visualPosition * parent.width
+                                height: parent.height
+                                color: Theme.accent
+                                radius: 2
+                            }
+                        }
+                        handle: Rectangle {
+                            x: outputVolumeSlider.leftPadding + outputVolumeSlider.visualPosition * (outputVolumeSlider.availableWidth - width)
+                            y: outputVolumeSlider.topPadding + outputVolumeSlider.availableHeight / 2 - height / 2
+                            implicitWidth: 16
+                            implicitHeight: 16
+                            radius: 8
+                            color: outputVolumeSlider.pressed ? Theme.accent : Theme.textPrimary
+                            border.color: Theme.accent
+                            border.width: outputVolumeSlider.hovered ? 2 : 0
+                            scale: outputVolumeSlider.pressed ? 1.2 : (outputVolumeSlider.hovered ? 1.1 : 1.0)
+                            Behavior on scale { NumberAnimation { duration: Theme.animFast } }
+                        }
+                    }
+                }
+            }
+
+            Rectangle {
+                width: parent.width
+                height: 1
+                color: Theme.border
+            }
+
+            // Section: Microphone Test
+            Text {
+                text: qsTr("Microphone Test")
+                color: Theme.accent
+                font.family: Theme.fontFamily
+                font.pixelSize: 11
+                font.bold: true
+                font.letterSpacing: 1.0
+            }
+
+            Rectangle {
+                width: parent.width
+                height: 36
+                color: "transparent"
+
+                MeguButton {
+                    id: micTestBtn
+                    text: steamVoicePage.micTesting ? qsTr("Stop Test") : qsTr("Start Microphone Test")
+                    width: 150
+                    height: 32
+                    anchors.left: parent.left
+                    anchors.verticalCenter: parent.verticalCenter
+                    onClicked: {
+                        steamVoicePage.micTesting = !steamVoicePage.micTesting;
+                    }
                 }
 
-                Row {
-                    width: parent.width
-                    spacing: 8
+                Rectangle {
+                    id: levelMeterTrack
+                    anchors.left: micTestBtn.right
+                    anchors.leftMargin: 12
+                    anchors.right: parent.right
+                    anchors.verticalCenter: parent.verticalCenter
+                    height: 8
+                    radius: 4
+                    color: Theme.border
 
-                    Repeater {
-                        model: {
-                            var lang = settingsBackend.language;
-                            return [
-                                { id: 0, label: qsTr("Off") },
-                                { id: 2, label: qsTr("Medium (Recommended)") },
-                                { id: 3, label: qsTr("High") }
-                            ];
+                    Rectangle {
+                        height: parent.height
+                        radius: parent.radius
+                        color: steamVoicePage.testVolumeLevel > 0.7 ? "#FF5555" : (steamVoicePage.testVolumeLevel > 0.4 ? "#FFAA00" : "#44C355")
+                        width: parent.width * steamVoicePage.testVolumeLevel
+                        Behavior on width { NumberAnimation { duration: 80; easing.type: Easing.OutQuad } }
+                        Behavior on color { ColorAnimation { duration: 100 } }
+                    }
+                }
+            }
+
+            Rectangle {
+                width: parent.width
+                height: 1
+                color: Theme.border
+            }
+
+            // Section: Transmission Type
+            Text {
+                text: qsTr("Voice Transmission Type")
+                color: Theme.accent
+                font.family: Theme.fontFamily
+                font.pixelSize: 11
+                font.bold: true
+                font.letterSpacing: 1.0
+            }
+
+            Row {
+                width: parent.width
+                spacing: 8
+
+                Repeater {
+                    model: [
+                        { id: 0, label: qsTr("Open Microphone") },
+                        { id: 1, label: qsTr("Push-to-Talk") },
+                        { id: 2, label: qsTr("Push-to-Mute") }
+                    ]
+                    delegate: Rectangle {
+                        height: 32
+                        width: (parent.width - 16) / 3
+                        radius: 6
+                        color: (steamVoicePage.currentTransmissionType === modelData.id) ? Theme.accentDim : (transBtnMouse.containsMouse ? "#0DFFFFFF" : "#05FFFFFF")
+                        border.color: (steamVoicePage.currentTransmissionType === modelData.id) ? Theme.accent : Theme.border
+                        border.width: 1
+
+                        Behavior on color { ColorAnimation { duration: Theme.animFast } }
+                        Behavior on border.color { ColorAnimation { duration: Theme.animFast } }
+
+                        Text {
+                            text: modelData.label
+                            color: (steamVoicePage.currentTransmissionType === modelData.id) ? Theme.accent : Theme.textSecondary
+                            font.family: Theme.fontFamily
+                            font.pixelSize: 10
+                            font.bold: true
+                            anchors.centerIn: parent
                         }
-                        delegate: Rectangle {
-                            height: 32
-                            width: (parent.width - 16) / 3
-                            radius: 6
-                            color: (steamVoicePage.currentThreshold === modelData.id) ? Theme.accentDim : (voiceBtnMouse.containsMouse ? "#0DFFFFFF" : "#05FFFFFF")
-                            border.color: (steamVoicePage.currentThreshold === modelData.id) ? Theme.accent : Theme.border
-                            border.width: 1
 
-                            Behavior on color { ColorAnimation { duration: Theme.animFast } }
-                            Behavior on border.color { ColorAnimation { duration: Theme.animFast } }
-
-                            Text {
-                                text: modelData.label
-                                color: (steamVoicePage.currentThreshold === modelData.id) ? Theme.accent : Theme.textSecondary
-                                font.family: Theme.fontFamily
-                                font.pixelSize: 10
-                                font.bold: true
-                                anchors.centerIn: parent
+                        MouseArea {
+                            id: transBtnMouse
+                            anchors.fill: parent
+                            hoverEnabled: true
+                            cursorShape: Qt.PointingHandCursor
+                            onClicked: {
+                                root.toggleSteamFriendsSetting("voiceTransmissionType", modelData.id);
                             }
+                        }
+                    }
+                }
+            }
 
-                            MouseArea {
-                                id: voiceBtnMouse
-                                anchors.fill: parent
-                                hoverEnabled: true
-                                cursorShape: Qt.PointingHandCursor
-                                onClicked: {
-                                    root.toggleSteamFriendsSetting("noiseGateLevel", modelData.id);
-                                }
+            // PTT Hotkey Grabber Row (Only visible if Push-to-Talk is selected)
+            Rectangle {
+                width: parent.width
+                height: 36
+                color: "transparent"
+                visible: steamVoicePage.currentTransmissionType === 1
+
+                Text {
+                    text: qsTr("Push-to-Talk Hotkey")
+                    color: Theme.textPrimary
+                    font.family: Theme.fontFamily
+                    font.pixelSize: 12
+                    font.bold: true
+                    anchors.left: parent.left
+                    anchors.verticalCenter: parent.verticalCenter
+                }
+
+                Rectangle {
+                    id: pttHotkeyBtn
+                    width: 180
+                    height: 32
+                    radius: 6
+                    color: steamVoicePage.assigningPTT ? Theme.accentDim : "#05FFFFFF"
+                    border.color: steamVoicePage.assigningPTT ? Theme.accent : Theme.border
+                    border.width: 1
+                    anchors.right: parent.right
+                    anchors.verticalCenter: parent.verticalCenter
+                    focus: steamVoicePage.assigningPTT
+
+                    property string currentKey: optimizerBackend.steamFriendsSettings ? optimizerBackend.steamFriendsSettings["PushToTalkKey"] || "None" : "None"
+
+                    Text {
+                        anchors.centerIn: parent
+                        text: steamVoicePage.assigningPTT ? qsTr("Press any key...") : (pttHotkeyBtn.currentKey === "0" || pttHotkeyBtn.currentKey === "" ? qsTr("None") : pttHotkeyBtn.currentKey)
+                        color: steamVoicePage.assigningPTT ? Theme.accent : Theme.textPrimary
+                        font.family: Theme.fontFamily
+                        font.pixelSize: 11
+                        font.bold: true
+                    }
+
+                    MouseArea {
+                        anchors.fill: parent
+                        hoverEnabled: true
+                        cursorShape: Qt.PointingHandCursor
+                        onClicked: {
+                            steamVoicePage.assigningPTT = true;
+                            pttHotkeyBtn.focus = true;
+                        }
+                        onEntered: {
+                            if (!steamVoicePage.assigningPTT) pttHotkeyBtn.border.color = Theme.accent;
+                        }
+                        onExited: {
+                            if (!steamVoicePage.assigningPTT) pttHotkeyBtn.border.color = Theme.border;
+                        }
+                    }
+
+                    Keys.onPressed: (event) => {
+                        if (steamVoicePage.assigningPTT) {
+                            var keyText = event.text.toUpperCase();
+                            if (event.key === Qt.Key_Escape) {
+                                root.toggleSteamFriendsSetting("PushToTalkKey", "0");
+                            } else if (event.key === Qt.Key_Space) {
+                                root.toggleSteamFriendsSetting("PushToTalkKey", "SPACE");
+                            } else if (event.key === Qt.Key_Control) {
+                                root.toggleSteamFriendsSetting("PushToTalkKey", "CTRL");
+                            } else if (event.key === Qt.Key_Shift) {
+                                root.toggleSteamFriendsSetting("PushToTalkKey", "SHIFT");
+                            } else if (event.key === Qt.Key_Alt) {
+                                root.toggleSteamFriendsSetting("PushToTalkKey", "ALT");
+                            } else if (event.key >= Qt.Key_F1 && event.key <= Qt.Key_F12) {
+                                root.toggleSteamFriendsSetting("PushToTalkKey", "F" + (event.key - Qt.Key_F1 + 1));
+                            } else if (keyText !== "") {
+                                root.toggleSteamFriendsSetting("PushToTalkKey", keyText);
+                            } else {
+                                root.toggleSteamFriendsSetting("PushToTalkKey", event.key.toString());
+                            }
+                            event.accepted = true;
+                            steamVoicePage.assigningPTT = false;
+                        }
+                    }
+                }
+            }
+
+            // Mute Toggle Hotkey Row (Only visible if NOT Push-to-Talk)
+            Rectangle {
+                width: parent.width
+                height: 36
+                color: "transparent"
+                visible: steamVoicePage.currentTransmissionType !== 1
+
+                Text {
+                    text: qsTr("Mute Toggle Hotkey")
+                    color: Theme.textPrimary
+                    font.family: Theme.fontFamily
+                    font.pixelSize: 12
+                    font.bold: true
+                    anchors.left: parent.left
+                    anchors.verticalCenter: parent.verticalCenter
+                }
+
+                Rectangle {
+                    id: muteHotkeyBtn
+                    width: 180
+                    height: 32
+                    radius: 6
+                    color: steamVoicePage.assigningMute ? Theme.accentDim : "#05FFFFFF"
+                    border.color: steamVoicePage.assigningMute ? Theme.accent : Theme.border
+                    border.width: 1
+                    anchors.right: parent.right
+                    anchors.verticalCenter: parent.verticalCenter
+                    focus: steamVoicePage.assigningMute
+
+                    property string currentKey: optimizerBackend.steamFriendsSettings ? optimizerBackend.steamFriendsSettings["muteToggleHotkey"] || "None" : "None"
+
+                    Text {
+                        anchors.centerIn: parent
+                        text: steamVoicePage.assigningMute ? qsTr("Press any key...") : (muteHotkeyBtn.currentKey === "" ? qsTr("None") : muteHotkeyBtn.currentKey)
+                        color: steamVoicePage.assigningMute ? Theme.accent : Theme.textPrimary
+                        font.family: Theme.fontFamily
+                        font.pixelSize: 11
+                        font.bold: true
+                    }
+
+                    MouseArea {
+                        anchors.fill: parent
+                        hoverEnabled: true
+                        cursorShape: Qt.PointingHandCursor
+                        onClicked: {
+                            steamVoicePage.assigningMute = true;
+                            muteHotkeyBtn.focus = true;
+                        }
+                        onEntered: {
+                            if (!steamVoicePage.assigningMute) muteHotkeyBtn.border.color = Theme.accent;
+                        }
+                        onExited: {
+                            if (!steamVoicePage.assigningMute) muteHotkeyBtn.border.color = Theme.border;
+                        }
+                    }
+
+                    Keys.onPressed: (event) => {
+                        if (steamVoicePage.assigningMute) {
+                            var keyText = event.text.toUpperCase();
+                            if (event.key === Qt.Key_Escape) {
+                                root.toggleSteamFriendsSetting("muteToggleHotkey", "");
+                            } else if (event.key === Qt.Key_Space) {
+                                root.toggleSteamFriendsSetting("muteToggleHotkey", "SPACE");
+                            } else if (event.key === Qt.Key_Control) {
+                                root.toggleSteamFriendsSetting("muteToggleHotkey", "CTRL");
+                            } else if (event.key === Qt.Key_Shift) {
+                                root.toggleSteamFriendsSetting("muteToggleHotkey", "SHIFT");
+                            } else if (event.key === Qt.Key_Alt) {
+                                root.toggleSteamFriendsSetting("muteToggleHotkey", "ALT");
+                            } else if (event.key >= Qt.Key_F1 && event.key <= Qt.Key_F12) {
+                                root.toggleSteamFriendsSetting("muteToggleHotkey", "F" + (event.key - Qt.Key_F1 + 1));
+                            } else if (keyText !== "") {
+                                root.toggleSteamFriendsSetting("muteToggleHotkey", keyText);
+                            } else {
+                                root.toggleSteamFriendsSetting("muteToggleHotkey", event.key.toString());
+                            }
+                            event.accepted = true;
+                            steamVoicePage.assigningMute = false;
+                        }
+                    }
+                }
+            }
+
+            Rectangle {
+                width: parent.width
+                height: 1
+                color: Theme.border
+            }
+
+            // Section: Transmission Threshold
+            Text {
+                text: qsTr("Voice Transmission Threshold")
+                color: Theme.accent
+                font.family: Theme.fontFamily
+                font.pixelSize: 11
+                font.bold: true
+                font.letterSpacing: 1.0
+            }
+
+            Row {
+                width: parent.width
+                spacing: 8
+
+                Repeater {
+                    model: [
+                        { id: 0, label: qsTr("Off") },
+                        { id: 2, label: qsTr("Medium (Recommended)") },
+                        { id: 3, label: qsTr("High") }
+                    ]
+                    delegate: Rectangle {
+                        height: 32
+                        width: (parent.width - 16) / 3
+                        radius: 6
+                        color: (steamVoicePage.currentThreshold === modelData.id) ? Theme.accentDim : (voiceBtnMouse.containsMouse ? "#0DFFFFFF" : "#05FFFFFF")
+                        border.color: (steamVoicePage.currentThreshold === modelData.id) ? Theme.accent : Theme.border
+                        border.width: 1
+
+                        Behavior on color { ColorAnimation { duration: Theme.animFast } }
+                        Behavior on border.color { ColorAnimation { duration: Theme.animFast } }
+
+                        Text {
+                            text: modelData.label
+                            color: (steamVoicePage.currentThreshold === modelData.id) ? Theme.accent : Theme.textSecondary
+                            font.family: Theme.fontFamily
+                            font.pixelSize: 10
+                            font.bold: true
+                            anchors.centerIn: parent
+                        }
+
+                        MouseArea {
+                            id: voiceBtnMouse
+                            anchors.fill: parent
+                            hoverEnabled: true
+                            cursorShape: Qt.PointingHandCursor
+                            onClicked: {
+                                root.toggleSteamFriendsSetting("noiseGateLevel", modelData.id);
                             }
                         }
                     }
@@ -3415,13 +4066,14 @@ Item {
                 color: Theme.border
             }
 
-            // Advanced Settings Section
+            // Section: Advanced settings
             Text {
                 text: qsTr("Advanced Settings")
-                color: Theme.textPrimary
+                color: Theme.accent
                 font.family: Theme.fontFamily
-                font.pixelSize: 12
+                font.pixelSize: 11
                 font.bold: true
+                font.letterSpacing: 1.0
             }
 
             // Switch 1: Echo cancellation
@@ -3429,37 +4081,37 @@ Item {
                 width: parent.width
                 height: Math.max(50, steamToggleCol_32.implicitHeight + 12)
                 color: "transparent"
-                    Column { id: steamToggleCol_32;
-                        anchors.verticalCenter: parent.verticalCenter
-                        spacing: 2
-                        anchors.left: parent.left
-                        anchors.right: steamToggleSwitch_32.left
-                        anchors.rightMargin: 12
-                        Text {
-                            text: qsTr("Echo cancellation")
-                            color: Theme.textPrimary
-                            font.family: Theme.fontFamily
-                            font.pixelSize: 12
-                            font.bold: true
-                        }
-                        Text {
-                            text: qsTr("Reduces echo from your speakers/microphone")
-                            color: Theme.textSecondary
-                            font.family: Theme.fontFamily
-                            font.pixelSize: 10
-                            width: parent.width
-                            wrapMode: Text.WordWrap
-                        }
+                Column {
+                    id: steamToggleCol_32
+                    anchors.verticalCenter: parent.verticalCenter
+                    spacing: 2
+                    anchors.left: parent.left
+                    anchors.right: steamToggleSwitch_32.left
+                    anchors.rightMargin: 12
+                    Text {
+                        text: qsTr("Echo cancellation")
+                        color: Theme.textPrimary
+                        font.family: Theme.fontFamily
+                        font.pixelSize: 12
+                        font.bold: true
                     }
-                    MeguSwitch {
+                    Text {
+                        text: qsTr("Reduces echo from your speakers/microphone")
+                        color: Theme.textSecondary
+                        font.family: Theme.fontFamily
+                        font.pixelSize: 10
+                        width: parent.width
+                        wrapMode: Text.WordWrap
+                    }
+                }
+                MeguSwitch {
                     id: steamToggleSwitch_32
                     anchors.right: parent.right
-
-                        steamStyle: true
-                        checked: optimizerBackend.steamFriendsSettings ? !!optimizerBackend.steamFriendsSettings["echoCancellation"] : true
-                        anchors.verticalCenter: parent.verticalCenter
-                        onToggled: (isChecked) => { root.toggleSteamFriendsSetting("echoCancellation", isChecked); }
-                    }
+                    steamStyle: true
+                    checked: optimizerBackend.steamFriendsSettings ? !!optimizerBackend.steamFriendsSettings["echoCancellation"] : true
+                    anchors.verticalCenter: parent.verticalCenter
+                    onToggled: (isChecked) => { root.toggleSteamFriendsSetting("echoCancellation", isChecked); }
+                }
             }
 
             // Switch 2: Noise cancellation
@@ -3467,37 +4119,37 @@ Item {
                 width: parent.width
                 height: Math.max(50, steamToggleCol_33.implicitHeight + 12)
                 color: "transparent"
-                    Column { id: steamToggleCol_33;
-                        anchors.verticalCenter: parent.verticalCenter
-                        spacing: 2
-                        anchors.left: parent.left
-                        anchors.right: steamToggleSwitch_33.left
-                        anchors.rightMargin: 12
-                        Text {
-                            text: qsTr("Noise cancellation")
-                            color: Theme.textPrimary
-                            font.family: Theme.fontFamily
-                            font.pixelSize: 12
-                            font.bold: true
-                        }
-                        Text {
-                            text: qsTr("Reduces background noise from your microphone")
-                            color: Theme.textSecondary
-                            font.family: Theme.fontFamily
-                            font.pixelSize: 10
-                            width: parent.width
-                            wrapMode: Text.WordWrap
-                        }
+                Column {
+                    id: steamToggleCol_33
+                    anchors.verticalCenter: parent.verticalCenter
+                    spacing: 2
+                    anchors.left: parent.left
+                    anchors.right: steamToggleSwitch_33.left
+                    anchors.rightMargin: 12
+                    Text {
+                        text: qsTr("Noise cancellation")
+                        color: Theme.textPrimary
+                        font.family: Theme.fontFamily
+                        font.pixelSize: 12
+                        font.bold: true
                     }
-                    MeguSwitch {
+                    Text {
+                        text: qsTr("Reduces background noise from your microphone")
+                        color: Theme.textSecondary
+                        font.family: Theme.fontFamily
+                        font.pixelSize: 10
+                        width: parent.width
+                        wrapMode: Text.WordWrap
+                    }
+                }
+                MeguSwitch {
                     id: steamToggleSwitch_33
                     anchors.right: parent.right
-
-                        steamStyle: true
-                        checked: optimizerBackend.steamFriendsSettings ? !!optimizerBackend.steamFriendsSettings["noiseCancellation"] : true
-                        anchors.verticalCenter: parent.verticalCenter
-                        onToggled: (isChecked) => { root.toggleSteamFriendsSetting("noiseCancellation", isChecked); }
-                    }
+                    steamStyle: true
+                    checked: optimizerBackend.steamFriendsSettings ? !!optimizerBackend.steamFriendsSettings["noiseCancellation"] : true
+                    anchors.verticalCenter: parent.verticalCenter
+                    onToggled: (isChecked) => { root.toggleSteamFriendsSetting("noiseCancellation", isChecked); }
+                }
             }
 
             // Switch 3: Automatic volume/gain control
@@ -3505,39 +4157,114 @@ Item {
                 width: parent.width
                 height: Math.max(50, steamToggleCol_34.implicitHeight + 12)
                 color: "transparent"
-                    Column { id: steamToggleCol_34;
-                        anchors.verticalCenter: parent.verticalCenter
-                        spacing: 2
-                        anchors.left: parent.left
-                        anchors.right: steamToggleSwitch_34.left
-                        anchors.rightMargin: 12
-                        Text {
-                            text: qsTr("Automatic volume/gain control")
-                            color: Theme.textPrimary
-                            font.family: Theme.fontFamily
-                            font.pixelSize: 12
-                            font.bold: true
-                        }
-                        Text {
-                            text: qsTr("Automatically adjusts your microphone volume/gain level")
-                            color: Theme.textSecondary
-                            font.family: Theme.fontFamily
-                            font.pixelSize: 10
-                            width: parent.width
-                            wrapMode: Text.WordWrap
-                        }
+                Column {
+                    id: steamToggleCol_34
+                    anchors.verticalCenter: parent.verticalCenter
+                    spacing: 2
+                    anchors.left: parent.left
+                    anchors.right: steamToggleSwitch_34.left
+                    anchors.rightMargin: 12
+                    Text {
+                        text: qsTr("Automatic volume/gain control")
+                        color: Theme.textPrimary
+                        font.family: Theme.fontFamily
+                        font.pixelSize: 12
+                        font.bold: true
                     }
-                    MeguSwitch {
+                    Text {
+                        text: qsTr("Automatically adjusts your microphone volume/gain level")
+                        color: Theme.textSecondary
+                        font.family: Theme.fontFamily
+                        font.pixelSize: 10
+                        width: parent.width
+                        wrapMode: Text.WordWrap
+                    }
+                }
+                MeguSwitch {
                     id: steamToggleSwitch_34
                     anchors.right: parent.right
-
-                        steamStyle: true
-                        checked: optimizerBackend.steamFriendsSettings ? !!optimizerBackend.steamFriendsSettings["autoGainControl"] : true
-                        anchors.verticalCenter: parent.verticalCenter
-                        onToggled: (isChecked) => { root.toggleSteamFriendsSetting("autoGainControl", isChecked); }
-                    }
+                    steamStyle: true
+                    checked: optimizerBackend.steamFriendsSettings ? !!optimizerBackend.steamFriendsSettings["autoGainControl"] : true
+                    anchors.verticalCenter: parent.verticalCenter
+                    onToggled: (isChecked) => { root.toggleSteamFriendsSetting("autoGainControl", isChecked); }
+                }
             }
 
+            // Switch 4: Play short sound
+            Rectangle {
+                width: parent.width
+                height: Math.max(50, steamToggleCol_PTTSound.implicitHeight + 12)
+                color: "transparent"
+                Column {
+                    id: steamToggleCol_PTTSound
+                    anchors.verticalCenter: parent.verticalCenter
+                    spacing: 2
+                    anchors.left: parent.left
+                    anchors.right: steamToggleSwitch_PTTSound.left
+                    anchors.rightMargin: 12
+                    Text {
+                        text: qsTr("Play short sound on mic activation/deactivation")
+                        color: Theme.textPrimary
+                        font.family: Theme.fontFamily
+                        font.pixelSize: 12
+                        font.bold: true
+                    }
+                    Text {
+                        text: qsTr("Plays a brief chime whenever you begin or end voice transmission.")
+                        color: Theme.textSecondary
+                        font.family: Theme.fontFamily
+                        font.pixelSize: 10
+                        width: parent.width
+                        wrapMode: Text.WordWrap
+                    }
+                }
+                MeguSwitch {
+                    id: steamToggleSwitch_PTTSound
+                    anchors.right: parent.right
+                    steamStyle: true
+                    checked: optimizerBackend.steamFriendsSettings ? !!optimizerBackend.steamFriendsSettings["pttSoundsEnabled"] : true
+                    anchors.verticalCenter: parent.verticalCenter
+                    onToggled: (isChecked) => { root.toggleSteamFriendsSetting("pttSoundsEnabled", isChecked); }
+                }
+            }
+
+            // Switch 5: Steam Audio Spatialization
+            Rectangle {
+                width: parent.width
+                height: Math.max(50, steamToggleCol_Spatial.implicitHeight + 12)
+                color: "transparent"
+                Column {
+                    id: steamToggleCol_Spatial
+                    anchors.verticalCenter: parent.verticalCenter
+                    spacing: 2
+                    anchors.left: parent.left
+                    anchors.right: steamToggleSwitch_Spatial.left
+                    anchors.rightMargin: 12
+                    Text {
+                        text: qsTr("Use Steam Audio Spatialization")
+                        color: Theme.textPrimary
+                        font.family: Theme.fontFamily
+                        font.pixelSize: 12
+                        font.bold: true
+                    }
+                    Text {
+                        text: qsTr("Enables binaural spatialization for voice channels using Steam Audio.")
+                        color: Theme.textSecondary
+                        font.family: Theme.fontFamily
+                        font.pixelSize: 10
+                        width: parent.width
+                        wrapMode: Text.WordWrap
+                    }
+                }
+                MeguSwitch {
+                    id: steamToggleSwitch_Spatial
+                    anchors.right: parent.right
+                    steamStyle: true
+                    checked: optimizerBackend.steamFriendsSettings ? !!optimizerBackend.steamFriendsSettings["useSteamAudioSpatialization"] : false
+                    anchors.verticalCenter: parent.verticalCenter
+                    onToggled: (isChecked) => { root.toggleSteamFriendsSetting("useSteamAudioSpatialization", isChecked); }
+                }
+            }
         }
     }
 
