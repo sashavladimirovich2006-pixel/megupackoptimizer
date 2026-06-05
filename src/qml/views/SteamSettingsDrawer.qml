@@ -4290,18 +4290,21 @@ Item {
                         property int currentH: optimizerBackend.steamFriendsSettings ? optimizerBackend.steamFriendsSettings["RemotePlay_ResolutionHeight"] || 0 : 0
 
                         readonly property var options: [
-                            { width: 0, height: 0, label: qsTr("Display Resolution") },
-                            { width: 1280, height: 720, label: "1280x720" },
-                            { width: 1920, height: 1080, label: "1920x1080" },
-                            { width: 2560, height: 1440, label: "2560x1440" },
-                            { width: 3840, height: 2160, label: "3840x2160" }
+                            { width: 0, height: 0, label: qsTr("Automatic") },
+                            { width: 852, height: 480, label: "852x480 (480p)" },
+                            { width: 1280, height: 720, label: "1280x720 (720p)" },
+                            { width: 1600, height: 900, label: "1600x900 (900p)" },
+                            { width: 1920, height: 1080, label: "1920x1080 (1080p)" },
+                            { width: 2560, height: 1440, label: "2560x1440 (1440p)" },
+                            { width: 3840, height: 2160, label: "3840x2160 (4K)" },
+                            { width: 7680, height: 4320, label: "7680x4320 (8K)" }
                         ]
 
                         function getLabelForVal(w, h) {
                             for (var i = 0; i < options.length; i++) {
                                 if (options[i].width === w && options[i].height === h) return options[i].label;
                             }
-                            return qsTr("Display Resolution");
+                            return qsTr("Automatic");
                         }
 
                         Text {
