@@ -6,7 +6,7 @@ set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 # Find Qt6 Modules
-find_package(Qt6 REQUIRED COMPONENTS Core Gui Qml Quick)
+find_package(Qt6 REQUIRED COMPONENTS Core Gui Qml Quick Sql)
 
 qt_standard_project_setup()
 
@@ -111,6 +111,7 @@ target_link_libraries(megu_pack_optimizer PRIVATE
     Qt6::Gui
     Qt6::Qml
     Qt6::Quick
+    Qt6::Sql
 )
 
 # Windows Specific: Hide terminal window in production (Release mode)

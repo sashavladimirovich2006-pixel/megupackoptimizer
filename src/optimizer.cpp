@@ -20,6 +20,11 @@
 #include <QProcess>
 #include <QRegularExpression>
 #include <QCryptographicHash>
+#include <QMessageAuthenticationCode>
+#include <QSqlDatabase>
+#include <QSqlQuery>
+#include <QSqlError>
+#include <QProcessEnvironment>
 #include <QJsonDocument>
 #include <QJsonObject>
 #include <QFile>
@@ -1864,13 +1869,23 @@ bool Optimizer::getVdfFriendsSettings(const QString &filePath, const QString &ac
         }
     }
 
-    // 5.5 Load system PushToTalkKey
+    // 5.5 Load system PushToTalkKey and transmission type
     {
         QString pttKey = getVdfSystemSetting(filePath, "PushToTalkKey");
         if (!pttKey.isEmpty()) {
             settings["PushToTalkKey"] = pttKey;
         } else {
             settings["PushToTalkKey"] = "0";
+        }
+
+        QString pttFriends = getVdfSystemSetting(filePath, "UsePushToTalkFriendsUI");
+        QString ptm = getVdfSystemSetting(filePath, "UsePushToMute");
+        if (pttFriends == "1") {
+            settings["voiceTransmissionType"] = 1;
+        } else if (ptm == "1") {
+            settings["voiceTransmissionType"] = 2;
+        } else {
+            settings["voiceTransmissionType"] = 0;
         }
     }
 
@@ -2560,6 +2575,20 @@ bool Optimizer::updateVdfFriendsSettings(const QString &filePath, const QString 
     
     if (settings.contains("PushToTalkKey")) {
         updateVdfSystemSetting(filePath, "PushToTalkKey", settings.value("PushToTalkKey").toString());
+    }
+
+    if (settings.contains("voiceTransmissionType")) {
+        int txType = settings.value("voiceTransmissionType").toInt();
+        if (txType == 1) {
+            updateVdfSystemSetting(filePath, "UsePushToTalkFriendsUI", "1");
+            updateVdfSystemSetting(filePath, "UsePushToMute", "0");
+        } else if (txType == 2) {
+            updateVdfSystemSetting(filePath, "UsePushToTalkFriendsUI", "0");
+            updateVdfSystemSetting(filePath, "UsePushToMute", "1");
+        } else {
+            updateVdfSystemSetting(filePath, "UsePushToTalkFriendsUI", "0");
+            updateVdfSystemSetting(filePath, "UsePushToMute", "0");
+        }
     }
 
     if (settings.contains("bReduceMotion")) {
@@ -12915,6 +12944,70 @@ bool Optimizer::unpairSteamDevice(const QString &deviceId) {
     return true;
 }
 
+static QString getSteamAudioSalt() {
+    QString localAppData = QString::fromLocal8Bit(qgetenv("LOCALAPPDATA"));
+    if (localAppData.isEmpty()) return "";
+    
+    QString dbPath = localAppData + "/Steam/htmlcache/Default/MediaDeviceSalts";
+    if (QFile::exists(dbPath)) {
+        QString connectionName = "steam_salts_conn_mpo";
+        QSqlDatabase db;
+        if (QSqlDatabase::contains(connectionName)) {
+            db = QSqlDatabase::database(connectionName);
+        } else {
+            db = QSqlDatabase::addDatabase("QSQLITE", connectionName);
+        }
+        db.setDatabaseName(dbPath);
+        if (db.open()) {
+            QSqlQuery query(db);
+            query.prepare("SELECT salt FROM media_device_salts WHERE storage_key LIKE :key LIMIT 1");
+            query.bindValue(":key", "https://steamloopback.host%");
+            if (query.exec() && query.next()) {
+                QString salt = query.value(0).toString();
+                db.close();
+                QSqlDatabase::removeDatabase(connectionName);
+                return salt;
+            }
+            if (query.exec("SELECT salt FROM media_device_salts LIMIT 1") && query.next()) {
+                QString salt = query.value(0).toString();
+                db.close();
+                QSqlDatabase::removeDatabase(connectionName);
+                return salt;
+            }
+            db.close();
+        }
+        QSqlDatabase::removeDatabase(connectionName);
+    }
+    
+    // Fallback: Read Preferences JSON
+    QString prefPath = localAppData + "/Steam/htmlcache/Default/Preferences";
+    if (QFile::exists(prefPath)) {
+        QFile file(prefPath);
+        if (file.open(QIODevice::ReadOnly)) {
+            QJsonDocument doc = QJsonDocument::fromJson(file.readAll());
+            file.close();
+            if (doc.isObject()) {
+                QJsonObject obj = doc.object();
+                if (obj.contains("media")) {
+                    QJsonObject mediaObj = obj["media"].toObject();
+                    if (mediaObj.contains("device_id_salt")) {
+                        return mediaObj["device_id_salt"].toString();
+                    }
+                }
+            }
+        }
+    }
+    return "";
+}
+
+static QString calculateSteamDeviceHash(const QString &deviceGuid, const QString &salt) {
+    if (salt.isEmpty()) return deviceGuid;
+    QByteArray key = "https://steamloopback.host";
+    QByteArray message = (deviceGuid + salt).toUtf8();
+    QByteArray hmac = QMessageAuthenticationCode::hash(message, key, QCryptographicHash::Sha256);
+    return QString::fromUtf8(hmac.toHex().toLower());
+}
+
 QVariantList Optimizer::getAudioInputDevices() {
     QVariantList devices;
     QVariantMap defaultDev;
@@ -12929,6 +13022,7 @@ QVariantList Optimizer::getAudioInputDevices() {
         IMMDeviceCollection *pCollection = NULL;
         hr = pEnumerator->EnumAudioEndpoints(eCapture, DEVICE_STATE_ACTIVE, &pCollection);
         if (SUCCEEDED(hr)) {
+            QString salt = getSteamAudioSalt();
             UINT count = 0;
             pCollection->GetCount(&count);
             for (UINT i = 0; i < count; i++) {
@@ -12947,7 +13041,12 @@ QVariantList Optimizer::getAudioInputDevices() {
                             if (SUCCEEDED(hr)) {
                                 QVariantMap dev;
                                 dev["name"] = QString::fromWCharArray(varName.pwszVal);
-                                dev["id"] = QString::fromWCharArray(pwszID);
+                                QString rawId = QString::fromWCharArray(pwszID);
+                                if (!salt.isEmpty()) {
+                                    dev["id"] = calculateSteamDeviceHash(rawId, salt);
+                                } else {
+                                    dev["id"] = rawId;
+                                }
                                 devices.append(dev);
                                 PropVariantClear(&varName);
                             }
@@ -12983,6 +13082,7 @@ QVariantList Optimizer::getAudioOutputDevices() {
         IMMDeviceCollection *pCollection = NULL;
         hr = pEnumerator->EnumAudioEndpoints(eRender, DEVICE_STATE_ACTIVE, &pCollection);
         if (SUCCEEDED(hr)) {
+            QString salt = getSteamAudioSalt();
             UINT count = 0;
             pCollection->GetCount(&count);
             for (UINT i = 0; i < count; i++) {
@@ -13001,7 +13101,12 @@ QVariantList Optimizer::getAudioOutputDevices() {
                             if (SUCCEEDED(hr)) {
                                 QVariantMap dev;
                                 dev["name"] = QString::fromWCharArray(varName.pwszVal);
-                                dev["id"] = QString::fromWCharArray(pwszID);
+                                QString rawId = QString::fromWCharArray(pwszID);
+                                if (!salt.isEmpty()) {
+                                    dev["id"] = calculateSteamDeviceHash(rawId, salt);
+                                } else {
+                                    dev["id"] = rawId;
+                                }
                                 devices.append(dev);
                                 PropVariantClear(&varName);
                             }
@@ -13034,7 +13139,37 @@ double Optimizer::getMicrophonePeakLevel(const QString &deviceName) {
         if (deviceName == "default" || deviceName == "Default" || deviceName.isEmpty()) {
             hr = pEnumerator->GetDefaultAudioEndpoint(eCapture, eConsole, &pDevice);
         } else {
-            hr = pEnumerator->GetDevice(deviceName.toStdWString().c_str(), &pDevice);
+            QString resolvedId = deviceName;
+            if (deviceName.length() == 64) {
+                QString salt = getSteamAudioSalt();
+                IMMDeviceCollection *pCollection = NULL;
+                hr = pEnumerator->EnumAudioEndpoints(eCapture, DEVICE_STATE_ACTIVE, &pCollection);
+                if (SUCCEEDED(hr)) {
+                    UINT count = 0;
+                    pCollection->GetCount(&count);
+                    for (UINT i = 0; i < count; i++) {
+                        IMMDevice *pTempDevice = NULL;
+                        hr = pCollection->Item(i, &pTempDevice);
+                        if (SUCCEEDED(hr)) {
+                            LPWSTR pwszID = NULL;
+                            hr = pTempDevice->GetId(&pwszID);
+                            if (SUCCEEDED(hr)) {
+                                QString rawId = QString::fromWCharArray(pwszID);
+                                if (calculateSteamDeviceHash(rawId, salt) == deviceName) {
+                                    resolvedId = rawId;
+                                    CoTaskMemFree(pwszID);
+                                    pTempDevice->Release();
+                                    break;
+                                }
+                                CoTaskMemFree(pwszID);
+                            }
+                            pTempDevice->Release();
+                        }
+                    }
+                    pCollection->Release();
+                }
+            }
+            hr = pEnumerator->GetDevice(resolvedId.toStdWString().c_str(), &pDevice);
         }
 
         if (SUCCEEDED(hr) && pDevice) {

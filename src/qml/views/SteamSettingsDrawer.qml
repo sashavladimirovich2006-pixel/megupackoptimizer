@@ -3312,6 +3312,7 @@ Item {
         width: parent.width
         spacing: 20
         visible: steamSettingsDrawer.subPage === "voice"
+        focus: true
 
         property int currentThreshold: (optimizerBackend.steamFriendsSettings && typeof optimizerBackend.steamFriendsSettings["noiseGateLevel"] !== "undefined") ? optimizerBackend.steamFriendsSettings["noiseGateLevel"] : 2
         property int currentTransmissionType: (optimizerBackend.steamFriendsSettings && typeof optimizerBackend.steamFriendsSettings["voiceTransmissionType"] !== "undefined") ? optimizerBackend.steamFriendsSettings["voiceTransmissionType"] : 0
@@ -3324,6 +3325,176 @@ Item {
 
         property bool assigningPTT: false
         property bool assigningMute: false
+        property bool showCyrillicWarning: false
+
+        function updateVoiceHotkey(vkCode, keyName) {
+            var current = optimizerBackend.steamFriendsSettings;
+            if (current) {
+                var optMap = {};
+                var keys = Object.keys(current);
+                for (var i = 0; i < keys.length; i++) {
+                    optMap[keys[i]] = current[keys[i]];
+                }
+                optMap["PushToTalkKey"] = vkCode;
+                optMap["muteToggleHotkey"] = keyName;
+                optimizerBackend.steamFriendsSettings = optMap;
+            }
+        }
+
+        function getVkCodeForKey(latinKey) {
+            var map = {
+                "SPACE": "32",
+                "CTRL": "17",
+                "SHIFT": "16",
+                "ALT": "18",
+                "TAB": "9",
+                "CAPSLOCK": "20",
+                "BACKSPACE": "8",
+                "ENTER": "13",
+                "ESCAPE": "27",
+                "INSERT": "45",
+                "DELETE": "46",
+                "PAGEUP": "33",
+                "PAGEDOWN": "34",
+                "END": "35",
+                "HOME": "36",
+                "LEFT": "37",
+                "UP": "38",
+                "RIGHT": "39",
+                "DOWN": "40",
+                "F1": "112", "F2": "113", "F3": "114", "F4": "115", "F5": "116", "F6": "117", "F7": "118", "F8": "119", "F9": "120", "F10": "121", "F11": "122", "F12": "123",
+                "A": "65", "B": "66", "C": "67", "D": "68", "E": "69", "F": "70", "G": "71", "H": "72", "I": "73", "J": "74", "K": "75", "L": "76", "M": "77", "N": "78", "O": "79", "P": "80", "Q": "81", "R": "82", "S": "83", "T": "84", "U": "85", "V": "86", "W": "87", "X": "88", "Y": "89", "Z": "90",
+                "0": "48", "1": "49", "2": "50", "3": "51", "4": "52", "5": "53", "6": "54", "7": "55", "8": "56", "9": "57",
+                ";": "186", "=": "187", ",": "188", "-": "189", ".": "190", "/": "191", "`": "192", "[": "219", "\\": "220", "]": "221", "'": "222"
+            };
+            return map[latinKey] || "";
+        }
+
+        function getKeyNameFromVkCode(vkCode) {
+            if (!vkCode || vkCode === "0") return "";
+            var map = {
+                "8": "BACKSPACE",
+                "9": "TAB",
+                "13": "ENTER",
+                "16": "SHIFT",
+                "17": "CTRL",
+                "18": "ALT",
+                "20": "CAPSLOCK",
+                "27": "ESCAPE",
+                "32": "SPACE",
+                "33": "PAGEUP",
+                "34": "PAGEDOWN",
+                "35": "END",
+                "36": "HOME",
+                "37": "LEFT",
+                "38": "UP",
+                "39": "RIGHT",
+                "40": "DOWN",
+                "45": "INSERT",
+                "46": "DELETE",
+                "48": "0", "49": "1", "50": "2", "51": "3", "52": "4", "53": "5", "54": "6", "55": "7", "56": "8", "57": "9",
+                "65": "A", "66": "B", "67": "C", "68": "D", "69": "E", "70": "F", "71": "G", "72": "H", "73": "I", "74": "J", "75": "K", "76": "L", "77": "M", "78": "N", "79": "O", "80": "P", "81": "Q", "82": "R", "83": "S", "84": "T", "85": "U", "86": "V", "87": "W", "88": "X", "89": "Y", "90": "Z",
+                "96": "0", "97": "1", "98": "2", "99": "3", "100": "4", "101": "5", "102": "6", "103": "7", "104": "8", "105": "9",
+                "112": "F1", "113": "F2", "114": "F3", "115": "F4", "116": "F5", "117": "F6", "118": "F7", "119": "F8", "120": "F9", "121": "F10", "122": "F11", "123": "F12",
+                "186": ";", "187": "=", "188": ",", "189": "-", "190": ".", "191": "/", "192": "`", "219": "[", "220": "\\", "221": "]", "222": "'"
+            };
+            return map[vkCode.toString()] || vkCode;
+        }
+
+        Timer {
+            id: cyrillicWarningTimer
+            interval: 4000
+            onTriggered: steamVoicePage.showCyrillicWarning = false
+        }
+
+        Keys.onPressed: (event) => {
+            function isCyrillic(str) {
+                for (var i = 0; i < str.length; i++) {
+                    var code = str.charCodeAt(i);
+                    if (code >= 0x0400 && code <= 0x04FF) {
+                        return true;
+                    }
+                }
+                return false;
+            }
+
+            function getLatinKey(evt) {
+                if (evt.key === Qt.Key_Space) return "SPACE";
+                if (evt.key === Qt.Key_Control) return "CTRL";
+                if (evt.key === Qt.Key_Shift) return "SHIFT";
+                if (evt.key === Qt.Key_Alt) return "ALT";
+                if (evt.key === Qt.Key_Tab || evt.key === Qt.Key_Backtab) return "TAB";
+                if (evt.key === Qt.Key_CapsLock) return "CAPSLOCK";
+                
+                // F1-F12
+                if (evt.key >= Qt.Key_F1 && evt.key <= Qt.Key_F12) {
+                    return "F" + (evt.key - Qt.Key_F1 + 1);
+                }
+                
+                // Letters A-Z
+                if (evt.key >= Qt.Key_A && evt.key <= Qt.Key_Z) {
+                    return String.fromCharCode(evt.key);
+                }
+                
+                // Numbers 0-9
+                if (evt.key >= Qt.Key_0 && evt.key <= Qt.Key_9) {
+                    return String.fromCharCode(evt.key);
+                }
+
+                // Numpad Numbers 0-9
+                if (evt.key >= Qt.Key_Keypad0 && evt.key <= Qt.Key_Keypad9) {
+                    return (evt.key - Qt.Key_Keypad0).toString();
+                }
+
+                // Punctuation & other common layout-independent mappings
+                if (evt.key === Qt.Key_Comma) return ",";
+                if (evt.key === Qt.Key_Period) return ".";
+                if (evt.key === Qt.Key_Semicolon) return ";";
+                if (evt.key === Qt.Key_Slash) return "/";
+                if (evt.key === Qt.Key_Backslash) return "\\";
+                if (evt.key === Qt.Key_BracketLeft) return "[";
+                if (evt.key === Qt.Key_BracketRight) return "]";
+                if (evt.key === Qt.Key_Minus) return "-";
+                if (evt.key === Qt.Key_Equal) return "=";
+                if (evt.key === Qt.Key_QuoteLeft) return "`";
+                if (evt.key === Qt.Key_Apostrophe) return "'";
+
+                // Fallback to text character if it is a standard Latin letter
+                var txt = evt.text.toUpperCase();
+                if (txt.length === 1 && txt >= 'A' && txt <= 'Z') {
+                    return txt;
+                }
+                return "";
+            }
+
+            if (steamVoicePage.assigningPTT) {
+                if (event.key === Qt.Key_Escape) {
+                    steamVoicePage.updateVoiceHotkey("0", "");
+                    event.accepted = true;
+                    steamVoicePage.assigningPTT = false;
+                    steamVoicePage.showCyrillicWarning = false;
+                } else if (isCyrillic(event.text)) {
+                    steamVoicePage.showCyrillicWarning = true;
+                    cyrillicWarningTimer.restart();
+                    event.accepted = true;
+                } else {
+                    var latinKey = getLatinKey(event);
+                    if (latinKey !== "") {
+                        var vkCode = steamVoicePage.getVkCodeForKey(latinKey);
+                        if (vkCode !== "") {
+                            steamVoicePage.updateVoiceHotkey(vkCode, latinKey);
+                            event.accepted = true;
+                            steamVoicePage.assigningPTT = false;
+                            steamVoicePage.showCyrillicWarning = false;
+                        } else {
+                            event.accepted = true;
+                        }
+                    } else {
+                        event.accepted = true;
+                    }
+                }
+            }
+        }
 
         function getDeviceName(list, idVal) {
             if (!list) return idVal === "default" ? qsTr("Default") : idVal;
@@ -3333,6 +3504,25 @@ Item {
                 }
             }
             return idVal === "default" ? qsTr("Default") : idVal;
+        }
+
+        function mapGainToSlider(gain) {
+            if (gain === undefined) return 0.5;
+            var g = parseFloat(gain);
+            if (g <= 1.0) {
+                return g * 0.5;
+            } else {
+                return 0.5 + (g - 1.0) / 6.0;
+            }
+        }
+
+        function mapSliderToGain(sliderVal) {
+            var x = parseFloat(sliderVal);
+            if (x <= 0.5) {
+                return x * 2.0;
+            } else {
+                return 1.0 + (x - 0.5) * 6.0;
+            }
         }
 
         onVisibleChanged: {
@@ -3518,7 +3708,7 @@ Item {
                         }
                         Item { Layout.fillWidth: true }
                         Text {
-                            text: Math.round(inputVolumeSlider.value * 100) + "%"
+                            text: Math.round(steamVoicePage.mapSliderToGain(inputVolumeSlider.value) * 100) + "%"
                             color: Theme.accent
                             font.family: Theme.fontFamily
                             font.pixelSize: 12
@@ -3530,12 +3720,12 @@ Item {
                         id: inputVolumeSlider
                         width: parent.width
                         from: 0.0
-                        to: 2.0
-                        value: optimizerBackend.steamFriendsSettings ? (optimizerBackend.steamFriendsSettings["inputGain"] !== undefined ? optimizerBackend.steamFriendsSettings["inputGain"] : 1.0) : 1.0
-                        stepSize: 0.01
+                        to: 1.0
+                        value: steamVoicePage.mapGainToSlider(optimizerBackend.steamFriendsSettings ? (optimizerBackend.steamFriendsSettings["inputGain"] !== undefined ? optimizerBackend.steamFriendsSettings["inputGain"] : 1.0) : 1.0)
+                        stepSize: 0.005
                         live: true
                         onMoved: {
-                            root.toggleSteamFriendsSetting("inputGain", value);
+                            root.toggleSteamFriendsSetting("inputGain", steamVoicePage.mapSliderToGain(value));
                         }
                         background: Rectangle {
                             x: inputVolumeSlider.leftPadding
@@ -3679,7 +3869,7 @@ Item {
                         }
                         Item { Layout.fillWidth: true }
                         Text {
-                            text: Math.round(outputVolumeSlider.value * 100) + "%"
+                            text: Math.round(steamVoicePage.mapSliderToGain(outputVolumeSlider.value) * 100) + "%"
                             color: Theme.accent
                             font.family: Theme.fontFamily
                             font.pixelSize: 12
@@ -3691,12 +3881,12 @@ Item {
                         id: outputVolumeSlider
                         width: parent.width
                         from: 0.0
-                        to: 2.0
-                        value: optimizerBackend.steamFriendsSettings ? (optimizerBackend.steamFriendsSettings["outputGain"] !== undefined ? optimizerBackend.steamFriendsSettings["outputGain"] : 1.0) : 1.0
-                        stepSize: 0.01
+                        to: 1.0
+                        value: steamVoicePage.mapGainToSlider(optimizerBackend.steamFriendsSettings ? (optimizerBackend.steamFriendsSettings["outputGain"] !== undefined ? optimizerBackend.steamFriendsSettings["outputGain"] : 1.0) : 1.0)
+                        stepSize: 0.005
                         live: true
                         onMoved: {
-                            root.toggleSteamFriendsSetting("outputGain", value);
+                            root.toggleSteamFriendsSetting("outputGain", steamVoicePage.mapSliderToGain(value));
                         }
                         background: Rectangle {
                             x: outputVolumeSlider.leftPadding
@@ -3841,15 +4031,18 @@ Item {
                 }
             }
 
-            // PTT Hotkey Grabber Row (Only visible if Push-to-Talk is selected)
+            // Voice Hotkey Row (Visible for all transmission types)
             Rectangle {
                 width: parent.width
                 height: 36
                 color: "transparent"
-                visible: steamVoicePage.currentTransmissionType === 1
 
                 Text {
-                    text: qsTr("Push-to-Talk Hotkey")
+                    text: {
+                        if (steamVoicePage.currentTransmissionType === 1) return qsTr("Push-to-Talk Hotkey");
+                        if (steamVoicePage.currentTransmissionType === 2) return qsTr("Push-to-Mute Hotkey");
+                        return qsTr("Mute Toggle Hotkey");
+                    }
                     color: Theme.textPrimary
                     font.family: Theme.fontFamily
                     font.pixelSize: 12
@@ -3859,7 +4052,7 @@ Item {
                 }
 
                 Rectangle {
-                    id: pttHotkeyBtn
+                    id: voiceHotkeyBtn
                     width: 180
                     height: 32
                     radius: 6
@@ -3868,140 +4061,137 @@ Item {
                     border.width: 1
                     anchors.right: parent.right
                     anchors.verticalCenter: parent.verticalCenter
-                    focus: steamVoicePage.assigningPTT
 
-                    property string currentKey: optimizerBackend.steamFriendsSettings ? optimizerBackend.steamFriendsSettings["PushToTalkKey"] || "None" : "None"
+                    property string currentPttKey: optimizerBackend.steamFriendsSettings ? optimizerBackend.steamFriendsSettings["PushToTalkKey"] || "0" : "0"
+                    property string currentMuteKey: optimizerBackend.steamFriendsSettings ? optimizerBackend.steamFriendsSettings["muteToggleHotkey"] || "" : ""
+                    property bool hasKey: (currentPttKey !== "0" && currentPttKey !== "") || (currentMuteKey !== "")
 
                     Text {
-                        anchors.centerIn: parent
-                        text: steamVoicePage.assigningPTT ? qsTr("Press any key...") : (pttHotkeyBtn.currentKey === "0" || pttHotkeyBtn.currentKey === "" ? qsTr("None") : pttHotkeyBtn.currentKey)
+                        anchors.left: parent.left
+                        anchors.right: clearVoiceHotkeyBtn.visible ? clearVoiceHotkeyBtn.left : parent.right
+                        anchors.leftMargin: clearVoiceHotkeyBtn.visible ? 24 : 8
+                        anchors.rightMargin: 8
+                        anchors.verticalCenter: parent.verticalCenter
+                        horizontalAlignment: Text.AlignHCenter
+                        text: {
+                            if (steamVoicePage.assigningPTT) {
+                                return qsTr("Press any key...");
+                            }
+                            if (voiceHotkeyBtn.currentMuteKey !== "") {
+                                return voiceHotkeyBtn.currentMuteKey;
+                            }
+                            if (voiceHotkeyBtn.currentPttKey !== "0" && voiceHotkeyBtn.currentPttKey !== "") {
+                                return steamVoicePage.getKeyNameFromVkCode(voiceHotkeyBtn.currentPttKey);
+                            }
+                            return qsTr("None");
+                        }
                         color: steamVoicePage.assigningPTT ? Theme.accent : Theme.textPrimary
                         font.family: Theme.fontFamily
                         font.pixelSize: 11
                         font.bold: true
+                        elide: Text.ElideRight
+                    }
+
+                    // Clear button
+                    Rectangle {
+                        id: clearVoiceHotkeyBtn
+                        width: 20
+                        height: 20
+                        radius: 10
+                        color: clearVoiceHotkeyMouse.containsMouse ? Qt.rgba(255/255, 255/255, 255/255, 0.1) : "transparent"
+                        anchors.right: parent.right
+                        anchors.rightMargin: 6
+                        anchors.verticalCenter: parent.verticalCenter
+                        visible: !steamVoicePage.assigningPTT && voiceHotkeyBtn.hasKey
+
+                        Text {
+                            text: "×"
+                            color: clearVoiceHotkeyMouse.containsMouse ? Theme.accent : Theme.textSecondary
+                            font.pixelSize: 16
+                            font.bold: true
+                            anchors.centerIn: parent
+                            anchors.verticalCenterOffset: -1
+                        }
+
+                        MouseArea {
+                            id: clearVoiceHotkeyMouse
+                            anchors.fill: parent
+                            hoverEnabled: true
+                            cursorShape: Qt.PointingHandCursor
+                            onClicked: {
+                                steamVoicePage.updateVoiceHotkey("0", "");
+                            }
+                        }
                     }
 
                     MouseArea {
-                        anchors.fill: parent
+                        anchors.left: parent.left
+                        anchors.right: clearVoiceHotkeyBtn.visible ? clearVoiceHotkeyBtn.left : parent.right
+                        anchors.top: parent.top
+                        anchors.bottom: parent.bottom
                         hoverEnabled: true
                         cursorShape: Qt.PointingHandCursor
                         onClicked: {
                             steamVoicePage.assigningPTT = true;
-                            pttHotkeyBtn.focus = true;
+                            steamVoicePage.forceActiveFocus();
                         }
                         onEntered: {
-                            if (!steamVoicePage.assigningPTT) pttHotkeyBtn.border.color = Theme.accent;
+                            if (!steamVoicePage.assigningPTT) voiceHotkeyBtn.border.color = Theme.accent;
                         }
                         onExited: {
-                            if (!steamVoicePage.assigningPTT) pttHotkeyBtn.border.color = Theme.border;
-                        }
-                    }
-
-                    Keys.onPressed: (event) => {
-                        if (steamVoicePage.assigningPTT) {
-                            var keyText = event.text.toUpperCase();
-                            if (event.key === Qt.Key_Escape) {
-                                root.toggleSteamFriendsSetting("PushToTalkKey", "0");
-                            } else if (event.key === Qt.Key_Space) {
-                                root.toggleSteamFriendsSetting("PushToTalkKey", "SPACE");
-                            } else if (event.key === Qt.Key_Control) {
-                                root.toggleSteamFriendsSetting("PushToTalkKey", "CTRL");
-                            } else if (event.key === Qt.Key_Shift) {
-                                root.toggleSteamFriendsSetting("PushToTalkKey", "SHIFT");
-                            } else if (event.key === Qt.Key_Alt) {
-                                root.toggleSteamFriendsSetting("PushToTalkKey", "ALT");
-                            } else if (event.key >= Qt.Key_F1 && event.key <= Qt.Key_F12) {
-                                root.toggleSteamFriendsSetting("PushToTalkKey", "F" + (event.key - Qt.Key_F1 + 1));
-                            } else if (keyText !== "") {
-                                root.toggleSteamFriendsSetting("PushToTalkKey", keyText);
-                            } else {
-                                root.toggleSteamFriendsSetting("PushToTalkKey", event.key.toString());
-                            }
-                            event.accepted = true;
-                            steamVoicePage.assigningPTT = false;
+                            if (!steamVoicePage.assigningPTT) voiceHotkeyBtn.border.color = Theme.border;
                         }
                     }
                 }
             }
 
-            // Mute Toggle Hotkey Row (Only visible if NOT Push-to-Talk)
+            // Cyrillic Keyboard Layout Warning Card
             Rectangle {
                 width: parent.width
-                height: 36
-                color: "transparent"
-                visible: steamVoicePage.currentTransmissionType !== 1
+                height: steamVoicePage.showCyrillicWarning ? warningTextCol.implicitHeight + 20 : 0
+                radius: Theme.radiusSmall
+                color: Qt.rgba(232/255, 17/255, 35/255, 0.08)
+                border.color: "#E81123"
+                border.width: 1
+                clip: true
+                visible: height > 0
+                opacity: steamVoicePage.showCyrillicWarning ? 1.0 : 0.0
 
-                Text {
-                    text: qsTr("Mute Toggle Hotkey")
-                    color: Theme.textPrimary
-                    font.family: Theme.fontFamily
-                    font.pixelSize: 12
-                    font.bold: true
-                    anchors.left: parent.left
-                    anchors.verticalCenter: parent.verticalCenter
-                }
+                Behavior on height { NumberAnimation { duration: Theme.animFast } }
+                Behavior on opacity { NumberAnimation { duration: Theme.animFast } }
 
-                Rectangle {
-                    id: muteHotkeyBtn
-                    width: 180
-                    height: 32
-                    radius: 6
-                    color: steamVoicePage.assigningMute ? Theme.accentDim : "#05FFFFFF"
-                    border.color: steamVoicePage.assigningMute ? Theme.accent : Theme.border
-                    border.width: 1
-                    anchors.right: parent.right
-                    anchors.verticalCenter: parent.verticalCenter
-                    focus: steamVoicePage.assigningMute
-
-                    property string currentKey: optimizerBackend.steamFriendsSettings ? optimizerBackend.steamFriendsSettings["muteToggleHotkey"] || "None" : "None"
+                Row {
+                    anchors.fill: parent
+                    anchors.margins: 10
+                    spacing: 12
 
                     Text {
-                        anchors.centerIn: parent
-                        text: steamVoicePage.assigningMute ? qsTr("Press any key...") : (muteHotkeyBtn.currentKey === "" ? qsTr("None") : muteHotkeyBtn.currentKey)
-                        color: steamVoicePage.assigningMute ? Theme.accent : Theme.textPrimary
-                        font.family: Theme.fontFamily
-                        font.pixelSize: 11
-                        font.bold: true
+                        text: "⚠️"
+                        font.pixelSize: 16
+                        anchors.verticalCenter: parent.verticalCenter
                     }
 
-                    MouseArea {
-                        anchors.fill: parent
-                        hoverEnabled: true
-                        cursorShape: Qt.PointingHandCursor
-                        onClicked: {
-                            steamVoicePage.assigningMute = true;
-                            muteHotkeyBtn.focus = true;
-                        }
-                        onEntered: {
-                            if (!steamVoicePage.assigningMute) muteHotkeyBtn.border.color = Theme.accent;
-                        }
-                        onExited: {
-                            if (!steamVoicePage.assigningMute) muteHotkeyBtn.border.color = Theme.border;
-                        }
-                    }
+                    Column {
+                        id: warningTextCol
+                        width: parent.width - 40
+                        anchors.verticalCenter: parent.verticalCenter
+                        spacing: 2
 
-                    Keys.onPressed: (event) => {
-                        if (steamVoicePage.assigningMute) {
-                            var keyText = event.text.toUpperCase();
-                            if (event.key === Qt.Key_Escape) {
-                                root.toggleSteamFriendsSetting("muteToggleHotkey", "");
-                            } else if (event.key === Qt.Key_Space) {
-                                root.toggleSteamFriendsSetting("muteToggleHotkey", "SPACE");
-                            } else if (event.key === Qt.Key_Control) {
-                                root.toggleSteamFriendsSetting("muteToggleHotkey", "CTRL");
-                            } else if (event.key === Qt.Key_Shift) {
-                                root.toggleSteamFriendsSetting("muteToggleHotkey", "SHIFT");
-                            } else if (event.key === Qt.Key_Alt) {
-                                root.toggleSteamFriendsSetting("muteToggleHotkey", "ALT");
-                            } else if (event.key >= Qt.Key_F1 && event.key <= Qt.Key_F12) {
-                                root.toggleSteamFriendsSetting("muteToggleHotkey", "F" + (event.key - Qt.Key_F1 + 1));
-                            } else if (keyText !== "") {
-                                root.toggleSteamFriendsSetting("muteToggleHotkey", keyText);
-                            } else {
-                                root.toggleSteamFriendsSetting("muteToggleHotkey", event.key.toString());
-                            }
-                            event.accepted = true;
-                            steamVoicePage.assigningMute = false;
+                        Text {
+                            text: qsTr("Cyrillic hotkeys are not supported!")
+                            color: "#FF5555"
+                            font.family: Theme.fontFamily
+                            font.pixelSize: 11
+                            font.bold: true
+                        }
+
+                        Text {
+                            text: qsTr("Please switch your keyboard layout to English and try again.")
+                            color: Theme.textSecondary
+                            font.family: Theme.fontFamily
+                            font.pixelSize: 10
+                            width: parent.width
+                            wrapMode: Text.Wrap
                         }
                     }
                 }
