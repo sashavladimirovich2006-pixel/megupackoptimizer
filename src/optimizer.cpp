@@ -12889,9 +12889,12 @@ bool Optimizer::unpairSteamDevice(const QString &deviceId) {
     return true;
 }
 
-QStringList Optimizer::getAudioInputDevices() {
-    QStringList devices;
-    devices << "Default";
+QVariantList Optimizer::getAudioInputDevices() {
+    QVariantList devices;
+    QVariantMap defaultDev;
+    defaultDev["name"] = "Default";
+    defaultDev["id"] = "default";
+    devices.append(defaultDev);
 #ifdef Q_OS_WIN
     HRESULT hrInit = CoInitializeEx(NULL, COINIT_APARTMENTTHREADED | COINIT_DISABLE_OLE1DDE);
     IMMDeviceEnumerator *pEnumerator = NULL;
@@ -12906,17 +12909,25 @@ QStringList Optimizer::getAudioInputDevices() {
                 IMMDevice *pDevice = NULL;
                 hr = pCollection->Item(i, &pDevice);
                 if (SUCCEEDED(hr)) {
-                    IPropertyStore *pProps = NULL;
-                    hr = pDevice->OpenPropertyStore(STGM_READ, &pProps);
+                    LPWSTR pwszID = NULL;
+                    hr = pDevice->GetId(&pwszID);
                     if (SUCCEEDED(hr)) {
-                        PROPVARIANT varName;
-                        PropVariantInit(&varName);
-                        hr = pProps->GetValue(PKEY_Device_FriendlyName, &varName);
+                        IPropertyStore *pProps = NULL;
+                        hr = pDevice->OpenPropertyStore(STGM_READ, &pProps);
                         if (SUCCEEDED(hr)) {
-                            devices << QString::fromWCharArray(varName.pwszVal);
-                            PropVariantClear(&varName);
+                            PROPVARIANT varName;
+                            PropVariantInit(&varName);
+                            hr = pProps->GetValue(PKEY_Device_FriendlyName, &varName);
+                            if (SUCCEEDED(hr)) {
+                                QVariantMap dev;
+                                dev["name"] = QString::fromWCharArray(varName.pwszVal);
+                                dev["id"] = QString::fromWCharArray(pwszID);
+                                devices.append(dev);
+                                PropVariantClear(&varName);
+                            }
+                            pProps->Release();
                         }
-                        pProps->Release();
+                        CoTaskMemFree(pwszID);
                     }
                     pDevice->Release();
                 }
@@ -12932,9 +12943,12 @@ QStringList Optimizer::getAudioInputDevices() {
     return devices;
 }
 
-QStringList Optimizer::getAudioOutputDevices() {
-    QStringList devices;
-    devices << "Default";
+QVariantList Optimizer::getAudioOutputDevices() {
+    QVariantList devices;
+    QVariantMap defaultDev;
+    defaultDev["name"] = "Default";
+    defaultDev["id"] = "default";
+    devices.append(defaultDev);
 #ifdef Q_OS_WIN
     HRESULT hrInit = CoInitializeEx(NULL, COINIT_APARTMENTTHREADED | COINIT_DISABLE_OLE1DDE);
     IMMDeviceEnumerator *pEnumerator = NULL;
@@ -12949,17 +12963,25 @@ QStringList Optimizer::getAudioOutputDevices() {
                 IMMDevice *pDevice = NULL;
                 hr = pCollection->Item(i, &pDevice);
                 if (SUCCEEDED(hr)) {
-                    IPropertyStore *pProps = NULL;
-                    hr = pDevice->OpenPropertyStore(STGM_READ, &pProps);
+                    LPWSTR pwszID = NULL;
+                    hr = pDevice->GetId(&pwszID);
                     if (SUCCEEDED(hr)) {
-                        PROPVARIANT varName;
-                        PropVariantInit(&varName);
-                        hr = pProps->GetValue(PKEY_Device_FriendlyName, &varName);
+                        IPropertyStore *pProps = NULL;
+                        hr = pDevice->OpenPropertyStore(STGM_READ, &pProps);
                         if (SUCCEEDED(hr)) {
-                            devices << QString::fromWCharArray(varName.pwszVal);
-                            PropVariantClear(&varName);
+                            PROPVARIANT varName;
+                            PropVariantInit(&varName);
+                            hr = pProps->GetValue(PKEY_Device_FriendlyName, &varName);
+                            if (SUCCEEDED(hr)) {
+                                QVariantMap dev;
+                                dev["name"] = QString::fromWCharArray(varName.pwszVal);
+                                dev["id"] = QString::fromWCharArray(pwszID);
+                                devices.append(dev);
+                                PropVariantClear(&varName);
+                            }
+                            pProps->Release();
                         }
-                        pProps->Release();
+                        CoTaskMemFree(pwszID);
                     }
                     pDevice->Release();
                 }
@@ -12986,40 +13008,10 @@ double Optimizer::getMicrophonePeakLevel(const QString &deviceName) {
         if (deviceName == "default" || deviceName == "Default" || deviceName.isEmpty()) {
             hr = pEnumerator->GetDefaultAudioEndpoint(eCapture, eConsole, &pDevice);
         } else {
-            IMMDeviceCollection *pCollection = NULL;
-            hr = pEnumerator->EnumAudioEndpoints(eCapture, DEVICE_STATE_ACTIVE, &pCollection);
-            if (SUCCEEDED(hr)) {
-                UINT count = 0;
-                pCollection->GetCount(&count);
-                for (UINT i = 0; i < count; i++) {
-                    IMMDevice *pTempDevice = NULL;
-                    if (SUCCEEDED(pCollection->Item(i, &pTempDevice))) {
-                        IPropertyStore *pProps = NULL;
-                        if (SUCCEEDED(pTempDevice->OpenPropertyStore(STGM_READ, &pProps))) {
-                            PROPVARIANT varName;
-                            PropVariantInit(&varName);
-                            if (SUCCEEDED(pProps->GetValue(PKEY_Device_FriendlyName, &varName))) {
-                                QString friendlyName = QString::fromWCharArray(varName.pwszVal);
-                                if (friendlyName == deviceName) {
-                                    pDevice = pTempDevice;
-                                    PropVariantClear(&varName);
-                                    pProps->Release();
-                                    break;
-                                }
-                                PropVariantClear(&varName);
-                            }
-                            pProps->Release();
-                        }
-                        if (pDevice != pTempDevice) {
-                            pTempDevice->Release();
-                        }
-                    }
-                }
-                pCollection->Release();
-            }
+            hr = pEnumerator->GetDevice(deviceName.toStdWString().c_str(), &pDevice);
         }
 
-        if (pDevice) {
+        if (SUCCEEDED(hr) && pDevice) {
             IAudioMeterInformation *pMeterInfo = NULL;
             static const GUID my_IID_IAudioMeterInformation = {0xC8ADBD64, 0xE71E, 0x48a0, {0xA4, 0xDE, 0x18, 0x5C, 0x38, 0x49, 0xA9, 0xE5}};
             hr = pDevice->Activate(my_IID_IAudioMeterInformation, CLSCTX_ALL, NULL, (void**)&pMeterInfo);

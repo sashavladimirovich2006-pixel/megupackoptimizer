@@ -3325,6 +3325,16 @@ Item {
         property bool assigningPTT: false
         property bool assigningMute: false
 
+        function getDeviceName(list, idVal) {
+            if (!list) return idVal === "default" ? qsTr("Default") : idVal;
+            for (var i = 0; i < list.length; i++) {
+                if (list[i] && list[i].id === idVal) {
+                    return list[i].name;
+                }
+            }
+            return idVal === "default" ? qsTr("Default") : idVal;
+        }
+
         onVisibleChanged: {
             if (visible) {
                 inputDevices = optimizerBackend.getAudioInputDevices();
@@ -3429,7 +3439,7 @@ Item {
                         anchors.right: parent.right
                         anchors.rightMargin: 28
                         anchors.verticalCenter: parent.verticalCenter
-                        text: micDeviceDropdown.currentVal === "default" ? qsTr("Default") : micDeviceDropdown.currentVal
+                        text: steamVoicePage.getDeviceName(steamVoicePage.inputDevices, micDeviceDropdown.currentVal)
                         color: Theme.textPrimary
                         font.family: Theme.fontFamily
                         font.pixelSize: 11
@@ -3468,7 +3478,7 @@ Item {
                             onObjectAdded: (index, object) => micDeviceMenu.insertItem(index, object)
                             onObjectRemoved: (index, object) => micDeviceMenu.removeItem(object)
                             delegate: MenuItem {
-                                text: modelData
+                                text: modelData.name
                                 width: micDeviceMenu.width
                                 height: 32
                                 contentItem: Text {
@@ -3481,9 +3491,7 @@ Item {
                                     elide: Text.ElideRight
                                 }
                                 onClicked: {
-                                    var val = modelData;
-                                    if (val === "Default") val = "default";
-                                    root.toggleSteamFriendsSetting("selectedMic", val);
+                                    root.toggleSteamFriendsSetting("selectedMic", modelData.id);
                                 }
                             }
                         }
@@ -3592,7 +3600,7 @@ Item {
                         anchors.right: parent.right
                         anchors.rightMargin: 28
                         anchors.verticalCenter: parent.verticalCenter
-                        text: outputDeviceDropdown.currentVal === "default" ? qsTr("Default") : outputDeviceDropdown.currentVal
+                        text: steamVoicePage.getDeviceName(steamVoicePage.outputDevices, outputDeviceDropdown.currentVal)
                         color: Theme.textPrimary
                         font.family: Theme.fontFamily
                         font.pixelSize: 11
@@ -3631,7 +3639,7 @@ Item {
                             onObjectAdded: (index, object) => outputDeviceMenu.insertItem(index, object)
                             onObjectRemoved: (index, object) => outputDeviceMenu.removeItem(object)
                             delegate: MenuItem {
-                                text: modelData
+                                text: modelData.name
                                 width: outputDeviceMenu.width
                                 height: 32
                                 contentItem: Text {
@@ -3644,9 +3652,7 @@ Item {
                                     elide: Text.ElideRight
                                 }
                                 onClicked: {
-                                    var val = modelData;
-                                    if (val === "Default") val = "default";
-                                    root.toggleSteamFriendsSetting("selectedOutput", val);
+                                    root.toggleSteamFriendsSetting("selectedOutput", modelData.id);
                                 }
                             }
                         }
