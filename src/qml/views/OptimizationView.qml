@@ -6981,9 +6981,9 @@ Item {
     function findDrawerChild(item, searchText) {
         if (!item) return null;
         if (item.text !== undefined && typeof item.text === "string") {
-            var cleanItemText = item.text.replace(/\r?\n|\r/g, " ").trim().toLowerCase();
-            var cleanSearch = searchText.toLowerCase();
-            if (cleanItemText === cleanSearch || cleanItemText.indexOf(cleanSearch) !== -1 || cleanSearch.indexOf(cleanItemText) !== -1) {
+            var cleanItemText = item.text.replace(/[^a-zA-Z0-9а-яА-ЯёЁ]/g, "").replace(/\s+/g, "").toLowerCase();
+            var cleanSearch = searchText.replace(/[^a-zA-Z0-9а-яА-ЯёЁ]/g, "").replace(/\s+/g, "").toLowerCase();
+            if (cleanItemText === cleanSearch) {
                 return item;
             }
         }
@@ -7146,7 +7146,9 @@ Item {
 
 
         function locateFunction(categoryName) {
-        var cleanName = categoryName.split(":")[0].trim();
+        var parts = categoryName.split(": ");
+        if (parts.length > 1) parts.pop();
+        var cleanName = parts.join(": ");
         
         var section = getSectionForDrawerOrCategory(cleanName);
         if (section === "core" && cleanName !== categoryName) {
