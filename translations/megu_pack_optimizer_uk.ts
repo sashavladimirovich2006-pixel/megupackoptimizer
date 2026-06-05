@@ -6674,6 +6674,26 @@ Recommendation: If scans and repairs do not solve your system problems, we recom
             <translation>Оверлей контролера</translation>
         </message>
         <message>
+            <location filename="../src/qml/views/SteamSettingsDrawer.qml" line="4820" />
+            <source>Start Button</source>
+            <translation>Кнопка Start</translation>
+        </message>
+        <message>
+            <location filename="../src/qml/views/SteamSettingsDrawer.qml" line="4821" />
+            <source>Back Button</source>
+            <translation>Кнопка Back</translation>
+        </message>
+        <message>
+            <location filename="../src/qml/views/SteamSettingsDrawer.qml" line="4822" />
+            <source>Guide Button</source>
+            <translation>Кнопка Guide</translation>
+        </message>
+        <message>
+            <location filename="../src/qml/views/SteamSettingsDrawer.qml" line="4823" />
+            <source>Y Button</source>
+            <translation>Кнопка Y</translation>
+        </message>
+        <message>
             <location filename="../src/qml/views/SteamSettingsDrawer.qml" line="4674" />
             <location filename="../src/qml/views/SteamSettingsDrawer.qml" line="4682" />
             <source>Default Button</source>

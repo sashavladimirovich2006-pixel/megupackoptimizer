@@ -5971,7 +5971,7 @@ void Optimizer::loadSystemStates() {
     defaultFriendsSettings["RemotePlay_LowLatencyNetworking"] = true;
     defaultFriendsSettings["RemotePlay_HEVC"] = true;
     defaultFriendsSettings["RemotePlay_AV1"] = true;
-    defaultFriendsSettings["RemotePlay_ControllerButton"] = "guide";
+    defaultFriendsSettings["RemotePlay_ControllerButton"] = "auto";
     defaultFriendsSettings["RemotePlay_ControllerVisibility"] = 2;
 
     m_steamFriendsSettings.clear();

@@ -4794,7 +4794,7 @@ Item {
                     height: 50
                     color: "transparent"
                     Text {
-                        text: qsTr("Overlay activation button")
+                        text: qsTr("Controller Overlay")
                         color: Theme.textPrimary
                         font.family: Theme.fontFamily
                         font.pixelSize: 12
@@ -4813,19 +4813,22 @@ Item {
                         anchors.right: parent.right
                         anchors.verticalCenter: parent.verticalCenter
 
-                        property string currentVal: optimizerBackend.steamFriendsSettings ? optimizerBackend.steamFriendsSettings["RemotePlay_ControllerButton"] || "guide" : "guide"
+                        property string currentVal: optimizerBackend.steamFriendsSettings ? optimizerBackend.steamFriendsSettings["RemotePlay_ControllerButton"] || "auto" : "auto"
 
                         readonly property var options: [
-                            { id: "guide", label: qsTr("Steam / Guide") },
-                            { id: "back", label: qsTr("Back / View") },
-                            { id: "start", label: qsTr("Start / Menu") }
+                            { id: "auto", label: qsTr("Default Button") },
+                            { id: "start", label: qsTr("Start Button") },
+                            { id: "back", label: qsTr("Back Button") },
+                            { id: "guide", label: qsTr("Guide Button") },
+                            { id: "y", label: qsTr("Y Button") },
+                            { id: "none", label: qsTr("Disabled") }
                         ]
 
                         function getLabelForVal(v) {
                             for (var i = 0; i < options.length; i++) {
                                 if (options[i].id === v) return options[i].label;
                             }
-                            return qsTr("Steam / Guide");
+                            return qsTr("Default Button");
                         }
 
                         Text {
@@ -4893,109 +4896,6 @@ Item {
                     }
                 }
 
-                // Dropdown: Controller Visibility (Field 19)
-                Rectangle {
-                    width: parent.width
-                    height: 50
-                    color: "transparent"
-                    Text {
-                        text: qsTr("Controller Overlay")
-                        color: Theme.textPrimary
-                        font.family: Theme.fontFamily
-                        font.pixelSize: 12
-                        font.bold: true
-                        anchors.left: parent.left
-                        anchors.verticalCenter: parent.verticalCenter
-                    }
-                    Rectangle {
-                        id: controllerVisDropdown
-                        width: 150
-                        height: 32
-                        radius: 6
-                        color: "#05FFFFFF"
-                        border.color: Theme.border
-                        border.width: 1
-                        anchors.right: parent.right
-                        anchors.verticalCenter: parent.verticalCenter
-
-                        property int currentVal: optimizerBackend.steamFriendsSettings ? optimizerBackend.steamFriendsSettings["RemotePlay_ControllerVisibility"] || 2 : 2
-
-                        readonly property var options: [
-                            { id: 2, label: qsTr("Default Button") },
-                            { id: 0, label: qsTr("Off") }
-                        ]
-
-                        function getLabelForVal(v) {
-                            for (var i = 0; i < options.length; i++) {
-                                if (options[i].id === v) return options[i].label;
-                            }
-                            return qsTr("Default Button");
-                        }
-
-                        Text {
-                            anchors.left: parent.left
-                            anchors.leftMargin: 12
-                            anchors.verticalCenter: parent.verticalCenter
-                            text: controllerVisDropdown.getLabelForVal(controllerVisDropdown.currentVal)
-                            color: Theme.textPrimary
-                            font.family: Theme.fontFamily
-                            font.pixelSize: 11
-                        }
-                        Text {
-                            anchors.right: parent.right
-                            anchors.rightMargin: 12
-                            anchors.verticalCenter: parent.verticalCenter
-                            text: "\u2304"
-                            color: Theme.textSecondary
-                            font.family: Theme.fontFamily
-                            font.pixelSize: 12
-                            font.bold: true
-                        }
-                        MouseArea {
-                            anchors.fill: parent
-                            hoverEnabled: true
-                            cursorShape: Qt.PointingHandCursor
-                            onClicked: controllerVisMenu.open()
-                            onEntered: controllerVisDropdown.border.color = Theme.accent
-                            onExited: controllerVisDropdown.border.color = Theme.border
-                        }
-                        Menu {
-                            id: controllerVisMenu
-                            y: controllerVisDropdown.height + 4
-                            width: controllerVisDropdown.width
-                            background: Rectangle {
-                                color: Theme.sidebarBg
-                                border.color: Theme.border
-                                border.width: 1
-                                radius: 6
-                            }
-                            Instantiator {
-                                model: controllerVisDropdown.options
-                                onObjectAdded: (index, object) => controllerVisMenu.insertItem(index, object)
-                                onObjectRemoved: (index, object) => controllerVisMenu.removeItem(object)
-                                delegate: MenuItem {
-                                    text: modelData.label
-                                    width: controllerVisMenu.width
-                                    height: 32
-                                    contentItem: Text {
-                                        text: parent.text
-                                        font.family: Theme.fontFamily
-                                        font.pixelSize: 11
-                                        color: parent.highlighted ? Theme.accent : Theme.textPrimary
-                                        verticalAlignment: Text.AlignVCenter
-                                        leftPadding: 12
-                                    }
-                                    background: Rectangle {
-                                        color: parent.highlighted ? Qt.rgba(Theme.accent.r, Theme.accent.g, Theme.accent.b, 0.1) : "transparent"
-                                    }
-                                    onTriggered: {
-                                        root.toggleSteamFriendsSetting("RemotePlay_ControllerVisibility", modelData.id);
-                                    }
-                                }
-                            }
-                        }
-                    }
-                }
 
                 // Switch: Record my microphone
                 Rectangle {
