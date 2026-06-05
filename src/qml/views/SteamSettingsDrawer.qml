@@ -51,6 +51,57 @@ Item {
         }
     }
 
+    function applyClientPreset(presetName) {
+        var current = optimizerBackend.steamFriendsSettings;
+        if (!current) return;
+        
+        var optMap = {};
+        var keys = Object.keys(current);
+        for (var i = 0; i < keys.length; i++) {
+            optMap[keys[i]] = current[keys[i]];
+        }
+        
+        if (presetName === "default") {
+            optMap["RemotePlay_VideoQuality"] = 2;
+            optMap["RemotePlay_ResolutionWidth"] = 0;
+            optMap["RemotePlay_ResolutionHeight"] = 0;
+            optMap["RemotePlay_BandwidthLimit"] = -1;
+            optMap["RemotePlay_Microphone"] = 0;
+            optMap["RemotePlay_WindowedMode"] = false;
+            optMap["RemotePlay_HardwareDecoding"] = true;
+            optMap["RemotePlay_LowLatencyNetworking"] = false;
+            optMap["RemotePlay_HEVC"] = true;
+            optMap["RemotePlay_AV1"] = true;
+            optMap["RemotePlay_PerformanceOverlay"] = 0;
+        } else if (presetName === "1080p") {
+            optMap["RemotePlay_VideoQuality"] = 3;
+            optMap["RemotePlay_ResolutionWidth"] = 1920;
+            optMap["RemotePlay_ResolutionHeight"] = 1080;
+            optMap["RemotePlay_BandwidthLimit"] = 30000;
+            optMap["RemotePlay_Microphone"] = 1;
+            optMap["RemotePlay_WindowedMode"] = true;
+            optMap["RemotePlay_HardwareDecoding"] = true;
+            optMap["RemotePlay_LowLatencyNetworking"] = true;
+            optMap["RemotePlay_HEVC"] = true;
+            optMap["RemotePlay_AV1"] = false;
+            optMap["RemotePlay_PerformanceOverlay"] = 2;
+        } else if (presetName === "4k") {
+            optMap["RemotePlay_VideoQuality"] = 3;
+            optMap["RemotePlay_ResolutionWidth"] = 3840;
+            optMap["RemotePlay_ResolutionHeight"] = 2160;
+            optMap["RemotePlay_BandwidthLimit"] = 50000;
+            optMap["RemotePlay_Microphone"] = 1;
+            optMap["RemotePlay_WindowedMode"] = true;
+            optMap["RemotePlay_HardwareDecoding"] = true;
+            optMap["RemotePlay_LowLatencyNetworking"] = true;
+            optMap["RemotePlay_HEVC"] = true;
+            optMap["RemotePlay_AV1"] = false;
+            optMap["RemotePlay_PerformanceOverlay"] = 2;
+        }
+        
+        optimizerBackend.steamFriendsSettings = optMap;
+    }
+
     property real dynamicHeight: {
         if (subPage === "friends") return steamFriendsPage.implicitHeight;
         if (subPage === "chat") return steamChatPage.implicitHeight;
@@ -3969,6 +4020,141 @@ Item {
                     enabled: optimizerBackend.steamFriendsSettings ? !!optimizerBackend.steamFriendsSettings["RemotePlay_ClientConfigEnabled"] : false
                     opacity: enabled ? 1.0 : 0.4
                     Behavior on opacity { NumberAnimation { duration: Theme.animNormal } }
+
+                    // Row: Presets (Default, Enhanced 1080p, Enhanced 4K)
+                    Row {
+                        width: parent.width
+                        spacing: 12
+                        
+                        function getActivePreset() {
+                            var settings = optimizerBackend.steamFriendsSettings;
+                            if (!settings) return "";
+                            
+                            var is1080p = (settings["RemotePlay_VideoQuality"] === 3 &&
+                                           settings["RemotePlay_ResolutionWidth"] === 1920 &&
+                                           settings["RemotePlay_ResolutionHeight"] === 1080 &&
+                                           settings["RemotePlay_BandwidthLimit"] === 30000 &&
+                                           settings["RemotePlay_Microphone"] === 1 &&
+                                           settings["RemotePlay_WindowedMode"] === true &&
+                                           settings["RemotePlay_HardwareDecoding"] === true &&
+                                           settings["RemotePlay_LowLatencyNetworking"] === true &&
+                                           settings["RemotePlay_HEVC"] === true &&
+                                           settings["RemotePlay_AV1"] === false &&
+                                           settings["RemotePlay_PerformanceOverlay"] === 2);
+                                           
+                            var is4k = (settings["RemotePlay_VideoQuality"] === 3 &&
+                                        settings["RemotePlay_ResolutionWidth"] === 3840 &&
+                                        settings["RemotePlay_ResolutionHeight"] === 2160 &&
+                                        settings["RemotePlay_BandwidthLimit"] === 50000 &&
+                                        settings["RemotePlay_Microphone"] === 1 &&
+                                        settings["RemotePlay_WindowedMode"] === true &&
+                                        settings["RemotePlay_HardwareDecoding"] === true &&
+                                        settings["RemotePlay_LowLatencyNetworking"] === true &&
+                                        settings["RemotePlay_HEVC"] === true &&
+                                        settings["RemotePlay_AV1"] === false &&
+                                        settings["RemotePlay_PerformanceOverlay"] === 2);
+                                        
+                            var isDefault = (settings["RemotePlay_VideoQuality"] === 2 &&
+                                             settings["RemotePlay_ResolutionWidth"] === 0 &&
+                                             settings["RemotePlay_ResolutionHeight"] === 0 &&
+                                             settings["RemotePlay_BandwidthLimit"] === -1 &&
+                                             settings["RemotePlay_Microphone"] === 0 &&
+                                             settings["RemotePlay_WindowedMode"] === false &&
+                                             settings["RemotePlay_HardwareDecoding"] === true &&
+                                             settings["RemotePlay_LowLatencyNetworking"] === false &&
+                                             settings["RemotePlay_HEVC"] === true &&
+                                             settings["RemotePlay_AV1"] === true &&
+                                             settings["RemotePlay_PerformanceOverlay"] === 0);
+                                             
+                            if (is1080p) return "1080p";
+                            if (is4k) return "4k";
+                            if (isDefault) return "default";
+                            return "";
+                        }
+                        
+                        property string activePreset: getActivePreset()
+                        
+                        // Button: Default
+                        Rectangle {
+                            width: (parent.width - 24) / 3
+                            height: 36
+                            radius: 6
+                            color: parent.activePreset === "default" ? Theme.accentDim : (defaultMouse.containsMouse ? "#1AFFFFFF" : "#0DFFFFFF")
+                            border.color: parent.activePreset === "default" ? Theme.accent : Theme.border
+                            border.width: 1
+                            
+                            Text {
+                                anchors.centerIn: parent
+                                text: qsTr("Default")
+                                color: Theme.textPrimary
+                                font.family: Theme.fontFamily
+                                font.pixelSize: 12
+                                font.bold: true
+                            }
+                            
+                            MouseArea {
+                                id: defaultMouse
+                                anchors.fill: parent
+                                hoverEnabled: true
+                                cursorShape: Qt.PointingHandCursor
+                                onClicked: { steamSettingsDrawer.applyClientPreset("default"); }
+                            }
+                        }
+                        
+                        // Button: Enhanced 1080p
+                        Rectangle {
+                            width: (parent.width - 24) / 3
+                            height: 36
+                            radius: 6
+                            color: parent.activePreset === "1080p" ? Theme.accentDim : (e1080Mouse.containsMouse ? "#1AFFFFFF" : "#0DFFFFFF")
+                            border.color: parent.activePreset === "1080p" ? Theme.accent : Theme.border
+                            border.width: 1
+                            
+                            Text {
+                                anchors.centerIn: parent
+                                text: qsTr("Enhanced 1080p")
+                                color: Theme.textPrimary
+                                font.family: Theme.fontFamily
+                                font.pixelSize: 12
+                                font.bold: true
+                            }
+                            
+                            MouseArea {
+                                id: e1080Mouse
+                                anchors.fill: parent
+                                hoverEnabled: true
+                                cursorShape: Qt.PointingHandCursor
+                                onClicked: { steamSettingsDrawer.applyClientPreset("1080p"); }
+                            }
+                        }
+                        
+                        // Button: Enhanced 4K
+                        Rectangle {
+                            width: (parent.width - 24) / 3
+                            height: 36
+                            radius: 6
+                            color: parent.activePreset === "4k" ? Theme.accentDim : (e4kMouse.containsMouse ? "#1AFFFFFF" : "#0DFFFFFF")
+                            border.color: parent.activePreset === "4k" ? Theme.accent : Theme.border
+                            border.width: 1
+                            
+                            Text {
+                                anchors.centerIn: parent
+                                text: qsTr("Enhanced 4K")
+                                color: Theme.textPrimary
+                                font.family: Theme.fontFamily
+                                font.pixelSize: 12
+                                font.bold: true
+                            }
+                            
+                            MouseArea {
+                                id: e4kMouse
+                                anchors.fill: parent
+                                hoverEnabled: true
+                                cursorShape: Qt.PointingHandCursor
+                                onClicked: { steamSettingsDrawer.applyClientPreset("4k"); }
+                            }
+                        }
+                    }
 
                 // Dropdown: Video Quality (Quality)
                 Rectangle {
