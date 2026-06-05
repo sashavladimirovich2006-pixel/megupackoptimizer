@@ -49,6 +49,8 @@
 #pragma comment(lib, "user32.lib")
 #include <winevt.h>
 #pragma comment(lib, "wevtapi.lib")
+#include <mmdeviceapi.h>
+#include <functiondiscoverykeys_devpkey.h>
 #endif
 
 namespace {
@@ -1833,7 +1835,41 @@ bool Optimizer::getVdfFriendsSettings(const QString &filePath, const QString &ac
                 if (voiceMap.contains("autoGainControl")) {
                     settings["autoGainControl"] = voiceMap["autoGainControl"].toBool();
                 }
+                if (voiceMap.contains("inputGain")) {
+                    settings["inputGain"] = voiceMap["inputGain"].toDouble();
+                }
+                if (voiceMap.contains("outputGain")) {
+                    settings["outputGain"] = voiceMap["outputGain"].toDouble();
+                }
+                if (voiceMap.contains("selectedMic")) {
+                    settings["selectedMic"] = voiceMap["selectedMic"].toString();
+                }
+                if (voiceMap.contains("selectedOutput")) {
+                    settings["selectedOutput"] = voiceMap["selectedOutput"].toString();
+                }
+                if (voiceMap.contains("pttSoundsEnabled")) {
+                    settings["pttSoundsEnabled"] = voiceMap["pttSoundsEnabled"].toBool();
+                }
+                if (voiceMap.contains("useSteamAudioSpatialization")) {
+                    settings["useSteamAudioSpatialization"] = voiceMap["useSteamAudioSpatialization"].toBool();
+                }
+                if (voiceMap.contains("voiceTransmissionType")) {
+                    settings["voiceTransmissionType"] = voiceMap["voiceTransmissionType"].toInt();
+                }
+                if (voiceMap.contains("muteToggleHotkey")) {
+                    settings["muteToggleHotkey"] = voiceMap["muteToggleHotkey"].toString();
+                }
             }
+        }
+    }
+
+    // 5.5 Load system PushToTalkKey
+    {
+        QString pttKey = getVdfSystemSetting(filePath, "PushToTalkKey");
+        if (!pttKey.isEmpty()) {
+            settings["PushToTalkKey"] = pttKey;
+        } else {
+            settings["PushToTalkKey"] = "0";
         }
     }
 
@@ -2271,6 +2307,15 @@ bool Optimizer::updateVdfFriendsSettings(const QString &filePath, const QString 
     incomingObj.remove("echoCancellation");
     incomingObj.remove("noiseCancellation");
     incomingObj.remove("autoGainControl");
+    incomingObj.remove("inputGain");
+    incomingObj.remove("outputGain");
+    incomingObj.remove("selectedMic");
+    incomingObj.remove("selectedOutput");
+    incomingObj.remove("pttSoundsEnabled");
+    incomingObj.remove("useSteamAudioSpatialization");
+    incomingObj.remove("voiceTransmissionType");
+    incomingObj.remove("muteToggleHotkey");
+    incomingObj.remove("PushToTalkKey");
     incomingObj.remove("bRestoreOverlayBrowserTabs");
     incomingObj.remove("bScaleOverlayTextAndIcons");
     incomingObj.remove("library_low_bandwidth_mode");
@@ -2340,6 +2385,30 @@ bool Optimizer::updateVdfFriendsSettings(const QString &filePath, const QString 
     }
     if (settings.contains("autoGainControl")) {
         voiceObj["autoGainControl"] = settings.value("autoGainControl").toBool();
+    }
+    if (settings.contains("inputGain")) {
+        voiceObj["inputGain"] = settings.value("inputGain").toDouble();
+    }
+    if (settings.contains("outputGain")) {
+        voiceObj["outputGain"] = settings.value("outputGain").toDouble();
+    }
+    if (settings.contains("selectedMic")) {
+        voiceObj["selectedMic"] = settings.value("selectedMic").toString();
+    }
+    if (settings.contains("selectedOutput")) {
+        voiceObj["selectedOutput"] = settings.value("selectedOutput").toString();
+    }
+    if (settings.contains("pttSoundsEnabled")) {
+        voiceObj["pttSoundsEnabled"] = settings.value("pttSoundsEnabled").toBool();
+    }
+    if (settings.contains("useSteamAudioSpatialization")) {
+        voiceObj["useSteamAudioSpatialization"] = settings.value("useSteamAudioSpatialization").toBool();
+    }
+    if (settings.contains("voiceTransmissionType")) {
+        voiceObj["voiceTransmissionType"] = settings.value("voiceTransmissionType").toInt();
+    }
+    if (settings.contains("muteToggleHotkey")) {
+        voiceObj["muteToggleHotkey"] = settings.value("muteToggleHotkey").toString();
     }
 
     QString cleanVoiceJson = QString::fromUtf8(QJsonDocument(voiceObj).toJson(QJsonDocument::Compact));
@@ -2460,6 +2529,10 @@ bool Optimizer::updateVdfFriendsSettings(const QString &filePath, const QString 
     }
     if (settings.contains("bControllerLowPlaySound")) {
         updateVdfSystemSetting(filePath, "ControllerLowBatteryNotificationSound", settings.value("bControllerLowPlaySound").toBool() ? "1" : "0");
+    }
+    
+    if (settings.contains("PushToTalkKey")) {
+        updateVdfSystemSetting(filePath, "PushToTalkKey", settings.value("PushToTalkKey").toString());
     }
 
     if (settings.contains("bReduceMotion")) {
@@ -5916,6 +5989,15 @@ void Optimizer::loadSystemStates() {
     defaultFriendsSettings["echoCancellation"] = true;
     defaultFriendsSettings["noiseCancellation"] = true;
     defaultFriendsSettings["autoGainControl"] = true;
+    defaultFriendsSettings["inputGain"] = 1.0;
+    defaultFriendsSettings["outputGain"] = 1.0;
+    defaultFriendsSettings["selectedMic"] = QString("default");
+    defaultFriendsSettings["selectedOutput"] = QString("default");
+    defaultFriendsSettings["pttSoundsEnabled"] = true;
+    defaultFriendsSettings["useSteamAudioSpatialization"] = false;
+    defaultFriendsSettings["voiceTransmissionType"] = 0;
+    defaultFriendsSettings["muteToggleHotkey"] = QString("");
+    defaultFriendsSettings["PushToTalkKey"] = QString("0");
     defaultFriendsSettings["EnableStreaming"] = true;
     defaultFriendsSettings["DownloadHighQualityAudio"] = false;
     defaultFriendsSettings["PauseOnAppStartedProcess"] = true;
@@ -12804,6 +12886,92 @@ bool Optimizer::unpairSteamDevice(const QString &deviceId) {
     emit steamFriendsSettingsChanged(m_steamFriendsSettings);
     
     return true;
+}
+
+QStringList Optimizer::getAudioInputDevices() {
+    QStringList devices;
+    devices << "Default";
+#ifdef Q_OS_WIN
+    HRESULT hrInit = CoInitializeEx(NULL, COINIT_APARTMENTTHREADED | COINIT_DISABLE_OLE1DDE);
+    IMMDeviceEnumerator *pEnumerator = NULL;
+    HRESULT hr = CoCreateInstance(__uuidof(MMDeviceEnumerator), NULL, CLSCTX_ALL, __uuidof(IMMDeviceEnumerator), (void**)&pEnumerator);
+    if (SUCCEEDED(hr)) {
+        IMMDeviceCollection *pCollection = NULL;
+        hr = pEnumerator->EnumAudioEndpoints(eCapture, DEVICE_STATE_ACTIVE, &pCollection);
+        if (SUCCEEDED(hr)) {
+            UINT count = 0;
+            pCollection->GetCount(&count);
+            for (UINT i = 0; i < count; i++) {
+                IMMDevice *pDevice = NULL;
+                hr = pCollection->Item(i, &pDevice);
+                if (SUCCEEDED(hr)) {
+                    IPropertyStore *pProps = NULL;
+                    hr = pDevice->OpenPropertyStore(STGM_READ, &pProps);
+                    if (SUCCEEDED(hr)) {
+                        PROPVARIANT varName;
+                        PropVariantInit(&varName);
+                        hr = pProps->GetValue(PKEY_Device_FriendlyName, &varName);
+                        if (SUCCEEDED(hr)) {
+                            devices << QString::fromWCharArray(varName.pwszVal);
+                            PropVariantClear(&varName);
+                        }
+                        pProps->Release();
+                    }
+                    pDevice->Release();
+                }
+            }
+            pCollection->Release();
+        }
+        pEnumerator->Release();
+    }
+    if (SUCCEEDED(hrInit)) {
+        CoUninitialize();
+    }
+#endif
+    return devices;
+}
+
+QStringList Optimizer::getAudioOutputDevices() {
+    QStringList devices;
+    devices << "Default";
+#ifdef Q_OS_WIN
+    HRESULT hrInit = CoInitializeEx(NULL, COINIT_APARTMENTTHREADED | COINIT_DISABLE_OLE1DDE);
+    IMMDeviceEnumerator *pEnumerator = NULL;
+    HRESULT hr = CoCreateInstance(__uuidof(MMDeviceEnumerator), NULL, CLSCTX_ALL, __uuidof(IMMDeviceEnumerator), (void**)&pEnumerator);
+    if (SUCCEEDED(hr)) {
+        IMMDeviceCollection *pCollection = NULL;
+        hr = pEnumerator->EnumAudioEndpoints(eRender, DEVICE_STATE_ACTIVE, &pCollection);
+        if (SUCCEEDED(hr)) {
+            UINT count = 0;
+            pCollection->GetCount(&count);
+            for (UINT i = 0; i < count; i++) {
+                IMMDevice *pDevice = NULL;
+                hr = pCollection->Item(i, &pDevice);
+                if (SUCCEEDED(hr)) {
+                    IPropertyStore *pProps = NULL;
+                    hr = pDevice->OpenPropertyStore(STGM_READ, &pProps);
+                    if (SUCCEEDED(hr)) {
+                        PROPVARIANT varName;
+                        PropVariantInit(&varName);
+                        hr = pProps->GetValue(PKEY_Device_FriendlyName, &varName);
+                        if (SUCCEEDED(hr)) {
+                            devices << QString::fromWCharArray(varName.pwszVal);
+                            PropVariantClear(&varName);
+                        }
+                        pProps->Release();
+                    }
+                    pDevice->Release();
+                }
+            }
+            pCollection->Release();
+        }
+        pEnumerator->Release();
+    }
+    if (SUCCEEDED(hrInit)) {
+        CoUninitialize();
+    }
+#endif
+    return devices;
 }
 
 
