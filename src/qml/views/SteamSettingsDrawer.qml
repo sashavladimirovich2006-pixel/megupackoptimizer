@@ -980,7 +980,7 @@ Item {
                     width: parent.width - 32
 
                     Text {
-                        text: qsTr("Broadcasting")
+                        text: qsTr("Broadcast customization")
                         color: Theme.textPrimary
                         font.family: Theme.fontFamily
                         font.pixelSize: 12
