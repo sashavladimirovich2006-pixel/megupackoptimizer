@@ -1911,9 +1911,9 @@ bool Optimizer::getVdfFriendsSettings(const QString &filePath, const QString &ac
                 else if (f.fieldNum == 4) settings["RemotePlay_FramerateLimit"] = int(f.varintVal);
                 else if (f.fieldNum == 5) settings["RemotePlay_AudioVolume"] = int(f.varintVal);
                 else if (f.fieldNum == 6) settings["RemotePlay_BandwidthLimit"] = int(f.varintVal);
-                else if (f.fieldNum == 7) settings["RemotePlay_Microphone"] = int(f.varintVal);
+                else if (f.fieldNum == 15) settings["RemotePlay_Microphone"] = int(f.varintVal);
                 else if (f.fieldNum == 8) perfOverlayDetails = (f.varintVal != 0);
-                else if (f.fieldNum == 9) settings["RemotePlay_WindowedMode"] = (f.varintVal != 0);
+                else if (f.fieldNum == 27) settings["RemotePlay_WindowedMode"] = (f.varintVal != 0);
                 else if (f.fieldNum == 10) settings["RemotePlay_HardwareDecoding"] = (f.varintVal != 0);
                 else if (f.fieldNum == 12) settings["RemotePlay_AudioMode"] = int(f.varintVal);
                 else if (f.fieldNum == 13) settings["RemotePlay_LowLatencyNetworking"] = (f.varintVal != 0);
@@ -2571,9 +2571,9 @@ bool Optimizer::updateVdfFriendsSettings(const QString &filePath, const QString 
             else setOrUpdateFieldVarint(fields, 6, limit);
         }
         
-        if (settings.contains("RemotePlay_Microphone")) setOrUpdateFieldVarint(fields, 7, settings.value("RemotePlay_Microphone").toUInt());
+        if (settings.contains("RemotePlay_Microphone")) setOrUpdateFieldVarint(fields, 15, settings.value("RemotePlay_Microphone").toUInt());
         if (settings.contains("RemotePlay_AudioMode")) setOrUpdateFieldVarint(fields, 12, settings.value("RemotePlay_AudioMode").toUInt());
-        if (settings.contains("RemotePlay_WindowedMode")) setOrUpdateFieldVarint(fields, 9, settings.value("RemotePlay_WindowedMode").toBool() ? 1 : 0);
+        if (settings.contains("RemotePlay_WindowedMode")) setOrUpdateFieldVarint(fields, 27, settings.value("RemotePlay_WindowedMode").toBool() ? 1 : 0);
         if (settings.contains("RemotePlay_HardwareDecoding")) setOrUpdateFieldVarint(fields, 10, settings.value("RemotePlay_HardwareDecoding").toBool() ? 1 : 0);
         
         if (settings.contains("RemotePlay_PerformanceOverlay")) {
