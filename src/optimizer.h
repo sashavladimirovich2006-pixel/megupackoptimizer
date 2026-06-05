@@ -651,6 +651,7 @@ public:
     Q_INVOKABLE bool unpairSteamDevice(const QString &deviceId);
     Q_INVOKABLE QStringList getAudioInputDevices();
     Q_INVOKABLE QStringList getAudioOutputDevices();
+    Q_INVOKABLE double getMicrophonePeakLevel(const QString &deviceName);
 
 
 

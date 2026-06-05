@@ -50,6 +50,7 @@
 #include <winevt.h>
 #pragma comment(lib, "wevtapi.lib")
 #include <mmdeviceapi.h>
+#include <endpointvolume.h>
 #include <functiondiscoverykeys_devpkey.h>
 #endif
 
@@ -12972,6 +12973,69 @@ QStringList Optimizer::getAudioOutputDevices() {
     }
 #endif
     return devices;
+}
+
+double Optimizer::getMicrophonePeakLevel(const QString &deviceName) {
+    float peak = 0.0f;
+#ifdef Q_OS_WIN
+    HRESULT hrInit = CoInitializeEx(NULL, COINIT_APARTMENTTHREADED | COINIT_DISABLE_OLE1DDE);
+    IMMDeviceEnumerator *pEnumerator = NULL;
+    HRESULT hr = CoCreateInstance(__uuidof(MMDeviceEnumerator), NULL, CLSCTX_ALL, __uuidof(IMMDeviceEnumerator), (void**)&pEnumerator);
+    if (SUCCEEDED(hr)) {
+        IMMDevice *pDevice = NULL;
+        if (deviceName == "default" || deviceName == "Default" || deviceName.isEmpty()) {
+            hr = pEnumerator->GetDefaultAudioEndpoint(eCapture, eConsole, &pDevice);
+        } else {
+            IMMDeviceCollection *pCollection = NULL;
+            hr = pEnumerator->EnumAudioEndpoints(eCapture, DEVICE_STATE_ACTIVE, &pCollection);
+            if (SUCCEEDED(hr)) {
+                UINT count = 0;
+                pCollection->GetCount(&count);
+                for (UINT i = 0; i < count; i++) {
+                    IMMDevice *pTempDevice = NULL;
+                    if (SUCCEEDED(pCollection->Item(i, &pTempDevice))) {
+                        IPropertyStore *pProps = NULL;
+                        if (SUCCEEDED(pTempDevice->OpenPropertyStore(STGM_READ, &pProps))) {
+                            PROPVARIANT varName;
+                            PropVariantInit(&varName);
+                            if (SUCCEEDED(pProps->GetValue(PKEY_Device_FriendlyName, &varName))) {
+                                QString friendlyName = QString::fromWCharArray(varName.pwszVal);
+                                if (friendlyName == deviceName) {
+                                    pDevice = pTempDevice;
+                                    PropVariantClear(&varName);
+                                    pProps->Release();
+                                    break;
+                                }
+                                PropVariantClear(&varName);
+                            }
+                            pProps->Release();
+                        }
+                        if (pDevice != pTempDevice) {
+                            pTempDevice->Release();
+                        }
+                    }
+                }
+                pCollection->Release();
+            }
+        }
+
+        if (pDevice) {
+            IAudioMeterInformation *pMeterInfo = NULL;
+            static const GUID my_IID_IAudioMeterInformation = {0xC8ADBD64, 0xE71E, 0x48a0, {0xA4, 0xDE, 0x18, 0x5C, 0x38, 0x49, 0xA9, 0xE5}};
+            hr = pDevice->Activate(my_IID_IAudioMeterInformation, CLSCTX_ALL, NULL, (void**)&pMeterInfo);
+            if (SUCCEEDED(hr)) {
+                pMeterInfo->GetPeakValue(&peak);
+                pMeterInfo->Release();
+            }
+            pDevice->Release();
+        }
+        pEnumerator->Release();
+    }
+    if (SUCCEEDED(hrInit)) {
+        CoUninitialize();
+    }
+#endif
+    return static_cast<double>(peak);
 }
 
 

@@ -3339,12 +3339,12 @@ Item {
 
         Timer {
             id: micTestTimer
-            interval: 80
+            interval: 50
             running: steamVoicePage.micTesting
             repeat: true
             onTriggered: {
-                var target = 0.05 + Math.random() * 0.75;
-                steamVoicePage.testVolumeLevel = steamVoicePage.testVolumeLevel * 0.4 + target * 0.6;
+                var level = optimizerBackend.getMicrophonePeakLevel(micDeviceDropdown.currentVal);
+                steamVoicePage.testVolumeLevel = level;
             }
             onRunningChanged: {
                 if (!running) {
