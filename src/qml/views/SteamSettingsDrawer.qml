@@ -3662,11 +3662,23 @@ Item {
                             spacing: 8
                             anchors.horizontalCenter: parent.horizontalCenter
                             
-                            Text {
-                                text: "🖥"
-                                color: Theme.textSecondary
-                                font.pixelSize: 16
+                            Item {
+                                width: 14
+                                height: 14
                                 anchors.verticalCenter: parent.verticalCenter
+                                Image {
+                                    id: noDevicesImg
+                                    source: "qrc:/MeguPackOptimizer/src/resources/monitor.svg"
+                                    anchors.fill: parent
+                                    sourceSize.width: 14
+                                    sourceSize.height: 14
+                                    visible: false
+                                }
+                                ColorOverlay {
+                                    anchors.fill: noDevicesImg
+                                    source: noDevicesImg
+                                    color: Theme.textSecondary
+                                }
                             }
                             Text {
                                 text: qsTr("No devices available")
