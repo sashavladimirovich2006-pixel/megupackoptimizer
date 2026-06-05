@@ -4711,15 +4711,16 @@ Item {
                         property int currentVal: optimizerBackend.steamFriendsSettings ? optimizerBackend.steamFriendsSettings["RemotePlay_PerformanceOverlay"] || 0 : 0
 
                         readonly property var options: [
-                            { id: 0, label: qsTr("Off") },
-                            { id: 8, label: qsTr("On") }
+                            { id: 0, label: qsTr("Disabled") },
+                            { id: 1, label: qsTr("Show Icons") },
+                            { id: 2, label: qsTr("Show Details") }
                         ]
 
                         function getLabelForVal(v) {
                             for (var i = 0; i < options.length; i++) {
                                 if (options[i].id === v) return options[i].label;
                             }
-                            return qsTr("Off");
+                            return qsTr("Disabled");
                         }
 
                         Text {
