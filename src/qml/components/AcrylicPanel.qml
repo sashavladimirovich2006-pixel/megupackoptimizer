@@ -11,7 +11,7 @@ Rectangle {
 
     color: Theme.panelBg
     radius: 8
-    border.color: isFlashing ? Theme.accent : (hoverArea.containsMouse ? Theme.borderHover : Theme.border)
+    border.color: isFlashing ? Theme.success : (hoverArea.containsMouse ? Theme.borderHover : Theme.border)
     border.width: 1
 
     Behavior on border.color { enabled: !panel.isFlashing; ColorAnimation { duration: Theme.animNormal } }
@@ -57,7 +57,7 @@ Rectangle {
         anchors.fill: parent
         radius: panel.radius
         color: "transparent"
-        border.color: Theme.accent
+        border.color: Theme.success
         border.width: 2
         opacity: panel.flashOpacity
         visible: opacity > 0.0

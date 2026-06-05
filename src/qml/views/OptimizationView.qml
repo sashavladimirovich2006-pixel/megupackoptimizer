@@ -6793,63 +6793,63 @@ Item {
 
 
 
-        function getDrawerName(name) {
+            function getDrawerName(name) {
         name = name.toLowerCase();
-        if (name.indexOf("explorer") !== -1 || name.indexOf("classic context menu") !== -1 || name.indexOf("shortcut arrow") !== -1) {
+        if (name.indexOf("explorer") !== -1 || name.indexOf("classic context menu") !== -1 || name.indexOf("shortcut arrow") !== -1 || name.indexOf("проводник") !== -1 || name.indexOf("контекстн") !== -1) {
             return "explorerCustomization";
         }
-        if (name.indexOf("start menu") !== -1) {
+        if (name.indexOf("start menu") !== -1 || name.indexOf("пуск") !== -1) {
             return "startMenuCustomization";
         }
-        if (name.indexOf("desktop") !== -1) {
+        if (name.indexOf("desktop") !== -1 || name.indexOf("рабоч") !== -1) {
             return "desktopCustomization";
         }
-        if (name.indexOf("visual effects") !== -1 || name.indexOf("visualeffects") !== -1) {
+        if (name.indexOf("visual effects") !== -1 || name.indexOf("visualeffects") !== -1 || name.indexOf("визуальн") !== -1) {
             return "visualEffects";
         }
-        if (name.indexOf("indexing") !== -1) {
+        if (name.indexOf("indexing") !== -1 || name.indexOf("индекс") !== -1) {
             return "indexing";
         }
         if (name.indexOf("xbox") !== -1) {
             return "xbox";
         }
-        if (name.indexOf("notification") !== -1) {
+        if (name.indexOf("notification") !== -1 || name.indexOf("уведомл") !== -1) {
             return "notifications";
         }
-        if (name.indexOf("power plan") !== -1 || name.indexOf("powerplan") !== -1) {
+        if (name.indexOf("power plan") !== -1 || name.indexOf("powerplan") !== -1 || name.indexOf("электропит") !== -1 || name.indexOf("схем") !== -1) {
             return "power";
         }
-        if (name.indexOf("defender") !== -1) {
+        if (name.indexOf("defender") !== -1 || name.indexOf("защитн") !== -1 || name.indexOf("безопасн") !== -1) {
             return "defender";
         }
-        if (name.indexOf("usb") !== -1) {
+        if (name.indexOf("usb") !== -1 || name.indexOf("юсб") !== -1) {
             return "usb";
         }
-        if (name.indexOf("telemetry") !== -1) {
+        if (name.indexOf("telemetry") !== -1 || name.indexOf("телеметр") !== -1) {
             return "telemetry";
         }
-        if (name.indexOf("windows update") !== -1 || name.indexOf("windowsupdate") !== -1) {
+        if (name.indexOf("windows update") !== -1 || name.indexOf("windowsupdate") !== -1 || name.indexOf("обновлен") !== -1) {
             return "windowsUpdate";
         }
-        if (name.indexOf("privileges") !== -1 || name.indexOf("more rights") !== -1 || name.indexOf("morerights") !== -1) {
+        if (name.indexOf("privileges") !== -1 || name.indexOf("more rights") !== -1 || name.indexOf("morerights") !== -1 || name.indexOf("прав") !== -1 || name.indexOf("привилег") !== -1) {
             return "moreRights";
         }
-        if (name.indexOf("steam") !== -1 || name.indexOf("cs2") !== -1 || name.indexOf("counter-strike") !== -1 || name.indexOf("remote play") !== -1 || name.indexOf("remoteplay") !== -1) {
+        if (name.indexOf("steam") !== -1 || name.indexOf("cs2") !== -1 || name.indexOf("counter-strike") !== -1 || name.indexOf("remote play") !== -1 || name.indexOf("remoteplay") !== -1 || name.indexOf("стим") !== -1) {
             return "steamSettings";
         }
-        if (name.indexOf("sleeping pill") !== -1 || name.indexOf("sleepingpill") !== -1) {
+        if (name.indexOf("sleeping pill") !== -1 || name.indexOf("sleepingpill") !== -1 || name.indexOf("снотворн") !== -1) {
             return "sleepingPill";
         }
-        if (name.indexOf("health") !== -1) {
+        if (name.indexOf("health") !== -1 || name.indexOf("здоров") !== -1 || name.indexOf("состоян") !== -1) {
             return "health";
         }
-        if (name.indexOf("cleanup") !== -1) {
+        if (name.indexOf("cleanup") !== -1 || name.indexOf("очистк") !== -1) {
             return "cleanup";
         }
-        if (name.indexOf("repair") !== -1) {
+        if (name.indexOf("repair") !== -1 || name.indexOf("восстановл") !== -1) {
             return "repair";
         }
-        if (name.indexOf("mpo") !== -1) {
+        if (name.indexOf("mpo") !== -1 || name.indexOf("мпо") !== -1) {
             return "mpo";
         }
         return "";
@@ -6947,7 +6947,7 @@ Item {
         return "main";
     }
 
-    function getSectionForDrawerOrCategory(name) {
+        function getSectionForDrawerOrCategory(name) {
         name = name.toLowerCase();
         if (name.indexOf("explorer") !== -1 ||
             name.indexOf("classic context menu") !== -1 ||
@@ -6957,7 +6957,20 @@ Item {
             name.indexOf("clock") !== -1 ||
             name.indexOf("privileges") !== -1 ||
             name.indexOf("start menu") !== -1 ||
-            name.indexOf("desktop") !== -1) {
+            name.indexOf("desktop") !== -1 ||
+            name.indexOf("customization") !== -1 ||
+            name.indexOf("проводник") !== -1 ||
+            name.indexOf("контекстн") !== -1 ||
+            name.indexOf("ярлык") !== -1 ||
+            name.indexOf("буфер") !== -1 ||
+            name.indexOf("заверш") !== -1 ||
+            name.indexOf("секунд") !== -1 ||
+            name.indexOf("час") !== -1 ||
+            name.indexOf("прав") !== -1 ||
+            name.indexOf("пуск") !== -1 ||
+            name.indexOf("рабоч") !== -1 ||
+            name.indexOf("персонал") !== -1 ||
+            name.indexOf("кастомиз") !== -1) {
             return "customization";
         }
         if (name.indexOf("telemetry") !== -1 ||
@@ -6965,14 +6978,27 @@ Item {
             name.indexOf("privacy") !== -1 ||
             name.indexOf("location") !== -1 ||
             name.indexOf("speech") !== -1 ||
-            name.indexOf("camera") !== -1) {
+            name.indexOf("camera") !== -1 ||
+            name.indexOf("microphone") !== -1 ||
+            name.indexOf("телеметр") !== -1 ||
+            name.indexOf("реклам") !== -1 ||
+            name.indexOf("конфиденц") !== -1 ||
+            name.indexOf("местополож") !== -1 ||
+            name.indexOf("реч") !== -1 ||
+            name.indexOf("камер") !== -1 ||
+            name.indexOf("микрофон") !== -1) {
             return "telemetry";
         }
         if (name.indexOf("steam") !== -1 ||
             name.indexOf("cs2") !== -1 ||
             name.indexOf("counter-strike") !== -1 ||
             name.indexOf("remote play") !== -1 ||
-            name.indexOf("remoteplay") !== -1) {
+            name.indexOf("remoteplay") !== -1 ||
+            name.indexOf("games") !== -1 ||
+            name.indexOf("gaming") !== -1 ||
+            name.indexOf("стим") !== -1 ||
+            name.indexOf("игр") !== -1 ||
+            name.indexOf("гейм") !== -1) {
             return "games";
         }
         return "core";
@@ -6983,7 +7009,26 @@ Item {
         if (item.text !== undefined && typeof item.text === "string") {
             var cleanItemText = item.text.replace(/[^a-zA-Z0-9а-яА-ЯёЁ]/g, "").replace(/\s+/g, "").toLowerCase();
             var cleanSearch = searchText.replace(/[^a-zA-Z0-9а-яА-ЯёЁ]/g, "").replace(/\s+/g, "").toLowerCase();
-            if (cleanItemText === cleanSearch) {
+            
+            // Check for Windows Defender Completely Delete button (which can show "Cancel Deletion" or "Отмена удаления" or "Completely Delete Windows Defender")
+            var searchRaw = searchText.toLowerCase();
+            var itemRaw = item.text.toLowerCase();
+            var isDefenderDeleteQuery = (searchRaw.indexOf("delete") !== -1 || searchRaw.indexOf("удал") !== -1) && 
+                                        (searchRaw.indexOf("defender") !== -1 || searchRaw.indexOf("защит") !== -1);
+            
+            if (isDefenderDeleteQuery) {
+                if ((itemRaw.indexOf("delete") !== -1 || itemRaw.indexOf("удал") !== -1) && 
+                    (itemRaw.indexOf("defender") !== -1 || itemRaw.indexOf("защит") !== -1)) {
+                    return item;
+                }
+                if (itemRaw.indexOf("cancel") !== -1 || itemRaw.indexOf("отмен") !== -1) {
+                    if (itemRaw.indexOf("delet") !== -1 || itemRaw.indexOf("удал") !== -1) {
+                        return item;
+                    }
+                }
+            }
+
+            if (cleanItemText === cleanSearch || cleanSearch.indexOf(cleanItemText) !== -1 || cleanItemText.indexOf(cleanSearch) !== -1) {
                 return item;
             }
         }
@@ -7145,55 +7190,34 @@ Item {
 
 
 
-        function locateFunction(categoryName) {
+                function locateFunction(categoryName, isCategory) {
+        if (isCategory === undefined) {
+            isCategory = (root.currentIslandPage !== "detail");
+        }
         var parts = categoryName.split(": ");
         if (parts.length > 1) parts.pop();
         var cleanName = parts.join(": ");
         
+        var targetValue = "";
+        if (categoryName.indexOf(" -> ") !== -1) {
+            var valParts = categoryName.split(" -> ");
+            targetValue = valParts[valParts.length - 1].trim();
+        }
+        
+        // Find the correct drawer target name using translation-safe keywords
+        var targetDrawerName = getDrawerName(cleanName);
+        if (!targetDrawerName && root.currentIslandPage === "detail") {
+            targetDrawerName = getDrawerName(root.islandDetailCategory);
+        }
+        
         var section = getSectionForDrawerOrCategory(cleanName);
-        if (section === "core" && cleanName !== categoryName) {
-            var targetDrawerName = "";
-            var allDrawers = [
-                "explorerCustomization", "startMenuCustomization", "desktopCustomization",
-                "visualEffects", "indexing", "xbox", "notifications", "power", "defender",
-                "usb", "telemetry", "windowsUpdate", "moreRights", "steamSettings",
-                "sleepingPill", "health", "cleanup", "repair", "mpo"
-            ];
-            for (var i = 0; i < allDrawers.length; i++) {
-                var drObj = getDrawerObject(allDrawers[i]);
-                if (drObj && findDrawerChild(drObj, cleanName)) {
-                    targetDrawerName = allDrawers[i];
-                    break;
-                }
-            }
-            if (targetDrawerName) {
-                section = getSectionForDrawerOrCategory(targetDrawerName);
-            }
+        if (targetDrawerName) {
+            section = getSectionForDrawerOrCategory(targetDrawerName);
         }
         
         root.currentSection = section;
         
         Qt.callLater(function() {
-            var targetDrawerName = "";
-            var directDrawer = getDrawerName(cleanName);
-            if (directDrawer) {
-                targetDrawerName = directDrawer;
-            } else {
-                var allDrawers = [
-                    "explorerCustomization", "startMenuCustomization", "desktopCustomization",
-                    "visualEffects", "indexing", "xbox", "notifications", "power", "defender",
-                    "usb", "telemetry", "windowsUpdate", "moreRights", "steamSettings",
-                    "sleepingPill", "health", "cleanup", "repair", "mpo"
-                ];
-                for (var i = 0; i < allDrawers.length; i++) {
-                    var drObj = getDrawerObject(allDrawers[i]);
-                    if (drObj && findDrawerChild(drObj, cleanName)) {
-                        targetDrawerName = allDrawers[i];
-                        break;
-                    }
-                }
-            }
-            
             var panel = getParentCard(cleanName);
             if (!panel && targetDrawerName) {
                 panel = getParentCardForDrawer(targetDrawerName);
@@ -7218,7 +7242,7 @@ Item {
                 }
             }
             
-            if (targetDrawerName) {
+            if (targetDrawerName && !isCategory) {
                 root.activeDrawer = targetDrawerName;
                 
                 Qt.callLater(function() {
@@ -7232,6 +7256,9 @@ Item {
                     
                     Qt.callLater(function() {
                         var targetControl = findDrawerChild(drawerObj, cleanName);
+                        if (!targetControl && targetValue) {
+                            targetControl = findDrawerChild(drawerObj, targetValue);
+                        }
                         if (targetControl) {
                             var pt = targetControl.mapToItem(drawerObj, 0, 0);
                             var targetScrollY = pt.y - (drawerScroll.height - targetControl.height) / 2;
@@ -7253,7 +7280,9 @@ Item {
                                     typeStr.indexOf("ComboBox") !== -1 || 
                                     typeStr.indexOf("CheckBox") !== -1 || 
                                     typeStr.indexOf("Panel") !== -1 || 
-                                    typeStr.indexOf("Rectangle") !== -1) {
+                                    typeStr.indexOf("Rectangle") !== -1 ||
+                                    typeStr.indexOf("Row") !== -1 ||
+                                    typeStr.indexOf("Grid") !== -1) {
                                     break;
                                 }
                                 container = container.parent;
@@ -34502,7 +34531,7 @@ Item {
                     Rectangle {
                         id: drawerLocatorHighlight
                         color: "transparent"
-                        border.color: Theme.accent
+                        border.color: Theme.success
                         border.width: 2
                         radius: 8
                         visible: opacity > 0.0
@@ -34824,7 +34853,7 @@ Item {
 
 
 
-                    color: Theme.textPrimary
+                    color: "#F8FAFC"
 
 
 
@@ -34916,7 +34945,7 @@ Item {
 
 
 
-                        color: Theme.textSecondary
+                        color: "#8A9CB2"
 
 
 
@@ -35160,7 +35189,7 @@ Item {
 
 
 
-                                color: islandCloseMouse.containsMouse ? Theme.accent : Theme.textMuted
+                                color: islandCloseMouse.containsMouse ? Theme.accent : "#8A9CB2"
 
 
 
@@ -35396,7 +35425,7 @@ Item {
 
 
 
-                                        color: revertMouse.containsMouse ? Theme.accent : Theme.textMuted
+                                        color: revertMouse.containsMouse ? Theme.accent : "#55677D"
 
 
 
@@ -35544,7 +35573,7 @@ Item {
 
 
 
-                                    color: Theme.textPrimary
+                                    color: "#F8FAFC"
 
 
 
@@ -35680,7 +35709,7 @@ Item {
 
 
 
-                                        color: eyeMouse.containsMouse ? Theme.accent : Theme.textMuted
+                                        color: eyeMouse.containsMouse ? Theme.accent : "#8A9CB2"
 
 
 
@@ -35716,7 +35745,7 @@ Item {
 
 
 
-                                            root.locateFunction(modelData.name);
+                                            root.locateFunction(modelData.name, true);
 
 
 
@@ -35844,7 +35873,7 @@ Item {
 
 
 
-                                        color: arrowMouse.containsMouse ? Theme.accent : Theme.textMuted
+                                        color: arrowMouse.containsMouse ? Theme.accent : "#8A9CB2"
 
 
 
@@ -36076,7 +36105,7 @@ Item {
 
 
 
-                                color: backMouse.containsMouse ? Theme.accent : Theme.textMuted
+                                color: backMouse.containsMouse ? Theme.accent : "#8A9CB2"
 
 
 
@@ -36276,7 +36305,7 @@ Item {
 
 
 
-                                color: detailCloseMouse.containsMouse ? Theme.accent : Theme.textMuted
+                                color: detailCloseMouse.containsMouse ? Theme.accent : "#8A9CB2"
 
 
 
@@ -36512,7 +36541,7 @@ Item {
 
 
 
-                                        color: subRevertMouse.containsMouse ? Theme.accent : Theme.textMuted
+                                        color: subRevertMouse.containsMouse ? Theme.accent : "#55677D"
 
 
 
@@ -36580,7 +36609,7 @@ Item {
 
 
 
-                                    color: Theme.textPrimary
+                                    color: "#F8FAFC"
 
 
 
@@ -36716,7 +36745,7 @@ Item {
 
 
 
-                                        color: subEyeMouse.containsMouse ? Theme.accent : Theme.textMuted
+                                        color: subEyeMouse.containsMouse ? Theme.accent : "#8A9CB2"
 
 
 
@@ -36752,7 +36781,7 @@ Item {
 
 
 
-                                            root.locateFunction(modelData.name);
+                                            root.locateFunction(modelData.name, false);
 
 
 
