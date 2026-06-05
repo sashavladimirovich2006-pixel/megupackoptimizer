@@ -1902,6 +1902,8 @@ bool Optimizer::getVdfFriendsSettings(const QString &filePath, const QString &ac
         if (!clientConfigHex.isEmpty()) {
             QByteArray clientConfigBytes = QByteArray::fromHex(clientConfigHex.toUtf8());
             QList<ProtobufField> fields = parseProtobuf(clientConfigBytes);
+            bool perfOverlayEnabled = false;
+            bool perfOverlayDetails = false;
             for (const auto &f : fields) {
                 if (f.fieldNum == 1) settings["RemotePlay_VideoQuality"] = int(f.varintVal);
                 else if (f.fieldNum == 2) settings["RemotePlay_ResolutionWidth"] = int(f.varintVal);
@@ -1910,15 +1912,21 @@ bool Optimizer::getVdfFriendsSettings(const QString &filePath, const QString &ac
                 else if (f.fieldNum == 5) settings["RemotePlay_AudioVolume"] = int(f.varintVal);
                 else if (f.fieldNum == 6) settings["RemotePlay_BandwidthLimit"] = int(f.varintVal);
                 else if (f.fieldNum == 7) settings["RemotePlay_Microphone"] = int(f.varintVal);
-                else if (f.fieldNum == 8) settings["RemotePlay_AudioMode"] = int(f.varintVal);
+                else if (f.fieldNum == 8) perfOverlayDetails = (f.varintVal != 0);
                 else if (f.fieldNum == 9) settings["RemotePlay_WindowedMode"] = (f.varintVal != 0);
                 else if (f.fieldNum == 10) settings["RemotePlay_HardwareDecoding"] = (f.varintVal != 0);
-                else if (f.fieldNum == 12) settings["RemotePlay_PerformanceOverlay"] = int(f.varintVal);
+                else if (f.fieldNum == 12) settings["RemotePlay_AudioMode"] = int(f.varintVal);
                 else if (f.fieldNum == 13) settings["RemotePlay_LowLatencyNetworking"] = (f.varintVal != 0);
-                else if (f.fieldNum == 14) settings["RemotePlay_HEVC"] = (f.varintVal != 0);
-                else if (f.fieldNum == 15) settings["RemotePlay_AV1"] = (f.varintVal != 0);
+                else if (f.fieldNum == 14) perfOverlayEnabled = (f.varintVal != 0);
                 else if (f.fieldNum == 16) settings["RemotePlay_ControllerButton"] = QString::fromUtf8(f.bytesVal);
                 else if (f.fieldNum == 19) settings["RemotePlay_ControllerVisibility"] = int(f.varintVal);
+                else if (f.fieldNum == 25) settings["RemotePlay_HEVC"] = (f.varintVal != 0);
+                else if (f.fieldNum == 26) settings["RemotePlay_AV1"] = (f.varintVal != 0);
+            }
+            if (perfOverlayEnabled) {
+                settings["RemotePlay_PerformanceOverlay"] = perfOverlayDetails ? 2 : 1;
+            } else {
+                settings["RemotePlay_PerformanceOverlay"] = 0;
             }
         }
         QVariantList devices = parseLocalConfigDevices(filePath);
@@ -2516,28 +2524,15 @@ bool Optimizer::updateVdfFriendsSettings(const QString &filePath, const QString 
 
     // Client config protobuf update
     bool updateClient = false;
-    QList<int> clientKeys = {
-        1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 12, 13, 14, 15, 16, 19
+    QList<QString> clientSettingKeys = {
+        "RemotePlay_VideoQuality", "RemotePlay_ResolutionWidth", "RemotePlay_ResolutionHeight",
+        "RemotePlay_FramerateLimit", "RemotePlay_AudioVolume", "RemotePlay_BandwidthLimit",
+        "RemotePlay_Microphone", "RemotePlay_AudioMode", "RemotePlay_WindowedMode",
+        "RemotePlay_HardwareDecoding", "RemotePlay_PerformanceOverlay",
+        "RemotePlay_LowLatencyNetworking", "RemotePlay_HEVC", "RemotePlay_AV1",
+        "RemotePlay_ControllerButton", "RemotePlay_ControllerVisibility"
     };
-    for (int k : clientKeys) {
-        QString sKey;
-        if (k == 1) sKey = "RemotePlay_VideoQuality";
-        else if (k == 2) sKey = "RemotePlay_ResolutionWidth";
-        else if (k == 3) sKey = "RemotePlay_ResolutionHeight";
-        else if (k == 4) sKey = "RemotePlay_FramerateLimit";
-        else if (k == 5) sKey = "RemotePlay_AudioVolume";
-        else if (k == 6) sKey = "RemotePlay_BandwidthLimit";
-        else if (k == 7) sKey = "RemotePlay_Microphone";
-        else if (k == 8) sKey = "RemotePlay_AudioMode";
-        else if (k == 9) sKey = "RemotePlay_WindowedMode";
-        else if (k == 10) sKey = "RemotePlay_HardwareDecoding";
-        else if (k == 12) sKey = "RemotePlay_PerformanceOverlay";
-        else if (k == 13) sKey = "RemotePlay_LowLatencyNetworking";
-        else if (k == 14) sKey = "RemotePlay_HEVC";
-        else if (k == 15) sKey = "RemotePlay_AV1";
-        else if (k == 16) sKey = "RemotePlay_ControllerButton";
-        else if (k == 19) sKey = "RemotePlay_ControllerVisibility";
-
+    for (const QString &sKey : clientSettingKeys) {
         if (settings.contains(sKey)) {
             updateClient = true;
         }
@@ -2577,13 +2572,27 @@ bool Optimizer::updateVdfFriendsSettings(const QString &filePath, const QString 
         }
         
         if (settings.contains("RemotePlay_Microphone")) setOrUpdateFieldVarint(fields, 7, settings.value("RemotePlay_Microphone").toUInt());
-        if (settings.contains("RemotePlay_AudioMode")) setOrUpdateFieldVarint(fields, 8, settings.value("RemotePlay_AudioMode").toUInt());
+        if (settings.contains("RemotePlay_AudioMode")) setOrUpdateFieldVarint(fields, 12, settings.value("RemotePlay_AudioMode").toUInt());
         if (settings.contains("RemotePlay_WindowedMode")) setOrUpdateFieldVarint(fields, 9, settings.value("RemotePlay_WindowedMode").toBool() ? 1 : 0);
         if (settings.contains("RemotePlay_HardwareDecoding")) setOrUpdateFieldVarint(fields, 10, settings.value("RemotePlay_HardwareDecoding").toBool() ? 1 : 0);
-        if (settings.contains("RemotePlay_PerformanceOverlay")) setOrUpdateFieldVarint(fields, 12, settings.value("RemotePlay_PerformanceOverlay").toUInt());
+        
+        if (settings.contains("RemotePlay_PerformanceOverlay")) {
+            quint64 val = settings.value("RemotePlay_PerformanceOverlay").toUInt();
+            if (val == 2) {
+                setOrUpdateFieldVarint(fields, 14, 1);
+                setOrUpdateFieldVarint(fields, 8, 1);
+            } else if (val == 1) {
+                setOrUpdateFieldVarint(fields, 14, 1);
+                setOrUpdateFieldVarint(fields, 8, 0);
+            } else {
+                setOrUpdateFieldVarint(fields, 14, 0);
+                setOrUpdateFieldVarint(fields, 8, 0);
+            }
+        }
+        
         if (settings.contains("RemotePlay_LowLatencyNetworking")) setOrUpdateFieldVarint(fields, 13, settings.value("RemotePlay_LowLatencyNetworking").toBool() ? 1 : 0);
-        if (settings.contains("RemotePlay_HEVC")) setOrUpdateFieldVarint(fields, 14, settings.value("RemotePlay_HEVC").toBool() ? 1 : 0);
-        if (settings.contains("RemotePlay_AV1")) setOrUpdateFieldVarint(fields, 15, settings.value("RemotePlay_AV1").toBool() ? 1 : 0);
+        if (settings.contains("RemotePlay_HEVC")) setOrUpdateFieldVarint(fields, 25, settings.value("RemotePlay_HEVC").toBool() ? 1 : 0);
+        if (settings.contains("RemotePlay_AV1")) setOrUpdateFieldVarint(fields, 26, settings.value("RemotePlay_AV1").toBool() ? 1 : 0);
         if (settings.contains("RemotePlay_ControllerButton")) setOrUpdateFieldString(fields, 16, settings.value("RemotePlay_ControllerButton").toString());
         if (settings.contains("RemotePlay_ControllerVisibility")) setOrUpdateFieldVarint(fields, 19, settings.value("RemotePlay_ControllerVisibility").toUInt());
 
