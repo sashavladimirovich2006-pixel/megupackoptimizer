@@ -1171,6 +1171,7 @@ private:
     QVariantList m_steamInstalledGames;
     QVariantMap m_steamFriendsSettings;
     QVariantMap m_originalSteamFriendsSettings;
+    QStringList m_stagedUnpairedSteamDevices;
     bool getVdfFriendsSettings(const QString &filePath, const QString &accountId, QVariantMap &settings);
     bool updateVdfFriendsSettings(const QString &filePath, const QString &accountId, const QVariantMap &settings);
     bool m_isOptimizingSystem = false;

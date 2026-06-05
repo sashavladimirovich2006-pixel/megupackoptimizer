@@ -6032,6 +6032,18 @@ void Optimizer::loadSystemStates() {
     }
     m_steamFriendsSettings["bScaleOverlayTextAndIcons"] = bScaleOverlayTextAndIcons;
 #endif
+
+    if (!m_stagedUnpairedSteamDevices.isEmpty()) {
+        QVariantList devices = m_steamFriendsSettings.value("RemotePlay_Devices").toList();
+        QVariantList filteredDevices;
+        for (const QVariant &dVar : devices) {
+            if (!m_stagedUnpairedSteamDevices.contains(dVar.toMap().value("id").toString())) {
+                filteredDevices.append(dVar);
+            }
+        }
+        m_steamFriendsSettings["RemotePlay_Devices"] = filteredDevices;
+    }
+
     m_originalSteamFriendsSettings = m_steamFriendsSettings;
     emit steamFriendsSettingsChanged(m_steamFriendsSettings);
     emit originalSteamFriendsSettingsChanged(m_originalSteamFriendsSettings);
@@ -6966,10 +6978,13 @@ void Optimizer::startSystemOptimization() {
     bool forceVal = m_forceApplyAll;
     m_forceApplyAll = false;
 
+    QStringList stagedUnpairedDevices = m_stagedUnpairedSteamDevices;
+    m_stagedUnpairedSteamDevices.clear();
+
     m_explorerNeedsRestart = false;
     emit explorerNeedsRestartChanged(m_explorerNeedsRestart);
 
-    QThread* worker = QThread::create([this, explorerShowExtensionsVal, origExplorerShowExtensionsVal, explorerShowHiddenVal, origExplorerShowHiddenVal, explorerShowExtractFilesVal, origExplorerShowExtractFilesVal, explorerClassicRibbonVal, origExplorerClassicRibbonVal, explorerShowPreviewPaneVal, origExplorerShowPreviewPaneVal, explorerShowRecycleBinVal, origExplorerShowRecycleBinVal, explorerPinRecycleBinVal, origExplorerPinRecycleBinVal, explorerPinHomeVal, origExplorerPinHomeVal, explorerPinGalleryVal, origExplorerPinGalleryVal, explorerUseCheckboxesVal, origExplorerUseCheckboxesVal, explorerSyncNotificationsVal, origExplorerSyncNotificationsVal, explorerLaunchToVal, origExplorerLaunchToVal, forceVal, searchVal, classicContextMenuVal, shortcutArrowsVal, clipboardHistoryVal, taskbarEndTaskVal, taskbarSecondsVal, hibernationVal, overlayVal, coreIsolationVal, hagsVal, mouseAccelVal, gameModeVal, firewallVal, bitlockerVal, discordOverlayVal, notificationsVal, notifGlobalVal, notifAppVal, notifSoundsVal, notifLockscreenVal, targetPowerSchemeVal, activePowerSchemeVal, deleteUltimateStagedVal, deleteDefenderStagedVal, defenderVal, defenderRegistryVal, defenderCmdVal, defenderServiceVal, remoteAccessVal, telemetryVal, telemetryDiagTrackVal, telemetryWapPushVal, telemetryCeipVal, telemetryWerVal, windowsUpdateModeVal, targets, originalTargets, origSearch, origClassicContextMenu, origShortcutArrows, origClipboardHistory, origTaskbarEndTask, origTaskbarSeconds, origHibernation, origOverlay, origCoreIsolation, origHags, origMouseAccel, origGameMode, origFirewall, origBitlocker, origDiscordOverlay, origNotifications, origNotifGlobal, origNotifApp, origNotifSounds, origNotifLockscreen, origDefender, origDefenderRegistry, origDefenderCmd, origDefenderService, origRemoteAccess, origTelemetry, origTelemetryDiagTrack, origTelemetryWapPush, origTelemetryCeip, origTelemetryWer, origWindowsUpdateMode, usbDevicesVal, origUsbDevicesVal, appNotificationSettingsVal, steamPathVal, cs2OptionsVal, origCs2OptionsVal, steamOverlayVal, origSteamOverlayVal, cs2OverlayVal, origCs2OverlayVal, visualEffectsVal, origVisualEffectsVal, steamFriendsSettingsVal, origSteamFriendsSettingsVal, steamFriendsChanged, pagefileMinVal, origPagefileMinVal, pagefileMaxVal, origPagefileMaxVal, adsTailoredExperiencesVal, origAdsTailored, adsAdvertisingIdVal, origAdsAdvertisingId, adsSuggestedContentVal, origAdsSuggestedContent, adsSettingsHomeVal, origAdsSettingsHome, adsSuggestedNotificationsVal, origAdsSuggestedNotifications, adsLockScreenTipsVal, origAdsLockScreenTips, adsWindowsTipsVal, origAdsWindowsTips, adsWelcomeExperienceVal, origAdsWelcomeExperience, adsFinishSetupVal, origAdsFinishSetup, privacyLocationVal, origPrivacyLocation, privacyTelemetryVal, origPrivacyTelemetry, privacyCeipVal, origPrivacyCeip, privacyAppsTelemetryVal, origPrivacyAppsTelemetry, privacyAppLaunchesVal, origPrivacyAppLaunches, privacyImproveInkingVal, origPrivacyImproveInking, privacyPersonalizeInkingVal, origPrivacyPersonalizeInking, privacyErrorReportingVal, origPrivacyErrorReporting, privacyLockScreenCameraVal, origPrivacyLockScreenCamera, privacyCameraIndicatorVal, origPrivacyCameraIndicator, privacyOnlineSpeechVal, origPrivacyOnlineSpeech, superuserGodModeVal, superuserDeveloperModeVal, superuserUacLevelVal, superuserUcpdVal, superuserGodModeOrig, superuserDeveloperModeOrig, superuserUacLevelOrig, superuserUcpdOrig, startMenuWebResultsVal, origStartMenuWebResultsVal, startMenuAutoinstallVal, origStartMenuAutoinstallVal, startMenuAccountNotificationsVal, origStartMenuAccountNotificationsVal, startMenuShowHibernateVal, origStartMenuShowHibernateVal, desktopShowThisPCVal, origDesktopShowThisPCVal, desktopShowWidgetsVal, origDesktopShowWidgetsVal, desktopIconShadowsVal, origDesktopIconShadowsVal, desktopShowDesktopButtonVal, origDesktopShowDesktopButtonVal, desktopAeroShakeVal, origDesktopAeroShakeVal, desktopWallpaperQualityVal, origDesktopWallpaperQualityVal, coinstallersActiveVal, origCoinstallersActiveVal, driverUpdatesVal, origDriverUpdatesVal, appUpdatesVal, origAppUpdatesVal, storageSenseVal, origStorageSenseVal, driveOptimizationVal, origDriveOptimizationVal, hibernationSizeVal, origHibernationSize, fastStartupVal, origFastStartup]() {
+    QThread* worker = QThread::create([this, explorerShowExtensionsVal, origExplorerShowExtensionsVal, explorerShowHiddenVal, origExplorerShowHiddenVal, explorerShowExtractFilesVal, origExplorerShowExtractFilesVal, explorerClassicRibbonVal, origExplorerClassicRibbonVal, explorerShowPreviewPaneVal, origExplorerShowPreviewPaneVal, explorerShowRecycleBinVal, origExplorerShowRecycleBinVal, explorerPinRecycleBinVal, origExplorerPinRecycleBinVal, explorerPinHomeVal, origExplorerPinHomeVal, explorerPinGalleryVal, origExplorerPinGalleryVal, explorerUseCheckboxesVal, origExplorerUseCheckboxesVal, explorerSyncNotificationsVal, origExplorerSyncNotificationsVal, explorerLaunchToVal, origExplorerLaunchToVal, forceVal, searchVal, classicContextMenuVal, shortcutArrowsVal, clipboardHistoryVal, taskbarEndTaskVal, taskbarSecondsVal, hibernationVal, overlayVal, coreIsolationVal, hagsVal, mouseAccelVal, gameModeVal, firewallVal, bitlockerVal, discordOverlayVal, notificationsVal, notifGlobalVal, notifAppVal, notifSoundsVal, notifLockscreenVal, targetPowerSchemeVal, activePowerSchemeVal, deleteUltimateStagedVal, deleteDefenderStagedVal, defenderVal, defenderRegistryVal, defenderCmdVal, defenderServiceVal, remoteAccessVal, telemetryVal, telemetryDiagTrackVal, telemetryWapPushVal, telemetryCeipVal, telemetryWerVal, windowsUpdateModeVal, targets, originalTargets, origSearch, origClassicContextMenu, origShortcutArrows, origClipboardHistory, origTaskbarEndTask, origTaskbarSeconds, origHibernation, origOverlay, origCoreIsolation, origHags, origMouseAccel, origGameMode, origFirewall, origBitlocker, origDiscordOverlay, origNotifications, origNotifGlobal, origNotifApp, origNotifSounds, origNotifLockscreen, origDefender, origDefenderRegistry, origDefenderCmd, origDefenderService, origRemoteAccess, origTelemetry, origTelemetryDiagTrack, origTelemetryWapPush, origTelemetryCeip, origTelemetryWer, origWindowsUpdateMode, usbDevicesVal, origUsbDevicesVal, appNotificationSettingsVal, steamPathVal, cs2OptionsVal, origCs2OptionsVal, steamOverlayVal, origSteamOverlayVal, cs2OverlayVal, origCs2OverlayVal, visualEffectsVal, origVisualEffectsVal, steamFriendsSettingsVal, origSteamFriendsSettingsVal, steamFriendsChanged, pagefileMinVal, origPagefileMinVal, pagefileMaxVal, origPagefileMaxVal, adsTailoredExperiencesVal, origAdsTailored, adsAdvertisingIdVal, origAdsAdvertisingId, adsSuggestedContentVal, origAdsSuggestedContent, adsSettingsHomeVal, origAdsSettingsHome, adsSuggestedNotificationsVal, origAdsSuggestedNotifications, adsLockScreenTipsVal, origAdsLockScreenTips, adsWindowsTipsVal, origAdsWindowsTips, adsWelcomeExperienceVal, origAdsWelcomeExperience, adsFinishSetupVal, origAdsFinishSetup, privacyLocationVal, origPrivacyLocation, privacyTelemetryVal, origPrivacyTelemetry, privacyCeipVal, origPrivacyCeip, privacyAppsTelemetryVal, origPrivacyAppsTelemetry, privacyAppLaunchesVal, origPrivacyAppLaunches, privacyImproveInkingVal, origPrivacyImproveInking, privacyPersonalizeInkingVal, origPrivacyPersonalizeInking, privacyErrorReportingVal, origPrivacyErrorReporting, privacyLockScreenCameraVal, origPrivacyLockScreenCamera, privacyCameraIndicatorVal, origPrivacyCameraIndicator, privacyOnlineSpeechVal, origPrivacyOnlineSpeech, superuserGodModeVal, superuserDeveloperModeVal, superuserUacLevelVal, superuserUcpdVal, superuserGodModeOrig, superuserDeveloperModeOrig, superuserUacLevelOrig, superuserUcpdOrig, startMenuWebResultsVal, origStartMenuWebResultsVal, startMenuAutoinstallVal, origStartMenuAutoinstallVal, startMenuAccountNotificationsVal, origStartMenuAccountNotificationsVal, startMenuShowHibernateVal, origStartMenuShowHibernateVal, desktopShowThisPCVal, origDesktopShowThisPCVal, desktopShowWidgetsVal, origDesktopShowWidgetsVal, desktopIconShadowsVal, origDesktopIconShadowsVal, desktopShowDesktopButtonVal, origDesktopShowDesktopButtonVal, desktopAeroShakeVal, origDesktopAeroShakeVal, desktopWallpaperQualityVal, origDesktopWallpaperQualityVal, coinstallersActiveVal, origCoinstallersActiveVal, driverUpdatesVal, origDriverUpdatesVal, appUpdatesVal, origAppUpdatesVal, storageSenseVal, origStorageSenseVal, driveOptimizationVal, origDriveOptimizationVal, hibernationSizeVal, origHibernationSize, fastStartupVal, origFastStartup, stagedUnpairedDevices]() {
         // Step 00: Auto-create backup before making changes
         if (!forceVal && Settings::instance()->createBackup()) {
             emit systemStepReported(tr("Creating automatic system backup..."), "INFO");
@@ -7102,7 +7117,7 @@ void Optimizer::startSystemOptimization() {
                           steamOverlayChanged ||
                           cs2OverlayChanged ||
                           visualEffectsChanged || deleteDefenderStagedVal || steamFriendsChanged || pagefileChanged || superuserChanged ||
-                          explorerChanged || startMenuChanged || desktopChanged;
+                          explorerChanged || startMenuChanged || desktopChanged || !stagedUnpairedDevices.isEmpty();
         if (!anyChanges) {
             for (const QString &driveLetter : targets.keys()) {
                 if (targets.value(driveLetter).toBool() != originalTargets.value(driveLetter).toBool()) {
@@ -10594,6 +10609,69 @@ void Optimizer::startSystemOptimization() {
 #endif
         }
 
+                // Step 2.7.6: Steam Remote Play Unpairing (only if there are staged devices to unpair)
+        bool steamRemotePlayUnpairSuccess = true;
+        if (!stagedUnpairedDevices.isEmpty()) {
+            emit systemStepReported(Optimizer::tr("Unpairing Steam Remote Play devices..."), "INFO");
+            QThread::msleep(800);
+
+#ifdef Q_OS_WIN
+            bool steamRunning = isSteamRunning();
+            if (steamRunning) {
+                QString steamExePath = steamPathVal + "/steam.exe";
+                if (QFile::exists(steamExePath)) {
+                    QProcess::execute(steamExePath, QStringList() << "-shutdown");
+                    for (int i = 0; i < 10; ++i) {
+                        QThread::msleep(500);
+                        if (!isSteamRunning()) break;
+                    }
+                }
+                if (isSteamRunning()) {
+                    killSteam();
+                }
+                emit systemStepReported(Optimizer::tr("Steam process detected and closed to prevent configuration overwrite."), "WARNING");
+                QThread::msleep(2000);
+            }
+
+            if (!steamPathVal.isEmpty() && QDir(steamPathVal).exists()) {
+                int unpairedCount = 0;
+                for (const QString &deviceId : stagedUnpairedDevices) {
+                    bool deviceUnpaired = false;
+                    // 1. Try remoteclients.vdf
+                    QString remoteClientsPath = steamPathVal + "/config/remoteclients.vdf";
+                    if (QFile::exists(remoteClientsPath)) {
+                        if (unpairRemoteClient(remoteClientsPath, deviceId)) {
+                            deviceUnpaired = true;
+                        }
+                    }
+                    // 2. Try all localconfig.vdf files in userdata
+                    QString userdataPath = steamPathVal + "/userdata";
+                    QDir userdataDir(userdataPath);
+                    if (userdataDir.exists()) {
+                        QStringList subdirs = userdataDir.entryList(QDir::Dirs | QDir::NoDotAndDotDot);
+                        for (const QString &subdir : subdirs) {
+                            QString vdfPath = userdataPath + "/" + subdir + "/config/localconfig.vdf";
+                            if (QFile::exists(vdfPath)) {
+                                if (unpairRemoteClient(vdfPath, deviceId)) {
+                                    deviceUnpaired = true;
+                                }
+                            }
+                        }
+                    }
+                    if (deviceUnpaired) {
+                        unpairedCount++;
+                    }
+                }
+                emit systemStepReported(Optimizer::tr("Successfully unpaired %1 Steam Remote Play devices.").arg(unpairedCount), "SUCCESS");
+            } else {
+                steamRemotePlayUnpairSuccess = false;
+                emit systemStepReported(Optimizer::tr("Steam path not found. Cannot apply unpairing."), "ERROR");
+            }
+#else
+            emit systemStepReported(Optimizer::tr("[Simulation] Unpaired %1 Steam Remote Play devices successfully.").arg(stagedUnpairedDevices.size()), "SUCCESS");
+#endif
+        }
+
         // Step 2.8: Visual Effects (only if changed)
         bool visualEffectsSuccess = true;
         if (visualEffectsChanged) {
@@ -12545,47 +12623,23 @@ void Optimizer::launchSteam() {
 }
 
 bool Optimizer::unpairSteamDevice(const QString &deviceId) {
-    Logger::log("unpairSteamDevice: Requested to unpair device with ID: " + deviceId, "INFO");
-    QString path = steamPath();
-    if (path.isEmpty() || !QDir(path).exists()) {
-        Logger::log("unpairSteamDevice: Steam path is invalid or does not exist", "WARNING");
-        return false;
+    Logger::log("unpairSteamDevice: Requested to stage unpairing for device with ID: " + deviceId, "INFO");
+    if (!m_stagedUnpairedSteamDevices.contains(deviceId)) {
+        m_stagedUnpairedSteamDevices.append(deviceId);
     }
     
-    bool anySuccess = false;
-    
-    // 1. Try remoteclients.vdf
-    QString remoteClientsPath = path + "/config/remoteclients.vdf";
-    if (QFile::exists(remoteClientsPath)) {
-        if (unpairRemoteClient(remoteClientsPath, deviceId)) {
-            Logger::log("unpairSteamDevice: Unpaired device from remoteclients.vdf", "INFO");
-            anySuccess = true;
+    // Remove it from m_steamFriendsSettings["RemotePlay_Devices"] so it immediately disappears from the UI
+    QVariantList devices = m_steamFriendsSettings.value("RemotePlay_Devices").toList();
+    QVariantList filteredDevices;
+    for (const QVariant &dVar : devices) {
+        if (dVar.toMap().value("id").toString() != deviceId) {
+            filteredDevices.append(dVar);
         }
     }
+    m_steamFriendsSettings["RemotePlay_Devices"] = filteredDevices;
+    emit steamFriendsSettingsChanged(m_steamFriendsSettings);
     
-    // 2. Try all localconfig.vdf files in userdata
-    QString userdataPath = path + "/userdata";
-    QDir userdataDir(userdataPath);
-    if (userdataDir.exists()) {
-        QStringList subdirs = userdataDir.entryList(QDir::Dirs | QDir::NoDotAndDotDot);
-        for (const QString &subdir : subdirs) {
-            QString vdfPath = userdataPath + "/" + subdir + "/config/localconfig.vdf";
-            if (QFile::exists(vdfPath)) {
-                if (unpairRemoteClient(vdfPath, deviceId)) {
-                    Logger::log("unpairSteamDevice: Unpaired device from localconfig.vdf for user: " + subdir, "INFO");
-                    anySuccess = true;
-                }
-            }
-        }
-    }
-    
-    if (anySuccess) {
-        loadSystemStates();
-        return true;
-    } else {
-        Logger::log("unpairSteamDevice: Failed to unpair device ID " + deviceId + " from any configs", "WARNING");
-        return false;
-    }
+    return true;
 }
 
 
