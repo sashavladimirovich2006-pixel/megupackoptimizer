@@ -3582,6 +3582,16 @@ Item {
             width: parent.width
             spacing: 16
 
+            // Section: Optimization
+            Text {
+                text: qsTr("Optimization")
+                color: Theme.accent
+                font.family: Theme.fontFamily
+                font.pixelSize: 11
+                font.bold: true
+                font.letterSpacing: 1.0
+            }
+
             // Toggle 1: Enable Remote Play
             Rectangle {
                 width: parent.width
@@ -3631,6 +3641,16 @@ Item {
                     width: parent.width
                     height: 1
                     color: Theme.border
+                }
+
+                // Section: Customization
+                Text {
+                    text: qsTr("Customization")
+                    color: Theme.accent
+                    font.family: Theme.fontFamily
+                    font.pixelSize: 11
+                    font.bold: true
+                    font.letterSpacing: 1.0
                 }
 
                 // Section: Computers & Devices
