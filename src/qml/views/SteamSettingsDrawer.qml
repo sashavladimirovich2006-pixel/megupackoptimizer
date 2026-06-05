@@ -4401,18 +4401,23 @@ Item {
                         property int currentVal: optimizerBackend.steamFriendsSettings ? optimizerBackend.steamFriendsSettings["RemotePlay_FramerateLimit"] || 0 : 0
 
                         readonly property var options: [
-                            { id: 0, label: qsTr("Automatic") },
+                            { id: 0, label: qsTr("Automatic (recommended)") },
                             { id: 3000, label: "30 FPS" },
-                            { id: 5975, label: "60 FPS" },
+                            { id: 4975, label: "49.75 FPS" },
+                            { id: 5000, label: "50 FPS" },
+                            { id: 5975, label: "59.75 FPS" },
+                            { id: 6000, label: "60 FPS" },
                             { id: 9000, label: "90 FPS" },
-                            { id: 12000, label: "120 FPS" }
+                            { id: 12000, label: "120 FPS" },
+                            { id: 14400, label: "144 FPS" },
+                            { id: 24000, label: "240 FPS" }
                         ]
 
                         function getLabelForVal(v) {
                             for (var i = 0; i < options.length; i++) {
                                 if (options[i].id === v) return options[i].label;
                             }
-                            return qsTr("Automatic");
+                            return qsTr("Automatic (recommended)");
                         }
 
                         Text {
