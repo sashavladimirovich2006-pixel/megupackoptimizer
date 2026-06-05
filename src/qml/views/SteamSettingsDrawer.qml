@@ -6909,7 +6909,7 @@ Item {
             }
 
             Text {
-                text: qsTr("BROADCASTING")
+                text: qsTr("Broadcast customization")
                 color: Theme.textPrimary
                 font.family: Theme.fontFamily
                 font.pixelSize: 16
@@ -7777,6 +7777,81 @@ Item {
                     checked: optimizerBackend.steamFriendsSettings ? !!optimizerBackend.steamFriendsSettings["BroadcastShowDebugInfo"] : false
                     anchors.verticalCenter: parent.verticalCenter
                     onToggled: (isChecked) => { root.toggleSteamFriendsSetting("BroadcastShowDebugInfo", isChecked); }
+                }
+            }
+        }
+
+        // Bottom Optimization Recommendation Warning
+        Rectangle {
+            width: parent.width
+            height: optWarningRow.implicitHeight + 20
+            radius: Theme.radiusSmall
+            color: Qt.rgba(Theme.accent.r, Theme.accent.g, Theme.accent.b, 0.03)
+            border.color: Theme.border
+            border.width: 1
+            visible: optimizerBackend.steamOverlayActive
+
+            Row {
+                id: optWarningRow
+                anchors.fill: parent
+                anchors.margins: 10
+                spacing: 12
+
+                Item {
+                    width: 20
+                    height: 20
+                    anchors.verticalCenter: parent.verticalCenter
+                    Image {
+                        id: infoImg
+                        source: "qrc:/MeguPackOptimizer/src/resources/info.svg"
+                        anchors.fill: parent
+                        sourceSize.width: 20
+                        sourceSize.height: 20
+                        visible: false
+                    }
+                    ColorOverlay {
+                        anchors.fill: infoImg
+                        source: infoImg
+                        color: Theme.accent
+                    }
+                }
+
+                Text {
+                    text: qsTr("Recommended to turn off for optimization. To do this, turn off the Steam Overlay.")
+                    color: Theme.textSecondary
+                    font.family: Theme.fontFamily
+                    font.pixelSize: 11
+                    width: parent.width - 76
+                    wrapMode: Text.WordWrap
+                    anchors.verticalCenter: parent.verticalCenter
+                }
+
+                Item {
+                    width: 20
+                    height: 20
+                    anchors.verticalCenter: parent.verticalCenter
+                    Image {
+                        id: optEyeImg
+                        source: "qrc:/MeguPackOptimizer/src/resources/eye.svg"
+                        anchors.fill: parent
+                        sourceSize.width: 20
+                        sourceSize.height: 20
+                        visible: false
+                    }
+                    ColorOverlay {
+                        anchors.fill: optEyeImg
+                        source: optEyeImg
+                        color: optEyeMouse.containsMouse ? Theme.accent : Theme.textSecondary
+                    }
+                    MouseArea {
+                        id: optEyeMouse
+                        anchors.fill: parent
+                        hoverEnabled: true
+                        cursorShape: Qt.PointingHandCursor
+                        onClicked: {
+                            steamSettingsDrawer.subPage = "ingame"
+                        }
+                    }
                 }
             }
         }
