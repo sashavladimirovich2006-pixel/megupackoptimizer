@@ -4899,7 +4899,7 @@ Item {
                     height: 50
                     color: "transparent"
                     Text {
-                        text: qsTr("Overlay visibility")
+                        text: qsTr("Controller Overlay")
                         color: Theme.textPrimary
                         font.family: Theme.fontFamily
                         font.pixelSize: 12

@@ -6669,9 +6669,9 @@ Recommendation: If scans and repairs do not solve your system problems, we recom
             <translation>Пуск / Меню</translation>
         </message>
         <message>
-            <location filename="../src/qml/views/SteamSettingsDrawer.qml" line="4652" />
-            <source>Overlay visibility</source>
-            <translation>Видимість оверлея</translation>
+            <location filename="../src/qml/views/SteamSettingsDrawer.qml" line="4902" />
+            <source>Controller Overlay</source>
+            <translation>Оверлей контролера</translation>
         </message>
         <message>
             <location filename="../src/qml/views/SteamSettingsDrawer.qml" line="4674" />
