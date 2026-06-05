@@ -4510,10 +4510,10 @@ Item {
                         anchors.right: parent.right
                         anchors.verticalCenter: parent.verticalCenter
 
-                        property int currentVal: optimizerBackend.steamFriendsSettings ? optimizerBackend.steamFriendsSettings["RemotePlay_BandwidthLimit"] || 0 : 0
+                        property int currentVal: optimizerBackend.steamFriendsSettings ? (optimizerBackend.steamFriendsSettings["RemotePlay_BandwidthLimit"] !== undefined ? optimizerBackend.steamFriendsSettings["RemotePlay_BandwidthLimit"] : -1) : -1
 
                         readonly property var options: [
-                            { id: 0, label: qsTr("Automatic") },
+                            { id: -1, label: qsTr("Automatic") },
                             { id: 3000, label: "3 Mbps" },
                             { id: 5000, label: "5 Mbps" },
                             { id: 10000, label: "10 Mbps" },
@@ -4523,7 +4523,7 @@ Item {
                             { id: 30000, label: "30 Mbps" },
                             { id: 50000, label: "50 Mbps" },
                             { id: 75000, label: "75 Mbps" },
-                            { id: -1, label: qsTr("Unlimited") }
+                            { id: 0, label: qsTr("Unlimited") }
                         ]
 
                         function getLabelForVal(v) {

@@ -2566,9 +2566,8 @@ bool Optimizer::updateVdfFriendsSettings(const QString &filePath, const QString 
         if (settings.contains("RemotePlay_AudioVolume")) setOrUpdateFieldVarint(fields, 5, settings.value("RemotePlay_AudioVolume").toUInt());
         
         if (settings.contains("RemotePlay_BandwidthLimit")) {
-            quint64 limit = settings.value("RemotePlay_BandwidthLimit").toUInt();
-            if (limit == 0) removeField(fields, 6);
-            else setOrUpdateFieldVarint(fields, 6, limit);
+            qint64 limit = settings.value("RemotePlay_BandwidthLimit").toLongLong();
+            setOrUpdateFieldVarint(fields, 6, static_cast<quint64>(limit));
         }
         
         if (settings.contains("RemotePlay_Microphone")) setOrUpdateFieldVarint(fields, 15, settings.value("RemotePlay_Microphone").toUInt());
@@ -5962,7 +5961,7 @@ void Optimizer::loadSystemStates() {
     defaultFriendsSettings["RemotePlay_ResolutionHeight"] = 0;
     defaultFriendsSettings["RemotePlay_FramerateLimit"] = 0;
     defaultFriendsSettings["RemotePlay_AudioVolume"] = 100;
-    defaultFriendsSettings["RemotePlay_BandwidthLimit"] = 0;
+    defaultFriendsSettings["RemotePlay_BandwidthLimit"] = -1;
     defaultFriendsSettings["RemotePlay_Microphone"] = 0;
     defaultFriendsSettings["RemotePlay_AudioMode"] = 1;
     defaultFriendsSettings["RemotePlay_WindowedMode"] = false;
