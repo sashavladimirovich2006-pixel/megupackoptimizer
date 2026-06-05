@@ -254,7 +254,7 @@ Item {
                     implicitHeight: 120
                     category: "MOTHERBOARD"
                     value: optimizerBackend.motherboard
-                    subValue: qsTr("UEFI Boot Mode Enabled")
+                    subValue: optimizerBackend.motherboardSubValue
                     iconSource: "qrc:/MeguPackOptimizer/src/resources/motherboard.svg"
                     badgeColor: Qt.rgba(0.92, 0.11, 0.45, 0.1)
                     iconColor: "#FF1493"
@@ -285,6 +285,108 @@ Item {
                     iconSource: "qrc:/MeguPackOptimizer/src/resources/monitor.svg"
                     badgeColor: Qt.rgba(0.0, 0.8, 0.8, 0.1)
                     iconColor: "#00CED1"
+                }
+            }
+
+            // New Section Header: BIOS & Advanced Settings
+            RowLayout {
+                spacing: 8
+                Layout.fillWidth: true
+
+                Rectangle {
+                    width: 4
+                    height: 18
+                    radius: 2
+                    color: Theme.accent
+                }
+
+                Text {
+                    text: qsTr("BIOS & Advanced Settings")
+                    color: Theme.textPrimary
+                    font.family: Theme.fontFamily
+                    font.pixelSize: 15
+                    font.bold: true
+                    Layout.fillWidth: true
+                }
+            }
+
+            // Advanced BIOS & Telemetry Grid
+            GridLayout {
+                columns: mainScroll.width > 1200 ? 4 : (mainScroll.width > 800 ? 3 : 2)
+                rowSpacing: 16
+                columnSpacing: 16
+                Layout.fillWidth: true
+
+                // GPU Temp Card
+                SpecCard {
+                    Layout.fillWidth: true
+                    implicitHeight: 120
+                    category: qsTr("GPU TEMP")
+                    value: optimizerBackend.gpuTemp
+                    subValue: qsTr("Real-time GPU Telemetry")
+                    iconSource: "qrc:/MeguPackOptimizer/src/resources/settings.svg"
+                    badgeColor: root.getGpuColors(optimizerBackend.gpuName).badge
+                    iconColor: root.getGpuColors(optimizerBackend.gpuName).icon
+                }
+
+                // Resizable BAR Card
+                SpecCard {
+                    Layout.fillWidth: true
+                    implicitHeight: 120
+                    category: qsTr("RESIZABLE BAR")
+                    value: optimizerBackend.rebarStatus
+                    subValue: qsTr("PCIe Resizable BAR")
+                    iconSource: "qrc:/MeguPackOptimizer/src/resources/motherboard.svg"
+                    badgeColor: Qt.rgba(0.92, 0.11, 0.45, 0.1)
+                    iconColor: "#FF1493"
+                }
+
+                // Secure Boot Card
+                SpecCard {
+                    Layout.fillWidth: true
+                    implicitHeight: 120
+                    category: qsTr("SECURE BOOT")
+                    value: optimizerBackend.secureBoot
+                    subValue: qsTr("System Boot Security")
+                    iconSource: "qrc:/MeguPackOptimizer/src/resources/privacy.svg"
+                    badgeColor: Qt.rgba(0.0, 0.8, 0.0, 0.1)
+                    iconColor: "#00C853"
+                }
+
+                // TPM Status Card
+                SpecCard {
+                    Layout.fillWidth: true
+                    implicitHeight: 120
+                    category: qsTr("TPM")
+                    value: optimizerBackend.tpmStatus
+                    subValue: qsTr("Trusted Platform Module")
+                    iconSource: "qrc:/MeguPackOptimizer/src/resources/privacy.svg"
+                    badgeColor: Qt.rgba(0.0, 0.8, 0.0, 0.1)
+                    iconColor: "#00C853"
+                }
+
+                // HAGS Card
+                SpecCard {
+                    Layout.fillWidth: true
+                    implicitHeight: 120
+                    category: qsTr("HAGS")
+                    value: optimizerBackend.hagsStatus
+                    subValue: qsTr("Hardware GPU Scheduling")
+                    iconSource: "qrc:/MeguPackOptimizer/src/resources/settings.svg"
+                    badgeColor: Qt.rgba(0.6, 0.2, 0.8, 0.1)
+                    iconColor: "#9932CC"
+                }
+
+                // Memory Integrity Card
+                SpecCard {
+                    Layout.fillWidth: true
+                    implicitHeight: 120
+                    category: qsTr("MEMORY INTEGRITY")
+                    value: optimizerBackend.hvciStatus
+                    subValue: qsTr("VBS / HVCI Security")
+                    iconSource: "qrc:/MeguPackOptimizer/src/resources/privacy.svg"
+                    badgeColor: Qt.rgba(0.0, 0.47, 0.83, 0.1)
+                    iconColor: "#0078D4"
                 }
             }
         }

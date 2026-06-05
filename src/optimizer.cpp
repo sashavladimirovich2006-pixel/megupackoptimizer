@@ -1,6 +1,7 @@
 #include "optimizer.h"
 #include "logger.h"
 #include "settings.h"
+#include <QSettings>
 #include <vector>
 #include <string>
 #include <QUrl>
@@ -1846,6 +1847,13 @@ bool Optimizer::getVdfFriendsSettings(const QString &filePath, const QString &ac
         // Host settings (Advanced Host Options)
         QString serverConfig = getVdfBlockSetting(filePath, "streaming_v2", "ServerConfigEnabled");
         if (!serverConfig.isEmpty()) settings["Host_ServerConfigEnabled"] = (serverConfig != "0");
+
+        QString changeRes = getVdfBlockSetting(filePath, "streaming_v2", "ChangeDesktopResolution");
+        if (!changeRes.isEmpty()) settings["Host_ChangeDesktopResolution"] = (changeRes != "0");
+
+        // Client settings (Advanced Client Options)
+        QString clientConfigEnabled = getVdfBlockSetting(filePath, "streaming_v2", "ClientConfigEnabled");
+        if (!clientConfigEnabled.isEmpty()) settings["RemotePlay_ClientConfigEnabled"] = (clientConfigEnabled != "0");
         
         QString hostPlayAudio = getVdfBlockSetting(filePath, "streaming_v2", "HostPlayAudio");
         if (!hostPlayAudio.isEmpty()) settings["Host_PlayAudio"] = (hostPlayAudio != "0");
@@ -2219,6 +2227,8 @@ bool Optimizer::updateVdfFriendsSettings(const QString &filePath, const QString 
     incomingObj.remove("MusicVolume");
     incomingObj.remove("EnableStreaming");
     incomingObj.remove("Host_ServerConfigEnabled");
+    incomingObj.remove("Host_ChangeDesktopResolution");
+    incomingObj.remove("RemotePlay_ClientConfigEnabled");
     incomingObj.remove("Host_PlayAudio");
     incomingObj.remove("Host_CustomDisplayDevice");
     incomingObj.remove("Host_DisplayResolutionSetting");
@@ -2455,6 +2465,12 @@ bool Optimizer::updateVdfFriendsSettings(const QString &filePath, const QString 
     }
     if (settings.contains("Host_ServerConfigEnabled")) {
         updateVdfBlockSetting(filePath, "streaming_v2", "ServerConfigEnabled", settings.value("Host_ServerConfigEnabled").toBool() ? "1" : "0");
+    }
+    if (settings.contains("Host_ChangeDesktopResolution")) {
+        updateVdfBlockSetting(filePath, "streaming_v2", "ChangeDesktopResolution", settings.value("Host_ChangeDesktopResolution").toBool() ? "1" : "0");
+    }
+    if (settings.contains("RemotePlay_ClientConfigEnabled")) {
+        updateVdfBlockSetting(filePath, "streaming_v2", "ClientConfigEnabled", settings.value("RemotePlay_ClientConfigEnabled").toBool() ? "1" : "0");
     }
     if (settings.contains("Host_PlayAudio")) {
         updateVdfBlockSetting(filePath, "streaming_v2", "HostPlayAudio", settings.value("Host_PlayAudio").toBool() ? "1" : "0");
@@ -3034,12 +3050,17 @@ Optimizer::Optimizer(QObject *parent) : QObject(parent) {
     scanSteamInstalledGames();
 
     updateCpuAndRamLoad();
+    updateRealTimeTelemetry();
 
     QTimer *loadTimer = new QTimer(this);
     connect(loadTimer, &QTimer::timeout, this, [this]() {
         this->updateCpuAndRamLoad();
     });
     loadTimer->start(2000);
+
+    QTimer *telemetryTimer = new QTimer(this);
+    connect(telemetryTimer, &QTimer::timeout, this, &Optimizer::updateRealTimeTelemetry);
+    telemetryTimer->start(5000);
 }
 
 Optimizer::~Optimizer() {
@@ -3107,6 +3128,40 @@ void Optimizer::updateCpuAndRamLoad() {
         m_ramLoadPercent = ram;
         emit ramLoadPercentChanged(m_ramLoadPercent);
     }
+}
+
+void Optimizer::updateRealTimeTelemetry() {
+#ifdef Q_OS_WIN
+    QProcess *proc = new QProcess(this);
+    connect(proc, QOverload<int, QProcess::ExitStatus>::of(&QProcess::finished), this, [this, proc](int exitCode, QProcess::ExitStatus exitStatus) {
+        if (exitStatus == QProcess::NormalExit && exitCode == 0) {
+            QString out = QString::fromUtf8(proc->readAllStandardOutput()).trimmed();
+            if (!out.isEmpty()) {
+                QString newTemp = out + "°C";
+                if (m_gpuTemp != newTemp) {
+                    m_gpuTemp = newTemp;
+                    emit gpuTempChanged(m_gpuTemp);
+                }
+            }
+        } else {
+            if (m_gpuTemp != "N/A") {
+                m_gpuTemp = "N/A";
+                emit gpuTempChanged(m_gpuTemp);
+            }
+        }
+        proc->deleteLater();
+    });
+    proc->start("nvidia-smi", QStringList() << "--query-gpu=temperature.gpu" << "--format=csv,noheader,nounits");
+#else
+    // Simulation: generate a temperature around 45-55C
+    static int baseTemp = 48;
+    int offset = (rand() % 5) - 2; // -2 to +2
+    QString newTemp = QString::number(baseTemp + offset) + "°C";
+    if (m_gpuTemp != newTemp) {
+        m_gpuTemp = newTemp;
+        emit gpuTempChanged(m_gpuTemp);
+    }
+#endif
 }
 
 
@@ -5878,6 +5933,8 @@ void Optimizer::loadSystemStates() {
 
     // Remote Play defaults
     defaultFriendsSettings["Host_ServerConfigEnabled"] = false;
+    defaultFriendsSettings["Host_ChangeDesktopResolution"] = true;
+    defaultFriendsSettings["RemotePlay_ClientConfigEnabled"] = false;
     defaultFriendsSettings["Host_PlayAudio"] = true;
     defaultFriendsSettings["Host_CustomDisplayDevice"] = "";
     defaultFriendsSettings["Host_DisplayResolutionSetting"] = 0;
@@ -11808,6 +11865,91 @@ void Optimizer::refreshSystemInfo() {
         double totalGB = totalBytes.QuadPart / (1024.0 * 1024.0 * 1024.0);
         m_storage = QString("%1 GB Free / %2 GB Total").arg(QString::number(freeGB, 'f', 1)).arg(QString::number(totalGB, 'f', 1));
     }
+
+    // 8. Motherboard Boot Mode (UEFI/Legacy BIOS)
+    GetFirmwareEnvironmentVariableW(L"", L"{00000000-0000-0000-0000-000000000000}", NULL, 0);
+    if (GetLastError() == ERROR_INVALID_FUNCTION) {
+        m_motherboardSubValue = tr("Legacy BIOS Boot Mode");
+    } else {
+        m_motherboardSubValue = tr("UEFI Boot Mode Enabled");
+    }
+
+    // 9. Secure Boot Status
+    QSettings regSecureBoot("HKEY_LOCAL_MACHINE\\SYSTEM\\CurrentControlSet\\Control\\SecureBoot\\State", QSettings::NativeFormat);
+    int secureBootEnabled = regSecureBoot.value("UEFISecureBootEnabled", 0).toInt();
+    m_secureBoot = (secureBootEnabled == 1) ? tr("Enabled") : tr("Disabled");
+
+    // 10. HAGS Status
+    QSettings regHags("HKEY_LOCAL_MACHINE\\SYSTEM\\CurrentControlSet\\Control\\GraphicsDrivers", QSettings::NativeFormat);
+    int hwSchMode = regHags.value("HwSchMode", 1).toInt();
+    m_hagsStatus = (hwSchMode == 2) ? tr("Enabled") : tr("Disabled");
+
+    // 11. HVCI (Memory Integrity)
+    QSettings regHvci("HKEY_LOCAL_MACHINE\\SYSTEM\\CurrentControlSet\\Control\\DeviceGuard\\Scenarios\\HypervisorEnforcedCodeIntegrity", QSettings::NativeFormat);
+    int hvciEnabled = regHvci.value("Enabled", 0).toInt();
+    m_hvciStatus = (hvciEnabled == 1) ? tr("Enabled") : tr("Disabled");
+
+    // 12. TPM Status (TBS API)
+    QString tpm = tr("Disabled / Not Found");
+    HMODULE hTbs = LoadLibraryW(L"tbs.dll");
+    if (hTbs) {
+        typedef HRESULT (WINAPI *FN_Tbsi_GetDeviceInfo)(UINT32 Size, PVOID Info);
+        FN_Tbsi_GetDeviceInfo pGetDeviceInfo = (FN_Tbsi_GetDeviceInfo)GetProcAddress(hTbs, "Tbsi_GetDeviceInfo");
+        if (pGetDeviceInfo) {
+            struct TBS_DEVICE_INFO_1 {
+                UINT32 structVersion;
+                UINT32 tpmVersion;
+                UINT32 tpmInterfaceType;
+                UINT32 tpmImplVersion;
+            } info;
+            memset(&info, 0, sizeof(info));
+            info.structVersion = 1;
+            HRESULT hr = pGetDeviceInfo(sizeof(info), &info);
+            if (hr == S_OK) {
+                if (info.tpmVersion == 1) {
+                    tpm = tr("TPM 1.2 Active");
+                } else if (info.tpmVersion == 2) {
+                    tpm = tr("TPM 2.0 Active");
+                } else {
+                    tpm = tr("TPM Active (Unknown Version)");
+                }
+            }
+        }
+        FreeLibrary(hTbs);
+    }
+    m_tpmStatus = tpm;
+
+    // 13. ReBAR Status
+    QString rebar = tr("Disabled");
+    QProcess rebarProc;
+    rebarProc.start("nvidia-smi", QStringList() << "-q");
+    if (rebarProc.waitForFinished(2000)) {
+        QString out = QString::fromUtf8(rebarProc.readAllStandardOutput());
+        int idx = out.indexOf("BAR1 Memory Usage");
+        if (idx != -1) {
+            int totalIdx = out.indexOf("Total", idx);
+            if (totalIdx != -1) {
+                int colonIdx = out.indexOf(":", totalIdx);
+                int eolIdx = out.indexOf("\n", totalIdx);
+                if (colonIdx != -1 && eolIdx != -1 && colonIdx < eolIdx) {
+                    QString totalStr = out.mid(colonIdx + 1, eolIdx - colonIdx - 1).trimmed();
+                    QRegularExpression numRx("(\\d+)");
+                    QRegularExpressionMatch m = numRx.match(totalStr);
+                    if (m.hasMatch()) {
+                        int mib = m.captured(1).toInt();
+                        if (mib > 512) {
+                            rebar = tr("Enabled (%1)").arg(totalStr);
+                        } else {
+                            rebar = tr("Disabled (%1)").arg(totalStr);
+                        }
+                    } else {
+                        rebar = tr("Disabled (%1)").arg(totalStr);
+                    }
+                }
+            }
+        }
+    }
+    m_rebarStatus = rebar;
 #else
     m_osName = QSysInfo::prettyProductName();
     m_cpuName = "AMD Ryzen 5 5600X 6-Core Processor";
@@ -11816,6 +11958,13 @@ void Optimizer::refreshSystemInfo() {
     m_gpuName = "NVIDIA GeForce RTX 5070";
     m_motherboard = "ASUSTeK COMPUTER INC. TUF GAMING B550M-PLUS";
     m_storage = "120.0 GB Free / 250.0 GB Total";
+
+    m_motherboardSubValue = tr("UEFI Boot Mode Enabled");
+    m_secureBoot = tr("Enabled");
+    m_hagsStatus = tr("Enabled");
+    m_hvciStatus = tr("Disabled");
+    m_tpmStatus = tr("TPM 2.0 Active");
+    m_rebarStatus = tr("Enabled (8192 MiB)");
 #endif
 
     // 8. Display
@@ -11833,8 +11982,14 @@ void Optimizer::refreshSystemInfo() {
     emit ramSizeChanged(m_ramSize);
     emit gpuNameChanged(m_gpuName);
     emit motherboardChanged(m_motherboard);
+    emit motherboardSubValueChanged(m_motherboardSubValue);
     emit storageChanged(m_storage);
     emit displayChanged(m_display);
+    emit secureBootChanged(m_secureBoot);
+    emit tpmStatusChanged(m_tpmStatus);
+    emit hagsStatusChanged(m_hagsStatus);
+    emit hvciStatusChanged(m_hvciStatus);
+    emit rebarStatusChanged(m_rebarStatus);
 }
 
 void Optimizer::removeXboxEntirely() {

@@ -14,8 +14,15 @@ class Optimizer : public QObject {
     Q_PROPERTY(QString ramSize READ ramSize NOTIFY ramSizeChanged)
     Q_PROPERTY(QString gpuName READ gpuName NOTIFY gpuNameChanged)
     Q_PROPERTY(QString motherboard READ motherboard NOTIFY motherboardChanged)
+    Q_PROPERTY(QString motherboardSubValue READ motherboardSubValue NOTIFY motherboardSubValueChanged)
     Q_PROPERTY(QString storage READ storage NOTIFY storageChanged)
     Q_PROPERTY(QString display READ display NOTIFY displayChanged)
+    Q_PROPERTY(QString gpuTemp READ gpuTemp NOTIFY gpuTempChanged)
+    Q_PROPERTY(QString rebarStatus READ rebarStatus NOTIFY rebarStatusChanged)
+    Q_PROPERTY(QString secureBoot READ secureBoot NOTIFY secureBootChanged)
+    Q_PROPERTY(QString tpmStatus READ tpmStatus NOTIFY tpmStatusChanged)
+    Q_PROPERTY(QString hagsStatus READ hagsStatus NOTIFY hagsStatusChanged)
+    Q_PROPERTY(QString hvciStatus READ hvciStatus NOTIFY hvciStatusChanged)
     Q_PROPERTY(double cpuLoadPercent READ cpuLoadPercent NOTIFY cpuLoadPercentChanged)
     Q_PROPERTY(double ramLoadPercent READ ramLoadPercent NOTIFY ramLoadPercentChanged)
 
@@ -266,8 +273,15 @@ public:
     QString ramSize() const { return m_ramSize; }
     QString gpuName() const { return m_gpuName; }
     QString motherboard() const { return m_motherboard; }
+    QString motherboardSubValue() const { return m_motherboardSubValue; }
     QString storage() const { return m_storage; }
     QString display() const { return m_display; }
+    QString gpuTemp() const { return m_gpuTemp; }
+    QString rebarStatus() const { return m_rebarStatus; }
+    QString secureBoot() const { return m_secureBoot; }
+    QString tpmStatus() const { return m_tpmStatus; }
+    QString hagsStatus() const { return m_hagsStatus; }
+    QString hvciStatus() const { return m_hvciStatus; }
     double cpuLoadPercent() const { return m_cpuLoadPercent; }
     double ramLoadPercent() const { return m_ramLoadPercent; }
 
@@ -691,8 +705,15 @@ signals:
     void ramSizeChanged(const QString &val);
     void gpuNameChanged(const QString &val);
     void motherboardChanged(const QString &val);
+    void motherboardSubValueChanged(const QString &val);
     void storageChanged(const QString &val);
     void displayChanged(const QString &val);
+    void gpuTempChanged(const QString &val);
+    void rebarStatusChanged(const QString &val);
+    void secureBootChanged(const QString &val);
+    void tpmStatusChanged(const QString &val);
+    void hagsStatusChanged(const QString &val);
+    void hvciStatusChanged(const QString &val);
     void cpuLoadPercentChanged(double val);
     void ramLoadPercentChanged(double val);
 
@@ -942,11 +963,19 @@ private:
     QString m_ramSize;
     QString m_gpuName;
     QString m_motherboard;
+    QString m_motherboardSubValue;
     QString m_storage;
     QString m_display;
+    QString m_gpuTemp = "N/A";
+    QString m_rebarStatus = "Disabled";
+    QString m_secureBoot = "Disabled";
+    QString m_tpmStatus = "Disabled / Not Found";
+    QString m_hagsStatus = "Disabled";
+    QString m_hvciStatus = "Disabled";
     double m_cpuLoadPercent = 0.0;
     double m_ramLoadPercent = 0.0;
     void updateCpuAndRamLoad();
+    void updateRealTimeTelemetry();
     void updateMemoryDiagnosticStatus();
 #ifdef Q_OS_WIN
     void* m_prevIdleTime = nullptr;

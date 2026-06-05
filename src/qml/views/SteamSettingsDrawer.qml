@@ -3901,6 +3901,7 @@ Item {
                             text: qsTr("Clear")
                             width: 60
                             height: 32
+                            visible: !!(optimizerBackend.steamFriendsSettings && optimizerBackend.steamFriendsSettings["RemotePlay_PIN_enabled"])
                             onClicked: {
                                 root.toggleSteamFriendsSetting("RemotePlay_PIN", "");
                                 pinInput.text = "";
@@ -3924,6 +3925,50 @@ Item {
                     font.bold: true
                     font.letterSpacing: 1.0
                 }
+
+                // Switch: Enable Advanced Client Options (RemotePlay_ClientConfigEnabled)
+                Rectangle {
+                    width: parent.width
+                    height: 64
+                    color: "transparent"
+                    Row {
+                        anchors.fill: parent
+                        spacing: 12
+                        MeguSwitch {
+                            steamStyle: true
+                            checked: optimizerBackend.steamFriendsSettings ? !!optimizerBackend.steamFriendsSettings["RemotePlay_ClientConfigEnabled"] : false
+                            anchors.verticalCenter: parent.verticalCenter
+                            onToggled: (isChecked) => { root.toggleSteamFriendsSetting("RemotePlay_ClientConfigEnabled", isChecked); }
+                        }
+                        Column {
+                            anchors.verticalCenter: parent.verticalCenter
+                            spacing: 2
+                            width: parent.width - 50
+                            Text {
+                                text: qsTr("Enable Advanced Client Options")
+                                color: Theme.textPrimary
+                                font.family: Theme.fontFamily
+                                font.pixelSize: 12
+                                font.bold: true
+                            }
+                            Text {
+                                text: qsTr("To improve performance streaming a game running on another computer, try reducing your game's resolution or adjusting these settings.")
+                                color: Theme.textSecondary
+                                font.family: Theme.fontFamily
+                                font.pixelSize: 10
+                                width: parent.width
+                                wrapMode: Text.WordWrap
+                            }
+                        }
+                    }
+                }
+
+                Column {
+                    width: parent.width
+                    spacing: 16
+                    enabled: optimizerBackend.steamFriendsSettings ? !!optimizerBackend.steamFriendsSettings["RemotePlay_ClientConfigEnabled"] : false
+                    opacity: enabled ? 1.0 : 0.4
+                    Behavior on opacity { NumberAnimation { duration: Theme.animNormal } }
 
                 // Dropdown: Video Quality (Quality)
                 Rectangle {
@@ -4930,6 +4975,7 @@ Item {
                         }
                     }
                 }
+                }
 
                 Rectangle {
                     width: parent.width
@@ -4947,10 +4993,10 @@ Item {
                     font.letterSpacing: 1.0
                 }
 
-                // Switch: Change desktop resolution to match streaming client
+                // Switch: Enable Advanced Host Options (Host_ServerConfigEnabled)
                 Rectangle {
                     width: parent.width
-                    height: 50
+                    height: 64
                     color: "transparent"
                     Row {
                         anchors.fill: parent
@@ -4966,15 +5012,59 @@ Item {
                             spacing: 2
                             width: parent.width - 50
                             Text {
-                                text: qsTr("Change desktop resolution to match streaming client")
+                                text: qsTr("Enable Advanced Host Options")
                                 color: Theme.textPrimary
                                 font.family: Theme.fontFamily
                                 font.pixelSize: 12
                                 font.bold: true
                             }
+                            Text {
+                                text: qsTr("To improve performance streaming a game running on this computer, try reducing your game's resolution or adjusting these settings.")
+                                color: Theme.textSecondary
+                                font.family: Theme.fontFamily
+                                font.pixelSize: 10
+                                width: parent.width
+                                wrapMode: Text.WordWrap
+                            }
                         }
                     }
                 }
+
+                Column {
+                    width: parent.width
+                    spacing: 16
+                    enabled: optimizerBackend.steamFriendsSettings ? !!optimizerBackend.steamFriendsSettings["Host_ServerConfigEnabled"] : false
+                    opacity: enabled ? 1.0 : 0.4
+                    Behavior on opacity { NumberAnimation { duration: Theme.animNormal } }
+
+                    // Switch: Change desktop resolution to match streaming client (Host_ChangeDesktopResolution)
+                    Rectangle {
+                        width: parent.width
+                        height: 50
+                        color: "transparent"
+                        Row {
+                            anchors.fill: parent
+                            spacing: 12
+                            MeguSwitch {
+                                steamStyle: true
+                                checked: optimizerBackend.steamFriendsSettings ? !!optimizerBackend.steamFriendsSettings["Host_ChangeDesktopResolution"] : true
+                                anchors.verticalCenter: parent.verticalCenter
+                                onToggled: (isChecked) => { root.toggleSteamFriendsSetting("Host_ChangeDesktopResolution", isChecked); }
+                            }
+                            Column {
+                                anchors.verticalCenter: parent.verticalCenter
+                                spacing: 2
+                                width: parent.width - 50
+                                Text {
+                                    text: qsTr("Change desktop resolution to match streaming client")
+                                    color: Theme.textPrimary
+                                    font.family: Theme.fontFamily
+                                    font.pixelSize: 12
+                                    font.bold: true
+                                }
+                            }
+                        }
+                    }
 
                 // Switch: Play audio on host
                 Rectangle {
@@ -5302,6 +5392,7 @@ Item {
                             }
                         }
                     }
+                }
                 }
             }
         }
