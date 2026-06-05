@@ -6694,6 +6694,16 @@ Recommendation: If scans and repairs do not solve your system problems, we recom
             <translation>Кнопка Y</translation>
         </message>
         <message>
+            <location filename="../src/qml/views/SteamSettingsDrawer.qml" line="4919" />
+            <source>Microphone</source>
+            <translation>Мікрофон</translation>
+        </message>
+        <message>
+            <location filename="../src/qml/views/SteamSettingsDrawer.qml" line="4948" />
+            <source>Windowed Mode</source>
+            <translation>Віконний режим</translation>
+        </message>
+        <message>
             <location filename="../src/qml/views/SteamSettingsDrawer.qml" line="4674" />
             <location filename="../src/qml/views/SteamSettingsDrawer.qml" line="4682" />
             <source>Default Button</source>

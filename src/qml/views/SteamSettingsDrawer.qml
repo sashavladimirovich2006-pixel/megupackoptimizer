@@ -4916,7 +4916,7 @@ Item {
                             spacing: 2
                             width: parent.width - 50
                             Text {
-                                text: qsTr("Record my microphone")
+                                text: qsTr("Microphone")
                                 color: Theme.textPrimary
                                 font.family: Theme.fontFamily
                                 font.pixelSize: 12
@@ -4945,7 +4945,7 @@ Item {
                             spacing: 2
                             width: parent.width - 50
                             Text {
-                                text: qsTr("Play in window")
+                                text: qsTr("Windowed Mode")
                                 color: Theme.textPrimary
                                 font.family: Theme.fontFamily
                                 font.pixelSize: 12
