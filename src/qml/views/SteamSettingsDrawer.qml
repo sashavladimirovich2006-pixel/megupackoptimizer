@@ -4197,9 +4197,12 @@ Item {
 
                     readonly property var options: [
                         { id: 0, label: qsTr("No Limit") },
-                        { id: 1080, label: "1080p" },
-                        { id: 720, label: "720p" },
-                        { id: 480, label: "480p" }
+                        { id: 2160, label: qsTr("2160 pixels") },
+                        { id: 1440, label: qsTr("1440 pixels") },
+                        { id: 1200, label: qsTr("1200 pixels") },
+                        { id: 1080, label: qsTr("1080 pixels") },
+                        { id: 720, label: qsTr("720 pixels") },
+                        { id: 480, label: qsTr("480 pixels") }
                     ]
 
                     function getLabelForVal(v) {
