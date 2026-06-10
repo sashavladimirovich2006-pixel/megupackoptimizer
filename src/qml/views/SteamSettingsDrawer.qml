@@ -3988,16 +3988,6 @@ Item {
                 color: Theme.border
             }
 
-            // Section: Optimization
-            Text {
-                text: qsTr("Optimization")
-                color: Theme.accent
-                font.family: Theme.fontFamily
-                font.pixelSize: 11
-                font.bold: true
-                font.letterSpacing: 1.0
-            }
-
             // Section: Transmission Type
             Text {
                 text: qsTr("Voice Transmission Type")
@@ -4221,6 +4211,16 @@ Item {
                 width: parent.width
                 height: 1
                 color: Theme.border
+            }
+
+            // Section: Optimization
+            Text {
+                text: qsTr("Optimization")
+                color: Theme.accent
+                font.family: Theme.fontFamily
+                font.pixelSize: 11
+                font.bold: true
+                font.letterSpacing: 1.0
             }
 
             // Section: Transmission Threshold
