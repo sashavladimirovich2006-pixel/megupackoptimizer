@@ -649,6 +649,8 @@ public:
     Q_INVOKABLE void killSteam();
     Q_INVOKABLE void launchSteam();
     Q_INVOKABLE bool unpairSteamDevice(const QString &deviceId);
+    Q_INVOKABLE QString getDefaultGameRecordingFolder();
+    Q_INVOKABLE QString selectFolder(const QString &title);
     Q_INVOKABLE QVariantList getAudioInputDevices();
     Q_INVOKABLE QVariantList getAudioOutputDevices();
     Q_INVOKABLE double getMicrophonePeakLevel(const QString &deviceName);

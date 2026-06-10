@@ -57,6 +57,7 @@
 #include <mmdeviceapi.h>
 #include <endpointvolume.h>
 #include <functiondiscoverykeys_devpkey.h>
+#include <shobjidl.h>
 #endif
 
 namespace {
@@ -1815,6 +1816,46 @@ bool Optimizer::getVdfFriendsSettings(const QString &filePath, const QString &ac
     if (!recMode.isEmpty()) {
         settings["BackgroundRecordMode"] = recMode.toInt();
     }
+    QString maxFps = getVdfBlockSetting(filePath, "GameRecording", "MaxFPS");
+    if (!maxFps.isEmpty()) {
+        settings["GR_MaxFPS"] = maxFps.toInt();
+    }
+    QString maxVidHeight = getVdfBlockSetting(filePath, "GameRecording", "MaxVideoHeight");
+    if (!maxVidHeight.isEmpty()) {
+        settings["GR_MaxVideoHeight"] = maxVidHeight.toInt();
+    }
+    QString hwEnc = getVdfBlockSetting(filePath, "GameRecording", "EnableHardwareEncoding");
+    if (!hwEnc.isEmpty()) {
+        settings["GR_EnableHardwareEncoding"] = (hwEnc != "0");
+    }
+    QString hevc = getVdfBlockSetting(filePath, "GameRecording", "EnableHEVC");
+    if (!hevc.isEmpty()) {
+        settings["GR_EnableHEVC"] = (hevc != "0");
+    }
+    QString recMic = getVdfBlockSetting(filePath, "GameRecording", "RecordMicrophone");
+    if (!recMic.isEmpty()) {
+        settings["GR_RecordMicrophone"] = (recMic != "0");
+    }
+    QString audioSrc = getVdfBlockSetting(filePath, "GameRecording", "AudioSource");
+    if (!audioSrc.isEmpty()) {
+        settings["GR_AudioSource"] = audioSrc.toInt();
+    }
+    QString maxKeepMin = getVdfBlockSetting(filePath, "GameRecording", "MaxKeepMinutes");
+    if (!maxKeepMin.isEmpty()) {
+        settings["GR_MaxKeepMinutes"] = maxKeepMin.toInt();
+    }
+    QString vidQual = getVdfBlockSetting(filePath, "GameRecording", "VideoQuality");
+    if (!vidQual.isEmpty()) {
+        settings["GR_VideoQuality"] = vidQual.toInt();
+    }
+    QString recFolder = getVdfBlockSetting(filePath, "GameRecording", "RecordingFolder");
+    if (!recFolder.isEmpty()) {
+        settings["GR_RecordingFolder"] = recFolder;
+    }
+    QString clipSec = getVdfBlockSetting(filePath, "GameRecording", "InstantClipSeconds");
+    if (!clipSec.isEmpty()) {
+        settings["GR_InstantClipSeconds"] = clipSec.toInt();
+    }
 
     // 5. voice settings (always prioritize SteamVoiceSettings_<AccountId> JSON block)
     {
@@ -2596,6 +2637,36 @@ bool Optimizer::updateVdfFriendsSettings(const QString &filePath, const QString 
     }
     if (settings.contains("BackgroundRecordMode")) {
         updateVdfBlockSetting(filePath, "GameRecording", "BackgroundRecordMode", QString::number(settings.value("BackgroundRecordMode").toInt()));
+    }
+    if (settings.contains("GR_MaxFPS")) {
+        updateVdfBlockSetting(filePath, "GameRecording", "MaxFPS", QString::number(settings.value("GR_MaxFPS").toInt()));
+    }
+    if (settings.contains("GR_MaxVideoHeight")) {
+        updateVdfBlockSetting(filePath, "GameRecording", "MaxVideoHeight", QString::number(settings.value("GR_MaxVideoHeight").toInt()));
+    }
+    if (settings.contains("GR_EnableHardwareEncoding")) {
+        updateVdfBlockSetting(filePath, "GameRecording", "EnableHardwareEncoding", settings.value("GR_EnableHardwareEncoding").toBool() ? "1" : "0");
+    }
+    if (settings.contains("GR_EnableHEVC")) {
+        updateVdfBlockSetting(filePath, "GameRecording", "EnableHEVC", settings.value("GR_EnableHEVC").toBool() ? "1" : "0");
+    }
+    if (settings.contains("GR_RecordMicrophone")) {
+        updateVdfBlockSetting(filePath, "GameRecording", "RecordMicrophone", settings.value("GR_RecordMicrophone").toBool() ? "1" : "0");
+    }
+    if (settings.contains("GR_AudioSource")) {
+        updateVdfBlockSetting(filePath, "GameRecording", "AudioSource", QString::number(settings.value("GR_AudioSource").toInt()));
+    }
+    if (settings.contains("GR_MaxKeepMinutes")) {
+        updateVdfBlockSetting(filePath, "GameRecording", "MaxKeepMinutes", QString::number(settings.value("GR_MaxKeepMinutes").toInt()));
+    }
+    if (settings.contains("GR_VideoQuality")) {
+        updateVdfBlockSetting(filePath, "GameRecording", "VideoQuality", QString::number(settings.value("GR_VideoQuality").toInt()));
+    }
+    if (settings.contains("GR_RecordingFolder")) {
+        updateVdfBlockSetting(filePath, "GameRecording", "RecordingFolder", settings.value("GR_RecordingFolder").toString());
+    }
+    if (settings.contains("GR_InstantClipSeconds")) {
+        updateVdfBlockSetting(filePath, "GameRecording", "InstantClipSeconds", QString::number(settings.value("GR_InstantClipSeconds").toInt()));
     }
     if (settings.contains("EnableStreaming")) {
         updateVdfBlockSetting(filePath, "streaming_v2", "EnableStreaming", settings.value("EnableStreaming").toBool() ? "1" : "0");
@@ -6041,6 +6112,16 @@ void Optimizer::loadSystemStates() {
     defaultFriendsSettings["bScaleOverlayTextAndIcons"] = true;
     defaultFriendsSettings["bReduceMotion"] = false;
     defaultFriendsSettings["BackgroundRecordMode"] = 0;
+    defaultFriendsSettings["GR_MaxFPS"] = 60;
+    defaultFriendsSettings["GR_MaxVideoHeight"] = 0; // 0 = No Limit
+    defaultFriendsSettings["GR_EnableHardwareEncoding"] = true;
+    defaultFriendsSettings["GR_EnableHEVC"] = false;
+    defaultFriendsSettings["GR_RecordMicrophone"] = false;
+    defaultFriendsSettings["GR_AudioSource"] = 0; // 0 = Game Audio Only, 1 = All System
+    defaultFriendsSettings["GR_MaxKeepMinutes"] = 120;
+    defaultFriendsSettings["GR_VideoQuality"] = 1; // 0=Low, 1=High(Default)
+    defaultFriendsSettings["GR_RecordingFolder"] = "";
+    defaultFriendsSettings["GR_InstantClipSeconds"] = 30;
     defaultFriendsSettings["noiseGateLevel"] = 2;
     defaultFriendsSettings["echoCancellation"] = true;
     defaultFriendsSettings["noiseCancellation"] = true;
@@ -12942,6 +13023,60 @@ bool Optimizer::unpairSteamDevice(const QString &deviceId) {
     emit steamFriendsSettingsChanged(m_steamFriendsSettings);
     
     return true;
+}
+
+QString Optimizer::getDefaultGameRecordingFolder() {
+    QString path = steamPath();
+    if (path.isEmpty()) return "";
+    QString activeUserStr = getSteamActiveUserId();
+    if (activeUserStr.isEmpty() || activeUserStr == "0") {
+        activeUserStr = getActiveOrRecentUser(path);
+    }
+    if (activeUserStr.isEmpty()) return "";
+    return QDir::cleanPath(path + "/userdata/" + activeUserStr + "/gamerecordings");
+}
+
+QString Optimizer::selectFolder(const QString &title) {
+#ifdef Q_OS_WIN
+    bool coInit = false;
+    HRESULT hr = CoInitializeEx(NULL, COINIT_APARTMENTTHREADED | COINIT_DISABLE_OLE1DDE);
+    if (SUCCEEDED(hr)) {
+        coInit = true;
+    }
+    QString result = "";
+    IFileOpenDialog *pDlg = nullptr;
+    hr = CoCreateInstance(CLSID_FileOpenDialog, nullptr, CLSCTX_INPROC_SERVER, IID_PPV_ARGS(&pDlg));
+    if (SUCCEEDED(hr)) {
+        DWORD dwOptions;
+        if (SUCCEEDED(pDlg->GetOptions(&dwOptions))) {
+            pDlg->SetOptions(dwOptions | FOS_PICKFOLDERS);
+        }
+        if (!title.isEmpty()) {
+            pDlg->SetTitle(title.toStdWString().c_str());
+        }
+        hr = pDlg->Show(nullptr);
+        if (SUCCEEDED(hr)) {
+            IShellItem *pItem = nullptr;
+            hr = pDlg->GetResult(&pItem);
+            if (SUCCEEDED(hr)) {
+                PWSTR pszPath = nullptr;
+                hr = pItem->GetDisplayName(SIGDN_FILESYSPATH, &pszPath);
+                if (SUCCEEDED(hr)) {
+                    result = QString::fromWCharArray(pszPath);
+                    CoTaskMemFree(pszPath);
+                }
+                pItem->Release();
+            }
+        }
+        pDlg->Release();
+    }
+    if (coInit) {
+        CoUninitialize();
+    }
+    return result;
+#else
+    return "";
+#endif
 }
 
 static QString getSteamAudioSalt() {

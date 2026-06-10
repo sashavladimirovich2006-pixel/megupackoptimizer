@@ -3051,6 +3051,20 @@ Item {
 
         property int currentMode: (optimizerBackend.steamFriendsSettings && typeof optimizerBackend.steamFriendsSettings["BackgroundRecordMode"] !== "undefined") ? optimizerBackend.steamFriendsSettings["BackgroundRecordMode"] : 0
 
+        function getEstimatedDiskSpace(minutes, quality) {
+            var min = parseInt(minutes);
+            var qual = parseInt(quality);
+            if (qual === 0) { // Low
+                var lowVal = (min * 0.033).toFixed(1);
+                var highVal = (min * 0.1).toFixed(1);
+                return lowVal + " - " + highVal + " GB";
+            } else { // High
+                var lowVal = (min * 0.09).toFixed(1);
+                var highVal = (min * 0.285).toFixed(1);
+                return lowVal + " - " + highVal + " GB";
+            }
+        }
+
         Row {
             spacing: 10
             width: parent.width
@@ -3301,6 +3315,985 @@ Item {
                     hoverEnabled: true
                     cursorShape: Qt.PointingHandCursor
                     onClicked: { root.toggleSteamFriendsSetting("BackgroundRecordMode", 2); }
+                }
+            }
+        }
+
+        // Expanded Game Recording Settings (Visible if not Off)
+        Column {
+            width: parent.width
+            spacing: 16
+            visible: steamGameRecordingPage.currentMode !== 0
+
+            Rectangle {
+                width: parent.width
+                height: 1
+                color: Theme.border
+            }
+
+            // SECTION: Shortcut Keys
+            Text {
+                text: qsTr("Shortcut Keys")
+                color: Theme.accent
+                font.family: Theme.fontFamily
+                font.pixelSize: 11
+                font.bold: true
+                font.letterSpacing: 1.0
+            }
+
+            Rectangle {
+                width: parent.width
+                height: 32
+                color: "transparent"
+                Text {
+                    text: qsTr("Start/stop saving a clip")
+                    color: Theme.textPrimary
+                    font.family: Theme.fontFamily
+                    font.pixelSize: 12
+                    anchors.left: parent.left
+                    anchors.verticalCenter: parent.verticalCenter
+                }
+                Rectangle {
+                    width: 100
+                    height: 26
+                    radius: 4
+                    color: "#161616"
+                    border.color: Theme.border
+                    border.width: 1
+                    anchors.right: parent.right
+                    anchors.verticalCenter: parent.verticalCenter
+                    Text {
+                        text: "Ctrl+F11"
+                        color: Theme.textSecondary
+                        font.family: Theme.fontFamily
+                        font.pixelSize: 11
+                        font.bold: true
+                        anchors.centerIn: parent
+                    }
+                }
+            }
+
+            Rectangle {
+                width: parent.width
+                height: 32
+                color: "transparent"
+                Text {
+                    text: qsTr("Add a timeline marker")
+                    color: Theme.textPrimary
+                    font.family: Theme.fontFamily
+                    font.pixelSize: 12
+                    anchors.left: parent.left
+                    anchors.verticalCenter: parent.verticalCenter
+                }
+                Rectangle {
+                    width: 100
+                    height: 26
+                    radius: 4
+                    color: "#161616"
+                    border.color: Theme.border
+                    border.width: 1
+                    anchors.right: parent.right
+                    anchors.verticalCenter: parent.verticalCenter
+                    Text {
+                        text: "Ctrl+F12"
+                        color: Theme.textSecondary
+                        font.family: Theme.fontFamily
+                        font.pixelSize: 11
+                        font.bold: true
+                        anchors.centerIn: parent
+                    }
+                }
+            }
+
+            Rectangle {
+                width: parent.width
+                height: 32
+                color: "transparent"
+                Text {
+                    text: qsTr("Take a screenshot")
+                    color: Theme.textPrimary
+                    font.family: Theme.fontFamily
+                    font.pixelSize: 12
+                    anchors.left: parent.left
+                    anchors.verticalCenter: parent.verticalCenter
+                }
+                Rectangle {
+                    width: 100
+                    height: 26
+                    radius: 4
+                    color: "#161616"
+                    border.color: Theme.border
+                    border.width: 1
+                    anchors.right: parent.right
+                    anchors.verticalCenter: parent.verticalCenter
+                    Text {
+                        text: "F12"
+                        color: Theme.textSecondary
+                        font.family: Theme.fontFamily
+                        font.pixelSize: 11
+                        font.bold: true
+                        anchors.centerIn: parent
+                    }
+                }
+            }
+
+            // Save the last N seconds (Only visible in Background mode 1)
+            Rectangle {
+                width: parent.width
+                height: 36
+                color: "transparent"
+                visible: steamGameRecordingPage.currentMode === 1
+                
+                Row {
+                    spacing: 8
+                    anchors.left: parent.left
+                    anchors.verticalCenter: parent.verticalCenter
+                    Text {
+                        text: qsTr("Save the last")
+                        color: Theme.textPrimary
+                        font.family: Theme.fontFamily
+                        font.pixelSize: 12
+                        anchors.verticalCenter: parent.verticalCenter
+                    }
+                    Rectangle {
+                        width: 50
+                        height: 26
+                        color: "#10FFFFFF"
+                        border.color: Theme.border
+                        border.width: 1
+                        radius: 4
+                        anchors.verticalCenter: parent.verticalCenter
+                        TextInput {
+                            id: clipSecsInput
+                            anchors.fill: parent
+                            horizontalAlignment: TextInput.AlignHCenter
+                            verticalAlignment: TextInput.AlignVCenter
+                            color: Theme.textPrimary
+                            font.family: Theme.fontFamily
+                            font.pixelSize: 11
+                            font.bold: true
+                            selectByMouse: true
+                            inputMethodHints: Qt.ImhDigitsOnly
+                            text: (optimizerBackend.steamFriendsSettings && typeof optimizerBackend.steamFriendsSettings["GR_InstantClipSeconds"] !== "undefined") ? optimizerBackend.steamFriendsSettings["GR_InstantClipSeconds"].toString() : "30"
+                            validator: IntValidator { bottom: 5; top: 300; }
+                            onEditingFinished: {
+                                var val = parseInt(text);
+                                if (isNaN(val) || val < 5) {
+                                    val = 5;
+                                } else if (val > 300) {
+                                    val = 300;
+                                }
+                                text = val.toString();
+                                root.toggleSteamFriendsSetting("GR_InstantClipSeconds", val);
+                            }
+                        }
+                    }
+                    Text {
+                        text: qsTr("seconds...")
+                        color: Theme.textPrimary
+                        font.family: Theme.fontFamily
+                        font.pixelSize: 12
+                        anchors.verticalCenter: parent.verticalCenter
+                    }
+                }
+                
+                Rectangle {
+                    width: 100
+                    height: 26
+                    radius: 4
+                    color: "#161616"
+                    border.color: Theme.border
+                    border.width: 1
+                    anchors.right: parent.right
+                    anchors.verticalCenter: parent.verticalCenter
+                    Text {
+                        text: "Ctrl+Shift+F11"
+                        color: Theme.textSecondary
+                        font.family: Theme.fontFamily
+                        font.pixelSize: 10
+                        font.bold: true
+                        anchors.centerIn: parent
+                    }
+                }
+            }
+
+            Rectangle {
+                width: parent.width
+                height: 1
+                color: Theme.border
+            }
+
+            // SECTION: Game-specific Settings
+            Text {
+                text: qsTr("Game-specific Settings")
+                color: Theme.accent
+                font.family: Theme.fontFamily
+                font.pixelSize: 11
+                font.bold: true
+                font.letterSpacing: 1.0
+            }
+
+            Text {
+                text: "⚙ " + qsTr("All Games")
+                color: Theme.textPrimary
+                font.family: Theme.fontFamily
+                font.pixelSize: 12
+                font.bold: true
+            }
+
+            Row {
+                width: parent.width
+                spacing: 16
+
+                Column {
+                    width: (parent.width - 16) / 2
+                    spacing: 4
+                    Text {
+                        text: qsTr("Length")
+                        color: Theme.textSecondary
+                        font.family: Theme.fontFamily
+                        font.pixelSize: 10
+                    }
+                    Rectangle {
+                        id: lengthDropdown
+                        width: parent.width
+                        height: 32
+                        radius: 6
+                        color: "#05FFFFFF"
+                        border.color: Theme.border
+                        border.width: 1
+
+                        property int currentVal: (optimizerBackend.steamFriendsSettings && typeof optimizerBackend.steamFriendsSettings["GR_MaxKeepMinutes"] !== "undefined") ? optimizerBackend.steamFriendsSettings["GR_MaxKeepMinutes"] : 120
+
+                        readonly property var options: [
+                            { id: 15, label: qsTr("15 Minutes") },
+                            { id: 30, label: qsTr("30 Minutes") },
+                            { id: 60, label: qsTr("60 Minutes") },
+                            { id: 120, label: qsTr("120 Minutes") }
+                        ]
+
+                        function getLabelForVal(v) {
+                            for (var i = 0; i < options.length; i++) {
+                                if (options[i].id === v) return options[i].label;
+                            }
+                            return qsTr("120 Minutes");
+                        }
+
+                        Text {
+                            anchors.left: parent.left
+                            anchors.leftMargin: 12
+                            anchors.verticalCenter: parent.verticalCenter
+                            text: lengthDropdown.getLabelForVal(lengthDropdown.currentVal)
+                            color: Theme.textPrimary
+                            font.family: Theme.fontFamily
+                            font.pixelSize: 11
+                        }
+
+                        Text {
+                            anchors.right: parent.right
+                            anchors.rightMargin: 12
+                            anchors.verticalCenter: parent.verticalCenter
+                            text: "⌵"
+                            color: Theme.textSecondary
+                            font.family: Theme.fontFamily
+                            font.pixelSize: 12
+                            font.bold: true
+                        }
+
+                        MouseArea {
+                            anchors.fill: parent
+                            hoverEnabled: true
+                            cursorShape: Qt.PointingHandCursor
+                            onClicked: lengthMenu.open()
+                            onEntered: lengthDropdown.border.color = Theme.accent
+                            onExited: lengthDropdown.border.color = Theme.border
+                        }
+
+                        Menu {
+                            id: lengthMenu
+                            y: lengthDropdown.height + 4
+                            width: lengthDropdown.width
+                            background: Rectangle {
+                                color: Theme.sidebarBg
+                                border.color: Theme.border
+                                border.width: 1
+                                radius: 6
+                            }
+                            Instantiator {
+                                model: lengthDropdown.options
+                                onObjectAdded: (index, object) => lengthMenu.insertItem(index, object)
+                                onObjectRemoved: (index, object) => lengthMenu.removeItem(object)
+                                delegate: MenuItem {
+                                    text: modelData.label
+                                    width: lengthMenu.width
+                                    height: 32
+                                    contentItem: Text {
+                                        text: parent.text
+                                        font.family: Theme.fontFamily
+                                        font.pixelSize: 11
+                                        color: parent.highlighted ? Theme.accent : Theme.textPrimary
+                                        verticalAlignment: Text.AlignVCenter
+                                        leftPadding: 12
+                                    }
+                                    background: Rectangle {
+                                        color: parent.highlighted ? Qt.rgba(Theme.accent.r, Theme.accent.g, Theme.accent.b, 0.1) : "transparent"
+                                    }
+                                    onTriggered: {
+                                        root.toggleSteamFriendsSetting("GR_MaxKeepMinutes", modelData.id);
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+
+                Column {
+                    width: (parent.width - 16) / 2
+                    spacing: 4
+                    Text {
+                        text: qsTr("Quality")
+                        color: Theme.textSecondary
+                        font.family: Theme.fontFamily
+                        font.pixelSize: 10
+                    }
+                    Rectangle {
+                        id: qualityDropdown
+                        width: parent.width
+                        height: 32
+                        radius: 6
+                        color: "#05FFFFFF"
+                        border.color: Theme.border
+                        border.width: 1
+
+                        property int currentVal: (optimizerBackend.steamFriendsSettings && typeof optimizerBackend.steamFriendsSettings["GR_VideoQuality"] !== "undefined") ? optimizerBackend.steamFriendsSettings["GR_VideoQuality"] : 1
+
+                        readonly property var options: [
+                            { id: 0, label: qsTr("Low") },
+                            { id: 1, label: qsTr("High (Default)") }
+                        ]
+
+                        function getLabelForVal(v) {
+                            for (var i = 0; i < options.length; i++) {
+                                if (options[i].id === v) return options[i].label;
+                            }
+                            return qsTr("High (Default)");
+                        }
+
+                        Text {
+                            anchors.left: parent.left
+                            anchors.leftMargin: 12
+                            anchors.verticalCenter: parent.verticalCenter
+                            text: qualityDropdown.getLabelForVal(qualityDropdown.currentVal)
+                            color: Theme.textPrimary
+                            font.family: Theme.fontFamily
+                            font.pixelSize: 11
+                        }
+
+                        Text {
+                            anchors.right: parent.right
+                            anchors.rightMargin: 12
+                            anchors.verticalCenter: parent.verticalCenter
+                            text: "⌵"
+                            color: Theme.textSecondary
+                            font.family: Theme.fontFamily
+                            font.pixelSize: 12
+                            font.bold: true
+                        }
+
+                        MouseArea {
+                            anchors.fill: parent
+                            hoverEnabled: true
+                            cursorShape: Qt.PointingHandCursor
+                            onClicked: qualityMenu.open()
+                            onEntered: qualityDropdown.border.color = Theme.accent
+                            onExited: qualityDropdown.border.color = Theme.border
+                        }
+
+                        Menu {
+                            id: qualityMenu
+                            y: qualityDropdown.height + 4
+                            width: qualityDropdown.width
+                            background: Rectangle {
+                                color: Theme.sidebarBg
+                                border.color: Theme.border
+                                border.width: 1
+                                radius: 6
+                            }
+                            Instantiator {
+                                model: qualityDropdown.options
+                                onObjectAdded: (index, object) => qualityMenu.insertItem(index, object)
+                                onObjectRemoved: (index, object) => qualityMenu.removeItem(object)
+                                delegate: MenuItem {
+                                    text: modelData.label
+                                    width: qualityMenu.width
+                                    height: 32
+                                    contentItem: Text {
+                                        text: parent.text
+                                        font.family: Theme.fontFamily
+                                        font.pixelSize: 11
+                                        color: parent.highlighted ? Theme.accent : Theme.textPrimary
+                                        verticalAlignment: Text.AlignVCenter
+                                        leftPadding: 12
+                                    }
+                                    background: Rectangle {
+                                        color: parent.highlighted ? Qt.rgba(Theme.accent.r, Theme.accent.g, Theme.accent.b, 0.1) : "transparent"
+                                    }
+                                    onTriggered: {
+                                        root.toggleSteamFriendsSetting("GR_VideoQuality", modelData.id);
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+
+            Row {
+                spacing: 6
+                Text {
+                    text: qsTr("Estimated Disk Space:")
+                    color: Theme.textSecondary
+                    font.family: Theme.fontFamily
+                    font.pixelSize: 10
+                }
+                Text {
+                    text: steamGameRecordingPage.getEstimatedDiskSpace(lengthDropdown.currentVal, qualityDropdown.currentVal)
+                    color: Theme.textPrimary
+                    font.family: Theme.fontFamily
+                    font.pixelSize: 10
+                    font.bold: true
+                }
+            }
+
+            Rectangle {
+                width: parent.width
+                height: 1
+                color: Theme.border
+            }
+
+            // SECTION: Recordings Folder
+            Text {
+                text: qsTr("Recordings Folder")
+                color: Theme.accent
+                font.family: Theme.fontFamily
+                font.pixelSize: 11
+                font.bold: true
+                font.letterSpacing: 1.0
+            }
+
+            Rectangle {
+                width: parent.width
+                height: 36
+                color: "transparent"
+
+                Text {
+                    id: pathText
+                    anchors.left: parent.left
+                    anchors.right: folderButtons.left
+                    anchors.rightMargin: 12
+                    anchors.verticalCenter: parent.verticalCenter
+                    text: {
+                        var folder = (optimizerBackend.steamFriendsSettings && optimizerBackend.steamFriendsSettings["GR_RecordingFolder"]) ? optimizerBackend.steamFriendsSettings["GR_RecordingFolder"] : "";
+                        if (folder === "") {
+                            return optimizerBackend.getDefaultGameRecordingFolder();
+                        }
+                        return folder;
+                    }
+                    color: Theme.textSecondary
+                    font.family: Theme.fontFamily
+                    font.pixelSize: 11
+                    elide: Text.ElideMiddle
+                }
+
+                Row {
+                    id: folderButtons
+                    anchors.right: parent.right
+                    anchors.verticalCenter: parent.verticalCenter
+                    spacing: 8
+
+                    MeguButton {
+                        id: changeFolderBtn
+                        text: qsTr("Change folder")
+                        width: 110
+                        height: 28
+                        onClicked: {
+                            var newFolder = optimizerBackend.selectFolder(qsTr("Select Recordings Folder"));
+                            if (newFolder !== "") {
+                                root.toggleSteamFriendsSetting("GR_RecordingFolder", newFolder);
+                            }
+                        }
+                    }
+
+                    MeguButton {
+                        text: "×"
+                        width: 28
+                        height: 28
+                        visible: (optimizerBackend.steamFriendsSettings && optimizerBackend.steamFriendsSettings["GR_RecordingFolder"]) ? true : false
+                        onClicked: {
+                            root.toggleSteamFriendsSetting("GR_RecordingFolder", "");
+                        }
+                    }
+                }
+            }
+
+            Rectangle {
+                width: parent.width
+                height: 1
+                color: Theme.border
+            }
+
+            // SECTION: Video Recording
+            Text {
+                text: qsTr("Video Recording")
+                color: Theme.accent
+                font.family: Theme.fontFamily
+                font.pixelSize: 11
+                font.bold: true
+                font.letterSpacing: 1.0
+            }
+
+            // GPU hardware encoding
+            Rectangle {
+                width: parent.width
+                height: Math.max(40, vToggleCol_1.implicitHeight + 8)
+                color: "transparent"
+                Column {
+                    id: vToggleCol_1
+                    anchors.verticalCenter: parent.verticalCenter
+                    spacing: 2
+                    anchors.left: parent.left
+                    anchors.right: vSwitch_1.left
+                    anchors.rightMargin: 12
+                    Text {
+                        text: qsTr("Enable GPU hardware encoding")
+                        color: Theme.textPrimary
+                        font.family: Theme.fontFamily
+                        font.pixelSize: 12
+                        font.bold: true
+                    }
+                }
+                MeguSwitch {
+                    id: vSwitch_1
+                    anchors.right: parent.right
+                    steamStyle: true
+                    checked: (optimizerBackend.steamFriendsSettings && typeof optimizerBackend.steamFriendsSettings["GR_EnableHardwareEncoding"] !== "undefined") ? !!optimizerBackend.steamFriendsSettings["GR_EnableHardwareEncoding"] : true
+                    anchors.verticalCenter: parent.verticalCenter
+                    onToggled: (isChecked) => { root.toggleSteamFriendsSetting("GR_EnableHardwareEncoding", isChecked); }
+                }
+            }
+
+            // Enable HEVC (H.265)
+            Rectangle {
+                width: parent.width
+                height: Math.max(50, vToggleCol_2.implicitHeight + 8)
+                color: "transparent"
+                Column {
+                    id: vToggleCol_2
+                    anchors.verticalCenter: parent.verticalCenter
+                    spacing: 2
+                    anchors.left: parent.left
+                    anchors.right: vSwitch_2.left
+                    anchors.rightMargin: 12
+                    Text {
+                        text: qsTr("Enable HEVC (H.265) video codec")
+                        color: Theme.textPrimary
+                        font.family: Theme.fontFamily
+                        font.pixelSize: 12
+                        font.bold: true
+                    }
+                    Text {
+                        text: qsTr("Requires Steam Client GPU Acceleration")
+                        color: Theme.textSecondary
+                        font.family: Theme.fontFamily
+                        font.pixelSize: 10
+                        width: parent.width
+                        wrapMode: Text.WordWrap
+                    }
+                }
+                MeguSwitch {
+                    id: vSwitch_2
+                    anchors.right: parent.right
+                    steamStyle: true
+                    checked: (optimizerBackend.steamFriendsSettings && typeof optimizerBackend.steamFriendsSettings["GR_EnableHEVC"] !== "undefined") ? !!optimizerBackend.steamFriendsSettings["GR_EnableHEVC"] : false
+                    anchors.verticalCenter: parent.verticalCenter
+                    onToggled: (isChecked) => { root.toggleSteamFriendsSetting("GR_EnableHEVC", isChecked); }
+                }
+            }
+
+            // Maximum frame rate
+            Rectangle {
+                width: parent.width
+                height: 36
+                color: "transparent"
+                Text {
+                    text: qsTr("Maximum frame rate")
+                    color: Theme.textPrimary
+                    font.family: Theme.fontFamily
+                    font.pixelSize: 12
+                    font.bold: true
+                    anchors.left: parent.left
+                    anchors.verticalCenter: parent.verticalCenter
+                }
+                Rectangle {
+                    id: fpsDropdown
+                    width: 120
+                    height: 30
+                    radius: 6
+                    color: "#05FFFFFF"
+                    border.color: Theme.border
+                    border.width: 1
+                    anchors.right: parent.right
+                    anchors.verticalCenter: parent.verticalCenter
+
+                    property int currentVal: (optimizerBackend.steamFriendsSettings && typeof optimizerBackend.steamFriendsSettings["GR_MaxFPS"] !== "undefined") ? optimizerBackend.steamFriendsSettings["GR_MaxFPS"] : 60
+
+                    readonly property var options: [
+                        { id: 30, label: "30 FPS" },
+                        { id: 60, label: "60 FPS" }
+                    ]
+
+                    function getLabelForVal(v) {
+                        for (var i = 0; i < options.length; i++) {
+                            if (options[i].id === v) return options[i].label;
+                        }
+                        return "60 FPS";
+                    }
+
+                    Text {
+                        anchors.left: parent.left
+                        anchors.leftMargin: 12
+                        anchors.verticalCenter: parent.verticalCenter
+                        text: fpsDropdown.getLabelForVal(fpsDropdown.currentVal)
+                        color: Theme.textPrimary
+                        font.family: Theme.fontFamily
+                        font.pixelSize: 11
+                    }
+
+                    Text {
+                        anchors.right: parent.right
+                        anchors.rightMargin: 12
+                        anchors.verticalCenter: parent.verticalCenter
+                        text: "⌵"
+                        color: Theme.textSecondary
+                        font.family: Theme.fontFamily
+                        font.pixelSize: 12
+                        font.bold: true
+                    }
+
+                    MouseArea {
+                        anchors.fill: parent
+                        hoverEnabled: true
+                        cursorShape: Qt.PointingHandCursor
+                        onClicked: fpsMenu.open()
+                        onEntered: fpsDropdown.border.color = Theme.accent
+                        onExited: fpsDropdown.border.color = Theme.border
+                    }
+
+                    Menu {
+                        id: fpsMenu
+                        y: fpsDropdown.height + 4
+                        width: fpsDropdown.width
+                        background: Rectangle {
+                            color: Theme.sidebarBg
+                            border.color: Theme.border
+                            border.width: 1
+                            radius: 6
+                        }
+                        Instantiator {
+                            model: fpsDropdown.options
+                            onObjectAdded: (index, object) => fpsMenu.insertItem(index, object)
+                            onObjectRemoved: (index, object) => fpsMenu.removeItem(object)
+                            delegate: MenuItem {
+                                text: modelData.label
+                                width: fpsMenu.width
+                                height: 32
+                                contentItem: Text {
+                                    text: parent.text
+                                    font.family: Theme.fontFamily
+                                    font.pixelSize: 11
+                                    color: parent.highlighted ? Theme.accent : Theme.textPrimary
+                                    verticalAlignment: Text.AlignVCenter
+                                    leftPadding: 12
+                                }
+                                background: Rectangle {
+                                    color: parent.highlighted ? Qt.rgba(Theme.accent.r, Theme.accent.g, Theme.accent.b, 0.1) : "transparent"
+                                }
+                                onTriggered: {
+                                    root.toggleSteamFriendsSetting("GR_MaxFPS", modelData.id);
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+
+            // Maximum video height
+            Rectangle {
+                width: parent.width
+                height: 36
+                color: "transparent"
+                Text {
+                    text: qsTr("Maximum video height")
+                    color: Theme.textPrimary
+                    font.family: Theme.fontFamily
+                    font.pixelSize: 12
+                    font.bold: true
+                    anchors.left: parent.left
+                    anchors.verticalCenter: parent.verticalCenter
+                }
+                Rectangle {
+                    id: heightDropdown
+                    width: 120
+                    height: 30
+                    radius: 6
+                    color: "#05FFFFFF"
+                    border.color: Theme.border
+                    border.width: 1
+                    anchors.right: parent.right
+                    anchors.verticalCenter: parent.verticalCenter
+
+                    property int currentVal: (optimizerBackend.steamFriendsSettings && typeof optimizerBackend.steamFriendsSettings["GR_MaxVideoHeight"] !== "undefined") ? optimizerBackend.steamFriendsSettings["GR_MaxVideoHeight"] : 0
+
+                    readonly property var options: [
+                        { id: 0, label: qsTr("No Limit") },
+                        { id: 1080, label: "1080p" },
+                        { id: 720, label: "720p" },
+                        { id: 480, label: "480p" }
+                    ]
+
+                    function getLabelForVal(v) {
+                        for (var i = 0; i < options.length; i++) {
+                            if (options[i].id === v) return options[i].label;
+                        }
+                        return qsTr("No Limit");
+                    }
+
+                    Text {
+                        anchors.left: parent.left
+                        anchors.leftMargin: 12
+                        anchors.verticalCenter: parent.verticalCenter
+                        text: heightDropdown.getLabelForVal(heightDropdown.currentVal)
+                        color: Theme.textPrimary
+                        font.family: Theme.fontFamily
+                        font.pixelSize: 11
+                    }
+
+                    Text {
+                        anchors.right: parent.right
+                        anchors.rightMargin: 12
+                        anchors.verticalCenter: parent.verticalCenter
+                        text: "⌵"
+                        color: Theme.textSecondary
+                        font.family: Theme.fontFamily
+                        font.pixelSize: 12
+                        font.bold: true
+                    }
+
+                    MouseArea {
+                        anchors.fill: parent
+                        hoverEnabled: true
+                        cursorShape: Qt.PointingHandCursor
+                        onClicked: heightMenu.open()
+                        onEntered: heightDropdown.border.color = Theme.accent
+                        onExited: heightDropdown.border.color = Theme.border
+                    }
+
+                    Menu {
+                        id: heightMenu
+                        y: heightDropdown.height + 4
+                        width: heightDropdown.width
+                        background: Rectangle {
+                            color: Theme.sidebarBg
+                            border.color: Theme.border
+                            border.width: 1
+                            radius: 6
+                        }
+                        Instantiator {
+                            model: heightDropdown.options
+                            onObjectAdded: (index, object) => heightMenu.insertItem(index, object)
+                            onObjectRemoved: (index, object) => heightMenu.removeItem(object)
+                            delegate: MenuItem {
+                                text: modelData.label
+                                width: heightMenu.width
+                                height: 32
+                                contentItem: Text {
+                                    text: parent.text
+                                    font.family: Theme.fontFamily
+                                    font.pixelSize: 11
+                                    color: parent.highlighted ? Theme.accent : Theme.textPrimary
+                                    verticalAlignment: Text.AlignVCenter
+                                    leftPadding: 12
+                                }
+                                background: Rectangle {
+                                    color: parent.highlighted ? Qt.rgba(Theme.accent.r, Theme.accent.g, Theme.accent.b, 0.1) : "transparent"
+                                }
+                                onTriggered: {
+                                    root.toggleSteamFriendsSetting("GR_MaxVideoHeight", modelData.id);
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+
+            Rectangle {
+                width: parent.width
+                height: 1
+                color: Theme.border
+            }
+
+            // SECTION: Audio Recording
+            Text {
+                text: qsTr("Audio Recording")
+                color: Theme.accent
+                font.family: Theme.fontFamily
+                font.pixelSize: 11
+                font.bold: true
+                font.letterSpacing: 1.0
+            }
+
+            // Record Microphone
+            Rectangle {
+                width: parent.width
+                height: Math.max(50, aToggleCol_1.implicitHeight + 8)
+                color: "transparent"
+                Column {
+                    id: aToggleCol_1
+                    anchors.verticalCenter: parent.verticalCenter
+                    spacing: 2
+                    anchors.left: parent.left
+                    anchors.right: aSwitch_1.left
+                    anchors.rightMargin: 12
+                    Text {
+                        text: qsTr("Record Microphone")
+                        color: Theme.textPrimary
+                        font.family: Theme.fontFamily
+                        font.pixelSize: 12
+                        font.bold: true
+                    }
+                    Text {
+                        text: qsTr("Enables recording of your system microphone in clips")
+                        color: Theme.textSecondary
+                        font.family: Theme.fontFamily
+                        font.pixelSize: 10
+                        width: parent.width
+                        wrapMode: Text.WordWrap
+                    }
+                }
+                MeguSwitch {
+                    id: aSwitch_1
+                    anchors.right: parent.right
+                    steamStyle: true
+                    checked: (optimizerBackend.steamFriendsSettings && typeof optimizerBackend.steamFriendsSettings["GR_RecordMicrophone"] !== "undefined") ? !!optimizerBackend.steamFriendsSettings["GR_RecordMicrophone"] : false
+                    anchors.verticalCenter: parent.verticalCenter
+                    onToggled: (isChecked) => { root.toggleSteamFriendsSetting("GR_RecordMicrophone", isChecked); }
+                }
+            }
+
+            // Record Audio from
+            Rectangle {
+                width: parent.width
+                height: 36
+                color: "transparent"
+                Text {
+                    text: qsTr("Record Audio from...")
+                    color: Theme.textPrimary
+                    font.family: Theme.fontFamily
+                    font.pixelSize: 12
+                    font.bold: true
+                    anchors.left: parent.left
+                    anchors.verticalCenter: parent.verticalCenter
+                }
+                Rectangle {
+                    id: audioSrcDropdown
+                    width: 160
+                    height: 30
+                    radius: 6
+                    color: "#05FFFFFF"
+                    border.color: Theme.border
+                    border.width: 1
+                    anchors.right: parent.right
+                    anchors.verticalCenter: parent.verticalCenter
+
+                    property int currentVal: (optimizerBackend.steamFriendsSettings && typeof optimizerBackend.steamFriendsSettings["GR_AudioSource"] !== "undefined") ? optimizerBackend.steamFriendsSettings["GR_AudioSource"] : 0
+
+                    readonly property var options: [
+                        { id: 0, label: qsTr("Game Audio Only") },
+                        { id: 1, label: qsTr("All System Audio") }
+                    ]
+
+                    function getLabelForVal(v) {
+                        for (var i = 0; i < options.length; i++) {
+                            if (options[i].id === v) return options[i].label;
+                        }
+                        return qsTr("Game Audio Only");
+                    }
+
+                    Text {
+                        anchors.left: parent.left
+                        anchors.leftMargin: 12
+                        anchors.verticalCenter: parent.verticalCenter
+                        text: audioSrcDropdown.getLabelForVal(audioSrcDropdown.currentVal)
+                        color: Theme.textPrimary
+                        font.family: Theme.fontFamily
+                        font.pixelSize: 11
+                    }
+
+                    Text {
+                        anchors.right: parent.right
+                        anchors.rightMargin: 12
+                        anchors.verticalCenter: parent.verticalCenter
+                        text: "⌵"
+                        color: Theme.textSecondary
+                        font.family: Theme.fontFamily
+                        font.pixelSize: 12
+                        font.bold: true
+                    }
+
+                    MouseArea {
+                        anchors.fill: parent
+                        hoverEnabled: true
+                        cursorShape: Qt.PointingHandCursor
+                        onClicked: audioSrcMenu.open()
+                        onEntered: audioSrcDropdown.border.color = Theme.accent
+                        onExited: audioSrcDropdown.border.color = Theme.border
+                    }
+
+                    Menu {
+                        id: audioSrcMenu
+                        y: audioSrcDropdown.height + 4
+                        width: audioSrcDropdown.width
+                        background: Rectangle {
+                            color: Theme.sidebarBg
+                            border.color: Theme.border
+                            border.width: 1
+                            radius: 6
+                        }
+                        Instantiator {
+                            model: audioSrcDropdown.options
+                            onObjectAdded: (index, object) => audioSrcMenu.insertItem(index, object)
+                            onObjectRemoved: (index, object) => audioSrcMenu.removeItem(object)
+                            delegate: MenuItem {
+                                text: modelData.label
+                                width: audioSrcMenu.width
+                                height: 32
+                                contentItem: Text {
+                                    text: parent.text
+                                    font.family: Theme.fontFamily
+                                    font.pixelSize: 11
+                                    color: parent.highlighted ? Theme.accent : Theme.textPrimary
+                                    verticalAlignment: Text.AlignVCenter
+                                    leftPadding: 12
+                                }
+                                background: Rectangle {
+                                    color: parent.highlighted ? Qt.rgba(Theme.accent.r, Theme.accent.g, Theme.accent.b, 0.1) : "transparent"
+                                }
+                                onTriggered: {
+                                    root.toggleSteamFriendsSetting("GR_AudioSource", modelData.id);
+                                }
+                            }
+                        }
+                    }
                 }
             }
         }
