@@ -52,10 +52,14 @@
 #pragma comment(lib, "advapi32.lib")
 #pragma comment(lib, "shell32.lib")
 #pragma comment(lib, "user32.lib")
+#pragma comment(lib, "version.lib")
+#include <winver.h>
 #include <winevt.h>
 #pragma comment(lib, "wevtapi.lib")
 #include <mmdeviceapi.h>
 #include <endpointvolume.h>
+#include <audiopolicy.h>
+#include <psapi.h>
 #include <functiondiscoverykeys_devpkey.h>
 #include <shobjidl.h>
 #endif
@@ -1543,6 +1547,198 @@ namespace {
 
 } // namespace
 
+#ifdef Q_OS_WIN
+static QString findProcessPath(const QString &exeName) {
+    QString path = "";
+    HANDLE hSnap = CreateToolhelp32Snapshot(TH32CS_SNAPPROCESS, 0);
+    if (hSnap != INVALID_HANDLE_VALUE) {
+        PROCESSENTRY32W pe;
+        pe.dwSize = sizeof(pe);
+        if (Process32FirstW(hSnap, &pe)) {
+            do {
+                QString currentExe = QString::fromWCharArray(pe.szExeFile).toLower();
+                if (currentExe == exeName.toLower()) {
+                    HANDLE hProcess = OpenProcess(PROCESS_QUERY_LIMITED_INFORMATION, FALSE, pe.th32ProcessID);
+                    if (!hProcess) {
+                        hProcess = OpenProcess(PROCESS_QUERY_INFORMATION | PROCESS_VM_READ, FALSE, pe.th32ProcessID);
+                    }
+                    if (hProcess) {
+                        wchar_t szProcessPath[MAX_PATH] = L"";
+                        DWORD dwSize = MAX_PATH;
+                        if (QueryFullProcessImageNameW(hProcess, 0, szProcessPath, &dwSize)) {
+                            path = QString::fromWCharArray(szProcessPath);
+                        }
+                        CloseHandle(hProcess);
+                    }
+                    if (!path.isEmpty()) break;
+                }
+            } while (Process32NextW(hSnap, &pe));
+        }
+        CloseHandle(hSnap);
+    }
+    return path;
+}
+#else
+static QString findProcessPath(const QString &) { return ""; }
+#endif
+
+static QString getNativeFilePath(const QString &filePath);
+static QString getDefaultAudioEndpointId();
+
+static QString getAppPathFromRegistry(const QString &exeName) {
+    HKEY hKey;
+    QString keyPath = QString("SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\App Paths\\%1").arg(exeName);
+    
+    // Check HKCU first
+    if (RegOpenKeyExW(HKEY_CURRENT_USER, (LPCWSTR)keyPath.utf16(), 0, KEY_READ, &hKey) == ERROR_SUCCESS) {
+        wchar_t value[MAX_PATH] = {0};
+        DWORD size = sizeof(value);
+        if (RegQueryValueExW(hKey, L"", NULL, NULL, (LPBYTE)value, &size) == ERROR_SUCCESS) {
+            RegCloseKey(hKey);
+            QString path = QString::fromWCharArray(value);
+            if (path.startsWith('"') && path.endsWith('"')) {
+                path = path.mid(1, path.length() - 2);
+            }
+            if (QFile::exists(path)) return path;
+        }
+        RegCloseKey(hKey);
+    }
+    
+    // Check HKLM
+    if (RegOpenKeyExW(HKEY_LOCAL_MACHINE, (LPCWSTR)keyPath.utf16(), 0, KEY_READ, &hKey) == ERROR_SUCCESS) {
+        wchar_t value[MAX_PATH] = {0};
+        DWORD size = sizeof(value);
+        if (RegQueryValueExW(hKey, L"", NULL, NULL, (LPBYTE)value, &size) == ERROR_SUCCESS) {
+            RegCloseKey(hKey);
+            QString path = QString::fromWCharArray(value);
+            if (path.startsWith('"') && path.endsWith('"')) {
+                path = path.mid(1, path.length() - 2);
+            }
+            if (QFile::exists(path)) return path;
+        }
+        RegCloseKey(hKey);
+    }
+    return "";
+}
+
+static QString findPathInUninstallKey(HKEY hRoot, const QString &subkeyPath, const QString &exeName) {
+    HKEY hKey;
+    if (RegOpenKeyExW(hRoot, (LPCWSTR)subkeyPath.utf16(), 0, KEY_READ, &hKey) != ERROR_SUCCESS) {
+        return "";
+    }
+    
+    DWORD index = 0;
+    wchar_t subkeyName[256];
+    DWORD subkeyNameSize = 256;
+    
+    QString foundPath = "";
+    
+    while (RegEnumKeyExW(hKey, index, subkeyName, &subkeyNameSize, NULL, NULL, NULL, NULL) == ERROR_SUCCESS) {
+        HKEY hSubKey;
+        if (RegOpenKeyExW(hKey, subkeyName, 0, KEY_READ, &hSubKey) == ERROR_SUCCESS) {
+            wchar_t displayIcon[MAX_PATH] = {0};
+            DWORD sizeIcon = sizeof(displayIcon);
+            wchar_t installLoc[MAX_PATH] = {0};
+            DWORD sizeLoc = sizeof(installLoc);
+            wchar_t uninstallStr[MAX_PATH] = {0};
+            DWORD sizeUninst = sizeof(uninstallStr);
+            
+            RegQueryValueExW(hSubKey, L"DisplayIcon", NULL, NULL, (LPBYTE)displayIcon, &sizeIcon);
+            RegQueryValueExW(hSubKey, L"InstallLocation", NULL, NULL, (LPBYTE)installLoc, &sizeLoc);
+            RegQueryValueExW(hSubKey, L"UninstallString", NULL, NULL, (LPBYTE)uninstallStr, &sizeUninst);
+            
+            QString iconPath = QString::fromWCharArray(displayIcon);
+            QString locPath = QString::fromWCharArray(installLoc);
+            QString uninstStr = QString::fromWCharArray(uninstallStr);
+            
+            int commaIdx = iconPath.indexOf(',');
+            if (commaIdx != -1) iconPath = iconPath.left(commaIdx);
+            if (iconPath.startsWith('"') && iconPath.endsWith('"')) iconPath = iconPath.mid(1, iconPath.length() - 2);
+            
+            if (iconPath.toLower().endsWith(exeName.toLower()) && QFile::exists(iconPath)) {
+                foundPath = iconPath;
+            }
+            
+            if (foundPath.isEmpty() && !locPath.isEmpty()) {
+                if (locPath.startsWith('"') && locPath.endsWith('"')) locPath = locPath.mid(1, locPath.length() - 2);
+                QDir dir(locPath);
+                QString testPath = dir.filePath(exeName);
+                if (QFile::exists(testPath)) {
+                    foundPath = testPath;
+                }
+            }
+            
+            if (foundPath.isEmpty() && !uninstStr.isEmpty()) {
+                QString cleanUninst = uninstStr.trimmed();
+                QString dirPath = "";
+                if (cleanUninst.startsWith('"')) {
+                    int nextQuote = cleanUninst.indexOf('"', 1);
+                    if (nextQuote != -1) {
+                        dirPath = QFileInfo(cleanUninst.mid(1, nextQuote - 1)).absolutePath();
+                    }
+                } else {
+                    int spaceIdx = cleanUninst.indexOf(' ');
+                    if (spaceIdx != -1) {
+                        dirPath = QFileInfo(cleanUninst.left(spaceIdx)).absolutePath();
+                    } else {
+                        dirPath = QFileInfo(cleanUninst).absolutePath();
+                    }
+                }
+                if (!dirPath.isEmpty() && dirPath.length() > 3) {
+                    QDir dir(dirPath);
+                    QString testPath = dir.filePath(exeName);
+                    if (QFile::exists(testPath)) {
+                        foundPath = testPath;
+                    }
+                }
+            }
+            
+            RegCloseKey(hSubKey);
+        }
+        if (!foundPath.isEmpty()) break;
+        
+        index++;
+        subkeyNameSize = 256;
+    }
+    
+    RegCloseKey(hKey);
+    return foundPath;
+}
+
+static QString findPathInRegistry(const QString &exeName) {
+    QString appPath = getAppPathFromRegistry(exeName);
+    if (!appPath.isEmpty()) return appPath;
+    
+    QString p = findPathInUninstallKey(HKEY_CURRENT_USER, "SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Uninstall", exeName);
+    if (!p.isEmpty()) return p;
+    
+    p = findPathInUninstallKey(HKEY_LOCAL_MACHINE, "SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Uninstall", exeName);
+    if (!p.isEmpty()) return p;
+    
+    p = findPathInUninstallKey(HKEY_LOCAL_MACHINE, "SOFTWARE\\Wow6432Node\\Microsoft\\Windows\\CurrentVersion\\Uninstall", exeName);
+    if (!p.isEmpty()) return p;
+    
+    return "";
+}
+
+static QString mapLabelToExe(const QString &label) {
+    QString l = label.toLower();
+    if (l.contains("chrome")) return "chrome.exe";
+    if (l.contains("nvidia container") || l.contains("nvcontainer")) return "nvcontainer.exe";
+    if (l.contains("remote desktop") || l.contains("msrdc")) return "msrdc.exe";
+    if (l.contains("antigravity")) return "antigravity.exe";
+    if (l.contains("telegram")) return "telegram.exe";
+    if (l.contains("windows input experience") || l.contains("textinputhost")) return "textinputhost.exe";
+    if (l.contains("discord")) return "discord.exe";
+    if (l.contains("spotify")) return "spotify.exe";
+    if (l.contains("vlc")) return "vlc.exe";
+    if (l.contains("firefox") || l.contains("mozilla")) return "firefox.exe";
+    if (l.contains("edge") || l.contains("msedge")) return "msedge.exe";
+    if (l.contains("obs") || l.contains("open broadcaster")) return "obs64.exe";
+    if (l.contains("steam client webhelper") || l.contains("steamwebhelper")) return "steamwebhelper.exe";
+    if (l.endsWith(".exe")) return l;
+    return "";
+}
 
 
 bool Optimizer::getVdfFriendsSettings(const QString &filePath, const QString &accountId, QVariantMap &settings) {
@@ -1820,7 +2016,7 @@ bool Optimizer::getVdfFriendsSettings(const QString &filePath, const QString &ac
     if (!maxFps.isEmpty()) {
         settings["GR_MaxFPS"] = maxFps.toInt();
     }
-    QString maxVidHeight = getVdfBlockSetting(filePath, "GameRecording", "MaxVideoHeight");
+    QString maxVidHeight = getVdfBlockSetting(filePath, "GameRecording", "VideoMaxHeight");
     if (!maxVidHeight.isEmpty()) {
         settings["GR_MaxVideoHeight"] = maxVidHeight.toInt();
     }
@@ -1832,23 +2028,43 @@ bool Optimizer::getVdfFriendsSettings(const QString &filePath, const QString &ac
     if (!hevc.isEmpty()) {
         settings["GR_EnableHEVC"] = (hevc != "0");
     }
-    QString recMic = getVdfBlockSetting(filePath, "GameRecording", "RecordMicrophone");
+    QString recMic = getVdfBlockSetting(filePath, "GameRecording", "Audio_Mic");
     if (!recMic.isEmpty()) {
         settings["GR_RecordMicrophone"] = (recMic != "0");
     }
+    QString forceMicMono = getVdfBlockSetting(filePath, "GameRecording", "ForceMicMono");
+    if (!forceMicMono.isEmpty()) {
+        settings["GR_ForceMicMono"] = (forceMicMono != "0");
+    }
+    QString agc = getVdfBlockSetting(filePath, "GameRecording", "AutomaticGainControl");
+    if (!agc.isEmpty()) {
+        settings["GR_AutomaticGainControl"] = (agc != "0");
+    }
     QString audioSrc = getVdfBlockSetting(filePath, "GameRecording", "AudioSource");
+    if (audioSrc.isEmpty()) {
+        audioSrc = getVdfBlockSetting(filePath, "GameRecording", "Recording_Audio_Option");
+    }
     if (!audioSrc.isEmpty()) {
         settings["GR_AudioSource"] = audioSrc.toInt();
     }
-    QString maxKeepMin = getVdfBlockSetting(filePath, "GameRecording", "MaxKeepMinutes");
+    QString maxKeepMin = getVdfBlockSetting(filePath, "GameRecording", "BackgroundRecordMaxKeep");
     if (!maxKeepMin.isEmpty()) {
-        settings["GR_MaxKeepMinutes"] = maxKeepMin.toInt();
+        if (maxKeepMin == "infinite") {
+            settings["GR_MaxKeepMinutes"] = -1;
+        } else if (maxKeepMin == "disabled") {
+            settings["GR_MaxKeepMinutes"] = 0;
+        } else {
+            settings["GR_MaxKeepMinutes"] = maxKeepMin.toInt();
+        }
     }
-    QString vidQual = getVdfBlockSetting(filePath, "GameRecording", "VideoQuality");
+    QString vidQual = getVdfBlockSetting(filePath, "GameRecording", "VideoBitRate");
     if (!vidQual.isEmpty()) {
-        settings["GR_VideoQuality"] = vidQual.toInt();
+        if (vidQual == "preset_low") settings["GR_VideoQuality"] = 0;
+        else if (vidQual == "preset_medium") settings["GR_VideoQuality"] = 1;
+        else if (vidQual == "preset_default") settings["GR_VideoQuality"] = 2;
+        else if (vidQual == "preset_ultra") settings["GR_VideoQuality"] = 3;
     }
-    QString recFolder = getVdfBlockSetting(filePath, "GameRecording", "RecordingFolder");
+    QString recFolder = getVdfBlockSetting(filePath, "GameRecording", "BackgroundRecordPath");
     if (!recFolder.isEmpty()) {
         settings["GR_RecordingFolder"] = recFolder;
     }
@@ -2285,6 +2501,115 @@ bool Optimizer::getVdfFriendsSettings(const QString &filePath, const QString &ac
         }
     }
 
+    // If settings already has GR_AudioCaptureApps (from FriendsUIWebSettings), merge with ExtraAudioSessions
+    QVariantList existingApps = settings.value("GR_AudioCaptureApps").toList();
+    // Load ExtraAudioSessions from GameRecording block if present in localconfig.vdf
+    int easStart, easEnd;
+    if (getPathBodyRange(content, {"UserLocalConfigStore", "GameRecording", "ExtraAudioSessions"}, easStart, easEnd)) {
+        QString easBody = content.mid(easStart, easEnd - easStart);
+        QVariantList appsList;
+        QRegularExpression blockRegex("\"\\d+\"\\s*\\{([^\\}]*)\\}");
+        QRegularExpressionMatchIterator it = blockRegex.globalMatch(easBody);
+        while (it.hasNext()) {
+            QRegularExpressionMatch match = it.next();
+            QString blockContent = match.captured(1);
+            QRegularExpression nameRegex("\"name\"\\s*\"([^\"]*)\"", QRegularExpression::CaseInsensitiveOption);
+            QRegularExpression labelRegex("\"label\"\\s*\"([^\"]*)\"", QRegularExpression::CaseInsensitiveOption);
+            QRegularExpressionMatch nameMatch = nameRegex.match(blockContent);
+            QRegularExpressionMatch labelMatch = labelRegex.match(blockContent);
+            if (nameMatch.hasMatch() && labelMatch.hasMatch()) {
+                QString nameVal = nameMatch.captured(1);
+                nameVal.replace(QLatin1String("\\\\"), QLatin1String("\\"));
+                QString labelVal = labelMatch.captured(1);
+                labelVal.replace(QLatin1String("\\\\"), QLatin1String("\\"));
+                
+                // Extract exe name from session identifier
+                QString exeName = "";
+                int pipeIdx = nameVal.indexOf('|');
+                if (pipeIdx != -1) {
+                    int percentIdx = nameVal.indexOf("%b", pipeIdx);
+                    QString pathVal;
+                    if (percentIdx != -1) {
+                        pathVal = nameVal.mid(pipeIdx + 1, percentIdx - pipeIdx - 1);
+                    } else {
+                        pathVal = nameVal.mid(pipeIdx + 1);
+                    }
+                    int lastSlash = pathVal.lastIndexOf('\\');
+                    if (lastSlash == -1) lastSlash = pathVal.lastIndexOf('/');
+                    if (lastSlash != -1) exeName = pathVal.mid(lastSlash + 1).toLower();
+                    else exeName = pathVal.toLower();
+                }
+                
+                if (exeName.isEmpty()) {
+                    exeName = mapLabelToExe(labelVal);
+                    if (exeName.isEmpty() && !labelVal.isEmpty()) {
+                        QString cleanLabel = labelVal.toLower();
+                        if (cleanLabel.endsWith(".exe")) {
+                            exeName = cleanLabel;
+                        } else {
+                            exeName = cleanLabel.replace(" ", "").replace("_", "").replace("-", "") + ".exe";
+                        }
+                    }
+                }
+                
+                QVariantMap appMap;
+                appMap["name"] = nameVal;
+                appMap["label"] = labelVal;
+                appMap["exe"] = exeName;
+                appMap["fromVdf"] = true;
+                appsList.append(appMap);
+            }
+        }
+        
+        // Merge: add all from appsList, and add any from existingApps that aren't in appsList (match by exe)
+        QVariantList mergedList = appsList;
+        for (int i = 0; i < existingApps.size(); ++i) {
+            QVariantMap extApp = existingApps[i].toMap();
+            QString extExe = extApp.value("exe").toString().toLower();
+            if (extExe.isEmpty()) {
+                extExe = existingApps[i].toString().toLower();
+                extApp["exe"] = extExe;
+                extApp["label"] = extExe;
+                extApp["name"] = "";
+            }
+            
+            bool found = false;
+            for (int j = 0; j < appsList.size(); ++j) {
+                if (appsList[j].toMap().value("exe").toString().toLower() == extExe) {
+                    found = true;
+                    break;
+                }
+            }
+            if (!found && !extExe.isEmpty()) {
+                mergedList.append(extApp);
+            }
+        }
+        
+        if (!mergedList.isEmpty()) {
+            settings["GR_AudioCaptureApps"] = mergedList;
+        }
+    } else {
+        // If ExtraAudioSessions is missing, format raw strings to maps
+        QVariantList formattedList;
+        for (int i = 0; i < existingApps.size(); ++i) {
+            QVariantMap extApp;
+            if (existingApps[i].userType() == QMetaType::QVariantMap) {
+                extApp = existingApps[i].toMap();
+            } else {
+                QString extExe = existingApps[i].toString().toLower();
+                extApp["exe"] = extExe;
+                extApp["label"] = extExe;
+                extApp["name"] = "";
+            }
+            if (!extApp.value("exe").toString().isEmpty()) {
+                formattedList.append(extApp);
+            }
+        }
+        if (!formattedList.isEmpty()) {
+            settings["GR_AudioCaptureApps"] = formattedList;
+        }
+    }
+
     return true;
 }
 
@@ -2318,6 +2643,7 @@ bool Optimizer::updateVdfFriendsSettings(const QString &filePath, const QString 
         QJsonDocument doc = QJsonDocument::fromJson(clean.toUtf8());
         if (doc.isObject()) {
             friendsObj = doc.object();
+            friendsObj.remove("GR_AudioCaptureApps");
         }
     }
     
@@ -2398,6 +2724,7 @@ bool Optimizer::updateVdfFriendsSettings(const QString &filePath, const QString 
     incomingObj.remove("BroadcastOutputWidth");
     incomingObj.remove("BroadcastOutputHeight");
     incomingObj.remove("BroadcastShowReminder");
+    incomingObj.remove("GR_AudioCaptureApps");
     
     for (auto it = incomingObj.constBegin(); it != incomingObj.constEnd(); ++it) {
         friendsObj[it.key()] = it.value();
@@ -2499,6 +2826,200 @@ bool Optimizer::updateVdfFriendsSettings(const QString &filePath, const QString 
         QString insertStr = QString("\t\t\"%1\"\t\t\"%2\"\n").arg(voiceKey, escapedVoiceJson);
         content.insert(end, insertStr);
         end += insertStr.length();
+    }
+
+    // Write ExtraAudioSessions block for Game Recording if present in settings
+    // Write ExtraAudioSessions block for Game Recording if present in settings
+    if (settings.contains("GR_AudioCaptureApps")) {
+        QVariantList rawApps = settings.value("GR_AudioCaptureApps").toList();
+        QVariantList apps;
+        for (int i = 0; i < rawApps.size(); ++i) {
+            QVariantMap app;
+            if (rawApps[i].userType() == QMetaType::QVariantMap) {
+                app = rawApps[i].toMap();
+            } else {
+                QString exeName = rawApps[i].toString();
+                app["exe"] = exeName;
+                app["label"] = exeName;
+                app["name"] = "";
+            }
+            
+            QString name = app.value("name").toString();
+            QString exeName = app.value("exe").toString().toLower();
+            QString label = app.value("label").toString();
+            
+            if (label.isEmpty() && !exeName.isEmpty()) {
+                label = exeName;
+                label.replace(".exe", "");
+                if (label.length() > 0) {
+                    label[0] = label[0].toUpper();
+                }
+                app["label"] = label;
+            }
+            
+            bool fromVdf = app.value("fromVdf").toBool();
+            bool needsRegenerate = false;
+            if (name.isEmpty()) {
+                needsRegenerate = true;
+            } else {
+                int pipeIdx = name.indexOf('|');
+                if (pipeIdx == -1 || pipeIdx == name.length() - 1) {
+                    needsRegenerate = true;
+                }
+            }
+            
+            Logger::log(QString("updateVdfFriendsSettings: app=%1, exe=%2, fromVdf=%3, needsRegenerate=%4, origName=%5")
+                        .arg(label, exeName, QString::number(fromVdf), QString::number(needsRegenerate), name), "DEBUG");
+            
+            if (needsRegenerate && !exeName.isEmpty()) {
+                QString fullPath = findProcessPath(exeName);
+                if (fullPath.isEmpty()) {
+                    fullPath = findPathInRegistry(exeName);
+                }
+                if (fullPath.isEmpty()) {
+                    QString programFiles = QString::fromLocal8Bit(qgetenv("ProgramFiles"));
+                    QString programFilesX86 = QString::fromLocal8Bit(qgetenv("ProgramFiles(x86)"));
+                    QString localAppData = QString::fromLocal8Bit(qgetenv("LOCALAPPDATA"));
+                    
+                    QStringList checkPaths;
+                    if (exeName == "chrome.exe") {
+                        checkPaths << QString("%1/Google/Chrome/Application/chrome.exe").arg(programFiles)
+                                   << QString("%1/Google/Chrome/Application/chrome.exe").arg(programFilesX86);
+                    } else if (exeName == "discord.exe") {
+                        QDir discordDir(localAppData + "/Discord");
+                        if (discordDir.exists()) {
+                            QStringList subdirs = discordDir.entryList(QDir::Dirs | QDir::NoDotAndDotDot);
+                            for (const QString &sub : subdirs) {
+                                if (sub.startsWith("app-")) {
+                                    checkPaths << QString("%1/Discord/%2/discord.exe").arg(localAppData, sub);
+                                }
+                            }
+                        }
+                    } else if (exeName == "spotify.exe") {
+                        checkPaths << QString("%1/Spotify/spotify.exe").arg(localAppData)
+                                   << QString("%1/Spotify/spotify.exe").arg(programFiles);
+                    } else if (exeName == "vlc.exe") {
+                        checkPaths << QString("%1/VideoLAN/VLC/vlc.exe").arg(programFiles)
+                                   << QString("%1/VideoLAN/VLC/vlc.exe").arg(programFilesX86);
+                    } else if (exeName == "firefox.exe") {
+                        checkPaths << QString("%1/Mozilla Firefox/firefox.exe").arg(programFiles)
+                                   << QString("%1/Mozilla Firefox/firefox.exe").arg(programFilesX86);
+                    } else if (exeName == "msedge.exe") {
+                        checkPaths << QString("%1/Microsoft/Edge/Application/msedge.exe").arg(programFiles)
+                                   << QString("%1/Microsoft/Edge/Application/msedge.exe").arg(programFilesX86);
+                    } else if (exeName == "obs64.exe" || exeName == "obs.exe") {
+                        checkPaths << QString("%1/obs-studio/bin/64bit/obs64.exe").arg(programFiles)
+                                   << QString("%1/obs-studio/bin/64bit/obs.exe").arg(programFiles);
+                    } else if (exeName == "telegram.exe") {
+                        checkPaths << QString("%1/Telegram Desktop/Telegram.exe").arg(localAppData)
+                                   << QString("%1/Telegram Desktop/Telegram.exe").arg(programFiles);
+                    } else if (exeName == "textinputhost.exe") {
+                        QDir sysApps("C:/Windows/SystemApps");
+                        if (sysApps.exists()) {
+                            QStringList subdirs = sysApps.entryList(QStringList() << "MicrosoftWindows.Client.CBS_*", QDir::Dirs);
+                            for (const QString &sub : subdirs) {
+                                QString testPath = QString("C:/Windows/SystemApps/%1/TextInputHost.exe").arg(sub);
+                                if (QFile::exists(testPath)) {
+                                    checkPaths << testPath;
+                                    break;
+                                }
+                            }
+                        }
+                    } else if (exeName == "antigravity.exe") {
+                        checkPaths << "C:/Programs/antigravity/Antigravity.exe"
+                                   << "D:/Programs/antigravity/Antigravity.exe";
+                    } else if (exeName == "nvcontainer.exe") {
+                        checkPaths << QString("%1/NVIDIA Corporation/NvContainer/nvcontainer.exe").arg(programFiles);
+                    } else if (exeName == "msrdc.exe") {
+                        checkPaths << QString("%1/WSL/msrdc.exe").arg(programFiles)
+                                   << QString("%1/Remote Desktop/msrdc.exe").arg(programFiles)
+                                   << QString("%1/Remote Desktop/msrdc.exe").arg(programFilesX86);
+                    }
+                    
+                    for (const QString &p : checkPaths) {
+                        if (QFile::exists(p)) {
+                            fullPath = QDir::toNativeSeparators(p);
+                            break;
+                        }
+                    }
+                }
+                
+                Logger::log(QString("updateVdfFriendsSettings: Path resolved for %1 -> %2").arg(exeName, fullPath), "DEBUG");
+                
+                if (!fullPath.isEmpty()) {
+                    QString devId = "";
+                    int pipeIdx = name.indexOf('|');
+                    if (pipeIdx != -1) {
+                        devId = name.left(pipeIdx);
+                    }
+                    QString defaultDeviceId = getDefaultAudioEndpointId();
+                    if (defaultDeviceId.isEmpty()) {
+                        defaultDeviceId = devId;
+                    }
+                    
+                    Logger::log(QString("updateVdfFriendsSettings: defaultDeviceId for %1 -> %2").arg(exeName, defaultDeviceId), "DEBUG");
+                    
+                    if (!defaultDeviceId.isEmpty()) {
+                        QString nativePath = getNativeFilePath(fullPath);
+                        name = QString("%1|%2%b{00000000-0000-0000-0000-000000000000}").arg(defaultDeviceId, nativePath);
+                        app["name"] = name;
+                        
+                        Logger::log(QString("updateVdfFriendsSettings: Generated name for %1 -> %2").arg(exeName, name), "DEBUG");
+                    }
+                }
+            }
+            apps.append(app);
+        }
+
+        int grStart, grEnd;
+        if (ensurePathExists(content, {"UserLocalConfigStore", "GameRecording"}, grStart, grEnd)) {
+            // Check if ExtraAudioSessions already exists inside GameRecording
+            int easStart, easEnd;
+            if (getPathBodyRange(content.mid(grStart, grEnd - grStart), {"ExtraAudioSessions"}, easStart, easEnd)) {
+                easStart += grStart;
+                easEnd += grStart;
+                QString newBlockContent = "";
+                int indexCounter = 0;
+                for (int i = 0; i < apps.size(); ++i) {
+                    QVariantMap app = apps[i].toMap();
+                    QString name = app.value("name").toString();
+                    QString label = app.value("label").toString();
+                    if (!name.isEmpty() && !label.isEmpty()) {
+                        QString escapedName = name;
+                        escapedName.replace(QLatin1String("\\"), QLatin1String("\\\\"));
+                        QString escapedLabel = label;
+                        escapedLabel.replace(QLatin1String("\\"), QLatin1String("\\\\"));
+                        newBlockContent += QString("\t\t\t\"%1\"\n\t\t\t{\n\t\t\t\t\"name\"\t\t\"%2\"\n\t\t\t\t\"Label\"\t\t\"%3\"\n\t\t\t}\n").arg(QString::number(indexCounter++), escapedName, escapedLabel);
+                    }
+                }
+                content.replace(easStart, easEnd - easStart, "\n" + newBlockContent + "\t\t");
+                int diff = ("\n" + newBlockContent + "\t\t").length() - (easEnd - easStart);
+                grEnd += diff;
+            } else {
+                // Insert right before the closing brace of GameRecording
+                int insertPos = grEnd;
+                while (insertPos > grStart && content.at(insertPos - 1).isSpace()) {
+                    insertPos--;
+                }
+                QString newBlockContent = "\t\t\"ExtraAudioSessions\"\n\t\t{\n";
+                int indexCounter = 0;
+                for (int i = 0; i < apps.size(); ++i) {
+                    QVariantMap app = apps[i].toMap();
+                    QString name = app.value("name").toString();
+                    QString label = app.value("label").toString();
+                    if (!name.isEmpty() && !label.isEmpty()) {
+                        QString escapedName = name;
+                        escapedName.replace(QLatin1String("\\"), QLatin1String("\\\\"));
+                        QString escapedLabel = label;
+                        escapedLabel.replace(QLatin1String("\\"), QLatin1String("\\\\"));
+                        newBlockContent += QString("\t\t\t\"%1\"\n\t\t\t{\n\t\t\t\t\"name\"\t\t\"%2\"\n\t\t\t\t\"Label\"\t\t\"%3\"\n\t\t\t}\n").arg(QString::number(indexCounter++), escapedName, escapedLabel);
+                    }
+                }
+                newBlockContent += "\t\t}\n";
+                content.insert(insertPos, "\n" + newBlockContent);
+                grEnd += ("\n" + newBlockContent).length();
+            }
+        }
     }
 
     if (!file.open(QIODevice::WriteOnly | QIODevice::Text)) {
@@ -2642,7 +3163,7 @@ bool Optimizer::updateVdfFriendsSettings(const QString &filePath, const QString 
         updateVdfBlockSetting(filePath, "GameRecording", "MaxFPS", QString::number(settings.value("GR_MaxFPS").toInt()));
     }
     if (settings.contains("GR_MaxVideoHeight")) {
-        updateVdfBlockSetting(filePath, "GameRecording", "MaxVideoHeight", QString::number(settings.value("GR_MaxVideoHeight").toInt()));
+        updateVdfBlockSetting(filePath, "GameRecording", "VideoMaxHeight", QString::number(settings.value("GR_MaxVideoHeight").toInt()));
     }
     if (settings.contains("GR_EnableHardwareEncoding")) {
         updateVdfBlockSetting(filePath, "GameRecording", "EnableHardwareEncoding", settings.value("GR_EnableHardwareEncoding").toBool() ? "1" : "0");
@@ -2651,19 +3172,38 @@ bool Optimizer::updateVdfFriendsSettings(const QString &filePath, const QString 
         updateVdfBlockSetting(filePath, "GameRecording", "EnableHEVC", settings.value("GR_EnableHEVC").toBool() ? "1" : "0");
     }
     if (settings.contains("GR_RecordMicrophone")) {
-        updateVdfBlockSetting(filePath, "GameRecording", "RecordMicrophone", settings.value("GR_RecordMicrophone").toBool() ? "1" : "0");
+        updateVdfBlockSetting(filePath, "GameRecording", "Audio_Mic", settings.value("GR_RecordMicrophone").toBool() ? "1" : "0");
+    }
+    if (settings.contains("GR_ForceMicMono")) {
+        updateVdfBlockSetting(filePath, "GameRecording", "ForceMicMono", settings.value("GR_ForceMicMono").toBool() ? "1" : "0");
+    }
+    if (settings.contains("GR_AutomaticGainControl")) {
+        updateVdfBlockSetting(filePath, "GameRecording", "AutomaticGainControl", settings.value("GR_AutomaticGainControl").toBool() ? "1" : "0");
     }
     if (settings.contains("GR_AudioSource")) {
-        updateVdfBlockSetting(filePath, "GameRecording", "AudioSource", QString::number(settings.value("GR_AudioSource").toInt()));
+        int val = settings.value("GR_AudioSource").toInt();
+        updateVdfBlockSetting(filePath, "GameRecording", "AudioSource", QString::number(val));
+        updateVdfBlockSetting(filePath, "GameRecording", "Recording_Audio_Option", QString::number(val));
     }
     if (settings.contains("GR_MaxKeepMinutes")) {
-        updateVdfBlockSetting(filePath, "GameRecording", "MaxKeepMinutes", QString::number(settings.value("GR_MaxKeepMinutes").toInt()));
+        int mins = settings.value("GR_MaxKeepMinutes").toInt();
+        QString maxKeepStr;
+        if (mins == -1) maxKeepStr = "infinite";
+        else if (mins == 0) maxKeepStr = "disabled";
+        else maxKeepStr = QString::number(mins);
+        updateVdfBlockSetting(filePath, "GameRecording", "BackgroundRecordMaxKeep", maxKeepStr);
     }
     if (settings.contains("GR_VideoQuality")) {
-        updateVdfBlockSetting(filePath, "GameRecording", "VideoQuality", QString::number(settings.value("GR_VideoQuality").toInt()));
+        int qual = settings.value("GR_VideoQuality").toInt();
+        QString bitRateStr = "preset_default";
+        if (qual == 0) bitRateStr = "preset_low";
+        else if (qual == 1) bitRateStr = "preset_medium";
+        else if (qual == 2) bitRateStr = "preset_default";
+        else if (qual == 3) bitRateStr = "preset_ultra";
+        updateVdfBlockSetting(filePath, "GameRecording", "VideoBitRate", bitRateStr);
     }
     if (settings.contains("GR_RecordingFolder")) {
-        updateVdfBlockSetting(filePath, "GameRecording", "RecordingFolder", settings.value("GR_RecordingFolder").toString());
+        updateVdfBlockSetting(filePath, "GameRecording", "BackgroundRecordPath", settings.value("GR_RecordingFolder").toString());
     }
     if (settings.contains("GR_InstantClipSeconds")) {
         updateVdfBlockSetting(filePath, "GameRecording", "InstantClipSeconds", QString::number(settings.value("GR_InstantClipSeconds").toInt()));
@@ -6117,9 +6657,11 @@ void Optimizer::loadSystemStates() {
     defaultFriendsSettings["GR_EnableHardwareEncoding"] = true;
     defaultFriendsSettings["GR_EnableHEVC"] = false;
     defaultFriendsSettings["GR_RecordMicrophone"] = false;
-    defaultFriendsSettings["GR_AudioSource"] = 0; // 0 = Game Audio Only, 1 = All System
+    defaultFriendsSettings["GR_ForceMicMono"] = false;
+    defaultFriendsSettings["GR_AutomaticGainControl"] = true;
+    defaultFriendsSettings["GR_AudioSource"] = 0; // 0 = Game Audio Only, 1 = All System, 2 = Game and Selected Programs
     defaultFriendsSettings["GR_MaxKeepMinutes"] = 120;
-    defaultFriendsSettings["GR_VideoQuality"] = 1; // 0=Low, 1=High(Default)
+    defaultFriendsSettings["GR_VideoQuality"] = 2; // 0=Low, 1=Medium, 2=High(Default), 3=Ultra
     defaultFriendsSettings["GR_RecordingFolder"] = "";
     defaultFriendsSettings["GR_InstantClipSeconds"] = 30;
     defaultFriendsSettings["noiseGateLevel"] = 2;
@@ -12927,10 +13469,8 @@ bool Optimizer::isSteamRunning() {
         pe32.dwSize = sizeof(pe32);
         if (Process32FirstW(hSnapshot, &pe32)) {
             do {
-                if (wcscmp(pe32.szExeFile, L"steam.exe") == 0 || 
-                    wcscmp(pe32.szExeFile, L"Steam.exe") == 0 ||
-                    wcscmp(pe32.szExeFile, L"steamwebhelper.exe") == 0 ||
-                    wcscmp(pe32.szExeFile, L"SteamWebHelper.exe") == 0) {
+                if (_wcsicmp(pe32.szExeFile, L"steam.exe") == 0 || 
+                    _wcsicmp(pe32.szExeFile, L"steamwebhelper.exe") == 0) {
                     running = true;
                     break;
                 }
@@ -12970,10 +13510,8 @@ void Optimizer::killSteam() {
         pe32.dwSize = sizeof(pe32);
         if (Process32FirstW(hSnapshot, &pe32)) {
             do {
-                if (wcscmp(pe32.szExeFile, L"steam.exe") == 0 || 
-                    wcscmp(pe32.szExeFile, L"Steam.exe") == 0 ||
-                    wcscmp(pe32.szExeFile, L"steamwebhelper.exe") == 0 ||
-                    wcscmp(pe32.szExeFile, L"SteamWebHelper.exe") == 0) {
+                if (_wcsicmp(pe32.szExeFile, L"steam.exe") == 0 || 
+                    _wcsicmp(pe32.szExeFile, L"steamwebhelper.exe") == 0) {
                     HANDLE hProcess = OpenProcess(PROCESS_TERMINATE, FALSE, pe32.th32ProcessID);
                     if (hProcess) {
                         TerminateProcess(hProcess, 0);
@@ -13324,6 +13862,334 @@ double Optimizer::getMicrophonePeakLevel(const QString &deviceName) {
     }
 #endif
     return static_cast<double>(peak);
+}
+
+
+#ifdef Q_OS_WIN
+#include <QImage>
+
+static QString getProcessIconPath(const QString &exeName, const wchar_t* szProcessPath) {
+    SHFILEINFOW sfi = {0};
+    DWORD_PTR hr = SHGetFileInfoW(szProcessPath, 0, &sfi, sizeof(sfi), SHGFI_ICON | SHGFI_SMALLICON);
+    if (hr && sfi.hIcon) {
+        QImage img = QImage::fromHICON(sfi.hIcon);
+        DestroyIcon(sfi.hIcon);
+        if (!img.isNull()) {
+            QString tempPath = QDir::cleanPath(QStandardPaths::writableLocation(QStandardPaths::TempLocation) + "/MeguPackOptimizer/icons");
+            QDir().mkpath(tempPath);
+            QString iconFile = tempPath + "/" + exeName + ".png";
+            if (img.save(iconFile, "PNG")) {
+                return "file:///" + iconFile;
+            }
+        }
+    }
+    
+    // Fallback to hardcoded app icons if extraction fails, or generic icon
+    QString checkedExeLower = exeName.toLower();
+    if (checkedExeLower.contains("discord")) return "qrc:/MeguPackOptimizer/src/resources/discord.svg";
+    if (checkedExeLower.contains("chrome")) return "qrc:/MeguPackOptimizer/src/resources/chrome.svg";
+    if (checkedExeLower.contains("firefox")) return "qrc:/MeguPackOptimizer/src/resources/firefox.svg";
+    if (checkedExeLower.contains("msedge")) return "qrc:/MeguPackOptimizer/src/resources/msedge.svg";
+    if (checkedExeLower.contains("obs")) return "qrc:/MeguPackOptimizer/src/resources/obs.svg";
+    if (checkedExeLower.contains("telegram")) return "qrc:/MeguPackOptimizer/src/resources/telegram.svg";
+    if (checkedExeLower.contains("spotify")) return "qrc:/MeguPackOptimizer/src/resources/spotify.svg";
+    if (checkedExeLower.contains("vlc")) return "qrc:/MeguPackOptimizer/src/resources/vlc.svg";
+
+    return "qrc:/MeguPackOptimizer/src/resources/generic_audio.svg";
+}
+
+static QString getNativeFilePath(const QString &filePath) {
+    QString nativePath = QDir::toNativeSeparators(filePath);
+    if (nativePath.length() >= 2 && nativePath[1] == ':') {
+        wchar_t drive[3] = { nativePath[0].toUpper().toLatin1(), ':', '\0' };
+        wchar_t devicePath[MAX_PATH] = {0};
+        if (QueryDosDeviceW(drive, devicePath, MAX_PATH)) {
+            QString deviceStr = QString::fromWCharArray(devicePath);
+            return deviceStr + nativePath.mid(2);
+        }
+    }
+    return nativePath;
+}
+
+static QString getDefaultAudioEndpointId() {
+    QString deviceId = "";
+    HRESULT hrInit = CoInitializeEx(NULL, COINIT_APARTMENTTHREADED | COINIT_DISABLE_OLE1DDE);
+    bool coInit = (hrInit == S_OK || hrInit == S_FALSE);
+    
+    IMMDeviceEnumerator *pEnumerator = NULL;
+    HRESULT hr = CoCreateInstance(__uuidof(MMDeviceEnumerator), NULL, CLSCTX_ALL, __uuidof(IMMDeviceEnumerator), (void**)&pEnumerator);
+    if (SUCCEEDED(hr)) {
+        IMMDevice *pDevice = NULL;
+        hr = pEnumerator->GetDefaultAudioEndpoint(eRender, eConsole, &pDevice);
+        if (SUCCEEDED(hr)) {
+            LPWSTR pRetVal = NULL;
+            hr = pDevice->GetId(&pRetVal);
+            if (SUCCEEDED(hr) && pRetVal) {
+                deviceId = QString::fromWCharArray(pRetVal);
+                CoTaskMemFree(pRetVal);
+            }
+            pDevice->Release();
+        }
+        pEnumerator->Release();
+    }
+    
+    if (coInit) {
+        CoUninitialize();
+    }
+    return deviceId;
+}
+
+struct EnumData {
+    QVariantList* list;
+    QStringList* addedExes;
+    QString defaultDeviceId;
+};
+
+BOOL CALLBACK EnumWindowsProc(HWND hwnd, LPARAM lParam) {
+    EnumData* data = (EnumData*)lParam;
+    
+    // Check if window is visible
+    if (!IsWindowVisible(hwnd)) return TRUE;
+    
+    // Check if it has a title
+    int length = GetWindowTextLengthW(hwnd);
+    if (length == 0) return TRUE;
+    
+    LONG style = GetWindowLongW(hwnd, GWL_STYLE);
+    LONG exStyle = GetWindowLongW(hwnd, GWL_EXSTYLE);
+    
+    // Skip tool windows
+    if (exStyle & WS_EX_TOOLWINDOW) return TRUE;
+    
+    // Get process ID
+    DWORD pid = 0;
+    GetWindowThreadProcessId(hwnd, &pid);
+    if (pid == 0) return TRUE;
+    
+    HANDLE hProcess = OpenProcess(PROCESS_QUERY_LIMITED_INFORMATION, FALSE, pid);
+    if (!hProcess) {
+        hProcess = OpenProcess(PROCESS_QUERY_INFORMATION | PROCESS_VM_READ, FALSE, pid);
+    }
+    if (hProcess) {
+        wchar_t szProcessPath[MAX_PATH] = L"";
+        DWORD dwSize = MAX_PATH;
+        if (QueryFullProcessImageNameW(hProcess, 0, szProcessPath, &dwSize)) {
+            QString fullPath = QString::fromWCharArray(szProcessPath);
+            QString exeName = QFileInfo(fullPath).fileName().toLower();
+            
+            // Filter out system and utility apps
+            static const QStringList blacklist = {
+                "steam.exe", "steamwebhelper.exe", "explorer.exe", "megu_pack_optimizer.exe",
+                "applicationframehost.exe", "shellexperiencehost.exe", "systemsettings.exe",
+                "conhost.exe", "cmd.exe", "powershell.exe", "notepad.exe", "notepad++.exe",
+                "code.exe", "devenv.exe", "taskmgr.exe", "calc.exe", "regedit.exe",
+                "git-bash.exe", "searchhost.exe", "startmenuexperiencehost.exe",
+                "runtimebroker.exe", "sublime_text.exe", "clion64.exe", "idea64.exe",
+                "pycharm64.exe", "webstorm64.exe", "rider64.exe", "photoshop.exe",
+                "illustrator.exe", "acrobat.exe", "winrar.exe", "7zfm.exe", "msys2.exe",
+                "bash.exe", "wsl.exe", "wslhost.exe", "windowsterminal.exe",
+                "gamebar.exe", "gamebarftserver.exe", "gamebarpresencewriter.exe",
+                "lockapp.exe", "smartscreen.exe", "taskhostw.exe", "msinfo32.exe",
+                "cleanmgr.exe", "mmc.exe", "dxdiag.exe", "perfmon.exe", "resmon.exe",
+                "eventvwr.exe", "services.exe", "control.exe"
+            };
+            
+            if (!blacklist.contains(exeName) && !data->addedExes->contains(exeName)) {
+                
+                data->addedExes->append(exeName);
+                
+                // Get friendly name from file description
+                QString friendlyName = "";
+                DWORD dummy = 0;
+                DWORD size = GetFileVersionInfoSizeW(szProcessPath, &dummy);
+                if (size > 0) {
+                    std::vector<BYTE> versionData(size);
+                    if (GetFileVersionInfoW(szProcessPath, 0, size, &versionData[0])) {
+                        LPVOID value = nullptr;
+                        UINT valueSize = 0;
+                        struct LANGANDCODEPAGE {
+                            WORD wLanguage;
+                            WORD wCodePage;
+                        } *lpTranslate;
+                        if (VerQueryValueW(&versionData[0], L"\\VarFileInfo\\Translation", (LPVOID*)&lpTranslate, &valueSize) && valueSize > 0) {
+                            wchar_t subBlock[256];
+                            swprintf_s(subBlock, L"\\StringFileInfo\\%04x%04x\\FileDescription", 
+                                       lpTranslate[0].wLanguage, lpTranslate[0].wCodePage);
+                            if (VerQueryValueW(&versionData[0], subBlock, &value, &valueSize) && valueSize > 0) {
+                                friendlyName = QString::fromWCharArray((wchar_t*)value);
+                            }
+                        }
+                    }
+                }
+                
+                // Fallback to Window Title if FileDescription is empty
+                if (friendlyName.isEmpty()) {
+                    wchar_t szTitle[512] = L"";
+                    GetWindowTextW(hwnd, szTitle, 512);
+                    friendlyName = QString::fromWCharArray(szTitle);
+                }
+                
+                // Fallback to Capitalized Exe Name
+                if (friendlyName.isEmpty()) {
+                    friendlyName = exeName;
+                    friendlyName.replace(".exe", "");
+                    if (!friendlyName.isEmpty()) {
+                        friendlyName[0] = friendlyName[0].toUpper();
+                    }
+                }
+                
+                // Map icons dynamically
+                QString icon = getProcessIconPath(exeName, szProcessPath);
+                
+                QVariantMap proc;
+                proc["name"] = friendlyName;
+                proc["exe"] = exeName;
+                proc["icon"] = icon;
+                proc["running"] = true;
+                if (!data->defaultDeviceId.isEmpty()) {
+                    QString nativePath = getNativeFilePath(fullPath);
+                    QString sessionIdentifier = QString("%1|%2%b{00000000-0000-0000-0000-000000000000}").arg(data->defaultDeviceId, nativePath);
+                    proc["sessionIdentifier"] = sessionIdentifier;
+                } else {
+                    proc["sessionIdentifier"] = "";
+                }
+                data->list->append(proc);
+            }
+        }
+        CloseHandle(hProcess);
+    }
+    return TRUE;
+}
+#endif
+
+QVariantList Optimizer::getRunningAudioProcesses() {
+    QVariantList list;
+    QStringList addedExes;
+
+#ifdef Q_OS_WIN
+    QString defaultDeviceId = getDefaultAudioEndpointId();
+    // 1. WASAPI Session enumeration (gives active audio output sessions)
+    HRESULT hrInit = CoInitializeEx(NULL, COINIT_APARTMENTTHREADED | COINIT_DISABLE_OLE1DDE);
+    IMMDeviceEnumerator *pEnumerator = NULL;
+    HRESULT hr = CoCreateInstance(__uuidof(MMDeviceEnumerator), NULL, CLSCTX_ALL, __uuidof(IMMDeviceEnumerator), (void**)&pEnumerator);
+    if (SUCCEEDED(hr)) {
+        IMMDevice *pDevice = NULL;
+        hr = pEnumerator->GetDefaultAudioEndpoint(eRender, eConsole, &pDevice);
+        if (SUCCEEDED(hr)) {
+            IAudioSessionManager2 *pManager = NULL;
+            hr = pDevice->Activate(__uuidof(IAudioSessionManager2), CLSCTX_ALL, NULL, (void**)&pManager);
+            if (SUCCEEDED(hr)) {
+                IAudioSessionEnumerator *pSessionEnumerator = NULL;
+                hr = pManager->GetSessionEnumerator(&pSessionEnumerator);
+                if (SUCCEEDED(hr)) {
+                    int count = 0;
+                    pSessionEnumerator->GetCount(&count);
+                    for (int i = 0; i < count; i++) {
+                        IAudioSessionControl *pSessionControl = NULL;
+                        hr = pSessionEnumerator->GetSession(i, &pSessionControl);
+                        if (SUCCEEDED(hr)) {
+                            IAudioSessionControl2 *pSessionControl2 = NULL;
+                            hr = pSessionControl->QueryInterface(__uuidof(IAudioSessionControl2), (void**)&pSessionControl2);
+                            if (SUCCEEDED(hr)) {
+                                DWORD pid = 0;
+                                hr = pSessionControl2->GetProcessId(&pid);
+                                if (SUCCEEDED(hr) && pid != 0) {
+                                    HANDLE hProcess = OpenProcess(PROCESS_QUERY_LIMITED_INFORMATION, FALSE, pid);
+                                    if (!hProcess) {
+                                        hProcess = OpenProcess(PROCESS_QUERY_INFORMATION | PROCESS_VM_READ, FALSE, pid);
+                                    }
+                                    if (hProcess) {
+                                        wchar_t szProcessPath[MAX_PATH] = L"";
+                                        DWORD dwSize = MAX_PATH;
+                                        if (QueryFullProcessImageNameW(hProcess, 0, szProcessPath, &dwSize)) {
+                                            QString fullPath = QString::fromWCharArray(szProcessPath);
+                                            QString exeName = QFileInfo(fullPath).fileName().toLower();
+                                            
+                                            if (exeName != "steam.exe" && exeName != "steamwebhelper.exe" && exeName != "explorer.exe" && exeName != "megu_pack_optimizer.exe" && !addedExes.contains(exeName)) {
+                                                addedExes.append(exeName);
+                                                
+                                                QVariantMap proc;
+                                                proc["exe"] = exeName;
+                                                
+                                                LPWSTR pRetVal = NULL;
+                                                QString sessionIdentifier = "";
+                                                if (SUCCEEDED(pSessionControl2->GetSessionIdentifier(&pRetVal)) && pRetVal) {
+                                                    sessionIdentifier = QString::fromWCharArray(pRetVal);
+                                                    CoTaskMemFree(pRetVal);
+                                                }
+                                                if (sessionIdentifier.isEmpty() && !defaultDeviceId.isEmpty()) {
+                                                    QString nativePath = getNativeFilePath(fullPath);
+                                                    sessionIdentifier = QString("%1|%2%b{00000000-0000-0000-0000-000000000000}").arg(defaultDeviceId, nativePath);
+                                                }
+                                                proc["sessionIdentifier"] = sessionIdentifier;
+                                                
+                                                // Get friendly name from file description
+                                                QString friendlyName = "";
+                                                DWORD dummy = 0;
+                                                DWORD size = GetFileVersionInfoSizeW(szProcessPath, &dummy);
+                                                if (size > 0) {
+                                                    std::vector<BYTE> versionData(size);
+                                                    if (GetFileVersionInfoW(szProcessPath, 0, size, &versionData[0])) {
+                                                        LPVOID value = nullptr;
+                                                        UINT valueSize = 0;
+                                                        struct LANGANDCODEPAGE {
+                                                            WORD wLanguage;
+                                                            WORD wCodePage;
+                                                        } *lpTranslate;
+                                                        if (VerQueryValueW(&versionData[0], L"\\VarFileInfo\\Translation", (LPVOID*)&lpTranslate, &valueSize) && valueSize > 0) {
+                                                            wchar_t subBlock[256];
+                                                            swprintf_s(subBlock, L"\\StringFileInfo\\%04x%04x\\FileDescription", 
+                                                                       lpTranslate[0].wLanguage, lpTranslate[0].wCodePage);
+                                                            if (VerQueryValueW(&versionData[0], subBlock, &value, &valueSize) && valueSize > 0) {
+                                                                friendlyName = QString::fromWCharArray((wchar_t*)value);
+                                                            }
+                                                        }
+                                                    }
+                                                }
+                                                
+                                                if (friendlyName.isEmpty()) {
+                                                    friendlyName = exeName;
+                                                    friendlyName.replace(".exe", "");
+                                                    if (!friendlyName.isEmpty()) {
+                                                        friendlyName[0] = friendlyName[0].toUpper();
+                                                    }
+                                                }
+                                                
+                                                // Map icons dynamically
+                                                QString icon = getProcessIconPath(exeName, szProcessPath);
+                                                
+                                                proc["name"] = friendlyName;
+                                                proc["icon"] = icon;
+                                                proc["running"] = true;
+                                                list.append(proc);
+                                            }
+                                        }
+                                        CloseHandle(hProcess);
+                                    }
+                                }
+                                pSessionControl2->Release();
+                            }
+                            pSessionControl->Release();
+                        }
+                    }
+                    pSessionEnumerator->Release();
+                }
+                pManager->Release();
+            }
+            pDevice->Release();
+        }
+        pEnumerator->Release();
+    }
+    if (SUCCEEDED(hrInit)) {
+        CoUninitialize();
+    }
+
+    // 2. Visible Window Enumeration (gives other active user applications like silent Discord/browsers/etc.)
+    EnumData data = { &list, &addedExes, defaultDeviceId };
+    EnumWindows(EnumWindowsProc, (LPARAM)&data);
+#endif
+
+    return list;
 }
 
 

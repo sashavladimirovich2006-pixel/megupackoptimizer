@@ -29,6 +29,7 @@ Item {
     Component.onCompleted: {
         optimizerBackend.scanSteamInstalledGames();
         populateGamesModel();
+        steamGameRecordingPage.loadAudioAppsCheckedState();
     }
 
     Connections {
@@ -40,6 +41,9 @@ Item {
             if (typeof stepLogModel !== "undefined" && stepLogModel !== null) {
                 stepLogModel.append({ "message": message, "type": type });
             }
+        }
+        function onSteamFriendsSettingsChanged() {
+            steamGameRecordingPage.loadAudioAppsCheckedState();
         }
     }
 
@@ -3051,6 +3055,133 @@ Item {
 
         property int currentMode: (optimizerBackend.steamFriendsSettings && typeof optimizerBackend.steamFriendsSettings["BackgroundRecordMode"] !== "undefined") ? optimizerBackend.steamFriendsSettings["BackgroundRecordMode"] : 0
 
+        ListModel {
+            id: audioAppsModel
+        }
+        function loadAudioAppsCheckedState() {
+            audioAppsModel.clear();
+            var settings = optimizerBackend.steamFriendsSettings;
+            var rawApps = settings ? (settings["GR_AudioCaptureApps"] || []) : [];
+            var checkedExes = [];
+            if (rawApps && typeof rawApps.length === "number" && typeof rawApps !== "string") {
+                for (var i = 0; i < rawApps.length; i++) {
+                    checkedExes.push(rawApps[i]);
+                }
+            } else if (typeof rawApps === "string" && rawApps.trim() !== "") {
+                checkedExes = rawApps.split(",");
+            }
+            
+            // filter out empty/invalid elements
+            checkedExes = checkedExes.filter(function(el) {
+                if (typeof el === "object" && el !== null) {
+                    return (el.exe && el.exe.trim() !== "") || (el.label && el.label.trim() !== "");
+                }
+                return typeof el === "string" && el.trim() !== "";
+            });
+            
+            var cleanStr = function(s) {
+                return s ? s.toLowerCase().replace(/[\s\-_]/g, "") : "";
+            };
+            
+            var addedExesMap = {};
+            var runningApps = optimizerBackend.getRunningAudioProcesses();
+            for (var i = 0; i < runningApps.length; i++) {
+                var app = runningApps[i];
+                var exeLower = app.exe.toLowerCase();
+                
+                // Is checked if it matches any checked item by exe name or label
+                var isChecked = false;
+                var savedSessionId = "";
+                var savedFromVdf = false;
+                for (var j = 0; j < checkedExes.length; j++) {
+                    var item = checkedExes[j];
+                    var itemExe = (typeof item === "object" && item !== null) ? item.exe : item;
+                    var itemLabel = (typeof item === "object" && item !== null) ? item.label : "";
+                    
+                    if (itemExe && itemExe.toLowerCase() === exeLower) {
+                        isChecked = true;
+                        if (typeof item === "object" && item !== null) {
+                            if (item.name) savedSessionId = item.name;
+                            if (item.fromVdf) savedFromVdf = true;
+                        }
+                        break;
+                    }
+                    if ((!itemExe || itemExe === "") && itemLabel && app.name && cleanStr(itemLabel) === cleanStr(app.name)) {
+                        isChecked = true;
+                        if (typeof item === "object" && item !== null) {
+                            if (item.name) savedSessionId = item.name;
+                            if (item.fromVdf) savedFromVdf = true;
+                        }
+                        break;
+                    }
+                }
+                
+                var finalSessionId = app.sessionIdentifier || savedSessionId || "";
+
+                audioAppsModel.append({
+                    name: app.name,
+                    exe: app.exe,
+                    sessionIdentifier: finalSessionId,
+                    appChecked: isChecked,
+                    icon: app.icon,
+                    running: app.running,
+                    fromVdf: savedFromVdf
+                });
+                addedExesMap[exeLower] = true;
+                if (app.name) {
+                    addedExesMap[cleanStr(app.name)] = true;
+                }
+            }
+
+            // Append any previously saved/checked exes that are not currently running
+            for (var j = 0; j < checkedExes.length; j++) {
+                var item = checkedExes[j];
+                var checkedExe = (typeof item === "object" && item !== null) ? item.exe : item;
+                var checkedLabel = (typeof item === "object" && item !== null) ? item.label : "";
+                
+                var key = cleanStr(checkedExe ? checkedExe : checkedLabel);
+                if (!key) continue;
+                
+                var alreadyAdded = addedExesMap[key] || (checkedExe && addedExesMap[cleanStr(checkedExe)]);
+                if (!alreadyAdded) {
+                    var friendlyName = checkedLabel || checkedExe;
+                    var sessionIdentifier = (typeof item === "object" && item !== null && item.name) ? item.name : "";
+                    
+                    var icon = "qrc:/MeguPackOptimizer/src/resources/generic_audio.svg";
+                    var checkedExeLower = checkedExe ? checkedExe.toLowerCase() : "";
+                    if (checkedExeLower && checkedExeLower.indexOf("discord") !== -1) { friendlyName = "Discord"; icon = "qrc:/MeguPackOptimizer/src/resources/discord.svg"; }
+                    else if (checkedExeLower && checkedExeLower.indexOf("chrome") !== -1) { friendlyName = "Google Chrome"; icon = "qrc:/MeguPackOptimizer/src/resources/chrome.svg"; }
+                    else if (checkedExeLower && checkedExeLower.indexOf("firefox") !== -1) { friendlyName = "Mozilla Firefox"; icon = "qrc:/MeguPackOptimizer/src/resources/firefox.svg"; }
+                    else if (checkedExeLower && checkedExeLower.indexOf("msedge") !== -1) { friendlyName = "Microsoft Edge"; icon = "qrc:/MeguPackOptimizer/src/resources/msedge.svg"; }
+                    else if (checkedExeLower && checkedExeLower.indexOf("obs") !== -1) { friendlyName = "OBS Studio"; icon = "qrc:/MeguPackOptimizer/src/resources/obs.svg"; }
+                    else if (checkedExeLower && checkedExeLower.indexOf("telegram") !== -1) { friendlyName = "Telegram Desktop"; icon = "qrc:/MeguPackOptimizer/src/resources/telegram.svg"; }
+                    else if (checkedExeLower && checkedExeLower.indexOf("spotify") !== -1) { friendlyName = "Spotify"; icon = "qrc:/MeguPackOptimizer/src/resources/spotify.svg"; }
+                    else if (checkedExeLower && checkedExeLower.indexOf("vlc") !== -1) { friendlyName = "VLC Media Player"; icon = "qrc:/MeguPackOptimizer/src/resources/vlc.svg"; }
+                    else if (typeof item === "object" && item !== null && item.label) {
+                        friendlyName = item.label;
+                    } else if (friendlyName) {
+                        friendlyName = friendlyName.replace(".exe", "");
+                        if (friendlyName.length > 0) {
+                            friendlyName = friendlyName.charAt(0).toUpperCase() + friendlyName.slice(1);
+                        }
+                    }
+
+                    audioAppsModel.append({
+                        name: friendlyName,
+                        exe: checkedExe || "",
+                        sessionIdentifier: sessionIdentifier,
+                        appChecked: true,
+                        icon: icon,
+                        running: false,
+                        fromVdf: (typeof item === "object" && item !== null && item.fromVdf) ? true : false
+                    });
+                    addedExesMap[key] = true;
+                    if (checkedExe) {
+                        addedExesMap[cleanStr(checkedExe)] = true;
+                    }
+                }
+            }
+        }
         function getEstimatedDiskSpace(minutes, quality) {
             var min = parseInt(minutes);
             var qual = parseInt(quality);
@@ -3058,7 +3189,15 @@ Item {
                 var lowVal = (min * 0.033).toFixed(1);
                 var highVal = (min * 0.1).toFixed(1);
                 return lowVal + " - " + highVal + " GB";
-            } else { // High
+            } else if (qual === 1) { // Medium
+                var lowVal = (min * 0.06).toFixed(1);
+                var highVal = (min * 0.18).toFixed(1);
+                return lowVal + " - " + highVal + " GB";
+            } else if (qual === 3) { // Ultra
+                var lowVal = (min * 0.15).toFixed(1);
+                var highVal = (min * 0.45).toFixed(1);
+                return lowVal + " - " + highVal + " GB";
+            } else { // High (Default) - qual === 2
                 var lowVal = (min * 0.09).toFixed(1);
                 var highVal = (min * 0.285).toFixed(1);
                 return lowVal + " - " + highVal + " GB";
@@ -3346,7 +3485,7 @@ Item {
                 height: 32
                 color: "transparent"
                 Text {
-                    text: qsTr("Start/stop saving a clip")
+                    text: (steamGameRecordingPage.currentMode === 1) ? qsTr("Start/stop saving a clip") : qsTr("Start/stop recording")
                     color: Theme.textPrimary
                     font.family: Theme.fontFamily
                     font.pixelSize: 12
@@ -3665,11 +3804,13 @@ Item {
                         border.color: Theme.border
                         border.width: 1
 
-                        property int currentVal: (optimizerBackend.steamFriendsSettings && typeof optimizerBackend.steamFriendsSettings["GR_VideoQuality"] !== "undefined") ? optimizerBackend.steamFriendsSettings["GR_VideoQuality"] : 1
+                        property int currentVal: (optimizerBackend.steamFriendsSettings && typeof optimizerBackend.steamFriendsSettings["GR_VideoQuality"] !== "undefined") ? optimizerBackend.steamFriendsSettings["GR_VideoQuality"] : 2
 
                         readonly property var options: [
                             { id: 0, label: qsTr("Low") },
-                            { id: 1, label: qsTr("High (Default)") }
+                            { id: 1, label: qsTr("Medium") },
+                            { id: 2, label: qsTr("High (Default)") },
+                            { id: 3, label: qsTr("Ultra") }
                         ]
 
                         function getLabelForVal(v) {
@@ -4190,6 +4331,68 @@ Item {
                 }
             }
 
+            // Force microphone to mono
+            Rectangle {
+                width: parent.width
+                height: visible ? Math.max(40, monoToggleCol.implicitHeight + 8) : 0
+                color: "transparent"
+                visible: aSwitch_1.checked
+                Column {
+                    id: monoToggleCol
+                    anchors.verticalCenter: parent.verticalCenter
+                    spacing: 2
+                    anchors.left: parent.left
+                    anchors.right: monoSwitch.left
+                    anchors.rightMargin: 12
+                    Text {
+                        text: qsTr("Force microphone to mono")
+                        color: Theme.textPrimary
+                        font.family: Theme.fontFamily
+                        font.pixelSize: 12
+                        font.bold: true
+                    }
+                }
+                MeguSwitch {
+                    id: monoSwitch
+                    anchors.right: parent.right
+                    steamStyle: true
+                    checked: (optimizerBackend.steamFriendsSettings && typeof optimizerBackend.steamFriendsSettings["GR_ForceMicMono"] !== "undefined") ? !!optimizerBackend.steamFriendsSettings["GR_ForceMicMono"] : false
+                    anchors.verticalCenter: parent.verticalCenter
+                    onToggled: (isChecked) => { root.toggleSteamFriendsSetting("GR_ForceMicMono", isChecked); }
+                }
+            }
+
+            // Enable automatic gain control (AGC)
+            Rectangle {
+                width: parent.width
+                height: visible ? Math.max(40, agcToggleCol.implicitHeight + 8) : 0
+                color: "transparent"
+                visible: aSwitch_1.checked
+                Column {
+                    id: agcToggleCol
+                    anchors.verticalCenter: parent.verticalCenter
+                    spacing: 2
+                    anchors.left: parent.left
+                    anchors.right: agcSwitch.left
+                    anchors.rightMargin: 12
+                    Text {
+                        text: qsTr("Enable automatic gain control (AGC)")
+                        color: Theme.textPrimary
+                        font.family: Theme.fontFamily
+                        font.pixelSize: 12
+                        font.bold: true
+                    }
+                }
+                MeguSwitch {
+                    id: agcSwitch
+                    anchors.right: parent.right
+                    steamStyle: true
+                    checked: (optimizerBackend.steamFriendsSettings && typeof optimizerBackend.steamFriendsSettings["GR_AutomaticGainControl"] !== "undefined") ? !!optimizerBackend.steamFriendsSettings["GR_AutomaticGainControl"] : true
+                    anchors.verticalCenter: parent.verticalCenter
+                    onToggled: (isChecked) => { root.toggleSteamFriendsSetting("GR_AutomaticGainControl", isChecked); }
+                }
+            }
+
             // Record Audio from
             Rectangle {
                 width: parent.width
@@ -4219,7 +4422,8 @@ Item {
 
                     readonly property var options: [
                         { id: 0, label: qsTr("Game Audio Only") },
-                        { id: 1, label: qsTr("All System Audio") }
+                        { id: 1, label: qsTr("All System Audio") },
+                        { id: 2, label: qsTr("Game and Selected Programs") }
                     ]
 
                     function getLabelForVal(v) {
@@ -4290,6 +4494,148 @@ Item {
                                 }
                                 onTriggered: {
                                     root.toggleSteamFriendsSetting("GR_AudioSource", modelData.id);
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+
+            // Select additional programs panel
+            Column {
+                width: parent.width
+                visible: audioSrcDropdown.currentVal === 2
+                spacing: 8
+
+                Text {
+                    text: qsTr("Select additional programs to record audio from:")
+                    color: Theme.textSecondary
+                    font.family: Theme.fontFamily
+                    font.pixelSize: 11
+                    anchors.left: parent.left
+                }
+
+                Rectangle {
+                    width: parent.width
+                    height: Math.min(240, audioAppsRepeater.count * 40 + 8)
+                    color: "#05FFFFFF"
+                    border.color: Theme.border
+                    border.width: 1
+                    radius: 6
+                    clip: true
+
+                    ScrollView {
+                        anchors.fill: parent
+                        contentWidth: width
+                        contentHeight: audioAppsRepeater.count * 40 + 8
+                        ScrollBar.vertical.policy: ScrollBar.AsNeeded
+
+                        Column {
+                            width: parent.width
+                            spacing: 2
+                            padding: 4
+
+                            Repeater {
+                                id: audioAppsRepeater
+                                model: audioAppsModel
+                                delegate: Rectangle {
+                                    width: parent.width - 8
+                                    height: 36
+                                    color: mouseArea.containsMouse ? Qt.rgba(Theme.accent.r, Theme.accent.g, Theme.accent.b, 0.08) : "transparent"
+                                    radius: 4
+
+                                    Row {
+                                        anchors.left: parent.left
+                                        anchors.leftMargin: 12
+                                        anchors.verticalCenter: parent.verticalCenter
+                                        spacing: 12
+                                        opacity: model.running ? 1.0 : 0.6
+
+                                        Image {
+                                             source: model.icon
+                                             width: 16
+                                             height: 16
+                                             fillMode: Image.PreserveAspectFit
+                                             anchors.verticalCenter: parent.verticalCenter
+                                         }
+
+                                        Column {
+                                            anchors.verticalCenter: parent.verticalCenter
+                                            spacing: 1
+                                            Row {
+                                                spacing: 6
+                                                Text {
+                                                    text: model.name
+                                                    color: Theme.textPrimary
+                                                    font.family: Theme.fontFamily
+                                                    font.pixelSize: 12
+                                                    font.bold: true
+                                                }
+                                                Rectangle {
+                                                    width: 6
+                                                    height: 6
+                                                    radius: 3
+                                                    color: "#28a745" // Green dot for running processes
+                                                    visible: model.running
+                                                    anchors.verticalCenter: parent.verticalCenter
+                                                }
+                                            }
+                                            Text {
+                                                text: model.exe
+                                                color: Theme.textSecondary
+                                                font.family: Theme.fontFamily
+                                                font.pixelSize: 9
+                                            }
+                                        }
+                                    }
+
+                                    // Checkbox on the right
+                                    Rectangle {
+                                        width: 16
+                                        height: 16
+                                        radius: 3
+                                        color: model.appChecked ? Theme.accent : "transparent"
+                                        border.color: model.appChecked ? Theme.accent : Theme.border
+                                        border.width: 1
+                                        anchors.right: parent.right
+                                        anchors.rightMargin: 12
+                                        anchors.verticalCenter: parent.verticalCenter
+
+                                        Text {
+                                            text: "✓"
+                                            color: "white"
+                                            font.pixelSize: 10
+                                            font.bold: true
+                                            anchors.centerIn: parent
+                                            visible: model.appChecked
+                                        }
+                                    }
+
+                                    MouseArea {
+                                        id: mouseArea
+                                        anchors.fill: parent
+                                        hoverEnabled: true
+                                        cursorShape: Qt.PointingHandCursor
+                                        onClicked: {
+                                            var newVal = !model.appChecked;
+                                            audioAppsModel.setProperty(index, "appChecked", newVal);
+                                            
+                                            // Save state
+                                                var checkedAppsList = [];
+                                                for (var i = 0; i < audioAppsModel.count; i++) {
+                                                    var item = audioAppsModel.get(i);
+                                                    if (item.appChecked) {
+                                                        checkedAppsList.push({
+                                                            "exe": item.exe,
+                                                            "name": item.sessionIdentifier || "",
+                                                            "label": item.name,
+                                                            "fromVdf": item.fromVdf ? true : false
+                                                        });
+                                                    }
+                                                }
+                                                root.toggleSteamFriendsSetting("GR_AudioCaptureApps", checkedAppsList);
+                                        }
+                                    }
                                 }
                             }
                         }

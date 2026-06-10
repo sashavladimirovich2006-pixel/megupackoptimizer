@@ -102,6 +102,15 @@ qt_add_qml_module(megu_pack_optimizer
         src/resources/microphone.svg
         src/resources/heart_outline.svg
         src/resources/heart_filled.svg
+        src/resources/discord.svg
+        src/resources/chrome.svg
+        src/resources/firefox.svg
+        src/resources/msedge.svg
+        src/resources/obs.svg
+        src/resources/telegram.svg
+        src/resources/spotify.svg
+        src/resources/vlc.svg
+        src/resources/generic_audio.svg
         translations/megu_pack_optimizer_uk.qm
 )
 

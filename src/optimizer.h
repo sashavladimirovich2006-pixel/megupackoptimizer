@@ -654,6 +654,7 @@ public:
     Q_INVOKABLE QVariantList getAudioInputDevices();
     Q_INVOKABLE QVariantList getAudioOutputDevices();
     Q_INVOKABLE double getMicrophonePeakLevel(const QString &deviceName);
+    Q_INVOKABLE QVariantList getRunningAudioProcesses();
 
 
 
