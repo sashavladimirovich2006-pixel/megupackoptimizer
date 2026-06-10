@@ -122,6 +122,7 @@ Item {
         if (subPage === "remoteplay") return steamRemotePlayPage.implicitHeight;
         if (subPage === "music") return steamMusicPage.implicitHeight;
         if (subPage === "broadcast") return steamBroadcastPage.implicitHeight;
+        if (subPage === "controller") return steamControllerPage.implicitHeight;
         return steamMainPage.implicitHeight;
     }
 
@@ -1014,6 +1015,62 @@ Item {
                 hoverEnabled: true
                 cursorShape: Qt.PointingHandCursor
                 onClicked: steamSettingsDrawer.subPage = "broadcast"
+            }
+        }
+
+        // Controller Customization Menu Option
+        Rectangle {
+            width: parent.width
+            height: 48
+            radius: Theme.radiusSmall
+            color: controllerMouse.containsMouse ? Theme.accentDim : "transparent"
+            border.color: controllerMouse.containsMouse ? Theme.accent : Theme.border
+            border.width: 1
+
+            Behavior on color { ColorAnimation { duration: Theme.animFast } }
+            Behavior on border.color { ColorAnimation { duration: Theme.animFast } }
+
+            Row {
+                anchors.fill: parent
+                anchors.leftMargin: 12
+                anchors.rightMargin: 12
+                spacing: 8
+
+                Column {
+                    anchors.verticalCenter: parent.verticalCenter
+                    width: parent.width - 32
+
+                    Text {
+                        text: qsTr("Controller customization")
+                        color: Theme.textPrimary
+                        font.family: Theme.fontFamily
+                        font.pixelSize: 12
+                        font.bold: true
+                    }
+                    Text {
+                        text: qsTr("Configure steam controller settings and overlays")
+                        color: Theme.textMuted
+                        font.family: Theme.fontFamily
+                        font.pixelSize: 9
+                    }
+                }
+
+                Text {
+                    text: "→"
+                    color: Theme.accent
+                    font.family: Theme.fontFamily
+                    font.pixelSize: 14
+                    font.bold: true
+                    anchors.verticalCenter: parent.verticalCenter
+                }
+            }
+
+            MouseArea {
+                id: controllerMouse
+                anchors.fill: parent
+                hoverEnabled: true
+                cursorShape: Qt.PointingHandCursor
+                onClicked: steamSettingsDrawer.subPage = "controller"
             }
         }
         }
@@ -10297,6 +10354,36 @@ Item {
                         }
                     }
                 }
+            }
+        }
+    }
+
+    // PAGE 16: Controller Customization Sub-Page (Empty for now)
+    Column {
+        id: steamControllerPage
+        width: parent.width
+        spacing: 20
+        visible: steamSettingsDrawer.subPage === "controller"
+
+        Row {
+            spacing: 10
+            width: parent.width
+
+            MeguButton {
+                text: qsTr("Back")
+                iconRotation: 180
+                iconSource: "qrc:/MeguPackOptimizer/src/resources/arrow.svg"
+                width: 80
+                onClicked: steamSettingsDrawer.subPage = "main"
+            }
+
+            Text {
+                text: qsTr("Controller customization")
+                color: Theme.textPrimary
+                font.family: Theme.fontFamily
+                font.pixelSize: 16
+                font.bold: true
+                anchors.verticalCenter: parent.verticalCenter
             }
         }
     }
