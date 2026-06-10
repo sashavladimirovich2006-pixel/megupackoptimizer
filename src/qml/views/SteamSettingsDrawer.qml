@@ -3715,30 +3715,36 @@ Item {
                         border.width: 1
                         radius: 4
                         anchors.verticalCenter: parent.verticalCenter
-                        TextInput {
-                            id: clipSecsInput
-                            anchors.fill: parent
-                            horizontalAlignment: TextInput.AlignHCenter
-                            verticalAlignment: TextInput.AlignVCenter
-                            color: Theme.textPrimary
-                            font.family: Theme.fontFamily
-                            font.pixelSize: 11
-                            font.bold: true
-                            selectByMouse: true
-                            inputMethodHints: Qt.ImhDigitsOnly
-                            text: (optimizerBackend.steamFriendsSettings && typeof optimizerBackend.steamFriendsSettings["GR_InstantClipSeconds"] !== "undefined") ? optimizerBackend.steamFriendsSettings["GR_InstantClipSeconds"].toString() : "30"
-                            validator: IntValidator { bottom: 5; top: 300; }
-                            onEditingFinished: {
-                                var val = parseInt(text);
-                                if (isNaN(val) || val < 5) {
-                                    val = 5;
-                                } else if (val > 300) {
-                                    val = 300;
+                            TextInput {
+                                id: clipSecsInput
+                                anchors.fill: parent
+                                horizontalAlignment: TextInput.AlignHCenter
+                                verticalAlignment: TextInput.AlignVCenter
+                                color: Theme.textPrimary
+                                font.family: Theme.fontFamily
+                                font.pixelSize: 11
+                                font.bold: true
+                                selectByMouse: true
+                                inputMethodHints: Qt.ImhDigitsOnly
+                                text: (optimizerBackend.steamFriendsSettings && typeof optimizerBackend.steamFriendsSettings["GR_InstantClipSeconds"] !== "undefined") ? optimizerBackend.steamFriendsSettings["GR_InstantClipSeconds"].toString() : "30"
+                                validator: IntValidator { bottom: 5; top: 300; }
+                                onTextEdited: {
+                                    var val = parseInt(text);
+                                    if (!isNaN(val)) {
+                                        root.toggleSteamFriendsSetting("GR_InstantClipSeconds", val);
+                                    }
                                 }
-                                text = val.toString();
-                                root.toggleSteamFriendsSetting("GR_InstantClipSeconds", val);
+                                onEditingFinished: {
+                                    var val = parseInt(text);
+                                    if (isNaN(val) || val < 5) {
+                                        val = 5;
+                                    } else if (val > 300) {
+                                        val = 300;
+                                    }
+                                    text = val.toString();
+                                    root.toggleSteamFriendsSetting("GR_InstantClipSeconds", val);
+                                }
                             }
-                        }
                     }
                     Text {
                         text: qsTr("seconds...")
