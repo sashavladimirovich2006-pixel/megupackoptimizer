@@ -10534,6 +10534,12 @@ Item {
         visible: steamGameRecordingPage.recordingKeyName !== ""
         focus: visible
 
+        onVisibleChanged: {
+            if (visible) {
+                forceActiveFocus();
+            }
+        }
+
         MouseArea {
             anchors.fill: parent
             hoverEnabled: true
