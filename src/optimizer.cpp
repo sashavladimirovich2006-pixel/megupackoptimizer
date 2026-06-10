@@ -2055,14 +2055,21 @@ bool Optimizer::getVdfFriendsSettings(const QString &filePath, const QString &ac
     if (!audioSrc.isEmpty()) {
         settings["GR_AudioSource"] = audioSrc.toInt();
     }
-    QString maxKeepMin = getVdfBlockSetting(filePath, "GameRecording", "BackgroundRecordMaxKeep");
+    QString maxKeepMin = getVdfBlockSetting(filePath, "GameRecording", "BackgroundMaxKeep");
+    if (maxKeepMin.isEmpty()) {
+        maxKeepMin = getVdfBlockSetting(filePath, "GameRecording", "BackgroundRecordMaxKeep");
+    }
     if (!maxKeepMin.isEmpty()) {
         if (maxKeepMin == "infinite") {
             settings["GR_MaxKeepMinutes"] = -1;
         } else if (maxKeepMin == "disabled") {
             settings["GR_MaxKeepMinutes"] = 0;
         } else {
-            settings["GR_MaxKeepMinutes"] = maxKeepMin.toInt();
+            QString cleanVal = maxKeepMin;
+            cleanVal.remove("min");
+            bool ok = false;
+            int mins = cleanVal.toInt(&ok);
+            settings["GR_MaxKeepMinutes"] = ok ? mins : 120;
         }
     }
     QString vidQual = getVdfBlockSetting(filePath, "GameRecording", "VideoBitRate");
@@ -2077,9 +2084,14 @@ bool Optimizer::getVdfFriendsSettings(const QString &filePath, const QString &ac
         recFolder.replace(QLatin1String("\\\\"), QLatin1String("\\"));
         settings["GR_RecordingFolder"] = recFolder;
     }
-    QString clipSec = getVdfBlockSetting(filePath, "GameRecording", "InstantClipSeconds");
+    QString clipSec = getVdfBlockSetting(filePath, "GameRecording", "InstantClipDuration");
+    if (clipSec.isEmpty()) {
+        clipSec = getVdfBlockSetting(filePath, "GameRecording", "InstantClipSeconds");
+    }
     if (!clipSec.isEmpty()) {
-        settings["GR_InstantClipSeconds"] = clipSec.toInt();
+        bool ok = false;
+        int secs = clipSec.toInt(&ok);
+        settings["GR_InstantClipSeconds"] = ok ? secs : 30;
     }
 
     // 5. voice settings (always prioritize SteamVoiceSettings_<AccountId> JSON block)
@@ -3199,8 +3211,8 @@ bool Optimizer::updateVdfFriendsSettings(const QString &filePath, const QString 
         QString maxKeepStr;
         if (mins == -1) maxKeepStr = "infinite";
         else if (mins == 0) maxKeepStr = "disabled";
-        else maxKeepStr = QString::number(mins);
-        updateVdfBlockSetting(filePath, "GameRecording", "BackgroundRecordMaxKeep", maxKeepStr);
+        else maxKeepStr = QString::number(mins) + "min";
+        updateVdfBlockSetting(filePath, "GameRecording", "BackgroundMaxKeep", maxKeepStr);
     }
     if (settings.contains("GR_VideoQuality")) {
         int qual = settings.value("GR_VideoQuality").toInt();
@@ -3217,7 +3229,7 @@ bool Optimizer::updateVdfFriendsSettings(const QString &filePath, const QString 
         updateVdfBlockSetting(filePath, "GameRecording", "BackgroundRecordPath", recFolder);
     }
     if (settings.contains("GR_InstantClipSeconds")) {
-        updateVdfBlockSetting(filePath, "GameRecording", "InstantClipSeconds", QString::number(settings.value("GR_InstantClipSeconds").toInt()));
+        updateVdfBlockSetting(filePath, "GameRecording", "InstantClipDuration", QString::number(settings.value("GR_InstantClipSeconds").toInt()));
     }
     if (settings.contains("GR_ToggleKey")) {
         updateVdfBlockSetting(filePath, "GameRecording", "ToggleKey", settings.value("GR_ToggleKey").toString());

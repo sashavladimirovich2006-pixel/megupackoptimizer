@@ -3839,7 +3839,8 @@ Item {
                             for (var i = 0; i < options.length; i++) {
                                 if (options[i].id === v) return options[i].label;
                             }
-                            return qsTr("120 Minutes");
+                            if (v === -1) return qsTr("Unlimited");
+                            return qsTr("%1 Minutes").arg(v);
                         }
 
                         Text {
