@@ -2066,6 +2066,7 @@ bool Optimizer::getVdfFriendsSettings(const QString &filePath, const QString &ac
     }
     QString recFolder = getVdfBlockSetting(filePath, "GameRecording", "BackgroundRecordPath");
     if (!recFolder.isEmpty()) {
+        recFolder.replace(QLatin1String("\\\\"), QLatin1String("\\"));
         settings["GR_RecordingFolder"] = recFolder;
     }
     QString clipSec = getVdfBlockSetting(filePath, "GameRecording", "InstantClipSeconds");
@@ -3203,7 +3204,9 @@ bool Optimizer::updateVdfFriendsSettings(const QString &filePath, const QString 
         updateVdfBlockSetting(filePath, "GameRecording", "VideoBitRate", bitRateStr);
     }
     if (settings.contains("GR_RecordingFolder")) {
-        updateVdfBlockSetting(filePath, "GameRecording", "BackgroundRecordPath", settings.value("GR_RecordingFolder").toString());
+        QString recFolder = settings.value("GR_RecordingFolder").toString();
+        recFolder.replace(QLatin1String("\\"), QLatin1String("\\\\"));
+        updateVdfBlockSetting(filePath, "GameRecording", "BackgroundRecordPath", recFolder);
     }
     if (settings.contains("GR_InstantClipSeconds")) {
         updateVdfBlockSetting(filePath, "GameRecording", "InstantClipSeconds", QString::number(settings.value("GR_InstantClipSeconds").toInt()));
