@@ -3750,21 +3750,31 @@ Item {
                 }
                 
                 Rectangle {
+                    id: clipKeyBtn
                     width: 100
                     height: 26
                     radius: 4
-                    color: "#161616"
-                    border.color: Theme.border
+                    color: (steamGameRecordingPage.recordingKeyName === "GR_ClipKey") ? Qt.rgba(Theme.accent.r, Theme.accent.g, Theme.accent.b, 0.1) : "#161616"
+                    border.color: (steamGameRecordingPage.recordingKeyName === "GR_ClipKey") ? Theme.accent : (clipKeyMouse.containsMouse ? Theme.accent : Theme.border)
                     border.width: 1
                     anchors.right: parent.right
                     anchors.verticalCenter: parent.verticalCenter
                     Text {
-                        text: "Ctrl+Shift+F11"
-                        color: Theme.textSecondary
+                        text: (steamGameRecordingPage.recordingKeyName === "GR_ClipKey") ? qsTr("Press key...") : steamGameRecordingPage.parseSteamKey((optimizerBackend.steamFriendsSettings && optimizerBackend.steamFriendsSettings["GR_ClipKey"]) ? optimizerBackend.steamFriendsSettings["GR_ClipKey"] : "Ctrl\tShift\tKEY_F11")
+                        color: (steamGameRecordingPage.recordingKeyName === "GR_ClipKey") ? Theme.accent : Theme.textSecondary
                         font.family: Theme.fontFamily
                         font.pixelSize: 10
                         font.bold: true
                         anchors.centerIn: parent
+                    }
+                    MouseArea {
+                        id: clipKeyMouse
+                        anchors.fill: parent
+                        hoverEnabled: true
+                        cursorShape: Qt.PointingHandCursor
+                        onClicked: {
+                            steamGameRecordingPage.recordingKeyName = "GR_ClipKey";
+                        }
                     }
                 }
             }

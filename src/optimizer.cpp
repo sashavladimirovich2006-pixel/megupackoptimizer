@@ -2018,6 +2018,8 @@ bool Optimizer::getVdfFriendsSettings(const QString &filePath, const QString &ac
     settings["GR_MarkerKey"] = !markerKey.isEmpty() ? markerKey : "Ctrl\tKEY_F12";
     QString screenshotKey = getVdfSystemSetting(filePath, "InGameOverlayScreenshotHotKey");
     settings["ScreenshotKey"] = !screenshotKey.isEmpty() ? screenshotKey : "KEY_F12";
+    QString clipKey = getVdfBlockSetting(filePath, "GameRecording", "InstantClipKey");
+    settings["GR_ClipKey"] = !clipKey.isEmpty() ? clipKey : "Ctrl\tShift\tKEY_F11";
     QString maxFps = getVdfBlockSetting(filePath, "GameRecording", "MaxFPS");
     if (!maxFps.isEmpty()) {
         settings["GR_MaxFPS"] = maxFps.toInt();
@@ -3225,6 +3227,9 @@ bool Optimizer::updateVdfFriendsSettings(const QString &filePath, const QString 
     }
     if (settings.contains("ScreenshotKey")) {
         updateVdfSystemSetting(filePath, "InGameOverlayScreenshotHotKey", settings.value("ScreenshotKey").toString());
+    }
+    if (settings.contains("GR_ClipKey")) {
+        updateVdfBlockSetting(filePath, "GameRecording", "InstantClipKey", settings.value("GR_ClipKey").toString());
     }
     if (settings.contains("EnableStreaming")) {
         updateVdfBlockSetting(filePath, "streaming_v2", "EnableStreaming", settings.value("EnableStreaming").toBool() ? "1" : "0");
@@ -6684,6 +6689,7 @@ void Optimizer::loadSystemStates() {
     defaultFriendsSettings["GR_ToggleKey"] = "Ctrl\tKEY_F11";
     defaultFriendsSettings["GR_MarkerKey"] = "Ctrl\tKEY_F12";
     defaultFriendsSettings["ScreenshotKey"] = "KEY_F12";
+    defaultFriendsSettings["GR_ClipKey"] = "Ctrl\tShift\tKEY_F11";
     defaultFriendsSettings["GR_InstantClipSeconds"] = 30;
     defaultFriendsSettings["noiseGateLevel"] = 2;
     defaultFriendsSettings["echoCancellation"] = true;
