@@ -4019,15 +4019,22 @@ Item {
                     steamStyle: true
                     checked: (optimizerBackend.steamFriendsSettings && typeof optimizerBackend.steamFriendsSettings["GR_EnableHardwareEncoding"] !== "undefined") ? !!optimizerBackend.steamFriendsSettings["GR_EnableHardwareEncoding"] : true
                     anchors.verticalCenter: parent.verticalCenter
-                    onToggled: (isChecked) => { root.toggleSteamFriendsSetting("GR_EnableHardwareEncoding", isChecked); }
+                    onToggled: (isChecked) => {
+                        root.toggleSteamFriendsSetting("GR_EnableHardwareEncoding", isChecked);
+                        if (!isChecked) {
+                            root.toggleSteamFriendsSetting("GR_EnableHEVC", false);
+                        }
+                    }
                 }
             }
-
+ 
             // Enable HEVC (H.265)
             Rectangle {
                 width: parent.width
                 height: Math.max(50, vToggleCol_2.implicitHeight + 8)
                 color: "transparent"
+                enabled: vSwitch_1.checked
+                opacity: enabled ? 1.0 : 0.5
                 Column {
                     id: vToggleCol_2
                     anchors.verticalCenter: parent.verticalCenter
@@ -4055,7 +4062,7 @@ Item {
                     id: vSwitch_2
                     anchors.right: parent.right
                     steamStyle: true
-                    checked: (optimizerBackend.steamFriendsSettings && typeof optimizerBackend.steamFriendsSettings["GR_EnableHEVC"] !== "undefined") ? !!optimizerBackend.steamFriendsSettings["GR_EnableHEVC"] : false
+                    checked: vSwitch_1.checked && (optimizerBackend.steamFriendsSettings && typeof optimizerBackend.steamFriendsSettings["GR_EnableHEVC"] !== "undefined") ? !!optimizerBackend.steamFriendsSettings["GR_EnableHEVC"] : false
                     anchors.verticalCenter: parent.verticalCenter
                     onToggled: (isChecked) => { root.toggleSteamFriendsSetting("GR_EnableHEVC", isChecked); }
                 }
