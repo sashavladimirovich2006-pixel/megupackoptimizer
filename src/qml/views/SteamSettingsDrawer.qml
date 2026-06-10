@@ -3687,6 +3687,7 @@ Item {
                 Column {
                     width: (parent.width - 16) / 2
                     spacing: 4
+                    visible: steamGameRecordingPage.currentMode === 1
                     Text {
                         text: qsTr("Length")
                         color: Theme.textSecondary
@@ -3787,7 +3788,7 @@ Item {
                 }
 
                 Column {
-                    width: (parent.width - 16) / 2
+                    width: (steamGameRecordingPage.currentMode === 1) ? (parent.width - 16) / 2 : parent.width
                     spacing: 4
                     Text {
                         text: qsTr("Quality")
@@ -3891,6 +3892,7 @@ Item {
 
             Row {
                 spacing: 6
+                visible: steamGameRecordingPage.currentMode === 1
                 Text {
                     text: qsTr("Estimated Disk Space:")
                     color: Theme.textSecondary
