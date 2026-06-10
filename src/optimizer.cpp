@@ -2508,11 +2508,10 @@ bool Optimizer::getVdfFriendsSettings(const QString &filePath, const QString &ac
     if (getPathBodyRange(content, {"UserLocalConfigStore", "GameRecording", "ExtraAudioSessions"}, easStart, easEnd)) {
         QString easBody = content.mid(easStart, easEnd - easStart);
         QVariantList appsList;
-        QRegularExpression blockRegex("\"\\d+\"\\s*\\{([^\\}]*)\\}");
-        QRegularExpressionMatchIterator it = blockRegex.globalMatch(easBody);
-        while (it.hasNext()) {
-            QRegularExpressionMatch match = it.next();
-            QString blockContent = match.captured(1);
+        int index = 0;
+        int subStart, subEnd;
+        while (getBlockBodyRange(easBody, 0, easBody.length(), QString::number(index), subStart, subEnd)) {
+            QString blockContent = easBody.mid(subStart, subEnd - subStart);
             QRegularExpression nameRegex("\"name\"\\s*\"([^\"]*)\"", QRegularExpression::CaseInsensitiveOption);
             QRegularExpression labelRegex("\"label\"\\s*\"([^\"]*)\"", QRegularExpression::CaseInsensitiveOption);
             QRegularExpressionMatch nameMatch = nameRegex.match(blockContent);
@@ -2559,6 +2558,7 @@ bool Optimizer::getVdfFriendsSettings(const QString &filePath, const QString &ac
                 appMap["fromVdf"] = true;
                 appsList.append(appMap);
             }
+            index++;
         }
         
         // Merge: add all from appsList, and add any from existingApps that aren't in appsList (match by exe)
