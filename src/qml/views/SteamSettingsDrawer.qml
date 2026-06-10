@@ -3054,6 +3054,89 @@ Item {
         visible: steamSettingsDrawer.subPage === "gamerecording"
 
         property int currentMode: (optimizerBackend.steamFriendsSettings && typeof optimizerBackend.steamFriendsSettings["BackgroundRecordMode"] !== "undefined") ? optimizerBackend.steamFriendsSettings["BackgroundRecordMode"] : 0
+        property string recordingKeyName: ""
+
+        function parseSteamKey(vdfKey) {
+            if (!vdfKey) return "";
+            var parts = vdfKey.split('\t');
+            var resultParts = [];
+            for (var i = 0; i < parts.length; i++) {
+                var p = parts[i].trim();
+                if (p === "") continue;
+                if (p.startsWith("KEY_")) {
+                    resultParts.push(p.substring(4));
+                } else {
+                    resultParts.push(p);
+                }
+            }
+            return resultParts.join('+');
+        }
+
+        function keyEventToSteamString(event) {
+            var modifiersStr = "";
+            if (event.modifiers & Qt.ControlModifier) {
+                modifiersStr += "Ctrl\t";
+            }
+            if (event.modifiers & Qt.ShiftModifier) {
+                modifiersStr += "Shift\t";
+            }
+            if (event.modifiers & Qt.AltModifier) {
+                modifiersStr += "Alt\t";
+            }
+            
+            var keyStr = "";
+            var key = event.key;
+            
+            if (key >= Qt.Key_F1 && key <= Qt.Key_F24) {
+                keyStr = "KEY_F" + (key - Qt.Key_F1 + 1);
+            }
+            else if (key >= Qt.Key_0 && key <= Qt.Key_9) {
+                keyStr = "KEY_" + (key - Qt.Key_0);
+            }
+            else if (key >= Qt.Key_A && key <= Qt.Key_Z) {
+                keyStr = "KEY_" + String.fromCharCode(key);
+            }
+            else {
+                switch(key) {
+                    case Qt.Key_Escape: keyStr = "KEY_ESCAPE"; break;
+                    case Qt.Key_Tab: keyStr = "KEY_TAB"; break;
+                    case Qt.Key_Space: keyStr = "KEY_SPACE"; break;
+                    case Qt.Key_Backspace: keyStr = "KEY_BACKSPACE"; break;
+                    case Qt.Key_Delete: keyStr = "KEY_DELETE"; break;
+                    case Qt.Key_Insert: keyStr = "KEY_INSERT"; break;
+                    case Qt.Key_Home: keyStr = "KEY_HOME"; break;
+                    case Qt.Key_End: keyStr = "KEY_END"; break;
+                    case Qt.Key_PageUp: keyStr = "KEY_PAGEUP"; break;
+                    case Qt.Key_PageDown: keyStr = "KEY_PAGEDOWN"; break;
+                    case Qt.Key_Left: keyStr = "KEY_LEFT"; break;
+                    case Qt.Key_Right: keyStr = "KEY_RIGHT"; break;
+                    case Qt.Key_Up: keyStr = "KEY_UP"; break;
+                    case Qt.Key_Down: keyStr = "KEY_DOWN"; break;
+                    case Qt.Key_Minus: keyStr = "KEY_MINUS"; break;
+                    case Qt.Key_Equal: keyStr = "KEY_EQUAL"; break;
+                    case Qt.Key_BracketLeft: keyStr = "KEY_LBRACKET"; break;
+                    case Qt.Key_BracketRight: keyStr = "KEY_RBRACKET"; break;
+                    case Qt.Key_Semicolon: keyStr = "KEY_SEMICOLON"; break;
+                    case Qt.Key_Apostrophe: keyStr = "KEY_APOSTROPHE"; break;
+                    case Qt.Key_Backslash: keyStr = "KEY_BACKSLASH"; break;
+                    case Qt.Key_Comma: keyStr = "KEY_COMMA"; break;
+                    case Qt.Key_Period: keyStr = "KEY_PERIOD"; break;
+                    case Qt.Key_Slash: keyStr = "KEY_SLASH"; break;
+                    case Qt.Key_QuoteLeft: keyStr = "KEY_BACKQUOTE"; break;
+                    default:
+                        if (event.text && event.text.length === 1) {
+                            var ch = event.text.toUpperCase();
+                            if (ch >= 'A' && ch <= 'Z') {
+                                keyStr = "KEY_" + ch;
+                            }
+                        }
+                        break;
+                }
+            }
+            
+            if (keyStr === "") return "";
+            return modifiersStr + keyStr;
+        }
 
         ListModel {
             id: audioAppsModel
@@ -3493,21 +3576,31 @@ Item {
                     anchors.verticalCenter: parent.verticalCenter
                 }
                 Rectangle {
+                    id: toggleKeyBtn
                     width: 100
                     height: 26
                     radius: 4
-                    color: "#161616"
-                    border.color: Theme.border
+                    color: (steamGameRecordingPage.recordingKeyName === "GR_ToggleKey") ? Qt.rgba(Theme.accent.r, Theme.accent.g, Theme.accent.b, 0.1) : "#161616"
+                    border.color: (steamGameRecordingPage.recordingKeyName === "GR_ToggleKey") ? Theme.accent : (toggleKeyMouse.containsMouse ? Theme.accent : Theme.border)
                     border.width: 1
                     anchors.right: parent.right
                     anchors.verticalCenter: parent.verticalCenter
                     Text {
-                        text: "Ctrl+F11"
-                        color: Theme.textSecondary
+                        text: (steamGameRecordingPage.recordingKeyName === "GR_ToggleKey") ? qsTr("Press key...") : steamGameRecordingPage.parseSteamKey((optimizerBackend.steamFriendsSettings && optimizerBackend.steamFriendsSettings["GR_ToggleKey"]) ? optimizerBackend.steamFriendsSettings["GR_ToggleKey"] : "Ctrl\tKEY_F11")
+                        color: (steamGameRecordingPage.recordingKeyName === "GR_ToggleKey") ? Theme.accent : Theme.textSecondary
                         font.family: Theme.fontFamily
                         font.pixelSize: 11
                         font.bold: true
                         anchors.centerIn: parent
+                    }
+                    MouseArea {
+                        id: toggleKeyMouse
+                        anchors.fill: parent
+                        hoverEnabled: true
+                        cursorShape: Qt.PointingHandCursor
+                        onClicked: {
+                            steamGameRecordingPage.recordingKeyName = "GR_ToggleKey";
+                        }
                     }
                 }
             }
@@ -3525,21 +3618,31 @@ Item {
                     anchors.verticalCenter: parent.verticalCenter
                 }
                 Rectangle {
+                    id: markerKeyBtn
                     width: 100
                     height: 26
                     radius: 4
-                    color: "#161616"
-                    border.color: Theme.border
+                    color: (steamGameRecordingPage.recordingKeyName === "GR_MarkerKey") ? Qt.rgba(Theme.accent.r, Theme.accent.g, Theme.accent.b, 0.1) : "#161616"
+                    border.color: (steamGameRecordingPage.recordingKeyName === "GR_MarkerKey") ? Theme.accent : (markerKeyMouse.containsMouse ? Theme.accent : Theme.border)
                     border.width: 1
                     anchors.right: parent.right
                     anchors.verticalCenter: parent.verticalCenter
                     Text {
-                        text: "Ctrl+F12"
-                        color: Theme.textSecondary
+                        text: (steamGameRecordingPage.recordingKeyName === "GR_MarkerKey") ? qsTr("Press key...") : steamGameRecordingPage.parseSteamKey((optimizerBackend.steamFriendsSettings && optimizerBackend.steamFriendsSettings["GR_MarkerKey"]) ? optimizerBackend.steamFriendsSettings["GR_MarkerKey"] : "Ctrl\tKEY_F12")
+                        color: (steamGameRecordingPage.recordingKeyName === "GR_MarkerKey") ? Theme.accent : Theme.textSecondary
                         font.family: Theme.fontFamily
                         font.pixelSize: 11
                         font.bold: true
                         anchors.centerIn: parent
+                    }
+                    MouseArea {
+                        id: markerKeyMouse
+                        anchors.fill: parent
+                        hoverEnabled: true
+                        cursorShape: Qt.PointingHandCursor
+                        onClicked: {
+                            steamGameRecordingPage.recordingKeyName = "GR_MarkerKey";
+                        }
                     }
                 }
             }
@@ -3557,21 +3660,31 @@ Item {
                     anchors.verticalCenter: parent.verticalCenter
                 }
                 Rectangle {
+                    id: screenshotKeyBtn
                     width: 100
                     height: 26
                     radius: 4
-                    color: "#161616"
-                    border.color: Theme.border
+                    color: (steamGameRecordingPage.recordingKeyName === "ScreenshotKey") ? Qt.rgba(Theme.accent.r, Theme.accent.g, Theme.accent.b, 0.1) : "#161616"
+                    border.color: (steamGameRecordingPage.recordingKeyName === "ScreenshotKey") ? Theme.accent : (screenshotKeyMouse.containsMouse ? Theme.accent : Theme.border)
                     border.width: 1
                     anchors.right: parent.right
                     anchors.verticalCenter: parent.verticalCenter
                     Text {
-                        text: "F12"
-                        color: Theme.textSecondary
+                        text: (steamGameRecordingPage.recordingKeyName === "ScreenshotKey") ? qsTr("Press key...") : steamGameRecordingPage.parseSteamKey((optimizerBackend.steamFriendsSettings && optimizerBackend.steamFriendsSettings["ScreenshotKey"]) ? optimizerBackend.steamFriendsSettings["ScreenshotKey"] : "KEY_F12")
+                        color: (steamGameRecordingPage.recordingKeyName === "ScreenshotKey") ? Theme.accent : Theme.textSecondary
                         font.family: Theme.fontFamily
                         font.pixelSize: 11
                         font.bold: true
                         anchors.centerIn: parent
+                    }
+                    MouseArea {
+                        id: screenshotKeyMouse
+                        anchors.fill: parent
+                        hoverEnabled: true
+                        cursorShape: Qt.PointingHandCursor
+                        onClicked: {
+                            steamGameRecordingPage.recordingKeyName = "ScreenshotKey";
+                        }
                     }
                 }
             }
@@ -10414,5 +10527,64 @@ Item {
     }
 
     // (Removed pairSteamLinkDialog)
+
+    Item {
+        id: hotkeyGrabber
+        anchors.fill: parent
+        visible: steamGameRecordingPage.recordingKeyName !== ""
+        focus: visible
+
+        MouseArea {
+            anchors.fill: parent
+            hoverEnabled: true
+            preventStealing: true
+            onClicked: steamGameRecordingPage.recordingKeyName = ""
+        }
+
+        Rectangle {
+            anchors.fill: parent
+            color: "#B0000000"
+            
+            Column {
+                anchors.centerIn: parent
+                spacing: 12
+                
+                Text {
+                    text: qsTr("Press a key combination...")
+                    color: Theme.accent
+                    font.family: Theme.fontFamily
+                    font.pixelSize: 16
+                    font.bold: true
+                    anchors.horizontalCenter: parent.horizontalCenter
+                }
+                
+                Text {
+                    text: qsTr("Press ESC to cancel")
+                    color: Theme.textSecondary
+                    font.family: Theme.fontFamily
+                    font.pixelSize: 12
+                    anchors.horizontalCenter: parent.horizontalCenter
+                }
+            }
+        }
+
+        Keys.onPressed: (event) => {
+            if (event.key === Qt.Key_Escape) {
+                steamGameRecordingPage.recordingKeyName = "";
+                event.accepted = true;
+                return;
+            }
+            if (event.key === Qt.Key_Control || event.key === Qt.Key_Shift || event.key === Qt.Key_Alt || event.key === Qt.Key_Meta) {
+                event.accepted = true;
+                return;
+            }
+            var vdfStr = steamGameRecordingPage.keyEventToSteamString(event);
+            if (vdfStr !== "") {
+                root.toggleSteamFriendsSetting(steamGameRecordingPage.recordingKeyName, vdfStr);
+                steamGameRecordingPage.recordingKeyName = "";
+            }
+            event.accepted = true;
+        }
+    }
 }
 

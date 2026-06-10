@@ -2012,6 +2012,12 @@ bool Optimizer::getVdfFriendsSettings(const QString &filePath, const QString &ac
     if (!recMode.isEmpty()) {
         settings["BackgroundRecordMode"] = recMode.toInt();
     }
+    QString toggleKey = getVdfBlockSetting(filePath, "GameRecording", "ToggleKey");
+    settings["GR_ToggleKey"] = !toggleKey.isEmpty() ? toggleKey : "Ctrl\tKEY_F11";
+    QString markerKey = getVdfBlockSetting(filePath, "GameRecording", "MarkerKey");
+    settings["GR_MarkerKey"] = !markerKey.isEmpty() ? markerKey : "Ctrl\tKEY_F12";
+    QString screenshotKey = getVdfSystemSetting(filePath, "InGameOverlayScreenshotHotKey");
+    settings["ScreenshotKey"] = !screenshotKey.isEmpty() ? screenshotKey : "KEY_F12";
     QString maxFps = getVdfBlockSetting(filePath, "GameRecording", "MaxFPS");
     if (!maxFps.isEmpty()) {
         settings["GR_MaxFPS"] = maxFps.toInt();
@@ -3210,6 +3216,15 @@ bool Optimizer::updateVdfFriendsSettings(const QString &filePath, const QString 
     }
     if (settings.contains("GR_InstantClipSeconds")) {
         updateVdfBlockSetting(filePath, "GameRecording", "InstantClipSeconds", QString::number(settings.value("GR_InstantClipSeconds").toInt()));
+    }
+    if (settings.contains("GR_ToggleKey")) {
+        updateVdfBlockSetting(filePath, "GameRecording", "ToggleKey", settings.value("GR_ToggleKey").toString());
+    }
+    if (settings.contains("GR_MarkerKey")) {
+        updateVdfBlockSetting(filePath, "GameRecording", "MarkerKey", settings.value("GR_MarkerKey").toString());
+    }
+    if (settings.contains("ScreenshotKey")) {
+        updateVdfSystemSetting(filePath, "InGameOverlayScreenshotHotKey", settings.value("ScreenshotKey").toString());
     }
     if (settings.contains("EnableStreaming")) {
         updateVdfBlockSetting(filePath, "streaming_v2", "EnableStreaming", settings.value("EnableStreaming").toBool() ? "1" : "0");
@@ -6666,6 +6681,9 @@ void Optimizer::loadSystemStates() {
     defaultFriendsSettings["GR_MaxKeepMinutes"] = 120;
     defaultFriendsSettings["GR_VideoQuality"] = 2; // 0=Low, 1=Medium, 2=High(Default), 3=Ultra
     defaultFriendsSettings["GR_RecordingFolder"] = "";
+    defaultFriendsSettings["GR_ToggleKey"] = "Ctrl\tKEY_F11";
+    defaultFriendsSettings["GR_MarkerKey"] = "Ctrl\tKEY_F12";
+    defaultFriendsSettings["ScreenshotKey"] = "KEY_F12";
     defaultFriendsSettings["GR_InstantClipSeconds"] = 30;
     defaultFriendsSettings["noiseGateLevel"] = 2;
     defaultFriendsSettings["echoCancellation"] = true;
