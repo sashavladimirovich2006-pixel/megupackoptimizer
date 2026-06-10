@@ -2020,11 +2020,11 @@ bool Optimizer::getVdfFriendsSettings(const QString &filePath, const QString &ac
     if (!maxVidHeight.isEmpty()) {
         settings["GR_MaxVideoHeight"] = maxVidHeight.toInt();
     }
-    QString hwEnc = getVdfBlockSetting(filePath, "GameRecording", "EnableHardwareEncoding");
+    QString hwEnc = getVdfBlockSetting(filePath, "GameStream", "HardwareVideoEncode");
     if (!hwEnc.isEmpty()) {
         settings["GR_EnableHardwareEncoding"] = (hwEnc != "0");
     }
-    QString hevc = getVdfBlockSetting(filePath, "GameRecording", "EnableHEVC");
+    QString hevc = getVdfBlockSetting(filePath, "GameStream", "EnableVideoH265");
     if (!hevc.isEmpty()) {
         settings["GR_EnableHEVC"] = (hevc != "0");
     }
@@ -3166,10 +3166,10 @@ bool Optimizer::updateVdfFriendsSettings(const QString &filePath, const QString 
         updateVdfBlockSetting(filePath, "GameRecording", "VideoMaxHeight", QString::number(settings.value("GR_MaxVideoHeight").toInt()));
     }
     if (settings.contains("GR_EnableHardwareEncoding")) {
-        updateVdfBlockSetting(filePath, "GameRecording", "EnableHardwareEncoding", settings.value("GR_EnableHardwareEncoding").toBool() ? "1" : "0");
+        updateVdfBlockSetting(filePath, "GameStream", "HardwareVideoEncode", settings.value("GR_EnableHardwareEncoding").toBool() ? "1" : "0");
     }
     if (settings.contains("GR_EnableHEVC")) {
-        updateVdfBlockSetting(filePath, "GameRecording", "EnableHEVC", settings.value("GR_EnableHEVC").toBool() ? "1" : "0");
+        updateVdfBlockSetting(filePath, "GameStream", "EnableVideoH265", settings.value("GR_EnableHEVC").toBool() ? "1" : "0");
     }
     if (settings.contains("GR_RecordMicrophone")) {
         updateVdfBlockSetting(filePath, "GameRecording", "Audio_Mic", settings.value("GR_RecordMicrophone").toBool() ? "1" : "0");
