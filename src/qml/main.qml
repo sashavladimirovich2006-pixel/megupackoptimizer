@@ -679,7 +679,7 @@ ApplicationWindow {
                     
                     Rectangle {
                         width: 10
-                        height: 1.5
+                        height: 1
                         color: Theme.textPrimary
                         anchors.centerIn: parent
                     }
@@ -698,23 +698,71 @@ ApplicationWindow {
                     height: parent.height
                     color: maxMouse.containsMouse ? (Theme.currentTheme === "Белоснежная" || Theme.currentTheme === "Розовая" ? "#0F000000" : "#1AFFFFFF") : "transparent"
                     
+                    // Maximize Icon (when not maximized)
                     Rectangle {
+                        visible: window.visibility !== Window.Maximized
                         width: 10
                         height: 10
                         color: "transparent"
                         border.color: Theme.textPrimary
-                        border.width: 1.5
+                        border.width: 1
+                        radius: 1.5
                         anchors.centerIn: parent
-                        
+                    }
+
+                    // Restore Icon (when maximized)
+                    Item {
+                        visible: window.visibility === Window.Maximized
+                        width: 12
+                        height: 12
+                        anchors.centerIn: parent
+
+                        // Background rounded L-shape representing the background square
+                        Shape {
+                            anchors.fill: parent
+                            smooth: true
+                            ShapePath {
+                                fillColor: "transparent"
+                                strokeColor: Theme.textPrimary
+                                strokeWidth: 1
+                                capStyle: ShapePath.FlatCap
+                                
+                                PathMove { x: 4.5; y: 4.5 }
+                                PathLine { x: 4.5; y: 1.5 }
+                                PathArc {
+                                    x: 5.5; y: 0.5
+                                    radiusX: 1
+                                    radiusY: 1
+                                    direction: PathArc.Clockwise
+                                }
+                                PathLine { x: 10.5; y: 0.5 }
+                                PathArc {
+                                    x: 11.5; y: 1.5
+                                    radiusX: 1
+                                    radiusY: 1
+                                    direction: PathArc.Clockwise
+                                }
+                                PathLine { x: 11.5; y: 6.5 }
+                                PathArc {
+                                    x: 10.5; y: 7.5
+                                    radiusX: 1
+                                    radiusY: 1
+                                    direction: PathArc.Clockwise
+                                }
+                                PathLine { x: 7.5; y: 7.5 }
+                            }
+                        }
+
+                        // Foreground square
                         Rectangle {
-                            visible: window.visibility === Window.Maximized
                             width: 8
                             height: 8
+                            x: 0
+                            y: 4
                             color: "transparent"
                             border.color: Theme.textPrimary
-                            border.width: 1.5
-                            x: 3
-                            y: -3
+                            border.width: 1
+                            radius: 1.5
                         }
                     }
                     
@@ -738,15 +786,31 @@ ApplicationWindow {
                     height: parent.height
                     color: closeMouse.containsMouse ? "#E81123" : "transparent"
                     
-                    Image {
-                        source: "qrc:/MeguPackOptimizer/src/resources/close.svg"
+                    Item {
                         width: 10
                         height: 10
                         anchors.centerIn: parent
-                        sourceSize.width: 10
-                        sourceSize.height: 10
                         opacity: closeMouse.containsMouse ? 1.0 : 0.8
                         Behavior on opacity { NumberAnimation { duration: 100 } }
+                        
+                        Rectangle {
+                            width: 12
+                            height: 1
+                            color: closeMouse.containsMouse ? "#FFFFFF" : Theme.textPrimary
+                            rotation: 45
+                            transformOrigin: Item.Center
+                            anchors.centerIn: parent
+                            antialiasing: true
+                        }
+                        Rectangle {
+                            width: 12
+                            height: 1
+                            color: closeMouse.containsMouse ? "#FFFFFF" : Theme.textPrimary
+                            rotation: -45
+                            transformOrigin: Item.Center
+                            anchors.centerIn: parent
+                            antialiasing: true
+                        }
                     }
                     
                     MouseArea {
