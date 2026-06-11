@@ -3182,23 +3182,12 @@ Item {
                 width: parent.width
                 spacing: 8
 
-                Row {
-                    width: parent.width
-                    Text {
-                        text: qsTr("UI Scale")
-                        color: Theme.textPrimary
-                        font.family: Theme.fontFamily
-                        font.pixelSize: 12
-                        font.bold: true
-                    }
-                    Text {
-                        text: Math.round(uiScaleSlider.value * 100) + "%"
-                        color: Theme.accent
-                        font.family: Theme.fontFamily
-                        font.pixelSize: 11
-                        font.bold: true
-                        anchors.right: parent.right
-                    }
+                Text {
+                    text: qsTr("UI Scale")
+                    color: Theme.textPrimary
+                    font.family: Theme.fontFamily
+                    font.pixelSize: 12
+                    font.bold: true
                 }
 
                 Slider {
@@ -3221,29 +3210,50 @@ Item {
                         width: uiScaleSlider.availableWidth
                         height: implicitHeight
                         radius: 2
-                        color: Theme.border
+                        color: "#3d4450"
 
                         Rectangle {
                             width: uiScaleSlider.visualPosition * parent.width
                             height: parent.height
-                            color: Theme.accent
+                            color: "#1a9fff"
                             radius: 2
                         }
                     }
 
-                    handle: Rectangle {
+                    handle: Item {
+                        id: handleItem
+                        implicitWidth: 18
+                        implicitHeight: 26
                         x: uiScaleSlider.leftPadding + uiScaleSlider.visualPosition * (uiScaleSlider.availableWidth - width)
-                        y: uiScaleSlider.topPadding + uiScaleSlider.availableHeight / 2 - height / 2
-                        implicitWidth: 16
-                        implicitHeight: 16
-                        radius: 8
-                        color: uiScaleSlider.pressed ? Theme.accent : Theme.textPrimary
-                        border.color: Theme.accent
-                        border.width: uiScaleSlider.hovered ? 2 : 0
+                        y: uiScaleSlider.topPadding + uiScaleSlider.availableHeight / 2 - height + 9
 
-                        Behavior on color { ColorAnimation { duration: Theme.animFast } }
-                        Behavior on scale { NumberAnimation { duration: Theme.animFast } }
-                        scale: uiScaleSlider.pressed ? 1.2 : (uiScaleSlider.hovered ? 1.1 : 1.0)
+                        Canvas {
+                            id: arrowCanvas
+                            width: 8
+                            height: 5
+                            anchors.top: parent.top
+                            anchors.horizontalCenter: parent.horizontalCenter
+                            onPaint: {
+                                var ctx = getContext("2d");
+                                ctx.reset();
+                                ctx.fillStyle = "#6d7780";
+                                ctx.beginPath();
+                                ctx.moveTo(0, 0);
+                                ctx.lineTo(8, 0);
+                                ctx.lineTo(4, 5);
+                                ctx.closePath();
+                                ctx.fill();
+                            }
+                        }
+
+                        Rectangle {
+                            width: 16
+                            height: 16
+                            radius: 8
+                            color: "#ffffff"
+                            anchors.bottom: parent.bottom
+                            anchors.horizontalCenter: parent.horizontalCenter
+                        }
                     }
                 }
 
