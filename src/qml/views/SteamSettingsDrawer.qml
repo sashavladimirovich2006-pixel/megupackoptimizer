@@ -3073,6 +3073,15 @@ Item {
             width: parent.width
             spacing: 16
 
+            Text {
+                text: qsTr("Optimization")
+                color: Theme.accent
+                font.family: Theme.fontFamily
+                font.pixelSize: 11
+                font.bold: true
+                font.letterSpacing: 1.0
+            }
+
             // Toggle 1: Reduce Motion
             Rectangle {
                 width: parent.width
@@ -3111,11 +3120,61 @@ Item {
                     }
             }
 
+            // Toggle 2: High Contrast Mode
+            Rectangle {
+                width: parent.width
+                height: Math.max(50, steamToggleCol_hc.implicitHeight + 12)
+                color: "transparent"
+
+                Column {
+                    id: steamToggleCol_hc
+                    anchors.verticalCenter: parent.verticalCenter
+                    spacing: 2
+                    anchors.left: parent.left
+                    anchors.right: steamToggleSwitch_hc.left
+                    anchors.rightMargin: 12
+
+                    Text {
+                        text: qsTr("High Contrast Mode")
+                        color: Theme.textPrimary
+                        font.family: Theme.fontFamily
+                        font.pixelSize: 12
+                        font.bold: true
+                    }
+                    Text {
+                        text: qsTr("Make Steam text, buttons and icons more distinct from the background.")
+                        color: Theme.textSecondary
+                        font.family: Theme.fontFamily
+                        font.pixelSize: 10
+                        width: parent.width
+                        wrapMode: Text.WordWrap
+                    }
+                }
+
+                MeguSwitch {
+                    id: steamToggleSwitch_hc
+                    anchors.right: parent.right
+                    steamStyle: true
+                    checked: optimizerBackend.steamFriendsSettings ? !!optimizerBackend.steamFriendsSettings["bHighContrastMode"] : false
+                    anchors.verticalCenter: parent.verticalCenter
+                    onToggled: (isChecked) => { root.toggleSteamFriendsSetting("bHighContrastMode", isChecked); }
+                }
+            }
+
             // Divider
             Rectangle {
                 width: parent.width
                 height: 1
                 color: Theme.border
+            }
+
+            Text {
+                text: qsTr("Customization")
+                color: Theme.accent
+                font.family: Theme.fontFamily
+                font.pixelSize: 11
+                font.bold: true
+                font.letterSpacing: 1.0
             }
 
             // Slider: UI Scale
@@ -3205,54 +3264,6 @@ Item {
                         font.bold: true
                         anchors.right: parent.right
                     }
-                }
-            }
-
-            // Divider
-            Rectangle {
-                width: parent.width
-                height: 1
-                color: Theme.border
-            }
-
-            // Toggle 2: High Contrast Mode
-            Rectangle {
-                width: parent.width
-                height: Math.max(50, steamToggleCol_hc.implicitHeight + 12)
-                color: "transparent"
-
-                Column {
-                    id: steamToggleCol_hc
-                    anchors.verticalCenter: parent.verticalCenter
-                    spacing: 2
-                    anchors.left: parent.left
-                    anchors.right: steamToggleSwitch_hc.left
-                    anchors.rightMargin: 12
-
-                    Text {
-                        text: qsTr("High Contrast Mode")
-                        color: Theme.textPrimary
-                        font.family: Theme.fontFamily
-                        font.pixelSize: 12
-                        font.bold: true
-                    }
-                    Text {
-                        text: qsTr("Make Steam text, buttons and icons more distinct from the background.")
-                        color: Theme.textSecondary
-                        font.family: Theme.fontFamily
-                        font.pixelSize: 10
-                        width: parent.width
-                        wrapMode: Text.WordWrap
-                    }
-                }
-
-                MeguSwitch {
-                    id: steamToggleSwitch_hc
-                    anchors.right: parent.right
-                    steamStyle: true
-                    checked: optimizerBackend.steamFriendsSettings ? !!optimizerBackend.steamFriendsSettings["bHighContrastMode"] : false
-                    anchors.verticalCenter: parent.verticalCenter
-                    onToggled: (isChecked) => { root.toggleSteamFriendsSetting("bHighContrastMode", isChecked); }
                 }
             }
         }
