@@ -55,9 +55,7 @@ AcrylicPanel {
                     id: progressShape
                     anchors.fill: parent
                     visible: card.showProgressBar
-                    
-                    layer.enabled: true
-                    layer.samples: 4
+                    antialiasing: true
 
                     // Background track ring
                     ShapePath {

@@ -7487,7 +7487,7 @@ Item {
 
 
 
-        anchors.topMargin: 112
+        anchors.topMargin: 128
 
         anchors.bottomMargin: 24
 
@@ -37229,8 +37229,7 @@ Item {
 
                             Shape {
                                 anchors.fill: parent
-                                layer.enabled: true
-                                layer.samples: 4
+                                antialiasing: true
 
                                 // Track background arc
                                 ShapePath {

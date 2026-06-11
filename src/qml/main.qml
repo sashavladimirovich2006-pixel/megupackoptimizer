@@ -153,7 +153,8 @@ ApplicationWindow {
     header: Rectangle {
         id: header
         width: parent.width
-        height: 72
+        height: 88
+
         color: "transparent"
         border.width: 0
 
@@ -196,11 +197,11 @@ ApplicationWindow {
         // Left Island (Brand Logo + Real-Time Logs button)
         Rectangle {
             id: leftIsland
-            height: 64
+            height: 72
             anchors.left: parent.left
             anchors.leftMargin: 16
             anchors.top: parent.top
-            anchors.topMargin: leftIslandHover.containsMouse ? 19 : 20
+            anchors.topMargin: leftIslandHover.containsMouse ? 7 : 8
             width: leftIslandRow.width + 24
             color: Theme.panelBg
             border.color: leftIslandHover.containsMouse ? Theme.borderHover : Theme.border
@@ -268,7 +269,7 @@ ApplicationWindow {
                         text: "MEGU PACK"
                         color: Theme.textPrimary
                         font.family: Theme.fontFamily
-                        font.pixelSize: 11
+                        font.pixelSize: 12
                         font.bold: true
                         font.letterSpacing: 1.0
                     }
@@ -277,7 +278,7 @@ ApplicationWindow {
                         text: "OPTIMIZER"
                         color: Theme.accent
                         font.family: Theme.fontFamily
-                        font.pixelSize: 8
+                        font.pixelSize: 9
                         font.bold: true
                         font.letterSpacing: 2.0
                     }
@@ -299,8 +300,8 @@ ApplicationWindow {
 
                     Item {
                         id: speedometerCircle
-                        width: 36
-                        height: 36
+                        width: 40
+                        height: 40
                         anchors.verticalCenter: parent.verticalCenter
 
                         property real percentage: window.optimizationPercentage
@@ -336,10 +337,10 @@ ApplicationWindow {
                                 strokeColor: Theme.currentTheme === "Blackout полностью черная" ? "#222" : Qt.rgba(Theme.border.r, Theme.border.g, Theme.border.b, 0.25)
                                 strokeWidth: 2
                                 PathAngleArc {
-                                    centerX: 18
-                                    centerY: 18
-                                    radiusX: 16
-                                    radiusY: 16
+                                    centerX: 20
+                                    centerY: 20
+                                    radiusX: 18
+                                    radiusY: 18
                                     startAngle: 0
                                     sweepAngle: 360
                                 }
@@ -364,10 +365,10 @@ ApplicationWindow {
                                 strokeWidth: 2
                                 capStyle: ShapePath.RoundCap
                                 PathAngleArc {
-                                    centerX: 18
-                                    centerY: 18
-                                    radiusX: 16
-                                    radiusY: 16
+                                    centerX: 20
+                                    centerY: 20
+                                    radiusX: 18
+                                    radiusY: 18
                                     startAngle: -90
                                     sweepAngle: (speedometerCircle.animPercentage / 100) * 360
                                 }
@@ -379,7 +380,7 @@ ApplicationWindow {
                             text: Math.round(speedometerCircle.animPercentage) + "%"
                             color: speedometerCircle.levelColor
                             font.family: Theme.fontFamily
-                            font.pixelSize: 10
+                            font.pixelSize: 11
                             font.bold: true
                             anchors.centerIn: parent
                         }
@@ -419,7 +420,7 @@ ApplicationWindow {
                         }
                         color: speedometerCircle.levelColor
                         font.family: Theme.fontFamily
-                        font.pixelSize: 11
+                        font.pixelSize: 12
                         font.bold: true
                         anchors.verticalCenter: parent.verticalCenter
                     }
@@ -437,8 +438,8 @@ ApplicationWindow {
                 // Circular Real-Time Logs button inside left island
                 Item {
                     id: realTimeLogsRoundBtn
-                    width: 28
-                    height: 28
+                    width: 32
+                    height: 32
                     anchors.verticalCenter: parent.verticalCenter
                     opacity: !optimizerBackend.isOptimizingSystem ? 1.0 : 0.35
                     Behavior on opacity { NumberAnimation { duration: Theme.animFast } }
@@ -448,7 +449,7 @@ ApplicationWindow {
                     Rectangle {
                         id: roundBtnBg
                         anchors.fill: parent
-                        radius: 14
+                        radius: 16
                         color: {
                             if (realTimeLogsRoundBtn.isSelected) {
                                 return logsBtnMouse.pressed ? Qt.rgba(Theme.accent.r, Theme.accent.g, Theme.accent.b, 0.30) : 
@@ -473,16 +474,16 @@ ApplicationWindow {
                     }
                     
                     Item {
-                        width: 12
-                        height: 12
+                        width: 14
+                        height: 14
                         anchors.centerIn: parent
                         
                         Image {
                             id: logsIcon
                             source: "qrc:/MeguPackOptimizer/src/resources/terminal.svg"
                             anchors.fill: parent
-                            sourceSize.width: 12
-                            sourceSize.height: 12
+                            sourceSize.width: 14
+                            sourceSize.height: 14
                             visible: false
                         }
                         
@@ -515,10 +516,10 @@ ApplicationWindow {
         // Center Island (Navigation Tab Container)
         Rectangle {
             id: centerIsland
-            height: 64
+            height: 72
             anchors.horizontalCenter: parent.horizontalCenter
             anchors.top: parent.top
-            anchors.topMargin: centerIslandHover.containsMouse ? 19 : 20
+            anchors.topMargin: centerIslandHover.containsMouse ? 7 : 8
             width: tabsRow.width + 24
             color: Theme.panelBg
             border.color: centerIslandHover.containsMouse ? Theme.borderHover : Theme.border
@@ -563,7 +564,7 @@ ApplicationWindow {
                     enabled: !optimizerBackend.isOptimizingSystem
                     onClicked: window.activeTab = 0
                     anchors.verticalCenter: parent.verticalCenter
-                    height: 40
+                    height: 48
                 }
                 
                 MeguButton {
@@ -583,7 +584,7 @@ ApplicationWindow {
                         optDropdown.open();
                     }
                     anchors.verticalCenter: parent.verticalCenter
-                    height: 40
+                    height: 48
                 }
                 
                 MeguButton {
@@ -595,7 +596,7 @@ ApplicationWindow {
                     enabled: !optimizerBackend.isOptimizingSystem
                     onClicked: window.activeTab = 1
                     anchors.verticalCenter: parent.verticalCenter
-                    height: 40
+                    height: 48
                 }
             }
         }
@@ -603,11 +604,11 @@ ApplicationWindow {
         // Right Island (Version Label + Window Custom Controls)
         Rectangle {
             id: rightIsland
-            height: 64
+            height: 72
             anchors.right: parent.right
             anchors.rightMargin: 16
             anchors.top: parent.top
-            anchors.topMargin: rightIslandHover.containsMouse ? 19 : 20
+            anchors.topMargin: rightIslandHover.containsMouse ? 7 : 8
             width: rightInfoRow.implicitWidth + 32 + windowControls.implicitWidth
             color: Theme.panelBg
             border.color: rightIslandHover.containsMouse ? Theme.borderHover : Theme.border
@@ -822,9 +823,9 @@ ApplicationWindow {
         LogViewer {
             id: logsView
             x: 24
-            y: 112
+            y: 128
             width: visible ? (parent.width - 48) : 752
-            height: visible ? (parent.height - 112 - 24) : 424
+            height: visible ? (parent.height - 128 - 24) : 408
             opacity: window.activeTab === 2 ? 1.0 : 0.0
             visible: opacity > 0.0
             enabled: opacity === 1.0

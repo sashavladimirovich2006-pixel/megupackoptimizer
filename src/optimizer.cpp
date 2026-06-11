@@ -2007,6 +2007,32 @@ bool Optimizer::getVdfFriendsSettings(const QString &filePath, const QString &ac
         settings["bReduceMotion"] = (reduceMotion != "0");
     }
 
+    // 3.5. controller customization settings
+    QString xboxSupport = getVdfRootSetting(filePath, "SteamController_XBoxSupport");
+    if (!xboxSupport.isEmpty()) settings["Controller_XBoxSupport"] = (xboxSupport != "0");
+
+    QString psSupport = getVdfRootSetting(filePath, "SteamController_PSSupport");
+    settings["Controller_PSSupport"] = psSupport.isEmpty() ? "1" : psSupport;
+
+    QString switchSupport = getVdfRootSetting(filePath, "SteamController_SwitchSupport");
+    settings["Controller_SwitchSupport"] = switchSupport.isEmpty() ? false : (switchSupport != "0");
+
+    QString genericSupport = getVdfRootSetting(filePath, "SteamController_GenericGamepadSupport");
+    settings["Controller_GenericSupport"] = genericSupport.isEmpty() ? false : (genericSupport != "0");
+
+    QString turnOffBigPicture = getVdfRootSetting(filePath, "CSettingsPanelGameController.TurnOff");
+    settings["Controller_TurnOffBigPicture"] = turnOffBigPicture.isEmpty() ? false : (turnOffBigPicture != "0");
+
+
+    QString guideButton = getVdfRootSetting(filePath, "Controller_CheckGuideButton");
+    if (!guideButton.isEmpty()) settings["Controller_GuideButton"] = (guideButton != "0");
+
+    QString enableChord = getVdfRootSetting(filePath, "SteamController_Enable_Chord");
+    if (!enableChord.isEmpty()) settings["Controller_EnableChord"] = (enableChord != "0");
+
+    QString ctrlTimeout = getVdfRootSetting(filePath, "CSettingsPanelGameController.Timeout");
+    settings["Controller_Timeout"] = ctrlTimeout.isEmpty() ? "15" : ctrlTimeout;
+
     // 4. game recording settings
     QString recMode = getVdfBlockSetting(filePath, "GameRecording", "BackgroundRecordMode");
     if (!recMode.isEmpty()) {
@@ -2707,6 +2733,14 @@ bool Optimizer::updateVdfFriendsSettings(const QString &filePath, const QString 
     incomingObj.remove("RemotePlay_AV1");
     incomingObj.remove("RemotePlay_ControllerButton");
     incomingObj.remove("RemotePlay_ControllerVisibility");
+    incomingObj.remove("Controller_XBoxSupport");
+    incomingObj.remove("Controller_PSSupport");
+    incomingObj.remove("Controller_SwitchSupport");
+    incomingObj.remove("Controller_GenericSupport");
+    incomingObj.remove("Controller_TurnOffBigPicture");
+    incomingObj.remove("Controller_GuideButton");
+    incomingObj.remove("Controller_EnableChord");
+    incomingObj.remove("Controller_Timeout");
     incomingObj.remove("noiseGateLevel");
     incomingObj.remove("echoCancellation");
     incomingObj.remove("noiseCancellation");
@@ -3155,6 +3189,23 @@ bool Optimizer::updateVdfFriendsSettings(const QString &filePath, const QString 
     if (settings.contains("bControllerLowPlaySound")) {
         updateVdfSystemSetting(filePath, "ControllerLowBatteryNotificationSound", settings.value("bControllerLowPlaySound").toBool() ? "1" : "0");
     }
+
+    if (settings.contains("Controller_XBoxSupport"))
+        updateVdfRootSetting(filePath, "SteamController_XBoxSupport", settings.value("Controller_XBoxSupport").toBool() ? "1" : "0");
+    if (settings.contains("Controller_PSSupport"))
+        updateVdfRootSetting(filePath, "SteamController_PSSupport", settings.value("Controller_PSSupport").toString());
+    if (settings.contains("Controller_SwitchSupport"))
+        updateVdfRootSetting(filePath, "SteamController_SwitchSupport", settings.value("Controller_SwitchSupport").toBool() ? "1" : "0");
+    if (settings.contains("Controller_GenericSupport"))
+        updateVdfRootSetting(filePath, "SteamController_GenericGamepadSupport", settings.value("Controller_GenericSupport").toBool() ? "1" : "0");
+    if (settings.contains("Controller_TurnOffBigPicture"))
+        updateVdfRootSetting(filePath, "CSettingsPanelGameController.TurnOff", settings.value("Controller_TurnOffBigPicture").toBool() ? "1" : "0");
+    if (settings.contains("Controller_GuideButton"))
+        updateVdfRootSetting(filePath, "Controller_CheckGuideButton", settings.value("Controller_GuideButton").toBool() ? "1" : "0");
+    if (settings.contains("Controller_EnableChord"))
+        updateVdfRootSetting(filePath, "SteamController_Enable_Chord", settings.value("Controller_EnableChord").toBool() ? "1" : "0");
+    if (settings.contains("Controller_Timeout"))
+        updateVdfRootSetting(filePath, "CSettingsPanelGameController.Timeout", settings.value("Controller_Timeout").toString());
     
     if (settings.contains("PushToTalkKey")) {
         updateVdfSystemSetting(filePath, "PushToTalkKey", settings.value("PushToTalkKey").toString());
@@ -6772,6 +6823,14 @@ void Optimizer::loadSystemStates() {
     defaultFriendsSettings["RemotePlay_AV1"] = true;
     defaultFriendsSettings["RemotePlay_ControllerButton"] = "auto";
     defaultFriendsSettings["RemotePlay_ControllerVisibility"] = 2;
+    defaultFriendsSettings["Controller_XBoxSupport"] = false;
+    defaultFriendsSettings["Controller_PSSupport"] = "1";
+    defaultFriendsSettings["Controller_SwitchSupport"] = false;
+    defaultFriendsSettings["Controller_GenericSupport"] = false;
+    defaultFriendsSettings["Controller_TurnOffBigPicture"] = false;
+    defaultFriendsSettings["Controller_GuideButton"] = false;
+    defaultFriendsSettings["Controller_EnableChord"] = false;
+    defaultFriendsSettings["Controller_Timeout"] = "15";
 
     m_steamFriendsSettings.clear();
     if (m_steamInstalled) {

@@ -10358,7 +10358,7 @@ Item {
         }
     }
 
-    // PAGE 16: Controller Customization Sub-Page (Empty for now)
+    // PAGE 16: Controller Customization Sub-Page
     Column {
         id: steamControllerPage
         width: parent.width
@@ -10384,6 +10384,527 @@ Item {
                 font.pixelSize: 16
                 font.bold: true
                 anchors.verticalCenter: parent.verticalCenter
+            }
+        }
+
+        Row {
+            spacing: 10
+            width: parent.width
+            Text {
+                text: qsTr("EXTERNAL GAMEPAD SETTINGS")
+                color: Theme.textPrimary
+                font.family: Theme.fontFamily
+                font.pixelSize: 13
+                font.bold: true
+                font.letterSpacing: 1.5
+                anchors.verticalCenter: parent.verticalCenter
+            }
+        }
+
+        Rectangle {
+            width: parent.width
+            height: 1
+            color: Theme.border
+        }
+
+        Column {
+            width: parent.width
+            spacing: 16
+
+            // Dropdown: Idle Gamepad Shutdown Timeout
+            Rectangle {
+                width: parent.width
+                height: 50
+                color: "transparent"
+                Column {
+                    id: timeoutCol
+                    anchors.verticalCenter: parent.verticalCenter
+                    spacing: 2
+                    anchors.left: parent.left
+                    anchors.right: timeoutDropdown.left
+                    anchors.rightMargin: 12
+                    Text {
+                        text: qsTr("Idle Gamepad Shutdown Timeout")
+                        color: Theme.textPrimary
+                        font.family: Theme.fontFamily
+                        font.pixelSize: 12
+                        font.bold: true
+                    }
+                    Text {
+                        text: qsTr("Automatically turn off controllers after a period of inactivity.")
+                        color: Theme.textSecondary
+                        font.family: Theme.fontFamily
+                        font.pixelSize: 10
+                        width: parent.width
+                        wrapMode: Text.WordWrap
+                    }
+                }
+                Rectangle {
+                    id: timeoutDropdown
+                    width: 150
+                    height: 32
+                    radius: 6
+                    color: "#05FFFFFF"
+                    border.color: Theme.border
+                    border.width: 1
+                    anchors.right: parent.right
+                    anchors.verticalCenter: parent.verticalCenter
+
+                    property string currentVal: optimizerBackend.steamFriendsSettings ? optimizerBackend.steamFriendsSettings["Controller_Timeout"] || "15" : "15"
+
+                    readonly property var options: [
+                        { id: "0", label: qsTr("Never") },
+                        { id: "5", label: qsTr("5 Minutes") },
+                        { id: "10", label: qsTr("10 Minutes") },
+                        { id: "15", label: qsTr("15 Minutes") },
+                        { id: "30", label: qsTr("30 Minutes") },
+                        { id: "60", label: qsTr("1 Hour") }
+                    ]
+
+                    function getLabelForVal(v) {
+                        for (var i = 0; i < options.length; i++) {
+                            if (options[i].id === v) return options[i].label;
+                        }
+                        return qsTr("15 Minutes");
+                    }
+
+                    Text {
+                        anchors.left: parent.left
+                        anchors.leftMargin: 12
+                        anchors.verticalCenter: parent.verticalCenter
+                        text: timeoutDropdown.getLabelForVal(timeoutDropdown.currentVal)
+                        color: Theme.textPrimary
+                        font.family: Theme.fontFamily
+                        font.pixelSize: 11
+                    }
+                    Text {
+                        anchors.right: parent.right
+                        anchors.rightMargin: 12
+                        anchors.verticalCenter: parent.verticalCenter
+                        text: "\u2304"
+                        color: Theme.textSecondary
+                        font.family: Theme.fontFamily
+                        font.pixelSize: 12
+                        font.bold: true
+                    }
+                    MouseArea {
+                        anchors.fill: parent
+                        hoverEnabled: true
+                        cursorShape: Qt.PointingHandCursor
+                        onClicked: timeoutMenu.open()
+                        onEntered: timeoutDropdown.border.color = Theme.accent
+                        onExited: timeoutDropdown.border.color = Theme.border
+                    }
+                    Menu {
+                        id: timeoutMenu
+                        y: timeoutDropdown.height + 4
+                        width: timeoutDropdown.width
+                        background: Rectangle {
+                            color: Theme.sidebarBg
+                            border.color: Theme.border
+                            border.width: 1
+                            radius: 6
+                        }
+                        Instantiator {
+                            model: timeoutDropdown.options
+                            onObjectAdded: (index, object) => timeoutMenu.insertItem(index, object)
+                            onObjectRemoved: (index, object) => timeoutMenu.removeItem(object)
+                            delegate: MenuItem {
+                                text: modelData.label
+                                width: timeoutMenu.width
+                                height: 32
+                                contentItem: Text {
+                                    text: parent.text
+                                    font.family: Theme.fontFamily
+                                    font.pixelSize: 11
+                                    color: parent.highlighted ? Theme.accent : Theme.textPrimary
+                                    verticalAlignment: Text.AlignVCenter
+                                    leftPadding: 12
+                                }
+                                background: Rectangle {
+                                    color: parent.highlighted ? Qt.rgba(Theme.accent.r, Theme.accent.g, Theme.accent.b, 0.1) : "transparent"
+                                }
+                                onTriggered: {
+                                    root.toggleSteamFriendsSetting("Controller_Timeout", modelData.id);
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+
+            // Xbox
+            Rectangle {
+                width: parent.width
+                height: Math.max(50, xboxCol.implicitHeight + 12)
+                color: "transparent"
+                Column {
+                    id: xboxCol
+                    anchors.verticalCenter: parent.verticalCenter
+                    spacing: 2
+                    anchors.left: parent.left
+                    anchors.right: xboxSwitch.left
+                    anchors.rightMargin: 12
+                    Text {
+                        text: qsTr("Xbox Controller Support")
+                        color: Theme.textPrimary
+                        font.family: Theme.fontFamily
+                        font.pixelSize: 12
+                        font.bold: true
+                    }
+                    Text {
+                        text: qsTr("Enable Steam Input for Xbox controllers to configure mappings and options.")
+                        color: Theme.textSecondary
+                        font.family: Theme.fontFamily
+                        font.pixelSize: 10
+                        width: parent.width
+                        wrapMode: Text.WordWrap
+                    }
+                }
+                MeguSwitch {
+                    id: xboxSwitch
+                    anchors.right: parent.right
+                    steamStyle: true
+                    checked: optimizerBackend.steamFriendsSettings ? !!optimizerBackend.steamFriendsSettings["Controller_XBoxSupport"] : false
+                    anchors.verticalCenter: parent.verticalCenter
+                    onToggled: (isChecked) => { root.toggleSteamFriendsSetting("Controller_XBoxSupport", isChecked); }
+                }
+            }
+
+            // PlayStation
+            Rectangle {
+                width: parent.width
+                height: 50
+                color: "transparent"
+                Column {
+                    id: psCol
+                    anchors.verticalCenter: parent.verticalCenter
+                    spacing: 2
+                    anchors.left: parent.left
+                    anchors.right: psDropdown.left
+                    anchors.rightMargin: 12
+                    Text {
+                        text: qsTr("PlayStation Controller Support")
+                        color: Theme.textPrimary
+                        font.family: Theme.fontFamily
+                        font.pixelSize: 12
+                        font.bold: true
+                    }
+                    Text {
+                        text: qsTr("Enable Steam Input for PlayStation controllers to customize buttons and lightbars.")
+                        color: Theme.textSecondary
+                        font.family: Theme.fontFamily
+                        font.pixelSize: 10
+                        width: parent.width
+                        wrapMode: Text.WordWrap
+                    }
+                }
+                Rectangle {
+                    id: psDropdown
+                    width: 180
+                    height: 32
+                    radius: 6
+                    color: "#05FFFFFF"
+                    border.color: Theme.border
+                    border.width: 1
+                    anchors.right: parent.right
+                    anchors.verticalCenter: parent.verticalCenter
+
+                    property string currentVal: optimizerBackend.steamFriendsSettings ? optimizerBackend.steamFriendsSettings["Controller_PSSupport"] || "1" : "1"
+
+                    readonly property var options: [
+                        { id: "0", label: qsTr("Disabled") },
+                        { id: "1", label: qsTr("Enabled in Games w/o Support") },
+                        { id: "2", label: qsTr("Enabled") }
+                    ]
+
+                    function getLabelForVal(v) {
+                        for (var i = 0; i < options.length; i++) {
+                            if (options[i].id === v) return options[i].label;
+                        }
+                        return qsTr("Enabled in Games w/o Support");
+                    }
+
+                    Text {
+                        anchors.left: parent.left
+                        anchors.leftMargin: 12
+                        anchors.verticalCenter: parent.verticalCenter
+                        text: psDropdown.getLabelForVal(psDropdown.currentVal)
+                        color: Theme.textPrimary
+                        font.family: Theme.fontFamily
+                        font.pixelSize: 11
+                    }
+                    Text {
+                        anchors.right: parent.right
+                        anchors.rightMargin: 12
+                        anchors.verticalCenter: parent.verticalCenter
+                        text: "\u2304"
+                        color: Theme.textSecondary
+                        font.family: Theme.fontFamily
+                        font.pixelSize: 12
+                        font.bold: true
+                    }
+                    MouseArea {
+                        anchors.fill: parent
+                        hoverEnabled: true
+                        cursorShape: Qt.PointingHandCursor
+                        onClicked: psMenu.open()
+                        onEntered: psDropdown.border.color = Theme.accent
+                        onExited: psDropdown.border.color = Theme.border
+                    }
+                    Menu {
+                        id: psMenu
+                        y: psDropdown.height + 4
+                        width: psDropdown.width
+                        background: Rectangle {
+                            color: Theme.sidebarBg
+                            border.color: Theme.border
+                            border.width: 1
+                            radius: 6
+                        }
+                        Instantiator {
+                            model: psDropdown.options
+                            onObjectAdded: (index, object) => psMenu.insertItem(index, object)
+                            onObjectRemoved: (index, object) => psMenu.removeItem(object)
+                            delegate: MenuItem {
+                                text: modelData.label
+                                width: psMenu.width
+                                height: 32
+                                contentItem: Text {
+                                    text: parent.text
+                                    font.family: Theme.fontFamily
+                                    font.pixelSize: 11
+                                    color: parent.highlighted ? Theme.accent : Theme.textPrimary
+                                    verticalAlignment: Text.AlignVCenter
+                                    leftPadding: 12
+                                }
+                                background: Rectangle {
+                                    color: parent.highlighted ? Qt.rgba(Theme.accent.r, Theme.accent.g, Theme.accent.b, 0.1) : "transparent"
+                                }
+                                onTriggered: {
+                                    root.toggleSteamFriendsSetting("Controller_PSSupport", modelData.id);
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+
+            // Switch Pro
+            Rectangle {
+                width: parent.width
+                height: Math.max(50, switchCol.implicitHeight + 12)
+                color: "transparent"
+                Column {
+                    id: switchCol
+                    anchors.verticalCenter: parent.verticalCenter
+                    spacing: 2
+                    anchors.left: parent.left
+                    anchors.right: switchSwitch.left
+                    anchors.rightMargin: 12
+                    Text {
+                        text: qsTr("Switch Pro Controller Support")
+                        color: Theme.textPrimary
+                        font.family: Theme.fontFamily
+                        font.pixelSize: 12
+                        font.bold: true
+                    }
+                    Text {
+                        text: qsTr("Enable Steam Input for Nintendo Switch Pro controllers.")
+                        color: Theme.textSecondary
+                        font.family: Theme.fontFamily
+                        font.pixelSize: 10
+                        width: parent.width
+                        wrapMode: Text.WordWrap
+                    }
+                }
+                MeguSwitch {
+                    id: switchSwitch
+                    anchors.right: parent.right
+                    steamStyle: true
+                    checked: optimizerBackend.steamFriendsSettings ? !!optimizerBackend.steamFriendsSettings["Controller_SwitchSupport"] : false
+                    anchors.verticalCenter: parent.verticalCenter
+                    onToggled: (isChecked) => { root.toggleSteamFriendsSetting("Controller_SwitchSupport", isChecked); }
+                }
+            }
+
+            // Generic Controller
+            Rectangle {
+                width: parent.width
+                height: Math.max(50, genericCol.implicitHeight + 12)
+                color: "transparent"
+                Column {
+                    id: genericCol
+                    anchors.verticalCenter: parent.verticalCenter
+                    spacing: 2
+                    anchors.left: parent.left
+                    anchors.right: genericSwitch.left
+                    anchors.rightMargin: 12
+                    Text {
+                        text: qsTr("Enable Steam Input for generic controllers")
+                        color: Theme.textPrimary
+                        font.family: Theme.fontFamily
+                        font.pixelSize: 12
+                        font.bold: true
+                    }
+                    Text {
+                        text: qsTr("Enable Steam Input for generic/directinput gamepads.")
+                        color: Theme.textSecondary
+                        font.family: Theme.fontFamily
+                        font.pixelSize: 10
+                        width: parent.width
+                        wrapMode: Text.WordWrap
+                    }
+                }
+                MeguSwitch {
+                    id: genericSwitch
+                    anchors.right: parent.right
+                    steamStyle: true
+                    checked: optimizerBackend.steamFriendsSettings ? !!optimizerBackend.steamFriendsSettings["Controller_GenericSupport"] : false
+                    anchors.verticalCenter: parent.verticalCenter
+                    onToggled: (isChecked) => { root.toggleSteamFriendsSetting("Controller_GenericSupport", isChecked); }
+                }
+            }
+
+            // Turn off controllers when exiting Big Picture Mode
+            Rectangle {
+                width: parent.width
+                height: Math.max(50, turnOffBPCol.implicitHeight + 12)
+                color: "transparent"
+                Column {
+                    id: turnOffBPCol
+                    anchors.verticalCenter: parent.verticalCenter
+                    spacing: 2
+                    anchors.left: parent.left
+                    anchors.right: turnOffBPSwitch.left
+                    anchors.rightMargin: 12
+                    Text {
+                        text: qsTr("Turn off controllers when exiting Big Picture Mode")
+                        color: Theme.textPrimary
+                        font.family: Theme.fontFamily
+                        font.pixelSize: 12
+                        font.bold: true
+                    }
+                    Text {
+                        text: qsTr("Automatically shut down wireless gamepads when exiting Big Picture Mode.")
+                        color: Theme.textSecondary
+                        font.family: Theme.fontFamily
+                        font.pixelSize: 10
+                        width: parent.width
+                        wrapMode: Text.WordWrap
+                    }
+                }
+                MeguSwitch {
+                    id: turnOffBPSwitch
+                    anchors.right: parent.right
+                    steamStyle: true
+                    checked: optimizerBackend.steamFriendsSettings ? !!optimizerBackend.steamFriendsSettings["Controller_TurnOffBigPicture"] : false
+                    anchors.verticalCenter: parent.verticalCenter
+                    onToggled: (isChecked) => { root.toggleSteamFriendsSetting("Controller_TurnOffBigPicture", isChecked); }
+                }
+            }
+
+
+        }
+
+        Row {
+            spacing: 10
+            width: parent.width
+            Text {
+                text: qsTr("GENERAL CONTROLLER SETTINGS")
+                color: Theme.textPrimary
+                font.family: Theme.fontFamily
+                font.pixelSize: 13
+                font.bold: true
+                font.letterSpacing: 1.5
+                anchors.verticalCenter: parent.verticalCenter
+            }
+        }
+
+        Rectangle {
+            width: parent.width
+            height: 1
+            color: Theme.border
+        }
+
+        Column {
+            width: parent.width
+            spacing: 16
+
+            // Guide Button focuses Steam
+            Rectangle {
+                width: parent.width
+                height: Math.max(50, guideCol.implicitHeight + 12)
+                color: "transparent"
+                Column {
+                    id: guideCol
+                    anchors.verticalCenter: parent.verticalCenter
+                    spacing: 2
+                    anchors.left: parent.left
+                    anchors.right: guideSwitch.left
+                    anchors.rightMargin: 12
+                    Text {
+                        text: qsTr("Guide button focuses Steam")
+                        color: Theme.textPrimary
+                        font.family: Theme.fontFamily
+                        font.pixelSize: 12
+                        font.bold: true
+                    }
+                    Text {
+                        text: qsTr("Pressing the controller Guide button will bring Steam window to the front.")
+                        color: Theme.textSecondary
+                        font.family: Theme.fontFamily
+                        font.pixelSize: 10
+                        width: parent.width
+                        wrapMode: Text.WordWrap
+                    }
+                }
+                MeguSwitch {
+                    id: guideSwitch
+                    anchors.right: parent.right
+                    steamStyle: true
+                    checked: optimizerBackend.steamFriendsSettings ? !!optimizerBackend.steamFriendsSettings["Controller_GuideButton"] : false
+                    anchors.verticalCenter: parent.verticalCenter
+                    onToggled: (isChecked) => { root.toggleSteamFriendsSetting("Controller_GuideButton", isChecked); }
+                }
+            }
+
+            // Guide Button Chord Configuration
+            Rectangle {
+                width: parent.width
+                height: Math.max(50, chordCol.implicitHeight + 12)
+                color: "transparent"
+                Column {
+                    id: chordCol
+                    anchors.verticalCenter: parent.verticalCenter
+                    spacing: 2
+                    anchors.left: parent.left
+                    anchors.right: chordSwitch.left
+                    anchors.rightMargin: 12
+                    Text {
+                        text: qsTr("Guide Button Chord Configuration")
+                        color: Theme.textPrimary
+                        font.family: Theme.fontFamily
+                        font.pixelSize: 12
+                        font.bold: true
+                    }
+                    Text {
+                        text: qsTr("Enable custom combinations using the controller Guide button.")
+                        color: Theme.textSecondary
+                        font.family: Theme.fontFamily
+                        font.pixelSize: 10
+                        width: parent.width
+                        wrapMode: Text.WordWrap
+                    }
+                }
+                MeguSwitch {
+                    id: chordSwitch
+                    anchors.right: parent.right
+                    steamStyle: true
+                    checked: optimizerBackend.steamFriendsSettings ? !!optimizerBackend.steamFriendsSettings["Controller_EnableChord"] : false
+                    anchors.verticalCenter: parent.verticalCenter
+                    onToggled: (isChecked) => { root.toggleSteamFriendsSetting("Controller_EnableChord", isChecked); }
+                }
             }
         }
     }
