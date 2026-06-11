@@ -150,49 +150,49 @@ ApplicationWindow {
     }
 
     // Top Header Control Bar
-    header: Rectangle {
+    header: Item {
         id: header
         width: parent.width
         height: 88
 
-        color: "transparent"
-        border.width: 0
-
-        // Custom drag handler to move window when dragging empty areas of header
-        MouseArea {
-            id: headerDragArea
+        Item {
+            id: headerContent
             anchors.fill: parent
-            
-            property bool isRestoring: false
-            
-            onPositionChanged: (mouse) => {
-                if (window.visibility === Window.Maximized) {
-                    if (isRestoring) return;
-                    isRestoring = true;
-                    
-                    var screenX = mouse.x;
-                    var screenY = mouse.y;
-                    
-                    window.showNormal();
-                    window.x = screenX - window.width / 2;
-                    window.y = screenY - 20;
-                    
-                    Qt.callLater(() => {
+            anchors.leftMargin: 0
+            anchors.rightMargin: 0
+            anchors.topMargin: 0
+            anchors.bottomMargin: 0
+
+            // Custom drag handler to move window when dragging empty areas of header
+            MouseArea {
+                id: headerDragArea
+                anchors.fill: parent
+                
+                onPressed: {
+                    if (window.visibility !== Window.Maximized) {
                         window.startSystemMove();
-                        isRestoring = false;
-                    });
-                } else if (!isRestoring) {
-                    window.startSystemMove();
+                    }
+                }
+                
+                onPositionChanged: (mouse) => {
+                    if (window.visibility === Window.Maximized) {
+                        var dragX = mouse.x;
+                        var dragY = mouse.y;
+                        window.showNormal();
+                        window.x = dragX - window.width / 2;
+                        window.y = dragY - 20;
+                        window.startSystemMove();
+                    }
+                }
+                
+                onDoubleClicked: {
+                    if (window.visibility === Window.Maximized) {
+                        window.showNormal();
+                    } else {
+                        window.showMaximized();
+                    }
                 }
             }
-            onDoubleClicked: {
-                if (window.visibility === Window.Maximized) {
-                    window.showNormal();
-                } else {
-                    window.showMaximized();
-                }
-            }
-        }
 
         // Left Island (Brand Logo + Real-Time Logs button)
         Rectangle {
@@ -674,7 +674,7 @@ ApplicationWindow {
                 // Minimize Button
                 Rectangle {
                     width: 38
-                    height: parent.height
+                    height: 72
                     color: minMouse.containsMouse ? (Theme.currentTheme === "Белоснежная" || Theme.currentTheme === "Розовая" ? "#0F000000" : "#1AFFFFFF") : "transparent"
                     
                     Rectangle {
@@ -695,7 +695,7 @@ ApplicationWindow {
                 // Maximize / Restore Button
                 Rectangle {
                     width: 38
-                    height: parent.height
+                    height: 72
                     color: maxMouse.containsMouse ? (Theme.currentTheme === "Белоснежная" || Theme.currentTheme === "Розовая" ? "#0F000000" : "#1AFFFFFF") : "transparent"
                     
                     // Maximize Icon (when not maximized)
@@ -753,13 +753,21 @@ ApplicationWindow {
                             }
                         }
 
-                        // Foreground square
+                        // Foreground square with a solid background color to mask the background square's lines
                         Rectangle {
                             width: 8
                             height: 8
                             x: 0
                             y: 4
-                            color: "transparent"
+                            color: {
+                                if (Theme.currentTheme === "Белоснежная" || Theme.currentTheme === "Розовая") {
+                                    return maxMouse.containsMouse ? "#F0F0F0" : "#FFFFFF"
+                                } else if (Theme.currentTheme === "Blackout полностью черная") {
+                                    return maxMouse.containsMouse ? "#1A1A1A" : "#080808"
+                                } else {
+                                    return maxMouse.containsMouse ? "#252629" : "#0D0E12"
+                                }
+                            }
                             border.color: Theme.textPrimary
                             border.width: 1
                             radius: 1.5
@@ -783,7 +791,7 @@ ApplicationWindow {
                 // Close Button
                 Rectangle {
                     width: 42
-                    height: parent.height
+                    height: 72
                     color: closeMouse.containsMouse ? "#E81123" : "transparent"
                     
                     Item {
@@ -821,6 +829,7 @@ ApplicationWindow {
                     }
                 }
             }
+        }
         }
     }
 

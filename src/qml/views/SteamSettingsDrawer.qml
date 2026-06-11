@@ -3100,6 +3100,151 @@ Item {
                         onToggled: (isChecked) => { root.toggleSteamFriendsSetting("bReduceMotion", isChecked); }
                     }
             }
+
+            // Divider
+            Rectangle {
+                width: parent.width
+                height: 1
+                color: Theme.border
+            }
+
+            // Slider: UI Scale
+            Column {
+                width: parent.width
+                spacing: 8
+
+                Row {
+                    width: parent.width
+                    Text {
+                        text: qsTr("UI Scale")
+                        color: Theme.textPrimary
+                        font.family: Theme.fontFamily
+                        font.pixelSize: 12
+                        font.bold: true
+                    }
+                    Text {
+                        text: Math.round(uiScaleSlider.value * 100) + "%"
+                        color: Theme.accent
+                        font.family: Theme.fontFamily
+                        font.pixelSize: 11
+                        font.bold: true
+                        anchors.right: parent.right
+                    }
+                }
+
+                Slider {
+                    id: uiScaleSlider
+                    width: parent.width
+                    from: 0.5
+                    to: 2.5
+                    stepSize: 0.05
+                    value: optimizerBackend.steamFriendsSettings ? (optimizerBackend.steamFriendsSettings["desktop_ui_scale"] !== undefined ? optimizerBackend.steamFriendsSettings["desktop_ui_scale"] : 1.0) : 1.0
+                    live: true
+                    onMoved: {
+                        root.toggleSteamFriendsSetting("desktop_ui_scale", value);
+                    }
+
+                    background: Rectangle {
+                        x: uiScaleSlider.leftPadding
+                        y: uiScaleSlider.topPadding + uiScaleSlider.availableHeight / 2 - height / 2
+                        implicitWidth: 200
+                        implicitHeight: 4
+                        width: uiScaleSlider.availableWidth
+                        height: implicitHeight
+                        radius: 2
+                        color: Theme.border
+
+                        Rectangle {
+                            width: uiScaleSlider.visualPosition * parent.width
+                            height: parent.height
+                            color: Theme.accent
+                            radius: 2
+                        }
+                    }
+
+                    handle: Rectangle {
+                        x: uiScaleSlider.leftPadding + uiScaleSlider.visualPosition * (uiScaleSlider.availableWidth - width)
+                        y: uiScaleSlider.topPadding + uiScaleSlider.availableHeight / 2 - height / 2
+                        implicitWidth: 16
+                        implicitHeight: 16
+                        radius: 8
+                        color: uiScaleSlider.pressed ? Theme.accent : Theme.textPrimary
+                        border.color: Theme.accent
+                        border.width: uiScaleSlider.hovered ? 2 : 0
+
+                        Behavior on color { ColorAnimation { duration: Theme.animFast } }
+                        Behavior on scale { NumberAnimation { duration: Theme.animFast } }
+                        scale: uiScaleSlider.pressed ? 1.2 : (uiScaleSlider.hovered ? 1.1 : 1.0)
+                    }
+                }
+
+                Row {
+                    width: parent.width
+                    Text {
+                        text: qsTr("SMALLER TEXT")
+                        color: Theme.textMuted
+                        font.family: Theme.fontFamily
+                        font.pixelSize: 9
+                        font.bold: true
+                    }
+                    Text {
+                        text: qsTr("LARGER TEXT")
+                        color: Theme.textMuted
+                        font.family: Theme.fontFamily
+                        font.pixelSize: 9
+                        font.bold: true
+                        anchors.right: parent.right
+                    }
+                }
+            }
+
+            // Divider
+            Rectangle {
+                width: parent.width
+                height: 1
+                color: Theme.border
+            }
+
+            // Toggle 2: High Contrast Mode
+            Rectangle {
+                width: parent.width
+                height: Math.max(50, steamToggleCol_hc.implicitHeight + 12)
+                color: "transparent"
+
+                Column {
+                    id: steamToggleCol_hc
+                    anchors.verticalCenter: parent.verticalCenter
+                    spacing: 2
+                    anchors.left: parent.left
+                    anchors.right: steamToggleSwitch_hc.left
+                    anchors.rightMargin: 12
+
+                    Text {
+                        text: qsTr("High Contrast Mode")
+                        color: Theme.textPrimary
+                        font.family: Theme.fontFamily
+                        font.pixelSize: 12
+                        font.bold: true
+                    }
+                    Text {
+                        text: qsTr("Make Steam text, buttons and icons more distinct from the background.")
+                        color: Theme.textSecondary
+                        font.family: Theme.fontFamily
+                        font.pixelSize: 10
+                        width: parent.width
+                        wrapMode: Text.WordWrap
+                    }
+                }
+
+                MeguSwitch {
+                    id: steamToggleSwitch_hc
+                    anchors.right: parent.right
+                    steamStyle: true
+                    checked: optimizerBackend.steamFriendsSettings ? !!optimizerBackend.steamFriendsSettings["bHighContrastMode"] : false
+                    anchors.verticalCenter: parent.verticalCenter
+                    onToggled: (isChecked) => { root.toggleSteamFriendsSetting("bHighContrastMode", isChecked); }
+                }
+            }
         }
     }
 
@@ -3385,6 +3530,15 @@ Item {
             width: parent.width
             spacing: 12
 
+            Text {
+                text: qsTr("Optimization")
+                color: Theme.accent
+                font.family: Theme.fontFamily
+                font.pixelSize: 11
+                font.bold: true
+                font.letterSpacing: 1.0
+            }
+
             // Option 1: Recording Off
             Rectangle {
                 width: parent.width
@@ -3453,6 +3607,20 @@ Item {
                     cursorShape: Qt.PointingHandCursor
                     onClicked: { root.toggleSteamFriendsSetting("BackgroundRecordMode", 0); }
                 }
+            }
+
+            Item {
+                width: 1
+                height: 8
+            }
+
+            Text {
+                text: qsTr("Customization")
+                color: Theme.accent
+                font.family: Theme.fontFamily
+                font.pixelSize: 11
+                font.bold: true
+                font.letterSpacing: 1.0
             }
 
             // Option 2: Record in Background

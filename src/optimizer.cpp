@@ -2006,6 +2006,10 @@ bool Optimizer::getVdfFriendsSettings(const QString &filePath, const QString &ac
     if (!reduceMotion.isEmpty()) {
         settings["bReduceMotion"] = (reduceMotion != "0");
     }
+    QString highContrast = getVdfBlockSetting(filePath, "Accessibility", "HighContrastMode");
+    if (!highContrast.isEmpty()) {
+        settings["bHighContrastMode"] = (highContrast != "0");
+    }
 
     // 3.5. controller customization settings
     QString xboxSupport = getVdfRootSetting(filePath, "SteamController_XBoxSupport");
@@ -2461,6 +2465,18 @@ bool Optimizer::getVdfFriendsSettings(const QString &filePath, const QString &ac
             if (!alwaysShow.isEmpty()) {
                 settings["bAskAccountOnStart"] = (alwaysShow != "0");
             }
+            QString uiScale = getVdfBlockSetting(configVdfPath, "Accessibility", "DesktopUIScale");
+            if (!uiScale.isEmpty()) {
+                bool ok;
+                double val = uiScale.toDouble(&ok);
+                if (ok) {
+                    settings["desktop_ui_scale"] = val;
+                } else {
+                    settings["desktop_ui_scale"] = 1.0;
+                }
+            } else {
+                settings["desktop_ui_scale"] = 1.0;
+            }
             QString autoUpdate = getVdfBlockSetting(configVdfPath, "Steam", "AutoUpdateWindowEnabled");
             if (!autoUpdate.isEmpty()) {
                 settings["bScheduleAutoUpdates"] = (autoUpdate != "0");
@@ -2755,6 +2771,8 @@ bool Optimizer::updateVdfFriendsSettings(const QString &filePath, const QString 
     incomingObj.remove("muteToggleHotkey");
     incomingObj.remove("PushToTalkKey");
     incomingObj.remove("bRestoreOverlayBrowserTabs");
+    incomingObj.remove("bHighContrastMode");
+    incomingObj.remove("desktop_ui_scale");
     incomingObj.remove("bScaleOverlayTextAndIcons");
     incomingObj.remove("library_low_bandwidth_mode");
     incomingObj.remove("library_low_perf_mode");
@@ -3228,6 +3246,9 @@ bool Optimizer::updateVdfFriendsSettings(const QString &filePath, const QString 
     if (settings.contains("bReduceMotion")) {
         updateVdfBlockSetting(filePath, "Accessibility", "ReduceMotion", settings.value("bReduceMotion").toBool() ? "1" : "0");
     }
+    if (settings.contains("bHighContrastMode")) {
+        updateVdfBlockSetting(filePath, "Accessibility", "HighContrastMode", settings.value("bHighContrastMode").toBool() ? "1" : "0");
+    }
     if (settings.contains("BackgroundRecordMode")) {
         updateVdfBlockSetting(filePath, "GameRecording", "BackgroundRecordMode", QString::number(settings.value("BackgroundRecordMode").toInt()));
     }
@@ -3641,6 +3662,9 @@ bool Optimizer::updateVdfFriendsSettings(const QString &filePath, const QString 
         if (QFile::exists(configVdfPath)) {
             if (settings.contains("bAskAccountOnStart")) {
                 updateVdfBlockSetting(configVdfPath, "Auth", "AlwaysShowUserChooser", settings.value("bAskAccountOnStart").toBool() ? "1" : "0");
+            }
+            if (settings.contains("desktop_ui_scale")) {
+                updateVdfBlockSetting(configVdfPath, "Accessibility", "DesktopUIScale", QString::number(settings.value("desktop_ui_scale").toDouble(), 'g', 4));
             }
             if (settings.contains("bScheduleAutoUpdates")) {
                 updateVdfBlockSetting(configVdfPath, "Steam", "AutoUpdateWindowEnabled", settings.value("bScheduleAutoUpdates").toBool() ? "1" : "0");
@@ -6831,6 +6855,8 @@ void Optimizer::loadSystemStates() {
     defaultFriendsSettings["Controller_GuideButton"] = false;
     defaultFriendsSettings["Controller_EnableChord"] = false;
     defaultFriendsSettings["Controller_Timeout"] = "15";
+    defaultFriendsSettings["bHighContrastMode"] = false;
+    defaultFriendsSettings["desktop_ui_scale"] = 1.0;
 
     m_steamFriendsSettings.clear();
     if (m_steamInstalled) {
