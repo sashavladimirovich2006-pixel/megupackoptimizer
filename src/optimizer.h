@@ -236,6 +236,7 @@ class Optimizer : public QObject {
     Q_PROPERTY(bool steamInstalled READ steamInstalled NOTIFY steamInstalledChanged)
     Q_PROPERTY(QString steamPath READ steamPath NOTIFY steamInstalledChanged)
     Q_PROPERTY(QVariantList steamInstalledGames READ steamInstalledGames NOTIFY steamInstalledGamesChanged)
+    Q_PROPERTY(QVariantList steamLibraryPaths READ steamLibraryPaths NOTIFY steamLibraryPathsChanged)
     Q_PROPERTY(QVariantMap steamFriendsSettings READ steamFriendsSettings WRITE setSteamFriendsSettings NOTIFY steamFriendsSettingsChanged)
     Q_PROPERTY(QVariantMap originalSteamFriendsSettings READ originalSteamFriendsSettings NOTIFY originalSteamFriendsSettingsChanged)
     Q_PROPERTY(QStringList fixedDrives READ fixedDrives NOTIFY fixedDrivesChanged)
@@ -507,6 +508,7 @@ public:
     bool steamInstalled() const { return m_steamInstalled; }
     QString steamPath() const;
     QVariantList steamInstalledGames() const { return m_steamInstalledGames; }
+    QVariantList steamLibraryPaths() const { return m_steamLibraryPaths; }
     QVariantMap steamFriendsSettings() const { return m_steamFriendsSettings; }
     QVariantMap originalSteamFriendsSettings() const { return m_originalSteamFriendsSettings; }
     QStringList fixedDrives() const { return m_fixedDrives; }
@@ -937,6 +939,7 @@ signals:
     void originalVisualEffectsChanged(const QVariantMap &val);
     void steamInstalledChanged(bool val);
     void steamInstalledGamesChanged(const QVariantList &val);
+    void steamLibraryPathsChanged(const QVariantList &val);
     void steamFriendsSettingsChanged(const QVariantMap &val);
     void originalSteamFriendsSettingsChanged(const QVariantMap &val);
     void fixedDrivesChanged(const QStringList &val);
@@ -1204,6 +1207,7 @@ private:
     QVariantMap m_originalDriveStates;
     bool m_steamInstalled = false;
     QVariantList m_steamInstalledGames;
+    QVariantList m_steamLibraryPaths;
     QVariantMap m_steamFriendsSettings;
     QVariantMap m_originalSteamFriendsSettings;
     QStringList m_stagedUnpairedSteamDevices;

@@ -37,6 +37,9 @@ Item {
         function onSteamInstalledGamesChanged() {
             populateGamesModel();
         }
+        function onSteamLibraryPathsChanged() {
+            populateGamesModel();
+        }
         function onSteamCacheLog(message, type) {
             if (typeof stepLogModel !== "undefined" && stepLogModel !== null) {
                 stepLogModel.append({ "message": message, "type": type });
@@ -50,8 +53,15 @@ Item {
     function populateGamesModel() {
         steamGamesModel.clear();
         var games = optimizerBackend.steamInstalledGames;
+        var currentLib = (optimizerBackend.steamLibraryPaths && steamStoragePage.selectedLibraryIndex < optimizerBackend.steamLibraryPaths.length) ? optimizerBackend.steamLibraryPaths[steamStoragePage.selectedLibraryIndex] : null;
+        var currentLibPath = currentLib && currentLib.path ? currentLib.path.toLowerCase().replace(/\\/g, "/") : "";
+        
         for (var i = 0; i < games.length; i++) {
-            steamGamesModel.append(games[i]);
+            var game = games[i];
+            var gameLibPath = game.libraryPath ? game.libraryPath.toLowerCase().replace(/\\/g, "/") : "";
+            if (currentLibPath === "" || gameLibPath === currentLibPath) {
+                steamGamesModel.append(game);
+            }
         }
     }
 
@@ -9030,10 +9040,9 @@ Item {
             id: steamGamesModel
         }
 
-        property var driveInfo: {
-            var p = optimizerBackend.steamPath;
-            return optimizerBackend.getDriveInfo(p);
-        }
+        property int selectedLibraryIndex: 0
+
+        property var driveInfo: (optimizerBackend.steamLibraryPaths && selectedLibraryIndex < optimizerBackend.steamLibraryPaths.length) ? optimizerBackend.steamLibraryPaths[selectedLibraryIndex] : null
         property real totalSize: driveInfo && driveInfo.totalSize > 0 ? driveInfo.totalSize : 722.2 // GB
         property real gamesSize: {
             var sum = 0;
@@ -9093,6 +9102,10 @@ Item {
             return diff > 0 ? diff : 0;
         }
 
+        onSelectedLibraryIndexChanged: {
+            populateGamesModel();
+        }
+
         Row {
             spacing: 10
             width: parent.width
@@ -9123,14 +9136,17 @@ Item {
             color: Theme.border
         }
 
-        // Drive selection box (simulated, no points, with path)
+        // Drive selection box (interactive dropdown)
         Rectangle {
+            id: driveSelectDropdown
             width: parent.width
             height: 40
             color: "#161920"
-            border.color: Theme.border
+            border.color: driveSelectMouse.containsMouse ? Theme.accent : Theme.border
             border.width: 1
             radius: Theme.radiusSmall
+
+            Behavior on border.color { ColorAnimation { duration: Theme.animFast } }
 
             Item {
                 anchors.fill: parent
@@ -9160,6 +9176,15 @@ Item {
                         font.bold: true
                         anchors.verticalCenter: parent.verticalCenter
                     }
+
+                    Text {
+                        text: "⌵"
+                        color: Theme.textSecondary
+                        font.family: Theme.fontFamily
+                        font.pixelSize: 12
+                        font.bold: true
+                        anchors.verticalCenter: parent.verticalCenter
+                    }
                 }
 
                 Text {
@@ -9171,11 +9196,69 @@ Item {
                     anchors.right: parent.right
                 }
             }
+
+            MouseArea {
+                id: driveSelectMouse
+                anchors.fill: parent
+                hoverEnabled: true
+                cursorShape: Qt.PointingHandCursor
+                onClicked: {
+                    driveMenu.open();
+                }
+            }
+
+            Menu {
+                id: driveMenu
+                y: driveSelectDropdown.height + 4
+                width: driveSelectDropdown.width
+                
+                background: Rectangle {
+                    color: Theme.sidebarBg
+                    border.color: Theme.border
+                    border.width: 1
+                    radius: 6
+                }
+
+                Instantiator {
+                    model: optimizerBackend.steamLibraryPaths
+                    onObjectAdded: (index, object) => driveMenu.insertItem(index, object)
+                    onObjectRemoved: (index, object) => driveMenu.removeItem(object)
+
+                    delegate: MenuItem {
+                        text: {
+                            var name = modelData.name ? modelData.name : qsTr("Local Disk");
+                            var letter = modelData.letter ? modelData.letter : "C";
+                            var free = modelData.freeSize ? modelData.freeSize.toFixed(1) : "0.0";
+                            var total = modelData.totalSize ? modelData.totalSize.toFixed(1) : "0.0";
+                            return name + " (" + letter + ":)   -   " + free + " GB Free / " + total + " GB Total";
+                        }
+                        width: driveMenu.width
+                        height: 32
+                        
+                        contentItem: Text {
+                            text: parent.text
+                            font.family: Theme.fontFamily
+                            font.pixelSize: 11
+                            color: parent.highlighted ? Theme.accent : Theme.textPrimary
+                            verticalAlignment: Text.AlignVCenter
+                            leftPadding: 12
+                        }
+
+                        background: Rectangle {
+                            color: parent.highlighted ? Qt.rgba(Theme.accent.r, Theme.accent.g, Theme.accent.b, 0.1) : "transparent"
+                        }
+
+                        onTriggered: {
+                            steamStoragePage.selectedLibraryIndex = index;
+                        }
+                    }
+                }
+            }
         }
 
         // Plain Text Path
         Text {
-            text: optimizerBackend.steamPath.toUpperCase()
+            text: (steamStoragePage.driveInfo && steamStoragePage.driveInfo.path ? steamStoragePage.driveInfo.path : optimizerBackend.steamPath).toUpperCase()
             color: Theme.textMuted
             font.family: Theme.fontFamily
             font.pixelSize: 10
