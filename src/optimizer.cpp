@@ -62,6 +62,10 @@
 #include <psapi.h>
 #include <functiondiscoverykeys_devpkey.h>
 #include <shobjidl.h>
+#include <joystickapi.h>
+#include <bluetoothapis.h>
+#pragma comment(lib, "winmm.lib")
+#pragma comment(lib, "bthprops.lib")
 #endif
 
 namespace {
@@ -15963,6 +15967,159 @@ bool Optimizer::cleanSystemRestore() {
 #endif
     Logger::log("System Restore Points Cleanup completed.", "INFO");
     return true;
+}
+
+QVariantList Optimizer::getConnectedGamepads() {
+    QVariantList controllers;
+#ifdef Q_OS_WIN
+    // 1. Scan active game controllers using joystick API
+    UINT numDevs = joyGetNumDevs();
+    for (UINT i = 0; i < numDevs; ++i) {
+        JOYCAPSW caps;
+        if (joyGetDevCapsW(i, &caps, sizeof(caps)) == JOYERR_NOERROR) {
+            QVariantMap map;
+            map["id"] = QString("joy_%1").arg(i);
+            QString name = QString::fromWCharArray(caps.szPname).trimmed();
+            map["name"] = name.isEmpty() ? tr("Generic Controller") : name;
+            map["vidPid"] = QString("VID_%1&PID_%2")
+                .arg(caps.wMid, 4, 16, QChar('0'))
+                .arg(caps.wPid, 4, 16, QChar('0'))
+                .toUpper();
+            map["isBluetooth"] = false;
+            map["isConnected"] = true;
+            map["btAddress"] = "";
+            controllers.append(map);
+        }
+    }
+
+    // 2. Scan paired Bluetooth devices (including gamepads)
+    BLUETOOTH_DEVICE_SEARCH_PARAMS searchParams;
+    ZeroMemory(&searchParams, sizeof(searchParams));
+    searchParams.dwSize = sizeof(searchParams);
+    searchParams.fReturnAuthenticated = TRUE;
+    searchParams.fReturnRemembered = TRUE;
+    searchParams.fReturnUnknown = FALSE;
+    searchParams.fReturnConnected = TRUE;
+
+    BLUETOOTH_DEVICE_INFO deviceInfo;
+    ZeroMemory(&deviceInfo, sizeof(deviceInfo));
+    deviceInfo.dwSize = sizeof(deviceInfo);
+
+    HBLUETOOTH_DEVICE_FIND hFind = BluetoothFindFirstDevice(&searchParams, &deviceInfo);
+    if (hFind != NULL) {
+        do {
+            QString name = QString::fromWCharArray(deviceInfo.szName).trimmed();
+            QString nameLower = name.toLower();
+            
+            unsigned int majorClass = (deviceInfo.ulClassofDevice & 0x1F00);
+            unsigned int minorClass = (deviceInfo.ulClassofDevice & 0xFC);
+            
+            // Major Class 0x0500 is Peripheral (HID)
+            // Minor Class 0x04 is Joystick, 0x08 is Gamepad
+            bool isGamepad = (majorClass == 0x0500 && (minorClass == 0x04 || minorClass == 0x08));
+            if (!isGamepad) {
+                // Fallback to name matching
+                isGamepad = nameLower.contains("controller") || 
+                            nameLower.contains("gamepad") || 
+                            nameLower.contains("joy-con") || 
+                            nameLower.contains("xbox") || 
+                            nameLower.contains("dualshock") || 
+                            nameLower.contains("dualsense") || 
+                            nameLower.contains("pro con") ||
+                            nameLower.contains("wireless controller");
+            }
+            
+            if (isGamepad) {
+                QString btAddrStr = QString("%1:%2:%3:%4:%5:%6")
+                    .arg(deviceInfo.Address.rgBytes[5], 2, 16, QChar('0'))
+                    .arg(deviceInfo.Address.rgBytes[4], 2, 16, QChar('0'))
+                    .arg(deviceInfo.Address.rgBytes[3], 2, 16, QChar('0'))
+                    .arg(deviceInfo.Address.rgBytes[2], 2, 16, QChar('0'))
+                    .arg(deviceInfo.Address.rgBytes[1], 2, 16, QChar('0'))
+                    .arg(deviceInfo.Address.rgBytes[0], 2, 16, QChar('0'))
+                    .toUpper();
+
+                bool found = false;
+                for (int j = 0; j < controllers.size(); ++j) {
+                    QVariantMap m = controllers[j].toMap();
+                    if (m["name"].toString().toLower() == nameLower || 
+                        nameLower.contains(m["name"].toString().toLower()) ||
+                        m["name"].toString().toLower().contains(nameLower)) {
+                        m["isBluetooth"] = true;
+                        m["btAddress"] = btAddrStr;
+                        controllers[j] = m;
+                        found = true;
+                        break;
+                    }
+                }
+                
+                if (!found) {
+                    QVariantMap map;
+                    map["id"] = QString("bt_%1").arg(btAddrStr);
+                    map["name"] = name;
+                    map["vidPid"] = "";
+                    map["isBluetooth"] = true;
+                    map["isConnected"] = deviceInfo.fConnected;
+                    map["btAddress"] = btAddrStr;
+                    controllers.append(map);
+                }
+            }
+        } while (BluetoothFindNextDevice(hFind, &deviceInfo));
+        BluetoothFindDeviceClose(hFind);
+    }
+#endif
+    return controllers;
+}
+
+bool Optimizer::forgetGamepad(const QString &id, const QString &btAddress, const QString &vidPid) {
+    bool success = false;
+    Logger::log(QString("forgetGamepad: Requested to forget gamepad with ID: %1, BT Address: %2, VID_PID: %3")
+        .arg(id).arg(btAddress).arg(vidPid), "INFO");
+
+#ifdef Q_OS_WIN
+    // 1. Unpair Bluetooth device if btAddress is provided
+    if (!btAddress.isEmpty()) {
+        BLUETOOTH_ADDRESS address;
+        ZeroMemory(&address, sizeof(address));
+        QStringList parts = btAddress.split(':');
+        if (parts.size() == 6) {
+            for (int i = 0; i < 6; ++i) {
+                address.rgBytes[5 - i] = (BYTE)parts[i].toInt(nullptr, 16);
+            }
+            DWORD res = BluetoothRemoveDevice(&address);
+            if (res == ERROR_SUCCESS) {
+                Logger::log("forgetGamepad: Successfully removed Bluetooth device: " + btAddress, "SUCCESS");
+                success = true;
+            } else {
+                Logger::log(QString("forgetGamepad: BluetoothRemoveDevice failed with code: %1").arg(res), "WARNING");
+            }
+        }
+    }
+
+    // 2. Clean up Windows registry calibration and device settings under DirectInput and Joystick OEM
+    if (!vidPid.isEmpty()) {
+        QString diPath = QString("System\\CurrentControlSet\\Control\\MediaProperties\\PrivateProperties\\DirectInput\\%1").arg(vidPid);
+        LONG diRes = RegDeleteTreeW(HKEY_CURRENT_USER, (LPCWSTR)diPath.utf16());
+        if (diRes == ERROR_SUCCESS) {
+            Logger::log("forgetGamepad: Successfully deleted DirectInput registry key for " + vidPid, "SUCCESS");
+            success = true;
+        }
+
+        QString oemPath = QString("System\\CurrentControlSet\\Control\\MediaProperties\\PrivateProperties\\Joystick\\OEM\\%1").arg(vidPid);
+        LONG oemRes = RegDeleteTreeW(HKEY_CURRENT_USER, (LPCWSTR)oemPath.utf16());
+        if (oemRes == ERROR_SUCCESS) {
+            Logger::log("forgetGamepad: Successfully deleted Joystick OEM registry key for " + vidPid, "SUCCESS");
+            success = true;
+        }
+    }
+#else
+    Q_UNUSED(id);
+    Q_UNUSED(btAddress);
+    Q_UNUSED(vidPid);
+    success = true;
+#endif
+
+    return success;
 }
 
 
