@@ -476,6 +476,12 @@ Column {
                                 Text { text: qsTr("GPU Shader Cache (NVIDIA/AMD):"); color: Theme.textMuted; font.family: Theme.fontFamily; font.pixelSize: 10; Layout.fillWidth: true }
                                 Text { text: cardBg.formatBytes(cardBg.detailsData ? cardBg.detailsData.shaderSize : 0) + " (" + (cardBg.detailsData ? cardBg.detailsData.shaderCount : 0) + " files)"; color: Theme.textPrimary; font.family: Theme.fontFamily; font.pixelSize: 10; font.bold: true }
                             }
+                            RowLayout {
+                                Layout.fillWidth: true
+                                visible: cardBg.detailsData !== null && cardBg.detailsData.devSize !== undefined
+                                Text { text: qsTr("Developer Cache (pip/npm/NuGet):"); color: Theme.textMuted; font.family: Theme.fontFamily; font.pixelSize: 10; Layout.fillWidth: true }
+                                Text { text: cardBg.formatBytes(cardBg.detailsData ? cardBg.detailsData.devSize : 0) + " (" + (cardBg.detailsData ? cardBg.detailsData.devCount : 0) + " files)"; color: Theme.textPrimary; font.family: Theme.fontFamily; font.pixelSize: 10; font.bold: true }
+                            }
                         }
 
                         // 3. Details for STORAGE

@@ -16334,14 +16334,19 @@ QVariantMap Optimizer::getCleanerDetails(const QString &cleanerName) {
         appDirs << appData + "/Discord/GPUCache";
         appDirs << localAppData + "/Steam/htmlcache";
         
-        // Developer Caches (pip, npm, NuGet)
-        appDirs << localAppData + "/pip/cache";
-        appDirs << appData + "/npm-cache";
-        appDirs << localAppData + "/NuGet/v3-cache";
-        appDirs << localAppData + "/NuGet/Cache";
-
         for (const QString &path : appDirs) {
             appSize += getDirSizeAndCount(path, appCount);
+        }
+
+        qint64 devSize = 0, devCount = 0;
+        QStringList devDirs;
+        devDirs << localAppData + "/pip/cache";
+        devDirs << appData + "/npm-cache";
+        devDirs << localAppData + "/NuGet/v3-cache";
+        devDirs << localAppData + "/NuGet/Cache";
+
+        for (const QString &path : devDirs) {
+            devSize += getDirSizeAndCount(path, devCount);
         }
 
         QStringList shaderDirs;
@@ -16359,8 +16364,10 @@ QVariantMap Optimizer::getCleanerDetails(const QString &cleanerName) {
         res["appCount"] = appCount;
         res["shaderSize"] = shaderSize;
         res["shaderCount"] = shaderCount;
-        res["totalSize"] = browserSize + appSize + shaderSize;
-        res["totalCount"] = browserCount + appCount + shaderCount;
+        res["devSize"] = devSize;
+        res["devCount"] = devCount;
+        res["totalSize"] = browserSize + appSize + shaderSize + devSize;
+        res["totalCount"] = browserCount + appCount + shaderCount + devCount;
     }
     else if (cleanerName == "storage") {
         qint64 tempSize = 0, tempCount = 0;
