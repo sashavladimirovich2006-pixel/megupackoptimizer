@@ -298,6 +298,13 @@ bool PowerUsbManager::applyPowerScheme(const QString &targetPowerSchemeGuid,
     
     // 1. Delete Ultimate Performance scheme if staged
     if (deleteUltimateStaged) {
+        // Set target scheme active first (so we are not deleting the currently active scheme)
+        GUID targetGuid;
+        HRESULT hr = CLSIDFromString((LPCOLESTR)finalTargetPowerSchemeVal.utf16(), &targetGuid);
+        if (SUCCEEDED(hr)) {
+            PowerSetActiveScheme(NULL, &targetGuid);
+        }
+
         GUID schemeGuid;
         DWORD bufferSize = sizeof(GUID);
         DWORD index = 0;
@@ -335,7 +342,7 @@ bool PowerUsbManager::applyPowerScheme(const QString &targetPowerSchemeGuid,
         
         finalActiveSchemeGuid = finalTargetPowerSchemeVal;
         reportStep(QCoreApplication::translate("Optimizer", "Ultimate Performance scheme deleted from system."), "SUCCESS");
-        success = false; // Skip activation since we just deleted it
+        return true; // Skip activation since we just deleted it and set target active
     } 
     // 2. Unlock Ultimate Performance scheme if targeted and not yet present
     else if (finalTargetPowerSchemeVal == ultimateGuidStr) {
@@ -472,6 +479,25 @@ bool PowerUsbManager::applyUsbPowerSaving(const QVariantList &usbDevices,
                 } else {
                     reportStep(QCoreApplication::translate("Optimizer", "Power saving disabled for '%1'.").arg(name), "SUCCESS");
                 }
+
+                // WMI ground-truth update to instantly toggle Device Manager checkbox
+                int braceIdx = subkeyPath.indexOf('{');
+                QString relKey = (braceIdx != -1) ? subkeyPath.mid(braceIdx) : subkeyPath;
+                QString psCmd = QString(
+                    "Get-CimInstance -ClassName MSPower_DeviceEnable -Namespace root\\WMI | "
+                    "Where-Object { "
+                    "  $id = $_.InstanceName; "
+                    "  if ($id.Length -gt 2) { "
+                    "    $id = $id.Substring(0, $id.Length - 2); "
+                    "    $drv = (Get-ItemProperty -Path ('HKLM:\\SYSTEM\\CurrentControlSet\\Enum\\' + $id) -ErrorAction SilentlyContinue).Driver; "
+                    "    $drv -eq '%1' "
+                    "  } else { $false } "
+                    "} | Set-CimInstance -Property @{Enable = [bool]%2}"
+                ).arg(relKey).arg(targetVal ? "1" : "0");
+
+                QProcess wmiSetProc;
+                wmiSetProc.start("powershell.exe", QStringList() << "-NoProfile" << "-NonInteractive" << "-ExecutionPolicy" << "Bypass" << "-Command" << psCmd);
+                wmiSetProc.waitForFinished(12000);
             } else {
                 ok = false;
                 if (targetVal) {
