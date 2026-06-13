@@ -9,10 +9,10 @@ import "views"
 ApplicationWindow {
     id: window
     visible: true
-    width: 940
-    height: 620
-    minimumWidth: 800
-    minimumHeight: 560
+    width: 1080
+    height: 680
+    minimumWidth: 1024
+    minimumHeight: 600
     flags: Qt.Window | Qt.FramelessWindowHint
     color: "transparent"
     title: {
@@ -262,8 +262,6 @@ ApplicationWindow {
                 }
 
                 Column {
-                    id: brandTextColumn
-                    visible: window.width >= 960
                     anchors.verticalCenter: parent.verticalCenter
                     spacing: 0
                     
@@ -288,7 +286,6 @@ ApplicationWindow {
 
                 // Vertical Divider 1
                 Rectangle {
-                    visible: brandTextColumn.visible
                     width: 1
                     height: 16
                     color: Theme.border
@@ -414,7 +411,7 @@ ApplicationWindow {
                     // Level status text
                     Text {
                         id: levelLabel
-                        visible: window.width >= 1050
+                        visible: window.width >= 900
                         text: {
                             var pct = window.optimizationPercentage;
                             if (pct < 45) return qsTr("Poor Level");
@@ -560,7 +557,7 @@ ApplicationWindow {
                 
                 MeguButton {
                     id: tab0
-                    text: window.width >= 960 ? qsTr("Dashboard") : ""
+                    text: qsTr("Dashboard")
                     iconSource: "qrc:/MeguPackOptimizer/src/resources/monitor.svg"
                     accented: window.activeTab === 0
                     flat: !accented
@@ -572,7 +569,7 @@ ApplicationWindow {
                 
                 MeguButton {
                     id: tab3
-                    text: window.width >= 960 ? qsTr("Optimization") : ""
+                    text: qsTr("Optimization")
                     iconSource: "qrc:/MeguPackOptimizer/src/resources/bolt.svg"
                     accented: window.activeTab === 3
                     flat: !accented
@@ -592,7 +589,7 @@ ApplicationWindow {
                 
                 MeguButton {
                     id: tab1
-                    text: window.width >= 960 ? qsTr("Settings") : ""
+                    text: qsTr("Settings")
                     iconSource: "qrc:/MeguPackOptimizer/src/resources/settings.svg"
                     accented: window.activeTab === 1
                     flat: !accented
@@ -612,7 +609,7 @@ ApplicationWindow {
             anchors.rightMargin: 16
             anchors.top: parent.top
             anchors.topMargin: rightIslandHover.containsMouse ? 7 : 8
-            width: (rightInfoRow.visible ? rightInfoRow.implicitWidth + 32 : 16) + windowControls.implicitWidth
+            width: rightInfoRow.implicitWidth + 32 + windowControls.implicitWidth
             color: Theme.panelBg
             border.color: rightIslandHover.containsMouse ? Theme.borderHover : Theme.border
             border.width: 1
@@ -645,7 +642,6 @@ ApplicationWindow {
 
             Row {
                 id: rightInfoRow
-                visible: window.width >= 1000
                 anchors.left: parent.left
                 anchors.leftMargin: 16
                 anchors.verticalCenter: parent.verticalCenter
