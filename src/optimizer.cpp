@@ -1,4 +1,7 @@
 #include "optimizer.h"
+#include "cleanup_manager.h"
+#include "system_info_provider.h"
+#include "power_usb_manager.h"
 #include "logger.h"
 #include "settings.h"
 #include <QSettings>
@@ -3935,54 +3938,9 @@ Optimizer::~Optimizer() {
 }
 
 void Optimizer::updateCpuAndRamLoad() {
-    double cpu = 0.0;
-    double ram = 0.0;
-
-#ifdef Q_OS_WIN
-    FILETIME idleTime, kernelTime, userTime;
-    if (GetSystemTimes(&idleTime, &kernelTime, &userTime) && m_prevIdleTime && m_prevKernelTime && m_prevUserTime) {
-        ULARGE_INTEGER idle, kernel, user;
-        idle.LowPart = idleTime.dwLowDateTime; idle.HighPart = idleTime.dwHighDateTime;
-        kernel.LowPart = kernelTime.dwLowDateTime; kernel.HighPart = kernelTime.dwHighDateTime;
-        user.LowPart = userTime.dwLowDateTime; user.HighPart = userTime.dwHighDateTime;
-        
-        FILETIME* prevIdleTimePtr = static_cast<FILETIME*>(m_prevIdleTime);
-        FILETIME* prevKernelTimePtr = static_cast<FILETIME*>(m_prevKernelTime);
-        FILETIME* prevUserTimePtr = static_cast<FILETIME*>(m_prevUserTime);
-
-        ULARGE_INTEGER prevIdle, prevKernel, prevUser;
-        prevIdle.LowPart = prevIdleTimePtr->dwLowDateTime; prevIdle.HighPart = prevIdleTimePtr->dwHighDateTime;
-        prevKernel.LowPart = prevKernelTimePtr->dwLowDateTime; prevKernel.HighPart = prevKernelTimePtr->dwHighDateTime;
-        prevUser.LowPart = prevUserTimePtr->dwLowDateTime; prevUser.HighPart = prevUserTimePtr->dwHighDateTime;
-        
-        *prevIdleTimePtr = idleTime;
-        *prevKernelTimePtr = kernelTime;
-        *prevUserTimePtr = userTime;
-        
-        ULONGLONG idleDiff = idle.QuadPart - prevIdle.QuadPart;
-        ULONGLONG kernelDiff = kernel.QuadPart - prevKernel.QuadPart;
-        ULONGLONG userDiff = user.QuadPart - prevUser.QuadPart;
-        
-        ULONGLONG totalDiff = kernelDiff + userDiff;
-        if (totalDiff > 0) {
-            ULONGLONG activeDiff = totalDiff - idleDiff;
-            cpu = double(activeDiff) / double(totalDiff);
-        }
-    }
-
-    MEMORYSTATUSEX memInfo;
-    memInfo.dwLength = sizeof(MEMORYSTATUSEX);
-    if (GlobalMemoryStatusEx(&memInfo)) {
-        ram = double(memInfo.dwMemoryLoad) / 100.0;
-    }
-#else
-    cpu = 0.15;
-    ram = 0.45;
-#endif
-
-    cpu = qBound(0.0, cpu, 1.0);
-    ram = qBound(0.0, ram, 1.0);
-
+    double cpu = SystemInfoProvider::getCpuLoad(m_prevIdleTime, m_prevKernelTime, m_prevUserTime);
+    double ram = SystemInfoProvider::getRamLoad();
+    
     if (m_cpuLoadPercent != cpu) {
         m_cpuLoadPercent = cpu;
         emit cpuLoadPercentChanged(m_cpuLoadPercent);
@@ -3994,38 +3952,14 @@ void Optimizer::updateCpuAndRamLoad() {
 }
 
 void Optimizer::updateRealTimeTelemetry() {
-#ifdef Q_OS_WIN
-    QProcess *proc = new QProcess(this);
-    connect(proc, QOverload<int, QProcess::ExitStatus>::of(&QProcess::finished), this, [this, proc](int exitCode, QProcess::ExitStatus exitStatus) {
-        if (exitStatus == QProcess::NormalExit && exitCode == 0) {
-            QString out = QString::fromUtf8(proc->readAllStandardOutput()).trimmed();
-            if (!out.isEmpty()) {
-                QString newTemp = out + "°C";
-                if (m_gpuTemp != newTemp) {
-                    m_gpuTemp = newTemp;
-                    emit gpuTempChanged(m_gpuTemp);
-                }
-            }
-        } else {
-            if (m_gpuTemp != "N/A") {
-                m_gpuTemp = "N/A";
-                emit gpuTempChanged(m_gpuTemp);
-            }
+    SystemInfoProvider::queryGpuTempAsync(this, [this](const QString &newTemp) {
+        if (m_gpuTemp != newTemp) {
+            m_gpuTemp = newTemp;
+            emit gpuTempChanged(m_gpuTemp);
         }
-        proc->deleteLater();
     });
-    proc->start("nvidia-smi", QStringList() << "--query-gpu=temperature.gpu" << "--format=csv,noheader,nounits");
-#else
-    // Simulation: generate a temperature around 45-55C
-    static int baseTemp = 48;
-    int offset = (rand() % 5) - 2; // -2 to +2
-    QString newTemp = QString::number(baseTemp + offset) + "°C";
-    if (m_gpuTemp != newTemp) {
-        m_gpuTemp = newTemp;
-        emit gpuTempChanged(m_gpuTemp);
-    }
-#endif
 }
+
 
 
 void Optimizer::setDesktopShowThisPC(bool val) {
@@ -5498,81 +5432,11 @@ void Optimizer::loadSystemStates() {
     emit appNotificationSettingsChanged();
 
     // ----------------------------------------------------
-    // Load Windows Power Schemes
+// Load Windows Power Schemes
     // ----------------------------------------------------
-    QVariantList schemesList;
     bool isUltimateUnlocked = false;
     QString activeSchemeGuidStr = "";
-
-#ifdef Q_OS_WIN
-    GUID activeGuid;
-    GUID *pActiveGuid = NULL;
-    DWORD activeErr = PowerGetActiveScheme(NULL, &pActiveGuid);
-    if (activeErr == ERROR_SUCCESS && pActiveGuid != NULL) {
-        activeGuid = *pActiveGuid;
-        wchar_t activeGuidStr[64] = {0};
-        StringFromGUID2(activeGuid, activeGuidStr, 64);
-        activeSchemeGuidStr = QString::fromWCharArray(activeGuidStr).toUpper();
-        LocalFree(pActiveGuid);
-    }
-
-    DWORD index = 0;
-    GUID schemeGuid;
-    DWORD bufferSize = sizeof(GUID);
-    const GUID ultimateGuid = { 0xe9a22b95, 0xe3b0, 0x4b87, { 0xa1, 0x77, 0x72, 0x89, 0x78, 0xed, 0x60, 0x22 } };
-
-    while (PowerEnumerate(NULL, NULL, NULL, ACCESS_SCHEME, index, (UCHAR*)&schemeGuid, &bufferSize) == ERROR_SUCCESS) {
-        wchar_t guidStr[64] = {0};
-        StringFromGUID2(schemeGuid, guidStr, 64);
-        QString guidQStr = QString::fromWCharArray(guidStr).toUpper();
-
-        // Get friendly name
-        UCHAR friendlyName[256] = {0};
-        DWORD friendlyNameSize = sizeof(friendlyName);
-        PowerReadFriendlyName(NULL, &schemeGuid, NULL, NULL, friendlyName, &friendlyNameSize);
-        QString name = QString::fromWCharArray((const wchar_t*)friendlyName);
-        if (name.isEmpty()) {
-            name = guidQStr;
-        }
-
-        bool isActive = (activeErr == ERROR_SUCCESS && IsEqualGUID(schemeGuid, activeGuid));
-        bool isUltimate = IsEqualGUID(schemeGuid, ultimateGuid) || name.contains("Ultimate Performance") || name.contains("Ultimate") || name.contains("Максимальная производительность");
-        if (isUltimate) {
-            isUltimateUnlocked = true;
-        }
-
-        QVariantMap schemeMap;
-        schemeMap["name"] = name;
-        schemeMap["guid"] = guidQStr;
-        schemeMap["isActive"] = isActive;
-        schemeMap["isUltimate"] = isUltimate;
-        schemesList.append(schemeMap);
-
-        index++;
-        bufferSize = sizeof(GUID);
-    }
-#else
-    // Simulation fallbacks for non-Windows (or debugging)
-    QVariantMap balanced;
-    balanced["name"] = "Balanced (Збалансований)";
-    balanced["guid"] = "{381B4222-F694-41F0-9685-FF5BB260DF2E}";
-    balanced["isActive"] = true;
-    balanced["isUltimate"] = false;
-
-    QVariantMap highPerf;
-    highPerf["name"] = "High performance (Висока продуктивність)";
-    highPerf["guid"] = "{8C5E7FDA-E8BF-4A96-9A85-A6E23A8C635C}";
-    highPerf["isActive"] = false;
-    highPerf["isUltimate"] = false;
-
-    schemesList.append(balanced);
-    schemesList.append(highPerf);
-
-    isUltimateUnlocked = false; // By default hidden in simulation
-    activeSchemeGuidStr = "{381B4222-F694-41F0-9685-FF5BB260DF2E}";
-#endif
-
-    m_powerSchemes = schemesList;
+    m_powerSchemes = PowerUsbManager::loadPowerSchemes(isUltimateUnlocked, activeSchemeGuidStr);
     m_ultimateSchemeUnlocked = isUltimateUnlocked;
     m_deleteUltimateStaged = false;
     m_activePowerSchemeGuid = activeSchemeGuidStr;
@@ -5688,105 +5552,11 @@ void Optimizer::loadSystemStates() {
     emit originalDefenderActiveChanged(m_originalDefenderActive);
 
     // ----------------------------------------------------
-    // Load USB 3.0 Devices and Power Saving State
+// Load USB 3.0 Devices and Power Saving State
     // ----------------------------------------------------
-    QVariantList usbList;
-#ifdef Q_OS_WIN
-    // Query ground-truth WMI states first to get accurate active state
-    QMap<QString, bool> wmiStates;
-    QProcess wmiProc;
-    wmiProc.start("powershell.exe", QStringList() 
-        << "-NoProfile" 
-        << "-NonInteractive" 
-        << "-ExecutionPolicy" << "Bypass" 
-        << "-Command" 
-        << "Get-CimInstance -ClassName MSPower_DeviceEnable -Namespace root\\WMI | Where-Object { $_.InstanceName -like 'USB*' } | ForEach-Object { $id = $_.InstanceName; if ($id.Length -gt 2) { $id = $id.Substring(0, $id.Length - 2); $drv = (Get-ItemProperty -Path ('HKLM:\\SYSTEM\\CurrentControlSet\\Enum\\' + $id) -ErrorAction SilentlyContinue).Driver; if ($drv) { Write-Output ($drv + '=' + $_.Enable) } } }");
-    if (wmiProc.waitForFinished(8000)) {
-        QString output = QString::fromUtf8(wmiProc.readAllStandardOutput()).trimmed();
-        QStringList lines = output.split('\n', Qt::SkipEmptyParts);
-        for (const QString &line : lines) {
-            QString trimmed = line.trimmed();
-            int eqIdx = trimmed.indexOf('=');
-            if (eqIdx != -1) {
-                QString drv = trimmed.left(eqIdx).trimmed().toLower();
-                QString stateStr = trimmed.mid(eqIdx + 1).trimmed();
-                bool active = (stateStr.compare("True", Qt::CaseInsensitive) == 0);
-                wmiStates[drv] = active;
-            }
-        }
-    }
-
-    HKEY hKeyClass;
-    if (RegOpenKeyExW(HKEY_LOCAL_MACHINE, L"SYSTEM\\CurrentControlSet\\Control\\Class\\{36fc9e60-c465-11cf-8056-444553540000}", 0, KEY_READ, &hKeyClass) == ERROR_SUCCESS) {
-        wchar_t subkeyName[256];
-        DWORD index = 0;
-        DWORD subkeyNameSize = 256;
-        while (RegEnumKeyExW(hKeyClass, index, subkeyName, &subkeyNameSize, NULL, NULL, NULL, NULL) == ERROR_SUCCESS) {
-            HKEY hKeySub;
-            QString subkeyPath = QString("SYSTEM\\CurrentControlSet\\Control\\Class\\{36fc9e60-c465-11cf-8056-444553540000}\\%1").arg(QString::fromWCharArray(subkeyName));
-            std::wstring wSubkeyPath = subkeyPath.toStdWString();
-            if (RegOpenKeyExW(HKEY_LOCAL_MACHINE, wSubkeyPath.c_str(), 0, KEY_READ, &hKeySub) == ERROR_SUCCESS) {
-                wchar_t driverDesc[512] = {0};
-                DWORD descSize = sizeof(driverDesc);
-                if (RegQueryValueExW(hKeySub, L"DriverDesc", NULL, NULL, (LPBYTE)driverDesc, &descSize) == ERROR_SUCCESS) {
-                    QString desc = QString::fromWCharArray(driverDesc);
-                    if (desc.contains("USB 3", Qt::CaseInsensitive) || desc.contains("Root Hub", Qt::CaseInsensitive)) {
-                        DWORD pnpCaps = 0;
-                        DWORD capsSize = sizeof(pnpCaps);
-                        bool hasCaps = (RegQueryValueExW(hKeySub, L"PnPCapabilities", NULL, NULL, (LPBYTE)&pnpCaps, &capsSize) == ERROR_SUCCESS);
-                        
-                        int braceIdx = subkeyPath.indexOf('{');
-                        QString relativeKey = (braceIdx != -1) ? subkeyPath.mid(braceIdx) : subkeyPath;
-                        QString relKeyLower = relativeKey.toLower();
-                        
-                        bool powerSaving = true; // default enabled
-                        if (wmiStates.contains(relKeyLower)) {
-                            powerSaving = wmiStates[relKeyLower];
-                        } else {
-                            if (hasCaps && pnpCaps == 24) {
-                                powerSaving = false;
-                            }
-                        }
-                        
-                        QVariantMap deviceMap;
-                        deviceMap["name"] = desc;
-                        deviceMap["subkeyPath"] = subkeyPath;
-                        deviceMap["powerSavingActive"] = powerSaving;
-                        usbList.append(deviceMap);
-                    }
-                }
-                RegCloseKey(hKeySub);
-            }
-            subkeyNameSize = 256;
-            index++;
-        }
-        RegCloseKey(hKeyClass);
-    }
-#else
-    // Simulation fallbacks for other OS developers
-    QVariantMap dev1;
-    dev1["name"] = "Intel(R) USB 3.10 eXtensible Host Controller - 1.10 (Microsoft)";
-    dev1["subkeyPath"] = "SYSTEM\\CurrentControlSet\\Control\\Class\\{36fc9e60-c465-11cf-8056-444553540000}\\0001";
-    dev1["powerSavingActive"] = true;
-    
-    QVariantMap dev2;
-    dev2["name"] = "USB Root Hub (USB 3.0)";
-    dev2["subkeyPath"] = "SYSTEM\\CurrentControlSet\\Control\\Class\\{36fc9e60-c465-11cf-8056-444553540000}\\0002";
-    dev2["powerSavingActive"] = true;
-
-    usbList.append(dev1);
-    usbList.append(dev2);
-#endif
-
     bool anyUsbPowerSaving = false;
-    for (const QVariant &dev : usbList) {
-        if (dev.toMap()["powerSavingActive"].toBool()) {
-            anyUsbPowerSaving = true;
-            break;
-        }
-    }
-    m_usbDevices = usbList;
-    m_originalUsbDevices = usbList;
+    m_usbDevices = PowerUsbManager::loadUsbDevices(anyUsbPowerSaving);
+    m_originalUsbDevices = m_usbDevices;
     m_usbPowerSavingActive = anyUsbPowerSaving;
     m_originalUsbPowerSavingActive = anyUsbPowerSaving;
     emit usbDevicesChanged(m_usbDevices);
@@ -9629,250 +9399,35 @@ void Optimizer::startSystemOptimization() {
             emit systemStepReported(tr("Configuring Windows power settings..."), "INFO");
             QThread::msleep(800);
             
-#ifdef Q_OS_WIN
-            bool success = true;
-            const QString ultimateGuidStr = "{E9A22B95-E3B0-4B87-A177-728978ED6022}";
-            QString finalTargetPowerSchemeVal = targetPowerSchemeVal;
-            
-            if (deleteUltimateStagedVal) {
-                // Set target scheme active first (so we are not deleting the currently active scheme)
-                GUID targetGuid;
-                HRESULT hr = CLSIDFromString((LPCOLESTR)finalTargetPowerSchemeVal.utf16(), &targetGuid);
-                if (SUCCEEDED(hr)) {
-                    PowerSetActiveScheme(NULL, &targetGuid);
+            QString finalActiveSchemeGuid;
+            powerPlanSuccess = PowerUsbManager::applyPowerScheme(
+                targetPowerSchemeVal, 
+                activePowerSchemeVal, 
+                deleteUltimateStagedVal, 
+                finalActiveSchemeGuid,
+                [this](const QString &msg, const QString &status) {
+                    emit systemStepReported(msg, status);
                 }
-                
-                // Delete all custom/standard Ultimate Performance schemes
-                QStringList guidsToDelete;
-                DWORD bufferSize = sizeof(GUID);
-                DWORD index = 0;
-                GUID schemeGuid;
-                while (PowerEnumerate(NULL, NULL, NULL, ACCESS_SCHEME, index, (UCHAR*)&schemeGuid, &bufferSize) == ERROR_SUCCESS) {
-                    UCHAR friendlyName[256] = {0};
-                    DWORD friendlyNameSize = sizeof(friendlyName);
-                    PowerReadFriendlyName(NULL, &schemeGuid, NULL, NULL, friendlyName, &friendlyNameSize);
-                    QString name = QString::fromWCharArray((const wchar_t*)friendlyName);
-                    
-                    wchar_t gStr[64] = {0};
-                    StringFromGUID2(schemeGuid, gStr, 64);
-                    QString guidStrQ = QString::fromWCharArray(gStr).toUpper();
-                    
-                    bool isUltimate = (guidStrQ == ultimateGuidStr) || 
-                                      name.contains("Ultimate Performance") || 
-                                      name.contains("Ultimate") || 
-                                      name.contains("Максимальна продуктивність") || 
-                                      name.contains("Максимальная производительность");
-                    if (isUltimate) {
-                        guidsToDelete.append(guidStrQ);
-                    }
-                    index++;
-                    bufferSize = sizeof(GUID);
-                }
-                
-                for (const QString &guidStr : guidsToDelete) {
-                    QString cleanGuid = guidStr;
-                    cleanGuid.replace("{", "").replace("}", "");
-                    QProcess proc;
-                    proc.start("powercfg.exe", QStringList() << "-delete" << cleanGuid);
-                    proc.waitForFinished(4000);
-                    Logger::log(QString("Deleted custom Ultimate Performance scheme during optimization: %1").arg(guidStr), "INFO");
-                }
-                
-                m_activePowerSchemeGuid = finalTargetPowerSchemeVal;
+            );
+            if (!finalActiveSchemeGuid.isEmpty()) {
+                m_activePowerSchemeGuid = finalActiveSchemeGuid;
                 emit activePowerSchemeGuidChanged(m_activePowerSchemeGuid);
-                emit systemStepReported(tr("Ultimate Performance scheme deleted from system."), "SUCCESS");
-                
-                success = false; // Skip duplicate/activation since we handled it
-            } else if (finalTargetPowerSchemeVal == ultimateGuidStr) {
-                GUID schemeGuid;
-                DWORD bufferSize = sizeof(GUID);
-                DWORD index = 0;
-                bool found = false;
-                const GUID ultimateGuid = { 0xe9a22b95, 0xe3b0, 0x4b87, { 0xa1, 0x77, 0x72, 0x89, 0x78, 0xed, 0x60, 0x22 } };
-                while (PowerEnumerate(NULL, NULL, NULL, ACCESS_SCHEME, index, (UCHAR*)&schemeGuid, &bufferSize) == ERROR_SUCCESS) {
-                    if (IsEqualGUID(schemeGuid, ultimateGuid)) {
-                        found = true;
-                        break;
-                    }
-                    index++;
-                    bufferSize = sizeof(GUID);
-                }
-                
-                if (!found) {
-                    // Try to scan for any existing custom scheme containing "Ultimate Performance" or similar in its name
-                    index = 0;
-                    bufferSize = sizeof(GUID);
-                    GUID customUltGuid;
-                    while (PowerEnumerate(NULL, NULL, NULL, ACCESS_SCHEME, index, (UCHAR*)&customUltGuid, &bufferSize) == ERROR_SUCCESS) {
-                        UCHAR friendlyName[256] = {0};
-                        DWORD friendlyNameSize = sizeof(friendlyName);
-                        PowerReadFriendlyName(NULL, &customUltGuid, NULL, NULL, friendlyName, &friendlyNameSize);
-                        QString name = QString::fromWCharArray((const wchar_t*)friendlyName);
-                        if (name.contains("Ultimate Performance") || name.contains("Ultimate") || name.contains("Максимальная производительность")) {
-                            wchar_t customUltGuidStr[64] = {0};
-                            StringFromGUID2(customUltGuid, customUltGuidStr, 64);
-                            finalTargetPowerSchemeVal = QString::fromWCharArray(customUltGuidStr).toUpper();
-                            found = true;
-                            break;
-                        }
-                        index++;
-                        bufferSize = sizeof(GUID);
-                    }
-                }
-                
-                if (!found) {
-                    QProcess proc;
-                    proc.start("powercfg.exe", QStringList() << "-duplicatescheme" << "e9a22b95-e3b0-4b87-a177-728978ed6022");
-                    bool finished = proc.waitForFinished(8000);
-                    if (finished && proc.exitCode() == 0) {
-                        Logger::log("Successfully duplicated standard Ultimate Performance power scheme.", "INFO");
-                    } else {
-                        Logger::log("Ultimate Performance scheme template not supported. Falling back to duplicating High Performance...", "WARNING");
-                        
-                        QProcess fallbackProc;
-                        fallbackProc.start("powercfg.exe", QStringList() << "-duplicatescheme" << "8c5e7fda-e8bf-4a96-9a85-a6e23a8c635c");
-                        if (fallbackProc.waitForFinished(8000) && fallbackProc.exitCode() == 0) {
-                            QString output = QString::fromLocal8Bit(fallbackProc.readAllStandardOutput());
-                            QRegularExpression re("([a-fA-F0-9]{8}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{12})");
-                            QRegularExpressionMatch match = re.match(output);
-                            if (match.hasMatch()) {
-                                QString newGuidStr = match.captured(1);
-                                QProcess renameProc;
-                                renameProc.start("powercfg.exe", QStringList() << "-changename" << newGuidStr << "Ultimate Performance");
-                                renameProc.waitForFinished(3000);
-                                
-                                finalTargetPowerSchemeVal = "{" + newGuidStr.toUpper() + "}";
-                                Logger::log(QString("Created custom Ultimate Performance scheme by duplicating High Performance: %1").arg(finalTargetPowerSchemeVal), "INFO");
-                            } else {
-                                success = false;
-                                powerPlanSuccess = false;
-                                emit systemStepReported(tr("Failed to duplicate High Performance power scheme."), "ERROR");
-                                Logger::log("Failed to parse GUID from duplicatescheme output.", "ERROR");
-                            }
-                        } else {
-                            success = false;
-                            powerPlanSuccess = false;
-                            emit systemStepReported(tr("Failed to duplicate High Performance power scheme."), "ERROR");
-                            Logger::log("Failed to run duplicatescheme for High Performance.", "ERROR");
-                        }
-                    }
-                }
             }
-            
-            if (success) {
-                GUID guid;
-                HRESULT hr = CLSIDFromString((LPCOLESTR)finalTargetPowerSchemeVal.utf16(), &guid);
-                if (SUCCEEDED(hr)) {
-                    DWORD err = PowerSetActiveScheme(NULL, &guid);
-                    if (err == ERROR_SUCCESS) {
-                        UCHAR friendlyName[256] = {0};
-                        DWORD friendlyNameSize = sizeof(friendlyName);
-                        PowerReadFriendlyName(NULL, &guid, NULL, NULL, friendlyName, &friendlyNameSize);
-                        QString name = QString::fromWCharArray((const wchar_t*)friendlyName);
-                        if (name.isEmpty()) name = finalTargetPowerSchemeVal;
-                        
-                        m_activePowerSchemeGuid = finalTargetPowerSchemeVal;
-                        emit activePowerSchemeGuidChanged(m_activePowerSchemeGuid);
-                        
-                        emit systemStepReported(tr("Power plan changed to: %1").arg(name), "SUCCESS");
-                        Logger::log(QString("Power scheme successfully set active: %1").arg(name), "INFO");
-                    } else {
-                        powerPlanSuccess = false;
-                        emit systemStepReported(tr("Failed to change power scheme."), "ERROR");
-                        Logger::log(QString("Failed to set active scheme: %1").arg(err), "ERROR");
-                    }
-                } else {
-                    powerPlanSuccess = false;
-                    emit systemStepReported(tr("Failed to change power scheme."), "ERROR");
-                }
-            }
-#else
-            // Simulation
-            m_activePowerSchemeGuid = targetPowerSchemeVal;
-            emit activePowerSchemeGuidChanged(m_activePowerSchemeGuid);
-            emit systemStepReported(tr("[Simulation] Power plan changed to: %1").arg(targetPowerSchemeVal), "SUCCESS");
-#endif
         }
 
         // Step 1.99e: USB 3.0 Power Saving Configuration (only if changed)
         bool usbSuccess = true;
         if (usbChanged) {
-            emit systemStepReported(tr("Configuring USB 3.0 Power Saving..."), "INFO");
-            QThread::msleep(800);
-            
-            bool ok = true;
-#ifdef Q_OS_WIN
-            for (int i = 0; i < usbDevicesVal.size(); ++i) {
-                QVariantMap deviceMap = usbDevicesVal[i].toMap();
-                QString subkeyPath = deviceMap["subkeyPath"].toString();
-                bool targetVal = deviceMap["powerSavingActive"].toBool();
-                bool originalVal = origUsbDevicesVal[i].toMap()["powerSavingActive"].toBool();
-                
-                if (targetVal != originalVal) {
-                    emit systemStepReported(tr("Setting USB power saving for '%1' to %2...").arg(deviceMap["name"].toString()).arg(targetVal ? tr("Enabled") : tr("Disabled")), "INFO");
-                    
-                    std::wstring wSubkey = subkeyPath.toStdWString();
-                    HKEY hKeySub;
-                    if (RegOpenKeyExW(HKEY_LOCAL_MACHINE, wSubkey.c_str(), 0, KEY_SET_VALUE, &hKeySub) == ERROR_SUCCESS) {
-                        if (targetVal) {
-                            // Enable power saving (delete value)
-                            LSTATUS status = RegDeleteValueW(hKeySub, L"PnPCapabilities");
-                            if (status != ERROR_SUCCESS && status != ERROR_FILE_NOT_FOUND) {
-                                DWORD zero = 0;
-                                RegSetValueExW(hKeySub, L"PnPCapabilities", 0, REG_DWORD, (LPBYTE)&zero, sizeof(zero));
-                            }
-                            emit systemStepReported(tr("Power saving enabled for '%1'.").arg(deviceMap["name"].toString()), "SUCCESS");
-                        } else {
-                            // Disable power saving (write 24 / 0x18)
-                            DWORD pnpVal = 24;
-                            if (RegSetValueExW(hKeySub, L"PnPCapabilities", 0, REG_DWORD, (LPBYTE)&pnpVal, sizeof(pnpVal)) == ERROR_SUCCESS) {
-                                emit systemStepReported(tr("Power saving disabled for '%1'.").arg(deviceMap["name"].toString()), "SUCCESS");
-                            } else {
-                                ok = false;
-                                emit systemStepReported(tr("Failed to disable power saving for '%1'.").arg(deviceMap["name"].toString()), "ERROR");
-                            }
-                        }
-                        RegCloseKey(hKeySub);
-                    } else {
-                        ok = false;
-                        emit systemStepReported(tr("Failed to open registry key for '%1'.").arg(deviceMap["name"].toString()), "ERROR");
-                    }
-
-                    // WMI ground-truth update to instantly toggle Device Manager checkbox
-                    int braceIdx = subkeyPath.indexOf('{');
-                    QString relKey = (braceIdx != -1) ? subkeyPath.mid(braceIdx) : subkeyPath;
-                    QString psCmd = QString(
-                        "Get-CimInstance -ClassName MSPower_DeviceEnable -Namespace root\\WMI | "
-                        "Where-Object { "
-                        "  $id = $_.InstanceName; "
-                        "  if ($id.Length -gt 2) { "
-                        "    $id = $id.Substring(0, $id.Length - 2); "
-                        "    $drv = (Get-ItemProperty -Path ('HKLM:\\SYSTEM\\CurrentControlSet\\Enum\\' + $id) -ErrorAction SilentlyContinue).Driver; "
-                        "    $drv -eq '%1' "
-                        "  } else { $false } "
-                        "} | Set-CimInstance -Property @{Enable = [bool]%2}"
-                    ).arg(relKey).arg(targetVal ? "1" : "0");
-
-                    QProcess wmiSetProc;
-                    wmiSetProc.start("powershell.exe", QStringList() << "-NoProfile" << "-NonInteractive" << "-ExecutionPolicy" << "Bypass" << "-Command" << psCmd);
-                    wmiSetProc.waitForFinished(12000);
+            usbSuccess = PowerUsbManager::applyUsbPowerSaving(
+                usbDevicesVal, 
+                origUsbDevicesVal, 
+                [this](const QString &msg, const QString &status) {
+                    emit systemStepReported(msg, status);
                 }
-            }
-#else
-            // Simulation
-            for (int i = 0; i < usbDevicesVal.size(); ++i) {
-                QVariantMap deviceMap = usbDevicesVal[i].toMap();
-                bool targetVal = deviceMap["powerSavingActive"].toBool();
-                bool originalVal = origUsbDevicesVal[i].toMap()["powerSavingActive"].toBool();
-                if (targetVal != originalVal) {
-                    emit systemStepReported(tr("[Simulation] Set USB power saving for '%1' to %2.").arg(deviceMap["name"].toString()).arg(targetVal ? "Enabled" : "Disabled"), "SUCCESS");
-                }
-            }
-#endif
-            if (ok) {
+            );
+            if (usbSuccess) {
                 emit systemStepReported(tr("USB 3.0 Power Saving configuration completed."), "SUCCESS");
             } else {
-                usbSuccess = false;
                 emit systemStepReported(tr("Failed to apply some USB 3.0 Power Saving settings."), "WARNING");
             }
         }
@@ -12672,208 +12227,21 @@ void Optimizer::decryptBitLocker() {
 }
 
 void Optimizer::refreshSystemInfo() {
-    m_osName = "Unknown OS";
-    m_cpuName = "Unknown CPU";
-    m_logicalCores = "Unknown Cores";
-    m_ramSize = "Unknown RAM";
-    m_gpuName = "Unknown GPU";
-    m_motherboard = "Unknown Motherboard";
-    m_storage = "Unknown Storage";
-    m_display = "Unknown Display";
-
-#ifdef Q_OS_WIN
-    // 1. OS Name
-    QString os = QSysInfo::prettyProductName();
-    HKEY hKey;
-    if (RegOpenKeyExW(HKEY_LOCAL_MACHINE, L"SOFTWARE\\Microsoft\\Windows NT\\CurrentVersion", 0, KEY_READ, &hKey) == ERROR_SUCCESS) {
-        wchar_t displayVersion[128] = {0};
-        DWORD size = sizeof(displayVersion);
-        if (RegQueryValueExW(hKey, L"DisplayVersion", NULL, NULL, (LPBYTE)displayVersion, &size) == ERROR_SUCCESS) {
-            os = QSysInfo::prettyProductName() + QString(" (Build %1)").arg(QString::fromWCharArray(displayVersion));
-        } else {
-            wchar_t currentBuild[128] = {0};
-            size = sizeof(currentBuild);
-            if (RegQueryValueExW(hKey, L"CurrentBuild", NULL, NULL, (LPBYTE)currentBuild, &size) == ERROR_SUCCESS) {
-                os = QSysInfo::prettyProductName() + QString(" (Build %1)").arg(QString::fromWCharArray(currentBuild));
-            }
-        }
-        RegCloseKey(hKey);
-    }
-    m_osName = os;
-
-    // 2. CPU Name
-    if (RegOpenKeyExW(HKEY_LOCAL_MACHINE, L"HARDWARE\\DESCRIPTION\\System\\CentralProcessor\\0", 0, KEY_READ, &hKey) == ERROR_SUCCESS) {
-        wchar_t cpu[256] = {0};
-        DWORD size = sizeof(cpu);
-        if (RegQueryValueExW(hKey, L"ProcessorNameString", NULL, NULL, (LPBYTE)cpu, &size) == ERROR_SUCCESS) {
-            m_cpuName = QString::fromWCharArray(cpu).trimmed();
-        }
-        RegCloseKey(hKey);
-    }
-
-    // 3. Logical Cores
-    m_logicalCores = QString("%1 Logical Processors").arg(QThread::idealThreadCount());
-
-    // 4. Memory (RAM)
-    MEMORYSTATUSEX memInfo;
-    memInfo.dwLength = sizeof(MEMORYSTATUSEX);
-    if (GlobalMemoryStatusEx(&memInfo)) {
-        double totalPhysMem = memInfo.ullTotalPhys / (1024.0 * 1024.0 * 1024.0);
-        m_ramSize = QString::number(totalPhysMem, 'f', 2) + " GB RAM";
-    }
-
-    // 5. GPU Name
-    DISPLAY_DEVICEW dd;
-    dd.cb = sizeof(dd);
-    for (int i = 0; EnumDisplayDevicesW(NULL, i, &dd, 0); ++i) {
-        if (dd.StateFlags & DISPLAY_DEVICE_PRIMARY_DEVICE) {
-            m_gpuName = QString::fromWCharArray(dd.DeviceString).trimmed();
-            break;
-        }
-    }
-    if (m_gpuName == "Unknown GPU" && EnumDisplayDevicesW(NULL, 0, &dd, 0)) {
-        m_gpuName = QString::fromWCharArray(dd.DeviceString).trimmed();
-    }
-
-    // 6. Motherboard
-    QString manufacturer, product;
-    if (RegOpenKeyExW(HKEY_LOCAL_MACHINE, L"HARDWARE\\DESCRIPTION\\System\\BIOS", 0, KEY_READ, &hKey) == ERROR_SUCCESS) {
-        wchar_t val[256] = {0};
-        DWORD size = sizeof(val);
-        if (RegQueryValueExW(hKey, L"BaseBoardManufacturer", NULL, NULL, (LPBYTE)val, &size) == ERROR_SUCCESS) {
-            manufacturer = QString::fromWCharArray(val).trimmed();
-        }
-        size = sizeof(val);
-        memset(val, 0, sizeof(val));
-        if (RegQueryValueExW(hKey, L"BaseBoardProduct", NULL, NULL, (LPBYTE)val, &size) == ERROR_SUCCESS) {
-            product = QString::fromWCharArray(val).trimmed();
-        }
-        RegCloseKey(hKey);
-    }
-    if (!manufacturer.isEmpty() && !product.isEmpty()) {
-        m_motherboard = manufacturer + " " + product;
-    } else {
-        m_motherboard = "Unknown Motherboard";
-    }
-
-    // 7. Storage
-    ULARGE_INTEGER freeBytesAvailable, totalBytes, totalFreeBytes;
-    if (GetDiskFreeSpaceExW(L"C:\\", &freeBytesAvailable, &totalBytes, &totalFreeBytes)) {
-        double freeGB = freeBytesAvailable.QuadPart / (1024.0 * 1024.0 * 1024.0);
-        double totalGB = totalBytes.QuadPart / (1024.0 * 1024.0 * 1024.0);
-        m_storage = QString("%1 GB Free / %2 GB Total").arg(QString::number(freeGB, 'f', 1)).arg(QString::number(totalGB, 'f', 1));
-    }
-
-    // 8. Motherboard Boot Mode (UEFI/Legacy BIOS)
-    GetFirmwareEnvironmentVariableW(L"", L"{00000000-0000-0000-0000-000000000000}", NULL, 0);
-    if (GetLastError() == ERROR_INVALID_FUNCTION) {
-        m_motherboardSubValue = tr("Legacy BIOS Boot Mode");
-    } else {
-        m_motherboardSubValue = tr("UEFI Boot Mode Enabled");
-    }
-
-    // 9. Secure Boot Status
-    QSettings regSecureBoot("HKEY_LOCAL_MACHINE\\SYSTEM\\CurrentControlSet\\Control\\SecureBoot\\State", QSettings::NativeFormat);
-    int secureBootEnabled = regSecureBoot.value("UEFISecureBootEnabled", 0).toInt();
-    m_secureBoot = (secureBootEnabled == 1) ? tr("Enabled") : tr("Disabled");
-
-    // 10. HAGS Status
-    QSettings regHags("HKEY_LOCAL_MACHINE\\SYSTEM\\CurrentControlSet\\Control\\GraphicsDrivers", QSettings::NativeFormat);
-    int hwSchMode = regHags.value("HwSchMode", 1).toInt();
-    m_hagsStatus = (hwSchMode == 2) ? tr("Enabled") : tr("Disabled");
-
-    // 11. HVCI (Memory Integrity)
-    QSettings regHvci("HKEY_LOCAL_MACHINE\\SYSTEM\\CurrentControlSet\\Control\\DeviceGuard\\Scenarios\\HypervisorEnforcedCodeIntegrity", QSettings::NativeFormat);
-    int hvciEnabled = regHvci.value("Enabled", 0).toInt();
-    m_hvciStatus = (hvciEnabled == 1) ? tr("Enabled") : tr("Disabled");
-
-    // 12. TPM Status (TBS API)
-    QString tpm = tr("Disabled / Not Found");
-    HMODULE hTbs = LoadLibraryW(L"tbs.dll");
-    if (hTbs) {
-        typedef HRESULT (WINAPI *FN_Tbsi_GetDeviceInfo)(UINT32 Size, PVOID Info);
-        FN_Tbsi_GetDeviceInfo pGetDeviceInfo = (FN_Tbsi_GetDeviceInfo)GetProcAddress(hTbs, "Tbsi_GetDeviceInfo");
-        if (pGetDeviceInfo) {
-            struct TBS_DEVICE_INFO_1 {
-                UINT32 structVersion;
-                UINT32 tpmVersion;
-                UINT32 tpmInterfaceType;
-                UINT32 tpmImplVersion;
-            } info;
-            memset(&info, 0, sizeof(info));
-            info.structVersion = 1;
-            HRESULT hr = pGetDeviceInfo(sizeof(info), &info);
-            if (hr == S_OK) {
-                if (info.tpmVersion == 1) {
-                    tpm = tr("TPM 1.2 Active");
-                } else if (info.tpmVersion == 2) {
-                    tpm = tr("TPM 2.0 Active");
-                } else {
-                    tpm = tr("TPM Active (Unknown Version)");
-                }
-            }
-        }
-        FreeLibrary(hTbs);
-    }
-    m_tpmStatus = tpm;
-
-    // 13. ReBAR Status
-    QString rebar = tr("Disabled");
-    QProcess rebarProc;
-    rebarProc.start("nvidia-smi", QStringList() << "-q");
-    if (rebarProc.waitForFinished(2000)) {
-        QString out = QString::fromUtf8(rebarProc.readAllStandardOutput());
-        int idx = out.indexOf("BAR1 Memory Usage");
-        if (idx != -1) {
-            int totalIdx = out.indexOf("Total", idx);
-            if (totalIdx != -1) {
-                int colonIdx = out.indexOf(":", totalIdx);
-                int eolIdx = out.indexOf("\n", totalIdx);
-                if (colonIdx != -1 && eolIdx != -1 && colonIdx < eolIdx) {
-                    QString totalStr = out.mid(colonIdx + 1, eolIdx - colonIdx - 1).trimmed();
-                    QRegularExpression numRx("(\\d+)");
-                    QRegularExpressionMatch m = numRx.match(totalStr);
-                    if (m.hasMatch()) {
-                        int mib = m.captured(1).toInt();
-                        if (mib > 512) {
-                            rebar = tr("Enabled (%1)").arg(totalStr);
-                        } else {
-                            rebar = tr("Disabled (%1)").arg(totalStr);
-                        }
-                    } else {
-                        rebar = tr("Disabled (%1)").arg(totalStr);
-                    }
-                }
-            }
-        }
-    }
-    m_rebarStatus = rebar;
-#else
-    m_osName = QSysInfo::prettyProductName();
-    m_cpuName = "AMD Ryzen 5 5600X 6-Core Processor";
-    m_logicalCores = QString("%1 Logical Processors").arg(QThread::idealThreadCount());
-    m_ramSize = "32.00 GB RAM";
-    m_gpuName = "NVIDIA GeForce RTX 5070";
-    m_motherboard = "ASUSTeK COMPUTER INC. TUF GAMING B550M-PLUS";
-    m_storage = "120.0 GB Free / 250.0 GB Total";
-
-    m_motherboardSubValue = tr("UEFI Boot Mode Enabled");
-    m_secureBoot = tr("Enabled");
-    m_hagsStatus = tr("Enabled");
-    m_hvciStatus = tr("Disabled");
-    m_tpmStatus = tr("TPM 2.0 Active");
-    m_rebarStatus = tr("Enabled (8192 MiB)");
-#endif
-
-    // 8. Display
-    QScreen *screen = QGuiApplication::primaryScreen();
-    if (screen) {
-        m_display = QString("%1x%2 @ %3Hz")
-                        .arg(screen->geometry().width())
-                        .arg(screen->geometry().height())
-                        .arg(qRound(screen->refreshRate()));
-    }
-
+    m_osName = SystemInfoProvider::getOsName();
+    m_cpuName = SystemInfoProvider::getCpuName();
+    m_logicalCores = SystemInfoProvider::getLogicalCores();
+    m_ramSize = SystemInfoProvider::getRamSize();
+    m_gpuName = SystemInfoProvider::getGpuName();
+    m_motherboard = SystemInfoProvider::getMotherboard();
+    m_motherboardSubValue = SystemInfoProvider::getMotherboardSubValue();
+    m_storage = SystemInfoProvider::getStorage();
+    m_display = SystemInfoProvider::getDisplay();
+    m_secureBoot = SystemInfoProvider::getSecureBoot();
+    m_tpmStatus = SystemInfoProvider::getTpmStatus();
+    m_hagsStatus = SystemInfoProvider::getHagsStatus();
+    m_hvciStatus = SystemInfoProvider::getHvciStatus();
+    m_rebarStatus = SystemInfoProvider::getRebarStatus();
+    
     emit osNameChanged(m_osName);
     emit cpuNameChanged(m_cpuName);
     emit logicalCoresChanged(m_logicalCores);
@@ -13471,71 +12839,9 @@ void Optimizer::setDeleteDefenderStaged(bool val) {
 
 
 void Optimizer::deleteUltimatePerformance() {
-#ifdef Q_OS_WIN
-    // 1. Find all Ultimate Performance scheme GUIDs in m_powerSchemes
-    QStringList guidsToDelete;
-    const QString standardUltimateGuidStr = "{E9A22B95-E3B0-4B87-A177-728978ED6022}";
-    
-    // Scan m_powerSchemes
-    for (int i = 0; i < m_powerSchemes.size(); ++i) {
-        QVariantMap map = m_powerSchemes[i].toMap();
-        QString guid = map["guid"].toString().toUpper();
-        QString name = map["name"].toString();
-        bool isUltimate = (guid == standardUltimateGuidStr) || 
-                          name.contains("Ultimate Performance") || 
-                          name.contains("Ultimate") || 
-                          name.contains("Максимальная производительность");
-        if (isUltimate) {
-            guidsToDelete.append(guid);
-        }
-    }
-    
-    // 2. If any of the schemes we want to delete is currently active,
-    // we MUST switch the active scheme to Balanced first (otherwise Windows won't let us delete it!)
-    GUID activeGuid;
-    GUID *pActiveGuid = NULL;
-    DWORD activeErr = PowerGetActiveScheme(NULL, &pActiveGuid);
-    bool activeNeedsReset = false;
-    if (activeErr == ERROR_SUCCESS && pActiveGuid != NULL) {
-        activeGuid = *pActiveGuid;
-        wchar_t activeGuidStr[64] = {0};
-        StringFromGUID2(activeGuid, activeGuidStr, 64);
-        QString activeSchemeStr = QString::fromWCharArray(activeGuidStr).toUpper();
-        LocalFree(pActiveGuid);
-        
-        if (guidsToDelete.contains(activeSchemeStr)) {
-            activeNeedsReset = true;
-        }
-    }
-    
-    if (activeNeedsReset) {
-        // Set "Balanced" as active
-        const QString balancedGuidStr = "{381B4222-F694-41F0-9685-FF5BB260DF2E}";
-        GUID balancedGuid;
-        HRESULT hr = CLSIDFromString((LPCOLESTR)balancedGuidStr.utf16(), &balancedGuid);
-        if (SUCCEEDED(hr)) {
-            PowerSetActiveScheme(NULL, &balancedGuid);
-            Logger::log("Reset active power scheme to Balanced before deleting Ultimate Performance scheme.", "INFO");
-        }
-    }
-    
-    // 3. Delete each Ultimate Performance scheme using powercfg.exe -delete
-    for (const QString &guidStr : guidsToDelete) {
-        // powercfg requires GUID without curly braces
-        QString cleanGuid = guidStr;
-        cleanGuid.replace("{", "").replace("}", "");
-        
-        QProcess proc;
-        proc.start("powercfg.exe", QStringList() << "-delete" << cleanGuid);
-        proc.waitForFinished(4000);
-        Logger::log(QString("Deleted custom Ultimate Performance scheme: %1").arg(guidStr), "INFO");
-    }
-#endif
-
-    // 4. Reload all system states to update the UI list and reset properties
+    PowerUsbManager::deleteUltimatePerformance(m_powerSchemes);
     m_ultimateSchemeUnlocked = false;
     emit ultimateSchemeUnlockedChanged(m_ultimateSchemeUnlocked);
-    
     loadSystemStates();
 }
 
@@ -15817,254 +15123,32 @@ void Optimizer::rebootSystem() {
 #endif
 }
 
-void deleteDirectoryContents(const QString &dirPath) {
-    QDir dir(dirPath);
-    if (!dir.exists()) return;
-    for (const QFileInfo &info : dir.entryInfoList(QDir::NoDotAndDotDot | QDir::AllEntries)) {
-        if (info.isDir()) {
-            QDir subDir(info.absoluteFilePath());
-            subDir.removeRecursively();
-        } else {
-            QFile::remove(info.absoluteFilePath());
-        }
-    }
-}
-
 bool Optimizer::cleanTemp() {
-    Logger::log("Starting Temporary Files Cleanup...", "INFO");
-    
-#ifdef Q_OS_WIN
-    QString userTemp = QDir::tempPath();
-    Logger::log("Cleaning User Temp: " + userTemp, "INFO");
-    deleteDirectoryContents(userTemp);
-    
-    // System Temp
-    wchar_t windir[MAX_PATH];
-    if (GetWindowsDirectoryW(windir, MAX_PATH)) {
-        QString winPath = QString::fromWCharArray(windir);
-        QString sysTemp = winPath + "\\Temp";
-        Logger::log("Cleaning System Temp: " + sysTemp, "INFO");
-        deleteDirectoryContents(sysTemp);
-    }
-#else
-    Logger::log("[Simulation] Windows temp directories cleared.", "INFO");
-#endif
-
-    Logger::log("Temporary Files Cleanup completed.", "INFO");
-    return true;
+    return CleanupManager::cleanTemp();
 }
 
 bool Optimizer::cleanLocalCache() {
-    Logger::log("Starting AppData Local/Roaming Cache Cleanup...", "INFO");
-    
-#ifdef Q_OS_WIN
-    QString localAppData = QString::fromLocal8Bit(qgetenv("LOCALAPPDATA"));
-    QString appData = QString::fromLocal8Bit(qgetenv("APPDATA"));
-    
-    if (localAppData.isEmpty()) {
-        localAppData = QDir::homePath() + "/AppData/Local";
-    }
-    if (appData.isEmpty()) {
-        appData = QDir::homePath() + "/AppData/Roaming";
-    }
-    
-    QStringList cacheDirs;
-    
-    // 1. Google Chrome Cache
-    cacheDirs << localAppData + "/Google/Chrome/User Data/Default/Cache";
-    cacheDirs << localAppData + "/Google/Chrome/User Data/Default/Code Cache";
-    
-    // 2. Microsoft Edge Cache
-    cacheDirs << localAppData + "/Microsoft/Edge/User Data/Default/Cache";
-    cacheDirs << localAppData + "/Microsoft/Edge/User Data/Default/Code Cache";
-    
-    // 3. Spotify Cache
-    cacheDirs << localAppData + "/Spotify/Storage";
-    
-    // 4. Discord Cache
-    cacheDirs << appData + "/Discord/Cache";
-    cacheDirs << appData + "/Discord/Code Cache";
-    cacheDirs << appData + "/Discord/GPUCache";
-    
-    // 5. Steam HTML Cache
-    cacheDirs << localAppData + "/Steam/htmlcache";
-    
-    // 6. NVIDIA Shader Cache
-    cacheDirs << localAppData + "/NVIDIA/DXCache";
-    cacheDirs << localAppData + "/NVIDIA/GLCache";
-    
-    // 7. AMD Shader Cache
-    cacheDirs << localAppData + "/AMD/DxCache";
-    
-    // 8. Firefox Cache (Iterating over profile subfolders)
-    QString firefoxProfilesPath = localAppData + "/Mozilla/Firefox/Profiles";
-    QDir firefoxDir(firefoxProfilesPath);
-    if (firefoxDir.exists()) {
-        for (const QString &profileDirName : firefoxDir.entryList(QDir::Dirs | QDir::NoDotAndDotDot)) {
-            QString profilePath = firefoxProfilesPath + "/" + profileDirName;
-            cacheDirs << profilePath + "/cache2";
-            cacheDirs << profilePath + "/startupCache";
-        }
-    }
-    
-    // 9. Developer Caches (pip, npm, NuGet)
-    cacheDirs << localAppData + "/pip/cache";
-    cacheDirs << appData + "/npm-cache";
-    cacheDirs << localAppData + "/NuGet/v3-cache";
-    cacheDirs << localAppData + "/NuGet/Cache";
-    
-    // Clean all listed directories
-    for (const QString &path : cacheDirs) {
-        if (QDir(path).exists()) {
-            Logger::log("Cleaning Cache Directory: " + path, "INFO");
-            deleteDirectoryContents(path);
-        }
-    }
-#else
-    Logger::log("[Simulation] AppData Cache cleared.", "INFO");
-#endif
-    
-    Logger::log("AppData Local/Roaming Cache Cleanup completed.", "INFO");
-    return true;
+    return CleanupManager::cleanLocalCache();
 }
 
 bool Optimizer::cleanStorage() {
-    Logger::log("Starting Storage Cleanup...", "INFO");
-    
-    // 1. User Temp
-    QString userTemp = QDir::tempPath();
-    Logger::log("Cleaning User Temp: " + userTemp, "INFO");
-    deleteDirectoryContents(userTemp);
-    
-    // 2. System Temp
-#ifdef Q_OS_WIN
-    wchar_t windir[MAX_PATH];
-    if (GetWindowsDirectoryW(windir, MAX_PATH)) {
-        QString winPath = QString::fromWCharArray(windir);
-        QString sysTemp = winPath + "\\Temp";
-        Logger::log("Cleaning System Temp: " + sysTemp, "INFO");
-        deleteDirectoryContents(sysTemp);
-        
-        // 3. Prefetch
-        QString prefetch = winPath + "\\Prefetch";
-        Logger::log("Cleaning Prefetch: " + prefetch, "INFO");
-        deleteDirectoryContents(prefetch);
-
-        // 4. SoftwareDistribution\Download
-        QString swDist = winPath + "\\SoftwareDistribution\\Download";
-        Logger::log("Cleaning Windows Update Cache: " + swDist, "INFO");
-        deleteDirectoryContents(swDist);
-    }
-    
-    // 5. Empty Recycle Bin
-    Logger::log("Emptying Recycle Bin...", "INFO");
-    SHEmptyRecycleBinW(NULL, NULL, SHERB_NOCONFIRMATION | SHERB_NOPROGRESSUI | SHERB_NOSOUND);
-#else
-    Logger::log("[Simulation] Windows temp directories and Recycle Bin cleared.", "INFO");
-#endif
-    
-    Logger::log("Storage Cleanup completed.", "INFO");
-    return true;
+    return CleanupManager::cleanStorage();
 }
 
 bool Optimizer::cleanFileExplorer() {
-    Logger::log("Starting File Explorer Cleanup...", "INFO");
-#ifdef Q_OS_WIN
-    // 1. Clear TypedPaths
-    HKEY hKey;
-    if (RegOpenKeyExW(HKEY_CURRENT_USER, L"Software\\Microsoft\\Windows\\CurrentVersion\\Explorer\\TypedPaths", 0, KEY_SET_VALUE | KEY_QUERY_VALUE, &hKey) == ERROR_SUCCESS) {
-        wchar_t valueName[16384];
-        DWORD valueNameSize = 16384;
-        while (true) {
-            valueNameSize = 16384;
-            if (RegEnumValueW(hKey, 0, valueName, &valueNameSize, NULL, NULL, NULL, NULL) == ERROR_SUCCESS) {
-                RegDeleteValueW(hKey, valueName);
-            } else {
-                break;
-            }
-        }
-        RegCloseKey(hKey);
-    }
-    
-    // 2. Clear RunMRU
-    if (RegOpenKeyExW(HKEY_CURRENT_USER, L"Software\\Microsoft\\Windows\\CurrentVersion\\Explorer\\RunMRU", 0, KEY_SET_VALUE | KEY_QUERY_VALUE, &hKey) == ERROR_SUCCESS) {
-        wchar_t valueName[16384];
-        DWORD valueNameSize = 16384;
-        while (true) {
-            valueNameSize = 16384;
-            if (RegEnumValueW(hKey, 0, valueName, &valueNameSize, NULL, NULL, NULL, NULL) == ERROR_SUCCESS) {
-                RegDeleteValueW(hKey, valueName);
-            } else {
-                break;
-            }
-        }
-        RegCloseKey(hKey);
-    }
-
-    // 3. Clear RecentDocs
-    RegDeleteKeyW(HKEY_CURRENT_USER, L"Software\\Microsoft\\Windows\\CurrentVersion\\Explorer\\RecentDocs");
-
-    // 4. Delete recent folders files
-    QString appData = QDir::toNativeSeparators(QDir::homePath() + "\\AppData\\Roaming\\Microsoft\\Windows\\Recent");
-    deleteDirectoryContents(appData);
-    deleteDirectoryContents(appData + "\\AutomaticDestinations");
-    deleteDirectoryContents(appData + "\\CustomDestinations");
-#else
-    Logger::log("[Simulation] File Explorer history and recent items cleared.", "INFO");
-#endif
-    Logger::log("File Explorer Cleanup completed.", "INFO");
-    return true;
+    return CleanupManager::cleanFileExplorer();
 }
 
 bool Optimizer::cleanMicrosoftStore() {
-    Logger::log("Starting Microsoft Store Cleanup...", "INFO");
-#ifdef Q_OS_WIN
-    // 1. Run wsreset.exe in background
-    QProcess::startDetached("wsreset.exe");
-    
-    // 2. Clean LocalCache folder
-    QString localAppData = QDir::toNativeSeparators(QDir::homePath() + "\\AppData\\Local\\Packages\\Microsoft.WindowsStore_8wekyb3d8bbwe\\LocalCache");
-    deleteDirectoryContents(localAppData);
-#else
-    Logger::log("[Simulation] Microsoft Store cache cleared.", "INFO");
-#endif
-    Logger::log("Microsoft Store Cleanup completed.", "INFO");
-    return true;
+    return CleanupManager::cleanMicrosoftStore();
 }
 
 bool Optimizer::cleanNetwork() {
-    Logger::log("Starting Network Cleanup (Flush DNS & Reset)...", "INFO");
-#ifdef Q_OS_WIN
-    QProcess proc;
-    proc.start("ipconfig", QStringList() << "/flushdns");
-    proc.waitForFinished(5000);
-    
-    proc.start("netsh", QStringList() << "winsock" << "reset");
-    proc.waitForFinished(5000);
-    
-    proc.start("netsh", QStringList() << "int" << "ip" << "reset");
-    proc.waitForFinished(5000);
-#else
-    Logger::log("[Simulation] Network DNS cache flushed and winsock reset.", "INFO");
-#endif
-    Logger::log("Network Cleanup completed.", "INFO");
-    return true;
+    return CleanupManager::cleanNetwork();
 }
 
 bool Optimizer::cleanSystemRestore() {
-    Logger::log("Starting System Restore Points Cleanup...", "INFO");
-#ifdef Q_OS_WIN
-    QProcess proc;
-    proc.start("vssadmin", QStringList() << "delete" << "shadows" << "/for=C:" << "/all" << "/quiet");
-    proc.waitForFinished(10000);
-    
-    proc.start("powershell", QStringList() << "-Command" << "Disable-ComputerRestore -Drive 'C:'; Enable-ComputerRestore -Drive 'C:'");
-    proc.waitForFinished(15000);
-#else
-    Logger::log("[Simulation] System Restore shadow copies deleted.", "INFO");
-#endif
-    Logger::log("System Restore Points Cleanup completed.", "INFO");
-    return true;
+    return CleanupManager::cleanSystemRestore();
 }
 
 QVariantList Optimizer::getConnectedGamepads() {
@@ -16221,292 +15305,5 @@ bool Optimizer::forgetGamepad(const QString &id, const QString &btAddress, const
 }
 
 QVariantMap Optimizer::getCleanerDetails(const QString &cleanerName) {
-    QVariantMap res;
-    
-    auto getDirSizeAndCount = [](const QString &path, qint64 &count) -> qint64 {
-        qint64 size = 0;
-        QDir dir(path);
-        if (!dir.exists()) return 0;
-        QDirIterator it(path, QDir::Files | QDir::NoDotAndDotDot, QDirIterator::Subdirectories);
-        while (it.hasNext()) {
-            it.next();
-            size += it.fileInfo().size();
-            count++;
-        }
-        return size;
-    };
-
-    auto parseVssCount = [](const QString &output) -> qint64 {
-        qint64 count = 0;
-        QStringList lines = output.split('\n');
-        for (const QString &line : lines) {
-            if (line.contains("Shadow Copy ID", Qt::CaseInsensitive) || 
-                line.contains("теневого копирования", Qt::CaseInsensitive)) {
-                count++;
-            }
-        }
-        return count;
-    };
-
-    auto parseVssSize = [](const QString &output) -> qint64 {
-        QStringList lines = output.split('\n');
-        for (const QString &line : lines) {
-            if (line.contains("Used Shadow", Qt::CaseInsensitive) || 
-                line.contains("хранилища теневых", Qt::CaseInsensitive)) {
-                int colonIdx = line.indexOf(':');
-                int parenIdx = line.indexOf('(', colonIdx);
-                if (colonIdx != -1) {
-                    QString part = line.mid(colonIdx + 1, parenIdx != -1 ? (parenIdx - colonIdx - 1) : -1).trimmed();
-                    QStringList parts = part.split(QRegularExpression("\\s+"));
-                    if (parts.size() >= 2) {
-                        bool ok = false;
-                        double num = parts[0].toDouble(&ok);
-                        if (ok) {
-                            QString unit = parts[1].toUpper();
-                            qint64 multiplier = 1;
-                            if (unit.contains("KB") || unit.contains("КБ")) multiplier = 1024;
-                            else if (unit.contains("MB") || unit.contains("МБ")) multiplier = 1024 * 1024;
-                            else if (unit.contains("GB") || unit.contains("ГБ")) multiplier = 1024 * 1024 * 1024;
-                            else if (unit.contains("TB") || unit.contains("ТБ")) multiplier = 1024LL * 1024 * 1024 * 1024;
-                            return static_cast<qint64>(num * multiplier);
-                        }
-                    }
-                }
-            }
-        }
-        return 0;
-    };
-
-    if (cleanerName == "temp") {
-        qint64 userSize = 0, userCount = 0;
-        qint64 sysSize = 0, sysCount = 0;
-        
-        userSize = getDirSizeAndCount(QDir::tempPath(), userCount);
-        
-#ifdef Q_OS_WIN
-        wchar_t windir[MAX_PATH];
-        if (GetWindowsDirectoryW(windir, MAX_PATH)) {
-            QString winPath = QString::fromWCharArray(windir);
-            sysSize = getDirSizeAndCount(winPath + "\\Temp", sysCount);
-        }
-#endif
-        
-        res["userTempSize"] = userSize;
-        res["userTempCount"] = userCount;
-        res["sysTempSize"] = sysSize;
-        res["sysTempCount"] = sysCount;
-        res["totalSize"] = userSize + sysSize;
-        res["totalCount"] = userCount + sysCount;
-    }
-    else if (cleanerName == "cache") {
-        QString localAppData = QString::fromLocal8Bit(qgetenv("LOCALAPPDATA"));
-        QString appData = QString::fromLocal8Bit(qgetenv("APPDATA"));
-        if (localAppData.isEmpty()) localAppData = QDir::homePath() + "/AppData/Local";
-        if (appData.isEmpty()) appData = QDir::homePath() + "/AppData/Roaming";
-
-        qint64 browserSize = 0, browserCount = 0;
-        qint64 appSize = 0, appCount = 0;
-        qint64 shaderSize = 0, shaderCount = 0;
-
-        QStringList browserDirs;
-        browserDirs << localAppData + "/Google/Chrome/User Data/Default/Cache";
-        browserDirs << localAppData + "/Google/Chrome/User Data/Default/Code Cache";
-        browserDirs << localAppData + "/Microsoft/Edge/User Data/Default/Cache";
-        browserDirs << localAppData + "/Microsoft/Edge/User Data/Default/Code Cache";
-        
-        QString firefoxProfilesPath = localAppData + "/Mozilla/Firefox/Profiles";
-        QDir firefoxDir(firefoxProfilesPath);
-        if (firefoxDir.exists()) {
-            for (const QString &profileDirName : firefoxDir.entryList(QDir::Dirs | QDir::NoDotAndDotDot)) {
-                browserDirs << firefoxProfilesPath + "/" + profileDirName + "/cache2";
-                browserDirs << firefoxProfilesPath + "/" + profileDirName + "/startupCache";
-            }
-        }
-
-        for (const QString &path : browserDirs) {
-            browserSize += getDirSizeAndCount(path, browserCount);
-        }
-
-        QStringList appDirs;
-        appDirs << localAppData + "/Spotify/Storage";
-        appDirs << appData + "/Discord/Cache";
-        appDirs << appData + "/Discord/Code Cache";
-        appDirs << appData + "/Discord/GPUCache";
-        appDirs << localAppData + "/Steam/htmlcache";
-        
-        for (const QString &path : appDirs) {
-            appSize += getDirSizeAndCount(path, appCount);
-        }
-
-        qint64 devSize = 0, devCount = 0;
-        QStringList devDirs;
-        devDirs << localAppData + "/pip/cache";
-        devDirs << appData + "/npm-cache";
-        devDirs << localAppData + "/NuGet/v3-cache";
-        devDirs << localAppData + "/NuGet/Cache";
-
-        for (const QString &path : devDirs) {
-            devSize += getDirSizeAndCount(path, devCount);
-        }
-
-        QStringList shaderDirs;
-        shaderDirs << localAppData + "/NVIDIA/DXCache";
-        shaderDirs << localAppData + "/NVIDIA/GLCache";
-        shaderDirs << localAppData + "/AMD/DxCache";
-
-        for (const QString &path : shaderDirs) {
-            shaderSize += getDirSizeAndCount(path, shaderCount);
-        }
-
-        res["browserSize"] = browserSize;
-        res["browserCount"] = browserCount;
-        res["appSize"] = appSize;
-        res["appCount"] = appCount;
-        res["shaderSize"] = shaderSize;
-        res["shaderCount"] = shaderCount;
-        res["devSize"] = devSize;
-        res["devCount"] = devCount;
-        res["totalSize"] = browserSize + appSize + shaderSize + devSize;
-        res["totalCount"] = browserCount + appCount + shaderCount + devCount;
-    }
-    else if (cleanerName == "storage") {
-        qint64 tempSize = 0, tempCount = 0;
-        qint64 prefetchSize = 0, prefetchCount = 0;
-        qint64 updateSize = 0, updateCount = 0;
-        qint64 rbSize = 0, rbCount = 0;
-
-        tempSize += getDirSizeAndCount(QDir::tempPath(), tempCount);
-        
-#ifdef Q_OS_WIN
-        wchar_t windir[MAX_PATH];
-        if (GetWindowsDirectoryW(windir, MAX_PATH)) {
-            QString winPath = QString::fromWCharArray(windir);
-            tempSize += getDirSizeAndCount(winPath + "\\Temp", tempCount);
-            prefetchSize += getDirSizeAndCount(winPath + "\\Prefetch", prefetchCount);
-            updateSize += getDirSizeAndCount(winPath + "\\SoftwareDistribution\\Download", updateCount);
-        }
-
-        SHQUERYRBINFO rbInfo;
-        rbInfo.cbSize = sizeof(SHQUERYRBINFO);
-        if (SHQueryRecycleBinW(NULL, &rbInfo) == S_OK) {
-            rbSize = rbInfo.i64Size;
-            rbCount = rbInfo.i64NumItems;
-        }
-#endif
-
-        res["tempSize"] = tempSize;
-        res["tempCount"] = tempCount;
-        res["prefetchSize"] = prefetchSize;
-        res["prefetchCount"] = prefetchCount;
-        res["updateSize"] = updateSize;
-        res["updateCount"] = updateCount;
-        res["recycleBinSize"] = rbSize;
-        res["recycleBinCount"] = rbCount;
-        res["totalSize"] = tempSize + prefetchSize + updateSize + rbSize;
-        res["totalCount"] = tempCount + prefetchCount + updateCount + rbCount;
-    }
-    else if (cleanerName == "explorer") {
-        qint64 recentSize = 0, recentCount = 0;
-        QString appData = QString::fromLocal8Bit(qgetenv("APPDATA"));
-        if (appData.isEmpty()) appData = QDir::homePath() + "/AppData/Roaming";
-        
-        recentSize += getDirSizeAndCount(appData + "/Microsoft/Windows/Recent", recentCount);
-        
-        qint64 registryCount = 0;
-#ifdef Q_OS_WIN
-        HKEY hKey;
-        if (RegOpenKeyExW(HKEY_CURRENT_USER, L"Software\\Microsoft\\Windows\\CurrentVersion\\Explorer\\TypedPaths", 0, KEY_QUERY_VALUE, &hKey) == ERROR_SUCCESS) {
-            DWORD valueCount = 0;
-            if (RegQueryInfoKeyW(hKey, NULL, NULL, NULL, NULL, NULL, NULL, &valueCount, NULL, NULL, NULL, NULL) == ERROR_SUCCESS) {
-                registryCount += valueCount;
-            }
-            RegCloseKey(hKey);
-        }
-        if (RegOpenKeyExW(HKEY_CURRENT_USER, L"Software\\Microsoft\\Windows\\CurrentVersion\\Explorer\\RunMRU", 0, KEY_QUERY_VALUE, &hKey) == ERROR_SUCCESS) {
-            DWORD valueCount = 0;
-            if (RegQueryInfoKeyW(hKey, NULL, NULL, NULL, NULL, NULL, NULL, &valueCount, NULL, NULL, NULL, NULL) == ERROR_SUCCESS) {
-                registryCount += valueCount;
-            }
-            RegCloseKey(hKey);
-        }
-#endif
-        res["recentSize"] = recentSize;
-        res["recentCount"] = recentCount;
-        res["registryCount"] = registryCount;
-        res["totalSize"] = recentSize;
-        res["totalCount"] = recentCount + registryCount;
-    }
-    else if (cleanerName == "store") {
-        qint64 storeSize = 0, storeCount = 0;
-        QString localAppData = QString::fromLocal8Bit(qgetenv("LOCALAPPDATA"));
-        if (localAppData.isEmpty()) localAppData = QDir::homePath() + "/AppData/Local";
-        
-        storeSize = getDirSizeAndCount(localAppData + "/Packages/Microsoft.WindowsStore_8wekyb3d8bbwe/LocalCache", storeCount);
-        
-        res["storeSize"] = storeSize;
-        res["storeCount"] = storeCount;
-        res["totalSize"] = storeSize;
-        res["totalCount"] = storeCount;
-    }
-    else if (cleanerName == "network") {
-        qint64 dnsCount = 0;
-        qint64 activeConnCount = 0;
-#ifdef Q_OS_WIN
-        QProcess proc;
-        proc.start("ipconfig", QStringList() << "/displaydns");
-        if (proc.waitForFinished(3000)) {
-            QString out = QString::fromLocal8Bit(proc.readAllStandardOutput());
-            QStringList lines = out.split('\n');
-            for (const QString &line : lines) {
-                if (line.contains("Record Name", Qt::CaseInsensitive) || 
-                    line.contains("Имя записи", Qt::CaseInsensitive)) {
-                    dnsCount++;
-                }
-            }
-        }
-        proc.start("netstat", QStringList() << "-an");
-        if (proc.waitForFinished(3000)) {
-            QString out = QString::fromLocal8Bit(proc.readAllStandardOutput());
-            QStringList lines = out.split('\n');
-            for (const QString &line : lines) {
-                QString trimmed = line.trimmed();
-                if (trimmed.startsWith("TCP", Qt::CaseInsensitive) || 
-                    trimmed.startsWith("UDP", Qt::CaseInsensitive)) {
-                    activeConnCount++;
-                }
-            }
-        }
-#endif
-        res["dnsCount"] = dnsCount;
-        res["activeConnCount"] = activeConnCount;
-        res["totalSize"] = 0;
-        res["totalCount"] = dnsCount + activeConnCount;
-    }
-    else if (cleanerName == "restore") {
-        qint64 restoreSize = 0;
-        qint64 restoreCount = 0;
-#ifdef Q_OS_WIN
-        QProcess proc;
-        proc.start("vssadmin", QStringList() << "list" << "shadows" << "/for=C:");
-        if (proc.waitForFinished(3000)) {
-            QString out = QString::fromLocal8Bit(proc.readAllStandardOutput());
-            restoreCount = parseVssCount(out);
-        }
-        proc.start("vssadmin", QStringList() << "list" << "shadowstorage");
-        if (proc.waitForFinished(3000)) {
-            QString out = QString::fromLocal8Bit(proc.readAllStandardOutput());
-            restoreSize = parseVssSize(out);
-        }
-#endif
-        res["restoreSize"] = restoreSize;
-        res["restoreCount"] = restoreCount;
-        res["totalSize"] = restoreSize;
-        res["totalCount"] = restoreCount;
-    }
-    
-    return res;
+    return CleanupManager::getCleanerDetails(cleanerName);
 }
-
-
-
-

@@ -19,6 +19,12 @@ set(SOURCES
     src/settings.cpp
     src/optimizer.h
     src/optimizer.cpp
+    src/cleanup_manager.h
+    src/cleanup_manager.cpp
+    src/system_info_provider.h
+    src/system_info_provider.cpp
+    src/power_usb_manager.h
+    src/power_usb_manager.cpp
     src/app.manifest
     src/resources.rc
 )
