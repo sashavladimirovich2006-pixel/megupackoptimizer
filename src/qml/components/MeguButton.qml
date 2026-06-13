@@ -16,7 +16,9 @@ Item {
     signal clicked()
     signal dropdownClicked()
     
-    implicitWidth: Math.max(control.hasDropdown ? 130 : 90, buttonLayout.implicitWidth + (control.hasDropdown ? 56 : 28))
+    implicitWidth: control.text !== "" ? 
+                   Math.max(control.hasDropdown ? 130 : 90, buttonLayout.implicitWidth + (control.hasDropdown ? 56 : 28)) : 
+                   (control.hasDropdown ? 64 : 34)
     implicitHeight: 34 // Compact and extremely clean height matching modern UI standards
     
     opacity: control.enabled ? 1.0 : 0.35
@@ -141,6 +143,7 @@ Item {
             
             Text {
                 text: control.text
+                visible: control.text !== ""
                 color: {
                     if (control.accented) return Theme.textPrimary;
                     if (control.flat) {

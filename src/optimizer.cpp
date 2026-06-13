@@ -16214,5 +16214,184 @@ bool Optimizer::forgetGamepad(const QString &id, const QString &btAddress, const
     return success;
 }
 
+QVariantMap Optimizer::getCleanerDetails(const QString &cleanerName) {
+    QVariantMap res;
+    
+    auto getDirSizeAndCount = [](const QString &path, qint64 &count) -> qint64 {
+        qint64 size = 0;
+        QDir dir(path);
+        if (!dir.exists()) return 0;
+        QDirIterator it(path, QDir::Files | QDir::NoDotAndDotDot, QDirIterator::Subdirectories);
+        while (it.hasNext()) {
+            it.next();
+            size += it.fileInfo().size();
+            count++;
+        }
+        return size;
+    };
+
+    if (cleanerName == "temp") {
+        qint64 userSize = 0, userCount = 0;
+        qint64 sysSize = 0, sysCount = 0;
+        
+        userSize = getDirSizeAndCount(QDir::tempPath(), userCount);
+        
+#ifdef Q_OS_WIN
+        wchar_t windir[MAX_PATH];
+        if (GetWindowsDirectoryW(windir, MAX_PATH)) {
+            QString winPath = QString::fromWCharArray(windir);
+            sysSize = getDirSizeAndCount(winPath + "\\Temp", sysCount);
+        }
+#endif
+        
+        res["userTempSize"] = userSize;
+        res["userTempCount"] = userCount;
+        res["sysTempSize"] = sysSize;
+        res["sysTempCount"] = sysCount;
+        res["totalSize"] = userSize + sysSize;
+        res["totalCount"] = userCount + sysCount;
+    }
+    else if (cleanerName == "cache") {
+        QString localAppData = QString::fromLocal8Bit(qgetenv("LOCALAPPDATA"));
+        QString appData = QString::fromLocal8Bit(qgetenv("APPDATA"));
+        if (localAppData.isEmpty()) localAppData = QDir::homePath() + "/AppData/Local";
+        if (appData.isEmpty()) appData = QDir::homePath() + "/AppData/Roaming";
+
+        qint64 browserSize = 0, browserCount = 0;
+        qint64 appSize = 0, appCount = 0;
+        qint64 shaderSize = 0, shaderCount = 0;
+
+        QStringList browserDirs;
+        browserDirs << localAppData + "/Google/Chrome/User Data/Default/Cache";
+        browserDirs << localAppData + "/Google/Chrome/User Data/Default/Code Cache";
+        browserDirs << localAppData + "/Microsoft/Edge/User Data/Default/Cache";
+        browserDirs << localAppData + "/Microsoft/Edge/User Data/Default/Code Cache";
+        
+        QString firefoxProfilesPath = localAppData + "/Mozilla/Firefox/Profiles";
+        QDir firefoxDir(firefoxProfilesPath);
+        if (firefoxDir.exists()) {
+            for (const QString &profileDirName : firefoxDir.entryList(QDir::Dirs | QDir::NoDotAndDotDot)) {
+                browserDirs << firefoxProfilesPath + "/" + profileDirName + "/cache2";
+                browserDirs << firefoxProfilesPath + "/" + profileDirName + "/startupCache";
+            }
+        }
+
+        for (const QString &path : browserDirs) {
+            browserSize += getDirSizeAndCount(path, browserCount);
+        }
+
+        QStringList appDirs;
+        appDirs << localAppData + "/Spotify/Storage";
+        appDirs << appData + "/Discord/Cache";
+        appDirs << appData + "/Discord/Code Cache";
+        appDirs << appData + "/Discord/GPUCache";
+        appDirs << localAppData + "/Steam/htmlcache";
+
+        for (const QString &path : appDirs) {
+            appSize += getDirSizeAndCount(path, appCount);
+        }
+
+        QStringList shaderDirs;
+        shaderDirs << localAppData + "/NVIDIA/DXCache";
+        shaderDirs << localAppData + "/NVIDIA/GLCache";
+        shaderDirs << localAppData + "/AMD/DxCache";
+
+        for (const QString &path : shaderDirs) {
+            shaderSize += getDirSizeAndCount(path, shaderCount);
+        }
+
+        res["browserSize"] = browserSize;
+        res["browserCount"] = browserCount;
+        res["appSize"] = appSize;
+        res["appCount"] = appCount;
+        res["shaderSize"] = shaderSize;
+        res["shaderCount"] = shaderCount;
+        res["totalSize"] = browserSize + appSize + shaderSize;
+        res["totalCount"] = browserCount + appCount + shaderCount;
+    }
+    else if (cleanerName == "storage") {
+        qint64 tempSize = 0, tempCount = 0;
+        qint64 prefetchSize = 0, prefetchCount = 0;
+        qint64 updateSize = 0, updateCount = 0;
+        qint64 rbSize = 0, rbCount = 0;
+
+        tempSize += getDirSizeAndCount(QDir::tempPath(), tempCount);
+        
+#ifdef Q_OS_WIN
+        wchar_t windir[MAX_PATH];
+        if (GetWindowsDirectoryW(windir, MAX_PATH)) {
+            QString winPath = QString::fromWCharArray(windir);
+            tempSize += getDirSizeAndCount(winPath + "\\Temp", tempCount);
+            prefetchSize += getDirSizeAndCount(winPath + "\\Prefetch", prefetchCount);
+            updateSize += getDirSizeAndCount(winPath + "\\SoftwareDistribution\\Download", updateCount);
+        }
+
+        SHQUERYRBINFO rbInfo;
+        rbInfo.cbSize = sizeof(SHQUERYRBINFO);
+        if (SHQueryRecycleBinW(NULL, &rbInfo) == S_OK) {
+            rbSize = rbInfo.i64Size;
+            rbCount = rbInfo.i64NumItems;
+        }
+#endif
+
+        res["tempSize"] = tempSize;
+        res["tempCount"] = tempCount;
+        res["prefetchSize"] = prefetchSize;
+        res["prefetchCount"] = prefetchCount;
+        res["updateSize"] = updateSize;
+        res["updateCount"] = updateCount;
+        res["recycleBinSize"] = rbSize;
+        res["recycleBinCount"] = rbCount;
+        res["totalSize"] = tempSize + prefetchSize + updateSize + rbSize;
+        res["totalCount"] = tempCount + prefetchCount + updateCount + rbCount;
+    }
+    else if (cleanerName == "explorer") {
+        qint64 recentSize = 0, recentCount = 0;
+        QString appData = QString::fromLocal8Bit(qgetenv("APPDATA"));
+        if (appData.isEmpty()) appData = QDir::homePath() + "/AppData/Roaming";
+        
+        recentSize += getDirSizeAndCount(appData + "/Microsoft/Windows/Recent", recentCount);
+        
+        qint64 registryCount = 0;
+#ifdef Q_OS_WIN
+        HKEY hKey;
+        if (RegOpenKeyExW(HKEY_CURRENT_USER, L"Software\\Microsoft\\Windows\\CurrentVersion\\Explorer\\TypedPaths", 0, KEY_QUERY_VALUE, &hKey) == ERROR_SUCCESS) {
+            DWORD valueCount = 0;
+            if (RegQueryInfoKeyW(hKey, NULL, NULL, NULL, NULL, NULL, NULL, &valueCount, NULL, NULL, NULL, NULL) == ERROR_SUCCESS) {
+                registryCount += valueCount;
+            }
+            RegCloseKey(hKey);
+        }
+        if (RegOpenKeyExW(HKEY_CURRENT_USER, L"Software\\Microsoft\\Windows\\CurrentVersion\\Explorer\\RunMRU", 0, KEY_QUERY_VALUE, &hKey) == ERROR_SUCCESS) {
+            DWORD valueCount = 0;
+            if (RegQueryInfoKeyW(hKey, NULL, NULL, NULL, NULL, NULL, NULL, &valueCount, NULL, NULL, NULL, NULL) == ERROR_SUCCESS) {
+                registryCount += valueCount;
+            }
+            RegCloseKey(hKey);
+        }
+#endif
+        res["recentSize"] = recentSize;
+        res["recentCount"] = recentCount;
+        res["registryCount"] = registryCount;
+        res["totalSize"] = recentSize;
+        res["totalCount"] = recentCount + registryCount;
+    }
+    else if (cleanerName == "store") {
+        qint64 storeSize = 0, storeCount = 0;
+        QString localAppData = QString::fromLocal8Bit(qgetenv("LOCALAPPDATA"));
+        if (localAppData.isEmpty()) localAppData = QDir::homePath() + "/AppData/Local";
+        
+        storeSize = getDirSizeAndCount(localAppData + "/Packages/Microsoft.WindowsStore_8wekyb3d8bbwe/LocalCache", storeCount);
+        
+        res["storeSize"] = storeSize;
+        res["storeCount"] = storeCount;
+        res["totalSize"] = storeSize;
+        res["totalCount"] = storeCount;
+    }
+    
+    return res;
+}
+
+
 
 

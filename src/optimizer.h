@@ -688,6 +688,7 @@ public:
     Q_INVOKABLE bool cleanMicrosoftStore();
     Q_INVOKABLE bool cleanNetwork();
     Q_INVOKABLE bool cleanSystemRestore();
+    Q_INVOKABLE QVariantMap getCleanerDetails(const QString &cleanerName);
     Q_INVOKABLE void runMemoryDiagnostic();
     Q_INVOKABLE void runSleepingPillScan();
     Q_INVOKABLE void runRepairScan(bool runDism, bool runSfc, bool runChkdsk);
