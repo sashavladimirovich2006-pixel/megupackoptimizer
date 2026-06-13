@@ -16230,6 +16230,47 @@ QVariantMap Optimizer::getCleanerDetails(const QString &cleanerName) {
         return size;
     };
 
+    auto parseVssCount = [](const QString &output) -> qint64 {
+        qint64 count = 0;
+        QStringList lines = output.split('\n');
+        for (const QString &line : lines) {
+            if (line.contains("Shadow Copy ID", Qt::CaseInsensitive) || 
+                line.contains("теневого копирования", Qt::CaseInsensitive)) {
+                count++;
+            }
+        }
+        return count;
+    };
+
+    auto parseVssSize = [](const QString &output) -> qint64 {
+        QStringList lines = output.split('\n');
+        for (const QString &line : lines) {
+            if (line.contains("Used Shadow", Qt::CaseInsensitive) || 
+                line.contains("хранилища теневых", Qt::CaseInsensitive)) {
+                int colonIdx = line.indexOf(':');
+                int parenIdx = line.indexOf('(', colonIdx);
+                if (colonIdx != -1) {
+                    QString part = line.mid(colonIdx + 1, parenIdx != -1 ? (parenIdx - colonIdx - 1) : -1).trimmed();
+                    QStringList parts = part.split(QRegularExpression("\\s+"));
+                    if (parts.size() >= 2) {
+                        bool ok = false;
+                        double num = parts[0].toDouble(&ok);
+                        if (ok) {
+                            QString unit = parts[1].toUpper();
+                            qint64 multiplier = 1;
+                            if (unit.contains("KB") || unit.contains("КБ")) multiplier = 1024;
+                            else if (unit.contains("MB") || unit.contains("МБ")) multiplier = 1024 * 1024;
+                            else if (unit.contains("GB") || unit.contains("ГБ")) multiplier = 1024 * 1024 * 1024;
+                            else if (unit.contains("TB") || unit.contains("ТБ")) multiplier = 1024LL * 1024 * 1024 * 1024;
+                            return static_cast<qint64>(num * multiplier);
+                        }
+                    }
+                }
+            }
+        }
+        return 0;
+    };
+
     if (cleanerName == "temp") {
         qint64 userSize = 0, userCount = 0;
         qint64 sysSize = 0, sysCount = 0;
@@ -16387,6 +16428,61 @@ QVariantMap Optimizer::getCleanerDetails(const QString &cleanerName) {
         res["storeCount"] = storeCount;
         res["totalSize"] = storeSize;
         res["totalCount"] = storeCount;
+    }
+    else if (cleanerName == "network") {
+        qint64 dnsCount = 0;
+        qint64 activeConnCount = 0;
+#ifdef Q_OS_WIN
+        QProcess proc;
+        proc.start("ipconfig", QStringList() << "/displaydns");
+        if (proc.waitForFinished(3000)) {
+            QString out = QString::fromLocal8Bit(proc.readAllStandardOutput());
+            QStringList lines = out.split('\n');
+            for (const QString &line : lines) {
+                if (line.contains("Record Name", Qt::CaseInsensitive) || 
+                    line.contains("Имя записи", Qt::CaseInsensitive)) {
+                    dnsCount++;
+                }
+            }
+        }
+        proc.start("netstat", QStringList() << "-an");
+        if (proc.waitForFinished(3000)) {
+            QString out = QString::fromLocal8Bit(proc.readAllStandardOutput());
+            QStringList lines = out.split('\n');
+            for (const QString &line : lines) {
+                QString trimmed = line.trimmed();
+                if (trimmed.startsWith("TCP", Qt::CaseInsensitive) || 
+                    trimmed.startsWith("UDP", Qt::CaseInsensitive)) {
+                    activeConnCount++;
+                }
+            }
+        }
+#endif
+        res["dnsCount"] = dnsCount;
+        res["activeConnCount"] = activeConnCount;
+        res["totalSize"] = 0;
+        res["totalCount"] = dnsCount + activeConnCount;
+    }
+    else if (cleanerName == "restore") {
+        qint64 restoreSize = 0;
+        qint64 restoreCount = 0;
+#ifdef Q_OS_WIN
+        QProcess proc;
+        proc.start("vssadmin", QStringList() << "list" << "shadows" << "/for=C:");
+        if (proc.waitForFinished(3000)) {
+            QString out = QString::fromLocal8Bit(proc.readAllStandardOutput());
+            restoreCount = parseVssCount(out);
+        }
+        proc.start("vssadmin", QStringList() << "list" << "shadowstorage");
+        if (proc.waitForFinished(3000)) {
+            QString out = QString::fromLocal8Bit(proc.readAllStandardOutput());
+            restoreSize = parseVssSize(out);
+        }
+#endif
+        res["restoreSize"] = restoreSize;
+        res["restoreCount"] = restoreCount;
+        res["totalSize"] = restoreSize;
+        res["totalCount"] = restoreCount;
     }
     
     return res;

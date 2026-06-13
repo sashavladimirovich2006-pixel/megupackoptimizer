@@ -519,9 +519,19 @@ Column {
                         // 6. Details for NETWORK
                         ColumnLayout {
                             Layout.fillWidth: true
-                            visible: cardBg.cleanerName === "network"
+                            visible: cardBg.cleanerName === "network" && cardBg.detailsData !== null
                             spacing: 4
 
+                            RowLayout {
+                                Layout.fillWidth: true
+                                Text { text: qsTr("DNS Resolver Cache:"); color: Theme.textMuted; font.family: Theme.fontFamily; font.pixelSize: 10; Layout.fillWidth: true }
+                                Text { text: (cardBg.detailsData ? cardBg.detailsData.dnsCount : 0) + " " + qsTr("entries"); color: Theme.textPrimary; font.family: Theme.fontFamily; font.pixelSize: 10; font.bold: true }
+                            }
+                            RowLayout {
+                                Layout.fillWidth: true
+                                Text { text: qsTr("Active Network Connections:"); color: Theme.textMuted; font.family: Theme.fontFamily; font.pixelSize: 10; Layout.fillWidth: true }
+                                Text { text: (cardBg.detailsData ? cardBg.detailsData.activeConnCount : 0) + " " + qsTr("sockets"); color: Theme.textPrimary; font.family: Theme.fontFamily; font.pixelSize: 10; font.bold: true }
+                            }
                             RowLayout {
                                 Layout.fillWidth: true
                                 Text { text: qsTr("Operation details:"); color: Theme.textMuted; font.family: Theme.fontFamily; font.pixelSize: 10; Layout.fillWidth: true }
@@ -532,9 +542,19 @@ Column {
                         // 7. Details for SYSTEM RESTORE
                         ColumnLayout {
                             Layout.fillWidth: true
-                            visible: cardBg.cleanerName === "restore"
+                            visible: cardBg.cleanerName === "restore" && cardBg.detailsData !== null
                             spacing: 4
 
+                            RowLayout {
+                                Layout.fillWidth: true
+                                Text { text: qsTr("System Restore Points:"); color: Theme.textMuted; font.family: Theme.fontFamily; font.pixelSize: 10; Layout.fillWidth: true }
+                                Text { text: (cardBg.detailsData ? cardBg.detailsData.restoreCount : 0) + " " + qsTr("points"); color: Theme.textPrimary; font.family: Theme.fontFamily; font.pixelSize: 10; font.bold: true }
+                            }
+                            RowLayout {
+                                Layout.fillWidth: true
+                                Text { text: qsTr("Storage Space Used:"); color: Theme.textMuted; font.family: Theme.fontFamily; font.pixelSize: 10; Layout.fillWidth: true }
+                                Text { text: cardBg.formatBytes(cardBg.detailsData ? cardBg.detailsData.restoreSize : 0); color: Theme.textPrimary; font.family: Theme.fontFamily; font.pixelSize: 10; font.bold: true }
+                            }
                             RowLayout {
                                 Layout.fillWidth: true
                                 Text { text: qsTr("Operation details:"); color: Theme.textMuted; font.family: Theme.fontFamily; font.pixelSize: 10; Layout.fillWidth: true }
