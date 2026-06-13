@@ -7576,66 +7576,37 @@ Item {
             Row {
 
 
-
                 spacing: 8
-
-
 
                 height: 16
 
 
 
-
-
-
-
                 Rectangle {
-
-
 
                     width: 4
 
-
-
                     height: 16
-
-
 
                     radius: 2
 
-
-
                     color: Theme.accent
 
-
-
                     anchors.verticalCenter: parent.verticalCenter
-
-
 
                 }
 
 
 
-
-
-
-
                 Text {
-
-
 
                     text: root.currentSection === "telemetry" ? qsTr("Telemetry Settings") : 
 
-
-
                           root.currentSection === "games" ? qsTr("Video Games Optimization") :
-
-
 
                           root.currentSection === "customization" ? qsTr("Customization Settings") :
 
-
+                          root.currentSection === "cleanup" ? qsTr("System Cleanup") :
 
                           qsTr("System Optimization")
 
@@ -26364,6 +26335,18 @@ Item {
 
 
 
+
+            // 2.5. CLEANUP CATEGORY
+            Column {
+                visible: root.currentSection === "cleanup"
+                width: parent.width
+                spacing: 12
+
+                CleanupDrawer {
+                    id: mainCleanupContent
+                    width: parent.width
+                }
+            }
 
             // 3. HIBERNATION CATEGORY
 

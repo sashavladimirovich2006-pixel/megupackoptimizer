@@ -682,6 +682,8 @@ public:
     Q_INVOKABLE void restartGraphicsDriver();
     Q_INVOKABLE void rebuildIconCache();
     Q_INVOKABLE bool cleanStorage();
+    Q_INVOKABLE bool cleanTemp();
+    Q_INVOKABLE bool cleanLocalCache();
     Q_INVOKABLE bool cleanFileExplorer();
     Q_INVOKABLE bool cleanMicrosoftStore();
     Q_INVOKABLE bool cleanNetwork();

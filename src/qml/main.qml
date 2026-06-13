@@ -1067,6 +1067,27 @@ ApplicationWindow {
                     optDropdown.close();
                 }
             }
+
+            Rectangle {
+                width: parent.width
+                height: 1
+                color: Theme.border
+                opacity: 0.6
+            }
+
+            MeguButton {
+                width: parent.width
+                height: 30
+                text: qsTr("Cleanup")
+                iconSource: "qrc:/MeguPackOptimizer/src/resources/broom.svg"
+                accented: window.activeTab === 3 && optimizationView.currentSection === "cleanup"
+                flat: !accented
+                onClicked: {
+                    window.activeTab = 3;
+                    optimizationView.currentSection = "cleanup";
+                    optDropdown.close();
+                }
+            }
         }
     }
 }

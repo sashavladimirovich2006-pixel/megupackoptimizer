@@ -15830,6 +15830,98 @@ void deleteDirectoryContents(const QString &dirPath) {
     }
 }
 
+bool Optimizer::cleanTemp() {
+    Logger::log("Starting Temporary Files Cleanup...", "INFO");
+    
+#ifdef Q_OS_WIN
+    QString userTemp = QDir::tempPath();
+    Logger::log("Cleaning User Temp: " + userTemp, "INFO");
+    deleteDirectoryContents(userTemp);
+    
+    // System Temp
+    wchar_t windir[MAX_PATH];
+    if (GetWindowsDirectoryW(windir, MAX_PATH)) {
+        QString winPath = QString::fromWCharArray(windir);
+        QString sysTemp = winPath + "\\Temp";
+        Logger::log("Cleaning System Temp: " + sysTemp, "INFO");
+        deleteDirectoryContents(sysTemp);
+    }
+#else
+    Logger::log("[Simulation] Windows temp directories cleared.", "INFO");
+#endif
+
+    Logger::log("Temporary Files Cleanup completed.", "INFO");
+    return true;
+}
+
+bool Optimizer::cleanLocalCache() {
+    Logger::log("Starting AppData Local/Roaming Cache Cleanup...", "INFO");
+    
+#ifdef Q_OS_WIN
+    QString localAppData = QString::fromLocal8Bit(qgetenv("LOCALAPPDATA"));
+    QString appData = QString::fromLocal8Bit(qgetenv("APPDATA"));
+    
+    if (localAppData.isEmpty()) {
+        localAppData = QDir::homePath() + "/AppData/Local";
+    }
+    if (appData.isEmpty()) {
+        appData = QDir::homePath() + "/AppData/Roaming";
+    }
+    
+    QStringList cacheDirs;
+    
+    // 1. Google Chrome Cache
+    cacheDirs << localAppData + "/Google/Chrome/User Data/Default/Cache";
+    cacheDirs << localAppData + "/Google/Chrome/User Data/Default/Code Cache";
+    
+    // 2. Microsoft Edge Cache
+    cacheDirs << localAppData + "/Microsoft/Edge/User Data/Default/Cache";
+    cacheDirs << localAppData + "/Microsoft/Edge/User Data/Default/Code Cache";
+    
+    // 3. Spotify Cache
+    cacheDirs << localAppData + "/Spotify/Storage";
+    
+    // 4. Discord Cache
+    cacheDirs << appData + "/Discord/Cache";
+    cacheDirs << appData + "/Discord/Code Cache";
+    cacheDirs << appData + "/Discord/GPUCache";
+    
+    // 5. Steam HTML Cache
+    cacheDirs << localAppData + "/Steam/htmlcache";
+    
+    // 6. NVIDIA Shader Cache
+    cacheDirs << localAppData + "/NVIDIA/DXCache";
+    cacheDirs << localAppData + "/NVIDIA/GLCache";
+    
+    // 7. AMD Shader Cache
+    cacheDirs << localAppData + "/AMD/DxCache";
+    
+    // 8. Firefox Cache (Iterating over profile subfolders)
+    QString firefoxProfilesPath = localAppData + "/Mozilla/Firefox/Profiles";
+    QDir firefoxDir(firefoxProfilesPath);
+    if (firefoxDir.exists()) {
+        for (const QString &profileDirName : firefoxDir.entryList(QDir::Dirs | QDir::NoDotAndDotDot)) {
+            QString profilePath = firefoxProfilesPath + "/" + profileDirName;
+            cacheDirs << profilePath + "/cache2";
+            cacheDirs << profilePath + "/startupCache";
+        }
+    }
+    
+    // Clean all listed directories
+    for (const QString &path : cacheDirs) {
+        if (QDir(path).exists()) {
+            Logger::log("Cleaning Cache Directory: " + path, "INFO");
+            deleteDirectoryContents(path);
+        }
+    }
+#else
+    Logger::log("[Simulation] AppData Cache cleared.", "INFO");
+#endif
+    
+    Logger::log("AppData Local/Roaming Cache Cleanup completed.", "INFO");
+    return true;
+}
+
 bool Optimizer::cleanStorage() {
     Logger::log("Starting Storage Cleanup...", "INFO");
     

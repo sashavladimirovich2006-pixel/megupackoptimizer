@@ -20,6 +20,12 @@ Column {
     }
 
     // Cleaning states
+    property bool tempCleaning: false
+    property bool tempSuccess: false
+
+    property bool cacheCleaning: false
+    property bool cacheSuccess: false
+
     property bool storageCleaning: false
     property bool storageSuccess: false
 
@@ -36,6 +42,28 @@ Column {
     property bool restoreSuccess: false
 
     // Timers to simulate premium feel and delay execution
+    Timer {
+        id: tempTimer
+        interval: 1200
+        onTriggered: {
+            optimizerBackend.cleanTemp();
+            cleanupColumn.tempCleaning = false;
+            cleanupColumn.tempSuccess = true;
+            resetSuccessTimer.start();
+        }
+    }
+
+    Timer {
+        id: cacheTimer
+        interval: 2000
+        onTriggered: {
+            optimizerBackend.cleanLocalCache();
+            cleanupColumn.cacheCleaning = false;
+            cleanupColumn.cacheSuccess = true;
+            resetSuccessTimer.start();
+        }
+    }
+
     Timer {
         id: storageTimer
         interval: 1200
@@ -96,6 +124,8 @@ Column {
         interval: 3000
         repeat: false
         onTriggered: {
+            cleanupColumn.tempSuccess = false;
+            cleanupColumn.cacheSuccess = false;
             cleanupColumn.storageSuccess = false;
             cleanupColumn.explorerSuccess = false;
             cleanupColumn.storeSuccess = false;
@@ -278,7 +308,41 @@ Column {
         }
     }
 
-    // 1. Storage Cleaner
+    // 1. Temporary Files Cleaner
+    Loader {
+        width: parent.width
+        sourceComponent: cleanerRowComponent
+        onLoaded: {
+            item.title = qsTr("Temporary Files");
+            item.icon = "qrc:/MeguPackOptimizer/src/resources/folder.svg";
+            item.buttonIcon = "qrc:/MeguPackOptimizer/src/resources/trash.svg";
+            item.isCleaning = Qt.binding(function() { return cleanupColumn.tempCleaning; });
+            item.isSuccess = Qt.binding(function() { return cleanupColumn.tempSuccess; });
+            item.cleanCallback = function() {
+                cleanupColumn.tempCleaning = true;
+                tempTimer.start();
+            };
+        }
+    }
+
+    // 2. AppData Cache Cleaner
+    Loader {
+        width: parent.width
+        sourceComponent: cleanerRowComponent
+        onLoaded: {
+            item.title = qsTr("AppData Local Cache");
+            item.icon = "qrc:/MeguPackOptimizer/src/resources/settings.svg";
+            item.buttonIcon = "qrc:/MeguPackOptimizer/src/resources/broom.svg";
+            item.isCleaning = Qt.binding(function() { return cleanupColumn.cacheCleaning; });
+            item.isSuccess = Qt.binding(function() { return cleanupColumn.cacheSuccess; });
+            item.cleanCallback = function() {
+                cleanupColumn.cacheCleaning = true;
+                cacheTimer.start();
+            };
+        }
+    }
+
+    // 3. Storage Cleaner
     Loader {
         width: parent.width
         sourceComponent: cleanerRowComponent
