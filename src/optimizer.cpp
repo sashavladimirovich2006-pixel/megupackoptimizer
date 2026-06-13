@@ -15907,6 +15907,12 @@ bool Optimizer::cleanLocalCache() {
         }
     }
     
+    // 9. Developer Caches (pip, npm, NuGet)
+    cacheDirs << localAppData + "/pip/cache";
+    cacheDirs << appData + "/npm-cache";
+    cacheDirs << localAppData + "/NuGet/v3-cache";
+    cacheDirs << localAppData + "/NuGet/Cache";
+    
     // Clean all listed directories
     for (const QString &path : cacheDirs) {
         if (QDir(path).exists()) {
@@ -16327,6 +16333,12 @@ QVariantMap Optimizer::getCleanerDetails(const QString &cleanerName) {
         appDirs << appData + "/Discord/Code Cache";
         appDirs << appData + "/Discord/GPUCache";
         appDirs << localAppData + "/Steam/htmlcache";
+        
+        // Developer Caches (pip, npm, NuGet)
+        appDirs << localAppData + "/pip/cache";
+        appDirs << appData + "/npm-cache";
+        appDirs << localAppData + "/NuGet/v3-cache";
+        appDirs << localAppData + "/NuGet/Cache";
 
         for (const QString &path : appDirs) {
             appSize += getDirSizeAndCount(path, appCount);

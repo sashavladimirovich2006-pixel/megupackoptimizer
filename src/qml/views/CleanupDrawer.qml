@@ -629,7 +629,7 @@ Column {
         onLoaded: {
             item.title = qsTr("AppData Local Cache");
             item.cleanerName = "cache";
-            item.description = qsTr("Clears app caches, web browser history caches, Steam, Spotify, Discord caches, and shader cache. Speeds up app loading and frees significant space.");
+            item.description = qsTr("Clears app caches, web browser history caches, Steam, Spotify, Discord, shader caches, and developer packages cache (pip, npm, NuGet). Speeds up app loading and frees significant space.");
             item.icon = "qrc:/MeguPackOptimizer/src/resources/settings.svg";
             item.buttonIcon = "qrc:/MeguPackOptimizer/src/resources/broom.svg";
             item.isCleaning = Qt.binding(function() { return cleanupColumn.cacheCleaning; });
