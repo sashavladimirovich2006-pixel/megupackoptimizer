@@ -49,6 +49,9 @@ Column {
             optimizerBackend.cleanTemp();
             cleanupColumn.tempCleaning = false;
             cleanupColumn.tempSuccess = true;
+            if (tempLoader.item) {
+                tempLoader.item.detailsData = optimizerBackend.getCleanerDetails("temp");
+            }
             resetSuccessTimer.start();
         }
     }
@@ -60,6 +63,9 @@ Column {
             optimizerBackend.cleanLocalCache();
             cleanupColumn.cacheCleaning = false;
             cleanupColumn.cacheSuccess = true;
+            if (cacheLoader.item) {
+                cacheLoader.item.detailsData = optimizerBackend.getCleanerDetails("cache");
+            }
             resetSuccessTimer.start();
         }
     }
@@ -71,6 +77,9 @@ Column {
             optimizerBackend.cleanStorage();
             cleanupColumn.storageCleaning = false;
             cleanupColumn.storageSuccess = true;
+            if (storageLoader.item) {
+                storageLoader.item.detailsData = optimizerBackend.getCleanerDetails("storage");
+            }
             resetSuccessTimer.start();
         }
     }
@@ -82,6 +91,9 @@ Column {
             optimizerBackend.cleanFileExplorer();
             cleanupColumn.explorerCleaning = false;
             cleanupColumn.explorerSuccess = true;
+            if (explorerLoader.item) {
+                explorerLoader.item.detailsData = optimizerBackend.getCleanerDetails("explorer");
+            }
             resetSuccessTimer.start();
         }
     }
@@ -93,6 +105,9 @@ Column {
             optimizerBackend.cleanMicrosoftStore();
             cleanupColumn.storeCleaning = false;
             cleanupColumn.storeSuccess = true;
+            if (storeLoader.item) {
+                storeLoader.item.detailsData = optimizerBackend.getCleanerDetails("store");
+            }
             resetSuccessTimer.start();
         }
     }
@@ -104,6 +119,9 @@ Column {
             optimizerBackend.cleanNetwork();
             cleanupColumn.networkCleaning = false;
             cleanupColumn.networkSuccess = true;
+            if (networkLoader.item) {
+                networkLoader.item.detailsData = optimizerBackend.getCleanerDetails("network");
+            }
             resetSuccessTimer.start();
         }
     }
@@ -115,6 +133,9 @@ Column {
             optimizerBackend.cleanSystemRestore();
             cleanupColumn.restoreCleaning = false;
             cleanupColumn.restoreSuccess = true;
+            if (restoreLoader.item) {
+                restoreLoader.item.detailsData = optimizerBackend.getCleanerDetails("restore");
+            }
             resetSuccessTimer.start();
         }
     }
@@ -582,6 +603,7 @@ Column {
 
     // 1. Temporary Files Cleaner
     Loader {
+        id: tempLoader
         width: parent.width
         sourceComponent: cleanerRowComponent
         onLoaded: {
@@ -601,6 +623,7 @@ Column {
 
     // 2. AppData Cache Cleaner
     Loader {
+        id: cacheLoader
         width: parent.width
         sourceComponent: cleanerRowComponent
         onLoaded: {
@@ -620,6 +643,7 @@ Column {
 
     // 3. Storage Cleaner
     Loader {
+        id: storageLoader
         width: parent.width
         sourceComponent: cleanerRowComponent
         onLoaded: {
@@ -639,6 +663,7 @@ Column {
 
     // 4. File Explorer Cleaner
     Loader {
+        id: explorerLoader
         width: parent.width
         sourceComponent: cleanerRowComponent
         onLoaded: {
@@ -658,6 +683,7 @@ Column {
 
     // 5. Microsoft Store Cleaner
     Loader {
+        id: storeLoader
         width: parent.width
         sourceComponent: cleanerRowComponent
         onLoaded: {
@@ -677,6 +703,7 @@ Column {
 
     // 6. Network Cleaner
     Loader {
+        id: networkLoader
         width: parent.width
         sourceComponent: cleanerRowComponent
         onLoaded: {
@@ -696,6 +723,7 @@ Column {
 
     // 7. System Restore Cleaner
     Loader {
+        id: restoreLoader
         width: parent.width
         sourceComponent: cleanerRowComponent
         onLoaded: {
