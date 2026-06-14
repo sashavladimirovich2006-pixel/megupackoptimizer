@@ -650,6 +650,7 @@ public:
     Q_INVOKABLE QString getSteamActiveUserId();
     Q_INVOKABLE void killSteam();
     Q_INVOKABLE void launchSteam();
+    Q_INVOKABLE void runSteamLanguageLoop();
     Q_INVOKABLE bool unpairSteamDevice(const QString &deviceId);
     Q_INVOKABLE QString getDefaultGameRecordingFolder();
     Q_INVOKABLE QString selectFolder(const QString &title);
@@ -707,6 +708,8 @@ public:
     Q_INVOKABLE QVariantList getConnectedGamepads();
     Q_INVOKABLE bool forgetGamepad(const QString &id, const QString &btAddress, const QString &vidPid);
     Q_INVOKABLE QVariantList getSteamDownloadRegions();
+    Q_INVOKABLE QStringList getSteamLanguageList();
+
 
 
 

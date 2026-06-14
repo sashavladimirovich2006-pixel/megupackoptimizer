@@ -5,6 +5,8 @@
 #include "logger.h"
 #include "settings.h"
 #include <QSettings>
+#include <thread>
+#include <chrono>
 #include <vector>
 #include <string>
 #include <QUrl>
@@ -13347,11 +13349,37 @@ void Optimizer::launchSteam() {
         if (QFile::exists(exePath)) {
             QProcess::startDetached(exePath);
             Logger::log("Launched Steam process successfully.", "INFO");
+            runSteamLanguageLoop();
         } else {
             Logger::log("Steam executable not found at path: " + exePath, "WARNING");
         }
     } else {
         Logger::log("Steam path registry lookup returned empty.", "WARNING");
+    }
+#endif
+}
+
+void Optimizer::runSteamLanguageLoop() {
+#ifdef Q_OS_WIN
+    QString language = m_steamFriendsSettings.value("sSteamLanguage").toString();
+    if (!language.isEmpty()) {
+        Logger::log("runSteamLanguageLoop: starting registry write loop for language: " + language, "INFO");
+        std::wstring wLanguage = language.toStdWString();
+        std::thread([wLanguage]() {
+            for (int i = 0; i < 400; ++i) {
+                HKEY hKey;
+                if (RegOpenKeyExW(HKEY_CURRENT_USER, L"Software\\Valve\\Steam", 0, KEY_SET_VALUE, &hKey) == ERROR_SUCCESS) {
+                    RegSetValueExW(hKey, L"Language", 0, REG_SZ, 
+                                   reinterpret_cast<const BYTE*>(wLanguage.c_str()), 
+                                   (wLanguage.length() + 1) * sizeof(wchar_t));
+                    RegCloseKey(hKey);
+                }
+                std::this_thread::sleep_for(std::chrono::milliseconds(50));
+            }
+            Logger::log("runSteamLanguageLoop: registry write loop completed.", "INFO");
+        }).detach();
+    } else {
+        Logger::log("runSteamLanguageLoop: sSteamLanguage is empty, loop skipped.", "WARNING");
     }
 #endif
 }

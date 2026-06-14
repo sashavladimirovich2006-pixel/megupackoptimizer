@@ -142,6 +142,9 @@ ApplicationWindow {
             var isRunning = optimizerBackend.isSteamRunning();
             var activeUser = optimizerBackend.getSteamActiveUserId();
             if (isRunning !== steamIsRunning || activeUser !== steamActiveUserId) {
+                if (isRunning && !steamIsRunning) {
+                    optimizerBackend.runSteamLanguageLoop();
+                }
                 steamIsRunning = isRunning;
                 steamActiveUserId = activeUser;
                 optimizerBackend.loadSystemStates();
