@@ -1107,8 +1107,17 @@ namespace {
 
         int start, end;
 
+        if (settingKey == "AlwaysShowUserChooser") {
+            if (getPathBodyRange(content, {"UserLocalConfigStore", "WebStorage", "Auth"}, start, end)) {
+                return getValueFromBlockBody(content, start, end, settingKey);
+            }
+            if (getPathBodyRange(content, {"UserLocalConfigStore", "Auth"}, start, end)) {
+                return getValueFromBlockBody(content, start, end, settingKey);
+            }
+        }
+
         if (blockName == "Steam") {
-            QStringList deepKeys = {"AutoUpdateWindowEnabled", "AutoUpdateWindowStart", "AutoUpdateWindowEnd", "DownloadThrottleKbps", "AllowDownloadsDuringGameplay", "StreamingThrottleEnabled", "CellIDServerOverride", "GlobalDefaultAppUpdateBehavior", "CurrentCellID", "TimeCellIDSet"};
+            QStringList deepKeys = {"AutoUpdateWindowEnabled", "AutoUpdateWindowStart", "AutoUpdateWindowEnd", "DownloadThrottleKbps", "AllowDownloadsDuringGameplay", "StreamingThrottleEnabled", "CellIDServerOverride", "GlobalDefaultAppUpdateBehavior", "CurrentCellID", "TimeCellIDSet", "SteamDefaultDialog"};
             QStringList flatKeys = {"ShaderCacheEnabled", "LocalNetworkGameTransfers", "Display download rates in bits per second"};
             QStringList roots = {"UserLocalConfigStore", "InstallConfigStore", "UserRoamingConfigStore"};
 
@@ -1150,6 +1159,16 @@ namespace {
             }
         }
 
+        if (blockName == "SteamBeta") {
+            QStringList roots = {"UserLocalConfigStore", "InstallConfigStore", "UserRoamingConfigStore"};
+            for (const QString &root : roots) {
+                if (getPathBodyRange(content, {root, "Software", "Valve", "Steam", "SteamBeta"}, start, end)) {
+                    QString val = getValueFromBlockBody(content, start, end, settingKey);
+                    if (!val.isEmpty()) return val;
+                }
+            }
+        }
+
         if (getPathBodyRange(content, {"UserLocalConfigStore", blockName}, start, end)) {
             return getValueFromBlockBody(content, start, end, settingKey);
         }
@@ -1170,8 +1189,16 @@ namespace {
         int start, end;
         bool found = false;
 
+        if (settingKey == "AlwaysShowUserChooser") {
+            if (getPathBodyRange(content, {"UserLocalConfigStore", "WebStorage", "Auth"}, start, end)) {
+                found = true;
+            } else if (ensurePathExists(content, {"UserLocalConfigStore", "WebStorage", "Auth"}, start, end)) {
+                found = true;
+            }
+        }
+
         if (blockName == "Steam") {
-            QStringList deepKeys = {"AutoUpdateWindowEnabled", "AutoUpdateWindowStart", "AutoUpdateWindowEnd", "DownloadThrottleKbps", "AllowDownloadsDuringGameplay", "StreamingThrottleEnabled", "CellIDServerOverride", "GlobalDefaultAppUpdateBehavior", "CurrentCellID", "TimeCellIDSet"};
+            QStringList deepKeys = {"AutoUpdateWindowEnabled", "AutoUpdateWindowStart", "AutoUpdateWindowEnd", "DownloadThrottleKbps", "AllowDownloadsDuringGameplay", "StreamingThrottleEnabled", "CellIDServerOverride", "GlobalDefaultAppUpdateBehavior", "CurrentCellID", "TimeCellIDSet", "SteamDefaultDialog"};
             QStringList flatKeys = {"ShaderCacheEnabled", "LocalNetworkGameTransfers", "Display download rates in bits per second"};
             QStringList roots = {"UserLocalConfigStore", "InstallConfigStore", "UserRoamingConfigStore"};
 
@@ -1248,6 +1275,25 @@ namespace {
                     found = true;
                 }
             }
+            if (blockName == "SteamBeta") {
+                QStringList roots = {"UserLocalConfigStore", "InstallConfigStore", "UserRoamingConfigStore"};
+                for (const QString &root : roots) {
+                    if (getPathBodyRange(content, {root, "Software", "Valve", "Steam", "SteamBeta"}, start, end)) {
+                        found = true;
+                        break;
+                    }
+                }
+                if (!found) {
+                    for (const QString &root : roots) {
+                        if (content.contains(QString("\"%1\"").arg(root))) {
+                            if (ensurePathExists(content, {root, "Software", "Valve", "Steam", "SteamBeta"}, start, end)) {
+                                found = true;
+                                break;
+                            }
+                        }
+                    }
+                }
+            }
         }
         
         if (!found) {
@@ -1284,22 +1330,65 @@ namespace {
             std::wstring wValueName = valueName.toStdWString();
             if (RegQueryValueExW(hKey, wValueName.c_str(), nullptr, &dwType, reinterpret_cast<LPBYTE>(&val), &dwSize) == ERROR_SUCCESS) {
                 RegCloseKey(hKey);
+                Logger::log(QString("readSteamRegistryDword: read '%1' = %2").arg(valueName).arg(val != 0), "DEBUG");
                 return (val != 0);
             }
             RegCloseKey(hKey);
         }
+        Logger::log(QString("readSteamRegistryDword: failed to read '%1', returning default = %2").arg(valueName).arg(defaultValue), "DEBUG");
         return defaultValue;
     }
 
     bool writeSteamRegistryDword(const QString &valueName, bool value) {
+        Logger::log(QString("writeSteamRegistryDword: attempting to write '%1' = %2").arg(valueName).arg(value), "INFO");
         HKEY hKey;
         if (RegOpenKeyExW(HKEY_CURRENT_USER, L"Software\\Valve\\Steam", 0, KEY_SET_VALUE, &hKey) == ERROR_SUCCESS) {
             DWORD val = value ? 1 : 0;
             std::wstring wValueName = valueName.toStdWString();
             LONG res = RegSetValueExW(hKey, wValueName.c_str(), 0, REG_DWORD, reinterpret_cast<const BYTE*>(&val), sizeof(val));
             RegCloseKey(hKey);
-            return (res == ERROR_SUCCESS);
+            bool success = (res == ERROR_SUCCESS);
+            Logger::log(QString("writeSteamRegistryDword: result for '%1' = %2 (code: %3)").arg(valueName).arg(success ? "SUCCESS" : "FAILED").arg(res), "INFO");
+            return success;
         }
+        Logger::log(QString("writeSteamRegistryDword: failed to open registry key for '%1'").arg(valueName), "WARNING");
+        return false;
+    }
+
+    QString readSteamRegistryString(const QString &valueName, const QString &defaultValue) {
+        HKEY hKey;
+        if (RegOpenKeyExW(HKEY_CURRENT_USER, L"Software\\Valve\\Steam", 0, KEY_READ, &hKey) == ERROR_SUCCESS) {
+            wchar_t val[256] = {};
+            DWORD dwSize = sizeof(val);
+            DWORD dwType = REG_SZ;
+            std::wstring wValueName = valueName.toStdWString();
+            if (RegQueryValueExW(hKey, wValueName.c_str(), nullptr, &dwType, reinterpret_cast<LPBYTE>(val), &dwSize) == ERROR_SUCCESS) {
+                RegCloseKey(hKey);
+                QString strVal = QString::fromWCharArray(val);
+                Logger::log(QString("readSteamRegistryString: read '%1' = '%2'").arg(valueName, strVal), "DEBUG");
+                return strVal;
+            }
+            RegCloseKey(hKey);
+        }
+        Logger::log(QString("readSteamRegistryString: failed to read '%1', returning default = '%2'").arg(valueName, defaultValue), "DEBUG");
+        return defaultValue;
+    }
+
+    bool writeSteamRegistryString(const QString &valueName, const QString &value) {
+        Logger::log(QString("writeSteamRegistryString: attempting to write '%1' = '%2'").arg(valueName, value), "INFO");
+        HKEY hKey;
+        if (RegOpenKeyExW(HKEY_CURRENT_USER, L"Software\\Valve\\Steam", 0, KEY_SET_VALUE, &hKey) == ERROR_SUCCESS) {
+            std::wstring wValueName = valueName.toStdWString();
+            std::wstring wValue = value.toStdWString();
+            LONG res = RegSetValueExW(hKey, wValueName.c_str(), 0, REG_SZ, 
+                                      reinterpret_cast<const BYTE*>(wValue.c_str()), 
+                                      (wValue.length() + 1) * sizeof(wchar_t));
+            RegCloseKey(hKey);
+            bool success = (res == ERROR_SUCCESS);
+            Logger::log(QString("writeSteamRegistryString: result for '%1' = %2 (code: %3)").arg(valueName).arg(success ? "SUCCESS" : "FAILED").arg(res), "INFO");
+            return success;
+        }
+        Logger::log(QString("writeSteamRegistryString: failed to open registry key for '%1'").arg(valueName), "WARNING");
         return false;
     }
 #endif
@@ -1849,6 +1938,10 @@ bool Optimizer::getVdfFriendsSettings(const QString &filePath, const QString &ac
             if (sharedDoc.isObject()) {
                 QVariantMap sharedMap = sharedDoc.object().toVariantMap();
                 
+                if (sharedMap.contains("b24HourClock")) {
+                    settings["b24HourClock"] = sharedMap["b24HourClock"].toBool();
+                }
+
                 // Map Steam keys to our internal keys
                 if (sharedMap.contains("bAnimatedAvatars")) {
                     settings["bEnableAnimatedAvatars"] = sharedMap["bAnimatedAvatars"].toBool();
@@ -2457,7 +2550,62 @@ bool Optimizer::getVdfFriendsSettings(const QString &filePath, const QString &ac
     settings["bHardwareVideoDecoding"] = readSteamRegistryDword("H264HWAccel", true);
     settings["bSmoothScrolling"] = readSteamRegistryDword("SmoothScrollWebViews", true);
     settings["bScaleTextAndIcons"] = readSteamRegistryDword("DPIScaling", true);
+    settings["sSteamLanguage"] = readSteamRegistryString("language", "english");
+    settings["bStartInBigPicture"] = readSteamRegistryDword("StartupMode", false);
 #endif
+
+    // localconfig.vdf settings
+    if (!settings.contains("b24HourClock")) {
+        QString use24h = getVdfRootSetting(filePath, "Use24HourClock");
+        if (!use24h.isEmpty()) {
+            settings["b24HourClock"] = (use24h != "0");
+        } else {
+            settings["b24HourClock"] = false;
+        }
+    }
+
+    QString defaultDialog = "";
+    if (QFile::exists(sharedConfigPath)) {
+        defaultDialog = getVdfBlockSetting(sharedConfigPath, "Steam", "SteamDefaultDialog");
+    }
+
+    int startupPageVal = 1; // Default to Store
+    if (!defaultDialog.isEmpty()) {
+        if (defaultDialog == "#app_store") startupPageVal = 1;
+        else if (defaultDialog == "#app_games") startupPageVal = 2;
+        else if (defaultDialog == "#app_news") startupPageVal = 3;
+        else if (defaultDialog == "#steam_menu_friend_activity") startupPageVal = 4;
+        else if (defaultDialog == "#steam_menu_community_home") startupPageVal = 5;
+    } else {
+        // Fallback to legacy StartupPage key
+        QString startupPage = getVdfRootSetting(filePath, "StartupPage");
+        if (!startupPage.isEmpty()) {
+            startupPageVal = startupPage.toInt();
+        }
+    }
+    settings["nStartupPage"] = startupPageVal;
+
+    // Taskbar settings (JumplistSettings)
+    int js = 208763;
+    QString jsVal = getVdfSystemSetting(filePath, "JumplistSettings");
+    if (!jsVal.isEmpty()) {
+        js = jsVal.toInt();
+    }
+    settings["bTaskbarStatus_Online"] = ((js & (1 << 0)) != 0);
+    settings["bTaskbarStatus_Away"] = ((js & (1 << 1)) != 0);
+    settings["bTaskbarStatus_Offline"] = ((js & (1 << 3)) != 0);
+    settings["bTaskbarDest_Store"] = ((js & (1 << 4)) != 0);
+    settings["bTaskbarDest_Community"] = ((js & (1 << 5)) != 0);
+    settings["bTaskbarDest_Library"] = ((js & (1 << 6)) != 0);
+    settings["bTaskbarDest_Servers"] = ((js & (1 << 7)) != 0);
+    settings["bTaskbarDest_Friends"] = ((js & (1 << 9)) != 0);
+    settings["bTaskbarDest_ExitSteam"] = ((js & (1 << 10)) != 0);
+    settings["bTaskbarDest_Settings"] = ((js & (1 << 11)) != 0);
+    settings["bTaskbarDest_Screenshots"] = ((js & (1 << 12)) != 0);
+    settings["bTaskbarDest_BigPicture"] = ((js & (1 << 13)) != 0);
+    settings["bTaskbarDest_FriendActivity"] = ((js & (1 << 14)) != 0);
+    settings["bTaskbarDest_SteamVR"] = ((js & (1 << 16)) != 0);
+    settings["bTaskbarStatus_Invisible"] = ((js & (1 << 17)) != 0);
 
     // 10. config.vdf loading (downloads & chooser)
     QString configVdfPath = filePath;
@@ -2472,6 +2620,19 @@ bool Optimizer::getVdfFriendsSettings(const QString &filePath, const QString &ac
             if (!alwaysShow.isEmpty()) {
                 settings["bAskAccountOnStart"] = (alwaysShow != "0");
             }
+            QString betaName = "none";
+            QString steamPath = filePath.left(userdataIdx);
+            QString betaFilePath = steamPath + "/package/beta";
+            if (QFile::exists(betaFilePath)) {
+                QFile betaFile(betaFilePath);
+                if (betaFile.open(QIODevice::ReadOnly | QIODevice::Text)) {
+                    QString content = QString::fromUtf8(betaFile.readAll()).trimmed();
+                    if (content == "publicbeta") {
+                        betaName = "publicbeta";
+                    }
+                }
+            }
+            settings["sSteamBetaName"] = betaName;
             QString uiScale = getVdfBlockSetting(configVdfPath, "Accessibility", "DesktopUIScale");
             if (!uiScale.isEmpty()) {
                 bool ok;
@@ -2769,6 +2930,12 @@ bool Optimizer::updateVdfFriendsSettings(const QString &filePath, const QString 
     }
     
     QJsonObject incomingObj = QJsonObject::fromVariantMap(settings);
+    incomingObj.remove("bGPUAcceleratedRendering");
+    incomingObj.remove("bHardwareVideoDecoding");
+    incomingObj.remove("bSmoothScrolling");
+    incomingObj.remove("bScaleTextAndIcons");
+    incomingObj.remove("sSteamLanguage");
+    incomingObj.remove("bStartInBigPicture");
     incomingObj.remove("DownloadHighQualityAudio");
     incomingObj.remove("PauseOnAppStartedProcess");
     incomingObj.remove("PauseOnVoiceChat");
@@ -2836,12 +3003,14 @@ bool Optimizer::updateVdfFriendsSettings(const QString &filePath, const QString 
     incomingObj.remove("library_low_perf_mode");
     incomingObj.remove("library_disable_community_content");
     incomingObj.remove("library_display_icon_in_game_list");
+    incomingObj.remove("library_display_size");
     incomingObj.remove("ready_to_play_includes_streaming");
     incomingObj.remove("show_steam_deck_info");
     incomingObj.remove("bLibraryLowBandwidthMode");
     incomingObj.remove("bLibraryLowPerformanceMode");
     incomingObj.remove("bLibraryDisableCommunityContent");
     incomingObj.remove("bLibraryDisplayGameIconsInSidebar");
+    incomingObj.remove("bLibraryDisplaySize");
     incomingObj.remove("bLibraryReadyToPlayIncludesStreaming");
     incomingObj.remove("bLibraryShowSteamDeckCompatibility");
     incomingObj.remove("BroadcastPermissions");
@@ -3590,6 +3759,9 @@ bool Optimizer::updateVdfFriendsSettings(const QString &filePath, const QString 
         }
 
         // Apply our updates to sharedObj
+        if (settings.contains("b24HourClock")) {
+            sharedObj["b24HourClock"] = settings.value("b24HourClock").toBool();
+        }
         if (settings.contains("bEnableAnimatedAvatars")) {
             sharedObj["bAnimatedAvatars"] = settings.value("bEnableAnimatedAvatars").toBool();
         }
@@ -3693,21 +3865,81 @@ bool Optimizer::updateVdfFriendsSettings(const QString &filePath, const QString 
         updateVdfBlockSetting(filePath, "news", "NotifyAvailableGames", settings.value("bNotifyGameAdditions").toBool() ? "1" : "0");
     }
 
-#ifdef Q_OS_WIN
-    // 9. interface settings to Registry
-    if (settings.contains("bGPUAcceleratedRendering")) {
-        writeSteamRegistryDword("GPUAccelWebViewsV3", settings.value("bGPUAcceleratedRendering").toBool());
+
+    // Save Use24HourClock and StartupPage to localconfig.vdf
+    if (settings.contains("b24HourClock")) {
+        updateVdfRootSetting(filePath, "Use24HourClock", settings.value("b24HourClock").toBool() ? "1" : "0");
     }
-    if (settings.contains("bHardwareVideoDecoding")) {
-        writeSteamRegistryDword("H264HWAccel", settings.value("bHardwareVideoDecoding").toBool());
+    if (settings.contains("nStartupPage")) {
+        int val = settings.value("nStartupPage").toInt();
+        // Update the legacy key in localconfig.vdf
+        updateVdfRootSetting(filePath, "StartupPage", QString::number(val));
+
+        // Update the modern key in sharedconfig.vdf
+        QString sharedConfigPath = filePath;
+        sharedConfigPath.replace("/config/localconfig.vdf", "/7/remote/sharedconfig.vdf");
+        sharedConfigPath.replace("\\config\\localconfig.vdf", "\\7\\remote\\sharedconfig.vdf");
+
+        if (QFile::exists(sharedConfigPath)) {
+            QString defaultDialogVal = "#app_store";
+            if (val == 1) defaultDialogVal = "#app_store";
+            else if (val == 2) defaultDialogVal = "#app_games";
+            else if (val == 3) defaultDialogVal = "#app_news";
+            else if (val == 4) defaultDialogVal = "#steam_menu_friend_activity";
+            else if (val == 5) defaultDialogVal = "#steam_menu_community_home";
+
+            updateVdfBlockSetting(sharedConfigPath, "Steam", "SteamDefaultDialog", defaultDialogVal);
+            syncRemoteCache(sharedConfigPath);
+        }
     }
-    if (settings.contains("bSmoothScrolling")) {
-        writeSteamRegistryDword("SmoothScrollWebViews", settings.value("bSmoothScrolling").toBool());
+
+    // Save taskbar preferences (JumplistSettings)
+    if (settings.contains("bTaskbarStatus_Online") || settings.contains("bTaskbarStatus_Away") ||
+        settings.contains("bTaskbarStatus_Offline") || settings.contains("bTaskbarDest_Store") ||
+        settings.contains("bTaskbarDest_Community") || settings.contains("bTaskbarDest_Library") ||
+        settings.contains("bTaskbarDest_Servers") || settings.contains("bTaskbarDest_Friends") ||
+        settings.contains("bTaskbarDest_ExitSteam") || settings.contains("bTaskbarDest_Settings") ||
+        settings.contains("bTaskbarDest_Screenshots") || settings.contains("bTaskbarDest_BigPicture") ||
+        settings.contains("bTaskbarDest_FriendActivity") || settings.contains("bTaskbarDest_SteamVR") ||
+        settings.contains("bTaskbarStatus_Invisible")) {
+
+        int js = 208763;
+        QString jsVal = getVdfSystemSetting(filePath, "JumplistSettings");
+        if (!jsVal.isEmpty()) {
+            js = jsVal.toInt();
+        }
+
+        auto setBit = [](int &mask, int bit, bool value) {
+            if (value) mask |= (1 << bit);
+            else mask &= ~(1 << bit);
+        };
+
+        if (settings.contains("bTaskbarStatus_Online")) setBit(js, 0, settings.value("bTaskbarStatus_Online").toBool());
+        if (settings.contains("bTaskbarStatus_Away")) setBit(js, 1, settings.value("bTaskbarStatus_Away").toBool());
+        if (settings.contains("bTaskbarStatus_Offline")) setBit(js, 3, settings.value("bTaskbarStatus_Offline").toBool());
+        if (settings.contains("bTaskbarDest_Store")) setBit(js, 4, settings.value("bTaskbarDest_Store").toBool());
+        if (settings.contains("bTaskbarDest_Community")) setBit(js, 5, settings.value("bTaskbarDest_Community").toBool());
+        if (settings.contains("bTaskbarDest_Library")) setBit(js, 6, settings.value("bTaskbarDest_Library").toBool());
+        if (settings.contains("bTaskbarDest_Servers")) setBit(js, 7, settings.value("bTaskbarDest_Servers").toBool());
+        if (settings.contains("bTaskbarDest_Friends")) setBit(js, 9, settings.value("bTaskbarDest_Friends").toBool());
+        if (settings.contains("bTaskbarDest_ExitSteam")) setBit(js, 10, settings.value("bTaskbarDest_ExitSteam").toBool());
+        if (settings.contains("bTaskbarDest_Settings")) setBit(js, 11, settings.value("bTaskbarDest_Settings").toBool());
+        if (settings.contains("bTaskbarDest_Screenshots")) setBit(js, 12, settings.value("bTaskbarDest_Screenshots").toBool());
+        if (settings.contains("bTaskbarDest_BigPicture")) setBit(js, 13, settings.value("bTaskbarDest_BigPicture").toBool());
+        if (settings.contains("bTaskbarDest_FriendActivity")) setBit(js, 14, settings.value("bTaskbarDest_FriendActivity").toBool());
+        if (settings.contains("bTaskbarDest_SteamVR")) setBit(js, 16, settings.value("bTaskbarDest_SteamVR").toBool());
+        if (settings.contains("bTaskbarStatus_Invisible")) setBit(js, 17, settings.value("bTaskbarStatus_Invisible").toBool());
+
+        updateVdfSystemSetting(filePath, "JumplistSettings", QString::number(js));
+
+        int jks = 229375;
+        QString jksVal = getVdfSystemSetting(filePath, "JumplistSettingsKnown");
+        if (!jksVal.isEmpty()) {
+            jks = jksVal.toInt();
+        }
+        jks |= js;
+        updateVdfSystemSetting(filePath, "JumplistSettingsKnown", QString::number(jks));
     }
-    if (settings.contains("bScaleTextAndIcons")) {
-        writeSteamRegistryDword("DPIScaling", settings.value("bScaleTextAndIcons").toBool());
-    }
-#endif
 
     // 10. config.vdf loading (downloads & chooser)
     QString configVdfPath = filePath;
@@ -3720,6 +3952,23 @@ bool Optimizer::updateVdfFriendsSettings(const QString &filePath, const QString 
         if (QFile::exists(configVdfPath)) {
             if (settings.contains("bAskAccountOnStart")) {
                 updateVdfBlockSetting(configVdfPath, "Auth", "AlwaysShowUserChooser", settings.value("bAskAccountOnStart").toBool() ? "1" : "0");
+            }
+            if (settings.contains("sSteamBetaName")) {
+                QString betaName = settings.value("sSteamBetaName").toString();
+                updateVdfBlockSetting(configVdfPath, "SteamBeta", "BetaName", betaName);
+                
+                QString steamPath = filePath.left(userdataIdx);
+                QString betaFilePath = steamPath + "/package/beta";
+                if (betaName == "publicbeta") {
+                    QDir().mkpath(steamPath + "/package");
+                    QFile betaFile(betaFilePath);
+                    if (betaFile.open(QIODevice::WriteOnly | QIODevice::Text)) {
+                        betaFile.write("publicbeta");
+                        betaFile.close();
+                    }
+                } else {
+                    QFile::remove(betaFilePath);
+                }
             }
             if (settings.contains("desktop_ui_scale")) {
                 updateVdfBlockSetting(configVdfPath, "Accessibility", "DesktopUIScale", QString::number(settings.value("desktop_ui_scale").toDouble(), 'g', 4));
@@ -6598,6 +6847,7 @@ void Optimizer::loadSystemStates() {
     defaultFriendsSettings["library_display_icon_in_game_list"] = true;
     defaultFriendsSettings["ready_to_play_includes_streaming"] = true;
     defaultFriendsSettings["show_steam_deck_info"] = false;
+    defaultFriendsSettings["library_display_size"] = 0;
     defaultFriendsSettings["bLimitDownloadSpeed"] = false;
     defaultFriendsSettings["nDownloadThrottleKbps"] = 1250;
     defaultFriendsSettings["bScheduleAutoUpdates"] = false;
@@ -6654,6 +6904,28 @@ void Optimizer::loadSystemStates() {
     defaultFriendsSettings["bGPUAcceleratedRendering"] = true;
     defaultFriendsSettings["bHardwareVideoDecoding"] = true;
     defaultFriendsSettings["bNotifyGameAdditions"] = true;
+    defaultFriendsSettings["sSteamLanguage"] = QString("english");
+    defaultFriendsSettings["b24HourClock"] = false;
+    defaultFriendsSettings["nStartupPage"] = 1;
+    defaultFriendsSettings["bStartInBigPicture"] = false;
+    defaultFriendsSettings["sSteamBetaName"] = QString("none");
+    // Taskbar destinations
+    defaultFriendsSettings["bTaskbarDest_Store"] = true;
+    defaultFriendsSettings["bTaskbarDest_Library"] = true;
+    defaultFriendsSettings["bTaskbarDest_Community"] = true;
+    defaultFriendsSettings["bTaskbarDest_Friends"] = true;
+    defaultFriendsSettings["bTaskbarDest_FriendActivity"] = false;
+    defaultFriendsSettings["bTaskbarDest_Screenshots"] = false;
+    defaultFriendsSettings["bTaskbarDest_Servers"] = false;
+    defaultFriendsSettings["bTaskbarDest_Settings"] = true;
+    defaultFriendsSettings["bTaskbarDest_BigPicture"] = true;
+    defaultFriendsSettings["bTaskbarDest_SteamVR"] = true;
+    defaultFriendsSettings["bTaskbarDest_ExitSteam"] = true;
+    // Taskbar status
+    defaultFriendsSettings["bTaskbarStatus_Online"] = true;
+    defaultFriendsSettings["bTaskbarStatus_Away"] = true;
+    defaultFriendsSettings["bTaskbarStatus_Invisible"] = true;
+    defaultFriendsSettings["bTaskbarStatus_Offline"] = true;
 
     // Broadcast defaults
     defaultFriendsSettings["BroadcastPermissions"] = 1;
@@ -6791,6 +7063,12 @@ void Optimizer::loadSystemStates() {
                 QString sd = getVdfRootSetting(loadedVdfPath, "ShowSteamDeckInfoInLibrary");
                 if (!sd.isEmpty()) {
                     m_steamFriendsSettings["show_steam_deck_info"] = (sd != "0");
+                }
+                QString lds = getVdfRootSetting(loadedVdfPath, "LibraryDisplaySize");
+                if (!lds.isEmpty()) {
+                    m_steamFriendsSettings["library_display_size"] = lds.toInt();
+                } else {
+                    m_steamFriendsSettings["library_display_size"] = 0;
                 }
                 QString rt = getVdfRootSetting(loadedVdfPath, "InGameOverlayRestoreBrowserTabs");
                 if (!rt.isEmpty()) {
@@ -11117,6 +11395,27 @@ void Optimizer::startSystemOptimization() {
                     RegSetValueExW(hKeySteamRegistry, L"OverlayScaleInterface", 0, REG_DWORD, reinterpret_cast<const BYTE*>(&val), sizeof(val));
                     RegCloseKey(hKeySteamRegistry);
                 }
+
+                // Update global Steam registry settings once globally
+                if (steamFriendsSettingsVal.contains("bGPUAcceleratedRendering")) {
+                    writeSteamRegistryDword("GPUAccelWebViewsV3", steamFriendsSettingsVal.value("bGPUAcceleratedRendering").toBool());
+                }
+                if (steamFriendsSettingsVal.contains("bHardwareVideoDecoding")) {
+                    writeSteamRegistryDword("H264HWAccel", steamFriendsSettingsVal.value("bHardwareVideoDecoding").toBool());
+                }
+                if (steamFriendsSettingsVal.contains("bSmoothScrolling")) {
+                    writeSteamRegistryDword("SmoothScrollWebViews", steamFriendsSettingsVal.value("bSmoothScrolling").toBool());
+                }
+                if (steamFriendsSettingsVal.contains("bScaleTextAndIcons")) {
+                    writeSteamRegistryDword("DPIScaling", steamFriendsSettingsVal.value("bScaleTextAndIcons").toBool());
+                }
+                if (steamFriendsSettingsVal.contains("sSteamLanguage")) {
+                    writeSteamRegistryString("language", steamFriendsSettingsVal.value("sSteamLanguage").toString());
+                }
+                if (steamFriendsSettingsVal.contains("bStartInBigPicture")) {
+                    writeSteamRegistryDword("StartupMode", steamFriendsSettingsVal.value("bStartInBigPicture").toBool());
+                }
+
                 QString userdataPath = steamPathVal + "/userdata";
                 QDir userdataDir(userdataPath);
                 if (userdataDir.exists()) {
@@ -11134,6 +11433,7 @@ void Optimizer::startSystemOptimization() {
                             profileUpdated |= updateVdfRootSetting(vdfPath, "LibraryDisplayIconInGameList", steamFriendsSettingsVal.value("library_display_icon_in_game_list").toBool() ? "1" : "0");
                             profileUpdated |= updateVdfRootSetting(vdfPath, "ReadyToPlayIncludesStreaming", steamFriendsSettingsVal.value("ready_to_play_includes_streaming").toBool() ? "1" : "0");
                             profileUpdated |= updateVdfRootSetting(vdfPath, "ShowSteamDeckInfoInLibrary", steamFriendsSettingsVal.value("show_steam_deck_info").toBool() ? "1" : "0");
+                            profileUpdated |= updateVdfRootSetting(vdfPath, "LibraryDisplaySize", QString::number(steamFriendsSettingsVal.value("library_display_size", 0).toInt()));
                             profileUpdated |= updateVdfRootSetting(vdfPath, "InGameOverlayRestoreBrowserTabs", steamFriendsSettingsVal.value("bRestoreOverlayBrowserTabs").toBool() ? "1" : "0");
 
                             QVariantMap latestSettings;
@@ -14397,6 +14697,14 @@ QVariantList Optimizer::getSteamDownloadRegions() {
     addRegion(158, "Kazakhstan - Almaty");
 
     return list;
+}
+
+QStringList Optimizer::getSteamLanguageList() {
+    return QStringList{
+        "english", "schinese", "tchinese", "japanese", "koreana", "thai", "bulgarian", "czech", "danish", "dutch",
+        "finnish", "french", "german", "greek", "hungarian", "italian", "indonesian", "norwegian", "polish", "portuguese",
+        "brazilian", "romanian", "russian", "spanish", "latam", "swedish", "turkish", "ukrainian", "vietnamese"
+    };
 }
 
 bool Optimizer::clearSteamDownloadCache() {
