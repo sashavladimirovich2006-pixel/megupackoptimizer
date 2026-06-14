@@ -706,6 +706,7 @@ public:
     Q_INVOKABLE void refreshBackupList();
     Q_INVOKABLE QVariantList getConnectedGamepads();
     Q_INVOKABLE bool forgetGamepad(const QString &id, const QString &btAddress, const QString &vidPid);
+    Q_INVOKABLE QVariantList getSteamDownloadRegions();
 
 
 

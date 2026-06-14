@@ -8763,7 +8763,583 @@ Item {
             width: parent.width
             spacing: 16
 
+            // Downloads Header
+            Text {
+                text: qsTr("Downloads")
+                color: Theme.accent
+                font.family: Theme.fontFamily
+                font.pixelSize: 13
+                font.bold: true
+            }
 
+            // Download Region Dropdown
+            Rectangle {
+                width: parent.width
+                height: 50
+                color: "transparent"
+                Column {
+                    anchors.verticalCenter: parent.verticalCenter
+                    spacing: 2
+                    anchors.left: parent.left
+                    anchors.right: regionDropdown.left
+                    anchors.rightMargin: 12
+                    Text {
+                        text: qsTr("Download region")
+                        color: Theme.textPrimary
+                        font.family: Theme.fontFamily
+                        font.pixelSize: 12
+                        font.bold: true
+                    }
+                    Text {
+                        text: qsTr("Select the download region closest to your physical location.")
+                        color: Theme.textSecondary
+                        font.family: Theme.fontFamily
+                        font.pixelSize: 10
+                        width: parent.width
+                        wrapMode: Text.WordWrap
+                    }
+                }
+                Rectangle {
+                    id: regionDropdown
+                    width: 220
+                    height: 32
+                    radius: 6
+                    color: "#05FFFFFF"
+                    border.color: Theme.border
+                    border.width: 1
+                    anchors.right: parent.right
+                    anchors.verticalCenter: parent.verticalCenter
+
+                    property int currentVal: optimizerBackend.steamFriendsSettings ? optimizerBackend.steamFriendsSettings["DownloadRegionCellID"] || 0 : 0
+                    property var options: []
+
+                    Component.onCompleted: {
+                        regionDropdown.options = optimizerBackend.getSteamDownloadRegions();
+                    }
+
+                    function getLabelForVal(v) {
+                        for (var i = 0; i < options.length; i++) {
+                            if (options[i].id === v) return options[i].name;
+                        }
+                        return qsTr("Default / Auto");
+                    }
+
+                    Text {
+                        anchors.left: parent.left
+                        anchors.leftMargin: 12
+                        anchors.verticalCenter: parent.verticalCenter
+                        text: regionDropdown.getLabelForVal(regionDropdown.currentVal)
+                        color: Theme.textPrimary
+                        font.family: Theme.fontFamily
+                        font.pixelSize: 11
+                    }
+                    Text {
+                        anchors.right: parent.right
+                        anchors.rightMargin: 12
+                        anchors.verticalCenter: parent.verticalCenter
+                        text: "\u2304"
+                        color: Theme.textSecondary
+                        font.family: Theme.fontFamily
+                        font.pixelSize: 12
+                        font.bold: true
+                    }
+                    MouseArea {
+                        anchors.fill: parent
+                        hoverEnabled: true
+                        cursorShape: Qt.PointingHandCursor
+                        onClicked: regionMenu.open()
+                        onEntered: regionDropdown.border.color = Theme.accent
+                        onExited: regionDropdown.border.color = Theme.border
+                    }
+                    Menu {
+                        id: regionMenu
+                        y: regionDropdown.height + 4
+                        width: regionDropdown.width
+                        height: Math.min(300, contentHeight)
+                        background: Rectangle {
+                            color: Theme.sidebarBg
+                            border.color: Theme.border
+                            border.width: 1
+                            radius: 6
+                        }
+                        Instantiator {
+                            model: regionDropdown.options
+                            onObjectAdded: (index, object) => regionMenu.insertItem(index, object)
+                            onObjectRemoved: (index, object) => regionMenu.removeItem(object)
+                            delegate: MenuItem {
+                                text: modelData.name
+                                width: regionMenu.width
+                                height: 32
+                                contentItem: Text {
+                                    text: parent.text
+                                    font.family: Theme.fontFamily
+                                    font.pixelSize: 11
+                                    color: parent.highlighted ? Theme.accent : Theme.textPrimary
+                                    verticalAlignment: Text.AlignVCenter
+                                    leftPadding: 12
+                                }
+                                background: Rectangle {
+                                    color: parent.highlighted ? Qt.rgba(Theme.accent.r, Theme.accent.g, Theme.accent.b, 0.1) : "transparent"
+                                }
+                                onTriggered: {
+                                    root.toggleSteamFriendsSetting("DownloadRegionCellID", modelData.id);
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+
+            // Limit Download Speed Toggle
+            Rectangle {
+                width: parent.width
+                height: Math.max(50, limitSpeedCol.implicitHeight + 12)
+                color: "transparent"
+                Column {
+                    id: limitSpeedCol
+                    anchors.verticalCenter: parent.verticalCenter
+                    spacing: 2
+                    anchors.left: parent.left
+                    anchors.right: limitSpeedSwitch.left
+                    anchors.rightMargin: 12
+                    Text {
+                        text: qsTr("Limit download speed")
+                        color: Theme.textPrimary
+                        font.family: Theme.fontFamily
+                        font.pixelSize: 12
+                        font.bold: true
+                    }
+                    Text {
+                        text: qsTr("Limit the bandwidth Steam is permitted to use for downloading updates and games.")
+                        color: Theme.textSecondary
+                        font.family: Theme.fontFamily
+                        font.pixelSize: 10
+                        width: parent.width
+                        wrapMode: Text.WordWrap
+                    }
+                }
+                MeguSwitch {
+                    id: limitSpeedSwitch
+                    anchors.right: parent.right
+                    steamStyle: true
+                    checked: optimizerBackend.steamFriendsSettings ? !!optimizerBackend.steamFriendsSettings["bLimitDownloadSpeed"] : false
+                    anchors.verticalCenter: parent.verticalCenter
+                    onToggled: (isChecked) => { root.toggleSteamFriendsSetting("bLimitDownloadSpeed", isChecked); }
+                }
+            }
+
+            // Limit Download Speed Value Input Row
+            Rectangle {
+                width: parent.width
+                height: visible ? 50 : 0
+                color: "transparent"
+                visible: limitSpeedSwitch.checked
+
+                Column {
+                    anchors.verticalCenter: parent.verticalCenter
+                    spacing: 2
+                    anchors.left: parent.left
+                    anchors.right: limitInputRow.left
+                    anchors.rightMargin: 12
+                    Text {
+                        text: qsTr("Enter limit in kilobytes per second")
+                        color: Theme.textPrimary
+                        font.family: Theme.fontFamily
+                        font.pixelSize: 12
+                        font.bold: true
+                    }
+                }
+
+                Row {
+                    id: limitInputRow
+                    anchors.right: parent.right
+                    anchors.verticalCenter: parent.verticalCenter
+                    spacing: 8
+
+                    TextField {
+                        id: limitSpeedInput
+                        width: 130
+                        height: 32
+                        text: optimizerBackend.steamFriendsSettings ? (optimizerBackend.steamFriendsSettings["nDownloadThrottleKbps"] || 1250) : 1250
+                        color: Theme.textPrimary
+                        font.family: Theme.fontFamily
+                        font.pixelSize: 11
+                        verticalAlignment: TextInput.AlignVCenter
+                        leftPadding: 12
+                        rightPadding: 12
+                        selectByMouse: true
+                        background: Rectangle {
+                            color: "#05FFFFFF"
+                            border.color: limitSpeedInput.activeFocus ? Theme.accent : Theme.border
+                            border.width: 1
+                            radius: 6
+                        }
+                        validator: IntValidator { bottom: 0; top: 99999999 }
+                        onEditingFinished: {
+                            root.toggleSteamFriendsSetting("nDownloadThrottleKbps", parseInt(text) || 0);
+                        }
+                    }
+
+                    Text {
+                        text: qsTr("KB/s")
+                        color: Theme.textSecondary
+                        font.family: Theme.fontFamily
+                        font.pixelSize: 12
+                        anchors.verticalCenter: parent.verticalCenter
+                    }
+                }
+            }
+
+            // Game Updates Header
+            Text {
+                text: qsTr("Game Updates")
+                color: Theme.accent
+                font.family: Theme.fontFamily
+                font.pixelSize: 13
+                font.bold: true
+            }
+
+            // Game Update Timing Dropdown
+            Rectangle {
+                width: parent.width
+                height: 50
+                color: "transparent"
+                Column {
+                    anchors.verticalCenter: parent.verticalCenter
+                    spacing: 2
+                    anchors.left: parent.left
+                    anchors.right: timingDropdown.left
+                    anchors.rightMargin: 12
+                    Text {
+                        text: qsTr("Game update timing")
+                        color: Theme.textPrimary
+                        font.family: Theme.fontFamily
+                        font.pixelSize: 12
+                        font.bold: true
+                    }
+                    Text {
+                        text: qsTr("To set exceptions for individual games, go to your Library > Game > Properties.")
+                        color: Theme.textSecondary
+                        font.family: Theme.fontFamily
+                        font.pixelSize: 10
+                        width: parent.width
+                        wrapMode: Text.WordWrap
+                    }
+                }
+                Rectangle {
+                    id: timingDropdown
+                    width: 220
+                    height: 32
+                    radius: 6
+                    color: "#05FFFFFF"
+                    border.color: Theme.border
+                    border.width: 1
+                    anchors.right: parent.right
+                    anchors.verticalCenter: parent.verticalCenter
+
+                    property int currentVal: optimizerBackend.steamFriendsSettings ? optimizerBackend.steamFriendsSettings["nGameUpdateTiming"] || 0 : 0
+
+                    readonly property var options: [
+                        { id: 0, label: qsTr("Let Steam decide when to update") },
+                        { id: 1, label: qsTr("Wait to update until the game is launched") }
+                    ]
+
+                    function getLabelForVal(v) {
+                        for (var i = 0; i < options.length; i++) {
+                            if (options[i].id === v) return options[i].label;
+                        }
+                        return qsTr("Let Steam decide when to update");
+                    }
+
+                    Text {
+                        anchors.left: parent.left
+                        anchors.leftMargin: 12
+                        anchors.verticalCenter: parent.verticalCenter
+                        text: timingDropdown.getLabelForVal(timingDropdown.currentVal)
+                        color: Theme.textPrimary
+                        font.family: Theme.fontFamily
+                        font.pixelSize: 11
+                    }
+                    Text {
+                        anchors.right: parent.right
+                        anchors.rightMargin: 12
+                        anchors.verticalCenter: parent.verticalCenter
+                        text: "\u2304"
+                        color: Theme.textSecondary
+                        font.family: Theme.fontFamily
+                        font.pixelSize: 12
+                        font.bold: true
+                    }
+                    MouseArea {
+                        anchors.fill: parent
+                        hoverEnabled: true
+                        cursorShape: Qt.PointingHandCursor
+                        onClicked: timingMenu.open()
+                        onEntered: timingDropdown.border.color = Theme.accent
+                        onExited: timingDropdown.border.color = Theme.border
+                    }
+                    Menu {
+                        id: timingMenu
+                        y: timingDropdown.height + 4
+                        width: timingDropdown.width
+                        background: Rectangle {
+                            color: Theme.sidebarBg
+                            border.color: Theme.border
+                            border.width: 1
+                            radius: 6
+                        }
+                        Instantiator {
+                            model: timingDropdown.options
+                            onObjectAdded: (index, object) => timingMenu.insertItem(index, object)
+                            onObjectRemoved: (index, object) => timingMenu.removeItem(object)
+                            delegate: MenuItem {
+                                text: modelData.label
+                                width: timingMenu.width
+                                height: 32
+                                contentItem: Text {
+                                    text: parent.text
+                                    font.family: Theme.fontFamily
+                                    font.pixelSize: 11
+                                    color: parent.highlighted ? Theme.accent : Theme.textPrimary
+                                    verticalAlignment: Text.AlignVCenter
+                                    leftPadding: 12
+                                }
+                                background: Rectangle {
+                                    color: parent.highlighted ? Qt.rgba(Theme.accent.r, Theme.accent.g, Theme.accent.b, 0.1) : "transparent"
+                                }
+                                onTriggered: {
+                                    root.toggleSteamFriendsSetting("nGameUpdateTiming", modelData.id);
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+
+            // Schedule Auto-updates Toggle
+            Rectangle {
+                width: parent.width
+                height: visible ? Math.max(50, scheduleCol.implicitHeight + 12) : 0
+                color: "transparent"
+                visible: timingDropdown.currentVal === 0
+                Column {
+                    id: scheduleCol
+                    anchors.verticalCenter: parent.verticalCenter
+                    spacing: 2
+                    anchors.left: parent.left
+                    anchors.right: scheduleSwitch.left
+                    anchors.rightMargin: 12
+                    Text {
+                        text: qsTr("Schedule auto-updates")
+                        color: Theme.textPrimary
+                        font.family: Theme.fontFamily
+                        font.pixelSize: 12
+                        font.bold: true
+                    }
+                    Text {
+                        text: qsTr("Only auto-update games during a specific time window.")
+                        color: Theme.textSecondary
+                        font.family: Theme.fontFamily
+                        font.pixelSize: 10
+                        width: parent.width
+                        wrapMode: Text.WordWrap
+                    }
+                }
+                MeguSwitch {
+                    id: scheduleSwitch
+                    anchors.right: parent.right
+                    steamStyle: true
+                    checked: optimizerBackend.steamFriendsSettings ? !!optimizerBackend.steamFriendsSettings["bScheduleAutoUpdates"] : false
+                    anchors.verticalCenter: parent.verticalCenter
+                    onToggled: (isChecked) => { root.toggleSteamFriendsSetting("bScheduleAutoUpdates", isChecked); }
+                }
+            }
+
+            // Schedule Auto-updates Hours (Restrict updates to between)
+            Rectangle {
+                width: parent.width
+                height: visible ? 50 : 0
+                color: "transparent"
+                visible: scheduleSwitch.visible && scheduleSwitch.checked
+
+                Row {
+                    anchors.verticalCenter: parent.verticalCenter
+                    spacing: 12
+
+                    Text {
+                        text: qsTr("Restrict updates to between")
+                        color: Theme.textPrimary
+                        font.family: Theme.fontFamily
+                        font.pixelSize: 12
+                        font.bold: true
+                        anchors.verticalCenter: parent.verticalCenter
+                    }
+
+                    // Start Hour Dropdown
+                    Rectangle {
+                        id: startHourDropdown
+                        width: 80
+                        height: 32
+                        radius: 6
+                        color: "#05FFFFFF"
+                        border.color: Theme.border
+                        border.width: 1
+                        anchors.verticalCenter: parent.verticalCenter
+
+                        property int currentVal: optimizerBackend.steamFriendsSettings ? optimizerBackend.steamFriendsSettings["nAutoUpdateWindowStart"] || 0 : 0
+
+                        Text {
+                            anchors.left: parent.left
+                            anchors.leftMargin: 12
+                            anchors.verticalCenter: parent.verticalCenter
+                            text: startHourDropdown.currentVal + ":00"
+                            color: Theme.textPrimary
+                            font.family: Theme.fontFamily
+                            font.pixelSize: 11
+                        }
+                        Text {
+                            anchors.right: parent.right
+                            anchors.rightMargin: 12
+                            anchors.verticalCenter: parent.verticalCenter
+                            text: "\u2304"
+                            color: Theme.textSecondary
+                            font.family: Theme.fontFamily
+                            font.pixelSize: 12
+                            font.bold: true
+                        }
+                        MouseArea {
+                            anchors.fill: parent
+                            hoverEnabled: true
+                            cursorShape: Qt.PointingHandCursor
+                            onClicked: startHourMenu.open()
+                            onEntered: startHourDropdown.border.color = Theme.accent
+                            onExited: startHourDropdown.border.color = Theme.border
+                        }
+                        Menu {
+                            id: startHourMenu
+                            y: startHourDropdown.height + 4
+                            width: startHourDropdown.width
+                            height: Math.min(250, contentHeight)
+                            background: Rectangle {
+                                color: Theme.sidebarBg
+                                border.color: Theme.border
+                                border.width: 1
+                                radius: 6
+                            }
+                            Instantiator {
+                                model: 24
+                                onObjectAdded: (index, object) => startHourMenu.insertItem(index, object)
+                                onObjectRemoved: (index, object) => startHourMenu.removeItem(object)
+                                delegate: MenuItem {
+                                    text: modelData + ":00"
+                                    width: startHourMenu.width
+                                    height: 28
+                                    contentItem: Text {
+                                        text: parent.text
+                                        font.family: Theme.fontFamily
+                                        font.pixelSize: 11
+                                        color: parent.highlighted ? Theme.accent : Theme.textPrimary
+                                        verticalAlignment: Text.AlignVCenter
+                                        leftPadding: 12
+                                    }
+                                    background: Rectangle {
+                                        color: parent.highlighted ? Qt.rgba(Theme.accent.r, Theme.accent.g, Theme.accent.b, 0.1) : "transparent"
+                                    }
+                                    onTriggered: {
+                                        root.toggleSteamFriendsSetting("nAutoUpdateWindowStart", modelData);
+                                    }
+                                }
+                            }
+                        }
+                    }
+
+                    Text {
+                        text: qsTr("and")
+                        color: Theme.textSecondary
+                        font.family: Theme.fontFamily
+                        font.pixelSize: 12
+                        anchors.verticalCenter: parent.verticalCenter
+                    }
+
+                    // End Hour Dropdown
+                    Rectangle {
+                        id: endHourDropdown
+                        width: 80
+                        height: 32
+                        radius: 6
+                        color: "#05FFFFFF"
+                        border.color: Theme.border
+                        border.width: 1
+                        anchors.verticalCenter: parent.verticalCenter
+
+                        property int currentVal: optimizerBackend.steamFriendsSettings ? optimizerBackend.steamFriendsSettings["nAutoUpdateWindowEnd"] || 0 : 0
+
+                        Text {
+                            anchors.left: parent.left
+                            anchors.leftMargin: 12
+                            anchors.verticalCenter: parent.verticalCenter
+                            text: endHourDropdown.currentVal + ":00"
+                            color: Theme.textPrimary
+                            font.family: Theme.fontFamily
+                            font.pixelSize: 11
+                        }
+                        Text {
+                            anchors.right: parent.right
+                            anchors.rightMargin: 12
+                            anchors.verticalCenter: parent.verticalCenter
+                            text: "\u2304"
+                            color: Theme.textSecondary
+                            font.family: Theme.fontFamily
+                            font.pixelSize: 12
+                            font.bold: true
+                        }
+                        MouseArea {
+                            anchors.fill: parent
+                            hoverEnabled: true
+                            cursorShape: Qt.PointingHandCursor
+                            onClicked: endHourMenu.open()
+                            onEntered: endHourDropdown.border.color = Theme.accent
+                            onExited: endHourDropdown.border.color = Theme.border
+                        }
+                        Menu {
+                            id: endHourMenu
+                            y: endHourDropdown.height + 4
+                            width: endHourDropdown.width
+                            height: Math.min(250, contentHeight)
+                            background: Rectangle {
+                                color: Theme.sidebarBg
+                                border.color: Theme.border
+                                border.width: 1
+                                radius: 6
+                            }
+                            Instantiator {
+                                model: 24
+                                onObjectAdded: (index, object) => endHourMenu.insertItem(index, object)
+                                onObjectRemoved: (index, object) => endHourMenu.removeItem(object)
+                                delegate: MenuItem {
+                                    text: modelData + ":00"
+                                    width: endHourMenu.width
+                                    height: 28
+                                    contentItem: Text {
+                                        text: parent.text
+                                        font.family: Theme.fontFamily
+                                        font.pixelSize: 11
+                                        color: parent.highlighted ? Theme.accent : Theme.textPrimary
+                                        verticalAlignment: Text.AlignVCenter
+                                        leftPadding: 12
+                                    }
+                                    background: Rectangle {
+                                        color: parent.highlighted ? Qt.rgba(Theme.accent.r, Theme.accent.g, Theme.accent.b, 0.1) : "transparent"
+                                    }
+                                    onTriggered: {
+                                        root.toggleSteamFriendsSetting("nAutoUpdateWindowEnd", modelData);
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
 
             // Toggle 3: Allow downloads during gameplay
             Rectangle {
@@ -8907,6 +9483,125 @@ Item {
                         anchors.verticalCenter: parent.verticalCenter
                         onToggled: (isChecked) => { root.toggleSteamFriendsSetting("bLocalNetworkGameFileTransfer", isChecked); }
                     }
+            }
+
+            // Allow transfers from this device to dropdown
+            Rectangle {
+                width: parent.width
+                height: 50
+                color: "transparent"
+                visible: steamToggleSwitch_46.checked
+                Column {
+                    anchors.verticalCenter: parent.verticalCenter
+                    spacing: 2
+                    anchors.left: parent.left
+                    anchors.right: transferDropdown.left
+                    anchors.rightMargin: 12
+                    Text {
+                        text: qsTr("Allow transfers from this device to")
+                        color: Theme.textPrimary
+                        font.family: Theme.fontFamily
+                        font.pixelSize: 12
+                        font.bold: true
+                    }
+                    Text {
+                        text: qsTr("Allow other users on your local network to download game files from this PC.")
+                        color: Theme.textSecondary
+                        font.family: Theme.fontFamily
+                        font.pixelSize: 10
+                        width: parent.width
+                        wrapMode: Text.WordWrap
+                    }
+                }
+                Rectangle {
+                    id: transferDropdown
+                    width: 180
+                    height: 32
+                    radius: 6
+                    color: "#05FFFFFF"
+                    border.color: Theme.border
+                    border.width: 1
+                    anchors.right: parent.right
+                    anchors.verticalCenter: parent.verticalCenter
+
+                    property int currentVal: optimizerBackend.steamFriendsSettings ? optimizerBackend.steamFriendsSettings["nTransferFilterMode"] || 3 : 3
+
+                    readonly property var options: [
+                        { id: 1, label: qsTr("Only me") },
+                        { id: 2, label: qsTr("Friends") },
+                        { id: 3, label: qsTr("Anyone") }
+                    ]
+
+                    function getLabelForVal(v) {
+                        for (var i = 0; i < options.length; i++) {
+                            if (options[i].id === v) return options[i].label;
+                        }
+                        return qsTr("Anyone");
+                    }
+
+                    Text {
+                        anchors.left: parent.left
+                        anchors.leftMargin: 12
+                        anchors.verticalCenter: parent.verticalCenter
+                        text: transferDropdown.getLabelForVal(transferDropdown.currentVal)
+                        color: Theme.textPrimary
+                        font.family: Theme.fontFamily
+                        font.pixelSize: 11
+                    }
+                    Text {
+                        anchors.right: parent.right
+                        anchors.rightMargin: 12
+                        anchors.verticalCenter: parent.verticalCenter
+                        text: "\u2304"
+                        color: Theme.textSecondary
+                        font.family: Theme.fontFamily
+                        font.pixelSize: 12
+                        font.bold: true
+                    }
+                    MouseArea {
+                        anchors.fill: parent
+                        hoverEnabled: true
+                        cursorShape: Qt.PointingHandCursor
+                        onClicked: transferMenu.open()
+                        onEntered: transferDropdown.border.color = Theme.accent
+                        onExited: transferDropdown.border.color = Theme.border
+                    }
+                    Menu {
+                        id: transferMenu
+                        y: transferDropdown.height + 4
+                        width: transferDropdown.width
+                        background: Rectangle {
+                            color: Theme.sidebarBg
+                            border.color: Theme.border
+                            border.width: 1
+                            radius: 6
+                        }
+                        Instantiator {
+                            model: transferDropdown.options
+                            onObjectAdded: (index, object) => transferMenu.insertItem(index, object)
+                            onObjectRemoved: (index, object) => transferMenu.removeItem(object)
+                            delegate: MenuItem {
+                                text: modelData.label
+                                width: transferMenu.width
+                                height: 32
+                                contentItem: Text {
+                                    text: parent.text
+                                    font.family: Theme.fontFamily
+                                    font.pixelSize: 11
+                                    color: parent.highlighted ? Theme.accent : Theme.textPrimary
+                                    verticalAlignment: Text.AlignVCenter
+                                    leftPadding: 12
+                                }
+                                background: Rectangle {
+                                    color: parent.highlighted ? Qt.rgba(Theme.accent.r, Theme.accent.g, Theme.accent.b, 0.1) : "transparent"
+                                }
+                                onTriggered: {
+                                    root.toggleSteamFriendsSetting("nTransferFilterMode", modelData.id);
+                                }
+                            }
+                        }
+                    }
+                }
             }
 
             // Clear Download Cache

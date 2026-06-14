@@ -1108,7 +1108,7 @@ namespace {
         int start, end;
 
         if (blockName == "Steam") {
-            QStringList deepKeys = {"AutoUpdateWindowEnabled", "DownloadThrottleKbps", "AllowDownloadsDuringGameplay", "StreamingThrottleEnabled"};
+            QStringList deepKeys = {"AutoUpdateWindowEnabled", "AutoUpdateWindowStart", "AutoUpdateWindowEnd", "DownloadThrottleKbps", "AllowDownloadsDuringGameplay", "StreamingThrottleEnabled", "CellIDServerOverride", "GlobalDefaultAppUpdateBehavior", "CurrentCellID", "TimeCellIDSet"};
             QStringList flatKeys = {"ShaderCacheEnabled", "LocalNetworkGameTransfers", "Display download rates in bits per second"};
             QStringList roots = {"UserLocalConfigStore", "InstallConfigStore", "UserRoamingConfigStore"};
 
@@ -1171,7 +1171,7 @@ namespace {
         bool found = false;
 
         if (blockName == "Steam") {
-            QStringList deepKeys = {"AutoUpdateWindowEnabled", "DownloadThrottleKbps", "AllowDownloadsDuringGameplay", "StreamingThrottleEnabled"};
+            QStringList deepKeys = {"AutoUpdateWindowEnabled", "AutoUpdateWindowStart", "AutoUpdateWindowEnd", "DownloadThrottleKbps", "AllowDownloadsDuringGameplay", "StreamingThrottleEnabled", "CellIDServerOverride", "GlobalDefaultAppUpdateBehavior", "CurrentCellID", "TimeCellIDSet"};
             QStringList flatKeys = {"ShaderCacheEnabled", "LocalNetworkGameTransfers", "Display download rates in bits per second"};
             QStringList roots = {"UserLocalConfigStore", "InstallConfigStore", "UserRoamingConfigStore"};
 
@@ -2484,13 +2484,46 @@ bool Optimizer::getVdfFriendsSettings(const QString &filePath, const QString &ac
             } else {
                 settings["desktop_ui_scale"] = 1.0;
             }
+            QString cellId = getVdfBlockSetting(configVdfPath, "Steam", "CurrentCellID");
+            if (cellId.isEmpty()) {
+                cellId = getVdfBlockSetting(configVdfPath, "Steam", "CellIDServerOverride");
+            }
+            if (!cellId.isEmpty()) {
+                settings["DownloadRegionCellID"] = cellId.toInt();
+            } else {
+                settings["DownloadRegionCellID"] = 0;
+            }
+            QString autoUpdateDefault = getVdfBlockSetting(configVdfPath, "Steam", "GlobalDefaultAppUpdateBehavior");
+            if (!autoUpdateDefault.isEmpty()) {
+                int timingVal = autoUpdateDefault.toInt();
+                settings["nGameUpdateTiming"] = (timingVal == 1) ? 1 : 0;
+            } else {
+                settings["nGameUpdateTiming"] = 0;
+            }
             QString autoUpdate = getVdfBlockSetting(configVdfPath, "Steam", "AutoUpdateWindowEnabled");
             if (!autoUpdate.isEmpty()) {
                 settings["bScheduleAutoUpdates"] = (autoUpdate != "0");
             }
+            QString autoUpdateStart = getVdfBlockSetting(configVdfPath, "Steam", "AutoUpdateWindowStart");
+            if (!autoUpdateStart.isEmpty()) {
+                settings["nAutoUpdateWindowStart"] = autoUpdateStart.toInt();
+            } else {
+                settings["nAutoUpdateWindowStart"] = 0;
+            }
+            QString autoUpdateEnd = getVdfBlockSetting(configVdfPath, "Steam", "AutoUpdateWindowEnd");
+            if (!autoUpdateEnd.isEmpty()) {
+                settings["nAutoUpdateWindowEnd"] = autoUpdateEnd.toInt();
+            } else {
+                settings["nAutoUpdateWindowEnd"] = 0;
+            }
             QString throttle = getVdfBlockSetting(configVdfPath, "Steam", "DownloadThrottleKbps");
             if (!throttle.isEmpty()) {
-                settings["bLimitDownloadSpeed"] = (throttle.toInt() > 0);
+                int throttleVal = throttle.toInt();
+                settings["bLimitDownloadSpeed"] = (throttleVal > 0);
+                settings["nDownloadThrottleKbps"] = (throttleVal > 0) ? (throttleVal / 8) : 1250;
+            } else {
+                settings["bLimitDownloadSpeed"] = false;
+                settings["nDownloadThrottleKbps"] = 1250;
             }
             QString allowDownloads = getVdfBlockSetting(configVdfPath, "Steam", "AllowDownloadsDuringGameplay");
             if (!allowDownloads.isEmpty()) {
@@ -2517,11 +2550,29 @@ bool Optimizer::getVdfFriendsSettings(const QString &filePath, const QString &ac
             }
             QString clientMode = getVdfBlockSetting(filePath, "PeerContent", "ClientMode");
             if (!clientMode.isEmpty()) {
-                settings["bLocalNetworkGameFileTransfer"] = (clientMode != "0");
+                bool enabled = (clientMode != "0");
+                settings["bLocalNetworkGameFileTransfer"] = enabled;
+                if (enabled) {
+                    QString serverMode = getVdfBlockSetting(filePath, "PeerContent", "ServerMode");
+                    if (!serverMode.isEmpty()) {
+                        int sMode = serverMode.toInt();
+                        settings["nTransferFilterMode"] = (sMode >= 1 && sMode <= 3) ? sMode : 3;
+                    } else {
+                        settings["nTransferFilterMode"] = 3;
+                    }
+                } else {
+                    settings["nTransferFilterMode"] = 3;
+                }
             } else {
                 QString networkTransfers = getVdfBlockSetting(configVdfPath, "Steam", "LocalNetworkGameTransfers");
                 if (!networkTransfers.isEmpty()) {
-                    settings["bLocalNetworkGameFileTransfer"] = (networkTransfers != "0");
+                    bool enabled = (networkTransfers != "0");
+                    settings["bLocalNetworkGameFileTransfer"] = enabled;
+                    int val = networkTransfers.toInt();
+                    settings["nTransferFilterMode"] = (val >= 1 && val <= 3) ? val : 3;
+                } else {
+                    settings["bLocalNetworkGameFileTransfer"] = false;
+                    settings["nTransferFilterMode"] = 3;
                 }
             }
             bool loadedDisableShaderCache = false;
@@ -3673,11 +3724,34 @@ bool Optimizer::updateVdfFriendsSettings(const QString &filePath, const QString 
             if (settings.contains("desktop_ui_scale")) {
                 updateVdfBlockSetting(configVdfPath, "Accessibility", "DesktopUIScale", QString::number(settings.value("desktop_ui_scale").toDouble(), 'g', 4));
             }
+            if (settings.contains("DownloadRegionCellID")) {
+                int cellId = settings.value("DownloadRegionCellID").toInt();
+                updateVdfBlockSetting(configVdfPath, "Steam", "CurrentCellID", QString::number(cellId));
+                updateVdfBlockSetting(configVdfPath, "Steam", "TimeCellIDSet", QString::number(QDateTime::currentDateTime().toSecsSinceEpoch()));
+            }
+            if (settings.contains("nGameUpdateTiming")) {
+                int timingVal = settings.value("nGameUpdateTiming").toInt();
+                updateVdfBlockSetting(configVdfPath, "Steam", "GlobalDefaultAppUpdateBehavior", (timingVal == 1) ? "1" : "3");
+            }
             if (settings.contains("bScheduleAutoUpdates")) {
                 updateVdfBlockSetting(configVdfPath, "Steam", "AutoUpdateWindowEnabled", settings.value("bScheduleAutoUpdates").toBool() ? "1" : "0");
             }
-            if (settings.contains("bLimitDownloadSpeed")) {
-                updateVdfBlockSetting(configVdfPath, "Steam", "DownloadThrottleKbps", settings.value("bLimitDownloadSpeed").toBool() ? "10000" : "0");
+            if (settings.contains("nAutoUpdateWindowStart")) {
+                updateVdfBlockSetting(configVdfPath, "Steam", "AutoUpdateWindowStart", QString::number(settings.value("nAutoUpdateWindowStart").toInt()));
+            }
+            if (settings.contains("nAutoUpdateWindowEnd")) {
+                updateVdfBlockSetting(configVdfPath, "Steam", "AutoUpdateWindowEnd", QString::number(settings.value("nAutoUpdateWindowEnd").toInt()));
+            }
+            if (settings.contains("bLimitDownloadSpeed") || settings.contains("nDownloadThrottleKbps")) {
+                bool enabled = settings.contains("bLimitDownloadSpeed")
+                    ? settings.value("bLimitDownloadSpeed").toBool()
+                    : (getVdfBlockSetting(configVdfPath, "Steam", "DownloadThrottleKbps").toInt() > 0);
+                
+                int throttleVal = settings.contains("nDownloadThrottleKbps")
+                    ? settings.value("nDownloadThrottleKbps").toInt()
+                    : 1250;
+                
+                updateVdfBlockSetting(configVdfPath, "Steam", "DownloadThrottleKbps", enabled ? QString::number(throttleVal * 8) : "0");
             }
             if (settings.contains("bAllowDownloadsDuringGameplay")) {
                 updateVdfBlockSetting(configVdfPath, "Steam", "AllowDownloadsDuringGameplay", settings.value("bAllowDownloadsDuringGameplay").toBool() ? "1" : "0");
@@ -3692,19 +3766,21 @@ bool Optimizer::updateVdfFriendsSettings(const QString &filePath, const QString 
             if (settings.contains("InGameOverlayShowFPSCorner")) {
                 updateVdfSystemSetting(filePath, "InGameOverlayShowFPSCorner", settings.value("InGameOverlayShowFPSCorner").toString());
             }
-            if (settings.contains("bLocalNetworkGameFileTransfer")) {
-                bool enabled = settings.value("bLocalNetworkGameFileTransfer").toBool();
-                updateVdfBlockSetting(configVdfPath, "Steam", "LocalNetworkGameTransfers", enabled ? "3" : "0");
+            if (settings.contains("bLocalNetworkGameFileTransfer") || settings.contains("nTransferFilterMode")) {
+                bool enabled = settings.contains("bLocalNetworkGameFileTransfer")
+                    ? settings.value("bLocalNetworkGameFileTransfer").toBool()
+                    : (getVdfBlockSetting(filePath, "PeerContent", "ClientMode") != "0");
                 
+                int mode = settings.contains("nTransferFilterMode")
+                    ? settings.value("nTransferFilterMode").toInt()
+                    : 3;
+
                 if (enabled) {
-                    QString currentMode = getVdfBlockSetting(filePath, "PeerContent", "ClientMode");
-                    QString targetMode = "3"; // default to Anyone
-                    if (!currentMode.isEmpty() && currentMode != "0") {
-                        targetMode = currentMode;
-                    }
-                    updateVdfBlockSetting(filePath, "PeerContent", "ClientMode", targetMode);
-                    updateVdfBlockSetting(filePath, "PeerContent", "ServerMode", "1");
+                    updateVdfBlockSetting(configVdfPath, "Steam", "LocalNetworkGameTransfers", QString::number(mode));
+                    updateVdfBlockSetting(filePath, "PeerContent", "ClientMode", "3");
+                    updateVdfBlockSetting(filePath, "PeerContent", "ServerMode", QString::number(mode));
                 } else {
+                    updateVdfBlockSetting(configVdfPath, "Steam", "LocalNetworkGameTransfers", "0");
                     updateVdfBlockSetting(filePath, "PeerContent", "ClientMode", "0");
                     updateVdfBlockSetting(filePath, "PeerContent", "ServerMode", "0");
                 }
@@ -6523,7 +6599,10 @@ void Optimizer::loadSystemStates() {
     defaultFriendsSettings["ready_to_play_includes_streaming"] = true;
     defaultFriendsSettings["show_steam_deck_info"] = false;
     defaultFriendsSettings["bLimitDownloadSpeed"] = false;
+    defaultFriendsSettings["nDownloadThrottleKbps"] = 1250;
     defaultFriendsSettings["bScheduleAutoUpdates"] = false;
+    defaultFriendsSettings["nAutoUpdateWindowStart"] = 0;
+    defaultFriendsSettings["nAutoUpdateWindowEnd"] = 0;
     defaultFriendsSettings["bAllowDownloadsDuringGameplay"] = false;
     defaultFriendsSettings["bThrottleDownloadsWhileStreaming"] = true;
     defaultFriendsSettings["bDisplayDownloadRatesInBitsPerSecond"] = true;
@@ -14227,6 +14306,97 @@ QVariantMap Optimizer::getDriveInfo(const QString &path) {
     }
 
     return result;
+}
+
+QVariantList Optimizer::getSteamDownloadRegions() {
+    QVariantList list;
+    
+    auto addRegion = [&](int cellId, const QString &name) {
+        QVariantMap m;
+        m["id"] = cellId;
+        m["name"] = name;
+        list.append(m);
+    };
+
+    // Major and common regions based on Steam cell IDs
+    addRegion(2, "US - New York");
+    addRegion(1, "US - Chicago");
+    addRegion(50, "US - Atlanta");
+    addRegion(31, "US - Seattle");
+    addRegion(64, "US - Los Angeles");
+    addRegion(65, "US - Dallas");
+    addRegion(63, "US - Washington DC");
+    addRegion(4, "UK - London");
+    addRegion(5, "Germany - Frankfurt");
+    addRegion(14, "France - Paris");
+    addRegion(15, "Netherlands - Amsterdam");
+    addRegion(66, "Sweden - Stockholm");
+    addRegion(68, "Finland - Helsinki");
+    addRegion(67, "Norway - Oslo");
+    addRegion(41, "Denmark - Copenhagen");
+    addRegion(40, "Spain - Madrid");
+    addRegion(37, "Italy - Rome");
+    addRegion(92, "Austria - Vienna");
+    addRegion(38, "Poland - Warsaw");
+    addRegion(42, "Czech Republic - Prague");
+    addRegion(16, "Romania - Bucharest");
+    addRegion(124, "Turkey - Istanbul");
+    addRegion(7, "Russia - Moscow");
+    addRegion(149, "Russia - St. Petersburg");
+    addRegion(8, "South Korea - Seoul");
+    addRegion(32, "Japan - Tokyo");
+    addRegion(35, "Singapore");
+    addRegion(33, "Hong Kong");
+    addRegion(36, "India - Mumbai");
+    addRegion(73, "Ukraine - Kyiv");
+    addRegion(25, "Brazil - Sao Paulo");
+    addRegion(52, "Australia - Sydney");
+    addRegion(26, "South Africa - Johannesburg");
+    addRegion(20, "Canada - Toronto");
+    addRegion(81, "Canada - Montreal");
+    addRegion(116, "Argentina - Buenos Aires");
+    addRegion(117, "Chile - Santiago");
+    addRegion(118, "Peru - Lima");
+    addRegion(47, "China - Shanghai");
+    addRegion(148, "China - Guangzhou");
+    addRegion(9, "Taiwan - Taipei");
+    
+    // Additional commonly used regions to make the list feel complete
+    addRegion(82, "US - Boston");
+    addRegion(49, "US - Denver");
+    addRegion(79, "US - Detroit");
+    addRegion(78, "US - Houston");
+    addRegion(12, "US - Miami");
+    addRegion(10, "US - San Francisco");
+    addRegion(10, "US - San Jose");
+    addRegion(85, "UK - Manchester");
+    addRegion(91, "Germany - Munich");
+    addRegion(89, "Germany - Hamburg");
+    addRegion(96, "France - Marseille");
+    addRegion(86, "Belgium - Brussels");
+    addRegion(88, "Switzerland - Zurich");
+    addRegion(185, "Portugal - Lisbon");
+    addRegion(43, "Greece - Athens");
+    addRegion(93, "Hungary - Budapest");
+    addRegion(183, "Poland - Katowice");
+    addRegion(194, "Bulgaria - Sofia");
+    addRegion(62, "Russia - Novosibirsk");
+    addRegion(39, "Russia - Ekaterinburg");
+    addRegion(180, "Japan - Osaka");
+    addRegion(35, "Singapore - GGC");
+    addRegion(143, "India - Bangalore");
+    addRegion(193, "Ukraine - Kharkiv");
+    addRegion(155, "Brazil - Rio de Janeiro");
+    addRegion(53, "Australia - Melbourne");
+    addRegion(22, "New Zealand - Auckland");
+    addRegion(94, "Canada - Vancouver");
+    addRegion(116, "Argentina - Cordoba");
+    addRegion(119, "Colombia - Bogota");
+    addRegion(46, "China - Beijing");
+    addRegion(48, "China - Chengdu");
+    addRegion(158, "Kazakhstan - Almaty");
+
+    return list;
 }
 
 bool Optimizer::clearSteamDownloadCache() {
