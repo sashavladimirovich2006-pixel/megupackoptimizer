@@ -2173,7 +2173,7 @@ bool Optimizer::getVdfFriendsSettings(const QString &filePath, const QString &ac
 
     // Steam networking (VDF system section)
     QString networkShare = getVdfSystemSetting(filePath, "NetworkingAllowShareIP");
-    settings["NetworkingAllowShareIP"] = !networkShare.isEmpty() ? networkShare : QString("0");
+    settings["NetworkingAllowShareIP"] = !networkShare.isEmpty() ? networkShare : QString("3");
     QString clipKey = getVdfBlockSetting(filePath, "GameRecording", "InstantClipKey");
     settings["GR_ClipKey"] = !clipKey.isEmpty() ? clipKey : "Ctrl\tShift\tKEY_F11";
     QString maxFps = getVdfBlockSetting(filePath, "GameRecording", "MaxFPS");
@@ -3650,7 +3650,7 @@ bool Optimizer::updateVdfFriendsSettings(const QString &filePath, const QString 
         
         DWORD regVal = 2;
         if (netVal == "1") regVal = 1;
-        else if (netVal == "2") regVal = 0;
+        else if (netVal == "0") regVal = 0;
         
         HKEY hKeySteamRegistry;
         if (RegOpenKeyExW(HKEY_CURRENT_USER, L"Software\\Valve\\Steam", 0, KEY_SET_VALUE, &hKeySteamRegistry) == ERROR_SUCCESS) {

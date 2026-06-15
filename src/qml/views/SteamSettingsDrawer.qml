@@ -4134,8 +4134,10 @@ Item {
                 // 2. Show FPS Avg/Min Graph Switch
                 Rectangle {
                     width: parent.width
-                    height: 50
+                    visible: perfDetailDropdown.currentVal !== "1"
+                    height: visible ? 50 : 0
                     color: "transparent"
+                    clip: true
                     Column {
                         anchors.verticalCenter: parent.verticalCenter
                         spacing: 2
@@ -4163,8 +4165,10 @@ Item {
                 // 3. Show CPU Utilization Per-Core Graph Switch
                 Rectangle {
                     width: parent.width
-                    height: 50
+                    visible: perfDetailDropdown.currentVal === "3" || perfDetailDropdown.currentVal === "4"
+                    height: visible ? 50 : 0
                     color: "transparent"
+                    clip: true
                     Column {
                         anchors.verticalCenter: parent.verticalCenter
                         spacing: 2
@@ -4192,8 +4196,10 @@ Item {
                 // 4. Enable kernel driver based metrics (CPU Temperature) Switch
                 Rectangle {
                     width: parent.width
-                    height: 50
+                    visible: perfDetailDropdown.currentVal === "3" || perfDetailDropdown.currentVal === "4"
+                    height: visible ? 50 : 0
                     color: "transparent"
+                    clip: true
                     Column {
                         anchors.verticalCenter: parent.verticalCenter
                         spacing: 2
@@ -4842,20 +4848,19 @@ Item {
                     anchors.right: parent.right
                     anchors.verticalCenter: parent.verticalCenter
                     
-                    property string currentVal: optimizerBackend.steamFriendsSettings ? optimizerBackend.steamFriendsSettings["NetworkingAllowShareIP"] || "0" : "0"
+                    property string currentVal: optimizerBackend.steamFriendsSettings ? optimizerBackend.steamFriendsSettings["NetworkingAllowShareIP"] || "3" : "3"
                     
                     readonly property var options: [
-                        { id: "0", label: qsTr("Default") },
-                        { id: "2", label: qsTr("Never") },
+                        { id: "0", label: qsTr("Never") },
                         { id: "3", label: qsTr("Friends Only") },
                         { id: "1", label: qsTr("Always") }
                     ]
                     
                     function getLabelForVal(v) {
                         for (var i = 0; i < options.length; i++) {
-                            if (options[i].id === v) return options[i].label;
+                             if (options[i].id === v) return options[i].label;
                         }
-                        return qsTr("Default");
+                        return qsTr("Friends Only");
                     }
                     
                     Text {
