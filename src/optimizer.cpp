@@ -2150,6 +2150,30 @@ bool Optimizer::getVdfFriendsSettings(const QString &filePath, const QString &ac
     settings["GR_MarkerKey"] = !markerKey.isEmpty() ? markerKey : "Ctrl\tKEY_F12";
     QString screenshotKey = getVdfSystemSetting(filePath, "InGameOverlayScreenshotHotKey");
     settings["ScreenshotKey"] = !screenshotKey.isEmpty() ? screenshotKey : "KEY_F12";
+
+    // Screenshot settings (VDF system section)
+    QString screenshotNotif = getVdfSystemSetting(filePath, "InGameOverlayScreenshotNotification");
+    settings["ScreenshotNotification"] = screenshotNotif.isEmpty() ? true : (screenshotNotif != "0");
+
+    QString screenshotSound = getVdfSystemSetting(filePath, "InGameOverlayScreenshotPlaySound");
+    settings["ScreenshotPlaySound"] = screenshotSound.isEmpty() ? true : (screenshotSound != "0");
+
+    QString screenshotSaveExt = getVdfSystemSetting(filePath, "InGameOverlayScreenshotSaveUncompressed");
+    settings["ScreenshotSaveExternal"] = screenshotSaveExt.isEmpty() ? false : (screenshotSaveExt != "0");
+
+    QString screenshotAVIF = getVdfSystemSetting(filePath, "InGameOverlayScreenshotEnableAVIF");
+    settings["ScreenshotEnableAVIF"] = screenshotAVIF.isEmpty() ? false : (screenshotAVIF != "0");
+
+    QString screenshotPath = getVdfSystemSetting(filePath, "InGameOverlayScreenshotSaveUncompressedPath");
+    settings["ScreenshotExternalPath"] = !screenshotPath.isEmpty() ? screenshotPath : QString("");
+
+    // Overlay home page (VDF system section)
+    QString overlayHome = getVdfSystemSetting(filePath, "GameOverlayHomePage");
+    settings["OverlayHomePage"] = !overlayHome.isEmpty() ? overlayHome : QString("http://www.google.com");
+
+    // Steam networking (VDF system section)
+    QString networkShare = getVdfSystemSetting(filePath, "NetworkingAllowShareIP");
+    settings["NetworkingAllowShareIP"] = !networkShare.isEmpty() ? networkShare : QString("0");
     QString clipKey = getVdfBlockSetting(filePath, "GameRecording", "InstantClipKey");
     settings["GR_ClipKey"] = !clipKey.isEmpty() ? clipKey : "Ctrl\tShift\tKEY_F11";
     QString maxFps = getVdfBlockSetting(filePath, "GameRecording", "MaxFPS");
@@ -2648,6 +2672,8 @@ bool Optimizer::getVdfFriendsSettings(const QString &filePath, const QString &ac
                 settings["desktop_ui_scale"] = 1.0;
             }
             QString cellId = getVdfBlockSetting(configVdfPath, "Steam", "CurrentCellID");
+            QString pingsPerMin = getVdfBlockSetting(configVdfPath, "Steam", "MaxServerBrowserPingsPerMin");
+            settings["MaxServerBrowserPingsPerMin"] = !pingsPerMin.isEmpty() ? pingsPerMin : QString("1000");
             if (cellId.isEmpty()) {
                 cellId = getVdfBlockSetting(configVdfPath, "Steam", "CellIDServerOverride");
             }
@@ -2932,6 +2958,14 @@ bool Optimizer::updateVdfFriendsSettings(const QString &filePath, const QString 
     }
     
     QJsonObject incomingObj = QJsonObject::fromVariantMap(settings);
+    incomingObj.remove("ScreenshotNotification");
+    incomingObj.remove("ScreenshotPlaySound");
+    incomingObj.remove("ScreenshotSaveExternal");
+    incomingObj.remove("ScreenshotEnableAVIF");
+    incomingObj.remove("ScreenshotExternalPath");
+    incomingObj.remove("OverlayHomePage");
+    incomingObj.remove("NetworkingAllowShareIP");
+    incomingObj.remove("MaxServerBrowserPingsPerMin");
     incomingObj.remove("bGPUAcceleratedRendering");
     incomingObj.remove("bHardwareVideoDecoding");
     incomingObj.remove("bSmoothScrolling");
@@ -3541,6 +3575,40 @@ bool Optimizer::updateVdfFriendsSettings(const QString &filePath, const QString 
     if (settings.contains("ScreenshotKey")) {
         updateVdfSystemSetting(filePath, "InGameOverlayScreenshotHotKey", settings.value("ScreenshotKey").toString());
     }
+    if (settings.contains("ScreenshotNotification")) {
+        updateVdfSystemSetting(filePath, "InGameOverlayScreenshotNotification", settings.value("ScreenshotNotification").toBool() ? "1" : "0");
+    }
+    if (settings.contains("ScreenshotPlaySound")) {
+        updateVdfSystemSetting(filePath, "InGameOverlayScreenshotPlaySound", settings.value("ScreenshotPlaySound").toBool() ? "1" : "0");
+    }
+    if (settings.contains("ScreenshotSaveExternal")) {
+        updateVdfSystemSetting(filePath, "InGameOverlayScreenshotSaveUncompressed", settings.value("ScreenshotSaveExternal").toBool() ? "1" : "0");
+    }
+    if (settings.contains("ScreenshotEnableAVIF")) {
+        updateVdfSystemSetting(filePath, "InGameOverlayScreenshotEnableAVIF", settings.value("ScreenshotEnableAVIF").toBool() ? "1" : "0");
+    }
+    if (settings.contains("ScreenshotExternalPath")) {
+        updateVdfSystemSetting(filePath, "InGameOverlayScreenshotSaveUncompressedPath", settings.value("ScreenshotExternalPath").toString());
+    }
+    if (settings.contains("OverlayHomePage")) {
+        QString overlayHome = settings.value("OverlayHomePage").toString();
+        updateVdfSystemSetting(filePath, "GameOverlayHomePage", overlayHome);
+        updateVdfSystemSetting(filePath, "OverlayHomePage", overlayHome);
+    }
+    if (settings.contains("NetworkingAllowShareIP")) {
+        QString netVal = settings.value("NetworkingAllowShareIP").toString();
+        updateVdfSystemSetting(filePath, "NetworkingAllowShareIP", netVal);
+        
+        DWORD regVal = 2;
+        if (netVal == "1") regVal = 1;
+        else if (netVal == "2") regVal = 0;
+        
+        HKEY hKeySteamRegistry;
+        if (RegOpenKeyExW(HKEY_CURRENT_USER, L"Software\\Valve\\Steam", 0, KEY_SET_VALUE, &hKeySteamRegistry) == ERROR_SUCCESS) {
+            RegSetValueExW(hKeySteamRegistry, L"SteamNetworkingSocketsP2POptimize", 0, REG_DWORD, reinterpret_cast<const BYTE*>(&regVal), sizeof(regVal));
+            RegCloseKey(hKeySteamRegistry);
+        }
+    }
     if (settings.contains("GR_ClipKey")) {
         updateVdfBlockSetting(filePath, "GameRecording", "InstantClipKey", settings.value("GR_ClipKey").toString());
     }
@@ -3992,6 +4060,9 @@ bool Optimizer::updateVdfFriendsSettings(const QString &filePath, const QString 
             }
             if (settings.contains("nAutoUpdateWindowEnd")) {
                 updateVdfBlockSetting(configVdfPath, "Steam", "AutoUpdateWindowEnd", QString::number(settings.value("nAutoUpdateWindowEnd").toInt()));
+            }
+            if (settings.contains("MaxServerBrowserPingsPerMin")) {
+                updateVdfBlockSetting(configVdfPath, "Steam", "MaxServerBrowserPingsPerMin", settings.value("MaxServerBrowserPingsPerMin").toString());
             }
             if (settings.contains("bLimitDownloadSpeed") || settings.contains("nDownloadThrottleKbps")) {
                 bool enabled = settings.contains("bLimitDownloadSpeed")
@@ -6881,6 +6952,14 @@ void Optimizer::loadSystemStates() {
     defaultFriendsSettings["GR_ToggleKey"] = "Ctrl\tKEY_F11";
     defaultFriendsSettings["GR_MarkerKey"] = "Ctrl\tKEY_F12";
     defaultFriendsSettings["ScreenshotKey"] = "KEY_F12";
+    defaultFriendsSettings["ScreenshotNotification"] = true;
+    defaultFriendsSettings["ScreenshotPlaySound"] = true;
+    defaultFriendsSettings["ScreenshotSaveExternal"] = false;
+    defaultFriendsSettings["ScreenshotEnableAVIF"] = false;
+    defaultFriendsSettings["ScreenshotExternalPath"] = QString("");
+    defaultFriendsSettings["OverlayHomePage"] = QString("http://www.google.com");
+    defaultFriendsSettings["NetworkingAllowShareIP"] = QString("0");
+    defaultFriendsSettings["MaxServerBrowserPingsPerMin"] = QString("1000");
     defaultFriendsSettings["GR_ClipKey"] = "Ctrl\tShift\tKEY_F11";
     defaultFriendsSettings["GR_InstantClipSeconds"] = 30;
     defaultFriendsSettings["noiseGateLevel"] = 2;

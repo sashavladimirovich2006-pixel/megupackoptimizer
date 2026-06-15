@@ -3538,37 +3538,139 @@ Item {
                 width: parent.width
                 height: Math.max(50, steamToggleCol_24.implicitHeight + 12)
                 color: "transparent"
-                    Column { id: steamToggleCol_24;
-                        anchors.verticalCenter: parent.verticalCenter
-                        spacing: 2
-                        anchors.left: parent.left
-                        anchors.right: steamToggleSwitch_24.left
-                        anchors.rightMargin: 12
-                        Text {
-                            text: qsTr("Enable the Steam Overlay while in-game")
-                            color: Theme.textPrimary
-                            font.family: Theme.fontFamily
-                            font.pixelSize: 12
-                            font.bold: true
-                        }
-                        Text {
-                            text: qsTr("Allows access to Steam features while playing games.")
-                            color: Theme.textSecondary
-                            font.family: Theme.fontFamily
-                            font.pixelSize: 10
-                            width: parent.width
-                            wrapMode: Text.WordWrap
-                        }
+                Column { id: steamToggleCol_24;
+                    anchors.verticalCenter: parent.verticalCenter
+                    spacing: 2
+                    anchors.left: parent.left
+                    anchors.right: steamToggleSwitch_24.left
+                    anchors.rightMargin: 12
+                    Text {
+                        text: qsTr("Enable the Steam Overlay while in-game")
+                        color: Theme.textPrimary
+                        font.family: Theme.fontFamily
+                        font.pixelSize: 12
+                        font.bold: true
                     }
-                    MeguSwitch {
+                    Text {
+                        text: qsTr("Allows access to Steam features while playing games.")
+                        color: Theme.textSecondary
+                        font.family: Theme.fontFamily
+                        font.pixelSize: 10
+                        width: parent.width
+                        wrapMode: Text.WordWrap
+                    }
+                }
+                MeguSwitch {
                     id: steamToggleSwitch_24
                     anchors.right: parent.right
+                    steamStyle: true
+                    checked: optimizerBackend.steamOverlayActive
+                    anchors.verticalCenter: parent.verticalCenter
+                    onToggled: (isChecked) => { optimizerBackend.steamOverlayActive = isChecked; }
+                }
+            }
 
-                        steamStyle: true
-                        checked: optimizerBackend.steamOverlayActive
-                        anchors.verticalCenter: parent.verticalCenter
-                        onToggled: (isChecked) => { optimizerBackend.steamOverlayActive = isChecked; }
+            // Row: Overlay shortcut key(s)
+            Rectangle {
+                width: parent.width
+                height: 32
+                color: "transparent"
+                Text {
+                    text: qsTr("Overlay shortcut key(s)")
+                    color: Theme.textPrimary
+                    font.family: Theme.fontFamily
+                    font.pixelSize: 12
+                    anchors.left: parent.left
+                    anchors.verticalCenter: parent.verticalCenter
+                }
+                Rectangle {
+                    width: 100
+                    height: 26
+                    radius: 4
+                    color: "#161616"
+                    border.color: Theme.border
+                    border.width: 1
+                    anchors.right: parent.right
+                    anchors.verticalCenter: parent.verticalCenter
+                    Text {
+                        text: "Shift + Tab"
+                        color: Theme.textSecondary
+                        font.family: Theme.fontFamily
+                        font.pixelSize: 11
+                        font.bold: true
+                        anchors.centerIn: parent
                     }
+                }
+            }
+
+            // Row: Toggle performance monitor hotkey
+            Rectangle {
+                width: parent.width
+                height: 32
+                color: "transparent"
+                Text {
+                    text: qsTr("Toggle performance monitor hotkey")
+                    color: Theme.textPrimary
+                    font.family: Theme.fontFamily
+                    font.pixelSize: 12
+                    anchors.left: parent.left
+                    anchors.verticalCenter: parent.verticalCenter
+                }
+                Rectangle {
+                    width: 100
+                    height: 26
+                    radius: 4
+                    color: "#161616"
+                    border.color: Theme.border
+                    border.width: 1
+                    anchors.right: parent.right
+                    anchors.verticalCenter: parent.verticalCenter
+                    Text {
+                        text: qsTr("Configure in Steam")
+                        color: Theme.textSecondary
+                        font.family: Theme.fontFamily
+                        font.pixelSize: 10
+                        font.bold: true
+                        anchors.centerIn: parent
+                    }
+                }
+            }
+
+            // Toggle A3: Show toolbar as list view
+            Rectangle {
+                width: parent.width
+                height: Math.max(50, steamToggleCol_ingame_list.implicitHeight + 12)
+                color: "transparent"
+                Column { id: steamToggleCol_ingame_list;
+                    anchors.verticalCenter: parent.verticalCenter
+                    spacing: 2
+                    anchors.left: parent.left
+                    anchors.right: steamToggleSwitch_ingame_list.left
+                    anchors.rightMargin: 12
+                    Text {
+                        text: qsTr("Show toolbar as list view")
+                        color: Theme.textPrimary
+                        font.family: Theme.fontFamily
+                        font.pixelSize: 12
+                        font.bold: true
+                    }
+                    Text {
+                        text: qsTr("Displays overlay toolbar options in a list layout instead of grid icons.")
+                        color: Theme.textSecondary
+                        font.family: Theme.fontFamily
+                        font.pixelSize: 10
+                        width: parent.width
+                        wrapMode: Text.WordWrap
+                    }
+                }
+                MeguSwitch {
+                    id: steamToggleSwitch_ingame_list
+                    anchors.right: parent.right
+                    steamStyle: true
+                    checked: optimizerBackend.steamFriendsSettings ? !!optimizerBackend.steamFriendsSettings["bShowOverlayToolbarAsList"] : false
+                    anchors.verticalCenter: parent.verticalCenter
+                    onToggled: (isChecked) => { root.toggleSteamFriendsSetting("bShowOverlayToolbarAsList", isChecked); }
+                }
             }
 
             // Toggle 3: Restore my previous browser tabs when starting a game
@@ -3576,37 +3678,73 @@ Item {
                 width: parent.width
                 height: Math.max(50, steamToggleCol_26.implicitHeight + 12)
                 color: "transparent"
-                    Column { id: steamToggleCol_26;
-                        anchors.verticalCenter: parent.verticalCenter
-                        spacing: 2
-                        anchors.left: parent.left
-                        anchors.right: steamToggleSwitch_26.left
-                        anchors.rightMargin: 12
-                        Text {
-                            text: qsTr("Restore my previous browser tabs when starting a game")
-                            color: Theme.textPrimary
-                            font.family: Theme.fontFamily
-                            font.pixelSize: 12
-                            font.bold: true
-                        }
-                        Text {
-                            text: qsTr("Saves open browser tabs when you close a game and restores them.")
-                            color: Theme.textSecondary
-                            font.family: Theme.fontFamily
-                            font.pixelSize: 10
-                            width: parent.width
-                            wrapMode: Text.WordWrap
-                        }
+                Column { id: steamToggleCol_26;
+                    anchors.verticalCenter: parent.verticalCenter
+                    spacing: 2
+                    anchors.left: parent.left
+                    anchors.right: steamToggleSwitch_26.left
+                    anchors.rightMargin: 12
+                    Text {
+                        text: qsTr("Restore my previous browser tabs when starting a game")
+                        color: Theme.textPrimary
+                        font.family: Theme.fontFamily
+                        font.pixelSize: 12
+                        font.bold: true
                     }
-                    MeguSwitch {
+                    Text {
+                        text: qsTr("Saves open browser tabs when you close a game and restores them.")
+                        color: Theme.textSecondary
+                        font.family: Theme.fontFamily
+                        font.pixelSize: 10
+                        width: parent.width
+                        wrapMode: Text.WordWrap
+                    }
+                }
+                MeguSwitch {
                     id: steamToggleSwitch_26
                     anchors.right: parent.right
+                    steamStyle: true
+                    checked: optimizerBackend.steamFriendsSettings ? !!optimizerBackend.steamFriendsSettings["bRestoreOverlayBrowserTabs"] : true
+                    anchors.verticalCenter: parent.verticalCenter
+                    onToggled: (isChecked) => { root.toggleSteamFriendsSetting("bRestoreOverlayBrowserTabs", isChecked); }
+                }
+            }
 
-                        steamStyle: true
-                        checked: optimizerBackend.steamFriendsSettings ? !!optimizerBackend.steamFriendsSettings["bRestoreOverlayBrowserTabs"] : true
-                        anchors.verticalCenter: parent.verticalCenter
-                        onToggled: (isChecked) => { root.toggleSteamFriendsSetting("bRestoreOverlayBrowserTabs", isChecked); }
+            // Toggle A4: Use the Big Picture Overlay when using a controller
+            Rectangle {
+                width: parent.width
+                height: Math.max(50, steamToggleCol_ingame_bp.implicitHeight + 12)
+                color: "transparent"
+                Column { id: steamToggleCol_ingame_bp;
+                    anchors.verticalCenter: parent.verticalCenter
+                    spacing: 2
+                    anchors.left: parent.left
+                    anchors.right: steamToggleSwitch_ingame_bp.left
+                    anchors.rightMargin: 12
+                    Text {
+                        text: qsTr("Use the Big Picture Overlay when using a controller")
+                        color: Theme.textPrimary
+                        font.family: Theme.fontFamily
+                        font.pixelSize: 12
+                        font.bold: true
                     }
+                    Text {
+                        text: qsTr("Forces controller-friendly UI scaling and interface in the overlay.")
+                        color: Theme.textSecondary
+                        font.family: Theme.fontFamily
+                        font.pixelSize: 10
+                        width: parent.width
+                        wrapMode: Text.WordWrap
+                    }
+                }
+                MeguSwitch {
+                    id: steamToggleSwitch_ingame_bp
+                    anchors.right: parent.right
+                    steamStyle: true
+                    checked: optimizerBackend.steamFriendsSettings ? !!optimizerBackend.steamFriendsSettings["bUseBigPictureOverlay"] : false
+                    anchors.verticalCenter: parent.verticalCenter
+                    onToggled: (isChecked) => { root.toggleSteamFriendsSetting("bUseBigPictureOverlay", isChecked); }
+                }
             }
 
             // Toggle 5: Scale Steam Overlay text and icons to match monitor settings
@@ -3614,37 +3752,120 @@ Item {
                 width: parent.width
                 height: Math.max(50, steamToggleCol_28.implicitHeight + 12)
                 color: "transparent"
-                    Column { id: steamToggleCol_28;
-                        anchors.verticalCenter: parent.verticalCenter
-                        spacing: 2
-                        anchors.left: parent.left
-                        anchors.right: steamToggleSwitch_28.left
-                        anchors.rightMargin: 12
-                        Text {
-                            text: qsTr("Scale Steam Overlay text and icons to match monitor settings")
-                            color: Theme.textPrimary
-                            font.family: Theme.fontFamily
-                            font.pixelSize: 12
-                            font.bold: true
-                        }
-                        Text {
-                            text: qsTr("Adjusts overlay text size and UI scale according to your monitor DPI.")
-                            color: Theme.textSecondary
-                            font.family: Theme.fontFamily
-                            font.pixelSize: 10
-                            width: parent.width
-                            wrapMode: Text.WordWrap
-                        }
+                Column { id: steamToggleCol_28;
+                    anchors.verticalCenter: parent.verticalCenter
+                    spacing: 2
+                    anchors.left: parent.left
+                    anchors.right: steamToggleSwitch_28.left
+                    anchors.rightMargin: 12
+                    Text {
+                        text: qsTr("Scale Steam Overlay text and icons to match monitor settings")
+                        color: Theme.textPrimary
+                        font.family: Theme.fontFamily
+                        font.pixelSize: 12
+                        font.bold: true
                     }
-                    MeguSwitch {
+                    Text {
+                        text: qsTr("Adjusts overlay text size and UI scale according to your monitor DPI.")
+                        color: Theme.textSecondary
+                        font.family: Theme.fontFamily
+                        font.pixelSize: 10
+                        width: parent.width
+                        wrapMode: Text.WordWrap
+                    }
+                }
+                MeguSwitch {
                     id: steamToggleSwitch_28
                     anchors.right: parent.right
+                    steamStyle: true
+                    checked: optimizerBackend.steamFriendsSettings ? !!optimizerBackend.steamFriendsSettings["bScaleOverlayTextAndIcons"] : true
+                    anchors.verticalCenter: parent.verticalCenter
+                    onToggled: (isChecked) => { root.toggleSteamFriendsSetting("bScaleOverlayTextAndIcons", isChecked); }
+                }
+            }
 
-                        steamStyle: true
-                        checked: optimizerBackend.steamFriendsSettings ? !!optimizerBackend.steamFriendsSettings["bScaleOverlayTextAndIcons"] : true
-                        anchors.verticalCenter: parent.verticalCenter
-                        onToggled: (isChecked) => { root.toggleSteamFriendsSetting("bScaleOverlayTextAndIcons", isChecked); }
+            // Button: Toolbar Preferences
+            Rectangle {
+                width: parent.width
+                height: Math.max(50, steamToggleCol_toolbarPrefs.implicitHeight + 12)
+                color: "transparent"
+                Column {
+                    id: steamToggleCol_toolbarPrefs
+                    anchors.verticalCenter: parent.verticalCenter
+                    spacing: 2
+                    anchors.left: parent.left
+                    anchors.right: toolbarPrefsBtn.left
+                    anchors.rightMargin: 12
+                    Text {
+                        text: qsTr("Toolbar Preferences")
+                        color: Theme.textPrimary
+                        font.family: Theme.fontFamily
+                        font.pixelSize: 12
+                        font.bold: true
                     }
+                    Text {
+                        text: qsTr("Choose which items are visible in the Steam Overlay toolbar.")
+                        color: Theme.textSecondary
+                        font.family: Theme.fontFamily
+                        font.pixelSize: 10
+                        width: parent.width
+                        wrapMode: Text.WordWrap
+                    }
+                }
+                MeguButton {
+                    id: toolbarPrefsBtn
+                    text: qsTr("Customize")
+                    width: 100
+                    anchors.right: parent.right
+                    anchors.verticalCenter: parent.verticalCenter
+                    onClicked: steamSettingsDrawer.subPage = "toolbarPrefs"
+                }
+            }
+
+            // Row: Web browser home page
+            Rectangle {
+                width: parent.width
+                height: 50
+                color: "transparent"
+                Text {
+                    text: qsTr("Web browser home page")
+                    color: Theme.textPrimary
+                    font.family: Theme.fontFamily
+                    font.pixelSize: 12
+                    font.bold: true
+                    anchors.left: parent.left
+                    anchors.verticalCenter: parent.verticalCenter
+                }
+                TextField {
+                    id: overlayHomePageInput
+                    width: 200
+                    height: 32
+                    text: optimizerBackend.steamFriendsSettings ? (optimizerBackend.steamFriendsSettings["OverlayHomePage"] || "http://www.google.com") : "http://www.google.com"
+                    color: Theme.textPrimary
+                    font.family: Theme.fontFamily
+                    font.pixelSize: 11
+                    verticalAlignment: TextInput.AlignVCenter
+                    leftPadding: 12
+                    rightPadding: 12
+                    selectByMouse: true
+                    background: Rectangle {
+                        color: "#05FFFFFF"
+                        border.color: overlayHomePageInput.activeFocus ? Theme.accent : Theme.border
+                        border.width: 1
+                        radius: 6
+                    }
+                    anchors.right: parent.right
+                    anchors.verticalCenter: parent.verticalCenter
+                    onEditingFinished: {
+                        root.toggleSteamFriendsSetting("OverlayHomePage", text);
+                    }
+                }
+            }
+
+            Rectangle {
+                width: parent.width
+                height: 1
+                color: Theme.border
             }
 
             // Header: Overlay Performance Monitor
@@ -3802,6 +4023,529 @@ Item {
                 color: Theme.border
             }
 
+            // Header: Screenshots
+            Column {
+                width: parent.width
+                spacing: 6
+
+                Text {
+                    text: qsTr("Screenshots")
+                    color: Theme.accent
+                    font.family: Theme.fontFamily
+                    font.pixelSize: 11
+                    font.bold: true
+                    font.letterSpacing: 1.0
+                }
+            }
+
+            // Row: Take a screenshot (Key binding)
+            Rectangle {
+                width: parent.width
+                height: 32
+                color: "transparent"
+                Text {
+                    text: qsTr("Take a screenshot")
+                    color: Theme.textPrimary
+                    font.family: Theme.fontFamily
+                    font.pixelSize: 12
+                    anchors.left: parent.left
+                    anchors.verticalCenter: parent.verticalCenter
+                }
+                Rectangle {
+                    id: screenshotKeyBtn_ingame
+                    width: 100
+                    height: 26
+                    radius: 4
+                    color: (steamGameRecordingPage.recordingKeyName === "ScreenshotKey") ? Qt.rgba(Theme.accent.r, Theme.accent.g, Theme.accent.b, 0.1) : "#161616"
+                    border.color: (steamGameRecordingPage.recordingKeyName === "ScreenshotKey") ? Theme.accent : (screenshotKeyMouse_ingame.containsMouse ? Theme.accent : Theme.border)
+                    border.width: 1
+                    anchors.right: parent.right
+                    anchors.verticalCenter: parent.verticalCenter
+                    Text {
+                        text: (steamGameRecordingPage.recordingKeyName === "ScreenshotKey") ? qsTr("Press key...") : steamGameRecordingPage.parseSteamKey((optimizerBackend.steamFriendsSettings && optimizerBackend.steamFriendsSettings["ScreenshotKey"]) ? optimizerBackend.steamFriendsSettings["ScreenshotKey"] : "KEY_F12")
+                        color: (steamGameRecordingPage.recordingKeyName === "ScreenshotKey") ? Theme.accent : Theme.textSecondary
+                        font.family: Theme.fontFamily
+                        font.pixelSize: 11
+                        font.bold: true
+                        anchors.centerIn: parent
+                    }
+                    MouseArea {
+                        id: screenshotKeyMouse_ingame
+                        anchors.fill: parent
+                        hoverEnabled: true
+                        cursorShape: Qt.PointingHandCursor
+                        onClicked: {
+                            steamGameRecordingPage.recordingKeyName = "ScreenshotKey";
+                        }
+                    }
+                }
+            }
+
+            // Toggle B2: Screenshot Notification
+            Rectangle {
+                width: parent.width
+                height: Math.max(50, steamToggleCol_ingame_notif.implicitHeight + 12)
+                color: "transparent"
+                Column { id: steamToggleCol_ingame_notif;
+                    anchors.verticalCenter: parent.verticalCenter
+                    spacing: 2
+                    anchors.left: parent.left
+                    anchors.right: steamToggleSwitch_ingame_notif.left
+                    anchors.rightMargin: 12
+                    Text {
+                        text: qsTr("Display a notification when screenshot is taken")
+                        color: Theme.textPrimary
+                        font.family: Theme.fontFamily
+                        font.pixelSize: 12
+                        font.bold: true
+                    }
+                    Text {
+                        text: qsTr("Shows a toast notification in the corner of your screen.")
+                        color: Theme.textSecondary
+                        font.family: Theme.fontFamily
+                        font.pixelSize: 10
+                        width: parent.width
+                        wrapMode: Text.WordWrap
+                    }
+                }
+                MeguSwitch {
+                    id: steamToggleSwitch_ingame_notif
+                    anchors.right: parent.right
+                    steamStyle: true
+                    checked: optimizerBackend.steamFriendsSettings ? !!optimizerBackend.steamFriendsSettings["ScreenshotNotification"] : true
+                    anchors.verticalCenter: parent.verticalCenter
+                    onToggled: (isChecked) => { root.toggleSteamFriendsSetting("ScreenshotNotification", isChecked); }
+                }
+            }
+
+            // Toggle B3: Screenshot Sound
+            Rectangle {
+                width: parent.width
+                height: Math.max(50, steamToggleCol_ingame_sound.implicitHeight + 12)
+                color: "transparent"
+                Column { id: steamToggleCol_ingame_sound;
+                    anchors.verticalCenter: parent.verticalCenter
+                    spacing: 2
+                    anchors.left: parent.left
+                    anchors.right: steamToggleSwitch_ingame_sound.left
+                    anchors.rightMargin: 12
+                    Text {
+                        text: qsTr("Play a sound when screenshot is taken")
+                        color: Theme.textPrimary
+                        font.family: Theme.fontFamily
+                        font.pixelSize: 12
+                        font.bold: true
+                    }
+                    Text {
+                        text: qsTr("Plays the camera shutter sound effect when capturing screenshots.")
+                        color: Theme.textSecondary
+                        font.family: Theme.fontFamily
+                        font.pixelSize: 10
+                        width: parent.width
+                        wrapMode: Text.WordWrap
+                    }
+                }
+                MeguSwitch {
+                    id: steamToggleSwitch_ingame_sound
+                    anchors.right: parent.right
+                    steamStyle: true
+                    checked: optimizerBackend.steamFriendsSettings ? !!optimizerBackend.steamFriendsSettings["ScreenshotPlaySound"] : true
+                    anchors.verticalCenter: parent.verticalCenter
+                    onToggled: (isChecked) => { root.toggleSteamFriendsSetting("ScreenshotPlaySound", isChecked); }
+                }
+            }
+
+            // Toggle B4: Save an external copy of my screenshots
+            Rectangle {
+                width: parent.width
+                height: Math.max(50, steamToggleCol_ingame_ext.implicitHeight + 12)
+                color: "transparent"
+                Column { id: steamToggleCol_ingame_ext;
+                    anchors.verticalCenter: parent.verticalCenter
+                    spacing: 2
+                    anchors.left: parent.left
+                    anchors.right: steamToggleSwitch_ingame_ext.left
+                    anchors.rightMargin: 12
+                    Text {
+                        text: qsTr("Save an uncompressed external copy of screenshots")
+                        color: Theme.textPrimary
+                        font.family: Theme.fontFamily
+                        font.pixelSize: 12
+                        font.bold: true
+                    }
+                    Text {
+                        text: qsTr("Saves a high-quality copy of screenshots to a custom folder.")
+                        color: Theme.textSecondary
+                        font.family: Theme.fontFamily
+                        font.pixelSize: 10
+                        width: parent.width
+                        wrapMode: Text.WordWrap
+                    }
+                }
+                MeguSwitch {
+                    id: steamToggleSwitch_ingame_ext
+                    anchors.right: parent.right
+                    steamStyle: true
+                    checked: optimizerBackend.steamFriendsSettings ? !!optimizerBackend.steamFriendsSettings["ScreenshotSaveExternal"] : false
+                    anchors.verticalCenter: parent.verticalCenter
+                    onToggled: (isChecked) => { root.toggleSteamFriendsSetting("ScreenshotSaveExternal", isChecked); }
+                }
+            }
+
+            // Toggle B5: Save external HDR screenshots as AVIF (only if save external is checked)
+            Rectangle {
+                width: parent.width
+                height: Math.max(50, steamToggleCol_ingame_avif.implicitHeight + 12)
+                color: "transparent"
+                visible: optimizerBackend.steamFriendsSettings ? !!optimizerBackend.steamFriendsSettings["ScreenshotSaveExternal"] : false
+                Column { id: steamToggleCol_ingame_avif;
+                    anchors.verticalCenter: parent.verticalCenter
+                    spacing: 2
+                    anchors.left: parent.left
+                    anchors.right: steamToggleSwitch_ingame_avif.left
+                    anchors.rightMargin: 12
+                    Text {
+                        text: qsTr("Save external HDR screenshots as AVIF")
+                        color: Theme.textPrimary
+                        font.family: Theme.fontFamily
+                        font.pixelSize: 12
+                        font.bold: true
+                    }
+                    Text {
+                        text: qsTr("Saves HDR screenshots using the AVIF container instead of standard SDR formats.")
+                        color: Theme.textSecondary
+                        font.family: Theme.fontFamily
+                        font.pixelSize: 10
+                        width: parent.width
+                        wrapMode: Text.WordWrap
+                    }
+                }
+                MeguSwitch {
+                    id: steamToggleSwitch_ingame_avif
+                    anchors.right: parent.right
+                    steamStyle: true
+                    checked: optimizerBackend.steamFriendsSettings ? !!optimizerBackend.steamFriendsSettings["ScreenshotEnableAVIF"] : false
+                    anchors.verticalCenter: parent.verticalCenter
+                    onToggled: (isChecked) => { root.toggleSteamFriendsSetting("ScreenshotEnableAVIF", isChecked); }
+                }
+            }
+
+            // Folder Picker B6: External screenshots folder (only if save external is checked)
+            Rectangle {
+                width: parent.width
+                height: 50
+                color: "transparent"
+                visible: optimizerBackend.steamFriendsSettings ? !!optimizerBackend.steamFriendsSettings["ScreenshotSaveExternal"] : false
+
+                Column {
+                    anchors.verticalCenter: parent.verticalCenter
+                    spacing: 2
+                    anchors.left: parent.left
+                    anchors.right: screenshotFolderButtons.left
+                    anchors.rightMargin: 12
+
+                    Text {
+                        text: qsTr("External screenshots folder")
+                        color: Theme.textPrimary
+                        font.family: Theme.fontFamily
+                        font.pixelSize: 12
+                        font.bold: true
+                    }
+
+                    Text {
+                        id: screenshotFolderPathText
+                        text: {
+                            var path = (optimizerBackend.steamFriendsSettings && optimizerBackend.steamFriendsSettings["ScreenshotExternalPath"]) ? optimizerBackend.steamFriendsSettings["ScreenshotExternalPath"] : "";
+                            if (path === "") {
+                                return qsTr("Default Steam Directory");
+                            }
+                            return path;
+                        }
+                        color: Theme.textSecondary
+                        font.family: Theme.fontFamily
+                        font.pixelSize: 11
+                        elide: Text.ElideMiddle
+                        width: parent.width
+                    }
+                }
+
+                Row {
+                    id: screenshotFolderButtons
+                    anchors.right: parent.right
+                    anchors.verticalCenter: parent.verticalCenter
+                    spacing: 8
+
+                    MeguButton {
+                        text: qsTr("Change folder")
+                        width: 110
+                        height: 28
+                        onClicked: {
+                            var newFolder = optimizerBackend.selectFolder(qsTr("Select Screenshots Folder"));
+                            if (newFolder !== "") {
+                                root.toggleSteamFriendsSetting("ScreenshotExternalPath", newFolder);
+                            }
+                        }
+                    }
+
+                    MeguButton {
+                        text: "×"
+                        width: 28
+                        height: 28
+                        visible: (optimizerBackend.steamFriendsSettings && optimizerBackend.steamFriendsSettings["ScreenshotExternalPath"]) ? true : false
+                        onClicked: {
+                            root.toggleSteamFriendsSetting("ScreenshotExternalPath", "");
+                        }
+                    }
+                }
+            }
+
+            Rectangle {
+                width: parent.width
+                height: 1
+                color: Theme.border
+            }
+
+            // Header: Other Settings
+            Column {
+                width: parent.width
+                spacing: 6
+
+                Text {
+                    text: qsTr("Other Settings")
+                    color: Theme.accent
+                    font.family: Theme.fontFamily
+                    font.pixelSize: 11
+                    font.bold: true
+                    font.letterSpacing: 1.0
+                }
+            }
+
+            // Row: Server browser pings dropdown
+            Rectangle {
+                width: parent.width
+                height: 50
+                color: "transparent"
+                Text {
+                    text: qsTr("Server browser pings / minute")
+                    color: Theme.textPrimary
+                    font.family: Theme.fontFamily
+                    font.pixelSize: 12
+                    font.bold: true
+                    anchors.left: parent.left
+                    anchors.verticalCenter: parent.verticalCenter
+                }
+                
+                Rectangle {
+                    id: pingsDropdown
+                    width: 140
+                    height: 32
+                    radius: 6
+                    color: "#05FFFFFF"
+                    border.color: Theme.border
+                    border.width: 1
+                    anchors.right: parent.right
+                    anchors.verticalCenter: parent.verticalCenter
+                    
+                    property string currentVal: optimizerBackend.steamFriendsSettings ? optimizerBackend.steamFriendsSettings["MaxServerBrowserPingsPerMin"] || "1000" : "1000"
+                    
+                    readonly property var options: [
+                        { id: "250", label: "250" },
+                        { id: "500", label: "500" },
+                        { id: "1000", label: "1000 (" + qsTr("Default") + ")" },
+                        { id: "3000", label: "3000" },
+                        { id: "5000", label: "5000" }
+                    ]
+                    
+                    function getLabelForVal(v) {
+                        for (var i = 0; i < options.length; i++) {
+                            if (options[i].id === v) return options[i].label;
+                        }
+                        return "1000 (" + qsTr("Default") + ")";
+                    }
+                    
+                    Text {
+                        anchors.left: parent.left
+                        anchors.leftMargin: 12
+                        anchors.verticalCenter: parent.verticalCenter
+                        text: pingsDropdown.getLabelForVal(pingsDropdown.currentVal)
+                        color: Theme.textPrimary
+                        font.family: Theme.fontFamily
+                        font.pixelSize: 11
+                    }
+                    
+                    Text {
+                        anchors.right: parent.right
+                        anchors.rightMargin: 12
+                        anchors.verticalCenter: parent.verticalCenter
+                        text: "⌵"
+                        color: Theme.textSecondary
+                        font.family: Theme.fontFamily
+                        font.pixelSize: 12
+                        font.bold: true
+                    }
+                    
+                    MouseArea {
+                        anchors.fill: parent
+                        hoverEnabled: true
+                        cursorShape: Qt.PointingHandCursor
+                        onClicked: pingsMenu.open()
+                        onEntered: pingsDropdown.border.color = Theme.accent
+                        onExited: pingsDropdown.border.color = Theme.border
+                    }
+                    
+                    Menu {
+                        id: pingsMenu
+                        y: pingsDropdown.height + 4
+                        width: pingsDropdown.width
+                        background: Rectangle {
+                            color: Theme.sidebarBg
+                            border.color: Theme.border
+                            border.width: 1
+                            radius: 6
+                        }
+                        Instantiator {
+                            model: pingsDropdown.options
+                            onObjectAdded: (index, object) => pingsMenu.insertItem(index, object)
+                            onObjectRemoved: (index, object) => pingsMenu.removeItem(object)
+                            delegate: MenuItem {
+                                text: modelData.label
+                                width: pingsMenu.width
+                                height: 32
+                                contentItem: Text {
+                                    text: parent.text
+                                    font.family: Theme.fontFamily
+                                    font.pixelSize: 11
+                                    color: parent.highlighted ? Theme.accent : Theme.textPrimary
+                                    verticalAlignment: Text.AlignVCenter
+                                    leftPadding: 12
+                                }
+                                background: Rectangle {
+                                    color: parent.highlighted ? Qt.rgba(Theme.accent.r, Theme.accent.g, Theme.accent.b, 0.1) : "transparent"
+                                }
+                                onTriggered: {
+                                    root.toggleSteamFriendsSetting("MaxServerBrowserPingsPerMin", modelData.id);
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+
+            // Row: Steam Networking
+            Rectangle {
+                width: parent.width
+                height: 50
+                color: "transparent"
+                Text {
+                    text: qsTr("Steam Networking")
+                    color: Theme.textPrimary
+                    font.family: Theme.fontFamily
+                    font.pixelSize: 12
+                    font.bold: true
+                    anchors.left: parent.left
+                    anchors.verticalCenter: parent.verticalCenter
+                }
+                
+                Rectangle {
+                    id: networkingDropdown
+                    width: 200
+                    height: 32
+                    radius: 6
+                    color: "#05FFFFFF"
+                    border.color: Theme.border
+                    border.width: 1
+                    anchors.right: parent.right
+                    anchors.verticalCenter: parent.verticalCenter
+                    
+                    property string currentVal: optimizerBackend.steamFriendsSettings ? optimizerBackend.steamFriendsSettings["NetworkingAllowShareIP"] || "0" : "0"
+                    
+                    readonly property var options: [
+                        { id: "0", label: qsTr("Default") },
+                        { id: "1", label: qsTr("Always") },
+                        { id: "2", label: qsTr("Never") }
+                    ]
+                    
+                    function getLabelForVal(v) {
+                        for (var i = 0; i < options.length; i++) {
+                            if (options[i].id === v) return options[i].label;
+                        }
+                        return qsTr("Default");
+                    }
+                    
+                    Text {
+                        anchors.left: parent.left
+                        anchors.leftMargin: 12
+                        anchors.verticalCenter: parent.verticalCenter
+                        text: networkingDropdown.getLabelForVal(networkingDropdown.currentVal)
+                        color: Theme.textPrimary
+                        font.family: Theme.fontFamily
+                        font.pixelSize: 11
+                    }
+                    
+                    Text {
+                        anchors.right: parent.right
+                        anchors.rightMargin: 12
+                        anchors.verticalCenter: parent.verticalCenter
+                        text: "⌵"
+                        color: Theme.textSecondary
+                        font.family: Theme.fontFamily
+                        font.pixelSize: 12
+                        font.bold: true
+                    }
+                    
+                    MouseArea {
+                        anchors.fill: parent
+                        hoverEnabled: true
+                        cursorShape: Qt.PointingHandCursor
+                        onClicked: networkingMenu.open()
+                        onEntered: networkingDropdown.border.color = Theme.accent
+                        onExited: networkingDropdown.border.color = Theme.border
+                    }
+                    
+                    Menu {
+                        id: networkingMenu
+                        y: networkingDropdown.height + 4
+                        width: networkingDropdown.width
+                        background: Rectangle {
+                            color: Theme.sidebarBg
+                            border.color: Theme.border
+                            border.width: 1
+                            radius: 6
+                        }
+                        Instantiator {
+                            model: networkingDropdown.options
+                            onObjectAdded: (index, object) => networkingMenu.insertItem(index, object)
+                            onObjectRemoved: (index, object) => networkingMenu.removeItem(object)
+                            delegate: MenuItem {
+                                text: modelData.label
+                                width: networkingMenu.width
+                                height: 32
+                                contentItem: Text {
+                                    text: parent.text
+                                    font.family: Theme.fontFamily
+                                    font.pixelSize: 11
+                                    color: parent.highlighted ? Theme.accent : Theme.textPrimary
+                                    verticalAlignment: Text.AlignVCenter
+                                    leftPadding: 12
+                                }
+                                background: Rectangle {
+                                    color: parent.highlighted ? Qt.rgba(Theme.accent.r, Theme.accent.g, Theme.accent.b, 0.1) : "transparent"
+                                }
+                                onTriggered: {
+                                    root.toggleSteamFriendsSetting("NetworkingAllowShareIP", modelData.id);
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+
+            Rectangle {
+                width: parent.width
+                height: 1
+                color: Theme.border
+            }
+
             // Action 1: Delete Web Browser Data
             Rectangle {
                 width: parent.width
@@ -3841,8 +4585,6 @@ Item {
                     }
                 }
             }
-
-
         }
     }
 
@@ -3888,82 +4630,441 @@ Item {
             spacing: 16
 
             Text {
-                text: qsTr("This feature is currently configured automatically by the optimizer for best performance.")
+                text: qsTr("Visibility of Overlay Toolbar Items")
+                color: Theme.accent
+                font.family: Theme.fontFamily
+                font.pixelSize: 11
+                font.bold: true
+                font.letterSpacing: 1.0
+            }
+
+            Text {
+                text: qsTr("Select which items should appear in the overlay toolbar. Individual visibility is managed by Steam overlay.")
                 color: Theme.textSecondary
                 font.family: Theme.fontFamily
-                font.pixelSize: 12
+                font.pixelSize: 10
                 width: parent.width
                 wrapMode: Text.WordWrap
             }
 
-            Rectangle {
+            Grid {
                 width: parent.width
-                height: 40
-                color: "transparent"
-                Row {
-                    anchors.fill: parent
-                    spacing: 12
-                    MeguSwitch {
+                columns: 2
+                columnSpacing: 16
+                rowSpacing: 8
 
-                        steamStyle: true
-                        checked: true
-                        anchors.verticalCenter: parent.verticalCenter
-                        enabled: false
-                    }
-                    Text {
-                        text: qsTr("Show Web Browser")
-                        color: Theme.textPrimary
-                        font.family: Theme.fontFamily
-                        font.pixelSize: 12
-                        anchors.verticalCenter: parent.verticalCenter
+                // Helper to create individual items
+                Rectangle {
+                    width: (parent.width - 16) / 2
+                    height: 32
+                    color: "transparent"
+                    Row {
+                        anchors.fill: parent
+                        spacing: 8
+                        MeguSwitch {
+                            steamStyle: true
+                            checked: true
+                            enabled: false
+                            anchors.verticalCenter: parent.verticalCenter
+                        }
+                        Text {
+                            text: qsTr("Game Overview")
+                            color: Theme.textPrimary
+                            font.family: Theme.fontFamily
+                            font.pixelSize: 11
+                            anchors.verticalCenter: parent.verticalCenter
+                        }
                     }
                 }
-            }
 
-            Rectangle {
-                width: parent.width
-                height: 40
-                color: "transparent"
-                Row {
-                    anchors.fill: parent
-                    spacing: 12
-                    MeguSwitch {
-
-                        steamStyle: true
-                        checked: true
-                        anchors.verticalCenter: parent.verticalCenter
-                        enabled: false
-                    }
-                    Text {
-                        text: qsTr("Show Friends List")
-                        color: Theme.textPrimary
-                        font.family: Theme.fontFamily
-                        font.pixelSize: 12
-                        anchors.verticalCenter: parent.verticalCenter
+                Rectangle {
+                    width: (parent.width - 16) / 2
+                    height: 32
+                    color: "transparent"
+                    Row {
+                        anchors.fill: parent
+                        spacing: 8
+                        MeguSwitch {
+                            steamStyle: true
+                            checked: true
+                            enabled: false
+                            anchors.verticalCenter: parent.verticalCenter
+                        }
+                        Text {
+                            text: qsTr("Achievements")
+                            color: Theme.textPrimary
+                            font.family: Theme.fontFamily
+                            font.pixelSize: 11
+                            anchors.verticalCenter: parent.verticalCenter
+                        }
                     }
                 }
-            }
 
-            Rectangle {
-                width: parent.width
-                height: 40
-                color: "transparent"
-                Row {
-                    anchors.fill: parent
-                    spacing: 12
-                    MeguSwitch {
-
-                        steamStyle: true
-                        checked: false
-                        anchors.verticalCenter: parent.verticalCenter
-                        enabled: false
+                Rectangle {
+                    width: (parent.width - 16) / 2
+                    height: 32
+                    color: "transparent"
+                    Row {
+                        anchors.fill: parent
+                        spacing: 8
+                        MeguSwitch {
+                            steamStyle: true
+                            checked: true
+                            enabled: false
+                            anchors.verticalCenter: parent.verticalCenter
+                        }
+                        Text {
+                            text: qsTr("Notes")
+                            color: Theme.textPrimary
+                            font.family: Theme.fontFamily
+                            font.pixelSize: 11
+                            anchors.verticalCenter: parent.verticalCenter
+                        }
                     }
-                    Text {
-                        text: qsTr("Show Achievements")
-                        color: Theme.textPrimary
-                        font.family: Theme.fontFamily
-                        font.pixelSize: 12
-                        anchors.verticalCenter: parent.verticalCenter
+                }
+
+                Rectangle {
+                    width: (parent.width - 16) / 2
+                    height: 32
+                    color: "transparent"
+                    Row {
+                        anchors.fill: parent
+                        spacing: 8
+                        MeguSwitch {
+                            steamStyle: true
+                            checked: true
+                            enabled: false
+                            anchors.verticalCenter: parent.verticalCenter
+                        }
+                        Text {
+                            text: qsTr("Clock")
+                            color: Theme.textPrimary
+                            font.family: Theme.fontFamily
+                            font.pixelSize: 11
+                            anchors.verticalCenter: parent.verticalCenter
+                        }
+                    }
+                }
+
+                Rectangle {
+                    width: (parent.width - 16) / 2
+                    height: 32
+                    color: "transparent"
+                    Row {
+                        anchors.fill: parent
+                        spacing: 8
+                        MeguSwitch {
+                            steamStyle: true
+                            checked: true
+                            enabled: false
+                            anchors.verticalCenter: parent.verticalCenter
+                        }
+                        Text {
+                            text: qsTr("Guides")
+                            color: Theme.textPrimary
+                            font.family: Theme.fontFamily
+                            font.pixelSize: 11
+                            anchors.verticalCenter: parent.verticalCenter
+                        }
+                    }
+                }
+
+                Rectangle {
+                    width: (parent.width - 16) / 2
+                    height: 32
+                    color: "transparent"
+                    Row {
+                        anchors.fill: parent
+                        spacing: 8
+                        MeguSwitch {
+                            steamStyle: true
+                            checked: true
+                            enabled: false
+                            anchors.verticalCenter: parent.verticalCenter
+                        }
+                        Text {
+                            text: qsTr("Discussions")
+                            color: Theme.textPrimary
+                            font.family: Theme.fontFamily
+                            font.pixelSize: 11
+                            anchors.verticalCenter: parent.verticalCenter
+                        }
+                    }
+                }
+
+                Rectangle {
+                    width: (parent.width - 16) / 2
+                    height: 32
+                    color: "transparent"
+                    Row {
+                        anchors.fill: parent
+                        spacing: 8
+                        MeguSwitch {
+                            steamStyle: true
+                            checked: true
+                            enabled: false
+                            anchors.verticalCenter: parent.verticalCenter
+                        }
+                        Text {
+                            text: qsTr("DLC")
+                            color: Theme.textPrimary
+                            font.family: Theme.fontFamily
+                            font.pixelSize: 11
+                            anchors.verticalCenter: parent.verticalCenter
+                        }
+                    }
+                }
+
+                Rectangle {
+                    width: (parent.width - 16) / 2
+                    height: 32
+                    color: "transparent"
+                    Row {
+                        anchors.fill: parent
+                        spacing: 8
+                        MeguSwitch {
+                            steamStyle: true
+                            checked: true
+                            enabled: false
+                            anchors.verticalCenter: parent.verticalCenter
+                        }
+                        Text {
+                            text: qsTr("Steam Workshop")
+                            color: Theme.textPrimary
+                            font.family: Theme.fontFamily
+                            font.pixelSize: 11
+                            anchors.verticalCenter: parent.verticalCenter
+                        }
+                    }
+                }
+
+                Rectangle {
+                    width: (parent.width - 16) / 2
+                    height: 32
+                    color: "transparent"
+                    Row {
+                        anchors.fill: parent
+                        spacing: 8
+                        MeguSwitch {
+                            steamStyle: true
+                            checked: true
+                            enabled: false
+                            anchors.verticalCenter: parent.verticalCenter
+                        }
+                        Text {
+                            text: qsTr("Recordings & Screenshots")
+                            color: Theme.textPrimary
+                            font.family: Theme.fontFamily
+                            font.pixelSize: 11
+                            anchors.verticalCenter: parent.verticalCenter
+                        }
+                    }
+                }
+
+                Rectangle {
+                    width: (parent.width - 16) / 2
+                    height: 32
+                    color: "transparent"
+                    Row {
+                        anchors.fill: parent
+                        spacing: 8
+                        MeguSwitch {
+                            steamStyle: true
+                            checked: true
+                            enabled: false
+                            anchors.verticalCenter: parent.verticalCenter
+                        }
+                        Text {
+                            text: qsTr("Friends")
+                            color: Theme.textPrimary
+                            font.family: Theme.fontFamily
+                            font.pixelSize: 11
+                            anchors.verticalCenter: parent.verticalCenter
+                        }
+                    }
+                }
+
+                Rectangle {
+                    width: (parent.width - 16) / 2
+                    height: 32
+                    color: "transparent"
+                    Row {
+                        anchors.fill: parent
+                        spacing: 8
+                        MeguSwitch {
+                            steamStyle: true
+                            checked: true
+                            enabled: false
+                            anchors.verticalCenter: parent.verticalCenter
+                        }
+                        Text {
+                            text: qsTr("Remote Play Together")
+                            color: Theme.textPrimary
+                            font.family: Theme.fontFamily
+                            font.pixelSize: 11
+                            anchors.verticalCenter: parent.verticalCenter
+                        }
+                    }
+                }
+
+                Rectangle {
+                    width: (parent.width - 16) / 2
+                    height: 32
+                    color: "transparent"
+                    Row {
+                        anchors.fill: parent
+                        spacing: 8
+                        MeguSwitch {
+                            steamStyle: true
+                            checked: true
+                            enabled: false
+                            anchors.verticalCenter: parent.verticalCenter
+                        }
+                        Text {
+                            text: qsTr("Web Browser")
+                            color: Theme.textPrimary
+                            font.family: Theme.fontFamily
+                            font.pixelSize: 11
+                            anchors.verticalCenter: parent.verticalCenter
+                        }
+                    }
+                }
+
+                Rectangle {
+                    width: (parent.width - 16) / 2
+                    height: 32
+                    color: "transparent"
+                    Row {
+                        anchors.fill: parent
+                        spacing: 8
+                        MeguSwitch {
+                            steamStyle: true
+                            checked: true
+                            enabled: false
+                            anchors.verticalCenter: parent.verticalCenter
+                        }
+                        Text {
+                            text: qsTr("Controller Settings")
+                            color: Theme.textPrimary
+                            font.family: Theme.fontFamily
+                            font.pixelSize: 11
+                            anchors.verticalCenter: parent.verticalCenter
+                        }
+                    }
+                }
+
+                Rectangle {
+                    width: (parent.width - 16) / 2
+                    height: 32
+                    color: "transparent"
+                    Row {
+                        anchors.fill: parent
+                        spacing: 8
+                        MeguSwitch {
+                            steamStyle: true
+                            checked: true
+                            enabled: false
+                            anchors.verticalCenter: parent.verticalCenter
+                        }
+                        Text {
+                            text: qsTr("Soundtrack Player")
+                            color: Theme.textPrimary
+                            font.family: Theme.fontFamily
+                            font.pixelSize: 11
+                            anchors.verticalCenter: parent.verticalCenter
+                        }
+                    }
+                }
+
+                Rectangle {
+                    width: (parent.width - 16) / 2
+                    height: 32
+                    color: "transparent"
+                    Row {
+                        anchors.fill: parent
+                        spacing: 8
+                        MeguSwitch {
+                            steamStyle: true
+                            checked: false
+                            enabled: false
+                            anchors.verticalCenter: parent.verticalCenter
+                        }
+                        Text {
+                            text: qsTr("Report AI Content")
+                            color: Theme.textPrimary
+                            font.family: Theme.fontFamily
+                            font.pixelSize: 11
+                            anchors.verticalCenter: parent.verticalCenter
+                        }
+                    }
+                }
+
+                Rectangle {
+                    width: (parent.width - 16) / 2
+                    height: 32
+                    color: "transparent"
+                    Row {
+                        anchors.fill: parent
+                        spacing: 8
+                        MeguSwitch {
+                            steamStyle: true
+                            checked: false
+                            enabled: false
+                            anchors.verticalCenter: parent.verticalCenter
+                        }
+                        Text {
+                            text: qsTr("Get Invite Link")
+                            color: Theme.textPrimary
+                            font.family: Theme.fontFamily
+                            font.pixelSize: 11
+                            anchors.verticalCenter: parent.verticalCenter
+                        }
+                    }
+                }
+
+                Rectangle {
+                    width: (parent.width - 16) / 2
+                    height: 32
+                    color: "transparent"
+                    Row {
+                        anchors.fill: parent
+                        spacing: 8
+                        MeguSwitch {
+                            steamStyle: true
+                            checked: true
+                            enabled: false
+                            anchors.verticalCenter: parent.verticalCenter
+                        }
+                        Text {
+                            text: qsTr("Game Servers")
+                            color: Theme.textPrimary
+                            font.family: Theme.fontFamily
+                            font.pixelSize: 11
+                            anchors.verticalCenter: parent.verticalCenter
+                        }
+                    }
+                }
+
+                Rectangle {
+                    width: (parent.width - 16) / 2
+                    height: 32
+                    color: "transparent"
+                    Row {
+                        anchors.fill: parent
+                        spacing: 8
+                        MeguSwitch {
+                            steamStyle: true
+                            checked: true
+                            enabled: false
+                            anchors.verticalCenter: parent.verticalCenter
+                        }
+                        Text {
+                            text: qsTr("Game Recording")
+                            color: Theme.textPrimary
+                            font.family: Theme.fontFamily
+                            font.pixelSize: 11
+                            anchors.verticalCenter: parent.verticalCenter
+                        }
                     }
                 }
             }
