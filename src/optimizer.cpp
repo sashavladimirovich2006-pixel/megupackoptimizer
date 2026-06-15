@@ -2737,6 +2737,48 @@ bool Optimizer::getVdfFriendsSettings(const QString &filePath, const QString &ac
             } else {
                 settings["InGameOverlayShowFPSCorner"] = "0";
             }
+            QString fpsDetail = getVdfSystemSetting(filePath, "InGameOverlayShowFPSDetailLevel");
+            if (!fpsDetail.isEmpty()) {
+                settings["InGameOverlayShowFPSDetailLevel"] = fpsDetail;
+            } else {
+                settings["InGameOverlayShowFPSDetailLevel"] = "1";
+            }
+            QString fpsGraphFPS = getVdfSystemSetting(filePath, "InGameOverlayShowFPSGraphFPS");
+            if (!fpsGraphFPS.isEmpty()) {
+                settings["InGameOverlayShowFPSGraphFPS"] = (fpsGraphFPS != "0");
+            } else {
+                settings["InGameOverlayShowFPSGraphFPS"] = false;
+            }
+            QString fpsGraphCPU = getVdfSystemSetting(filePath, "InGameOverlayShowFPSGraphCPU");
+            if (!fpsGraphCPU.isEmpty()) {
+                settings["InGameOverlayShowFPSGraphCPU"] = (fpsGraphCPU != "0");
+            } else {
+                settings["InGameOverlayShowFPSGraphCPU"] = false;
+            }
+            QString allowKM = getVdfSystemSetting(filePath, "InGameOverlayAllowKMDriveOnWindows");
+            if (!allowKM.isEmpty()) {
+                settings["InGameOverlayAllowKMDriveOnWindows"] = (allowKM != "0");
+            } else {
+                settings["InGameOverlayAllowKMDriveOnWindows"] = false;
+            }
+            QString fpsScaling = getVdfSystemSetting(filePath, "InGameOverlayShowFPSScaling");
+            if (!fpsScaling.isEmpty()) {
+                settings["InGameOverlayShowFPSScaling"] = fpsScaling.toDouble();
+            } else {
+                settings["InGameOverlayShowFPSScaling"] = 1.0;
+            }
+            QString fpsSaturation = getVdfSystemSetting(filePath, "InGameOverlayShowFPSSaturation");
+            if (!fpsSaturation.isEmpty()) {
+                settings["InGameOverlayShowFPSSaturation"] = fpsSaturation.toDouble();
+            } else {
+                settings["InGameOverlayShowFPSSaturation"] = 0.0;
+            }
+            QString fpsBgOpacity = getVdfSystemSetting(filePath, "InGameOverlayShowFPSBgOpacity");
+            if (!fpsBgOpacity.isEmpty()) {
+                settings["InGameOverlayShowFPSBgOpacity"] = fpsBgOpacity.toDouble();
+            } else {
+                settings["InGameOverlayShowFPSBgOpacity"] = 0.0;
+            }
             QString clientMode = getVdfBlockSetting(filePath, "PeerContent", "ClientMode");
             if (!clientMode.isEmpty()) {
                 bool enabled = (clientMode != "0");
@@ -3061,6 +3103,13 @@ bool Optimizer::updateVdfFriendsSettings(const QString &filePath, const QString 
     incomingObj.remove("BroadcastOutputHeight");
     incomingObj.remove("BroadcastShowReminder");
     incomingObj.remove("GR_AudioCaptureApps");
+    incomingObj.remove("InGameOverlayShowFPSDetailLevel");
+    incomingObj.remove("InGameOverlayShowFPSGraphFPS");
+    incomingObj.remove("InGameOverlayShowFPSGraphCPU");
+    incomingObj.remove("InGameOverlayAllowKMDriveOnWindows");
+    incomingObj.remove("InGameOverlayShowFPSScaling");
+    incomingObj.remove("InGameOverlayShowFPSSaturation");
+    incomingObj.remove("InGameOverlayShowFPSBgOpacity");
     
     for (auto it = incomingObj.constBegin(); it != incomingObj.constEnd(); ++it) {
         friendsObj[it.key()] = it.value();
@@ -4087,6 +4136,27 @@ bool Optimizer::updateVdfFriendsSettings(const QString &filePath, const QString 
             }
             if (settings.contains("InGameOverlayShowFPSCorner")) {
                 updateVdfSystemSetting(filePath, "InGameOverlayShowFPSCorner", settings.value("InGameOverlayShowFPSCorner").toString());
+            }
+            if (settings.contains("InGameOverlayShowFPSDetailLevel")) {
+                updateVdfSystemSetting(filePath, "InGameOverlayShowFPSDetailLevel", settings.value("InGameOverlayShowFPSDetailLevel").toString());
+            }
+            if (settings.contains("InGameOverlayShowFPSGraphFPS")) {
+                updateVdfSystemSetting(filePath, "InGameOverlayShowFPSGraphFPS", settings.value("InGameOverlayShowFPSGraphFPS").toBool() ? "1" : "0");
+            }
+            if (settings.contains("InGameOverlayShowFPSGraphCPU")) {
+                updateVdfSystemSetting(filePath, "InGameOverlayShowFPSGraphCPU", settings.value("InGameOverlayShowFPSGraphCPU").toBool() ? "1" : "0");
+            }
+            if (settings.contains("InGameOverlayAllowKMDriveOnWindows")) {
+                updateVdfSystemSetting(filePath, "InGameOverlayAllowKMDriveOnWindows", settings.value("InGameOverlayAllowKMDriveOnWindows").toBool() ? "1" : "0");
+            }
+            if (settings.contains("InGameOverlayShowFPSScaling")) {
+                updateVdfSystemSetting(filePath, "InGameOverlayShowFPSScaling", QString::number(settings.value("InGameOverlayShowFPSScaling").toDouble(), 'f', 6));
+            }
+            if (settings.contains("InGameOverlayShowFPSSaturation")) {
+                updateVdfSystemSetting(filePath, "InGameOverlayShowFPSSaturation", QString::number(settings.value("InGameOverlayShowFPSSaturation").toDouble(), 'f', 6));
+            }
+            if (settings.contains("InGameOverlayShowFPSBgOpacity")) {
+                updateVdfSystemSetting(filePath, "InGameOverlayShowFPSBgOpacity", QString::number(settings.value("InGameOverlayShowFPSBgOpacity").toDouble(), 'f', 6));
             }
             if (settings.contains("bLocalNetworkGameFileTransfer") || settings.contains("nTransferFilterMode")) {
                 bool enabled = settings.contains("bLocalNetworkGameFileTransfer")

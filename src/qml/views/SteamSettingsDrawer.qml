@@ -4006,6 +4006,399 @@ Item {
                 }
             }
 
+            Column {
+                width: parent.width
+                spacing: 12
+                visible: perfMonitorDropdown.currentVal !== "0"
+
+                // 1. Performance detail level Dropdown
+                Rectangle {
+                    width: parent.width
+                    height: 50
+                    color: "transparent"
+
+                    Text {
+                        text: qsTr("Performance detail level")
+                        color: Theme.textPrimary
+                        font.family: Theme.fontFamily
+                        font.pixelSize: 12
+                        font.bold: true
+                        anchors.left: parent.left
+                        anchors.verticalCenter: parent.verticalCenter
+                    }
+
+                    // Styled Premium ComboBox Dropdown
+                    Rectangle {
+                        id: perfDetailDropdown
+                        width: 250
+                        height: 32
+                        radius: 6
+                        color: "#05FFFFFF"
+                        border.color: Theme.border
+                        border.width: 1
+                        anchors.right: parent.right
+                        anchors.verticalCenter: parent.verticalCenter
+
+                        property string currentVal: optimizerBackend.steamFriendsSettings ? optimizerBackend.steamFriendsSettings["InGameOverlayShowFPSDetailLevel"] || "1" : "1"
+
+                        readonly property var options: [
+                            { id: "1", label: qsTr("FPS Only") },
+                            { id: "2", label: qsTr("FPS Details") },
+                            { id: "3", label: qsTr("FPS, CPU & GPU Utilization") },
+                            { id: "4", label: qsTr("FPS, CPU, GPU & RAM Full Details") }
+                        ]
+
+                        function getLabelForVal(v) {
+                            for (var i = 0; i < options.length; i++) {
+                                if (options[i].id === v) return options[i].label;
+                            }
+                            return qsTr("FPS Only");
+                        }
+
+                        Text {
+                            anchors.left: parent.left
+                            anchors.leftMargin: 12
+                            anchors.verticalCenter: parent.verticalCenter
+                            text: perfDetailDropdown.getLabelForVal(perfDetailDropdown.currentVal)
+                            color: Theme.textPrimary
+                            font.family: Theme.fontFamily
+                            font.pixelSize: 11
+                        }
+
+                        Text {
+                            anchors.right: parent.right
+                            anchors.rightMargin: 12
+                            anchors.verticalCenter: parent.verticalCenter
+                            text: "⌵"
+                            color: Theme.textSecondary
+                            font.family: Theme.fontFamily
+                            font.pixelSize: 12
+                            font.bold: true
+                        }
+
+                        MouseArea {
+                            anchors.fill: parent
+                            hoverEnabled: true
+                            cursorShape: Qt.PointingHandCursor
+                            onClicked: {
+                                perfDetailMenu.open();
+                            }
+                            onEntered: perfDetailDropdown.border.color = Theme.accent
+                            onExited: perfDetailDropdown.border.color = Theme.border
+                        }
+
+                        Menu {
+                            id: perfDetailMenu
+                            y: perfDetailDropdown.height + 4
+                            width: perfDetailDropdown.width
+                            
+                            background: Rectangle {
+                                color: Theme.sidebarBg
+                                border.color: Theme.border
+                                border.width: 1
+                                radius: 6
+                            }
+
+                            Instantiator {
+                                model: perfDetailDropdown.options
+                                onObjectAdded: (index, object) => perfDetailMenu.insertItem(index, object)
+                                onObjectRemoved: (index, object) => perfDetailMenu.removeItem(object)
+
+                                delegate: MenuItem {
+                                    text: modelData.label
+                                    width: perfDetailMenu.width
+                                    height: 32
+                                    
+                                    contentItem: Text {
+                                        text: parent.text
+                                        font.family: Theme.fontFamily
+                                        font.pixelSize: 11
+                                        color: parent.highlighted ? Theme.accent : Theme.textPrimary
+                                        verticalAlignment: Text.AlignVCenter
+                                        leftPadding: 12
+                                    }
+
+                                    background: Rectangle {
+                                        color: parent.highlighted ? Qt.rgba(Theme.accent.r, Theme.accent.g, Theme.accent.b, 0.1) : "transparent"
+                                    }
+
+                                    onTriggered: {
+                                        root.toggleSteamFriendsSetting("InGameOverlayShowFPSDetailLevel", modelData.id);
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+
+                // 2. Show FPS Avg/Min Graph Switch
+                Rectangle {
+                    width: parent.width
+                    height: 50
+                    color: "transparent"
+                    Column {
+                        anchors.verticalCenter: parent.verticalCenter
+                        spacing: 2
+                        anchors.left: parent.left
+                        anchors.right: graphFpSwitch.left
+                        anchors.rightMargin: 12
+                        Text {
+                            text: qsTr("Show FPS Avg/Min Graph")
+                            color: Theme.textPrimary
+                            font.family: Theme.fontFamily
+                            font.pixelSize: 12
+                            font.bold: true
+                        }
+                    }
+                    MeguSwitch {
+                        id: graphFpSwitch
+                        anchors.right: parent.right
+                        steamStyle: true
+                        checked: optimizerBackend.steamFriendsSettings ? !!optimizerBackend.steamFriendsSettings["InGameOverlayShowFPSGraphFPS"] : false
+                        anchors.verticalCenter: parent.verticalCenter
+                        onToggled: (isChecked) => { root.toggleSteamFriendsSetting("InGameOverlayShowFPSGraphFPS", isChecked); }
+                    }
+                }
+
+                // 3. Show CPU Utilization Per-Core Graph Switch
+                Rectangle {
+                    width: parent.width
+                    height: 50
+                    color: "transparent"
+                    Column {
+                        anchors.verticalCenter: parent.verticalCenter
+                        spacing: 2
+                        anchors.left: parent.left
+                        anchors.right: graphCpuSwitch.left
+                        anchors.rightMargin: 12
+                        Text {
+                            text: qsTr("Show CPU Utilization Per-Core Graph")
+                            color: Theme.textPrimary
+                            font.family: Theme.fontFamily
+                            font.pixelSize: 12
+                            font.bold: true
+                        }
+                    }
+                    MeguSwitch {
+                        id: graphCpuSwitch
+                        anchors.right: parent.right
+                        steamStyle: true
+                        checked: optimizerBackend.steamFriendsSettings ? !!optimizerBackend.steamFriendsSettings["InGameOverlayShowFPSGraphCPU"] : false
+                        anchors.verticalCenter: parent.verticalCenter
+                        onToggled: (isChecked) => { root.toggleSteamFriendsSetting("InGameOverlayShowFPSGraphCPU", isChecked); }
+                    }
+                }
+
+                // 4. Enable kernel driver based metrics (CPU Temperature) Switch
+                Rectangle {
+                    width: parent.width
+                    height: 50
+                    color: "transparent"
+                    Column {
+                        anchors.verticalCenter: parent.verticalCenter
+                        spacing: 2
+                        anchors.left: parent.left
+                        anchors.right: allowKmSwitch.left
+                        anchors.rightMargin: 12
+                        Text {
+                            text: qsTr("Enable kernel driver based metrics (CPU Temperature)")
+                            color: Theme.textPrimary
+                            font.family: Theme.fontFamily
+                            font.pixelSize: 12
+                            font.bold: true
+                        }
+                    }
+                    MeguSwitch {
+                        id: allowKmSwitch
+                        anchors.right: parent.right
+                        steamStyle: true
+                        checked: optimizerBackend.steamFriendsSettings ? !!optimizerBackend.steamFriendsSettings["InGameOverlayAllowKMDriveOnWindows"] : false
+                        anchors.verticalCenter: parent.verticalCenter
+                        onToggled: (isChecked) => { root.toggleSteamFriendsSetting("InGameOverlayAllowKMDriveOnWindows", isChecked); }
+                    }
+                }
+
+                // 5. Text size scaling Slider
+                Rectangle {
+                    width: parent.width
+                    height: 50
+                    color: "transparent"
+
+                    Text {
+                        text: qsTr("Text size scaling")
+                        color: Theme.textPrimary
+                        font.family: Theme.fontFamily
+                        font.pixelSize: 12
+                        font.bold: true
+                        anchors.left: parent.left
+                        anchors.verticalCenter: parent.verticalCenter
+                    }
+
+                    Slider {
+                        id: fpsScalingSlider
+                        width: 200
+                        height: 32
+                        anchors.right: parent.right
+                        anchors.verticalCenter: parent.verticalCenter
+                        from: 0.5
+                        to: 2.0
+                        stepSize: 0.05
+                        value: optimizerBackend.steamFriendsSettings ? (optimizerBackend.steamFriendsSettings["InGameOverlayShowFPSScaling"] !== undefined ? optimizerBackend.steamFriendsSettings["InGameOverlayShowFPSScaling"] : 1.0) : 1.0
+                        live: true
+                        onMoved: {
+                            root.toggleSteamFriendsSetting("InGameOverlayShowFPSScaling", value);
+                        }
+
+                        background: Rectangle {
+                            x: fpsScalingSlider.leftPadding
+                            y: fpsScalingSlider.topPadding + fpsScalingSlider.availableHeight / 2 - height / 2
+                            implicitWidth: 200
+                            implicitHeight: 4
+                            width: fpsScalingSlider.availableWidth
+                            height: implicitHeight
+                            radius: 2
+                            color: "#3d4450"
+
+                            Rectangle {
+                                width: fpsScalingSlider.visualPosition * parent.width
+                                height: parent.height
+                                color: "#1a9fff"
+                                radius: 2
+                            }
+                        }
+
+                        handle: Rectangle {
+                            x: fpsScalingSlider.leftPadding + fpsScalingSlider.visualPosition * (fpsScalingSlider.availableWidth - width)
+                            y: fpsScalingSlider.topPadding + fpsScalingSlider.availableHeight / 2 - height / 2
+                            implicitWidth: 16
+                            implicitHeight: 16
+                            radius: 8
+                            color: "#ffffff"
+                        }
+                    }
+                }
+
+                // 6. Text contrast/saturation Slider
+                Rectangle {
+                    width: parent.width
+                    height: 50
+                    color: "transparent"
+
+                    Text {
+                        text: qsTr("Text contrast/saturation")
+                        color: Theme.textPrimary
+                        font.family: Theme.fontFamily
+                        font.pixelSize: 12
+                        font.bold: true
+                        anchors.left: parent.left
+                        anchors.verticalCenter: parent.verticalCenter
+                    }
+
+                    Slider {
+                        id: fpsSaturationSlider
+                        width: 200
+                        height: 32
+                        anchors.right: parent.right
+                        anchors.verticalCenter: parent.verticalCenter
+                        from: 0.0
+                        to: 1.0
+                        stepSize: 0.05
+                        value: optimizerBackend.steamFriendsSettings ? (optimizerBackend.steamFriendsSettings["InGameOverlayShowFPSSaturation"] !== undefined ? optimizerBackend.steamFriendsSettings["InGameOverlayShowFPSSaturation"] : 0.0) : 0.0
+                        live: true
+                        onMoved: {
+                            root.toggleSteamFriendsSetting("InGameOverlayShowFPSSaturation", value);
+                        }
+
+                        background: Rectangle {
+                            x: fpsSaturationSlider.leftPadding
+                            y: fpsSaturationSlider.topPadding + fpsSaturationSlider.availableHeight / 2 - height / 2
+                            implicitWidth: 200
+                            implicitHeight: 4
+                            width: fpsSaturationSlider.availableWidth
+                            height: implicitHeight
+                            radius: 2
+                            color: "#3d4450"
+
+                            Rectangle {
+                                width: fpsSaturationSlider.visualPosition * parent.width
+                                height: parent.height
+                                color: "#1a9fff"
+                                radius: 2
+                            }
+                        }
+
+                        handle: Rectangle {
+                            x: fpsSaturationSlider.leftPadding + fpsSaturationSlider.visualPosition * (fpsSaturationSlider.availableWidth - width)
+                            y: fpsSaturationSlider.topPadding + fpsSaturationSlider.availableHeight / 2 - height / 2
+                            implicitWidth: 16
+                            implicitHeight: 16
+                            radius: 8
+                            color: "#ffffff"
+                        }
+                    }
+                }
+
+                // 7. Background opacity Slider
+                Rectangle {
+                    width: parent.width
+                    height: 50
+                    color: "transparent"
+
+                    Text {
+                        text: qsTr("Background opacity")
+                        color: Theme.textPrimary
+                        font.family: Theme.fontFamily
+                        font.pixelSize: 12
+                        font.bold: true
+                        anchors.left: parent.left
+                        anchors.verticalCenter: parent.verticalCenter
+                    }
+
+                    Slider {
+                        id: fpsBgOpacitySlider
+                        width: 200
+                        height: 32
+                        anchors.right: parent.right
+                        anchors.verticalCenter: parent.verticalCenter
+                        from: 0.0
+                        to: 1.0
+                        stepSize: 0.05
+                        value: optimizerBackend.steamFriendsSettings ? (optimizerBackend.steamFriendsSettings["InGameOverlayShowFPSBgOpacity"] !== undefined ? optimizerBackend.steamFriendsSettings["InGameOverlayShowFPSBgOpacity"] : 0.0) : 0.0
+                        live: true
+                        onMoved: {
+                            root.toggleSteamFriendsSetting("InGameOverlayShowFPSBgOpacity", value);
+                        }
+
+                        background: Rectangle {
+                            x: fpsBgOpacitySlider.leftPadding
+                            y: fpsBgOpacitySlider.topPadding + fpsBgOpacitySlider.availableHeight / 2 - height / 2
+                            implicitWidth: 200
+                            implicitHeight: 4
+                            width: fpsBgOpacitySlider.availableWidth
+                            height: implicitHeight
+                            radius: 2
+                            color: "#3d4450"
+
+                            Rectangle {
+                                width: fpsBgOpacitySlider.visualPosition * parent.width
+                                height: parent.height
+                                color: "#1a9fff"
+                                radius: 2
+                            }
+                        }
+
+                        handle: Rectangle {
+                            x: fpsBgOpacitySlider.leftPadding + fpsBgOpacitySlider.visualPosition * (fpsBgOpacitySlider.availableWidth - width)
+                            y: fpsBgOpacitySlider.topPadding + fpsBgOpacitySlider.availableHeight / 2 - height / 2
+                            implicitWidth: 16
+                            implicitHeight: 16
+                            radius: 8
+                            color: "#ffffff"
+                        }
+                    }
+                }
+            }
+
             Rectangle {
                 width: parent.width
                 height: 1
