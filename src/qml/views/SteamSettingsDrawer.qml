@@ -4338,18 +4338,21 @@ Item {
                     property string currentVal: optimizerBackend.steamFriendsSettings ? optimizerBackend.steamFriendsSettings["MaxServerBrowserPingsPerMin"] || "1000" : "1000"
                     
                     readonly property var options: [
-                        { id: "250", label: "250" },
-                        { id: "500", label: "500" },
-                        { id: "1000", label: "1000 (" + qsTr("Default") + ")" },
+                        { id: "0", label: qsTr("Automatic (5000)") },
+                        { id: "5000", label: "5000" },
                         { id: "3000", label: "3000" },
-                        { id: "5000", label: "5000" }
+                        { id: "1500", label: "1500" },
+                        { id: "1000", label: "1000" },
+                        { id: "500", label: "500" },
+                        { id: "250", label: "250" }
                     ]
                     
                     function getLabelForVal(v) {
+                        if (v === "" || v === "0") return qsTr("Automatic (5000)");
                         for (var i = 0; i < options.length; i++) {
                             if (options[i].id === v) return options[i].label;
                         }
-                        return "1000 (" + qsTr("Default") + ")";
+                        return v;
                     }
                     
                     Text {
@@ -4450,8 +4453,9 @@ Item {
                     
                     readonly property var options: [
                         { id: "0", label: qsTr("Default") },
-                        { id: "1", label: qsTr("Always") },
-                        { id: "2", label: qsTr("Never") }
+                        { id: "2", label: qsTr("Never") },
+                        { id: "3", label: qsTr("Friends Only") },
+                        { id: "1", label: qsTr("Always") }
                     ]
                     
                     function getLabelForVal(v) {
