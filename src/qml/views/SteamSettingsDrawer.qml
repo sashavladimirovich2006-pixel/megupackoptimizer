@@ -2301,6 +2301,16 @@ Item {
             width: parent.width
             spacing: 16
 
+            // Section: Customization
+            Text {
+                text: qsTr("Customization")
+                color: Theme.accent
+                font.family: Theme.fontFamily
+                font.pixelSize: 11
+                font.bold: true
+                font.letterSpacing: 1.0
+            }
+
             // Dropdown: Steam Client Language
             Rectangle {
                 width: parent.width
