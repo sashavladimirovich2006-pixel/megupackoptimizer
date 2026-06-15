@@ -1200,7 +1200,7 @@ namespace {
         }
 
         if (blockName == "Steam") {
-            QStringList deepKeys = {"AutoUpdateWindowEnabled", "AutoUpdateWindowStart", "AutoUpdateWindowEnd", "DownloadThrottleKbps", "AllowDownloadsDuringGameplay", "StreamingThrottleEnabled", "CellIDServerOverride", "GlobalDefaultAppUpdateBehavior", "CurrentCellID", "TimeCellIDSet", "SteamDefaultDialog"};
+            QStringList deepKeys = {"AutoUpdateWindowEnabled", "AutoUpdateWindowStart", "AutoUpdateWindowEnd", "DownloadThrottleKbps", "AllowDownloadsDuringGameplay", "StreamingThrottleEnabled", "CellIDServerOverride", "GlobalDefaultAppUpdateBehavior", "CurrentCellID", "TimeCellIDSet", "SteamDefaultDialog", "MaxServerBrowserPingsPerMin"};
             QStringList flatKeys = {"ShaderCacheEnabled", "LocalNetworkGameTransfers", "Display download rates in bits per second"};
             QStringList roots = {"UserLocalConfigStore", "InstallConfigStore", "UserRoamingConfigStore"};
 
