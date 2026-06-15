@@ -8,9 +8,16 @@ import "../components"
 Item {
     id: steamSettingsDrawer
     width: parent.width
-    height: dynamicHeight
+    implicitHeight: mainPagesColumn.implicitHeight
+    height: implicitHeight
 
     property string subPage: "main" // "main", "friends", "chat", "notifications", "ingame", "interface", "interfaceTaskbar", "library", "download", "storage", "toolbarPrefs", "accessibility", "gamerecording", "voice", "remoteplay", "music"
+
+    onSubPageChanged: {
+        if (typeof drawerScroll !== "undefined" && drawerScroll && drawerScroll.contentItem) {
+            drawerScroll.contentItem.contentY = 0;
+        }
+    }
 
     property bool steamIsRunning: window.steamIsRunning
     property string steamActiveUserId: window.steamActiveUserId
@@ -117,28 +124,10 @@ Item {
         optimizerBackend.steamFriendsSettings = optMap;
     }
 
-    property real dynamicHeight: {
-        if (subPage === "friends") return steamFriendsPage.implicitHeight;
-        if (subPage === "chat") return steamChatPage.implicitHeight;
-        if (subPage === "notifications") return steamNotificationsPage.implicitHeight;
-        if (subPage === "ingame") return steamInGamePage.implicitHeight;
-        if (subPage === "interface") return steamInterfacePage.implicitHeight;
-        if (subPage === "interfaceTaskbar") return steamInterfaceTaskbarPage.implicitHeight;
-        if (subPage === "library") return steamLibraryPage.implicitHeight;
-        if (subPage === "download") return steamDownloadPage.implicitHeight;
-        if (subPage === "storage") return steamStoragePage.implicitHeight;
-        if (subPage === "toolbarPrefs") return steamToolbarPrefsPage.implicitHeight;
-        if (subPage === "accessibility") return steamAccessibilityPage.implicitHeight;
-        if (subPage === "gamerecording") return steamGameRecordingPage.implicitHeight;
-        if (subPage === "voice") return steamVoicePage.implicitHeight;
-        if (subPage === "remoteplay") return steamRemotePlayPage.implicitHeight;
-        if (subPage === "music") return steamMusicPage.implicitHeight;
-        if (subPage === "broadcast") return steamBroadcastPage.implicitHeight;
-        if (subPage === "controller") return steamControllerPage.implicitHeight;
-        return steamMainPage.implicitHeight;
-    }
+
 
     Column {
+        id: mainPagesColumn
         width: parent.width
         spacing: 20
 
@@ -6960,13 +6949,13 @@ Item {
                     border.color: Theme.border
                     border.width: 1
                     radius: 6
-                    clip: true
 
                     ScrollView {
                         anchors.fill: parent
                         contentWidth: width
                         contentHeight: audioAppsRepeater.count * 40 + 8
-                        ScrollBar.vertical.policy: ScrollBar.AsNeeded
+                        clip: true
+                        ScrollBar.vertical: MeguScrollBar { }
 
                         Column {
                             width: parent.width

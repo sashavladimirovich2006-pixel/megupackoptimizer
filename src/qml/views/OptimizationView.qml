@@ -1678,7 +1678,11 @@ Item {
 
     property string activeDrawer: ""
 
-
+    onActiveDrawerChanged: {
+        if (typeof drawerScroll !== "undefined" && drawerScroll && drawerScroll.contentItem) {
+            drawerScroll.contentItem.contentY = 0;
+        }
+    }
 
     property bool sidebarOpen: activeDrawer !== ""
 
@@ -33312,15 +33316,8 @@ Item {
 
 
 
-            Column {
-
-
-
+            Item {
                 anchors.fill: parent
-
-
-
-                spacing: 20
 
 
 
@@ -33333,13 +33330,10 @@ Item {
 
 
                 Item {
-
-
-
-                    width: parent.width
-
-
-
+                    id: drawerHeader
+                    anchors.top: parent.top
+                    anchors.left: parent.left
+                    anchors.right: parent.right
                     height: 30
 
 
@@ -33476,122 +33470,116 @@ Item {
 
 
 
-                    // Close Button
-
-
-
-                    Rectangle {
-
-
-
-                        width: 24
-
-
-
-                        height: 24
-
-
-
-                        radius: 12
-
-
-
-                        color: closeMouseArea.containsMouse ? Theme.accentDim : "transparent"
-
-
-
-                        border.color: closeMouseArea.containsMouse ? Theme.accent : "transparent"
-
-
-
-                        border.width: 1
-
-
-
+                    Row {
                         anchors.right: parent.right
-
-
-
                         anchors.verticalCenter: parent.verticalCenter
+                        spacing: 8
 
+                        // Scroll Up Button
+                        Rectangle {
+                            width: 24
+                            height: 24
+                            radius: 12
+                            color: (enabled && upMouseArea.containsMouse) ? Theme.accentDim : "transparent"
+                            border.color: (enabled && upMouseArea.containsMouse) ? Theme.accent : "transparent"
+                            border.width: 1
+                            enabled: drawerScroll && drawerScroll.contentItem && (drawerScroll.contentItem.contentY > drawerScroll.contentItem.originY)
+                            opacity: enabled ? 1.0 : 0.25
 
+                            Behavior on opacity { NumberAnimation { duration: Theme.animFast } }
 
-
-
-
-
-                        Image {
-
-
-
-                            source: "qrc:/MeguPackOptimizer/src/resources/close.svg"
-
-
-
-                            width: 10
-
-
-
-                            height: 10
-
-
-
-                            sourceSize.width: 10
-
-
-
-                            sourceSize.height: 10
-
-
-
-                            anchors.centerIn: parent
-
-
-
-                        }
-
-
-
-
-
-
-
-                        MouseArea {
-
-
-
-                            id: closeMouseArea
-
-
-
-                            anchors.fill: parent
-
-
-
-                            hoverEnabled: true
-
-
-
-                            cursorShape: Qt.PointingHandCursor
-
-
-
-                            onClicked: {
-
-
-
-                                root.activeDrawer = "";
-
-
-
+                            Text {
+                                text: "▲"
+                                color: parent.enabled ? (upMouseArea.containsMouse ? Theme.accent : Theme.textPrimary) : Theme.textMuted
+                                font.pixelSize: 10
+                                font.bold: true
+                                anchors.centerIn: parent
                             }
 
-
-
+                            MouseArea {
+                                id: upMouseArea
+                                anchors.fill: parent
+                                hoverEnabled: true
+                                cursorShape: parent.enabled ? Qt.PointingHandCursor : Qt.ArrowCursor
+                                onClicked: {
+                                    var targetY = Math.max(drawerScroll.contentItem.originY, drawerScroll.contentItem.contentY - 200);
+                                    drawerScrollAnimation.stop();
+                                    drawerScrollAnimation.target = drawerScroll.contentItem;
+                                    drawerScrollAnimation.to = targetY;
+                                    drawerScrollAnimation.start();
+                                }
+                            }
                         }
 
+                        // Scroll Down Button
+                        Rectangle {
+                            width: 24
+                            height: 24
+                            radius: 12
+                            color: (enabled && downMouseArea.containsMouse) ? Theme.accentDim : "transparent"
+                            border.color: (enabled && downMouseArea.containsMouse) ? Theme.accent : "transparent"
+                            border.width: 1
+                            enabled: {
+                                if (!drawerScroll || !drawerScroll.contentItem) return false;
+                                var maxY = Math.max(drawerScroll.contentItem.originY, drawerScroll.contentItem.contentHeight - drawerScroll.height);
+                                return drawerScroll.contentItem.contentY < maxY;
+                            }
+                            opacity: enabled ? 1.0 : 0.25
 
+                            Behavior on opacity { NumberAnimation { duration: Theme.animFast } }
 
+                            Text {
+                                text: "▼"
+                                color: parent.enabled ? (downMouseArea.containsMouse ? Theme.accent : Theme.textPrimary) : Theme.textMuted
+                                font.pixelSize: 10
+                                font.bold: true
+                                anchors.centerIn: parent
+                            }
+
+                            MouseArea {
+                                id: downMouseArea
+                                anchors.fill: parent
+                                hoverEnabled: true
+                                cursorShape: parent.enabled ? Qt.PointingHandCursor : Qt.ArrowCursor
+                                onClicked: {
+                                    var maxY = Math.max(drawerScroll.contentItem.originY, drawerScroll.contentItem.contentHeight - drawerScroll.height);
+                                    var targetY = Math.min(maxY, drawerScroll.contentItem.contentY + 200);
+                                    drawerScrollAnimation.stop();
+                                    drawerScrollAnimation.target = drawerScroll.contentItem;
+                                    drawerScrollAnimation.to = targetY;
+                                    drawerScrollAnimation.start();
+                                }
+                            }
+                        }
+
+                        // Close Button
+                        Rectangle {
+                            width: 24
+                            height: 24
+                            radius: 12
+                            color: closeMouseArea.containsMouse ? Theme.accentDim : "transparent"
+                            border.color: closeMouseArea.containsMouse ? Theme.accent : "transparent"
+                            border.width: 1
+
+                            Image {
+                                source: "qrc:/MeguPackOptimizer/src/resources/close.svg"
+                                width: 10
+                                height: 10
+                                sourceSize.width: 10
+                                sourceSize.height: 10
+                                anchors.centerIn: parent
+                            }
+
+                            MouseArea {
+                                id: closeMouseArea
+                                anchors.fill: parent
+                                hoverEnabled: true
+                                cursorShape: Qt.PointingHandCursor
+                                onClicked: {
+                                    root.activeDrawer = "";
+                                }
+                            }
+                        }
                     }
 
 
@@ -33605,21 +33593,13 @@ Item {
 
 
                 Rectangle {
-
-
-
-                    width: parent.width
-
-
-
+                    id: drawerSeparator
+                    anchors.top: drawerHeader.bottom
+                    anchors.topMargin: 20
+                    anchors.left: parent.left
+                    anchors.right: parent.right
                     height: 1
-
-
-
                     color: Theme.border
-
-
-
                 }
 
 
@@ -33633,25 +33613,13 @@ Item {
 
 
                 ScrollView {
-
-
-
                     id: drawerScroll
-
-
-
-                    width: parent.width
-
-
-
-                    height: parent.height - 60
-
-
-
+                    anchors.top: drawerSeparator.bottom
+                    anchors.topMargin: 20
+                    anchors.left: parent.left
+                    anchors.right: parent.right
+                    anchors.bottom: parent.bottom
                     clip: true
-
-
-
                     contentWidth: width
 
 
@@ -33772,7 +33740,7 @@ Item {
 
 
 
-                        if (root.activeDrawer === "steamSettings") return steamSettingsDrawer.dynamicHeight;
+                        if (root.activeDrawer === "steamSettings") return steamSettingsDrawer.implicitHeight;
 
 
 
@@ -34141,22 +34109,10 @@ Item {
 
 
                     SteamSettingsDrawer {
-
-
-
                         id: steamSettingsDrawer
-
-
-
                         visible: root.activeDrawer === "steamSettings"
-
-
-
                         width: visible ? parent.width : 800
-
-
-
-                        height: visible ? dynamicHeight : 0
+                        height: visible ? implicitHeight : 0
 
 
 
@@ -37214,6 +37170,8 @@ Item {
                                 spacing: 8
                                 interactive: true
                                 boundsBehavior: Flickable.StopAtBounds
+                                ScrollBar.vertical: MeguScrollBar { }
+                                ScrollBar.horizontal: MeguScrollBar { }
 
                                 Connections {
                                     target: stepLogModel

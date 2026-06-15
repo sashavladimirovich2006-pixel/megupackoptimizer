@@ -6,23 +6,29 @@ ScrollBar {
     id: control
     implicitWidth: 14
     implicitHeight: 14
-    policy: ScrollBar.AsNeeded
+    
+    // Always show scrollbar when view is scrollable (i.e. size < 1.0)
+    policy: control.size < 1.0 ? ScrollBar.AlwaysOn : ScrollBar.AsNeeded
 
     contentItem: Rectangle {
-        implicitWidth: (control.hovered || control.pressed || control.active) ? 8 : 4
-        implicitHeight: (control.hovered || control.pressed || control.active) ? 8 : 4
+        // Wider handles (6px normally, 10px when hovered/active) for better visibility and easier dragging
+        implicitWidth: (control.hovered || control.pressed || control.active) ? 10 : 6
+        implicitHeight: (control.hovered || control.pressed || control.active) ? 10 : 6
         radius: width / 2
         
         color: {
             if (control.pressed) return Theme.accent;
             if (control.hovered) return Theme.accentLight;
-            return Theme.currentTheme === "Белоснежная" ? "#40000000" : "#30FFFFFF";
+            return Theme.currentTheme === "Белоснежная" ? "#60000000" : "#50FFFFFF";
         }
         
-        opacity: (control.hovered || control.pressed || control.active) ? 0.8 : 0.3
+        // Higher default opacity (0.5 instead of 0.3) so it's clearly visible
+        opacity: (control.hovered || control.pressed || control.active) ? 0.95 : 0.5
         
         Behavior on color { ColorAnimation { duration: Theme.animFast } }
         Behavior on opacity { NumberAnimation { duration: Theme.animFast } }
+        Behavior on implicitWidth { NumberAnimation { duration: Theme.animFast } }
+        Behavior on implicitHeight { NumberAnimation { duration: Theme.animFast } }
     }
 
     background: Rectangle {
