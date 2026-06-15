@@ -2783,6 +2783,16 @@ Item {
                 }
             }
 
+            // Section: Optimization
+            Text {
+                text: qsTr("Optimization")
+                color: Theme.accent
+                font.family: Theme.fontFamily
+                font.pixelSize: 11
+                font.bold: true
+                font.letterSpacing: 1.0
+            }
+
             // Button: Taskbar Preferences
             Rectangle {
                 width: parent.width
@@ -2819,16 +2829,6 @@ Item {
                     anchors.verticalCenter: parent.verticalCenter
                     onClicked: steamSettingsDrawer.subPage = "interfaceTaskbar"
                 }
-            }
-
-            // Section: Optimization
-            Text {
-                text: qsTr("Optimization")
-                color: Theme.accent
-                font.family: Theme.fontFamily
-                font.pixelSize: 11
-                font.bold: true
-                font.letterSpacing: 1.0
             }
 
             // Toggle 1: Scale text and icons
