@@ -10,7 +10,8 @@ Item {
     width: parent.width
     height: dynamicHeight
 
-    property string subPage: "main" // "main", "friends", "chat", "notifications", "ingame", "interface", "library", "download", "storage", "toolbarPrefs", "accessibility", "gamerecording", "voice", "remoteplay", "music"
+    property string subPage: "main" // "main", "friends", "chat", "notifications", "ingame", "interface", "interfaceTaskbar", "library", "download", "storage", "toolbarPrefs", "accessibility", "gamerecording", "voice", "remoteplay", "music"
+
     property bool steamIsRunning: window.steamIsRunning
     property string steamActiveUserId: window.steamActiveUserId
 
@@ -122,6 +123,7 @@ Item {
         if (subPage === "notifications") return steamNotificationsPage.implicitHeight;
         if (subPage === "ingame") return steamInGamePage.implicitHeight;
         if (subPage === "interface") return steamInterfacePage.implicitHeight;
+        if (subPage === "interfaceTaskbar") return steamInterfaceTaskbarPage.implicitHeight;
         if (subPage === "library") return steamLibraryPage.implicitHeight;
         if (subPage === "download") return steamDownloadPage.implicitHeight;
         if (subPage === "storage") return steamStoragePage.implicitHeight;
@@ -2299,6 +2301,536 @@ Item {
             width: parent.width
             spacing: 16
 
+            // Dropdown: Steam Client Language
+            Rectangle {
+                width: parent.width
+                height: 50
+                color: "transparent"
+                Column {
+                    id: langCol
+                    anchors.verticalCenter: parent.verticalCenter
+                    spacing: 2
+                    anchors.left: parent.left
+                    anchors.right: langDropdown.left
+                    anchors.rightMargin: 12
+                    Text {
+                        text: qsTr("Steam Client Language")
+                        color: Theme.textPrimary
+                        font.family: Theme.fontFamily
+                        font.pixelSize: 12
+                        font.bold: true
+                    }
+                    Text {
+                        text: qsTr("Select the language you want Steam to use (requires restart)")
+                        color: Theme.textSecondary
+                        font.family: Theme.fontFamily
+                        font.pixelSize: 10
+                        width: parent.width
+                        wrapMode: Text.WordWrap
+                    }
+                }
+                Rectangle {
+                    id: langDropdown
+                    width: 180
+                    height: 32
+                    radius: 6
+                    color: "#05FFFFFF"
+                    border.color: Theme.border
+                    border.width: 1
+                    anchors.right: parent.right
+                    anchors.verticalCenter: parent.verticalCenter
+
+                    property string currentVal: optimizerBackend.steamFriendsSettings ? optimizerBackend.steamFriendsSettings["sSteamLanguage"] || "english" : "english"
+
+                    readonly property var options: [
+                        { id: "english", label: "English" },
+                        { id: "russian", label: "Русский" },
+                        { id: "ukrainian", label: "Українська" },
+                        { id: "german", label: "Deutsch" },
+                        { id: "french", label: "Français" },
+                        { id: "spanish", label: "Español" },
+                        { id: "latam", label: "Español-Latinoamérica" },
+                        { id: "brazilian", label: "Português-Brasil" },
+                        { id: "portuguese", label: "Português" },
+                        { id: "italian", label: "Italiano" },
+                        { id: "japanese", label: "日本語" },
+                        { id: "koreana", label: "한국어" },
+                        { id: "schinese", label: "简体中文" },
+                        { id: "tchinese", label: "繁體中文" },
+                        { id: "thai", label: "ไทย" },
+                        { id: "polish", label: "Polski" },
+                        { id: "czech", label: "Čeština" },
+                        { id: "dutch", label: "Nederlands" },
+                        { id: "danish", label: "Dansk" },
+                        { id: "finnish", label: "Suomi" },
+                        { id: "hungarian", label: "Magyar" },
+                        { id: "norwegian", label: "Norsk" },
+                        { id: "swedish", label: "Svenska" },
+                        { id: "romanian", label: "Română" },
+                        { id: "turkish", label: "Türkçe" },
+                        { id: "greek", label: "Ελληνικά" },
+                        { id: "bulgarian", label: "Български" },
+                        { id: "vietnamese", label: "Tiếng Việt" },
+                        { id: "indonesian", label: "Bahasa Indonesia" }
+                    ]
+
+                    function getLabelForVal(v) {
+                        for (var i = 0; i < options.length; i++) {
+                            if (options[i].id === v) return options[i].label;
+                        }
+                        return v || "English";
+                    }
+
+                    Text {
+                        anchors.left: parent.left
+                        anchors.leftMargin: 12
+                        anchors.verticalCenter: parent.verticalCenter
+                        text: langDropdown.getLabelForVal(langDropdown.currentVal)
+                        color: Theme.textPrimary
+                        font.family: Theme.fontFamily
+                        font.pixelSize: 11
+                    }
+                    Text {
+                        anchors.right: parent.right
+                        anchors.rightMargin: 12
+                        anchors.verticalCenter: parent.verticalCenter
+                        text: "\u2304"
+                        color: Theme.textSecondary
+                        font.family: Theme.fontFamily
+                        font.pixelSize: 12
+                        font.bold: true
+                    }
+                    MouseArea {
+                        anchors.fill: parent
+                        hoverEnabled: true
+                        cursorShape: Qt.PointingHandCursor
+                        onClicked: langMenu.open()
+                        onEntered: langDropdown.border.color = Theme.accent
+                        onExited: langDropdown.border.color = Theme.border
+                    }
+                    Menu {
+                        id: langMenu
+                        y: langDropdown.height + 4
+                        width: langDropdown.width
+                        background: Rectangle {
+                            color: Theme.sidebarBg
+                            border.color: Theme.border
+                            border.width: 1
+                            radius: 6
+                        }
+                        Instantiator {
+                            model: langDropdown.options
+                            onObjectAdded: (index, object) => langMenu.insertItem(index, object)
+                            onObjectRemoved: (index, object) => langMenu.removeItem(object)
+                            delegate: MenuItem {
+                                text: modelData.label
+                                width: langMenu.width
+                                height: 32
+                                contentItem: Text {
+                                    text: parent.text
+                                    font.family: Theme.fontFamily
+                                    font.pixelSize: 11
+                                    color: parent.highlighted ? Theme.accent : Theme.textPrimary
+                                    verticalAlignment: Text.AlignVCenter
+                                    leftPadding: 12
+                                }
+                                background: Rectangle {
+                                    color: parent.highlighted ? Qt.rgba(Theme.accent.r, Theme.accent.g, Theme.accent.b, 0.1) : "transparent"
+                                }
+                                onTriggered: {
+                                    root.toggleSteamFriendsSetting("sSteamLanguage", modelData.id);
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+
+            // Toggle: 24-hour clock
+            Rectangle {
+                width: parent.width
+                height: Math.max(50, steamToggleCol_24h.implicitHeight + 12)
+                color: "transparent"
+                Column {
+                    id: steamToggleCol_24h
+                    anchors.verticalCenter: parent.verticalCenter
+                    spacing: 2
+                    anchors.left: parent.left
+                    anchors.right: steamToggleSwitch_24h.left
+                    anchors.rightMargin: 12
+                    Text {
+                        text: qsTr("24-hour clock")
+                        color: Theme.textPrimary
+                        font.family: Theme.fontFamily
+                        font.pixelSize: 12
+                        font.bold: true
+                    }
+                    Text {
+                        text: qsTr("Always display timestamps in 24-hour format")
+                        color: Theme.textSecondary
+                        font.family: Theme.fontFamily
+                        font.pixelSize: 10
+                        width: parent.width
+                        wrapMode: Text.WordWrap
+                    }
+                }
+                MeguSwitch {
+                    id: steamToggleSwitch_24h
+                    anchors.right: parent.right
+                    steamStyle: true
+                    checked: optimizerBackend.steamFriendsSettings ? !!optimizerBackend.steamFriendsSettings["b24HourClock"] : false
+                    anchors.verticalCenter: parent.verticalCenter
+                    onToggled: (isChecked) => { root.toggleSteamFriendsSetting("b24HourClock", isChecked); }
+                }
+            }
+
+            // Dropdown: Client Beta Participation
+            Rectangle {
+                width: parent.width
+                height: 50
+                color: "transparent"
+                Column {
+                    id: betaCol
+                    anchors.verticalCenter: parent.verticalCenter
+                    spacing: 2
+                    anchors.left: parent.left
+                    anchors.right: betaDropdown.left
+                    anchors.rightMargin: 12
+                    Text {
+                        text: qsTr("Client Beta Participation")
+                        color: Theme.textPrimary
+                        font.family: Theme.fontFamily
+                        font.pixelSize: 12
+                        font.bold: true
+                    }
+                    Text {
+                        text: qsTr("You can choose to participate in testing the latest Steam Client before it's widely released")
+                        color: Theme.textSecondary
+                        font.family: Theme.fontFamily
+                        font.pixelSize: 10
+                        width: parent.width
+                        wrapMode: Text.WordWrap
+                    }
+                }
+                Rectangle {
+                    id: betaDropdown
+                    width: 180
+                    height: 32
+                    radius: 6
+                    color: "#05FFFFFF"
+                    border.color: Theme.border
+                    border.width: 1
+                    anchors.right: parent.right
+                    anchors.verticalCenter: parent.verticalCenter
+
+                    property string currentVal: optimizerBackend.steamFriendsSettings ? optimizerBackend.steamFriendsSettings["sSteamBetaName"] || "none" : "none"
+
+                    readonly property var options: [
+                        { id: "none", label: qsTr("No beta chosen") },
+                        { id: "publicbeta", label: qsTr("Steam Beta Update") }
+                    ]
+
+                    function getLabelForVal(v) {
+                        for (var i = 0; i < options.length; i++) {
+                            if (options[i].id === v) return options[i].label;
+                        }
+                        return qsTr("No beta chosen");
+                    }
+
+                    Text {
+                        anchors.left: parent.left
+                        anchors.leftMargin: 12
+                        anchors.verticalCenter: parent.verticalCenter
+                        text: betaDropdown.getLabelForVal(betaDropdown.currentVal)
+                        color: Theme.textPrimary
+                        font.family: Theme.fontFamily
+                        font.pixelSize: 11
+                    }
+                    Text {
+                        anchors.right: parent.right
+                        anchors.rightMargin: 12
+                        anchors.verticalCenter: parent.verticalCenter
+                        text: "\u2304"
+                        color: Theme.textSecondary
+                        font.family: Theme.fontFamily
+                        font.pixelSize: 12
+                        font.bold: true
+                    }
+                    MouseArea {
+                        anchors.fill: parent
+                        hoverEnabled: true
+                        cursorShape: Qt.PointingHandCursor
+                        onClicked: betaMenu.open()
+                        onEntered: betaDropdown.border.color = Theme.accent
+                        onExited: betaDropdown.border.color = Theme.border
+                    }
+                    Menu {
+                        id: betaMenu
+                        y: betaDropdown.height + 4
+                        width: betaDropdown.width
+                        background: Rectangle {
+                            color: Theme.sidebarBg
+                            border.color: Theme.border
+                            border.width: 1
+                            radius: 6
+                        }
+                        Instantiator {
+                            model: betaDropdown.options
+                            onObjectAdded: (index, object) => betaMenu.insertItem(index, object)
+                            onObjectRemoved: (index, object) => betaMenu.removeItem(object)
+                            delegate: MenuItem {
+                                text: modelData.label
+                                width: betaMenu.width
+                                height: 32
+                                contentItem: Text {
+                                    text: parent.text
+                                    font.family: Theme.fontFamily
+                                    font.pixelSize: 11
+                                    color: parent.highlighted ? Theme.accent : Theme.textPrimary
+                                    verticalAlignment: Text.AlignVCenter
+                                    leftPadding: 12
+                                }
+                                background: Rectangle {
+                                    color: parent.highlighted ? Qt.rgba(Theme.accent.r, Theme.accent.g, Theme.accent.b, 0.1) : "transparent"
+                                }
+                                onTriggered: {
+                                    root.toggleSteamFriendsSetting("sSteamBetaName", modelData.id);
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+
+            // Dropdown: Start Up Location
+            Rectangle {
+                width: parent.width
+                height: 50
+                color: "transparent"
+                Column {
+                    id: startupCol
+                    anchors.verticalCenter: parent.verticalCenter
+                    spacing: 2
+                    anchors.left: parent.left
+                    anchors.right: startupDropdown.left
+                    anchors.rightMargin: 12
+                    Text {
+                        text: qsTr("Start Up Location")
+                        color: Theme.textPrimary
+                        font.family: Theme.fontFamily
+                        font.pixelSize: 12
+                        font.bold: true
+                    }
+                    Text {
+                        text: qsTr("Select your default Steam window")
+                        color: Theme.textSecondary
+                        font.family: Theme.fontFamily
+                        font.pixelSize: 10
+                        width: parent.width
+                        wrapMode: Text.WordWrap
+                    }
+                }
+                Rectangle {
+                    id: startupDropdown
+                    width: 180
+                    height: 32
+                    radius: 6
+                    color: "#05FFFFFF"
+                    border.color: Theme.border
+                    border.width: 1
+                    anchors.right: parent.right
+                    anchors.verticalCenter: parent.verticalCenter
+
+                    property int currentVal: optimizerBackend.steamFriendsSettings ? optimizerBackend.steamFriendsSettings["nStartupPage"] || 1 : 1
+
+                    readonly property var options: [
+                        { id: 1, label: qsTr("Store") },
+                        { id: 2, label: qsTr("Library") },
+                        { id: 3, label: qsTr("News") },
+                        { id: 4, label: qsTr("Friend Activity") },
+                        { id: 5, label: qsTr("Community Home") }
+                    ]
+
+                    function getLabelForVal(v) {
+                        for (var i = 0; i < options.length; i++) {
+                            if (options[i].id === v) return options[i].label;
+                        }
+                        return qsTr("Store");
+                    }
+
+                    Text {
+                        anchors.left: parent.left
+                        anchors.leftMargin: 12
+                        anchors.verticalCenter: parent.verticalCenter
+                        text: startupDropdown.getLabelForVal(startupDropdown.currentVal)
+                        color: Theme.textPrimary
+                        font.family: Theme.fontFamily
+                        font.pixelSize: 11
+                    }
+                    Text {
+                        anchors.right: parent.right
+                        anchors.rightMargin: 12
+                        anchors.verticalCenter: parent.verticalCenter
+                        text: "\u2304"
+                        color: Theme.textSecondary
+                        font.family: Theme.fontFamily
+                        font.pixelSize: 12
+                        font.bold: true
+                    }
+                    MouseArea {
+                        anchors.fill: parent
+                        hoverEnabled: true
+                        cursorShape: Qt.PointingHandCursor
+                        onClicked: startupMenu.open()
+                        onEntered: startupDropdown.border.color = Theme.accent
+                        onExited: startupDropdown.border.color = Theme.border
+                    }
+                    Menu {
+                        id: startupMenu
+                        y: startupDropdown.height + 4
+                        width: startupDropdown.width
+                        background: Rectangle {
+                            color: Theme.sidebarBg
+                            border.color: Theme.border
+                            border.width: 1
+                            radius: 6
+                        }
+                        Instantiator {
+                            model: startupDropdown.options
+                            onObjectAdded: (index, object) => startupMenu.insertItem(index, object)
+                            onObjectRemoved: (index, object) => startupMenu.removeItem(object)
+                            delegate: MenuItem {
+                                text: modelData.label
+                                width: startupMenu.width
+                                height: 32
+                                contentItem: Text {
+                                    text: parent.text
+                                    font.family: Theme.fontFamily
+                                    font.pixelSize: 11
+                                    color: parent.highlighted ? Theme.accent : Theme.textPrimary
+                                    verticalAlignment: Text.AlignVCenter
+                                    leftPadding: 12
+                                }
+                                background: Rectangle {
+                                    color: parent.highlighted ? Qt.rgba(Theme.accent.r, Theme.accent.g, Theme.accent.b, 0.1) : "transparent"
+                                }
+                                onTriggered: {
+                                    root.toggleSteamFriendsSetting("nStartupPage", modelData.id);
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+
+            // Toggle: Start Steam in Big Picture Mode
+            Rectangle {
+                width: parent.width
+                height: Math.max(50, steamToggleCol_bpm.implicitHeight + 12)
+                color: "transparent"
+                Column {
+                    id: steamToggleCol_bpm
+                    anchors.verticalCenter: parent.verticalCenter
+                    spacing: 2
+                    anchors.left: parent.left
+                    anchors.right: steamToggleSwitch_bpm.left
+                    anchors.rightMargin: 12
+                    Text {
+                        text: qsTr("Start Steam in Big Picture Mode")
+                        color: Theme.textPrimary
+                        font.family: Theme.fontFamily
+                        font.pixelSize: 12
+                        font.bold: true
+                    }
+                }
+                MeguSwitch {
+                    id: steamToggleSwitch_bpm
+                    anchors.right: parent.right
+                    steamStyle: true
+                    checked: optimizerBackend.steamFriendsSettings ? !!optimizerBackend.steamFriendsSettings["bStartInBigPicture"] : false
+                    anchors.verticalCenter: parent.verticalCenter
+                    onToggled: (isChecked) => { root.toggleSteamFriendsSetting("bStartInBigPicture", isChecked); }
+                }
+            }
+
+            // Toggle: Ask which account to use each time Steam starts
+            Rectangle {
+                width: parent.width
+                height: Math.max(50, steamToggleCol_askAcc.implicitHeight + 12)
+                color: "transparent"
+                Column {
+                    id: steamToggleCol_askAcc
+                    anchors.verticalCenter: parent.verticalCenter
+                    spacing: 2
+                    anchors.left: parent.left
+                    anchors.right: steamToggleSwitch_askAcc.left
+                    anchors.rightMargin: 12
+                    Text {
+                        text: qsTr("Ask which account to use each time Steam starts")
+                        color: Theme.textPrimary
+                        font.family: Theme.fontFamily
+                        font.pixelSize: 12
+                        font.bold: true
+                    }
+                }
+                MeguSwitch {
+                    id: steamToggleSwitch_askAcc
+                    anchors.right: parent.right
+                    steamStyle: true
+                    checked: optimizerBackend.steamFriendsSettings ? !!optimizerBackend.steamFriendsSettings["bAskAccountOnStart"] : false
+                    anchors.verticalCenter: parent.verticalCenter
+                    onToggled: (isChecked) => { root.toggleSteamFriendsSetting("bAskAccountOnStart", isChecked); }
+                }
+            }
+
+            // Button: Taskbar Preferences
+            Rectangle {
+                width: parent.width
+                height: 50
+                color: "transparent"
+                Column {
+                    id: taskbarCol
+                    anchors.verticalCenter: parent.verticalCenter
+                    spacing: 2
+                    anchors.left: parent.left
+                    anchors.right: taskbarBtn.left
+                    anchors.rightMargin: 12
+                    Text {
+                        text: qsTr("Taskbar Preferences")
+                        color: Theme.textPrimary
+                        font.family: Theme.fontFamily
+                        font.pixelSize: 12
+                        font.bold: true
+                    }
+                    Text {
+                        text: qsTr("Customize the shortcuts and status options displayed in the Windows taskbar right-click menu.")
+                        color: Theme.textSecondary
+                        font.family: Theme.fontFamily
+                        font.pixelSize: 10
+                        width: parent.width
+                        wrapMode: Text.WordWrap
+                    }
+                }
+                MeguButton {
+                    id: taskbarBtn
+                    text: qsTr("Customize")
+                    width: 100
+                    anchors.right: parent.right
+                    anchors.verticalCenter: parent.verticalCenter
+                    onClicked: steamSettingsDrawer.subPage = "interfaceTaskbar"
+                }
+            }
+
+            // Section: Optimization
+            Text {
+                text: qsTr("Optimization")
+                color: Theme.accent
+                font.family: Theme.fontFamily
+                font.pixelSize: 11
+                font.bold: true
+                font.letterSpacing: 1.0
+            }
+
             // Toggle 1: Scale text and icons
             Rectangle {
                 width: parent.width
@@ -2541,6 +3073,402 @@ Item {
                         anchors.verticalCenter: parent.verticalCenter
                         onToggled: (isChecked) => { root.toggleSteamFriendsSetting("bNotifyGameAdditions", isChecked); }
                     }
+            }
+        }
+    }
+
+    // PAGE: Interface Taskbar Sub-Page
+    Column {
+        id: steamInterfaceTaskbarPage
+        width: parent.width
+        spacing: 20
+        visible: steamSettingsDrawer.subPage === "interfaceTaskbar"
+
+        Row {
+            spacing: 10
+            width: parent.width
+
+            MeguButton {
+                text: qsTr("Back")
+                iconRotation: 180
+                iconSource: "qrc:/MeguPackOptimizer/src/resources/arrow.svg"
+                width: 80
+                onClicked: steamSettingsDrawer.subPage = "interface"
+            }
+
+            Text {
+                text: qsTr("TASKBAR PREFERENCES")
+                color: Theme.textPrimary
+                font.family: Theme.fontFamily
+                font.pixelSize: 13
+                font.bold: true
+                font.letterSpacing: 1.5
+                anchors.verticalCenter: parent.verticalCenter
+            }
+        }
+
+        Rectangle {
+            width: parent.width
+            height: 1
+            color: Theme.border
+        }
+
+        Column {
+            width: parent.width
+            spacing: 16
+
+            Text {
+                text: qsTr("Task bar - Select destinations to display")
+                color: Theme.accent
+                font.family: Theme.fontFamily
+                font.pixelSize: 12
+                font.bold: true
+            }
+
+            // Destinations toggles
+            // 1. Store
+            Rectangle {
+                width: parent.width
+                height: 35
+                color: "transparent"
+                Text {
+                    text: qsTr("Store")
+                    color: Theme.textPrimary
+                    font.family: Theme.fontFamily
+                    font.pixelSize: 12
+                    font.bold: true
+                    anchors.verticalCenter: parent.verticalCenter
+                }
+                MeguSwitch {
+                    anchors.right: parent.right
+                    steamStyle: true
+                    checked: optimizerBackend.steamFriendsSettings ? !!optimizerBackend.steamFriendsSettings["bTaskbarDest_Store"] : true
+                    anchors.verticalCenter: parent.verticalCenter
+                    onToggled: (isChecked) => { root.toggleSteamFriendsSetting("bTaskbarDest_Store", isChecked); }
+                }
+            }
+
+            // 2. Library
+            Rectangle {
+                width: parent.width
+                height: 35
+                color: "transparent"
+                Text {
+                    text: qsTr("Library")
+                    color: Theme.textPrimary
+                    font.family: Theme.fontFamily
+                    font.pixelSize: 12
+                    font.bold: true
+                    anchors.verticalCenter: parent.verticalCenter
+                }
+                MeguSwitch {
+                    anchors.right: parent.right
+                    steamStyle: true
+                    checked: optimizerBackend.steamFriendsSettings ? !!optimizerBackend.steamFriendsSettings["bTaskbarDest_Library"] : true
+                    anchors.verticalCenter: parent.verticalCenter
+                    onToggled: (isChecked) => { root.toggleSteamFriendsSetting("bTaskbarDest_Library", isChecked); }
+                }
+            }
+
+            // 3. Community
+            Rectangle {
+                width: parent.width
+                height: 35
+                color: "transparent"
+                Text {
+                    text: qsTr("Community")
+                    color: Theme.textPrimary
+                    font.family: Theme.fontFamily
+                    font.pixelSize: 12
+                    font.bold: true
+                    anchors.verticalCenter: parent.verticalCenter
+                }
+                MeguSwitch {
+                    anchors.right: parent.right
+                    steamStyle: true
+                    checked: optimizerBackend.steamFriendsSettings ? !!optimizerBackend.steamFriendsSettings["bTaskbarDest_Community"] : true
+                    anchors.verticalCenter: parent.verticalCenter
+                    onToggled: (isChecked) => { root.toggleSteamFriendsSetting("bTaskbarDest_Community", isChecked); }
+                }
+            }
+
+            // 4. Friends
+            Rectangle {
+                width: parent.width
+                height: 35
+                color: "transparent"
+                Text {
+                    text: qsTr("Friends")
+                    color: Theme.textPrimary
+                    font.family: Theme.fontFamily
+                    font.pixelSize: 12
+                    font.bold: true
+                    anchors.verticalCenter: parent.verticalCenter
+                }
+                MeguSwitch {
+                    anchors.right: parent.right
+                    steamStyle: true
+                    checked: optimizerBackend.steamFriendsSettings ? !!optimizerBackend.steamFriendsSettings["bTaskbarDest_Friends"] : true
+                    anchors.verticalCenter: parent.verticalCenter
+                    onToggled: (isChecked) => { root.toggleSteamFriendsSetting("bTaskbarDest_Friends", isChecked); }
+                }
+            }
+
+            // 5. Friend Activity
+            Rectangle {
+                width: parent.width
+                height: 35
+                color: "transparent"
+                Text {
+                    text: qsTr("Friend Activity")
+                    color: Theme.textPrimary
+                    font.family: Theme.fontFamily
+                    font.pixelSize: 12
+                    font.bold: true
+                    anchors.verticalCenter: parent.verticalCenter
+                }
+                MeguSwitch {
+                    anchors.right: parent.right
+                    steamStyle: true
+                    checked: optimizerBackend.steamFriendsSettings ? !!optimizerBackend.steamFriendsSettings["bTaskbarDest_FriendActivity"] : false
+                    anchors.verticalCenter: parent.verticalCenter
+                    onToggled: (isChecked) => { root.toggleSteamFriendsSetting("bTaskbarDest_FriendActivity", isChecked); }
+                }
+            }
+
+            // 6. Screenshots
+            Rectangle {
+                width: parent.width
+                height: 35
+                color: "transparent"
+                Text {
+                    text: qsTr("Screenshots")
+                    color: Theme.textPrimary
+                    font.family: Theme.fontFamily
+                    font.pixelSize: 12
+                    font.bold: true
+                    anchors.verticalCenter: parent.verticalCenter
+                }
+                MeguSwitch {
+                    anchors.right: parent.right
+                    steamStyle: true
+                    checked: optimizerBackend.steamFriendsSettings ? !!optimizerBackend.steamFriendsSettings["bTaskbarDest_Screenshots"] : false
+                    anchors.verticalCenter: parent.verticalCenter
+                    onToggled: (isChecked) => { root.toggleSteamFriendsSetting("bTaskbarDest_Screenshots", isChecked); }
+                }
+            }
+
+            // 7. Servers
+            Rectangle {
+                width: parent.width
+                height: 35
+                color: "transparent"
+                Text {
+                    text: qsTr("Servers")
+                    color: Theme.textPrimary
+                    font.family: Theme.fontFamily
+                    font.pixelSize: 12
+                    font.bold: true
+                    anchors.verticalCenter: parent.verticalCenter
+                }
+                MeguSwitch {
+                    anchors.right: parent.right
+                    steamStyle: true
+                    checked: optimizerBackend.steamFriendsSettings ? !!optimizerBackend.steamFriendsSettings["bTaskbarDest_Servers"] : false
+                    anchors.verticalCenter: parent.verticalCenter
+                    onToggled: (isChecked) => { root.toggleSteamFriendsSetting("bTaskbarDest_Servers", isChecked); }
+                }
+            }
+
+            // 8. Settings
+            Rectangle {
+                width: parent.width
+                height: 35
+                color: "transparent"
+                Text {
+                    text: qsTr("Settings")
+                    color: Theme.textPrimary
+                    font.family: Theme.fontFamily
+                    font.pixelSize: 12
+                    font.bold: true
+                    anchors.verticalCenter: parent.verticalCenter
+                }
+                MeguSwitch {
+                    anchors.right: parent.right
+                    steamStyle: true
+                    checked: optimizerBackend.steamFriendsSettings ? !!optimizerBackend.steamFriendsSettings["bTaskbarDest_Settings"] : true
+                    anchors.verticalCenter: parent.verticalCenter
+                    onToggled: (isChecked) => { root.toggleSteamFriendsSetting("bTaskbarDest_Settings", isChecked); }
+                }
+            }
+
+            // 9. Big Picture
+            Rectangle {
+                width: parent.width
+                height: 35
+                color: "transparent"
+                Text {
+                    text: qsTr("Big Picture")
+                    color: Theme.textPrimary
+                    font.family: Theme.fontFamily
+                    font.pixelSize: 12
+                    font.bold: true
+                    anchors.verticalCenter: parent.verticalCenter
+                }
+                MeguSwitch {
+                    anchors.right: parent.right
+                    steamStyle: true
+                    checked: optimizerBackend.steamFriendsSettings ? !!optimizerBackend.steamFriendsSettings["bTaskbarDest_BigPicture"] : true
+                    anchors.verticalCenter: parent.verticalCenter
+                    onToggled: (isChecked) => { root.toggleSteamFriendsSetting("bTaskbarDest_BigPicture", isChecked); }
+                }
+            }
+
+            // 10. SteamVR
+            Rectangle {
+                width: parent.width
+                height: 35
+                color: "transparent"
+                Text {
+                    text: qsTr("SteamVR")
+                    color: Theme.textPrimary
+                    font.family: Theme.fontFamily
+                    font.pixelSize: 12
+                    font.bold: true
+                    anchors.verticalCenter: parent.verticalCenter
+                }
+                MeguSwitch {
+                    anchors.right: parent.right
+                    steamStyle: true
+                    checked: optimizerBackend.steamFriendsSettings ? !!optimizerBackend.steamFriendsSettings["bTaskbarDest_SteamVR"] : true
+                    anchors.verticalCenter: parent.verticalCenter
+                    onToggled: (isChecked) => { root.toggleSteamFriendsSetting("bTaskbarDest_SteamVR", isChecked); }
+                }
+            }
+
+            // 11. Exit Steam
+            Rectangle {
+                width: parent.width
+                height: 35
+                color: "transparent"
+                Text {
+                    text: qsTr("Exit Steam")
+                    color: Theme.textPrimary
+                    font.family: Theme.fontFamily
+                    font.pixelSize: 12
+                    font.bold: true
+                    anchors.verticalCenter: parent.verticalCenter
+                }
+                MeguSwitch {
+                    anchors.right: parent.right
+                    steamStyle: true
+                    checked: optimizerBackend.steamFriendsSettings ? !!optimizerBackend.steamFriendsSettings["bTaskbarDest_ExitSteam"] : true
+                    anchors.verticalCenter: parent.verticalCenter
+                    onToggled: (isChecked) => { root.toggleSteamFriendsSetting("bTaskbarDest_ExitSteam", isChecked); }
+                }
+            }
+
+            Rectangle {
+                width: parent.width
+                height: 1
+                color: Theme.border
+            }
+
+            Text {
+                text: qsTr("Task bar - Select player status options to display")
+                color: Theme.accent
+                font.family: Theme.fontFamily
+                font.pixelSize: 12
+                font.bold: true
+            }
+
+            // Player status toggles
+            // 1. Online
+            Rectangle {
+                width: parent.width
+                height: 35
+                color: "transparent"
+                Text {
+                    text: qsTr("Online")
+                    color: Theme.textPrimary
+                    font.family: Theme.fontFamily
+                    font.pixelSize: 12
+                    font.bold: true
+                    anchors.verticalCenter: parent.verticalCenter
+                }
+                MeguSwitch {
+                    anchors.right: parent.right
+                    steamStyle: true
+                    checked: optimizerBackend.steamFriendsSettings ? !!optimizerBackend.steamFriendsSettings["bTaskbarStatus_Online"] : false
+                    anchors.verticalCenter: parent.verticalCenter
+                    onToggled: (isChecked) => { root.toggleSteamFriendsSetting("bTaskbarStatus_Online", isChecked); }
+                }
+            }
+
+            // 2. Away
+            Rectangle {
+                width: parent.width
+                height: 35
+                color: "transparent"
+                Text {
+                    text: qsTr("Away")
+                    color: Theme.textPrimary
+                    font.family: Theme.fontFamily
+                    font.pixelSize: 12
+                    font.bold: true
+                    anchors.verticalCenter: parent.verticalCenter
+                }
+                MeguSwitch {
+                    anchors.right: parent.right
+                    steamStyle: true
+                    checked: optimizerBackend.steamFriendsSettings ? !!optimizerBackend.steamFriendsSettings["bTaskbarStatus_Away"] : false
+                    anchors.verticalCenter: parent.verticalCenter
+                    onToggled: (isChecked) => { root.toggleSteamFriendsSetting("bTaskbarStatus_Away", isChecked); }
+                }
+            }
+
+            // 3. Invisible
+            Rectangle {
+                width: parent.width
+                height: 35
+                color: "transparent"
+                Text {
+                    text: qsTr("Invisible")
+                    color: Theme.textPrimary
+                    font.family: Theme.fontFamily
+                    font.pixelSize: 12
+                    font.bold: true
+                    anchors.verticalCenter: parent.verticalCenter
+                }
+                MeguSwitch {
+                    anchors.right: parent.right
+                    steamStyle: true
+                    checked: optimizerBackend.steamFriendsSettings ? !!optimizerBackend.steamFriendsSettings["bTaskbarStatus_Invisible"] : false
+                    anchors.verticalCenter: parent.verticalCenter
+                    onToggled: (isChecked) => { root.toggleSteamFriendsSetting("bTaskbarStatus_Invisible", isChecked); }
+                }
+            }
+
+            // 4. Offline
+            Rectangle {
+                width: parent.width
+                height: 35
+                color: "transparent"
+                Text {
+                    text: qsTr("Offline")
+                    color: Theme.textPrimary
+                    font.family: Theme.fontFamily
+                    font.pixelSize: 12
+                    font.bold: true
+                    anchors.verticalCenter: parent.verticalCenter
+                }
+                MeguSwitch {
+                    anchors.right: parent.right
+                    steamStyle: true
+                    checked: optimizerBackend.steamFriendsSettings ? !!optimizerBackend.steamFriendsSettings["bTaskbarStatus_Offline"] : false
+                    anchors.verticalCenter: parent.verticalCenter
+                    onToggled: (isChecked) => { root.toggleSteamFriendsSetting("bTaskbarStatus_Offline", isChecked); }
+                }
             }
         }
     }
@@ -8474,6 +9402,8 @@ Item {
         spacing: 20
         visible: steamSettingsDrawer.subPage === "library"
 
+        property int currentDisplaySize: (optimizerBackend.steamFriendsSettings && typeof optimizerBackend.steamFriendsSettings["library_display_size"] !== "undefined") ? optimizerBackend.steamFriendsSettings["library_display_size"] : 0
+
         Row {
             spacing: 10
             width: parent.width
@@ -8507,6 +9437,64 @@ Item {
         Column {
             width: parent.width
             spacing: 16
+
+            // Display size for Library user interface elements
+            Column {
+                width: parent.width
+                spacing: 8
+
+                Text {
+                    text: qsTr("Display size for Library user interface elements")
+                    color: Theme.textPrimary
+                    font.family: Theme.fontFamily
+                    font.pixelSize: 12
+                    font.bold: true
+                }
+
+                Row {
+                    width: parent.width
+                    spacing: 8
+
+                    Repeater {
+                        model: [
+                            { id: 0, label: qsTr("Automatic") },
+                            { id: 1, label: qsTr("Small") },
+                            { id: 2, label: qsTr("Medium") },
+                            { id: 3, label: qsTr("Large") }
+                        ]
+                        delegate: Rectangle {
+                            height: 32
+                            width: (parent.width - 24) / 4
+                            radius: 6
+                            color: (steamLibraryPage.currentDisplaySize === modelData.id) ? Theme.accentDim : (sizeBtnMouse.containsMouse ? "#0DFFFFFF" : "#05FFFFFF")
+                            border.color: (steamLibraryPage.currentDisplaySize === modelData.id) ? Theme.accent : Theme.border
+                            border.width: 1
+
+                            Behavior on color { ColorAnimation { duration: Theme.animFast } }
+                            Behavior on border.color { ColorAnimation { duration: Theme.animFast } }
+
+                            Text {
+                                text: modelData.label
+                                color: (steamLibraryPage.currentDisplaySize === modelData.id) ? Theme.accent : Theme.textSecondary
+                                font.family: Theme.fontFamily
+                                font.pixelSize: 10
+                                font.bold: true
+                                anchors.centerIn: parent
+                            }
+
+                            MouseArea {
+                                id: sizeBtnMouse
+                                anchors.fill: parent
+                                hoverEnabled: true
+                                cursorShape: Qt.PointingHandCursor
+                                onClicked: {
+                                    root.toggleSteamFriendsSetting("library_display_size", modelData.id);
+                                }
+                            }
+                        }
+                    }
+                }
+            }
 
             // Toggle 1: Low Bandwidth Mode
             Rectangle {
