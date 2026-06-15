@@ -720,6 +720,56 @@ namespace {
         return true;
     }
 
+    bool removeValueFromBlockBody(QString &content, int start, int &end, const QString &key) {
+        QRegularExpression kvRegex(QString("\"%1\"\\s*\"((?:[^\"\\\\]|\\\\.)*)\"").arg(QRegularExpression::escape(key)));
+        int currentPos = start;
+        while (currentPos < end) {
+            QRegularExpressionMatch match = kvRegex.match(content, currentPos);
+            if (match.hasMatch()) {
+                int matchStart = match.capturedStart();
+                if (matchStart < end) {
+                    int braceLevel = 0;
+                    bool inQuotes = false;
+                    for (int i = start; i < matchStart; ++i) {
+                        QChar c = content.at(i);
+                        if (c == '"' && (i == 0 || content.at(i - 1) != '\\')) {
+                            inQuotes = !inQuotes;
+                        }
+                        if (!inQuotes) {
+                            if (c == '{') {
+                                braceLevel++;
+                            } else if (c == '}') {
+                                braceLevel--;
+                            }
+                        }
+                    }
+
+                    if (braceLevel == 0) {
+                        int matchEnd = match.capturedEnd();
+                        int lineStart = matchStart;
+                        while (lineStart > start && (content.at(lineStart - 1) == ' ' || content.at(lineStart - 1) == '\t')) {
+                            lineStart--;
+                        }
+                        if (lineStart > start && content.at(lineStart - 1) == '\n') {
+                            lineStart--;
+                        }
+                        if (lineStart > start && content.at(lineStart - 1) == '\r') {
+                            lineStart--;
+                        }
+                        int len = matchEnd - lineStart;
+                        content.remove(lineStart, len);
+                        end -= len;
+                        return true;
+                    }
+                }
+                currentPos = match.capturedEnd();
+            } else {
+                break;
+            }
+        }
+        return false;
+    }
+
     bool ensurePathExists(QString &content, const QStringList &path, int &outStart, int &outEnd) {
         int start = 0;
         int end = content.length();
@@ -1119,7 +1169,7 @@ namespace {
         }
 
         if (blockName == "Steam") {
-            QStringList deepKeys = {"AutoUpdateWindowEnabled", "AutoUpdateWindowStart", "AutoUpdateWindowEnd", "DownloadThrottleKbps", "AllowDownloadsDuringGameplay", "StreamingThrottleEnabled", "CellIDServerOverride", "GlobalDefaultAppUpdateBehavior", "CurrentCellID", "TimeCellIDSet", "SteamDefaultDialog"};
+            QStringList deepKeys = {"AutoUpdateWindowEnabled", "AutoUpdateWindowStart", "AutoUpdateWindowEnd", "DownloadThrottleKbps", "AllowDownloadsDuringGameplay", "StreamingThrottleEnabled", "CellIDServerOverride", "GlobalDefaultAppUpdateBehavior", "CurrentCellID", "TimeCellIDSet", "SteamDefaultDialog", "MaxServerBrowserPingsPerMin"};
             QStringList flatKeys = {"ShaderCacheEnabled", "LocalNetworkGameTransfers", "Display download rates in bits per second"};
             QStringList roots = {"UserLocalConfigStore", "InstallConfigStore", "UserRoamingConfigStore"};
 
@@ -1205,6 +1255,14 @@ namespace {
             QStringList roots = {"UserLocalConfigStore", "InstallConfigStore", "UserRoamingConfigStore"};
 
             if (deepKeys.contains(settingKey)) {
+                // 1. Always clean up flat keys from the root/Steam block first to avoid index shifting later
+                for (const QString &root : roots) {
+                    int flatStart, flatEnd;
+                    if (getPathBodyRange(content, {root, "Steam"}, flatStart, flatEnd)) {
+                        removeValueFromBlockBody(content, flatStart, flatEnd, settingKey);
+                    }
+                }
+                // 2. Now search for the key inside the Software/Valve/Steam deep block
                 for (const QString &root : roots) {
                     if (getPathBodyRange(content, {root, "Software", "Valve", "Steam"}, start, end)) {
                         if (content.mid(start, end - start).contains(QString("\"%1\"").arg(settingKey))) {
@@ -1213,16 +1271,7 @@ namespace {
                         }
                     }
                 }
-                if (!found) {
-                    for (const QString &root : roots) {
-                        if (getPathBodyRange(content, {root, "Steam"}, start, end)) {
-                            if (content.mid(start, end - start).contains(QString("\"%1\"").arg(settingKey))) {
-                                found = true;
-                                break;
-                            }
-                        }
-                    }
-                }
+                // 3. If not found deep, ensure Software/Valve/Steam block exists and get range
                 if (!found) {
                     for (const QString &root : roots) {
                         if (content.contains(QString("\"%1\"").arg(root))) {
@@ -2173,7 +2222,7 @@ bool Optimizer::getVdfFriendsSettings(const QString &filePath, const QString &ac
 
     // Steam networking (VDF system section)
     QString networkShare = getVdfSystemSetting(filePath, "NetworkingAllowShareIP");
-    settings["NetworkingAllowShareIP"] = !networkShare.isEmpty() ? networkShare : QString("3");
+    settings["NetworkingAllowShareIP"] = !networkShare.isEmpty() ? networkShare : QString("0");
     QString clipKey = getVdfBlockSetting(filePath, "GameRecording", "InstantClipKey");
     settings["GR_ClipKey"] = !clipKey.isEmpty() ? clipKey : "Ctrl\tShift\tKEY_F11";
     QString maxFps = getVdfBlockSetting(filePath, "GameRecording", "MaxFPS");
@@ -3650,7 +3699,7 @@ bool Optimizer::updateVdfFriendsSettings(const QString &filePath, const QString 
         
         DWORD regVal = 2;
         if (netVal == "1") regVal = 1;
-        else if (netVal == "0") regVal = 0;
+        else if (netVal == "2") regVal = 0;
         
         HKEY hKeySteamRegistry;
         if (RegOpenKeyExW(HKEY_CURRENT_USER, L"Software\\Valve\\Steam", 0, KEY_SET_VALUE, &hKeySteamRegistry) == ERROR_SUCCESS) {

@@ -4848,10 +4848,11 @@ Item {
                     anchors.right: parent.right
                     anchors.verticalCenter: parent.verticalCenter
                     
-                    property string currentVal: optimizerBackend.steamFriendsSettings ? optimizerBackend.steamFriendsSettings["NetworkingAllowShareIP"] || "3" : "3"
+                    property string currentVal: optimizerBackend.steamFriendsSettings ? optimizerBackend.steamFriendsSettings["NetworkingAllowShareIP"] || "0" : "0"
                     
                     readonly property var options: [
-                        { id: "0", label: qsTr("Never") },
+                        { id: "0", label: qsTr("Default") },
+                        { id: "2", label: qsTr("Never") },
                         { id: "3", label: qsTr("Friends Only") },
                         { id: "1", label: qsTr("Always") }
                     ]
@@ -4860,7 +4861,7 @@ Item {
                         for (var i = 0; i < options.length; i++) {
                              if (options[i].id === v) return options[i].label;
                         }
-                        return qsTr("Friends Only");
+                        return qsTr("Default");
                     }
                     
                     Text {
