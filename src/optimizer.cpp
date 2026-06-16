@@ -2823,13 +2823,17 @@ bool Optimizer::getVdfFriendsSettings(const QString &filePath, const QString &ac
             }
             QString fpsSaturation = getVdfSystemSetting(filePath, "InGameOverlayShowFPSSaturation");
             if (!fpsSaturation.isEmpty()) {
-                settings["InGameOverlayShowFPSSaturation"] = fpsSaturation.toDouble();
+                double val = fpsSaturation.toDouble();
+                if (val <= 0.0001) val = 0.0;
+                settings["InGameOverlayShowFPSSaturation"] = val;
             } else {
                 settings["InGameOverlayShowFPSSaturation"] = 0.0;
             }
             QString fpsBgOpacity = getVdfSystemSetting(filePath, "InGameOverlayShowFPSBgOpacity");
             if (!fpsBgOpacity.isEmpty()) {
-                settings["InGameOverlayShowFPSBgOpacity"] = fpsBgOpacity.toDouble();
+                double val = fpsBgOpacity.toDouble();
+                if (val <= 0.0001) val = 0.0;
+                settings["InGameOverlayShowFPSBgOpacity"] = val;
             } else {
                 settings["InGameOverlayShowFPSBgOpacity"] = 0.0;
             }
@@ -4205,10 +4209,14 @@ bool Optimizer::updateVdfFriendsSettings(const QString &filePath, const QString 
                 updateVdfSystemSetting(filePath, "InGameOverlayShowFPSScaling", QString::number(settings.value("InGameOverlayShowFPSScaling").toDouble(), 'f', 6));
             }
             if (settings.contains("InGameOverlayShowFPSSaturation")) {
-                updateVdfSystemSetting(filePath, "InGameOverlayShowFPSSaturation", QString::number(settings.value("InGameOverlayShowFPSSaturation").toDouble(), 'f', 6));
+                double val = settings.value("InGameOverlayShowFPSSaturation").toDouble();
+                if (val <= 0.0) val = 0.0001;
+                updateVdfSystemSetting(filePath, "InGameOverlayShowFPSSaturation", QString::number(val, 'f', 6));
             }
             if (settings.contains("InGameOverlayShowFPSBgOpacity")) {
-                updateVdfSystemSetting(filePath, "InGameOverlayShowFPSBgOpacity", QString::number(settings.value("InGameOverlayShowFPSBgOpacity").toDouble(), 'f', 6));
+                double val = settings.value("InGameOverlayShowFPSBgOpacity").toDouble();
+                if (val <= 0.0) val = 0.0001;
+                updateVdfSystemSetting(filePath, "InGameOverlayShowFPSBgOpacity", QString::number(val, 'f', 6));
             }
             if (settings.contains("bLocalNetworkGameFileTransfer") || settings.contains("nTransferFilterMode")) {
                 bool enabled = settings.contains("bLocalNetworkGameFileTransfer")
@@ -5070,6 +5078,9 @@ void Optimizer::setVisualEffects(const QVariantMap &val) {
 }
 
 void Optimizer::setSteamFriendsSettings(const QVariantMap &val) {
+    Logger::log("setSteamFriendsSettings called with: Saturation=" + QString::number(val.value("InGameOverlayShowFPSSaturation").toDouble()) 
+                + ", Scaling=" + QString::number(val.value("InGameOverlayShowFPSScaling").toDouble()) 
+                + ", Opacity=" + QString::number(val.value("InGameOverlayShowFPSBgOpacity").toDouble()), "INFO");
     if (m_steamFriendsSettings != val) {
         m_steamFriendsSettings = val;
         emit steamFriendsSettingsChanged(m_steamFriendsSettings);
