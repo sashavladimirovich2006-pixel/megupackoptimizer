@@ -3186,6 +3186,8 @@ bool Optimizer::updateVdfFriendsSettings(const QString &filePath, const QString 
     incomingObj.remove("muteToggleHotkey");
     incomingObj.remove("PushToTalkKey");
     incomingObj.remove("bRestoreOverlayBrowserTabs");
+    incomingObj.remove("bShowOverlayToolbarAsList");
+    incomingObj.remove("bUseBigPictureOverlay");
     incomingObj.remove("bHighContrastMode");
     incomingObj.remove("desktop_ui_scale");
     incomingObj.remove("bScaleOverlayTextAndIcons");
@@ -7409,6 +7411,14 @@ void Optimizer::loadSystemStates() {
                 QString rt = getVdfRootSetting(loadedVdfPath, "InGameOverlayRestoreBrowserTabs");
                 if (!rt.isEmpty()) {
                     m_steamFriendsSettings["bRestoreOverlayBrowserTabs"] = (rt != "0");
+                }
+                QString tbl = getVdfRootSetting(loadedVdfPath, "OverlayToolBarListView");
+                if (!tbl.isEmpty()) {
+                    m_steamFriendsSettings["bShowOverlayToolbarAsList"] = (tbl != "0");
+                }
+                QString bpo = getVdfRootSetting(loadedVdfPath, "EnableSCTenFootOverlayCheckNew");
+                if (!bpo.isEmpty()) {
+                    m_steamFriendsSettings["bUseBigPictureOverlay"] = (bpo != "0");
                 }
             }
         } else {
@@ -11771,6 +11781,8 @@ void Optimizer::startSystemOptimization() {
                             profileUpdated |= updateVdfRootSetting(vdfPath, "ShowSteamDeckInfoInLibrary", steamFriendsSettingsVal.value("show_steam_deck_info").toBool() ? "1" : "0");
                             profileUpdated |= updateVdfRootSetting(vdfPath, "LibraryDisplaySize", QString::number(steamFriendsSettingsVal.value("library_display_size", 0).toInt()));
                             profileUpdated |= updateVdfRootSetting(vdfPath, "InGameOverlayRestoreBrowserTabs", steamFriendsSettingsVal.value("bRestoreOverlayBrowserTabs").toBool() ? "1" : "0");
+                            profileUpdated |= updateVdfRootSetting(vdfPath, "OverlayToolBarListView", steamFriendsSettingsVal.value("bShowOverlayToolbarAsList").toBool() ? "1" : "0");
+                            profileUpdated |= updateVdfRootSetting(vdfPath, "EnableSCTenFootOverlayCheckNew", steamFriendsSettingsVal.value("bUseBigPictureOverlay").toBool() ? "1" : "0");
 
                             QVariantMap latestSettings;
                             if (getVdfFriendsSettings(vdfPath, subdir, latestSettings)) {
