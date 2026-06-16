@@ -2214,7 +2214,12 @@ bool Optimizer::getVdfFriendsSettings(const QString &filePath, const QString &ac
     settings["ScreenshotEnableAVIF"] = screenshotAVIF.isEmpty() ? false : (screenshotAVIF != "0");
 
     QString screenshotPath = getVdfSystemSetting(filePath, "InGameOverlayScreenshotSaveUncompressedPath");
-    settings["ScreenshotExternalPath"] = !screenshotPath.isEmpty() ? screenshotPath : QString("");
+    if (!screenshotPath.isEmpty()) {
+        screenshotPath.replace(QLatin1String("\\\\"), QLatin1String("\\"));
+        settings["ScreenshotExternalPath"] = screenshotPath;
+    } else {
+        settings["ScreenshotExternalPath"] = QString("");
+    }
 
     // Overlay home page (VDF system section)
     QString overlayHome = getVdfSystemSetting(filePath, "GameOverlayHomePage");
@@ -3686,7 +3691,9 @@ bool Optimizer::updateVdfFriendsSettings(const QString &filePath, const QString 
         updateVdfSystemSetting(filePath, "InGameOverlayScreenshotEnableAVIF", settings.value("ScreenshotEnableAVIF").toBool() ? "1" : "0");
     }
     if (settings.contains("ScreenshotExternalPath")) {
-        updateVdfSystemSetting(filePath, "InGameOverlayScreenshotSaveUncompressedPath", settings.value("ScreenshotExternalPath").toString());
+        QString screenshotPath = settings.value("ScreenshotExternalPath").toString();
+        screenshotPath.replace(QLatin1String("\\"), QLatin1String("\\\\"));
+        updateVdfSystemSetting(filePath, "InGameOverlayScreenshotSaveUncompressedPath", screenshotPath);
     }
     if (settings.contains("OverlayHomePage")) {
         QString overlayHome = settings.value("OverlayHomePage").toString();
