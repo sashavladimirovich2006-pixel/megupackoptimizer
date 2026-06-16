@@ -126,11 +126,7 @@ ApplicationWindow {
     property bool showDelta: false
 
 
-    onVisibilityChanged: {
-        if (visibility !== Window.Maximized) {
-            headerDragArea.isRestoring = false;
-        }
-    }
+
 
     Timer {
         id: globalSteamRunningTimer

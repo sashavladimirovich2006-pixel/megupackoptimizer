@@ -2817,11 +2817,9 @@ bool Optimizer::getVdfFriendsSettings(const QString &filePath, const QString &ac
             }
             QString fpsScaling = getVdfSystemSetting(filePath, "InGameOverlayShowFPSScaling");
             if (!fpsScaling.isEmpty()) {
-                double val = fpsScaling.toDouble();
-                if (val <= 0.0001) val = 0.0;
-                settings["InGameOverlayShowFPSScaling"] = val;
+                settings["InGameOverlayShowFPSScaling"] = fpsScaling.toDouble();
             } else {
-                settings["InGameOverlayShowFPSScaling"] = 0.0;
+                settings["InGameOverlayShowFPSScaling"] = 1.0;
             }
             QString fpsSaturation = getVdfSystemSetting(filePath, "InGameOverlayShowFPSSaturation");
             if (!fpsSaturation.isEmpty()) {
@@ -2833,9 +2831,11 @@ bool Optimizer::getVdfFriendsSettings(const QString &filePath, const QString &ac
             }
             QString fpsBgOpacity = getVdfSystemSetting(filePath, "InGameOverlayShowFPSBgOpacity");
             if (!fpsBgOpacity.isEmpty()) {
-                settings["InGameOverlayShowFPSBgOpacity"] = fpsBgOpacity.toDouble();
+                double val = fpsBgOpacity.toDouble();
+                if (val <= 0.0001) val = 0.0;
+                settings["InGameOverlayShowFPSBgOpacity"] = val;
             } else {
-                settings["InGameOverlayShowFPSBgOpacity"] = 1.0;
+                settings["InGameOverlayShowFPSBgOpacity"] = 0.0;
             }
             QString clientMode = getVdfBlockSetting(filePath, "PeerContent", "ClientMode");
             if (!clientMode.isEmpty()) {
@@ -4206,9 +4206,7 @@ bool Optimizer::updateVdfFriendsSettings(const QString &filePath, const QString 
                 updateVdfSystemSetting(filePath, "InGameOverlayAllowKMDriveOnWindows", settings.value("InGameOverlayAllowKMDriveOnWindows").toBool() ? "1" : "0");
             }
             if (settings.contains("InGameOverlayShowFPSScaling")) {
-                double val = settings.value("InGameOverlayShowFPSScaling").toDouble();
-                if (val <= 0.0) val = 0.0001;
-                updateVdfSystemSetting(filePath, "InGameOverlayShowFPSScaling", QString::number(val, 'f', 6));
+                updateVdfSystemSetting(filePath, "InGameOverlayShowFPSScaling", QString::number(settings.value("InGameOverlayShowFPSScaling").toDouble(), 'f', 6));
             }
             if (settings.contains("InGameOverlayShowFPSSaturation")) {
                 double val = settings.value("InGameOverlayShowFPSSaturation").toDouble();
@@ -4216,7 +4214,9 @@ bool Optimizer::updateVdfFriendsSettings(const QString &filePath, const QString 
                 updateVdfSystemSetting(filePath, "InGameOverlayShowFPSSaturation", QString::number(val, 'f', 6));
             }
             if (settings.contains("InGameOverlayShowFPSBgOpacity")) {
-                updateVdfSystemSetting(filePath, "InGameOverlayShowFPSBgOpacity", QString::number(settings.value("InGameOverlayShowFPSBgOpacity").toDouble(), 'f', 6));
+                double val = settings.value("InGameOverlayShowFPSBgOpacity").toDouble();
+                if (val <= 0.0) val = 0.0001;
+                updateVdfSystemSetting(filePath, "InGameOverlayShowFPSBgOpacity", QString::number(val, 'f', 6));
             }
             if (settings.contains("bLocalNetworkGameFileTransfer") || settings.contains("nTransferFilterMode")) {
                 bool enabled = settings.contains("bLocalNetworkGameFileTransfer")
