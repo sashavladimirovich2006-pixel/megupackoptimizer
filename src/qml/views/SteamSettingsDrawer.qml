@@ -3845,6 +3845,9 @@ Item {
                     }
                     anchors.right: parent.right
                     anchors.verticalCenter: parent.verticalCenter
+                    onTextEdited: {
+                        root.toggleSteamFriendsSetting("OverlayHomePage", text);
+                    }
                     onEditingFinished: {
                         root.toggleSteamFriendsSetting("OverlayHomePage", text);
                     }
@@ -11466,6 +11469,12 @@ Item {
                             radius: 6
                         }
                         validator: IntValidator { bottom: 0; top: 99999999 }
+                        onTextEdited: {
+                            var val = parseInt(text);
+                            if (!isNaN(val)) {
+                                root.toggleSteamFriendsSetting("nDownloadThrottleKbps", val);
+                            }
+                        }
                         onEditingFinished: {
                             root.toggleSteamFriendsSetting("nDownloadThrottleKbps", parseInt(text) || 0);
                         }
