@@ -3601,38 +3601,6 @@ Item {
                 }
             }
 
-            // Row: Toggle performance monitor hotkey
-            Rectangle {
-                width: parent.width
-                height: 32
-                color: "transparent"
-                Text {
-                    text: qsTr("Toggle performance monitor hotkey")
-                    color: Theme.textPrimary
-                    font.family: Theme.fontFamily
-                    font.pixelSize: 12
-                    anchors.left: parent.left
-                    anchors.verticalCenter: parent.verticalCenter
-                }
-                Rectangle {
-                    width: 100
-                    height: 26
-                    radius: 4
-                    color: "#161616"
-                    border.color: Theme.border
-                    border.width: 1
-                    anchors.right: parent.right
-                    anchors.verticalCenter: parent.verticalCenter
-                    Text {
-                        text: qsTr("Configure in Steam")
-                        color: Theme.textSecondary
-                        font.family: Theme.fontFamily
-                        font.pixelSize: 10
-                        font.bold: true
-                        anchors.centerIn: parent
-                    }
-                }
-            }
 
             // Toggle A3: Show toolbar as list view
             Rectangle {
