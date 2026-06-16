@@ -4249,10 +4249,10 @@ Item {
                         from: 0.5
                         to: 2.0
                         stepSize: 0.05
-                        value: optimizerBackend.steamFriendsSettings ? (optimizerBackend.steamFriendsSettings["InGameOverlayShowFPSScaling"] !== undefined ? optimizerBackend.steamFriendsSettings["InGameOverlayShowFPSScaling"] : 1.0) : 1.0
+                        value: optimizerBackend.steamFriendsSettings ? (optimizerBackend.steamFriendsSettings["InGameOverlayShowFPSBgOpacity"] !== undefined ? optimizerBackend.steamFriendsSettings["InGameOverlayShowFPSBgOpacity"] : 1.0) : 1.0
                         live: true
                         onMoved: {
-                            root.toggleSteamFriendsSetting("InGameOverlayShowFPSScaling", value);
+                            root.toggleSteamFriendsSetting("InGameOverlayShowFPSBgOpacity", value);
                         }
 
                         background: Rectangle {
@@ -4369,10 +4369,10 @@ Item {
                         from: 0.0
                         to: 1.0
                         stepSize: 0.05
-                        value: optimizerBackend.steamFriendsSettings ? (optimizerBackend.steamFriendsSettings["InGameOverlayShowFPSBgOpacity"] !== undefined ? optimizerBackend.steamFriendsSettings["InGameOverlayShowFPSBgOpacity"] : 0.0) : 0.0
+                        value: optimizerBackend.steamFriendsSettings ? (optimizerBackend.steamFriendsSettings["InGameOverlayShowFPSScaling"] !== undefined ? optimizerBackend.steamFriendsSettings["InGameOverlayShowFPSScaling"] : 0.0) : 0.0
                         live: true
                         onMoved: {
-                            root.toggleSteamFriendsSetting("InGameOverlayShowFPSBgOpacity", value);
+                            root.toggleSteamFriendsSetting("InGameOverlayShowFPSScaling", value);
                         }
 
                         background: Rectangle {
