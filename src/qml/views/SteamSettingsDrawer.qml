@@ -5048,7 +5048,6 @@ Item {
                 columnSpacing: 16
                 rowSpacing: 8
 
-                // Helper to create individual items
                 Rectangle {
                     width: (parent.width - 16) / 2
                     height: 32
@@ -5058,8 +5057,8 @@ Item {
                         spacing: 8
                         MeguSwitch {
                             steamStyle: true
-                            checked: true
-                            enabled: false
+                            checked: optimizerBackend.steamFriendsSettings ? (optimizerBackend.steamFriendsSettings["OverlayTab_GameOverview"] !== undefined ? !!optimizerBackend.steamFriendsSettings["OverlayTab_GameOverview"] : true) : true
+                            onToggled: (isChecked) => { root.toggleSteamFriendsSetting("OverlayTab_GameOverview", isChecked); }
                             anchors.verticalCenter: parent.verticalCenter
                         }
                         Text {
@@ -5081,8 +5080,8 @@ Item {
                         spacing: 8
                         MeguSwitch {
                             steamStyle: true
-                            checked: true
-                            enabled: false
+                            checked: optimizerBackend.steamFriendsSettings ? (optimizerBackend.steamFriendsSettings["OverlayTab_Achievements"] !== undefined ? !!optimizerBackend.steamFriendsSettings["OverlayTab_Achievements"] : true) : true
+                            onToggled: (isChecked) => { root.toggleSteamFriendsSetting("OverlayTab_Achievements", isChecked); }
                             anchors.verticalCenter: parent.verticalCenter
                         }
                         Text {
@@ -5104,8 +5103,8 @@ Item {
                         spacing: 8
                         MeguSwitch {
                             steamStyle: true
-                            checked: true
-                            enabled: false
+                            checked: optimizerBackend.steamFriendsSettings ? (optimizerBackend.steamFriendsSettings["OverlayTab_Notes"] !== undefined ? !!optimizerBackend.steamFriendsSettings["OverlayTab_Notes"] : true) : true
+                            onToggled: (isChecked) => { root.toggleSteamFriendsSetting("OverlayTab_Notes", isChecked); }
                             anchors.verticalCenter: parent.verticalCenter
                         }
                         Text {
@@ -5127,8 +5126,8 @@ Item {
                         spacing: 8
                         MeguSwitch {
                             steamStyle: true
-                            checked: true
-                            enabled: false
+                            checked: optimizerBackend.steamFriendsSettings ? (optimizerBackend.steamFriendsSettings["OverlayTab_Timer"] !== undefined ? !!optimizerBackend.steamFriendsSettings["OverlayTab_Timer"] : true) : true
+                            onToggled: (isChecked) => { root.toggleSteamFriendsSetting("OverlayTab_Timer", isChecked); }
                             anchors.verticalCenter: parent.verticalCenter
                         }
                         Text {
@@ -5150,8 +5149,8 @@ Item {
                         spacing: 8
                         MeguSwitch {
                             steamStyle: true
-                            checked: true
-                            enabled: false
+                            checked: optimizerBackend.steamFriendsSettings ? (optimizerBackend.steamFriendsSettings["OverlayTab_Guides"] !== undefined ? !!optimizerBackend.steamFriendsSettings["OverlayTab_Guides"] : true) : true
+                            onToggled: (isChecked) => { root.toggleSteamFriendsSetting("OverlayTab_Guides", isChecked); }
                             anchors.verticalCenter: parent.verticalCenter
                         }
                         Text {
@@ -5173,8 +5172,8 @@ Item {
                         spacing: 8
                         MeguSwitch {
                             steamStyle: true
-                            checked: true
-                            enabled: false
+                            checked: optimizerBackend.steamFriendsSettings ? (optimizerBackend.steamFriendsSettings["OverlayTab_Discussions"] !== undefined ? !!optimizerBackend.steamFriendsSettings["OverlayTab_Discussions"] : true) : true
+                            onToggled: (isChecked) => { root.toggleSteamFriendsSetting("OverlayTab_Discussions", isChecked); }
                             anchors.verticalCenter: parent.verticalCenter
                         }
                         Text {
@@ -5196,8 +5195,8 @@ Item {
                         spacing: 8
                         MeguSwitch {
                             steamStyle: true
-                            checked: true
-                            enabled: false
+                            checked: optimizerBackend.steamFriendsSettings ? (optimizerBackend.steamFriendsSettings["OverlayTab_DLC"] !== undefined ? !!optimizerBackend.steamFriendsSettings["OverlayTab_DLC"] : true) : true
+                            onToggled: (isChecked) => { root.toggleSteamFriendsSetting("OverlayTab_DLC", isChecked); }
                             anchors.verticalCenter: parent.verticalCenter
                         }
                         Text {
@@ -5219,8 +5218,8 @@ Item {
                         spacing: 8
                         MeguSwitch {
                             steamStyle: true
-                            checked: true
-                            enabled: false
+                            checked: optimizerBackend.steamFriendsSettings ? (optimizerBackend.steamFriendsSettings["OverlayTab_Workshop"] !== undefined ? !!optimizerBackend.steamFriendsSettings["OverlayTab_Workshop"] : true) : true
+                            onToggled: (isChecked) => { root.toggleSteamFriendsSetting("OverlayTab_Workshop", isChecked); }
                             anchors.verticalCenter: parent.verticalCenter
                         }
                         Text {
@@ -5242,8 +5241,8 @@ Item {
                         spacing: 8
                         MeguSwitch {
                             steamStyle: true
-                            checked: true
-                            enabled: false
+                            checked: optimizerBackend.steamFriendsSettings ? (optimizerBackend.steamFriendsSettings["OverlayTab_Screenshots"] !== undefined ? !!optimizerBackend.steamFriendsSettings["OverlayTab_Screenshots"] : true) : true
+                            onToggled: (isChecked) => { root.toggleSteamFriendsSetting("OverlayTab_Screenshots", isChecked); }
                             anchors.verticalCenter: parent.verticalCenter
                         }
                         Text {
@@ -5265,8 +5264,8 @@ Item {
                         spacing: 8
                         MeguSwitch {
                             steamStyle: true
-                            checked: true
-                            enabled: false
+                            checked: optimizerBackend.steamFriendsSettings ? (optimizerBackend.steamFriendsSettings["OverlayTab_FriendsList"] !== undefined ? !!optimizerBackend.steamFriendsSettings["OverlayTab_FriendsList"] : true) : true
+                            onToggled: (isChecked) => { root.toggleSteamFriendsSetting("OverlayTab_FriendsList", isChecked); }
                             anchors.verticalCenter: parent.verticalCenter
                         }
                         Text {
@@ -5288,8 +5287,8 @@ Item {
                         spacing: 8
                         MeguSwitch {
                             steamStyle: true
-                            checked: true
-                            enabled: false
+                            checked: optimizerBackend.steamFriendsSettings ? (optimizerBackend.steamFriendsSettings["OverlayTab_RemotePlayTogether"] !== undefined ? !!optimizerBackend.steamFriendsSettings["OverlayTab_RemotePlayTogether"] : true) : true
+                            onToggled: (isChecked) => { root.toggleSteamFriendsSetting("OverlayTab_RemotePlayTogether", isChecked); }
                             anchors.verticalCenter: parent.verticalCenter
                         }
                         Text {
@@ -5311,8 +5310,8 @@ Item {
                         spacing: 8
                         MeguSwitch {
                             steamStyle: true
-                            checked: true
-                            enabled: false
+                            checked: optimizerBackend.steamFriendsSettings ? (optimizerBackend.steamFriendsSettings["OverlayTab_Browser"] !== undefined ? !!optimizerBackend.steamFriendsSettings["OverlayTab_Browser"] : true) : true
+                            onToggled: (isChecked) => { root.toggleSteamFriendsSetting("OverlayTab_Browser", isChecked); }
                             anchors.verticalCenter: parent.verticalCenter
                         }
                         Text {
@@ -5334,8 +5333,8 @@ Item {
                         spacing: 8
                         MeguSwitch {
                             steamStyle: true
-                            checked: true
-                            enabled: false
+                            checked: optimizerBackend.steamFriendsSettings ? (optimizerBackend.steamFriendsSettings["OverlayTab_Controller"] !== undefined ? !!optimizerBackend.steamFriendsSettings["OverlayTab_Controller"] : true) : true
+                            onToggled: (isChecked) => { root.toggleSteamFriendsSetting("OverlayTab_Controller", isChecked); }
                             anchors.verticalCenter: parent.verticalCenter
                         }
                         Text {
@@ -5357,8 +5356,8 @@ Item {
                         spacing: 8
                         MeguSwitch {
                             steamStyle: true
-                            checked: true
-                            enabled: false
+                            checked: optimizerBackend.steamFriendsSettings ? (optimizerBackend.steamFriendsSettings["OverlayTab_SoundtrackPlayer"] !== undefined ? !!optimizerBackend.steamFriendsSettings["OverlayTab_SoundtrackPlayer"] : true) : true
+                            onToggled: (isChecked) => { root.toggleSteamFriendsSetting("OverlayTab_SoundtrackPlayer", isChecked); }
                             anchors.verticalCenter: parent.verticalCenter
                         }
                         Text {
@@ -5380,8 +5379,8 @@ Item {
                         spacing: 8
                         MeguSwitch {
                             steamStyle: true
-                            checked: false
-                            enabled: false
+                            checked: optimizerBackend.steamFriendsSettings ? (optimizerBackend.steamFriendsSettings["OverlayTab_AIContentReport"] !== undefined ? !!optimizerBackend.steamFriendsSettings["OverlayTab_AIContentReport"] : false) : false
+                            onToggled: (isChecked) => { root.toggleSteamFriendsSetting("OverlayTab_AIContentReport", isChecked); }
                             anchors.verticalCenter: parent.verticalCenter
                         }
                         Text {
@@ -5403,8 +5402,8 @@ Item {
                         spacing: 8
                         MeguSwitch {
                             steamStyle: true
-                            checked: false
-                            enabled: false
+                            checked: optimizerBackend.steamFriendsSettings ? (optimizerBackend.steamFriendsSettings["OverlayTab_MultiplayerSessionLinkShare"] !== undefined ? !!optimizerBackend.steamFriendsSettings["OverlayTab_MultiplayerSessionLinkShare"] : false) : false
+                            onToggled: (isChecked) => { root.toggleSteamFriendsSetting("OverlayTab_MultiplayerSessionLinkShare", isChecked); }
                             anchors.verticalCenter: parent.verticalCenter
                         }
                         Text {
@@ -5426,8 +5425,8 @@ Item {
                         spacing: 8
                         MeguSwitch {
                             steamStyle: true
-                            checked: true
-                            enabled: false
+                            checked: optimizerBackend.steamFriendsSettings ? (optimizerBackend.steamFriendsSettings["OverlayTab_GameServers"] !== undefined ? !!optimizerBackend.steamFriendsSettings["OverlayTab_GameServers"] : true) : true
+                            onToggled: (isChecked) => { root.toggleSteamFriendsSetting("OverlayTab_GameServers", isChecked); }
                             anchors.verticalCenter: parent.verticalCenter
                         }
                         Text {
@@ -5449,8 +5448,8 @@ Item {
                         spacing: 8
                         MeguSwitch {
                             steamStyle: true
-                            checked: true
-                            enabled: false
+                            checked: optimizerBackend.steamFriendsSettings ? (optimizerBackend.steamFriendsSettings["OverlayTab_Timeline"] !== undefined ? !!optimizerBackend.steamFriendsSettings["OverlayTab_Timeline"] : true) : true
+                            onToggled: (isChecked) => { root.toggleSteamFriendsSetting("OverlayTab_Timeline", isChecked); }
                             anchors.verticalCenter: parent.verticalCenter
                         }
                         Text {

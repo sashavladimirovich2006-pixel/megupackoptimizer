@@ -32,6 +32,7 @@
 #include <QProcessEnvironment>
 #include <QJsonDocument>
 #include <QJsonObject>
+#include <QJsonArray>
 #include <QFile>
 #include <QTextStream>
 #include <QDateTime>
@@ -1889,6 +1890,26 @@ static QString mapLabelToExe(const QString &label) {
 
 
 bool Optimizer::getVdfFriendsSettings(const QString &filePath, const QString &accountId, QVariantMap &settings) {
+    // Initialize default overlay toolbar settings
+    settings["OverlayTab_GameOverview"] = true;
+    settings["OverlayTab_Achievements"] = true;
+    settings["OverlayTab_Notes"] = true;
+    settings["OverlayTab_Timer"] = true;
+    settings["OverlayTab_Guides"] = true;
+    settings["OverlayTab_Discussions"] = true;
+    settings["OverlayTab_DLC"] = true;
+    settings["OverlayTab_Workshop"] = true;
+    settings["OverlayTab_Screenshots"] = true;
+    settings["OverlayTab_FriendsList"] = true;
+    settings["OverlayTab_RemotePlayTogether"] = true;
+    settings["OverlayTab_Browser"] = true;
+    settings["OverlayTab_Controller"] = true;
+    settings["OverlayTab_SoundtrackPlayer"] = true;
+    settings["OverlayTab_AIContentReport"] = false;
+    settings["OverlayTab_MultiplayerSessionLinkShare"] = false;
+    settings["OverlayTab_GameServers"] = true;
+    settings["OverlayTab_Timeline"] = true;
+
     QFile file(filePath);
     if (!file.open(QIODevice::ReadOnly | QIODevice::Text)) {
         return false;
@@ -1978,6 +1999,27 @@ bool Optimizer::getVdfFriendsSettings(const QString &filePath, const QString &ac
         QString playSoundOnToast = getVdfRootSetting(sharedConfigPath, "PlaySoundOnToast");
         if (!playSoundOnToast.isEmpty()) {
             settings["bPlayNotificationSounds"] = (playSoundOnToast != "0");
+        }
+
+        QString overlayTabsStr = getVdfRootSetting(sharedConfigPath, "OverlayTabs");
+        if (!overlayTabsStr.isEmpty()) {
+            QString cleanJson = overlayTabsStr;
+            cleanJson.replace(QLatin1String("\\\""), QLatin1String("\""));
+            cleanJson.replace(QLatin1String("\\\\"), QLatin1String("\\"));
+            QJsonDocument overlayDoc = QJsonDocument::fromJson(cleanJson.toUtf8());
+            if (overlayDoc.isArray()) {
+                QJsonArray arr = overlayDoc.array();
+                for (const QJsonValue &val : arr) {
+                    if (val.isObject()) {
+                        QJsonObject obj = val.toObject();
+                        QString windowName = obj.value("window").toString();
+                        bool visible = obj.value("visible").toBool();
+                        if (!windowName.isEmpty()) {
+                            settings["OverlayTab_" + windowName] = visible;
+                        }
+                    }
+                }
+            }
         }
 
         QString friendsUIJsonStr = getVdfBlockSetting(sharedConfigPath, "FriendsUI", "FriendsUIJSON");
@@ -3058,6 +3100,18 @@ bool Optimizer::updateVdfFriendsSettings(const QString &filePath, const QString 
     }
     
     QJsonObject incomingObj = QJsonObject::fromVariantMap(settings);
+    
+    // Remove OverlayTab_* keys from incomingObj to prevent them from saving into localconfig's WebStorage
+    QStringList overlayKeysToRemove;
+    for (auto it = incomingObj.constBegin(); it != incomingObj.constEnd(); ++it) {
+        if (it.key().startsWith("OverlayTab_")) {
+            overlayKeysToRemove << it.key();
+        }
+    }
+    for (const QString &k : overlayKeysToRemove) {
+        incomingObj.remove(k);
+    }
+
     incomingObj.remove("ScreenshotNotification");
     incomingObj.remove("ScreenshotPlaySound");
     incomingObj.remove("ScreenshotSaveExternal");
@@ -4033,6 +4087,74 @@ bool Optimizer::updateVdfFriendsSettings(const QString &filePath, const QString 
 
         updateVdfBlockSetting(sharedConfigPath, "FriendsUI", "FriendsUIJSON", escapedSharedJson);
         syncRemoteCache(sharedConfigPath);
+
+        // Update OverlayTabs visibility list in sharedconfig.vdf
+        QStringList windowNames = {
+            "GameOverview", "Achievements", "Notes", "Timer", "Guides", "Discussions",
+            "DLC", "Workshop", "Screenshots", "FriendsList", "RemotePlayTogether", "Browser",
+            "Controller", "SoundtrackPlayer", "AIContentReport", "MultiplayerSessionLinkShare",
+            "GameServers", "Timeline"
+        };
+        
+        bool hasAnyOverlaySetting = false;
+        for (const QString &wName : windowNames) {
+            if (settings.contains("OverlayTab_" + wName)) {
+                hasAnyOverlaySetting = true;
+                break;
+            }
+        }
+        
+        if (hasAnyOverlaySetting) {
+            QString overlayTabsStr = getVdfRootSetting(sharedConfigPath, "OverlayTabs");
+            QMap<QString, bool> currentVisibilities;
+            // Set defaults first
+            for (const QString &wName : windowNames) {
+                currentVisibilities[wName] = (wName != "AIContentReport" && wName != "MultiplayerSessionLinkShare");
+            }
+            // Parse existing
+            if (!overlayTabsStr.isEmpty()) {
+                QString cleanJson = overlayTabsStr;
+                cleanJson.replace(QLatin1String("\\\""), QLatin1String("\""));
+                cleanJson.replace(QLatin1String("\\\\"), QLatin1String("\\"));
+                QJsonDocument overlayDoc = QJsonDocument::fromJson(cleanJson.toUtf8());
+                if (overlayDoc.isArray()) {
+                    QJsonArray existingArr = overlayDoc.array();
+                    for (const QJsonValue &val : existingArr) {
+                        if (val.isObject()) {
+                            QJsonObject obj = val.toObject();
+                            QString windowName = obj.value("window").toString();
+                            if (!windowName.isEmpty() && obj.contains("visible")) {
+                                currentVisibilities[windowName] = obj.value("visible").toBool();
+                            }
+                        }
+                    }
+                }
+            }
+            // Update with incoming values
+            for (const QString &wName : windowNames) {
+                QString settingsKey = "OverlayTab_" + wName;
+                if (settings.contains(settingsKey)) {
+                    currentVisibilities[wName] = settings.value(settingsKey).toBool();
+                }
+            }
+            // Construct the new QJsonArray
+            QJsonArray newArr;
+            for (const QString &wName : windowNames) {
+                QJsonObject obj;
+                obj["window"] = wName;
+                obj["visible"] = currentVisibilities[wName];
+                newArr.append(obj);
+            }
+            
+            // Serialize and escape
+            QString cleanJsonStr = QString::fromUtf8(QJsonDocument(newArr).toJson(QJsonDocument::Compact));
+            QString escapedJsonStr = cleanJsonStr;
+            escapedJsonStr.replace(QLatin1String("\\"), QLatin1String("\\\\"));
+            escapedJsonStr.replace(QLatin1String("\""), QLatin1String("\\\""));
+            
+            updateVdfRootSetting(sharedConfigPath, "OverlayTabs", escapedJsonStr);
+            syncRemoteCache(sharedConfigPath);
+        }
     }
 
     // 8. news settings
