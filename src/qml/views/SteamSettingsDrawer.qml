@@ -4246,7 +4246,7 @@ Item {
                         height: 32
                         anchors.right: parent.right
                         anchors.verticalCenter: parent.verticalCenter
-                        from: 0.5
+                        from: 1.0
                         to: 2.0
                         stepSize: 0.05
                         value: optimizerBackend.steamFriendsSettings ? (optimizerBackend.steamFriendsSettings["InGameOverlayShowFPSScaling"] !== undefined ? optimizerBackend.steamFriendsSettings["InGameOverlayShowFPSScaling"] : 1.0) : 1.0
