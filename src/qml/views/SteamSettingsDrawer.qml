@@ -3576,18 +3576,27 @@ Item {
                     width: 100
                     height: 26
                     radius: 4
-                    color: "#161616"
-                    border.color: Theme.border
+                    color: (steamGameRecordingPage.recordingKeyName === "InGameOverlayShortcutKey") ? Qt.rgba(Theme.accent.r, Theme.accent.g, Theme.accent.b, 0.1) : "#161616"
+                    border.color: (steamGameRecordingPage.recordingKeyName === "InGameOverlayShortcutKey") ? Theme.accent : (overlayShortcutKeyMouse.containsMouse ? Theme.accent : Theme.border)
                     border.width: 1
                     anchors.right: parent.right
                     anchors.verticalCenter: parent.verticalCenter
                     Text {
-                        text: "Shift + Tab"
-                        color: Theme.textSecondary
+                        text: (steamGameRecordingPage.recordingKeyName === "InGameOverlayShortcutKey") ? qsTr("Press key...") : steamGameRecordingPage.parseSteamKey((optimizerBackend.steamFriendsSettings && optimizerBackend.steamFriendsSettings["InGameOverlayShortcutKey"]) ? optimizerBackend.steamFriendsSettings["InGameOverlayShortcutKey"] : "Shift\tKEY_TAB")
+                        color: (steamGameRecordingPage.recordingKeyName === "InGameOverlayShortcutKey") ? Theme.accent : Theme.textSecondary
                         font.family: Theme.fontFamily
                         font.pixelSize: 11
                         font.bold: true
                         anchors.centerIn: parent
+                    }
+                    MouseArea {
+                        id: overlayShortcutKeyMouse
+                        anchors.fill: parent
+                        hoverEnabled: true
+                        cursorShape: Qt.PointingHandCursor
+                        onClicked: {
+                            steamGameRecordingPage.recordingKeyName = "InGameOverlayShortcutKey";
+                        }
                     }
                 }
             }
@@ -5725,7 +5734,7 @@ Item {
 
         function parseSteamKey(vdfKey) {
             if (!vdfKey) return "";
-            var parts = vdfKey.split('\t');
+            var parts = vdfKey.split(/[\t ]+/);
             var resultParts = [];
             for (var i = 0; i < parts.length; i++) {
                 var p = parts[i].trim();

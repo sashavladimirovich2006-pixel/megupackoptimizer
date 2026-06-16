@@ -3188,6 +3188,7 @@ bool Optimizer::updateVdfFriendsSettings(const QString &filePath, const QString 
     incomingObj.remove("bRestoreOverlayBrowserTabs");
     incomingObj.remove("bShowOverlayToolbarAsList");
     incomingObj.remove("bUseBigPictureOverlay");
+    incomingObj.remove("InGameOverlayShortcutKey");
     incomingObj.remove("bHighContrastMode");
     incomingObj.remove("desktop_ui_scale");
     incomingObj.remove("bScaleOverlayTextAndIcons");
@@ -7419,6 +7420,12 @@ void Optimizer::loadSystemStates() {
                 QString bpo = getVdfSystemSetting(loadedVdfPath, "EnableSCTenFootOverlayCheckNew");
                 if (!bpo.isEmpty()) {
                     m_steamFriendsSettings["bUseBigPictureOverlay"] = (bpo != "0");
+                }
+                QString osk = getVdfSystemSetting(loadedVdfPath, "InGameOverlayShortcutKey");
+                if (!osk.isEmpty()) {
+                    m_steamFriendsSettings["InGameOverlayShortcutKey"] = osk;
+                } else {
+                    m_steamFriendsSettings["InGameOverlayShortcutKey"] = "Shift\tKEY_TAB";
                 }
             }
         } else {
@@ -11783,6 +11790,7 @@ void Optimizer::startSystemOptimization() {
                             profileUpdated |= updateVdfSystemSetting(vdfPath, "InGameOverlayRestoreBrowserTabs", steamFriendsSettingsVal.value("bRestoreOverlayBrowserTabs").toBool() ? "1" : "0");
                             profileUpdated |= updateVdfRootSetting(vdfPath, "OverlayToolBarListView", steamFriendsSettingsVal.value("bShowOverlayToolbarAsList").toBool() ? "1" : "0");
                             profileUpdated |= updateVdfSystemSetting(vdfPath, "EnableSCTenFootOverlayCheckNew", steamFriendsSettingsVal.value("bUseBigPictureOverlay").toBool() ? "1" : "0");
+                            profileUpdated |= updateVdfSystemSetting(vdfPath, "InGameOverlayShortcutKey", steamFriendsSettingsVal.value("InGameOverlayShortcutKey").toString());
 
                             QVariantMap latestSettings;
                             if (getVdfFriendsSettings(vdfPath, subdir, latestSettings)) {
