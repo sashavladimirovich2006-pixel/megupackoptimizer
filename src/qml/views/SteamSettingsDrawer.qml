@@ -4852,9 +4852,9 @@ Item {
                     
                     readonly property var options: [
                         { id: "0", label: qsTr("Default") },
-                        { id: "2", label: qsTr("Never") },
-                        { id: "3", label: qsTr("Friends Only") },
-                        { id: "1", label: qsTr("Always") }
+                        { id: "1", label: qsTr("Never") },
+                        { id: "2", label: qsTr("Friends Only") },
+                        { id: "3", label: qsTr("Always") }
                     ]
                     
                     function getLabelForVal(v) {

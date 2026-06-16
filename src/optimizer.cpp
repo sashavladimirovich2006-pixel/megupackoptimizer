@@ -3697,13 +3697,9 @@ bool Optimizer::updateVdfFriendsSettings(const QString &filePath, const QString 
         QString netVal = settings.value("NetworkingAllowShareIP").toString();
         updateVdfSystemSetting(filePath, "NetworkingAllowShareIP", netVal);
         
-        DWORD regVal = 2;
-        if (netVal == "1") regVal = 1;
-        else if (netVal == "2") regVal = 0;
-        
         HKEY hKeySteamRegistry;
         if (RegOpenKeyExW(HKEY_CURRENT_USER, L"Software\\Valve\\Steam", 0, KEY_SET_VALUE, &hKeySteamRegistry) == ERROR_SUCCESS) {
-            RegSetValueExW(hKeySteamRegistry, L"SteamNetworkingSocketsP2POptimize", 0, REG_DWORD, reinterpret_cast<const BYTE*>(&regVal), sizeof(regVal));
+            RegDeleteValueW(hKeySteamRegistry, L"SteamNetworkingSocketsP2POptimize");
             RegCloseKey(hKeySteamRegistry);
         }
     }
