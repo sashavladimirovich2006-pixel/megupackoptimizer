@@ -1817,9 +1817,7 @@ Item {
                 items: [
                     { type: 20, label: qsTr("A publisher/developer I follow has released a game") },
                     { type: 21, label: qsTr("A publisher/developer I follow released a demo") },
-                    { type: 22, label: qsTr("Game-specific event notifications") },
-                    { type: 13, label: qsTr("A season pass I own ships new content") },
-                    { type: 14, label: qsTr("A game I follow has shipped new content from their roadmap") }
+                    { type: 22, label: qsTr("Game-specific event notifications") }
                 ]
             },
             {
@@ -1831,12 +1829,12 @@ Item {
         ]
 
         function isTargetSupported(notifType, bitVal) {
-            // Wishlist (type 8) supports Email (1) and Feed (8)
+            // Wishlist (type 8) supports Email (1), Mobile (4) and Feed (8)
             if (notifType === 8) {
-                return bitVal === 1 || bitVal === 8;
+                return bitVal === 1 || bitVal === 4 || bitVal === 8;
             }
-            // Developer/Game News (20, 21, 22, 13, 14) supports Email (1) only
-            if (notifType === 20 || notifType === 21 || notifType === 22 || notifType === 13 || notifType === 14) {
+            // Developer/Game News (20, 21, 22) supports Email (1) only
+            if (notifType === 20 || notifType === 21 || notifType === 22) {
                 return bitVal === 1;
             }
             // Store News (type 6) supports Email (1) only
