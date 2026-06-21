@@ -239,6 +239,8 @@ class Optimizer : public QObject {
     Q_PROPERTY(QVariantList steamLibraryPaths READ steamLibraryPaths NOTIFY steamLibraryPathsChanged)
     Q_PROPERTY(QVariantMap steamFriendsSettings READ steamFriendsSettings WRITE setSteamFriendsSettings NOTIFY steamFriendsSettingsChanged)
     Q_PROPERTY(QVariantMap originalSteamFriendsSettings READ originalSteamFriendsSettings NOTIFY originalSteamFriendsSettingsChanged)
+    Q_PROPERTY(QVariantList steamNotificationPreferences READ steamNotificationPreferences WRITE setSteamNotificationPreferences NOTIFY steamNotificationPreferencesChanged)
+    Q_PROPERTY(QVariantList originalSteamNotificationPreferences READ originalSteamNotificationPreferences NOTIFY originalSteamNotificationPreferencesChanged)
     Q_PROPERTY(QStringList fixedDrives READ fixedDrives NOTIFY fixedDrivesChanged)
     Q_PROPERTY(QVariantMap driveStates READ driveStates WRITE setDriveStates NOTIFY driveStatesChanged)
     Q_PROPERTY(QVariantMap originalDriveStates READ originalDriveStates NOTIFY originalDriveStatesChanged)
@@ -511,6 +513,8 @@ public:
     QVariantList steamLibraryPaths() const { return m_steamLibraryPaths; }
     QVariantMap steamFriendsSettings() const { return m_steamFriendsSettings; }
     QVariantMap originalSteamFriendsSettings() const { return m_originalSteamFriendsSettings; }
+    QVariantList steamNotificationPreferences() const { return m_steamNotificationPreferences; }
+    QVariantList originalSteamNotificationPreferences() const { return m_originalSteamNotificationPreferences; }
     QStringList fixedDrives() const { return m_fixedDrives; }
     QVariantMap driveStates() const { return m_driveStates; }
     QVariantMap originalDriveStates() const { return m_originalDriveStates; }
@@ -638,6 +642,7 @@ public:
     void setCs2OverlayActive(bool val);
     void setVisualEffects(const QVariantMap &val);
     void setSteamFriendsSettings(const QVariantMap &val);
+    void setSteamNotificationPreferences(const QVariantList &val);
     void setDeleteUltimateStaged(bool val);
     void setDeleteDefenderStaged(bool val);
     void setPagefileMin(int val);
@@ -951,6 +956,8 @@ signals:
     void steamLibraryPathsChanged(const QVariantList &val);
     void steamFriendsSettingsChanged(const QVariantMap &val);
     void originalSteamFriendsSettingsChanged(const QVariantMap &val);
+    void steamNotificationPreferencesChanged(const QVariantList &val);
+    void originalSteamNotificationPreferencesChanged(const QVariantList &val);
     void fixedDrivesChanged(const QStringList &val);
     void driveStatesChanged(const QVariantMap &val);
     void originalDriveStatesChanged(const QVariantMap &val);
@@ -1219,9 +1226,13 @@ private:
     QVariantList m_steamLibraryPaths;
     QVariantMap m_steamFriendsSettings;
     QVariantMap m_originalSteamFriendsSettings;
+    QVariantList m_steamNotificationPreferences;
+    QVariantList m_originalSteamNotificationPreferences;
     QStringList m_stagedUnpairedSteamDevices;
     bool getVdfFriendsSettings(const QString &filePath, const QString &accountId, QVariantMap &settings);
     bool updateVdfFriendsSettings(const QString &filePath, const QString &accountId, const QVariantMap &settings);
+    bool getVdfNotificationPreferences(const QString &filePath, QVariantList &prefs);
+    bool updateVdfNotificationPreferences(const QString &filePath, const QVariantList &prefs);
     bool m_isOptimizingSystem = false;
     double m_systemProgress = 0.0;
     int m_pagefileMin = 4096;

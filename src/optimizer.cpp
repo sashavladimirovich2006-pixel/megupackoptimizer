@@ -3065,6 +3065,95 @@ bool Optimizer::getVdfFriendsSettings(const QString &filePath, const QString &ac
     return true;
 }
 
+bool Optimizer::getVdfNotificationPreferences(const QString &filePath, QVariantList &prefs) {
+    QFile file(filePath);
+    if (!file.open(QIODevice::ReadOnly | QIODevice::Text)) {
+        return false;
+    }
+    QString content = QString::fromUtf8(file.readAll());
+    file.close();
+
+    int start, end;
+    bool found = false;
+    QString contentCopy = content;
+    if (ensurePathExists(contentCopy, {"UserLocalConfigStore", "WebStorage"}, start, end)) {
+        found = true;
+    } else if (ensurePathExists(contentCopy, {"WebStorage"}, start, end)) {
+        found = true;
+    }
+
+    if (!found) {
+        return false;
+    }
+
+    QString prefStr = getValueFromBlockBody(contentCopy, start, end, "CachedNotificationPreferences");
+    if (prefStr.isEmpty()) {
+        return false;
+    }
+
+    QString cleanJson = prefStr;
+    cleanJson.replace(QLatin1String("\\\""), QLatin1String("\""));
+    cleanJson.replace(QLatin1String("\\\\"), QLatin1String("\\"));
+
+    QJsonDocument doc = QJsonDocument::fromJson(cleanJson.toUtf8());
+    if (doc.isArray()) {
+        prefs = doc.array().toVariantList();
+        return true;
+    }
+    return false;
+}
+
+bool Optimizer::updateVdfNotificationPreferences(const QString &filePath, const QVariantList &prefs) {
+    QFile file(filePath);
+    if (!file.open(QIODevice::ReadOnly | QIODevice::Text)) {
+        return false;
+    }
+    QString content = QString::fromUtf8(file.readAll());
+    file.close();
+
+    int start, end;
+    bool found = false;
+    if (ensurePathExists(content, {"UserLocalConfigStore", "WebStorage"}, start, end)) {
+        found = true;
+    } else if (ensurePathExists(content, {"WebStorage"}, start, end)) {
+        found = true;
+    }
+
+    if (!found) {
+        return false;
+    }
+
+    QJsonArray arr;
+    for (const QVariant &var : prefs) {
+        arr.append(QJsonObject::fromVariantMap(var.toMap()));
+    }
+
+    QString cleanJson = QString::fromUtf8(QJsonDocument(arr).toJson(QJsonDocument::Compact));
+    QString escapedJson = cleanJson;
+    escapedJson.replace(QLatin1String("\\"), QLatin1String("\\\\"));
+    escapedJson.replace(QLatin1String("\""), QLatin1String("\\\""));
+
+    if (!updateValueInBlockBody(content, start, end, "CachedNotificationPreferences", escapedJson)) {
+        QString insertStr = QString("\t\t\"CachedNotificationPreferences\"\t\t\"%1\"\n").arg(escapedJson);
+        content.insert(end, insertStr);
+        end += insertStr.length();
+    }
+
+    if (!file.open(QIODevice::WriteOnly | QIODevice::Text)) {
+        return false;
+    }
+    file.write(content.toUtf8());
+    file.close();
+    return true;
+}
+
+void Optimizer::setSteamNotificationPreferences(const QVariantList &val) {
+    if (m_steamNotificationPreferences != val) {
+        m_steamNotificationPreferences = val;
+        emit steamNotificationPreferencesChanged(m_steamNotificationPreferences);
+    }
+}
+
 bool Optimizer::updateVdfFriendsSettings(const QString &filePath, const QString &accountId, const QVariantMap &settings) {
     QFile file(filePath);
     if (!file.open(QIODevice::ReadOnly | QIODevice::Text)) {
@@ -7322,6 +7411,7 @@ void Optimizer::loadSystemStates() {
     defaultFriendsSettings["bHighContrastMode"] = false;
     defaultFriendsSettings["desktop_ui_scale"] = 1.0;
 
+    QString loadedVdfPath = "";
     m_steamFriendsSettings.clear();
     if (m_steamInstalled) {
         QString userdataPath = steamPath + "/userdata";
@@ -7329,7 +7419,6 @@ void Optimizer::loadSystemStates() {
         QDir userdataDir(userdataPath);
         if (userdataDir.exists()) {
             bool loaded = false;
-            QString loadedVdfPath = "";
             QString activeUserStr = getActiveOrRecentUser(steamPath);
             Logger::log("loadSystemStates: Active or recent user ID resolved: " + activeUserStr, "INFO");
             if (!activeUserStr.isEmpty()) {
@@ -7482,6 +7571,17 @@ void Optimizer::loadSystemStates() {
     m_originalSteamFriendsSettings = m_steamFriendsSettings;
     emit steamFriendsSettingsChanged(m_steamFriendsSettings);
     emit originalSteamFriendsSettingsChanged(m_originalSteamFriendsSettings);
+
+    m_steamNotificationPreferences.clear();
+    if (!loadedVdfPath.isEmpty()) {
+        QVariantList loadedNotifPrefs;
+        if (getVdfNotificationPreferences(loadedVdfPath, loadedNotifPrefs)) {
+            m_steamNotificationPreferences = loadedNotifPrefs;
+        }
+    }
+    m_originalSteamNotificationPreferences = m_steamNotificationPreferences;
+    emit steamNotificationPreferencesChanged(m_steamNotificationPreferences);
+    emit originalSteamNotificationPreferencesChanged(m_originalSteamNotificationPreferences);
 
     // Load global Steam Overlay active state (VDF & Registry)
     bool steamOverlayActive = true;
@@ -8416,10 +8516,14 @@ void Optimizer::startSystemOptimization() {
     QStringList stagedUnpairedDevices = m_stagedUnpairedSteamDevices;
     m_stagedUnpairedSteamDevices.clear();
 
+    QVariantList steamNotificationPreferencesVal = m_steamNotificationPreferences;
+    QVariantList origSteamNotificationPreferencesVal = m_originalSteamNotificationPreferences;
+    bool steamNotificationPreferencesChanged = (m_steamNotificationPreferences != m_originalSteamNotificationPreferences);
+
     m_explorerNeedsRestart = false;
     emit explorerNeedsRestartChanged(m_explorerNeedsRestart);
 
-    QThread* worker = QThread::create([this, explorerShowExtensionsVal, origExplorerShowExtensionsVal, explorerShowHiddenVal, origExplorerShowHiddenVal, explorerShowExtractFilesVal, origExplorerShowExtractFilesVal, explorerClassicRibbonVal, origExplorerClassicRibbonVal, explorerShowPreviewPaneVal, origExplorerShowPreviewPaneVal, explorerShowRecycleBinVal, origExplorerShowRecycleBinVal, explorerPinRecycleBinVal, origExplorerPinRecycleBinVal, explorerPinHomeVal, origExplorerPinHomeVal, explorerPinGalleryVal, origExplorerPinGalleryVal, explorerUseCheckboxesVal, origExplorerUseCheckboxesVal, explorerSyncNotificationsVal, origExplorerSyncNotificationsVal, explorerLaunchToVal, origExplorerLaunchToVal, forceVal, searchVal, classicContextMenuVal, shortcutArrowsVal, clipboardHistoryVal, taskbarEndTaskVal, taskbarSecondsVal, hibernationVal, overlayVal, coreIsolationVal, hagsVal, mouseAccelVal, gameModeVal, firewallVal, bitlockerVal, discordOverlayVal, notificationsVal, notifGlobalVal, notifAppVal, notifSoundsVal, notifLockscreenVal, targetPowerSchemeVal, activePowerSchemeVal, deleteUltimateStagedVal, deleteDefenderStagedVal, defenderVal, defenderRegistryVal, defenderCmdVal, defenderServiceVal, remoteAccessVal, telemetryVal, telemetryDiagTrackVal, telemetryWapPushVal, telemetryCeipVal, telemetryWerVal, windowsUpdateModeVal, targets, originalTargets, origSearch, origClassicContextMenu, origShortcutArrows, origClipboardHistory, origTaskbarEndTask, origTaskbarSeconds, origHibernation, origOverlay, origCoreIsolation, origHags, origMouseAccel, origGameMode, origFirewall, origBitlocker, origDiscordOverlay, origNotifications, origNotifGlobal, origNotifApp, origNotifSounds, origNotifLockscreen, origDefender, origDefenderRegistry, origDefenderCmd, origDefenderService, origRemoteAccess, origTelemetry, origTelemetryDiagTrack, origTelemetryWapPush, origTelemetryCeip, origTelemetryWer, origWindowsUpdateMode, usbDevicesVal, origUsbDevicesVal, appNotificationSettingsVal, steamPathVal, cs2OptionsVal, origCs2OptionsVal, steamOverlayVal, origSteamOverlayVal, cs2OverlayVal, origCs2OverlayVal, visualEffectsVal, origVisualEffectsVal, steamFriendsSettingsVal, origSteamFriendsSettingsVal, steamFriendsChanged, pagefileMinVal, origPagefileMinVal, pagefileMaxVal, origPagefileMaxVal, adsTailoredExperiencesVal, origAdsTailored, adsAdvertisingIdVal, origAdsAdvertisingId, adsSuggestedContentVal, origAdsSuggestedContent, adsSettingsHomeVal, origAdsSettingsHome, adsSuggestedNotificationsVal, origAdsSuggestedNotifications, adsLockScreenTipsVal, origAdsLockScreenTips, adsWindowsTipsVal, origAdsWindowsTips, adsWelcomeExperienceVal, origAdsWelcomeExperience, adsFinishSetupVal, origAdsFinishSetup, privacyLocationVal, origPrivacyLocation, privacyTelemetryVal, origPrivacyTelemetry, privacyCeipVal, origPrivacyCeip, privacyAppsTelemetryVal, origPrivacyAppsTelemetry, privacyAppLaunchesVal, origPrivacyAppLaunches, privacyImproveInkingVal, origPrivacyImproveInking, privacyPersonalizeInkingVal, origPrivacyPersonalizeInking, privacyErrorReportingVal, origPrivacyErrorReporting, privacyLockScreenCameraVal, origPrivacyLockScreenCamera, privacyCameraIndicatorVal, origPrivacyCameraIndicator, privacyOnlineSpeechVal, origPrivacyOnlineSpeech, superuserGodModeVal, superuserDeveloperModeVal, superuserUacLevelVal, superuserUcpdVal, superuserGodModeOrig, superuserDeveloperModeOrig, superuserUacLevelOrig, superuserUcpdOrig, startMenuWebResultsVal, origStartMenuWebResultsVal, startMenuAutoinstallVal, origStartMenuAutoinstallVal, startMenuAccountNotificationsVal, origStartMenuAccountNotificationsVal, startMenuShowHibernateVal, origStartMenuShowHibernateVal, desktopShowThisPCVal, origDesktopShowThisPCVal, desktopShowWidgetsVal, origDesktopShowWidgetsVal, desktopIconShadowsVal, origDesktopIconShadowsVal, desktopShowDesktopButtonVal, origDesktopShowDesktopButtonVal, desktopAeroShakeVal, origDesktopAeroShakeVal, desktopWallpaperQualityVal, origDesktopWallpaperQualityVal, coinstallersActiveVal, origCoinstallersActiveVal, driverUpdatesVal, origDriverUpdatesVal, appUpdatesVal, origAppUpdatesVal, storageSenseVal, origStorageSenseVal, driveOptimizationVal, origDriveOptimizationVal, hibernationSizeVal, origHibernationSize, fastStartupVal, origFastStartup, stagedUnpairedDevices]() {
+    QThread* worker = QThread::create([this, explorerShowExtensionsVal, origExplorerShowExtensionsVal, explorerShowHiddenVal, origExplorerShowHiddenVal, explorerShowExtractFilesVal, origExplorerShowExtractFilesVal, explorerClassicRibbonVal, origExplorerClassicRibbonVal, explorerShowPreviewPaneVal, origExplorerShowPreviewPaneVal, explorerShowRecycleBinVal, origExplorerShowRecycleBinVal, explorerPinRecycleBinVal, origExplorerPinRecycleBinVal, explorerPinHomeVal, origExplorerPinHomeVal, explorerPinGalleryVal, origExplorerPinGalleryVal, explorerUseCheckboxesVal, origExplorerUseCheckboxesVal, explorerSyncNotificationsVal, origExplorerSyncNotificationsVal, explorerLaunchToVal, origExplorerLaunchToVal, forceVal, searchVal, classicContextMenuVal, shortcutArrowsVal, clipboardHistoryVal, taskbarEndTaskVal, taskbarSecondsVal, hibernationVal, overlayVal, coreIsolationVal, hagsVal, mouseAccelVal, gameModeVal, firewallVal, bitlockerVal, discordOverlayVal, notificationsVal, notifGlobalVal, notifAppVal, notifSoundsVal, notifLockscreenVal, targetPowerSchemeVal, activePowerSchemeVal, deleteUltimateStagedVal, deleteDefenderStagedVal, defenderVal, defenderRegistryVal, defenderCmdVal, defenderServiceVal, remoteAccessVal, telemetryVal, telemetryDiagTrackVal, telemetryWapPushVal, telemetryCeipVal, telemetryWerVal, windowsUpdateModeVal, targets, originalTargets, origSearch, origClassicContextMenu, origShortcutArrows, origClipboardHistory, origTaskbarEndTask, origTaskbarSeconds, origHibernation, origOverlay, origCoreIsolation, origHags, origMouseAccel, origGameMode, origFirewall, origBitlocker, origDiscordOverlay, origNotifications, origNotifGlobal, origNotifApp, origNotifSounds, origNotifLockscreen, origDefender, origDefenderRegistry, origDefenderCmd, origDefenderService, origRemoteAccess, origTelemetry, origTelemetryDiagTrack, origTelemetryWapPush, origTelemetryCeip, origTelemetryWer, origWindowsUpdateMode, usbDevicesVal, origUsbDevicesVal, appNotificationSettingsVal, steamPathVal, cs2OptionsVal, origCs2OptionsVal, steamOverlayVal, origSteamOverlayVal, cs2OverlayVal, origCs2OverlayVal, visualEffectsVal, origVisualEffectsVal, steamFriendsSettingsVal, origSteamFriendsSettingsVal, steamFriendsChanged, pagefileMinVal, origPagefileMinVal, pagefileMaxVal, origPagefileMaxVal, adsTailoredExperiencesVal, origAdsTailored, adsAdvertisingIdVal, origAdsAdvertisingId, adsSuggestedContentVal, origAdsSuggestedContent, adsSettingsHomeVal, origAdsSettingsHome, adsSuggestedNotificationsVal, origAdsSuggestedNotifications, adsLockScreenTipsVal, origAdsLockScreenTips, adsWindowsTipsVal, origAdsWindowsTips, adsWelcomeExperienceVal, origAdsWelcomeExperience, adsFinishSetupVal, origAdsFinishSetup, privacyLocationVal, origPrivacyLocation, privacyTelemetryVal, origPrivacyTelemetry, privacyCeipVal, origPrivacyCeip, privacyAppsTelemetryVal, origPrivacyAppsTelemetry, privacyAppLaunchesVal, origPrivacyAppLaunches, privacyImproveInkingVal, origPrivacyImproveInking, privacyPersonalizeInkingVal, origPrivacyPersonalizeInking, privacyErrorReportingVal, origPrivacyErrorReporting, privacyLockScreenCameraVal, origPrivacyLockScreenCamera, privacyCameraIndicatorVal, origPrivacyCameraIndicator, privacyOnlineSpeechVal, origPrivacyOnlineSpeech, superuserGodModeVal, superuserDeveloperModeVal, superuserUacLevelVal, superuserUcpdVal, superuserGodModeOrig, superuserDeveloperModeOrig, superuserUacLevelOrig, superuserUcpdOrig, startMenuWebResultsVal, origStartMenuWebResultsVal, startMenuAutoinstallVal, origStartMenuAutoinstallVal, startMenuAccountNotificationsVal, origStartMenuAccountNotificationsVal, startMenuShowHibernateVal, origStartMenuShowHibernateVal, desktopShowThisPCVal, origDesktopShowThisPCVal, desktopShowWidgetsVal, origDesktopShowWidgetsVal, desktopIconShadowsVal, origDesktopIconShadowsVal, desktopShowDesktopButtonVal, origDesktopShowDesktopButtonVal, desktopAeroShakeVal, origDesktopAeroShakeVal, desktopWallpaperQualityVal, origDesktopWallpaperQualityVal, coinstallersActiveVal, origCoinstallersActiveVal, driverUpdatesVal, origDriverUpdatesVal, appUpdatesVal, origAppUpdatesVal, storageSenseVal, origStorageSenseVal, driveOptimizationVal, origDriveOptimizationVal, hibernationSizeVal, origHibernationSize, fastStartupVal, origFastStartup, stagedUnpairedDevices, steamNotificationPreferencesVal, origSteamNotificationPreferencesVal, steamNotificationPreferencesChanged]() {
         // Step 00: Auto-create backup before making changes
         if (!forceVal && Settings::instance()->createBackup()) {
             emit systemStepReported(tr("Creating automatic system backup..."), "INFO");
@@ -11811,6 +11915,12 @@ void Optimizer::startSystemOptimization() {
                                 }
                             }
 
+                            if (steamNotificationPreferencesChanged) {
+                                if (updateVdfNotificationPreferences(vdfPath, steamNotificationPreferencesVal)) {
+                                    profileUpdated = true;
+                                }
+                            }
+
                             if (profileUpdated) {
                                 updatedCount++;
                             }
@@ -12339,6 +12449,7 @@ void Optimizer::startSystemOptimization() {
         m_originalSteamOverlayActive = steamOverlayVal;
         m_originalCs2OverlayActive = cs2OverlayVal;
         m_originalSteamFriendsSettings = steamFriendsSettingsVal;
+        m_originalSteamNotificationPreferences = steamNotificationPreferencesVal;
         m_originalVisualEffects = visualEffectsVal;
         m_originalDriveStates = targets;
         m_originalPagefileMin = pagefileMinVal;

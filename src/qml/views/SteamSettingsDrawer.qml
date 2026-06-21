@@ -1779,6 +1779,123 @@ Item {
         spacing: 20
         visible: steamSettingsDrawer.subPage === "notifications"
 
+        property var notificationSections: [
+            {
+                title: qsTr("Personal Activity"),
+                items: [
+                    { type: 2, label: qsTr("I receive a gift") },
+                    { type: 3, label: qsTr("A discussion I subscribed to has a reply") },
+                    { type: 4, label: qsTr("I receive a new item in my inventory") },
+                    { type: 5, label: qsTr("I receive a friend invitation") },
+                    { type: 9, label: qsTr("I receive a new trade offer") },
+                    { type: 10, label: qsTr("My annual Steam Replay is now available") },
+                    { type: 11, label: qsTr("I receive a reply from Steam Support") },
+                    { type: 12, label: qsTr("I receive a Steam Turn notification") },
+                    { type: 14, label: qsTr("A dev sends a review copy to a Curator group I'm part of") },
+                    { type: 28, label: qsTr("I receive an invite to a Playtest or Limited Launch") },
+                    { type: 29, label: qsTr("I receive Steam Community Awards") }
+                ]
+            },
+            {
+                title: qsTr("Wishlist Activity"),
+                items: [
+                    { type: 8, label: qsTr("An item on my wishlist is on sale") }
+                ]
+            },
+            {
+                title: qsTr("Steam Family Activity"),
+                items: [
+                    { type: 15, label: qsTr("A child requests access to Steam features") },
+                    { type: 16, label: qsTr("I receive an invite to a Steam Family") },
+                    { type: 17, label: qsTr("A child in my family requests a purchase") },
+                    { type: 18, label: qsTr("A child requests additional playtime") },
+                    { type: 19, label: qsTr("Family member requests access") }
+                ]
+            },
+            {
+                title: qsTr("Developer / Game News"),
+                items: [
+                    { type: 20, label: qsTr("A publisher/developer I follow has released a game") },
+                    { type: 21, label: qsTr("A publisher/developer I follow released a demo") },
+                    { type: 22, label: qsTr("Game-specific event notifications") }
+                ]
+            },
+            {
+                title: qsTr("Store News"),
+                items: [
+                    { type: 6, label: qsTr("There's a major sale") }
+                ]
+            }
+        ]
+
+        function isTargetSupported(notifType, bitVal) {
+            // Wishlist (type 8) supports Email (1) and Feed (8)
+            if (notifType === 8) {
+                return bitVal === 1 || bitVal === 8;
+            }
+            // Developer/Game News (20, 21, 22) supports Email (1) only
+            if (notifType === 20 || notifType === 21 || notifType === 22) {
+                return bitVal === 1;
+            }
+            // Store News (type 6) supports Email (1) only
+            if (notifType === 6) {
+                return bitVal === 1;
+            }
+            return true;
+        }
+
+        function getNotificationTarget(notifType, bitVal) {
+            if (!isTargetSupported(notifType, bitVal)) return false;
+            var prefs = optimizerBackend.steamNotificationPreferences;
+            if (!prefs) return false;
+            for (var i = 0; i < prefs.length; i++) {
+                if (prefs[i].notification_type === notifType) {
+                    return (prefs[i].notification_targets & bitVal) !== 0;
+                }
+            }
+            return false;
+        }
+
+        function toggleNotificationPreference(notifType, targetBit) {
+            var prefs = optimizerBackend.steamNotificationPreferences || [];
+            var currentTargets = 0;
+            var foundIndex = -1;
+            for (var i = 0; i < prefs.length; i++) {
+                if (prefs[i].notification_type === notifType) {
+                    currentTargets = prefs[i].notification_targets;
+                    foundIndex = i;
+                    break;
+                }
+            }
+
+            var newTargets = currentTargets;
+            if (targetBit === 1) {
+                if ((currentTargets & 1) !== 0) {
+                    newTargets = 0;
+                } else {
+                    newTargets = 1;
+                }
+            } else {
+                newTargets ^= targetBit;
+                if (newTargets !== 0) {
+                    newTargets |= 1;
+                }
+            }
+
+            var newPrefs = [];
+            for (var i = 0; i < prefs.length; i++) {
+                newPrefs.push(prefs[i]);
+            }
+
+            if (foundIndex !== -1) {
+                newPrefs[foundIndex] = { "notification_type": notifType, "notification_targets": newTargets };
+            } else {
+                newPrefs.push({ "notification_type": notifType, "notification_targets": newTargets });
+            }
+
+            optimizerBackend.steamNotificationPreferences = newPrefs;
+        }
+
         Row {
             spacing: 10
             width: parent.width
@@ -2241,6 +2358,178 @@ Item {
                             cursorShape: Qt.PointingHandCursor
                             onClicked: {
                                 root.toggleSteamFriendsSetting("flashWindowOnMessage", modelData.id);
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
+        Rectangle {
+            width: parent.width
+            height: 1
+            color: Theme.border
+        }
+
+        // Section: Notification Preferences Grid
+        Text {
+            text: qsTr("Notification Preferences Matrix")
+            color: Theme.textPrimary
+            font.family: Theme.fontFamily
+            font.pixelSize: 12
+            font.bold: true
+        }
+
+        Row {
+            width: parent.width
+            Text {
+                text: qsTr("Notification Type")
+                width: parent.width - 240
+                color: Theme.textSecondary
+                font.family: Theme.fontFamily
+                font.pixelSize: 10
+                font.bold: true
+                font.letterSpacing: 0.5
+            }
+            Text {
+                text: qsTr("Email")
+                width: 60
+                horizontalAlignment: Text.AlignHCenter
+                color: Theme.textSecondary
+                font.family: Theme.fontFamily
+                font.pixelSize: 10
+                font.bold: true
+                font.letterSpacing: 0.5
+            }
+            Text {
+                text: qsTr("Toast")
+                width: 60
+                horizontalAlignment: Text.AlignHCenter
+                color: Theme.textSecondary
+                font.family: Theme.fontFamily
+                font.pixelSize: 10
+                font.bold: true
+                font.letterSpacing: 0.5
+            }
+            Text {
+                text: qsTr("Mobile")
+                width: 60
+                horizontalAlignment: Text.AlignHCenter
+                color: Theme.textSecondary
+                font.family: Theme.fontFamily
+                font.pixelSize: 10
+                font.bold: true
+                font.letterSpacing: 0.5
+            }
+            Text {
+                text: qsTr("Feed")
+                width: 60
+                horizontalAlignment: Text.AlignHCenter
+                color: Theme.textSecondary
+                font.family: Theme.fontFamily
+                font.pixelSize: 10
+                font.bold: true
+                font.letterSpacing: 0.5
+            }
+        }
+
+        Repeater {
+            model: steamNotificationsPage.notificationSections
+            delegate: Column {
+                width: parent.width
+                spacing: 10
+                
+                Text {
+                    text: modelData.title
+                    color: Theme.accent
+                    font.family: Theme.fontFamily
+                    font.pixelSize: 11
+                    font.bold: true
+                    font.letterSpacing: 1.0
+                    topPadding: 10
+                }
+                
+                Column {
+                    width: parent.width
+                    spacing: 8
+                    
+                    Repeater {
+                        model: modelData.items
+                        delegate: Row {
+                            width: parent.width
+                            
+                            Text {
+                                text: modelData.label
+                                width: parent.width - 240
+                                color: Theme.textPrimary
+                                font.family: Theme.fontFamily
+                                font.pixelSize: 11
+                                wrapMode: Text.WordWrap
+                                anchors.verticalCenter: parent.verticalCenter
+                            }
+                            
+                            // Email Switch
+                            Item {
+                                width: 60
+                                height: 28
+                                anchors.verticalCenter: parent.verticalCenter
+                                MeguSwitch {
+                                    anchors.centerIn: parent
+                                    steamStyle: true
+                                    visible: steamNotificationsPage.isTargetSupported(modelData.type, 1)
+                                    checked: visible && steamNotificationsPage.getNotificationTarget(modelData.type, 1)
+                                    onToggled: {
+                                        steamNotificationsPage.toggleNotificationPreference(modelData.type, 1)
+                                    }
+                                }
+                            }
+                            
+                            // Toast Switch
+                            Item {
+                                width: 60
+                                height: 28
+                                anchors.verticalCenter: parent.verticalCenter
+                                MeguSwitch {
+                                    anchors.centerIn: parent
+                                    steamStyle: true
+                                    visible: steamNotificationsPage.isTargetSupported(modelData.type, 2)
+                                    checked: visible && steamNotificationsPage.getNotificationTarget(modelData.type, 2)
+                                    onToggled: {
+                                        steamNotificationsPage.toggleNotificationPreference(modelData.type, 2)
+                                    }
+                                }
+                            }
+                            
+                            // Mobile Switch
+                            Item {
+                                width: 60
+                                height: 28
+                                anchors.verticalCenter: parent.verticalCenter
+                                MeguSwitch {
+                                    anchors.centerIn: parent
+                                    steamStyle: true
+                                    visible: steamNotificationsPage.isTargetSupported(modelData.type, 4)
+                                    checked: visible && steamNotificationsPage.getNotificationTarget(modelData.type, 4)
+                                    onToggled: {
+                                        steamNotificationsPage.toggleNotificationPreference(modelData.type, 4)
+                                    }
+                                }
+                            }
+                            
+                            // Feed Switch
+                            Item {
+                                width: 60
+                                height: 28
+                                anchors.verticalCenter: parent.verticalCenter
+                                MeguSwitch {
+                                    anchors.centerIn: parent
+                                    steamStyle: true
+                                    visible: steamNotificationsPage.isTargetSupported(modelData.type, 8)
+                                    checked: visible && steamNotificationsPage.getNotificationTarget(modelData.type, 8)
+                                    onToggled: {
+                                        steamNotificationsPage.toggleNotificationPreference(modelData.type, 8)
+                                    }
+                                }
                             }
                         }
                     }
