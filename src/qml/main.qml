@@ -166,15 +166,23 @@ ApplicationWindow {
             MouseArea {
                 id: headerDragArea
                 anchors.fill: parent
+
+                property bool pressStartedMaximized: false
+                property real pressX: 0
+                property real pressY: 0
                 
-                onPressed: {
-                    if (window.visibility !== Window.Maximized) {
+                onPressed: (mouse) => {
+                    pressStartedMaximized = window.visibility === Window.Maximized;
+                    pressX = mouse.x;
+                    pressY = mouse.y;
+
+                    if (!pressStartedMaximized) {
                         window.startSystemMove();
                     }
                 }
                 
                 onPositionChanged: (mouse) => {
-                    if (window.visibility === Window.Maximized) {
+                    if (pressStartedMaximized && window.visibility === Window.Maximized) {
                         var dragX = mouse.x;
                         var dragY = mouse.y;
                         window.showNormal();
@@ -182,6 +190,14 @@ ApplicationWindow {
                         window.y = dragY - 20;
                         window.startSystemMove();
                     }
+                }
+
+                onReleased: {
+                    pressStartedMaximized = false;
+                }
+
+                onCanceled: {
+                    pressStartedMaximized = false;
                 }
                 
                 onDoubleClicked: {

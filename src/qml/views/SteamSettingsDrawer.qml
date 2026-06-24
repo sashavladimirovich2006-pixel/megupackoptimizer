@@ -12832,7 +12832,6 @@ Item {
 
         // Close nested Column container
     }
-    } // Close outer Column container
 
     // PAGE 15: Broadcasting Sub-Page
     Column {
@@ -13842,39 +13841,75 @@ Item {
                 width: 80
                 onClicked: steamSettingsDrawer.subPage = "main"
             }
-
-            Text {
-                text: qsTr("Controller customization")
-                color: Theme.textPrimary
-                font.family: Theme.fontFamily
-                font.pixelSize: 16
-                font.bold: true
-                anchors.verticalCenter: parent.verticalCenter
-            }
-        }
-
-        Row {
-            spacing: 10
-            width: parent.width
-            Text {
-                text: qsTr("EXTERNAL GAMEPAD SETTINGS")
-                color: Theme.textPrimary
-                font.family: Theme.fontFamily
-                font.pixelSize: 13
-                font.bold: true
-                font.letterSpacing: 1.5
-                anchors.verticalCenter: parent.verticalCenter
-            }
         }
 
         Rectangle {
             width: parent.width
-            height: 1
-            color: Theme.border
-        }
+            implicitHeight: customizationCol.implicitHeight + 24
+            height: implicitHeight
+            color: "#05FFFFFF"
+            border.color: Theme.warning
+            border.width: 1
+            radius: Theme.radiusSmall
 
-        Column {
-            width: parent.width
+            Column {
+                id: customizationCol
+                x: 12
+                y: 12
+                width: parent.width - 24
+                spacing: 16
+
+                Text {
+                    text: qsTr("Controller customization")
+                    color: Theme.textPrimary
+                    font.family: Theme.fontFamily
+                    font.pixelSize: 16
+                    font.bold: true
+                }
+
+                Row {
+                    spacing: 10
+                    width: parent.width
+                    Text {
+                        text: qsTr("CUSTOMIZATION")
+                        color: Theme.textPrimary
+                        font.family: Theme.fontFamily
+                        font.pixelSize: 13
+                        font.bold: true
+                        font.letterSpacing: 1.5
+                        anchors.verticalCenter: parent.verticalCenter
+                    }
+                }
+
+                Rectangle {
+                    width: parent.width
+                    height: 1
+                    color: Theme.border
+                }
+
+                Row {
+                    spacing: 10
+                    width: parent.width
+                    Text {
+                        text: qsTr("EXTERNAL GAMEPAD SETTINGS")
+                        color: Theme.textPrimary
+                        font.family: Theme.fontFamily
+                        font.pixelSize: 13
+                        font.bold: true
+                        font.letterSpacing: 1.5
+                        anchors.verticalCenter: parent.verticalCenter
+                    }
+                }
+
+                Rectangle {
+                    width: parent.width
+                    height: 1
+                    color: Theme.border
+                }
+
+                Column {
+                    id: externalSettingsCol
+                    width: parent.width
             spacing: 16
 
             // Dropdown: Idle Gamepad Shutdown Timeout
@@ -14269,36 +14304,34 @@ Item {
                     onToggled: (isChecked) => { root.toggleSteamFriendsSetting("Controller_TurnOffBigPicture", isChecked); }
                 }
             }
+                }
 
+                Row {
+                    spacing: 10
+                    width: parent.width
+                    Text {
+                        text: qsTr("GENERAL CONTROLLER SETTINGS")
+                        color: Theme.textPrimary
+                        font.family: Theme.fontFamily
+                        font.pixelSize: 13
+                        font.bold: true
+                        font.letterSpacing: 1.5
+                        anchors.verticalCenter: parent.verticalCenter
+                    }
+                }
 
-        }
+                Rectangle {
+                    width: parent.width
+                    height: 1
+                    color: Theme.border
+                }
 
-        Row {
-            spacing: 10
-            width: parent.width
-            Text {
-                text: qsTr("GENERAL CONTROLLER SETTINGS")
-                color: Theme.textPrimary
-                font.family: Theme.fontFamily
-                font.pixelSize: 13
-                font.bold: true
-                font.letterSpacing: 1.5
-                anchors.verticalCenter: parent.verticalCenter
-            }
-        }
+                Column {
+                    id: generalSettingsCol
+                    width: parent.width
+                    spacing: 16
 
-        Rectangle {
-            width: parent.width
-            height: 1
-            color: Theme.border
-        }
-
-        Column {
-            width: parent.width
-            spacing: 16
-
-            // Guide Button focuses Steam
-            Rectangle {
+                    Rectangle {
                 width: parent.width
                 height: Math.max(50, guideCol.implicitHeight + 12)
                 color: "transparent"
@@ -14334,9 +14367,7 @@ Item {
                     onToggled: (isChecked) => { root.toggleSteamFriendsSetting("Controller_GuideButton", isChecked); }
                 }
             }
-
-            // Guide Button Chord Configuration
-            Rectangle {
+                    Rectangle {
                 width: parent.width
                 height: Math.max(50, chordCol.implicitHeight + 12)
                 color: "transparent"
@@ -14372,48 +14403,79 @@ Item {
                     onToggled: (isChecked) => { root.toggleSteamFriendsSetting("Controller_EnableChord", isChecked); }
                 }
             }
-
-            // Divider
-            Rectangle {
-                width: parent.width
-                height: 1
-                color: Theme.border
-            }
-
-            // Section Header: Connected Controllers
-            Item {
-                width: parent.width
-                height: 24
-                
-                Text {
-                    text: qsTr("CONNECTED CONTROLLERS")
-                    color: Theme.textPrimary
-                    font.family: Theme.fontFamily
-                    font.pixelSize: 13
-                    font.bold: true
-                    font.letterSpacing: 1.5
-                    anchors.left: parent.left
-                    anchors.verticalCenter: parent.verticalCenter
-                }
-                
-                MeguButton {
-                    text: qsTr("Scan")
-                    width: 70
-                    height: 24
-                    anchors.right: parent.right
-                    anchors.verticalCenter: parent.verticalCenter
-                    onClicked: steamControllerPage.refreshControllers()
                 }
             }
+        }
 
-            Rectangle {
-                width: parent.width
-                height: 1
-                color: Theme.border
-            }
+        Rectangle {
+            width: parent.width
+            implicitHeight: optimizationCol.implicitHeight + 24
+            height: implicitHeight
+            color: "#05FFFFFF"
+            border.color: Theme.success
+            border.width: 1
+            radius: Theme.radiusSmall
 
-            // List of connected controllers
             Column {
+                id: optimizationCol
+                x: 12
+                y: 12
+                width: parent.width - 24
+                spacing: 16
+
+                Row {
+                    spacing: 10
+                    width: parent.width
+                    Text {
+                        text: qsTr("OPTIMIZATION")
+                        color: Theme.textPrimary
+                        font.family: Theme.fontFamily
+                        font.pixelSize: 13
+                        font.bold: true
+                        font.letterSpacing: 1.5
+                        anchors.verticalCenter: parent.verticalCenter
+                    }
+                }
+
+                Rectangle {
+                    width: parent.width
+                    height: 1
+                    color: Theme.border
+                }
+
+                Item {
+                    width: parent.width
+                    height: 24
+                    
+                    Text {
+                        text: qsTr("CONNECTED CONTROLLERS")
+                        color: Theme.textPrimary
+                        font.family: Theme.fontFamily
+                        font.pixelSize: 13
+                        font.bold: true
+                        font.letterSpacing: 1.5
+                        anchors.left: parent.left
+                        anchors.verticalCenter: parent.verticalCenter
+                    }
+                    
+                    MeguButton {
+                        text: qsTr("Scan")
+                        width: 70
+                        height: 24
+                        anchors.right: parent.right
+                        anchors.verticalCenter: parent.verticalCenter
+                        onClicked: steamControllerPage.refreshControllers()
+                    }
+                }
+
+                Rectangle {
+                    width: parent.width
+                    height: 1
+                    color: Theme.border
+                }
+
+                Column {
+                id: connectedControllersCol
                 width: parent.width
                 spacing: 12
 
@@ -14427,13 +14489,13 @@ Item {
 
                 Repeater {
                     model: steamControllerPage.connectedGamepadsList
-                    delegate: Rectangle {
+                    delegate: Item {
                         width: parent.width
                         height: 50
-                        radius: Theme.radiusSmall
-                        color: "#05FFFFFF"
-                        border.color: Theme.border
-                        border.width: 1
+                        
+                        
+                        
+                        
 
                         // Gamepad Icon (Canvas)
                         Item {
@@ -14535,8 +14597,10 @@ Item {
                     }
                 }
             }
+            }
         }
     }
+    } // Close outer Column container
 
     // STEAM CACHE CLEAR WARNING DIALOG
     Rectangle {

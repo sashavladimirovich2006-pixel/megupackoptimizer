@@ -20,10 +20,9 @@ public:
         if (m_window) {
             HWND hwnd = (HWND)m_window->winId();
             
-            LONG style = GetWindowLong(hwnd, GWL_STYLE);
-            style |= WS_THICKFRAME | WS_MAXIMIZEBOX | WS_MINIMIZEBOX;
-            style &= ~WS_CAPTION;
-            SetWindowLong(hwnd, GWL_STYLE, style);
+            LONG_PTR style = GetWindowLongPtr(hwnd, GWL_STYLE);
+            style |= WS_CAPTION | WS_SYSMENU | WS_THICKFRAME | WS_MAXIMIZEBOX | WS_MINIMIZEBOX;
+            SetWindowLongPtr(hwnd, GWL_STYLE, style);
             
             SetWindowPos(hwnd, NULL, 0, 0, 0, 0, 
                          SWP_NOMOVE | SWP_NOSIZE | SWP_NOZORDER | SWP_NOACTIVATE | SWP_FRAMECHANGED);
@@ -41,8 +40,8 @@ public:
                         MONITORINFO mi = { 0 };
                         mi.cbSize = sizeof(mi);
                         if (GetMonitorInfo(hMonitor, &mi)) {
-                            mmi->ptMaxPosition.x = mi.rcWork.left;
-                            mmi->ptMaxPosition.y = mi.rcWork.top;
+                            mmi->ptMaxPosition.x = mi.rcWork.left - mi.rcMonitor.left;
+                            mmi->ptMaxPosition.y = mi.rcWork.top - mi.rcMonitor.top;
                             mmi->ptMaxSize.x = mi.rcWork.right - mi.rcWork.left;
                             mmi->ptMaxSize.y = mi.rcWork.bottom - mi.rcWork.top;
                             mmi->ptMaxTrackSize.x = mmi->ptMaxSize.x;
@@ -65,6 +64,10 @@ public:
                         int border_width = GetSystemMetrics(SM_CXSIZEFRAME) + GetSystemMetrics(SM_CXPADDEDBORDER);
                         int width = m_window->width();
                         int height = m_window->height();
+
+                        if (IsZoomed(msg->hwnd)) {
+                            break;
+                        }
                         
                         bool left = pt.x < border_width;
                         bool right = pt.x > width - border_width;
