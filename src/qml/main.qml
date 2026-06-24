@@ -210,7 +210,7 @@ ApplicationWindow {
             }
 
         // Left Island (Brand Logo + Real-Time Logs button)
-        Rectangle {
+        Item {
             id: leftIsland
             height: 72
             anchors.left: parent.left
@@ -218,24 +218,30 @@ ApplicationWindow {
             anchors.top: parent.top
             anchors.topMargin: leftIslandHover.containsMouse ? 7 : 8
             width: leftIslandRow.width + 24
-            color: Theme.panelBg
-            border.color: leftIslandHover.containsMouse ? Theme.borderHover : Theme.border
-            border.width: 1
-            radius: 10
 
             Behavior on anchors.topMargin { NumberAnimation { duration: Theme.animFast } }
-            Behavior on border.color { ColorAnimation { duration: Theme.animFast } }
 
-            layer.enabled: true
-            layer.effect: DropShadow {
-                transparentBorder: true
-                horizontalOffset: 0
-                verticalOffset: leftIslandHover.containsMouse ? 8 : 5
-                radius: leftIslandHover.containsMouse ? 14 : 10
-                color: leftIslandHover.containsMouse ? "#C0000000" : "#80000000"
-                Behavior on verticalOffset { NumberAnimation { duration: Theme.animFast } }
-                Behavior on radius { NumberAnimation { duration: Theme.animFast } }
-                Behavior on color { ColorAnimation { duration: Theme.animFast } }
+            // Shadow Background
+            Rectangle {
+                anchors.fill: parent
+                color: Theme.panelBg
+                border.color: leftIslandHover.containsMouse ? Theme.borderHover : Theme.border
+                border.width: 1
+                radius: 10
+
+                Behavior on border.color { ColorAnimation { duration: Theme.animFast } }
+
+                layer.enabled: true
+                layer.effect: DropShadow {
+                    transparentBorder: true
+                    horizontalOffset: 0
+                    verticalOffset: leftIslandHover.containsMouse ? 8 : 5
+                    radius: leftIslandHover.containsMouse ? 14 : 10
+                    color: leftIslandHover.containsMouse ? "#C0000000" : "#80000000"
+                    Behavior on verticalOffset { NumberAnimation { duration: Theme.animFast } }
+                    Behavior on radius { NumberAnimation { duration: Theme.animFast } }
+                    Behavior on color { ColorAnimation { duration: Theme.animFast } }
+                }
             }
 
             MouseArea {
@@ -347,6 +353,7 @@ ApplicationWindow {
                         Shape {
                             anchors.fill: parent
                             smooth: true
+                            antialiasing: true
                             ShapePath {
                                 fillColor: "transparent"
                                 strokeColor: Theme.currentTheme === "Blackout полностью черная" ? "#222" : Qt.rgba(Theme.border.r, Theme.border.g, Theme.border.b, 0.25)
@@ -366,7 +373,9 @@ ApplicationWindow {
                         Shape {
                             anchors.fill: parent
                             smooth: true
+                            antialiasing: true
                             layer.enabled: true
+                            layer.smooth: true
                             layer.effect: DropShadow {
                                 transparentBorder: true
                                 horizontalOffset: 0
@@ -529,31 +538,37 @@ ApplicationWindow {
         }
 
         // Center Island (Navigation Tab Container)
-        Rectangle {
+        Item {
             id: centerIsland
             height: 72
             anchors.horizontalCenter: parent.horizontalCenter
             anchors.top: parent.top
             anchors.topMargin: centerIslandHover.containsMouse ? 7 : 8
             width: tabsRow.width + 24
-            color: Theme.panelBg
-            border.color: centerIslandHover.containsMouse ? Theme.borderHover : Theme.border
-            border.width: 1
-            radius: 10
 
             Behavior on anchors.topMargin { NumberAnimation { duration: Theme.animFast } }
-            Behavior on border.color { ColorAnimation { duration: Theme.animFast } }
 
-            layer.enabled: true
-            layer.effect: DropShadow {
-                transparentBorder: true
-                horizontalOffset: 0
-                verticalOffset: centerIslandHover.containsMouse ? 8 : 5
-                radius: centerIslandHover.containsMouse ? 14 : 10
-                color: centerIslandHover.containsMouse ? "#C0000000" : "#80000000"
-                Behavior on verticalOffset { NumberAnimation { duration: Theme.animFast } }
-                Behavior on radius { NumberAnimation { duration: Theme.animFast } }
-                Behavior on color { ColorAnimation { duration: Theme.animFast } }
+            // Shadow Background
+            Rectangle {
+                anchors.fill: parent
+                color: Theme.panelBg
+                border.color: centerIslandHover.containsMouse ? Theme.borderHover : Theme.border
+                border.width: 1
+                radius: 10
+
+                Behavior on border.color { ColorAnimation { duration: Theme.animFast } }
+
+                layer.enabled: true
+                layer.effect: DropShadow {
+                    transparentBorder: true
+                    horizontalOffset: 0
+                    verticalOffset: centerIslandHover.containsMouse ? 8 : 5
+                    radius: centerIslandHover.containsMouse ? 14 : 10
+                    color: centerIslandHover.containsMouse ? "#C0000000" : "#80000000"
+                    Behavior on verticalOffset { NumberAnimation { duration: Theme.animFast } }
+                    Behavior on radius { NumberAnimation { duration: Theme.animFast } }
+                    Behavior on color { ColorAnimation { duration: Theme.animFast } }
+                }
             }
 
             MouseArea {
@@ -617,7 +632,7 @@ ApplicationWindow {
         }
 
         // Right Island (Version Label + Window Custom Controls)
-        Rectangle {
+        Item {
             id: rightIsland
             height: 72
             anchors.right: parent.right
@@ -625,27 +640,39 @@ ApplicationWindow {
             anchors.top: parent.top
             anchors.topMargin: rightIslandHover.containsMouse ? 7 : 8
             width: rightInfoRow.implicitWidth + 32 + windowControls.implicitWidth
-            color: Theme.panelBg
-            border.color: rightIslandHover.containsMouse ? Theme.borderHover : Theme.border
-            border.width: 1
-            radius: 10
-            clip: true
             z: 10
 
             Behavior on anchors.topMargin { NumberAnimation { duration: Theme.animFast } }
-            Behavior on border.color { ColorAnimation { duration: Theme.animFast } }
 
-            layer.enabled: true
-            layer.effect: DropShadow {
-                transparentBorder: true
-                horizontalOffset: 0
-                verticalOffset: rightIslandHover.containsMouse ? 8 : 5
-                radius: rightIslandHover.containsMouse ? 14 : 10
-                color: rightIslandHover.containsMouse ? "#C0000000" : "#80000000"
-                Behavior on verticalOffset { NumberAnimation { duration: Theme.animFast } }
-                Behavior on radius { NumberAnimation { duration: Theme.animFast } }
-                Behavior on color { ColorAnimation { duration: Theme.animFast } }
+            // Shadow Background
+            Rectangle {
+                anchors.fill: parent
+                color: Theme.panelBg
+                border.color: rightIslandHover.containsMouse ? Theme.borderHover : Theme.border
+                border.width: 1
+                radius: 10
+
+                Behavior on border.color { ColorAnimation { duration: Theme.animFast } }
+
+                layer.enabled: true
+                layer.effect: DropShadow {
+                    transparentBorder: true
+                    horizontalOffset: 0
+                    verticalOffset: rightIslandHover.containsMouse ? 8 : 5
+                    radius: rightIslandHover.containsMouse ? 14 : 10
+                    color: rightIslandHover.containsMouse ? "#C0000000" : "#80000000"
+                    Behavior on verticalOffset { NumberAnimation { duration: Theme.animFast } }
+                    Behavior on radius { NumberAnimation { duration: Theme.animFast } }
+                    Behavior on color { ColorAnimation { duration: Theme.animFast } }
+                }
             }
+
+            // Clipped Content Container to keep window control corners rounded
+            Rectangle {
+                anchors.fill: parent
+                color: "transparent"
+                radius: 10
+                clip: true
 
             MouseArea {
                 id: rightIslandHover
@@ -845,6 +872,7 @@ ApplicationWindow {
                 }
             }
         }
+    }
         }
     }
 
