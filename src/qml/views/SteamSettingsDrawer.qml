@@ -7334,7 +7334,7 @@ Item {
 
                     ScrollView {
                         anchors.fill: parent
-                        contentWidth: width
+                        contentWidth: availableWidth
                         contentHeight: audioAppsRepeater.count * 40 + 8
                         clip: true
                         ScrollBar.vertical: MeguScrollBar { }
@@ -13830,16 +13830,223 @@ Item {
             }
         }
 
-        Row {
-            spacing: 10
+        Item {
             width: parent.width
+            height: backBtn.implicitHeight
 
             MeguButton {
+                id: backBtn
                 text: qsTr("Back")
                 iconRotation: 180
                 iconSource: "qrc:/MeguPackOptimizer/src/resources/arrow.svg"
                 width: 80
                 onClicked: steamSettingsDrawer.subPage = "main"
+            }
+
+            Text {
+                text: qsTr("Controller customization")
+                color: Theme.textPrimary
+                font.family: Theme.fontFamily
+                font.pixelSize: 16
+                font.bold: true
+                anchors.left: backBtn.right
+                anchors.leftMargin: 12
+                anchors.verticalCenter: backBtn.verticalCenter
+            }
+        }
+
+        Rectangle {
+            width: parent.width
+            implicitHeight: optimizationCol.implicitHeight + 24
+            height: implicitHeight
+            color: "#05FFFFFF"
+            border.color: Theme.success
+            border.width: 1
+            radius: Theme.radiusSmall
+
+            Column {
+                id: optimizationCol
+                anchors.left: parent.left
+                anchors.right: parent.right
+                anchors.top: parent.top
+                anchors.leftMargin: 12
+                anchors.rightMargin: 12
+                anchors.topMargin: 12
+                spacing: 16
+
+                Text {
+                    text: qsTr("OPTIMIZATION")
+                    color: Theme.success
+                    font.family: Theme.fontFamily
+                    font.pixelSize: 13
+                    font.bold: true
+                    font.letterSpacing: 1.5
+                    width: parent.width
+                    horizontalAlignment: Text.AlignHCenter
+                }
+
+                Rectangle {
+                    width: parent.width
+                    height: 1
+                    color: Theme.border
+                }
+
+                Item {
+                    anchors.left: parent.left
+                    anchors.right: parent.right
+                    height: 24
+                    
+                    Text {
+                        text: qsTr("CONNECTED CONTROLLERS")
+                        color: Theme.textPrimary
+                        font.family: Theme.fontFamily
+                        font.pixelSize: 13
+                        font.bold: true
+                        font.letterSpacing: 1.5
+                        anchors.left: parent.left
+                        anchors.verticalCenter: parent.verticalCenter
+                    }
+                    
+                    MeguButton {
+                        text: qsTr("Scan")
+                        width: 70
+                        height: 24
+                        anchors.right: parent.right
+                        anchors.verticalCenter: parent.verticalCenter
+                        onClicked: steamControllerPage.refreshControllers()
+                    }
+                }
+
+                Rectangle {
+                    width: parent.width
+                    height: 1
+                    color: Theme.border
+                }
+
+                Column {
+                id: connectedControllersCol
+                anchors.left: parent.left
+                anchors.right: parent.right
+                spacing: 12
+
+                Text {
+                    text: qsTr("No connected controllers found.")
+                    color: Theme.textSecondary
+                    font.family: Theme.fontFamily
+                    font.pixelSize: 12
+                    visible: steamControllerPage.connectedGamepadsList.length === 0
+                }
+
+                Repeater {
+                    model: steamControllerPage.connectedGamepadsList
+                    delegate: Item {
+                        width: parent.width
+                        height: 50
+                        
+                        
+                        
+                        
+
+                        // Gamepad Icon (Canvas)
+                        Item {
+                            id: gamepadIconContainer
+                            width: 24
+                            height: 24
+                            anchors.left: parent.left
+                            anchors.leftMargin: 12
+                            anchors.verticalCenter: parent.verticalCenter
+
+                            Canvas {
+                                id: gamepadCanvas
+                                anchors.centerIn: parent
+                                width: 22
+                                height: 14
+                                onPaint: {
+                                    var ctx = getContext("2d");
+                                    ctx.reset();
+                                    ctx.strokeStyle = modelData.isConnected ? Theme.accent : Theme.textSecondary;
+                                    ctx.lineWidth = 1.5;
+                                    
+                                    // Draw the gamepad body (rounded capsule shape with left/right ears)
+                                    ctx.beginPath();
+                                    ctx.arc(6, 7, 5, Math.PI * 0.5, Math.PI * 1.5);
+                                    ctx.lineTo(16, 2);
+                                    ctx.arc(16, 7, 5, Math.PI * 1.5, Math.PI * 0.5);
+                                    ctx.lineTo(6, 12);
+                                    ctx.closePath();
+                                    ctx.stroke();
+
+                                    // D-Pad (cross on the left)
+                                    ctx.fillStyle = modelData.isConnected ? Theme.accent : Theme.textSecondary;
+                                    ctx.fillRect(4, 6, 4, 2);
+                                    ctx.fillRect(5, 5, 2, 4);
+
+                                    // Action Buttons (dots on the right)
+                                    ctx.beginPath();
+                                    ctx.arc(15, 6, 0.7, 0, Math.PI * 2);
+                                    ctx.arc(17, 7, 0.7, 0, Math.PI * 2);
+                                    ctx.arc(15, 8, 0.7, 0, Math.PI * 2);
+                                    ctx.arc(13, 7, 0.7, 0, Math.PI * 2);
+                                    ctx.fill();
+                                }
+                                onWidthChanged: requestPaint()
+                            }
+                        }
+
+                        // Controller Name and Info
+                        Column {
+                            id: infoColumn
+                            anchors.left: gamepadIconContainer.right
+                            anchors.leftMargin: 12
+                            anchors.right: forgetBtn.left
+                            anchors.rightMargin: 12
+                            anchors.verticalCenter: parent.verticalCenter
+                            spacing: 2
+
+                            Text {
+                                text: modelData.name
+                                color: Theme.textPrimary
+                                font.family: Theme.fontFamily
+                                font.pixelSize: 12
+                                font.bold: true
+                                elide: Text.ElideRight
+                                width: parent.width
+                            }
+
+                            Text {
+                                text: {
+                                    var conn = modelData.isBluetooth ? qsTr("Bluetooth") : qsTr("USB");
+                                    var status = modelData.isConnected ? qsTr("Connected") : qsTr("Paired (Offline)");
+                                    var details = modelData.vidPid ? " (" + modelData.vidPid + ")" : "";
+                                    return conn + " • " + status + details;
+                                }
+                                color: Theme.textSecondary
+                                font.family: Theme.fontFamily
+                                font.pixelSize: 10
+                                elide: Text.ElideRight
+                                width: parent.width
+                            }
+                        }
+
+                        // Forget / Delete Button
+                        MeguButton {
+                            id: forgetBtn
+                            text: qsTr("Forget")
+                            anchors.right: parent.right
+                            anchors.rightMargin: 12
+                            anchors.verticalCenter: parent.verticalCenter
+                            width: 80
+                            height: 28
+                            onClicked: {
+                                var res = optimizerBackend.forgetGamepad(modelData.id, modelData.btAddress, modelData.vidPid);
+                                if (res) {
+                                    steamControllerPage.refreshControllers();
+                                }
+                            }
+                        }
+                    }
+                }
+            }
             }
         }
 
@@ -13854,31 +14061,24 @@ Item {
 
             Column {
                 id: customizationCol
-                x: 12
-                y: 12
-                width: parent.width - 24
+                anchors.left: parent.left
+                anchors.right: parent.right
+                anchors.top: parent.top
+                anchors.leftMargin: 12
+                anchors.rightMargin: 12
+                anchors.topMargin: 12
                 spacing: 16
 
-                Text {
-                    text: qsTr("Controller customization")
-                    color: Theme.textPrimary
-                    font.family: Theme.fontFamily
-                    font.pixelSize: 16
-                    font.bold: true
-                }
 
-                Row {
-                    spacing: 10
+                Text {
+                    text: qsTr("CUSTOMIZATION")
+                    color: Theme.warning
+                    font.family: Theme.fontFamily
+                    font.pixelSize: 13
+                    font.bold: true
+                    font.letterSpacing: 1.5
                     width: parent.width
-                    Text {
-                        text: qsTr("CUSTOMIZATION")
-                        color: Theme.textPrimary
-                        font.family: Theme.fontFamily
-                        font.pixelSize: 13
-                        font.bold: true
-                        font.letterSpacing: 1.5
-                        anchors.verticalCenter: parent.verticalCenter
-                    }
+                    horizontalAlignment: Text.AlignHCenter
                 }
 
                 Rectangle {
@@ -13909,12 +14109,14 @@ Item {
 
                 Column {
                     id: externalSettingsCol
-                    width: parent.width
+                    anchors.left: parent.left
+                    anchors.right: parent.right
             spacing: 16
 
             // Dropdown: Idle Gamepad Shutdown Timeout
             Rectangle {
-                width: parent.width
+                anchors.left: parent.left
+                anchors.right: parent.right
                 height: 50
                 color: "transparent"
                 Column {
@@ -14036,7 +14238,8 @@ Item {
 
             // Xbox
             Rectangle {
-                width: parent.width
+                anchors.left: parent.left
+                anchors.right: parent.right
                 height: Math.max(50, xboxCol.implicitHeight + 12)
                 color: "transparent"
                 Column {
@@ -14074,7 +14277,8 @@ Item {
 
             // PlayStation
             Rectangle {
-                width: parent.width
+                anchors.left: parent.left
+                anchors.right: parent.right
                 height: 50
                 color: "transparent"
                 Column {
@@ -14193,7 +14397,8 @@ Item {
 
             // Switch Pro
             Rectangle {
-                width: parent.width
+                anchors.left: parent.left
+                anchors.right: parent.right
                 height: Math.max(50, switchCol.implicitHeight + 12)
                 color: "transparent"
                 Column {
@@ -14231,7 +14436,8 @@ Item {
 
             // Generic Controller
             Rectangle {
-                width: parent.width
+                anchors.left: parent.left
+                anchors.right: parent.right
                 height: Math.max(50, genericCol.implicitHeight + 12)
                 color: "transparent"
                 Column {
@@ -14269,7 +14475,8 @@ Item {
 
             // Turn off controllers when exiting Big Picture Mode
             Rectangle {
-                width: parent.width
+                anchors.left: parent.left
+                anchors.right: parent.right
                 height: Math.max(50, turnOffBPCol.implicitHeight + 12)
                 color: "transparent"
                 Column {
@@ -14328,11 +14535,13 @@ Item {
 
                 Column {
                     id: generalSettingsCol
-                    width: parent.width
+                    anchors.left: parent.left
+                    anchors.right: parent.right
                     spacing: 16
 
                     Rectangle {
-                width: parent.width
+                anchors.left: parent.left
+                anchors.right: parent.right
                 height: Math.max(50, guideCol.implicitHeight + 12)
                 color: "transparent"
                 Column {
@@ -14368,7 +14577,8 @@ Item {
                 }
             }
                     Rectangle {
-                width: parent.width
+                anchors.left: parent.left
+                anchors.right: parent.right
                 height: Math.max(50, chordCol.implicitHeight + 12)
                 color: "transparent"
                 Column {
@@ -14404,199 +14614,6 @@ Item {
                 }
             }
                 }
-            }
-        }
-
-        Rectangle {
-            width: parent.width
-            implicitHeight: optimizationCol.implicitHeight + 24
-            height: implicitHeight
-            color: "#05FFFFFF"
-            border.color: Theme.success
-            border.width: 1
-            radius: Theme.radiusSmall
-
-            Column {
-                id: optimizationCol
-                x: 12
-                y: 12
-                width: parent.width - 24
-                spacing: 16
-
-                Row {
-                    spacing: 10
-                    width: parent.width
-                    Text {
-                        text: qsTr("OPTIMIZATION")
-                        color: Theme.textPrimary
-                        font.family: Theme.fontFamily
-                        font.pixelSize: 13
-                        font.bold: true
-                        font.letterSpacing: 1.5
-                        anchors.verticalCenter: parent.verticalCenter
-                    }
-                }
-
-                Rectangle {
-                    width: parent.width
-                    height: 1
-                    color: Theme.border
-                }
-
-                Item {
-                    width: parent.width
-                    height: 24
-                    
-                    Text {
-                        text: qsTr("CONNECTED CONTROLLERS")
-                        color: Theme.textPrimary
-                        font.family: Theme.fontFamily
-                        font.pixelSize: 13
-                        font.bold: true
-                        font.letterSpacing: 1.5
-                        anchors.left: parent.left
-                        anchors.verticalCenter: parent.verticalCenter
-                    }
-                    
-                    MeguButton {
-                        text: qsTr("Scan")
-                        width: 70
-                        height: 24
-                        anchors.right: parent.right
-                        anchors.verticalCenter: parent.verticalCenter
-                        onClicked: steamControllerPage.refreshControllers()
-                    }
-                }
-
-                Rectangle {
-                    width: parent.width
-                    height: 1
-                    color: Theme.border
-                }
-
-                Column {
-                id: connectedControllersCol
-                width: parent.width
-                spacing: 12
-
-                Text {
-                    text: qsTr("No connected controllers found.")
-                    color: Theme.textSecondary
-                    font.family: Theme.fontFamily
-                    font.pixelSize: 12
-                    visible: steamControllerPage.connectedGamepadsList.length === 0
-                }
-
-                Repeater {
-                    model: steamControllerPage.connectedGamepadsList
-                    delegate: Item {
-                        width: parent.width
-                        height: 50
-                        
-                        
-                        
-                        
-
-                        // Gamepad Icon (Canvas)
-                        Item {
-                            id: gamepadIconContainer
-                            width: 24
-                            height: 24
-                            anchors.left: parent.left
-                            anchors.leftMargin: 12
-                            anchors.verticalCenter: parent.verticalCenter
-
-                            Canvas {
-                                id: gamepadCanvas
-                                anchors.centerIn: parent
-                                width: 22
-                                height: 14
-                                onPaint: {
-                                    var ctx = getContext("2d");
-                                    ctx.reset();
-                                    ctx.strokeStyle = modelData.isConnected ? Theme.accent : Theme.textSecondary;
-                                    ctx.lineWidth = 1.5;
-                                    
-                                    // Draw the gamepad body (rounded capsule shape with left/right ears)
-                                    ctx.beginPath();
-                                    ctx.arc(6, 7, 5, Math.PI * 0.5, Math.PI * 1.5);
-                                    ctx.lineTo(16, 2);
-                                    ctx.arc(16, 7, 5, Math.PI * 1.5, Math.PI * 0.5);
-                                    ctx.lineTo(6, 12);
-                                    ctx.closePath();
-                                    ctx.stroke();
-
-                                    // D-Pad (cross on the left)
-                                    ctx.fillStyle = modelData.isConnected ? Theme.accent : Theme.textSecondary;
-                                    ctx.fillRect(4, 6, 4, 2);
-                                    ctx.fillRect(5, 5, 2, 4);
-
-                                    // Action Buttons (dots on the right)
-                                    ctx.beginPath();
-                                    ctx.arc(15, 6, 0.7, 0, Math.PI * 2);
-                                    ctx.arc(17, 7, 0.7, 0, Math.PI * 2);
-                                    ctx.arc(15, 8, 0.7, 0, Math.PI * 2);
-                                    ctx.arc(13, 7, 0.7, 0, Math.PI * 2);
-                                    ctx.fill();
-                                }
-                                onWidthChanged: requestPaint()
-                            }
-                        }
-
-                        // Controller Name and Info
-                        Column {
-                            id: infoColumn
-                            anchors.left: gamepadIconContainer.right
-                            anchors.leftMargin: 12
-                            anchors.right: forgetBtn.left
-                            anchors.rightMargin: 12
-                            anchors.verticalCenter: parent.verticalCenter
-                            spacing: 2
-
-                            Text {
-                                text: modelData.name
-                                color: Theme.textPrimary
-                                font.family: Theme.fontFamily
-                                font.pixelSize: 12
-                                font.bold: true
-                                elide: Text.ElideRight
-                                width: parent.width
-                            }
-
-                            Text {
-                                text: {
-                                    var conn = modelData.isBluetooth ? qsTr("Bluetooth") : qsTr("USB");
-                                    var status = modelData.isConnected ? qsTr("Connected") : qsTr("Paired (Offline)");
-                                    var details = modelData.vidPid ? " (" + modelData.vidPid + ")" : "";
-                                    return conn + " • " + status + details;
-                                }
-                                color: Theme.textSecondary
-                                font.family: Theme.fontFamily
-                                font.pixelSize: 10
-                                elide: Text.ElideRight
-                                width: parent.width
-                            }
-                        }
-
-                        // Forget / Delete Button
-                        MeguButton {
-                            id: forgetBtn
-                            text: qsTr("Forget")
-                            anchors.right: parent.right
-                            anchors.rightMargin: 12
-                            anchors.verticalCenter: parent.verticalCenter
-                            width: 80
-                            height: 28
-                            onClicked: {
-                                var res = optimizerBackend.forgetGamepad(modelData.id, modelData.btAddress, modelData.vidPid);
-                                if (res) {
-                                    steamControllerPage.refreshControllers();
-                                }
-                            }
-                        }
-                    }
-                }
-            }
             }
         }
     }

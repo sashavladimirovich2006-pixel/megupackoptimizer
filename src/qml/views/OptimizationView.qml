@@ -33620,7 +33620,7 @@ Item {
                     anchors.right: parent.right
                     anchors.bottom: parent.bottom
                     clip: true
-                    contentWidth: width
+                    contentWidth: availableWidth
 
 
 
