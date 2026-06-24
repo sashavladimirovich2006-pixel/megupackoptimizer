@@ -6,6 +6,7 @@ ScrollBar {
     id: control
     implicitWidth: 14
     implicitHeight: 14
+    z: 100
     
     // Always show scrollbar when view is scrollable (i.e. size < 1.0)
     policy: control.size < 1.0 ? ScrollBar.AlwaysOn : ScrollBar.AsNeeded

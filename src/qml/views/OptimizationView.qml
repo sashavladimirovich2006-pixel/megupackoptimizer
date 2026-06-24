@@ -33304,7 +33304,10 @@ Item {
 
 
 
-            anchors.margins: 20
+            anchors.leftMargin: 20
+            anchors.topMargin: 20
+            anchors.bottomMargin: 20
+            anchors.rightMargin: 0
 
 
 
@@ -33334,6 +33337,7 @@ Item {
                     anchors.top: parent.top
                     anchors.left: parent.left
                     anchors.right: parent.right
+                    anchors.rightMargin: 20
                     height: 30
 
 
@@ -33598,6 +33602,7 @@ Item {
                     anchors.topMargin: 20
                     anchors.left: parent.left
                     anchors.right: parent.right
+                    anchors.rightMargin: 20
                     height: 1
                     color: Theme.border
                 }
@@ -33620,7 +33625,7 @@ Item {
                     anchors.right: parent.right
                     anchors.bottom: parent.bottom
                     clip: true
-                    rightPadding: 14
+                    rightPadding: 20
                     contentWidth: availableWidth
 
 
