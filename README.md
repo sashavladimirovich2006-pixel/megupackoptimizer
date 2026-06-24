@@ -169,6 +169,16 @@ The following rules must be strictly adhered to by all developers (human or AI) 
   - **Layout & Navigation Indicator**: Added a horizontal neon indicator line in `main.qml` that glides smoothly when tabs are toggled. Incorporated a slow pulsing color interpolation around the outer border of the application window.
   - **Ukrainian Localizations**: Updated and translated all modified settings theme names and descriptions in the Ukrainian translation database, compiling them to the target execution folder.
 
+
+### Phase 2: Drawer, Controls & Steam Surface Redesign
+- **Action**: Extended the Obsidian Aurora & Emerald Glacier system beyond palette-level changes by replacing legacy inline control patterns across the most visible drawers and header surfaces.
+- **Detailed Rationale**:
+  - **Reusable Control Layer**: Added `MeguIconButton.qml` and `MeguMenuRow.qml` to centralize small icon actions and navigation rows, then registered both components in `CMakeLists.txt` for QML compilation.
+  - **Steam Settings Surface**: Replaced the Steam main menu's text-arrow rectangle delegates with `MeguMenuRow`, converted the remaining Steam glass literals (`#05FFFFFF`, `#0DFFFFFF`, `#1AFFFFFF`) to theme tokens, rethemed text fields, dropdown shells, warnings, UI-scale labels, and the Storage segmented legend.
+  - **Drawer Shell Modernization**: Updated the optimization side drawer header with a subtle accent-backed header plate and replaced text glyph scroll/close buttons (`▲`, `▼`) with reusable SVG-backed icon buttons.
+  - **Header Controls Refresh**: Compacted the top-right version/window-control island, removed the old Windows-red close hover rectangle, and shifted the version badge and window controls into theme-driven rounded control capsules.
+  - **Slider Redesign**: Reworked `MeguSlider.qml` into a thicker glass track with gradient fill, animated handle width, and theme-driven hover/pressed glow states.
+  - **Verification**: Ran `git diff --check` and the full `build.bat` pipeline. QML cache generation, C++ compilation, translation compilation, and deployment to `D:\Aps\Git\MPONERE\megu_pack_optimizer.exe` completed successfully.
 ### Phase 2: Design System Overhaul & Visual Refinements
 - **Action**: Performed a second QML redesign pass to achieve absolute visual and structural consistency under the Obsidian Aurora & Emerald Glacier design system.
 - **Detailed Rationale**:

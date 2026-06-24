@@ -762,37 +762,17 @@ Item {
                                     }
 
                                     // Interactive arrow circle (overlayed via z-order)
-                                    Rectangle {
+                                    MeguIconButton {
                                         width: 24
                                         height: 24
-                                        radius: 12
-                                        color: arrowMouseArea.containsMouse ? Theme.accentDim : "transparent"
-                                        border.color: arrowMouseArea.containsMouse ? Theme.accent : "transparent"
-                                        border.width: 1
+                                        iconSource: "qrc:/MeguPackOptimizer/src/resources/arrow.svg"
+                                        flat: true
                                         visible: modelData.hasSub
                                         anchors.verticalCenter: parent.verticalCenter
                                         z: 10 // Puts arrow on top of parent item mouseArea!
-
-                                        Behavior on color { ColorAnimation { duration: Theme.animFast } }
-
-                                        Text {
-                                            text: "→"
-                                            color: Theme.accent
-                                            font.family: Theme.fontFamily
-                                            font.pixelSize: 14
-                                            font.bold: true
-                                            anchors.centerIn: parent
-                                        }
-
-                                        MouseArea {
-                                            id: arrowMouseArea
-                                            anchors.fill: parent
-                                            hoverEnabled: true
-                                            cursorShape: Qt.PointingHandCursor
-                                            onClicked: {
-                                                Theme.setTheme("Розовая");
-                                                slidingPages.showSubPage = true;
-                                            }
+                                        onClicked: {
+                                            Theme.setTheme("Розовая");
+                                            slidingPages.showSubPage = true;
                                         }
                                     }
                                 }

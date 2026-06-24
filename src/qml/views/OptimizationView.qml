@@ -33338,13 +33338,32 @@ Item {
                     anchors.left: parent.left
                     anchors.right: parent.right
                     anchors.rightMargin: 20
-                    height: 30
+                    height: 36
 
 
 
 
+                    Rectangle {
+                        anchors.left: parent.left
+                        anchors.right: parent.right
+                        anchors.verticalCenter: parent.verticalCenter
+                        height: 34
+                        radius: Theme.radiusNormal
+                        color: Qt.rgba(Theme.accent.r, Theme.accent.g, Theme.accent.b, 0.045)
+                        border.color: Qt.rgba(Theme.accent.r, Theme.accent.g, Theme.accent.b, 0.16)
+                        border.width: 1
+                    }
 
-
+                    Rectangle {
+                        width: 4
+                        height: 22
+                        radius: 2
+                        color: Theme.accent
+                        opacity: 0.9
+                        anchors.left: parent.left
+                        anchors.leftMargin: 10
+                        anchors.verticalCenter: parent.verticalCenter
+                    }
 
                     Text {
 
@@ -33459,6 +33478,7 @@ Item {
 
 
                         anchors.left: parent.left
+                        anchors.leftMargin: 24
 
 
 
@@ -33480,127 +33500,56 @@ Item {
                         spacing: 8
 
                         // Scroll Up Button
-                        Rectangle {
+                        MeguIconButton {
                             id: scrollUpBtn
-                            width: 24
-                            height: 24
-                            radius: 12
-                            color: (enabled && upMouseArea.containsMouse) ? Theme.accentDim : "transparent"
-                            border.color: (enabled && upMouseArea.containsMouse) ? Theme.accent : "transparent"
-                            border.width: 1
+                            width: 28
+                            height: 28
+                            iconSource: "qrc:/MeguPackOptimizer/src/resources/arrow.svg"
+                            iconRotation: -90
+                            flat: !enabled
                             enabled: drawerScroll && drawerScroll.contentItem && (drawerScroll.contentItem.contentY > drawerScroll.contentItem.originY)
-                            opacity: enabled ? 1.0 : 0.25
-
-                            scale: enabled ? (upMouseArea.pressed ? 0.92 : (upMouseArea.containsMouse ? 1.08 : 1.0)) : 1.0
-                            Behavior on scale { NumberAnimation { duration: 100 } }
-                            Behavior on opacity { NumberAnimation { duration: Theme.animFast } }
-
-                            Text {
-                                text: "▲"
-                                color: parent.enabled ? (upMouseArea.containsMouse ? Theme.accent : Theme.textPrimary) : Theme.textMuted
-                                font.pixelSize: 10
-                                font.bold: true
-                                anchors.centerIn: parent
-                            }
-
-                            MouseArea {
-                                id: upMouseArea
-                                anchors.fill: parent
-                                hoverEnabled: true
-                                cursorShape: parent.enabled ? Qt.PointingHandCursor : Qt.ArrowCursor
-                                onClicked: {
-                                    var targetY = Math.max(drawerScroll.contentItem.originY, drawerScroll.contentItem.contentY - 200);
-                                    drawerScrollAnimation.stop();
-                                    drawerScrollAnimation.target = drawerScroll.contentItem;
-                                    drawerScrollAnimation.to = targetY;
-                                    drawerScrollAnimation.start();
-                                }
+                            opacity: enabled ? 1.0 : 0.28
+                            onClicked: {
+                                var targetY = Math.max(drawerScroll.contentItem.originY, drawerScroll.contentItem.contentY - 200);
+                                drawerScrollAnimation.stop();
+                                drawerScrollAnimation.target = drawerScroll.contentItem;
+                                drawerScrollAnimation.to = targetY;
+                                drawerScrollAnimation.start();
                             }
                         }
 
                         // Scroll Down Button
-                        Rectangle {
+                        MeguIconButton {
                             id: scrollDownBtn
-                            width: 24
-                            height: 24
-                            radius: 12
-                            color: (enabled && downMouseArea.containsMouse) ? Theme.accentDim : "transparent"
-                            border.color: (enabled && downMouseArea.containsMouse) ? Theme.accent : "transparent"
-                            border.width: 1
+                            width: 28
+                            height: 28
+                            iconSource: "qrc:/MeguPackOptimizer/src/resources/arrow.svg"
+                            iconRotation: 90
+                            flat: !enabled
                             enabled: {
                                 if (!drawerScroll || !drawerScroll.contentItem) return false;
                                 var maxY = Math.max(drawerScroll.contentItem.originY, drawerScroll.contentItem.contentHeight - drawerScroll.height);
                                 return drawerScroll.contentItem.contentY < maxY;
                             }
-                            opacity: enabled ? 1.0 : 0.25
-
-                            scale: enabled ? (downMouseArea.pressed ? 0.92 : (downMouseArea.containsMouse ? 1.08 : 1.0)) : 1.0
-                            Behavior on scale { NumberAnimation { duration: 100 } }
-                            Behavior on opacity { NumberAnimation { duration: Theme.animFast } }
-
-                            Text {
-                                text: "▼"
-                                color: parent.enabled ? (downMouseArea.containsMouse ? Theme.accent : Theme.textPrimary) : Theme.textMuted
-                                font.pixelSize: 10
-                                font.bold: true
-                                anchors.centerIn: parent
-                            }
-
-                            MouseArea {
-                                id: downMouseArea
-                                anchors.fill: parent
-                                hoverEnabled: true
-                                cursorShape: parent.enabled ? Qt.PointingHandCursor : Qt.ArrowCursor
-                                onClicked: {
-                                    var maxY = Math.max(drawerScroll.contentItem.originY, drawerScroll.contentItem.contentHeight - drawerScroll.height);
-                                    var targetY = Math.min(maxY, drawerScroll.contentItem.contentY + 200);
-                                    drawerScrollAnimation.stop();
-                                    drawerScrollAnimation.target = drawerScroll.contentItem;
-                                    drawerScrollAnimation.to = targetY;
-                                    drawerScrollAnimation.start();
-                                }
+                            opacity: enabled ? 1.0 : 0.28
+                            onClicked: {
+                                var maxY = Math.max(drawerScroll.contentItem.originY, drawerScroll.contentItem.contentHeight - drawerScroll.height);
+                                var targetY = Math.min(maxY, drawerScroll.contentItem.contentY + 200);
+                                drawerScrollAnimation.stop();
+                                drawerScrollAnimation.target = drawerScroll.contentItem;
+                                drawerScrollAnimation.to = targetY;
+                                drawerScrollAnimation.start();
                             }
                         }
 
                         // Close Button
-                        Rectangle {
+                        MeguIconButton {
                             id: closeBtn
-                            width: 24
-                            height: 24
-                            radius: 12
-                            color: closeMouseArea.containsMouse ? Theme.accentDim : "transparent"
-                            border.color: closeMouseArea.containsMouse ? Theme.accent : "transparent"
-                            border.width: 1
-
-                            scale: closeMouseArea.pressed ? 0.92 : (closeMouseArea.containsMouse ? 1.08 : 1.0)
-                            Behavior on scale { NumberAnimation { duration: 100 } }
-
-                            Image {
-                                id: closeImg
-                                source: "qrc:/MeguPackOptimizer/src/resources/close.svg"
-                                width: 10
-                                height: 10
-                                sourceSize.width: 10
-                                sourceSize.height: 10
-                                anchors.centerIn: parent
-                                visible: false
-                            }
-
-                            ColorOverlay {
-                                anchors.fill: closeImg
-                                source: closeImg
-                                color: closeMouseArea.containsMouse ? Theme.accent : Theme.textPrimary
-                                Behavior on color { ColorAnimation { duration: 100 } }
-                            }
-
-                            MouseArea {
-                                id: closeMouseArea
-                                anchors.fill: parent
-                                hoverEnabled: true
-                                cursorShape: Qt.PointingHandCursor
-                                onClicked: {
-                                    root.activeDrawer = "";
-                                }
+                            width: 28
+                            height: 28
+                            iconSource: "qrc:/MeguPackOptimizer/src/resources/close.svg"
+                            onClicked: {
+                                root.activeDrawer = "";
                             }
                         }
                     }

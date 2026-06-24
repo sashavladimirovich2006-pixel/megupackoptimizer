@@ -254,68 +254,11 @@ Item {
 
             Repeater {
                 model: parent.menuModel
-                delegate: Rectangle {
-                    id: menuRow
+                delegate: MeguMenuRow {
                     width: parent.width
-                    height: 48
-                    radius: Theme.radiusSmall
-                    
-                    // Translucent Obsidian Glass base with active hover highlight
-                    color: menuMouse.containsMouse ? Theme.accentDim : Theme.panelBg
-                    border.color: menuMouse.containsMouse ? Theme.accent : Theme.border
-                    border.width: 1
-
-                    // Smooth horizontal slide micro-animation on hover
-                    x: menuMouse.containsMouse ? 4 : 0
-
-                    Behavior on x { NumberAnimation { duration: Theme.animFast; easing.type: Easing.OutCubic } }
-                    Behavior on color { ColorAnimation { duration: Theme.animFast } }
-                    Behavior on border.color { ColorAnimation { duration: Theme.animFast } }
-
-                    Row {
-                        anchors.fill: parent
-                        anchors.leftMargin: 12
-                        anchors.rightMargin: 12
-                        spacing: 8
-
-                        Column {
-                            anchors.verticalCenter: parent.verticalCenter
-                            width: parent.width - 24
-
-                            Text {
-                                text: modelData.title
-                                color: Theme.textPrimary
-                                font.family: Theme.fontFamily
-                                font.pixelSize: 12
-                                font.bold: true
-                            }
-                            Text {
-                                text: modelData.desc
-                                color: Theme.textMuted
-                                font.family: Theme.fontFamily
-                                font.pixelSize: 9
-                            }
-                        }
-
-                        // Styled navigation arrow
-                        Text {
-                            text: "→"
-                            color: menuMouse.containsMouse ? Theme.accentLight : Theme.accent
-                            font.family: Theme.fontFamily
-                            font.pixelSize: 14
-                            font.bold: true
-                            anchors.verticalCenter: parent.verticalCenter
-                            Behavior on color { ColorAnimation { duration: Theme.animFast } }
-                        }
-                    }
-
-                    MouseArea {
-                        id: menuMouse
-                        anchors.fill: parent
-                        hoverEnabled: true
-                        cursorShape: Qt.PointingHandCursor
-                        onClicked: steamSettingsDrawer.subPage = modelData.pageId
-                    }
+                    title: modelData.title
+                    description: modelData.desc
+                    onClicked: steamSettingsDrawer.subPage = modelData.pageId
                 }
             }
         }
@@ -980,7 +923,7 @@ Item {
                         height: 32
                         width: (parent.width - 16) / 3
                         radius: 6
-                        color: (fontSizeRow.currentSize === modelData.id) ? Theme.accentDim : (btnMouse.containsMouse ? "#0DFFFFFF" : "#05FFFFFF")
+                        color: (fontSizeRow.currentSize === modelData.id) ? Theme.accentDim : (btnMouse.containsMouse ? Theme.buttonBgHover : Theme.buttonBg)
                         border.color: (fontSizeRow.currentSize === modelData.id) ? Theme.accent : Theme.border
                         border.width: 1
 
@@ -1467,7 +1410,7 @@ Item {
                         height: 32
                         width: (parent.width - 16) / 3
                         radius: 6
-                        color: (flashModeRow.flashMode === modelData.id) ? Theme.accentDim : (flashBtnMouse.containsMouse ? "#0DFFFFFF" : "#05FFFFFF")
+                        color: (flashModeRow.flashMode === modelData.id) ? Theme.accentDim : (flashBtnMouse.containsMouse ? Theme.buttonBgHover : Theme.buttonBg)
                         border.color: (flashModeRow.flashMode === modelData.id) ? Theme.accent : Theme.border
                         border.width: 1
 
@@ -1583,7 +1526,7 @@ Item {
                     width: 180
                     height: 32
                     radius: 6
-                    color: "#05FFFFFF"
+                    color: Theme.buttonBg
                     border.color: Theme.border
                     border.width: 1
                     anchors.right: parent.right
@@ -1766,7 +1709,7 @@ Item {
                     width: 180
                     height: 32
                     radius: 6
-                    color: "#05FFFFFF"
+                    color: Theme.buttonBg
                     border.color: Theme.border
                     border.width: 1
                     anchors.right: parent.right
@@ -1884,7 +1827,7 @@ Item {
                     width: 180
                     height: 32
                     radius: 6
-                    color: "#05FFFFFF"
+                    color: Theme.buttonBg
                     border.color: Theme.border
                     border.width: 1
                     anchors.right: parent.right
@@ -3067,10 +3010,10 @@ Item {
                     rightPadding: 12
                     selectByMouse: true
                     background: Rectangle {
-                        color: "#05FFFFFF"
+                        color: Theme.buttonBg
                         border.color: overlayHomePageInput.activeFocus ? Theme.accent : Theme.border
                         border.width: 1
-                        radius: 6
+                        radius: Theme.radiusSmall
                     }
                     anchors.right: parent.right
                     anchors.verticalCenter: parent.verticalCenter
@@ -3110,7 +3053,7 @@ Item {
                     color: Theme.textSecondary
                     font.family: Theme.fontFamily
                     font.pixelSize: 10
-                    text: qsTr("The In-Game overlay is designed to help you understand your game and PC performance. It can render a variety of game and hardware performance information over a running game. <a href='https://support.steampowered.com/kb_article.php?ref=2235-QOMF-3286' style='color:#63b1e2; text-decoration:underline;'>Learn about the performance monitor numbers here.</a>")
+                    text: qsTr("The In-Game overlay is designed to help you understand your game and PC performance. It can render a variety of game and hardware performance information over a running game. <a href='https://support.steampowered.com/kb_article.php?ref=2235-QOMF-3286' style='color:#00FFD2; text-decoration:underline;'>Learn about the performance monitor numbers here.</a>")
                     onLinkActivated: (link) => Qt.openUrlExternally(link)
                 }
             }
@@ -3137,7 +3080,7 @@ Item {
                     width: 140
                     height: 32
                     radius: 6
-                    color: "#05FFFFFF"
+                    color: Theme.buttonBg
                     border.color: Theme.border
                     border.width: 1
                     anchors.right: parent.right
@@ -3265,7 +3208,7 @@ Item {
                         width: 250
                         height: 32
                         radius: 6
-                        color: "#05FFFFFF"
+                        color: Theme.buttonBg
                         border.color: Theme.border
                         border.width: 1
                         anchors.right: parent.right
@@ -3879,7 +3822,7 @@ Item {
                     width: 140
                     height: 32
                     radius: 6
-                    color: "#05FFFFFF"
+                    color: Theme.buttonBg
                     border.color: Theme.border
                     border.width: 1
                     anchors.right: parent.right
@@ -3993,7 +3936,7 @@ Item {
                     width: 200
                     height: 32
                     radius: 6
-                    color: "#05FFFFFF"
+                    color: Theme.buttonBg
                     border.color: Theme.border
                     border.width: 1
                     anchors.right: parent.right
@@ -4817,7 +4760,7 @@ Item {
                     height: 15
                     Text {
                         text: qsTr("SMALLER TEXT")
-                        color: "#6d7780"
+                        color: Theme.textMuted
                         font.family: Theme.fontFamily
                         font.pixelSize: 9
                         font.bold: true
@@ -4825,7 +4768,7 @@ Item {
                     }
                     Text {
                         text: qsTr("LARGER TEXT")
-                        color: "#6d7780"
+                        color: Theme.textMuted
                         font.family: Theme.fontFamily
                         font.pixelSize: 9
                         font.bold: true
@@ -5133,7 +5076,7 @@ Item {
                 width: parent.width
                 height: 64
                 radius: Theme.radiusSmall
-                color: (steamGameRecordingPage.currentMode === 0) ? Theme.accentDim : (mode0Mouse.containsMouse ? "#0DFFFFFF" : "#05FFFFFF")
+                color: (steamGameRecordingPage.currentMode === 0) ? Theme.accentDim : (mode0Mouse.containsMouse ? Theme.buttonBgHover : Theme.buttonBg)
                 border.color: (steamGameRecordingPage.currentMode === 0) ? Theme.accent : Theme.border
                 border.width: 1
 
@@ -5217,7 +5160,7 @@ Item {
                 width: parent.width
                 height: 110
                 radius: Theme.radiusSmall
-                color: (steamGameRecordingPage.currentMode === 1) ? Theme.accentDim : (mode1Mouse.containsMouse ? "#0DFFFFFF" : "#05FFFFFF")
+                color: (steamGameRecordingPage.currentMode === 1) ? Theme.accentDim : (mode1Mouse.containsMouse ? Theme.buttonBgHover : Theme.buttonBg)
                 border.color: (steamGameRecordingPage.currentMode === 1) ? Theme.accent : Theme.border
                 border.width: 1
 
@@ -5288,7 +5231,7 @@ Item {
                 width: parent.width
                 height: 64
                 radius: Theme.radiusSmall
-                color: (steamGameRecordingPage.currentMode === 2) ? Theme.accentDim : (mode2Mouse.containsMouse ? "#0DFFFFFF" : "#05FFFFFF")
+                color: (steamGameRecordingPage.currentMode === 2) ? Theme.accentDim : (mode2Mouse.containsMouse ? Theme.buttonBgHover : Theme.buttonBg)
                 border.color: (steamGameRecordingPage.currentMode === 2) ? Theme.accent : Theme.border
                 border.width: 1
 
@@ -5524,7 +5467,7 @@ Item {
                     Rectangle {
                         width: 50
                         height: 26
-                        color: "#10FFFFFF"
+                        color: Theme.buttonBgHover
                         border.color: Theme.border
                         border.width: 1
                         radius: 4
@@ -5642,7 +5585,7 @@ Item {
                         width: parent.width
                         height: 32
                         radius: 6
-                        color: "#05FFFFFF"
+                        color: Theme.buttonBg
                         border.color: Theme.border
                         border.width: 1
 
@@ -5745,7 +5688,7 @@ Item {
                         width: parent.width
                         height: 32
                         radius: 6
-                        color: "#05FFFFFF"
+                        color: Theme.buttonBg
                         border.color: Theme.border
                         border.width: 1
 
@@ -6033,7 +5976,7 @@ Item {
                     width: 120
                     height: 30
                     radius: 6
-                    color: "#05FFFFFF"
+                    color: Theme.buttonBg
                     border.color: Theme.border
                     border.width: 1
                     anchors.right: parent.right
@@ -6140,7 +6083,7 @@ Item {
                     width: 120
                     height: 30
                     radius: 6
-                    color: "#05FFFFFF"
+                    color: Theme.buttonBg
                     border.color: Theme.border
                     border.width: 1
                     anchors.right: parent.right
@@ -6368,7 +6311,7 @@ Item {
                     width: 160
                     height: 30
                     radius: 6
-                    color: "#05FFFFFF"
+                    color: Theme.buttonBg
                     border.color: Theme.border
                     border.width: 1
                     anchors.right: parent.right
@@ -6474,7 +6417,7 @@ Item {
                 Rectangle {
                     width: parent.width
                     height: Math.min(240, audioAppsRepeater.count * 40 + 8)
-                    color: "#05FFFFFF"
+                    color: Theme.buttonBg
                     border.color: Theme.border
                     border.width: 1
                     radius: 6
@@ -6921,7 +6864,7 @@ Item {
                     width: 220
                     height: 32
                     radius: 6
-                    color: "#05FFFFFF"
+                    color: Theme.buttonBg
                     border.color: Theme.border
                     border.width: 1
                     anchors.right: parent.right
@@ -7057,7 +7000,7 @@ Item {
                     width: 220
                     height: 32
                     radius: 6
-                    color: "#05FFFFFF"
+                    color: Theme.buttonBg
                     border.color: Theme.border
                     border.width: 1
                     anchors.right: parent.right
@@ -7258,7 +7201,7 @@ Item {
                         height: 32
                         width: (parent.width - 16) / 3
                         radius: 6
-                        color: (steamVoicePage.currentTransmissionType === modelData.id) ? Theme.accentDim : (transBtnMouse.containsMouse ? "#0DFFFFFF" : "#05FFFFFF")
+                        color: (steamVoicePage.currentTransmissionType === modelData.id) ? Theme.accentDim : (transBtnMouse.containsMouse ? Theme.buttonBgHover : Theme.buttonBg)
                         border.color: (steamVoicePage.currentTransmissionType === modelData.id) ? Theme.accent : Theme.border
                         border.width: 1
 
@@ -7312,7 +7255,7 @@ Item {
                     width: 180
                     height: 32
                     radius: 6
-                    color: steamVoicePage.assigningPTT ? Theme.accentDim : "#05FFFFFF"
+                    color: steamVoicePage.assigningPTT ? Theme.accentDim : Theme.buttonBg
                     border.color: steamVoicePage.assigningPTT ? Theme.accent : Theme.border
                     border.width: 1
                     anchors.right: parent.right
@@ -7406,8 +7349,8 @@ Item {
                 width: parent.width
                 height: steamVoicePage.showCyrillicWarning ? warningTextCol.implicitHeight + 20 : 0
                 radius: Theme.radiusSmall
-                color: Qt.rgba(232/255, 17/255, 35/255, 0.08)
-                border.color: "#E81123"
+                color: Qt.rgba(Theme.error.r, Theme.error.g, Theme.error.b, 0.09)
+                border.color: Qt.rgba(Theme.error.r, Theme.error.g, Theme.error.b, 0.55)
                 border.width: 1
                 clip: true
                 visible: height > 0
@@ -7435,7 +7378,7 @@ Item {
 
                         Text {
                             text: qsTr("Cyrillic hotkeys are not supported!")
-                            color: "#FF5555"
+                            color: Theme.error
                             font.family: Theme.fontFamily
                             font.pixelSize: 11
                             font.bold: true
@@ -7493,7 +7436,7 @@ Item {
                         height: 32
                         width: (parent.width - 16) / 3
                         radius: 6
-                        color: (steamVoicePage.currentThreshold === modelData.id) ? Theme.accentDim : (voiceBtnMouse.containsMouse ? "#0DFFFFFF" : "#05FFFFFF")
+                        color: (steamVoicePage.currentThreshold === modelData.id) ? Theme.accentDim : (voiceBtnMouse.containsMouse ? Theme.buttonBgHover : Theme.buttonBg)
                         border.color: (steamVoicePage.currentThreshold === modelData.id) ? Theme.accent : Theme.border
                         border.width: 1
 
@@ -7858,7 +7801,7 @@ Item {
                     width: parent.width
                     height: deviceRepeater.count > 0 ? (deviceRepeater.count * 52) + 8 : 72
                     radius: 8
-                    color: "#05FFFFFF"
+                    color: Theme.buttonBg
                     border.color: Theme.border
                     border.width: 1
                     clip: true
@@ -8019,7 +7962,7 @@ Item {
                         width: 180
                         height: 32
                         radius: 6
-                        color: "#05FFFFFF"
+                        color: Theme.buttonBg
                         border.color: Theme.border
                         border.width: 1
                         anchors.right: parent.right
@@ -8129,7 +8072,7 @@ Item {
                             width: 120
                             height: 32
                             radius: 6
-                            color: "#05FFFFFF"
+                            color: Theme.buttonBg
                             border.color: Theme.border
                             border.width: 1
 
@@ -8301,7 +8244,7 @@ Item {
                             width: (parent.width - 24) / 3
                             height: 36
                             radius: 6
-                            color: parent.activePreset === "default" ? Theme.accentDim : (defaultMouse.containsMouse ? "#1AFFFFFF" : "#0DFFFFFF")
+                            color: parent.activePreset === "default" ? Theme.accentDim : (defaultMouse.containsMouse ? Theme.buttonBgPressed : Theme.buttonBgHover)
                             border.color: parent.activePreset === "default" ? Theme.accent : Theme.border
                             border.width: 1
                             
@@ -8328,7 +8271,7 @@ Item {
                             width: (parent.width - 24) / 3
                             height: 36
                             radius: 6
-                            color: parent.activePreset === "1080p" ? Theme.accentDim : (e1080Mouse.containsMouse ? "#1AFFFFFF" : "#0DFFFFFF")
+                            color: parent.activePreset === "1080p" ? Theme.accentDim : (e1080Mouse.containsMouse ? Theme.buttonBgPressed : Theme.buttonBgHover)
                             border.color: parent.activePreset === "1080p" ? Theme.accent : Theme.border
                             border.width: 1
                             
@@ -8355,7 +8298,7 @@ Item {
                             width: (parent.width - 24) / 3
                             height: 36
                             radius: 6
-                            color: parent.activePreset === "4k" ? Theme.accentDim : (e4kMouse.containsMouse ? "#1AFFFFFF" : "#0DFFFFFF")
+                            color: parent.activePreset === "4k" ? Theme.accentDim : (e4kMouse.containsMouse ? Theme.buttonBgPressed : Theme.buttonBgHover)
                             border.color: parent.activePreset === "4k" ? Theme.accent : Theme.border
                             border.width: 1
                             
@@ -8397,7 +8340,7 @@ Item {
                         width: 150
                         height: 32
                         radius: 6
-                        color: "#05FFFFFF"
+                        color: Theme.buttonBg
                         border.color: Theme.border
                         border.width: 1
                         anchors.right: parent.right
@@ -8502,7 +8445,7 @@ Item {
                         width: 180
                         height: 32
                         radius: 6
-                        color: "#05FFFFFF"
+                        color: Theme.buttonBg
                         border.color: Theme.border
                         border.width: 1
                         anchors.right: parent.right
@@ -8614,7 +8557,7 @@ Item {
                         width: 150
                         height: 32
                         radius: 6
-                        color: "#05FFFFFF"
+                        color: Theme.buttonBg
                         border.color: Theme.border
                         border.width: 1
                         anchors.right: parent.right
@@ -8726,7 +8669,7 @@ Item {
                         width: 150
                         height: 32
                         radius: 6
-                        color: "#05FFFFFF"
+                        color: Theme.buttonBg
                         border.color: Theme.border
                         border.width: 1
                         anchors.right: parent.right
@@ -8825,7 +8768,7 @@ Item {
                     width: parent.width
                     height: 80
                     radius: 8
-                    color: "#05FFFFFF"
+                    color: Theme.buttonBg
                     border.color: Theme.border
                     border.width: 1
 
@@ -8891,7 +8834,7 @@ Item {
                         width: 150
                         height: 32
                         radius: 6
-                        color: "#05FFFFFF"
+                        color: Theme.buttonBg
                         border.color: Theme.border
                         border.width: 1
                         anchors.right: parent.right
@@ -8996,7 +8939,7 @@ Item {
                         width: 150
                         height: 32
                         radius: 6
-                        color: "#05FFFFFF"
+                        color: Theme.buttonBg
                         border.color: Theme.border
                         border.width: 1
                         anchors.right: parent.right
@@ -9398,7 +9341,7 @@ Item {
                         width: 250
                         height: 32
                         radius: 6
-                        color: "#05FFFFFF"
+                        color: Theme.buttonBg
                         border.color: Theme.border
                         border.width: 1
                         anchors.right: parent.right
@@ -9560,7 +9503,7 @@ Item {
                         width: 150
                         height: 32
                         radius: 6
-                        color: "#05FFFFFF"
+                        color: Theme.buttonBg
                         border.color: Theme.border
                         border.width: 1
                         anchors.right: parent.right
@@ -9860,7 +9803,7 @@ Item {
                 width: parent.width
                 height: 80
                 radius: 8
-                color: "#05FFFFFF"
+                color: Theme.buttonBg
                 border.color: Theme.border
                 border.width: 1
 
@@ -9983,7 +9926,7 @@ Item {
                             height: 32
                             width: (parent.width - 24) / 4
                             radius: 6
-                            color: (steamLibraryPage.currentDisplaySize === modelData.id) ? Theme.accentDim : (sizeBtnMouse.containsMouse ? "#0DFFFFFF" : "#05FFFFFF")
+                            color: (steamLibraryPage.currentDisplaySize === modelData.id) ? Theme.accentDim : (sizeBtnMouse.containsMouse ? Theme.buttonBgHover : Theme.buttonBg)
                             border.color: (steamLibraryPage.currentDisplaySize === modelData.id) ? Theme.accent : Theme.border
                             border.width: 1
 
@@ -10310,7 +10253,7 @@ Item {
                     width: 220
                     height: 32
                     radius: 6
-                    color: "#05FFFFFF"
+                    color: Theme.buttonBg
                     border.color: Theme.border
                     border.width: 1
                     anchors.right: parent.right
@@ -10475,10 +10418,10 @@ Item {
                         rightPadding: 12
                         selectByMouse: true
                         background: Rectangle {
-                            color: "#05FFFFFF"
+                            color: Theme.buttonBg
                             border.color: limitSpeedInput.activeFocus ? Theme.accent : Theme.border
                             border.width: 1
-                            radius: 6
+                            radius: Theme.radiusSmall
                         }
                         validator: IntValidator { bottom: 0; top: 99999999 }
                         onTextEdited: {
@@ -10542,8 +10485,8 @@ Item {
                     id: timingDropdown
                     width: 220
                     height: 32
-                    radius: 6
-                    color: "#05FFFFFF"
+                    radius: Theme.radiusSmall
+                    color: Theme.buttonBg
                     border.color: Theme.border
                     border.width: 1
                     anchors.right: parent.right
@@ -10693,7 +10636,7 @@ Item {
                         width: 80
                         height: 32
                         radius: 6
-                        color: "#05FFFFFF"
+                        color: Theme.buttonBg
                         border.color: Theme.border
                         border.width: 1
                         anchors.verticalCenter: parent.verticalCenter
@@ -10779,7 +10722,7 @@ Item {
                         width: 80
                         height: 32
                         radius: 6
-                        color: "#05FFFFFF"
+                        color: Theme.buttonBg
                         border.color: Theme.border
                         border.width: 1
                         anchors.verticalCenter: parent.verticalCenter
@@ -11030,7 +10973,7 @@ Item {
                     width: 180
                     height: 32
                     radius: 6
-                    color: "#05FFFFFF"
+                    color: Theme.buttonBg
                     border.color: Theme.border
                     border.width: 1
                     anchors.right: parent.right
@@ -11331,6 +11274,12 @@ Item {
             var diff = totalSize - freeSize - gamesSize - dlcSize - workshopSize - shadersSize;
             return diff > 0 ? diff : 0;
         }
+        property color gamesColor: Theme.accent
+        property color dlcColor: Theme.info
+        property color workshopColor: Theme.success
+        property color shadersColor: Theme.warning
+        property color nonSteamColor: Theme.accentLight
+        property color freeColor: Theme.textMuted
 
         onSelectedLibraryIndexChanged: {
             populateGamesModel();
@@ -11501,7 +11450,7 @@ Item {
             width: parent.width
             height: 10
             radius: 5
-            color: "#2d3436"
+            color: Theme.buttonBg
             clip: true
 
             Row {
@@ -11510,32 +11459,32 @@ Item {
                 Rectangle {
                     height: parent.height
                     width: parent.parent.width * (steamStoragePage.gamesSize / steamStoragePage.totalSize)
-                    color: "#1a9fff"
+                    color: steamStoragePage.gamesColor
                 }
                 Rectangle {
                     height: parent.height
                     width: parent.parent.width * (steamStoragePage.dlcSize / steamStoragePage.totalSize)
-                    color: "#a347ff"
+                    color: steamStoragePage.dlcColor
                 }
                 Rectangle {
                     height: parent.height
                     width: parent.parent.width * (steamStoragePage.workshopSize / steamStoragePage.totalSize)
-                    color: "#2ecc71"
+                    color: steamStoragePage.workshopColor
                 }
                 Rectangle {
                     height: parent.height
                     width: parent.parent.width * (steamStoragePage.shadersSize / steamStoragePage.totalSize)
-                    color: "#ff7675"
+                    color: steamStoragePage.shadersColor
                 }
                 Rectangle {
                     height: parent.height
                     width: parent.parent.width * (steamStoragePage.nonSteamSize / steamStoragePage.totalSize)
-                    color: "#f1c40f"
+                    color: steamStoragePage.nonSteamColor
                 }
                 Rectangle {
                     height: parent.height
                     width: parent.parent.width * ((steamStoragePage.freeSize > 0 ? steamStoragePage.freeSize : 0) / steamStoragePage.totalSize)
-                    color: "#4a4a4a"
+                    color: steamStoragePage.freeColor
                 }
             }
         }
@@ -11548,7 +11497,7 @@ Item {
             // GAMES
             Row {
                 spacing: 6
-                Rectangle { width: 8; height: 8; radius: 4; color: "#1a9fff"; anchors.verticalCenter: parent.verticalCenter }
+                Rectangle { width: 8; height: 8; radius: 4; color: steamStoragePage.gamesColor; anchors.verticalCenter: parent.verticalCenter }
                 Text {
                     text: qsTr("GAMES") + " " + steamStoragePage.gamesSize.toFixed(2) + " GB"
                     color: Theme.textSecondary
@@ -11561,7 +11510,7 @@ Item {
             // DLC
             Row {
                 spacing: 6
-                Rectangle { width: 8; height: 8; radius: 4; color: "#a347ff"; anchors.verticalCenter: parent.verticalCenter }
+                Rectangle { width: 8; height: 8; radius: 4; color: steamStoragePage.dlcColor; anchors.verticalCenter: parent.verticalCenter }
                 Text {
                     text: {
                         var size = steamStoragePage.dlcSize;
@@ -11588,7 +11537,7 @@ Item {
             // WORKSHOP
             Row {
                 spacing: 6
-                Rectangle { width: 8; height: 8; radius: 4; color: "#2ecc71"; anchors.verticalCenter: parent.verticalCenter }
+                Rectangle { width: 8; height: 8; radius: 4; color: steamStoragePage.workshopColor; anchors.verticalCenter: parent.verticalCenter }
                 Text {
                     text: {
                         var size = steamStoragePage.workshopSize;
@@ -11610,7 +11559,7 @@ Item {
             // SHADERS
             Row {
                 spacing: 6
-                Rectangle { width: 8; height: 8; radius: 4; color: "#ff7675"; anchors.verticalCenter: parent.verticalCenter }
+                Rectangle { width: 8; height: 8; radius: 4; color: steamStoragePage.shadersColor; anchors.verticalCenter: parent.verticalCenter }
                 Text {
                     text: {
                         var size = steamStoragePage.shadersSize;
@@ -11637,7 +11586,7 @@ Item {
             // NON-STEAM
             Row {
                 spacing: 6
-                Rectangle { width: 8; height: 8; radius: 4; color: "#f1c40f"; anchors.verticalCenter: parent.verticalCenter }
+                Rectangle { width: 8; height: 8; radius: 4; color: steamStoragePage.nonSteamColor; anchors.verticalCenter: parent.verticalCenter }
                 Text {
                     text: qsTr("NON-STEAM") + " " + steamStoragePage.nonSteamSize.toFixed(2) + " GB"
                     color: Theme.textSecondary
@@ -11650,7 +11599,7 @@ Item {
             // FREE
             Row {
                 spacing: 6
-                Rectangle { width: 8; height: 8; radius: 4; color: "#4a4a4a"; anchors.verticalCenter: parent.verticalCenter }
+                Rectangle { width: 8; height: 8; radius: 4; color: steamStoragePage.freeColor; anchors.verticalCenter: parent.verticalCenter }
                 Text {
                     text: qsTr("FREE") + " " + (steamStoragePage.freeSize > 0 ? steamStoragePage.freeSize : 0).toFixed(2) + " GB"
                     color: Theme.textSecondary
@@ -11729,7 +11678,7 @@ Item {
                             end: Qt.point(80, 48)
                             gradient: Gradient {
                                 GradientStop { position: 0.0; color: Theme.accent }
-                                GradientStop { position: 1.0; color: "#0c0d12" }
+                                GradientStop { position: 1.0; color: Theme.background }
                             }
                         }
 
@@ -12006,7 +11955,7 @@ Item {
                     width: 250
                     height: 32
                     radius: 6
-                    color: "#05FFFFFF"
+                    color: Theme.buttonBg
                     border.color: Theme.border
                     border.width: 1
                     anchors.right: parent.right
@@ -12163,7 +12112,7 @@ Item {
                     width: 250
                     height: 32
                     radius: 6
-                    color: "#05FFFFFF"
+                    color: Theme.buttonBg
                     border.color: Theme.border
                     border.width: 1
                     anchors.right: parent.right
@@ -12282,7 +12231,7 @@ Item {
                     width: 250
                     height: 32
                     radius: 6
-                    color: "#05FFFFFF"
+                    color: Theme.buttonBg
                     border.color: Theme.border
                     border.width: 1
                     anchors.right: parent.right
@@ -12402,7 +12351,7 @@ Item {
                     width: 250
                     height: 32
                     radius: 6
-                    color: "#05FFFFFF"
+                    color: Theme.buttonBg
                     border.color: Theme.border
                     border.width: 1
                     anchors.right: parent.right
@@ -12517,7 +12466,7 @@ Item {
                     width: 250
                     height: 32
                     radius: 6
-                    color: "#05FFFFFF"
+                    color: Theme.buttonBg
                     border.color: Theme.border
                     border.width: 1
                     anchors.right: parent.right
@@ -12898,7 +12847,7 @@ Item {
             width: parent.width
             implicitHeight: optimizationCol.implicitHeight + 24
             height: implicitHeight
-            color: "#05FFFFFF"
+            color: Theme.buttonBg
             border.color: Theme.success
             border.width: 1
             radius: Theme.radiusSmall
@@ -13093,7 +13042,7 @@ Item {
             width: parent.width
             implicitHeight: customizationCol.implicitHeight + 24
             height: implicitHeight
-            color: "#05FFFFFF"
+            color: Theme.buttonBg
             border.color: Theme.warning
             border.width: 1
             radius: Theme.radiusSmall
@@ -13186,7 +13135,7 @@ Item {
                     width: 150
                     height: 32
                     radius: 6
-                    color: "#05FFFFFF"
+                    color: Theme.buttonBg
                     border.color: Theme.border
                     border.width: 1
                     anchors.right: parent.right
@@ -13348,7 +13297,7 @@ Item {
                     width: 180
                     height: 32
                     radius: 6
-                    color: "#05FFFFFF"
+                    color: Theme.buttonBg
                     border.color: Theme.border
                     border.width: 1
                     anchors.right: parent.right

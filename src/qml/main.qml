@@ -695,12 +695,12 @@ ApplicationWindow {
         // Right Island (Version Label + Window Custom Controls)
         Item {
             id: rightIsland
-            height: 80
+            height: 52
             anchors.right: parent.right
             anchors.rightMargin: 16
             anchors.top: parent.top
-            anchors.topMargin: rightIslandHover.containsMouse ? 8 : 10
-            width: rightInfoRow.implicitWidth + 32 + windowControls.implicitWidth
+            anchors.topMargin: rightIslandHover.containsMouse ? 14 : 16
+            width: rightInfoRow.implicitWidth + 26 + windowControls.implicitWidth
             z: 10
 
             Behavior on anchors.topMargin { NumberAnimation { duration: Theme.animFast } }
@@ -711,7 +711,7 @@ ApplicationWindow {
                 color: Theme.panelBg
                 border.color: rightIslandHover.containsMouse ? Theme.borderHover : Theme.border
                 border.width: 1
-                radius: 10
+                radius: 16
 
                 Behavior on border.color { ColorAnimation { duration: Theme.animFast } }
 
@@ -719,9 +719,9 @@ ApplicationWindow {
                 layer.effect: DropShadow {
                     transparentBorder: true
                     horizontalOffset: 0
-                    verticalOffset: rightIslandHover.containsMouse ? 8 : 5
-                    radius: rightIslandHover.containsMouse ? 14 : 10
-                    color: rightIslandHover.containsMouse ? "#C0000000" : "#80000000"
+                    verticalOffset: rightIslandHover.containsMouse ? 10 : 5
+                    radius: rightIslandHover.containsMouse ? 20 : 12
+                    color: Qt.rgba(0, 0, 0, rightIslandHover.containsMouse ? 0.45 : 0.28)
                     Behavior on verticalOffset { NumberAnimation { duration: Theme.animFast } }
                     Behavior on radius { NumberAnimation { duration: Theme.animFast } }
                     Behavior on color { ColorAnimation { duration: Theme.animFast } }
@@ -732,7 +732,7 @@ ApplicationWindow {
             Rectangle {
                 anchors.fill: parent
                 color: "transparent"
-                radius: 10
+                radius: 16
                 clip: true
 
                 MouseArea {
@@ -752,11 +752,11 @@ ApplicationWindow {
                     
                     // Version Chip Container
                     Rectangle {
-                        height: 20
+                        height: 24
                         width: versionText.implicitWidth + 16
-                        radius: 10
-                        color: Theme.buttonBg
-                        border.color: Theme.border
+                        radius: 12
+                        color: Qt.rgba(Theme.accent.r, Theme.accent.g, Theme.accent.b, 0.08)
+                        border.color: Qt.rgba(Theme.accent.r, Theme.accent.g, Theme.accent.b, 0.28)
                         border.width: 1
                         anchors.verticalCenter: parent.verticalCenter
 
@@ -783,15 +783,17 @@ ApplicationWindow {
                 Row {
                     id: windowControls
                     anchors.right: parent.right
-                    anchors.top: parent.top
-                    anchors.bottom: parent.bottom
-                    spacing: 0
+                    anchors.rightMargin: 10
+                    anchors.verticalCenter: parent.verticalCenter
+                    height: 34
+                    spacing: 6
                     
                     // Minimize Button
                     Rectangle {
                         id: minBtn
-                        width: 38
-                        height: parent.height
+                        width: 34
+                        height: 34
+                        radius: 11
                         color: minMouse.containsMouse ? Theme.buttonBgHover : "transparent"
                         
                         scale: minMouse.pressed ? 0.90 : (minMouse.containsMouse ? 1.05 : 1.0)
@@ -817,8 +819,9 @@ ApplicationWindow {
                     // Maximize / Restore Button
                     Rectangle {
                         id: maxBtn
-                        width: 38
-                        height: parent.height
+                        width: 34
+                        height: 34
+                        radius: 11
                         color: maxMouse.containsMouse ? Theme.buttonBgHover : "transparent"
                         
                         scale: maxMouse.pressed ? 0.90 : (maxMouse.containsMouse ? 1.05 : 1.0)
@@ -911,9 +914,10 @@ ApplicationWindow {
                     // Close Button
                     Rectangle {
                         id: closeWinBtn
-                        width: 42
-                        height: parent.height
-                        color: closeMouse.containsMouse ? "#E81123" : "transparent"
+                        width: 34
+                        height: 34
+                        radius: 11
+                        color: closeMouse.containsMouse ? Qt.rgba(Theme.error.r, Theme.error.g, Theme.error.b, 0.16) : "transparent"
                         
                         scale: closeMouse.pressed ? 0.90 : (closeMouse.containsMouse ? 1.05 : 1.0)
                         Behavior on scale { NumberAnimation { duration: 100 } }
@@ -929,7 +933,7 @@ ApplicationWindow {
                             Rectangle {
                                 width: 12
                                 height: 1.5
-                                color: closeMouse.containsMouse ? "#FFFFFF" : Theme.textPrimary
+                                color: closeMouse.containsMouse ? Theme.error : Theme.textPrimary
                                 rotation: 45
                                 transformOrigin: Item.Center
                                 anchors.centerIn: parent
@@ -938,7 +942,7 @@ ApplicationWindow {
                             Rectangle {
                                 width: 12
                                 height: 1.5
-                                color: closeMouse.containsMouse ? "#FFFFFF" : Theme.textPrimary
+                                color: closeMouse.containsMouse ? Theme.error : Theme.textPrimary
                                 rotation: -45
                                 transformOrigin: Item.Center
                                 anchors.centerIn: parent
