@@ -7,6 +7,7 @@ ScrollBar {
     implicitWidth: 14
     implicitHeight: 14
     z: 100
+    interactive: true
     
     // Always show scrollbar when view is scrollable (i.e. size < 1.0)
     policy: control.size < 1.0 ? ScrollBar.AlwaysOn : ScrollBar.AsNeeded
@@ -36,6 +37,30 @@ ScrollBar {
     }
 
     background: Rectangle {
-        color: "transparent"
+        implicitWidth: control.orientation === Qt.Vertical ? 14 : undefined
+        implicitHeight: control.orientation === Qt.Horizontal ? 14 : undefined
+        radius: width / 2
+        
+        // Faint, premium background track visible when hovered/active to guide interaction
+        color: {
+            if (control.hovered || control.pressed || control.active) {
+                var isLightTheme = (Theme.currentTheme === "Белоснежная" || Theme.currentTheme === "Розовая");
+                return isLightTheme ? "#10000000" : "#10FFFFFF"; // 6% opacity
+            }
+            return "transparent";
+        }
+        
+        // Very subtle border matching the panel borders
+        border.color: {
+            if (control.hovered || control.pressed || control.active) {
+                var isLightTheme = (Theme.currentTheme === "Белоснежная" || Theme.currentTheme === "Розовая");
+                return isLightTheme ? "#15000000" : "#15FFFFFF"; // Faint border
+            }
+            return "transparent";
+        }
+        border.width: 1
+        
+        Behavior on color { ColorAnimation { duration: Theme.animFast } }
+        Behavior on border.color { ColorAnimation { duration: Theme.animFast } }
     }
 }
