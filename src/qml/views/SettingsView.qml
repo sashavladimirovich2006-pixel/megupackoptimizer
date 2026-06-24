@@ -708,10 +708,10 @@ Item {
                                 var lang = settingsBackend.language;
                                 return [
                                     { name: "Белоснежная", desc: qsTr("Pure snow white theme"), hasSub: false },
-                                    { name: "Темная", desc: qsTr("Classic deep slate dark theme"), hasSub: false },
+                                    { name: "Темная", desc: qsTr("Glacier Mint & Obsidian theme"), hasSub: false },
                                     { name: "Blackout полностью черная", desc: qsTr("Absolute black OLED theme"), hasSub: false },
-                                    { name: "Ргб", desc: qsTr("Glowing orange gaming theme"), hasSub: false },
-                                    { name: "Розовая", desc: qsTr("Vibrant soft pink theme"), hasSub: true }
+                                    { name: "Ргб", desc: qsTr("Dynamic RGB gaming theme"), hasSub: false },
+                                    { name: "Розовая", desc: qsTr("Cyber Rose-Gold soft theme"), hasSub: true }
                                 ];
                             }
 
@@ -861,7 +861,7 @@ Item {
                                 font.bold: true
                             }
                             Text {
-                                text: qsTr("High contrast black and glowing pink accents")
+                                text: qsTr("High contrast black and hot pink accents")
                                 color: Theme.textMuted
                                 font.family: Theme.fontFamily
                                 font.pixelSize: 9

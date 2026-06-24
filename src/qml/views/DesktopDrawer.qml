@@ -470,7 +470,7 @@ Column {
                 }
             }
 
-            Slider {
+            MeguSlider {
                 id: wallpaperSlider
                 width: parent.width
                 from: 50
@@ -480,39 +480,6 @@ Column {
                 live: true
                 onMoved: {
                     optimizerBackend.desktopWallpaperQuality = Math.round(value);
-                }
-
-                background: Rectangle {
-                    x: wallpaperSlider.leftPadding
-                    y: wallpaperSlider.topPadding + wallpaperSlider.availableHeight / 2 - height / 2
-                    implicitWidth: 200
-                    implicitHeight: 4
-                    width: wallpaperSlider.availableWidth
-                    height: implicitHeight
-                    radius: 2
-                    color: Theme.border
-
-                    Rectangle {
-                        width: wallpaperSlider.visualPosition * parent.width
-                        height: parent.height
-                        color: Theme.accent
-                        radius: 2
-                    }
-                }
-
-                handle: Rectangle {
-                    x: wallpaperSlider.leftPadding + wallpaperSlider.visualPosition * (wallpaperSlider.availableWidth - width)
-                    y: wallpaperSlider.topPadding + wallpaperSlider.availableHeight / 2 - height / 2
-                    implicitWidth: 16
-                    implicitHeight: 16
-                    radius: 8
-                    color: wallpaperSlider.pressed ? Theme.accent : Theme.textPrimary
-                    border.color: Theme.accent
-                    border.width: wallpaperSlider.hovered ? 2 : 0
-
-                    Behavior on color { ColorAnimation { duration: Theme.animFast } }
-                    Behavior on scale { NumberAnimation { duration: Theme.animFast } }
-                    scale: wallpaperSlider.pressed ? 1.2 : (wallpaperSlider.hovered ? 1.1 : 1.0)
                 }
             }
         }

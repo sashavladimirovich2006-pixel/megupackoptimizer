@@ -1,5 +1,6 @@
 import QtQuick
 import MeguPackOptimizer 1.0
+import Qt5Compat.GraphicalEffects
 
 Rectangle {
     id: panel
@@ -10,12 +11,38 @@ Rectangle {
     property double flashOpacity: 0.0
 
     color: Theme.panelBg
-    radius: 8
+    radius: 12 // Modernized rounded corners
     border.color: isFlashing ? Theme.success : (hoverArea.containsMouse ? Theme.borderHover : Theme.border)
     border.width: 1
 
     Behavior on border.color { enabled: !panel.isFlashing; ColorAnimation { duration: Theme.animNormal } }
     Behavior on color { ColorAnimation { duration: Theme.animNormal } }
+
+    transform: Translate {
+        y: (hoverArea.containsMouse && !panel.isFlashing) ? -2 : 0
+        Behavior on y {
+            NumberAnimation {
+                duration: Theme.animNormal
+                easing.type: Easing.OutCubic
+            }
+        }
+    }
+
+    // Dynamic soft drop shadow glow under panel
+    DropShadow {
+        anchors.fill: panel
+        horizontalOffset: 0
+        verticalOffset: hoverArea.containsMouse ? 8 : 4
+        radius: hoverArea.containsMouse ? 16 : 8
+        color: hoverArea.containsMouse ? Qt.rgba(0, 0, 0, 0.45) : Qt.rgba(0, 0, 0, 0.25)
+        source: panel
+        z: -1
+        visible: Theme.currentTheme !== "Белоснежная"
+        
+        Behavior on verticalOffset { NumberAnimation { duration: Theme.animNormal } }
+        Behavior on radius { NumberAnimation { duration: Theme.animNormal } }
+        Behavior on color { ColorAnimation { duration: Theme.animNormal } }
+    }
 
     function triggerLocateFlash() {
         locateFlashAnim.stop();

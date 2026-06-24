@@ -1,6 +1,6 @@
 # Megu Pack Optimizer
 
-Megu Pack Optimizer is a professional, high-performance C++ and Qt 6 / QML utility designed to analyze, filter, and optimize asset packs (resource packs, texture packs, sound libraries, and metadata files). It uses a modern, high-fidelity user interface built on the **Neo-Luna** visual design system—fusing Windows XP's classic organic Luna curves and layout structure with Fluent-inspired Acrylic transparency and Zune's dark amber accents.
+Megu Pack Optimizer is a professional, high-performance C++ and Qt 6 / QML utility designed to analyze, filter, and optimize asset packs (resource packs, texture packs, sound libraries, and metadata files). It uses a modern, high-fidelity user interface built on the **Obsidian Aurora & Emerald Glacier** visual design system—featuring a dark obsidian base, glacier/teal glow, mint-cyan accents, sharp modern utility UI, and clean readable controls.
 
 ## Development Rules & Policies
 
@@ -25,15 +25,21 @@ The following rules must be strictly adhered to by all developers (human or AI) 
 - **Backend**: C++20, Qt 6 (Core, Gui, Qml, Quick)
 - **Frontend**: QML (Qt Quick / Qt Quick Controls 2)
 - **Build System**: CMake (minimum version 3.16) and Ninja
-- **Visual Palette (Neo-Luna)**:
-  - Base Background: Deep Slate Blue (`#1A2232`)
-  - Panels: Acrylic Tint (`#2A364F` with ~70% opacity)
-  - Accents: Zune Amber Orange (`#FFBF00`)
-  - Primary Text: Soft Slate White (`#F8FAFC`)
+- **Visual Palette (Obsidian Aurora & Emerald Glacier)**:
+  - Base Background: Obsidian Midnight (`#07080C`)
+  - Panels: Translucent Obsidian Glass (`#E60B0E14`)
+  - Accent: Mint-Cyan (`#00FFD2`)
+  - Accent Light: Glacier Mint (`#66FFDF`)
+  - Borders: Glacier Slate (`#182232`)
+  - Primary Text: Glacier White (`#F1F5F9`)
 
 ---
 
 ## Chronological Development Log
+
+> [!NOTE]
+> Chronological log entries prior to "Phase 1: Obsidian Aurora & Emerald Glacier Redesign" refer to the legacy **Neo-Luna** / **Zune Amber** visual design system, which has been deprecated in favor of **Obsidian Aurora & Emerald Glacier**.
+
 
 ### Phase 1: Bootstrap & Foundation (Current Step)
 - **Action**: Initialized the project structure, established CMake configuration, created local build tools, and set up the C++ core structures for logging, settings, and pack optimization.
@@ -153,3 +159,22 @@ The following rules must be strictly adhered to by all developers (human or AI) 
   - **Casing & Uninstallation Fix**: Mapped `(item.appid || item.appId)` inside the uninstaller trigger to support the C++ mapped lowercase keys, allowing the uninstaller to launch successfully via `steam://uninstall/<appId>` instead of resolving to `undefined`.
   - **System-Wide Translation Update**: Executed `lupdate` using the Qt 6 SDK to automatically register the contexts of all 11 new modular drawers (e.g. `XboxDrawer`, `SteamSettingsDrawer`). Wrote a custom python cross-context mapping script to copy identical translations from the old monolithic view, completely localizing all drawers and resolving the missing legend labels (`ІГРИ`, `ІНШІ ФАЙЛИ`, `ВІЛЬНО`) to Ukrainian. Compiled using `lrelease` in `build.bat`.
 
+### Phase 1: Obsidian Aurora & Emerald Glacier Redesign
+- **Action**: Performed a complete user interface redesign by overhauling the design system, adding smooth micro-interactions to buttons and switches, updating panel styles, and refining the navigation layout.
+- **Detailed Rationale**:
+  - **Color Palette & Theme Overhaul**: Replaced the "Zune Amber" dark theme in `Theme.qml` with a high-contrast "Obsidian Aurora & Emerald Glacier" palette. Backgrounds utilize midnight obsidian (`#07080C`) with a glowing cobalt/teal gradient (`#052636`) and a vibrant mint-cyan accent (`#00FFD2`). Modernized all secondary themes (Light, Blackout, Rose, and Black pink) with custom high-contrast styling.
+  - **MeguButton Upgrades**: Implemented a tactile spring scale animation (scales to `1.02` on hover, `0.97` on press), specular glass highlighting edges, and real-time accented drop shadow glows.
+  - **MeguSwitch Upgrades**: Redesigned switches to squash dynamically when pressed (`width: 20` instead of `16`) and toggle with a bouncy spring curve (`Easing.OutBack`). Active tracks are filled with dynamic accent gradients.
+  - **AcrylicPanel Upgrades**: Upgraded panel corner radii to `12px` and added a vertical hover translation (`-2px`) accompanied by fading backing shadows, making cards feel interactive and responsive.
+  - **Layout & Navigation Indicator**: Added a horizontal neon indicator line in `main.qml` that glides smoothly when tabs are toggled. Incorporated a slow pulsing color interpolation around the outer border of the application window.
+  - **Ukrainian Localizations**: Updated and translated all modified settings theme names and descriptions in the Ukrainian translation database, compiling them to the target execution folder.
+
+### Phase 2: Design System Overhaul & Visual Refinements
+- **Action**: Performed a second QML redesign pass to achieve absolute visual and structural consistency under the Obsidian Aurora & Emerald Glacier design system.
+- **Detailed Rationale**:
+  - **MeguScrollBar.qml**: Resolved a layout width constraint bug where the handle was locked to the full 16px width. Centered the scroll handle Rectangle and animated its width/height from 6px to 10px on hover/active states, adding a neon drop-shadow glow.
+  - **MeguSwitch.qml**: Resolved a QML implicit height calculation bug by replacing RowLayout with absolute anchors and binding implicitHeight to the text's actual wrapped height, eliminating text clipping.
+  - **SteamSettingsDrawer.qml**: Swapped 15 hardcoded QML menu rows with a dynamic Repeater using a localized JavaScript array model. Added 4px hover sliding transitions and styled navigation chevrons. Replaced hardcoded grey values (#161616) with Theme.buttonBg.
+  - **VisualEffectsDrawer.qml**: Added a left 3px vertical accent bar to section headers. Restructured visual preset chips with tactile scale-bouncing and HSL-tinted gradient fills.
+  - **OptimizationView.qml & main.qml**: Overhauled sliding drawer scroll buttons, close buttons, separator lines, and main window controls with spring-like scale transitions and accent overlays. Restructured the version label into a clean capsule badge.
+  - **Utility Widgets**: Refined ShowPathButton.qml, MeguProgressBar.qml, and SpecCard.qml progress rings to use new mint gradient tokens and outline glows.

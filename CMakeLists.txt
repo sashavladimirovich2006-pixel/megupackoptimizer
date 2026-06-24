@@ -47,6 +47,7 @@ qt_add_qml_module(megu_pack_optimizer
         src/qml/components/MeguSwitch.qml
         src/qml/components/MeguProgressBar.qml
         src/qml/components/MeguScrollBar.qml
+        src/qml/components/MeguSlider.qml
         src/qml/components/LogViewer.qml
         src/qml/components/SpecCard.qml
         src/qml/components/ShowPathButton.qml

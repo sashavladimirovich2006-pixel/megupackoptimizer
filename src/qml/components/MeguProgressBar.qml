@@ -1,4 +1,5 @@
 import QtQuick
+import Qt5Compat.GraphicalEffects
 import MeguPackOptimizer 1.0
 
 Item {
@@ -24,15 +25,31 @@ Item {
             border.color: Theme.border
             border.width: 1
             
+            // Progress Fill Shadow
+            DropShadow {
+                anchors.fill: fill
+                horizontalOffset: 0
+                verticalOffset: 0
+                radius: 6
+                color: Qt.rgba(Theme.accent.r, Theme.accent.g, Theme.accent.b, 0.4)
+                source: fill
+                visible: control.value > 0.0
+            }
+
             // Progress Fill
             Rectangle {
                 id: fill
                 height: parent.height - 2
                 radius: 4
-                color: Theme.accent
                 anchors.left: parent.left
                 anchors.leftMargin: 1
                 anchors.verticalCenter: parent.verticalCenter
+                
+                gradient: Gradient {
+                    orientation: Gradient.Horizontal
+                    GradientStop { position: 0.0; color: Theme.accent }
+                    GradientStop { position: 1.0; color: Theme.accentLight }
+                }
                 
                 // Animate fill width changes
                 width: Math.max(0, (track.width - 2) * control.value)

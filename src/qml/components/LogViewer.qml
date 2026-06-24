@@ -31,12 +31,13 @@ AcrylicPanel {
         spacing: 10
         
         // Terminal Header
-        Row {
+        Item {
             width: parent.width
             height: 24
             
             Row {
                 spacing: 6
+                anchors.left: parent.left
                 anchors.verticalCenter: parent.verticalCenter
                 
                 Image {

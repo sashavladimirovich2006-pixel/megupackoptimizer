@@ -17,10 +17,22 @@ Item {
     implicitHeight: isIconOnly ? 20 : 24
     
     opacity: control.enabled ? 1.0 : 0.35
-    scale: mouseArea.containsMouse ? 1.08 : 1.0
+    scale: control.enabled ? (mouseArea.pressed ? 0.95 : (mouseArea.containsMouse ? 1.08 : 1.0)) : 1.0
     
     Behavior on opacity { NumberAnimation { duration: Theme.animFast } }
     Behavior on scale { NumberAnimation { duration: Theme.animFast; easing.type: Easing.OutCubic } }
+
+    DropShadow {
+        anchors.fill: bg
+        horizontalOffset: 0
+        verticalOffset: 0
+        radius: mouseArea.containsMouse ? 8 : 0
+        color: Theme.accent
+        source: bg
+        visible: mouseArea.containsMouse && control.enabled
+        Behavior on radius { NumberAnimation { duration: Theme.animFast } }
+        Behavior on color { ColorAnimation { duration: Theme.animFast } }
+    }
     
     Rectangle {
         id: bg

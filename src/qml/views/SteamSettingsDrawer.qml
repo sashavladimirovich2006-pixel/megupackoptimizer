@@ -151,6 +151,7 @@ Item {
             width: parent.width
             height: 1
             color: Theme.border
+            opacity: 0.4
         }
 
         // Steam Not Running Warning Card
@@ -232,848 +233,91 @@ Item {
             opacity: (steamIsRunning && steamActiveUserId !== "") ? 1.0 : 0.4
             Behavior on opacity { NumberAnimation { duration: Theme.animNormal } }
 
-            // Friends & Chat Menu Option
-        Rectangle {
-            width: parent.width
-            height: 48
-            radius: Theme.radiusSmall
-            color: friendsMouse.containsMouse ? Theme.accentDim : "transparent"
-            border.color: friendsMouse.containsMouse ? Theme.accent : Theme.border
-            border.width: 1
+            // Dynamic menu model with translated items for localization
+            property var menuModel: [
+                { pageId: "friends", title: qsTr("Friends & Chat"), desc: qsTr("Friends list, avatars, and sign-in preferences") },
+                { pageId: "chat", title: qsTr("Chat Settings"), desc: qsTr("Media embedding, spellcheck, and text sizes") },
+                { pageId: "notifications", title: qsTr("Notifications"), desc: qsTr("Client alerts, sounds, and toast rules") },
+                { pageId: "ingame", title: qsTr("In-Game Overlay"), desc: qsTr("Performance monitor, overlay shortcuts, and browser options") },
+                { pageId: "interface", title: qsTr("Interface"), desc: qsTr("Taskbar preferences, UI scale, and language settings") },
+                { pageId: "library", title: qsTr("Library"), desc: qsTr("Game details, library layouts, and dynamic updates") },
+                { pageId: "download", title: qsTr("Downloads"), desc: qsTr("Download speeds, background throttling, and region options") },
+                { pageId: "storage", title: qsTr("Storage"), desc: qsTr("Steam libraries, dynamic space usage, and uninstaller") },
+                { pageId: "accessibility", title: qsTr("Accessibility"), desc: qsTr("Text scaling, screen reader support, and color options") },
+                { pageId: "gamerecording", title: qsTr("Game Recording"), desc: qsTr("Background capture, clip markers, and storage limits") },
+                { pageId: "voice", title: qsTr("In-Game Voice"), desc: qsTr("Microphone test, input volumes, and voice activation thresholds") },
+                { pageId: "remoteplay", title: qsTr("Remote Play"), desc: qsTr("Steam Link pairing, hardware encoding, and quality profiles") },
+                { pageId: "music", title: qsTr("Music"), desc: qsTr("Local soundtrack indexing, database scan, and volume rules") },
+                { pageId: "broadcast", title: qsTr("Broadcasting"), desc: qsTr("Stream resolution, audio channels, and viewer privacy rules") },
+                { pageId: "controller", title: qsTr("Controller"), desc: qsTr("Steam Input configurations, calibration, and desktop layouts") }
+            ]
 
-            Behavior on color { ColorAnimation { duration: Theme.animFast } }
-            Behavior on border.color { ColorAnimation { duration: Theme.animFast } }
+            Repeater {
+                model: parent.menuModel
+                delegate: Rectangle {
+                    id: menuRow
+                    width: parent.width
+                    height: 48
+                    radius: Theme.radiusSmall
+                    
+                    // Translucent Obsidian Glass base with active hover highlight
+                    color: menuMouse.containsMouse ? Theme.accentDim : Theme.panelBg
+                    border.color: menuMouse.containsMouse ? Theme.accent : Theme.border
+                    border.width: 1
 
-            Row {
-                anchors.fill: parent
-                anchors.leftMargin: 12
-                anchors.rightMargin: 12
-                spacing: 8
+                    // Smooth horizontal slide micro-animation on hover
+                    x: menuMouse.containsMouse ? 4 : 0
 
-                Column {
-                    anchors.verticalCenter: parent.verticalCenter
-                    width: parent.width - 32
+                    Behavior on x { NumberAnimation { duration: Theme.animFast; easing.type: Easing.OutCubic } }
+                    Behavior on color { ColorAnimation { duration: Theme.animFast } }
+                    Behavior on border.color { ColorAnimation { duration: Theme.animFast } }
 
-                    Text {
-                        text: qsTr("Friends & Chat")
-                        color: Theme.textPrimary
-                        font.family: Theme.fontFamily
-                        font.pixelSize: 12
-                        font.bold: true
+                    Row {
+                        anchors.fill: parent
+                        anchors.leftMargin: 12
+                        anchors.rightMargin: 12
+                        spacing: 8
+
+                        Column {
+                            anchors.verticalCenter: parent.verticalCenter
+                            width: parent.width - 24
+
+                            Text {
+                                text: modelData.title
+                                color: Theme.textPrimary
+                                font.family: Theme.fontFamily
+                                font.pixelSize: 12
+                                font.bold: true
+                            }
+                            Text {
+                                text: modelData.desc
+                                color: Theme.textMuted
+                                font.family: Theme.fontFamily
+                                font.pixelSize: 9
+                            }
+                        }
+
+                        // Styled navigation arrow
+                        Text {
+                            text: "→"
+                            color: menuMouse.containsMouse ? Theme.accentLight : Theme.accent
+                            font.family: Theme.fontFamily
+                            font.pixelSize: 14
+                            font.bold: true
+                            anchors.verticalCenter: parent.verticalCenter
+                            Behavior on color { ColorAnimation { duration: Theme.animFast } }
+                        }
                     }
-                    Text {
-                        text: qsTr("Friends list, avatars, and sign-in preferences")
-                        color: Theme.textMuted
-                        font.family: Theme.fontFamily
-                        font.pixelSize: 9
-                    }
-                }
 
-                Text {
-                    text: "→"
-                    color: Theme.accent
-                    font.family: Theme.fontFamily
-                    font.pixelSize: 14
-                    font.bold: true
-                    anchors.verticalCenter: parent.verticalCenter
-                }
-            }
-
-            MouseArea {
-                id: friendsMouse
-                anchors.fill: parent
-                hoverEnabled: true
-                cursorShape: Qt.PointingHandCursor
-                onClicked: steamSettingsDrawer.subPage = "friends"
-            }
-        }
-
-        // Chat Settings Menu Option
-        Rectangle {
-            width: parent.width
-            height: 48
-            radius: Theme.radiusSmall
-            color: chatMouse.containsMouse ? Theme.accentDim : "transparent"
-            border.color: chatMouse.containsMouse ? Theme.accent : Theme.border
-            border.width: 1
-
-            Behavior on color { ColorAnimation { duration: Theme.animFast } }
-            Behavior on border.color { ColorAnimation { duration: Theme.animFast } }
-
-            Row {
-                anchors.fill: parent
-                anchors.leftMargin: 12
-                anchors.rightMargin: 12
-                spacing: 8
-
-                Column {
-                    anchors.verticalCenter: parent.verticalCenter
-                    width: parent.width - 32
-
-                    Text {
-                        text: qsTr("Chat Settings")
-                        color: Theme.textPrimary
-                        font.family: Theme.fontFamily
-                        font.pixelSize: 12
-                        font.bold: true
-                    }
-                    Text {
-                        text: qsTr("Media embedding, spellcheck, and text sizes")
-                        color: Theme.textMuted
-                        font.family: Theme.fontFamily
-                        font.pixelSize: 9
+                    MouseArea {
+                        id: menuMouse
+                        anchors.fill: parent
+                        hoverEnabled: true
+                        cursorShape: Qt.PointingHandCursor
+                        onClicked: steamSettingsDrawer.subPage = modelData.pageId
                     }
                 }
-
-                Text {
-                    text: "→"
-                    color: Theme.accent
-                    font.family: Theme.fontFamily
-                    font.pixelSize: 14
-                    font.bold: true
-                    anchors.verticalCenter: parent.verticalCenter
-                }
             }
-
-            MouseArea {
-                id: chatMouse
-                anchors.fill: parent
-                hoverEnabled: true
-                cursorShape: Qt.PointingHandCursor
-                onClicked: steamSettingsDrawer.subPage = "chat"
-            }
-        }
-
-        // Notifications Menu Option
-        Rectangle {
-            width: parent.width
-            height: 48
-            radius: Theme.radiusSmall
-            color: notifMouse.containsMouse ? Theme.accentDim : "transparent"
-            border.color: notifMouse.containsMouse ? Theme.accent : Theme.border
-            border.width: 1
-
-            Behavior on color { ColorAnimation { duration: Theme.animFast } }
-            Behavior on border.color { ColorAnimation { duration: Theme.animFast } }
-
-            Row {
-                anchors.fill: parent
-                anchors.leftMargin: 12
-                anchors.rightMargin: 12
-                spacing: 8
-
-                Column {
-                    anchors.verticalCenter: parent.verticalCenter
-                    width: parent.width - 32
-
-                    Text {
-                        text: qsTr("Notifications")
-                        color: Theme.textPrimary
-                        font.family: Theme.fontFamily
-                        font.pixelSize: 12
-                        font.bold: true
-                    }
-                    Text {
-                        text: qsTr("Client alerts, sounds, and toast rules")
-                        color: Theme.textMuted
-                        font.family: Theme.fontFamily
-                        font.pixelSize: 9
-                    }
-                }
-
-                Text {
-                    text: "→"
-                    color: Theme.accent
-                    font.family: Theme.fontFamily
-                    font.pixelSize: 14
-                    font.bold: true
-                    anchors.verticalCenter: parent.verticalCenter
-                }
-            }
-
-            MouseArea {
-                id: notifMouse
-                anchors.fill: parent
-                hoverEnabled: true
-                cursorShape: Qt.PointingHandCursor
-                onClicked: steamSettingsDrawer.subPage = "notifications"
-            }
-        }
-
-        // In Game Menu Option
-        Rectangle {
-            width: parent.width
-            height: 48
-            radius: Theme.radiusSmall
-            color: inGameMouse.containsMouse ? Theme.accentDim : "transparent"
-            border.color: inGameMouse.containsMouse ? Theme.accent : Theme.border
-            border.width: 1
-
-            Behavior on color { ColorAnimation { duration: Theme.animFast } }
-            Behavior on border.color { ColorAnimation { duration: Theme.animFast } }
-
-            Row {
-                anchors.fill: parent
-                anchors.leftMargin: 12
-                anchors.rightMargin: 12
-                spacing: 8
-
-                Column {
-                    anchors.verticalCenter: parent.verticalCenter
-                    width: parent.width - 32
-
-                    Text {
-                        text: qsTr("In Game")
-                        color: Theme.textPrimary
-                        font.family: Theme.fontFamily
-                        font.pixelSize: 12
-                        font.bold: true
-                    }
-                    Text {
-                        text: qsTr("Steam Overlay settings and in-game preferences")
-                        color: Theme.textMuted
-                        font.family: Theme.fontFamily
-                        font.pixelSize: 9
-                    }
-                }
-
-                Text {
-                    text: "→"
-                    color: Theme.accent
-                    font.family: Theme.fontFamily
-                    font.pixelSize: 14
-                    font.bold: true
-                    anchors.verticalCenter: parent.verticalCenter
-                }
-            }
-
-            MouseArea {
-                id: inGameMouse
-                anchors.fill: parent
-                hoverEnabled: true
-                cursorShape: Qt.PointingHandCursor
-                onClicked: steamSettingsDrawer.subPage = "ingame"
-            }
-        }
-
-        // Interface Menu Option
-        Rectangle {
-            width: parent.width
-            height: 48
-            radius: Theme.radiusSmall
-            color: interfaceMouse.containsMouse ? Theme.accentDim : "transparent"
-            border.color: interfaceMouse.containsMouse ? Theme.accent : Theme.border
-            border.width: 1
-
-            Behavior on color { ColorAnimation { duration: Theme.animFast } }
-            Behavior on border.color { ColorAnimation { duration: Theme.animFast } }
-
-            Row {
-                anchors.fill: parent
-                anchors.leftMargin: 12
-                anchors.rightMargin: 12
-                spacing: 8
-
-                Column {
-                    anchors.verticalCenter: parent.verticalCenter
-                    width: parent.width - 32
-
-                    Text {
-                        text: qsTr("Interface")
-                        color: Theme.textPrimary
-                        font.family: Theme.fontFamily
-                        font.pixelSize: 12
-                        font.bold: true
-                    }
-                    Text {
-                        text: qsTr("Scale text, startup location, and GPU accelerated rendering")
-                        color: Theme.textMuted
-                        font.family: Theme.fontFamily
-                        font.pixelSize: 9
-                    }
-                }
-
-                Text {
-                    text: "→"
-                    color: Theme.accent
-                    font.family: Theme.fontFamily
-                    font.pixelSize: 14
-                    font.bold: true
-                    anchors.verticalCenter: parent.verticalCenter
-                }
-            }
-
-            MouseArea {
-                id: interfaceMouse
-                anchors.fill: parent
-                hoverEnabled: true
-                cursorShape: Qt.PointingHandCursor
-                onClicked: steamSettingsDrawer.subPage = "interface"
-            }
-        }
-
-        // Library Menu Option
-        Rectangle {
-            width: parent.width
-            height: 48
-            radius: Theme.radiusSmall
-            color: libraryMouse.containsMouse ? Theme.accentDim : "transparent"
-            border.color: libraryMouse.containsMouse ? Theme.accent : Theme.border
-            border.width: 1
-
-            Behavior on color { ColorAnimation { duration: Theme.animFast } }
-            Behavior on border.color { ColorAnimation { duration: Theme.animFast } }
-
-            Row {
-                anchors.fill: parent
-                anchors.leftMargin: 12
-                anchors.rightMargin: 12
-                spacing: 8
-
-                Column {
-                    anchors.verticalCenter: parent.verticalCenter
-                    width: parent.width - 32
-
-                    Text {
-                        text: qsTr("Library")
-                        color: Theme.textPrimary
-                        font.family: Theme.fontFamily
-                        font.pixelSize: 12
-                        font.bold: true
-                    }
-                    Text {
-                        text: qsTr("Bandwidth, performance, and community options")
-                        color: Theme.textMuted
-                        font.family: Theme.fontFamily
-                        font.pixelSize: 9
-                    }
-                }
-
-                Text {
-                    text: "→"
-                    color: Theme.accent
-                    font.family: Theme.fontFamily
-                    font.pixelSize: 14
-                    font.bold: true
-                    anchors.verticalCenter: parent.verticalCenter
-                }
-            }
-
-            MouseArea {
-                id: libraryMouse
-                anchors.fill: parent
-                hoverEnabled: true
-                cursorShape: Qt.PointingHandCursor
-                onClicked: steamSettingsDrawer.subPage = "library"
-            }
-        }
-
-        // Download Menu Option
-        Rectangle {
-            width: parent.width
-            height: 48
-            radius: Theme.radiusSmall
-            color: downloadMouse.containsMouse ? Theme.accentDim : "transparent"
-            border.color: downloadMouse.containsMouse ? Theme.accent : Theme.border
-            border.width: 1
-
-            Behavior on color { ColorAnimation { duration: Theme.animFast } }
-            Behavior on border.color { ColorAnimation { duration: Theme.animFast } }
-
-            Row {
-                anchors.fill: parent
-                anchors.leftMargin: 12
-                anchors.rightMargin: 12
-                spacing: 8
-
-                Column {
-                    anchors.verticalCenter: parent.verticalCenter
-                    width: parent.width - 32
-
-                    Text {
-                        text: qsTr("Downloads")
-                        color: Theme.textPrimary
-                        font.family: Theme.fontFamily
-                        font.pixelSize: 12
-                        font.bold: true
-                    }
-                    Text {
-                        text: qsTr("Speed limits, gameplay download rules, and shader pre-caching")
-                        color: Theme.textMuted
-                        font.family: Theme.fontFamily
-                        font.pixelSize: 9
-                    }
-                }
-
-                Text {
-                    text: "→"
-                    color: Theme.accent
-                    font.family: Theme.fontFamily
-                    font.pixelSize: 14
-                    font.bold: true
-                    anchors.verticalCenter: parent.verticalCenter
-                }
-            }
-
-            MouseArea {
-                id: downloadMouse
-                anchors.fill: parent
-                hoverEnabled: true
-                cursorShape: Qt.PointingHandCursor
-                onClicked: steamSettingsDrawer.subPage = "download"
-            }
-        }
-
-        // Storage Menu Option
-        Rectangle {
-            width: parent.width
-            height: 48
-            radius: Theme.radiusSmall
-            color: storageMouse.containsMouse ? Theme.accentDim : "transparent"
-            border.color: storageMouse.containsMouse ? Theme.accent : Theme.border
-            border.width: 1
-
-            Behavior on color { ColorAnimation { duration: Theme.animFast } }
-            Behavior on border.color { ColorAnimation { duration: Theme.animFast } }
-
-            Row {
-                anchors.fill: parent
-                anchors.leftMargin: 12
-                anchors.rightMargin: 12
-                spacing: 8
-
-                Column {
-                    anchors.verticalCenter: parent.verticalCenter
-                    width: parent.width - 32
-
-                    Text {
-                        text: qsTr("Storage")
-                        color: Theme.textPrimary
-                        font.family: Theme.fontFamily
-                        font.pixelSize: 12
-                        font.bold: true
-                    }
-                    Text {
-                        text: qsTr("Manage installed games, DLCs, and workshop content sizes")
-                        color: Theme.textMuted
-                        font.family: Theme.fontFamily
-                        font.pixelSize: 9
-                    }
-                }
-
-                Text {
-                    text: "→"
-                    color: Theme.accent
-                    font.family: Theme.fontFamily
-                    font.pixelSize: 14
-                    font.bold: true
-                    anchors.verticalCenter: parent.verticalCenter
-                }
-            }
-
-            MouseArea {
-                id: storageMouse
-                anchors.fill: parent
-                hoverEnabled: true
-                cursorShape: Qt.PointingHandCursor
-                onClicked: {
-                    optimizerBackend.scanSteamInstalledGames();
-                    steamSettingsDrawer.subPage = "storage"
-                }
-            }
-        }
-
-        // Accessibility Menu Option
-        Rectangle {
-            width: parent.width
-            height: 48
-            radius: Theme.radiusSmall
-            color: accessibilityMouse.containsMouse ? Theme.accentDim : "transparent"
-            border.color: accessibilityMouse.containsMouse ? Theme.accent : Theme.border
-            border.width: 1
-
-            Behavior on color { ColorAnimation { duration: Theme.animFast } }
-            Behavior on border.color { ColorAnimation { duration: Theme.animFast } }
-
-            Row {
-                anchors.fill: parent
-                anchors.leftMargin: 12
-                anchors.rightMargin: 12
-                spacing: 8
-
-                Column {
-                    anchors.verticalCenter: parent.verticalCenter
-                    width: parent.width - 32
-
-                    Text {
-                        text: qsTr("Accessibility")
-                        color: Theme.textPrimary
-                        font.family: Theme.fontFamily
-                        font.pixelSize: 12
-                        font.bold: true
-                    }
-                    Text {
-                        text: qsTr("Configure accessibility and user interface options")
-                        color: Theme.textMuted
-                        font.family: Theme.fontFamily
-                        font.pixelSize: 9
-                    }
-                }
-
-                Text {
-                    text: "→"
-                    color: Theme.accent
-                    font.family: Theme.fontFamily
-                    font.pixelSize: 14
-                    font.bold: true
-                    anchors.verticalCenter: parent.verticalCenter
-                }
-            }
-
-            MouseArea {
-                id: accessibilityMouse
-                anchors.fill: parent
-                hoverEnabled: true
-                cursorShape: Qt.PointingHandCursor
-                onClicked: steamSettingsDrawer.subPage = "accessibility"
-            }
-        }
-
-        // Game Recording Menu Option
-        Rectangle {
-            width: parent.width
-            height: 48
-            radius: Theme.radiusSmall
-            color: gameRecordingMouse.containsMouse ? Theme.accentDim : "transparent"
-            border.color: gameRecordingMouse.containsMouse ? Theme.accent : Theme.border
-            border.width: 1
-
-            Behavior on color { ColorAnimation { duration: Theme.animFast } }
-            Behavior on border.color { ColorAnimation { duration: Theme.animFast } }
-
-            Row {
-                anchors.fill: parent
-                anchors.leftMargin: 12
-                anchors.rightMargin: 12
-                spacing: 8
-
-                Column {
-                    anchors.verticalCenter: parent.verticalCenter
-                    width: parent.width - 32
-
-                    Text {
-                        text: qsTr("Game Recording")
-                        color: Theme.textPrimary
-                        font.family: Theme.fontFamily
-                        font.pixelSize: 12
-                        font.bold: true
-                    }
-                    Text {
-                        text: qsTr("Configure game recording and capture options")
-                        color: Theme.textMuted
-                        font.family: Theme.fontFamily
-                        font.pixelSize: 9
-                    }
-                }
-
-                Text {
-                    text: "→"
-                    color: Theme.accent
-                    font.family: Theme.fontFamily
-                    font.pixelSize: 14
-                    font.bold: true
-                    anchors.verticalCenter: parent.verticalCenter
-                }
-            }
-
-            MouseArea {
-                id: gameRecordingMouse
-                anchors.fill: parent
-                hoverEnabled: true
-                cursorShape: Qt.PointingHandCursor
-                onClicked: steamSettingsDrawer.subPage = "gamerecording"
-            }
-        }
-
-        // Voice Menu Option
-        Rectangle {
-            width: parent.width
-            height: 48
-            radius: Theme.radiusSmall
-            color: voiceMouse.containsMouse ? Theme.accentDim : "transparent"
-            border.color: voiceMouse.containsMouse ? Theme.accent : Theme.border
-            border.width: 1
-
-            Behavior on color { ColorAnimation { duration: Theme.animFast } }
-            Behavior on border.color { ColorAnimation { duration: Theme.animFast } }
-
-            Row {
-                anchors.fill: parent
-                anchors.leftMargin: 12
-                anchors.rightMargin: 12
-                spacing: 8
-
-                Column {
-                    anchors.verticalCenter: parent.verticalCenter
-                    width: parent.width - 32
-
-                    Text {
-                        text: qsTr("Voice")
-                        color: Theme.textPrimary
-                        font.family: Theme.fontFamily
-                        font.pixelSize: 12
-                        font.bold: true
-                    }
-                    Text {
-                        text: qsTr("Configure voice transmission and advanced voice settings")
-                        color: Theme.textMuted
-                        font.family: Theme.fontFamily
-                        font.pixelSize: 9
-                    }
-                }
-
-                Text {
-                    text: "→"
-                    color: Theme.accent
-                    font.family: Theme.fontFamily
-                    font.pixelSize: 14
-                    font.bold: true
-                    anchors.verticalCenter: parent.verticalCenter
-                }
-            }
-
-            MouseArea {
-                id: voiceMouse
-                anchors.fill: parent
-                hoverEnabled: true
-                cursorShape: Qt.PointingHandCursor
-                onClicked: steamSettingsDrawer.subPage = "voice"
-            }
-        }
-
-        // Remote Play Menu Option
-        Rectangle {
-            width: parent.width
-            height: 48
-            radius: Theme.radiusSmall
-            color: remotePlayMouse.containsMouse ? Theme.accentDim : "transparent"
-            border.color: remotePlayMouse.containsMouse ? Theme.accent : Theme.border
-            border.width: 1
-
-            Behavior on color { ColorAnimation { duration: Theme.animFast } }
-            Behavior on border.color { ColorAnimation { duration: Theme.animFast } }
-
-            Row {
-                anchors.fill: parent
-                anchors.leftMargin: 12
-                anchors.rightMargin: 12
-                spacing: 8
-
-                Column {
-                    anchors.verticalCenter: parent.verticalCenter
-                    width: parent.width - 32
-
-                    Text {
-                        text: qsTr("Remote Play")
-                        color: Theme.textPrimary
-                        font.family: Theme.fontFamily
-                        font.pixelSize: 12
-                        font.bold: true
-                    }
-                    Text {
-                        text: qsTr("Configure Remote Play and streaming options")
-                        color: Theme.textMuted
-                        font.family: Theme.fontFamily
-                        font.pixelSize: 9
-                    }
-                }
-
-                Text {
-                    text: "→"
-                    color: Theme.accent
-                    font.family: Theme.fontFamily
-                    font.pixelSize: 14
-                    font.bold: true
-                    anchors.verticalCenter: parent.verticalCenter
-                }
-            }
-
-            MouseArea {
-                id: remotePlayMouse
-                anchors.fill: parent
-                hoverEnabled: true
-                cursorShape: Qt.PointingHandCursor
-                onClicked: steamSettingsDrawer.subPage = "remoteplay"
-            }
-        }
-
-        // Music Menu Option
-        Rectangle {
-            width: parent.width
-            height: 48
-            radius: Theme.radiusSmall
-            color: musicMouse.containsMouse ? Theme.accentDim : "transparent"
-            border.color: musicMouse.containsMouse ? Theme.accent : Theme.border
-            border.width: 1
-
-            Behavior on color { ColorAnimation { duration: Theme.animFast } }
-            Behavior on border.color { ColorAnimation { duration: Theme.animFast } }
-
-            Row {
-                anchors.fill: parent
-                anchors.leftMargin: 12
-                anchors.rightMargin: 12
-                spacing: 8
-
-                Column {
-                    anchors.verticalCenter: parent.verticalCenter
-                    width: parent.width - 32
-
-                    Text {
-                        text: qsTr("Music")
-                        color: Theme.textPrimary
-                        font.family: Theme.fontFamily
-                        font.pixelSize: 12
-                        font.bold: true
-                    }
-                    Text {
-                        text: qsTr("Configure Music and soundtrack download options")
-                        color: Theme.textMuted
-                        font.family: Theme.fontFamily
-                        font.pixelSize: 9
-                    }
-                }
-
-                Text {
-                    text: "→"
-                    color: Theme.accent
-                    font.family: Theme.fontFamily
-                    font.pixelSize: 14
-                    font.bold: true
-                    anchors.verticalCenter: parent.verticalCenter
-                }
-            }
-
-            MouseArea {
-                id: musicMouse
-                anchors.fill: parent
-                hoverEnabled: true
-                cursorShape: Qt.PointingHandCursor
-                onClicked: steamSettingsDrawer.subPage = "music"
-            }
-        }
-
-        // Broadcasting Menu Option
-        Rectangle {
-            width: parent.width
-            height: 48
-            radius: Theme.radiusSmall
-            color: broadcastMouse.containsMouse ? Theme.accentDim : "transparent"
-            border.color: broadcastMouse.containsMouse ? Theme.accent : Theme.border
-            border.width: 1
-
-            Behavior on color { ColorAnimation { duration: Theme.animFast } }
-            Behavior on border.color { ColorAnimation { duration: Theme.animFast } }
-
-            Row {
-                anchors.fill: parent
-                anchors.leftMargin: 12
-                anchors.rightMargin: 12
-                spacing: 8
-
-                Column {
-                    anchors.verticalCenter: parent.verticalCenter
-                    width: parent.width - 32
-
-                    Text {
-                        text: qsTr("Broadcast customization")
-                        color: Theme.textPrimary
-                        font.family: Theme.fontFamily
-                        font.pixelSize: 12
-                        font.bold: true
-                    }
-                    Text {
-                        text: qsTr("Configure game broadcasting and stream preferences")
-                        color: Theme.textMuted
-                        font.family: Theme.fontFamily
-                        font.pixelSize: 9
-                    }
-                }
-
-                Text {
-                    text: "→"
-                    color: Theme.accent
-                    font.family: Theme.fontFamily
-                    font.pixelSize: 14
-                    font.bold: true
-                    anchors.verticalCenter: parent.verticalCenter
-                }
-            }
-
-            MouseArea {
-                id: broadcastMouse
-                anchors.fill: parent
-                hoverEnabled: true
-                cursorShape: Qt.PointingHandCursor
-                onClicked: steamSettingsDrawer.subPage = "broadcast"
-            }
-        }
-
-        // Controller Customization Menu Option
-        Rectangle {
-            width: parent.width
-            height: 48
-            radius: Theme.radiusSmall
-            color: controllerMouse.containsMouse ? Theme.accentDim : "transparent"
-            border.color: controllerMouse.containsMouse ? Theme.accent : Theme.border
-            border.width: 1
-
-            Behavior on color { ColorAnimation { duration: Theme.animFast } }
-            Behavior on border.color { ColorAnimation { duration: Theme.animFast } }
-
-            Row {
-                anchors.fill: parent
-                anchors.leftMargin: 12
-                anchors.rightMargin: 12
-                spacing: 8
-
-                Column {
-                    anchors.verticalCenter: parent.verticalCenter
-                    width: parent.width - 32
-
-                    Text {
-                        text: qsTr("Controller customization")
-                        color: Theme.textPrimary
-                        font.family: Theme.fontFamily
-                        font.pixelSize: 12
-                        font.bold: true
-                    }
-                    Text {
-                        text: qsTr("Configure steam controller settings and overlays")
-                        color: Theme.textMuted
-                        font.family: Theme.fontFamily
-                        font.pixelSize: 9
-                    }
-                }
-
-                Text {
-                    text: "→"
-                    color: Theme.accent
-                    font.family: Theme.fontFamily
-                    font.pixelSize: 14
-                    font.bold: true
-                    anchors.verticalCenter: parent.verticalCenter
-                }
-            }
-
-            MouseArea {
-                id: controllerMouse
-                anchors.fill: parent
-                hoverEnabled: true
-                cursorShape: Qt.PointingHandCursor
-                onClicked: steamSettingsDrawer.subPage = "controller"
-            }
-        }
         }
     }
 
@@ -1112,6 +356,7 @@ Item {
             width: parent.width
             height: 1
             color: Theme.border
+            opacity: 0.4
         }
 
         Column {
@@ -1459,6 +704,7 @@ Item {
             width: parent.width
             height: 1
             color: Theme.border
+            opacity: 0.4
         }
 
         Column {
@@ -1698,6 +944,7 @@ Item {
             width: parent.width
             height: 1
             color: Theme.border
+            opacity: 0.4
         }
 
         // FontSize Segmented Selector
@@ -1807,6 +1054,7 @@ Item {
             width: parent.width
             height: 1
             color: Theme.border
+            opacity: 0.4
         }
 
         // Global Sound Toggle
@@ -2183,6 +1431,7 @@ Item {
             width: parent.width
             height: 1
             color: Theme.border
+            opacity: 0.4
         }
 
         // Window Flashing option
@@ -2284,6 +1533,7 @@ Item {
             width: parent.width
             height: 1
             color: Theme.border
+            opacity: 0.4
         }
 
         Column {
@@ -3110,6 +2360,7 @@ Item {
             width: parent.width
             height: 1
             color: Theme.border
+            opacity: 0.4
         }
 
         Column {
@@ -3507,6 +2758,7 @@ Item {
             width: parent.width
             height: 1
             color: Theme.border
+            opacity: 0.4
         }
 
         Column {
@@ -3576,7 +2828,7 @@ Item {
                     width: 100
                     height: 26
                     radius: 4
-                    color: (steamGameRecordingPage.recordingKeyName === "InGameOverlayShortcutKey") ? Qt.rgba(Theme.accent.r, Theme.accent.g, Theme.accent.b, 0.1) : "#161616"
+                    color: (steamGameRecordingPage.recordingKeyName === "InGameOverlayShortcutKey") ? Qt.rgba(Theme.accent.r, Theme.accent.g, Theme.accent.b, 0.1) : Theme.buttonBg
                     border.color: (steamGameRecordingPage.recordingKeyName === "InGameOverlayShortcutKey") ? Theme.accent : (overlayShortcutKeyMouse.containsMouse ? Theme.accent : Theme.border)
                     border.width: 1
                     anchors.right: parent.right
@@ -4220,7 +3472,7 @@ Item {
                         anchors.verticalCenter: parent.verticalCenter
                     }
 
-                    Slider {
+                    MeguSlider {
                         id: fpsScalingSlider
                         width: 200
                         height: 32
@@ -4233,33 +3485,6 @@ Item {
                         live: true
                         onMoved: {
                             root.toggleSteamFriendsSetting("InGameOverlayShowFPSScaling", value);
-                        }
-
-                        background: Rectangle {
-                            x: fpsScalingSlider.leftPadding
-                            y: fpsScalingSlider.topPadding + fpsScalingSlider.availableHeight / 2 - height / 2
-                            implicitWidth: 200
-                            implicitHeight: 4
-                            width: fpsScalingSlider.availableWidth
-                            height: implicitHeight
-                            radius: 2
-                            color: "#3d4450"
-
-                            Rectangle {
-                                width: fpsScalingSlider.visualPosition * parent.width
-                                height: parent.height
-                                color: "#1a9fff"
-                                radius: 2
-                            }
-                        }
-
-                        handle: Rectangle {
-                            x: fpsScalingSlider.leftPadding + fpsScalingSlider.visualPosition * (fpsScalingSlider.availableWidth - width)
-                            y: fpsScalingSlider.topPadding + fpsScalingSlider.availableHeight / 2 - height / 2
-                            implicitWidth: 16
-                            implicitHeight: 16
-                            radius: 8
-                            color: "#ffffff"
                         }
                     }
                 }
@@ -4280,7 +3505,7 @@ Item {
                         anchors.verticalCenter: parent.verticalCenter
                     }
 
-                    Slider {
+                    MeguSlider {
                         id: fpsSaturationSlider
                         width: 200
                         height: 32
@@ -4293,33 +3518,6 @@ Item {
                         live: true
                         onMoved: {
                             root.toggleSteamFriendsSetting("InGameOverlayShowFPSSaturation", value);
-                        }
-
-                        background: Rectangle {
-                            x: fpsSaturationSlider.leftPadding
-                            y: fpsSaturationSlider.topPadding + fpsSaturationSlider.availableHeight / 2 - height / 2
-                            implicitWidth: 200
-                            implicitHeight: 4
-                            width: fpsSaturationSlider.availableWidth
-                            height: implicitHeight
-                            radius: 2
-                            color: "#3d4450"
-
-                            Rectangle {
-                                width: fpsSaturationSlider.visualPosition * parent.width
-                                height: parent.height
-                                color: "#1a9fff"
-                                radius: 2
-                            }
-                        }
-
-                        handle: Rectangle {
-                            x: fpsSaturationSlider.leftPadding + fpsSaturationSlider.visualPosition * (fpsSaturationSlider.availableWidth - width)
-                            y: fpsSaturationSlider.topPadding + fpsSaturationSlider.availableHeight / 2 - height / 2
-                            implicitWidth: 16
-                            implicitHeight: 16
-                            radius: 8
-                            color: "#ffffff"
                         }
                     }
                 }
@@ -4340,7 +3538,7 @@ Item {
                         anchors.verticalCenter: parent.verticalCenter
                     }
 
-                    Slider {
+                    MeguSlider {
                         id: fpsBgOpacitySlider
                         width: 200
                         height: 32
@@ -4353,33 +3551,6 @@ Item {
                         live: true
                         onMoved: {
                             root.toggleSteamFriendsSetting("InGameOverlayShowFPSBgOpacity", value);
-                        }
-
-                        background: Rectangle {
-                            x: fpsBgOpacitySlider.leftPadding
-                            y: fpsBgOpacitySlider.topPadding + fpsBgOpacitySlider.availableHeight / 2 - height / 2
-                            implicitWidth: 200
-                            implicitHeight: 4
-                            width: fpsBgOpacitySlider.availableWidth
-                            height: implicitHeight
-                            radius: 2
-                            color: "#3d4450"
-
-                            Rectangle {
-                                width: fpsBgOpacitySlider.visualPosition * parent.width
-                                height: parent.height
-                                color: "#1a9fff"
-                                radius: 2
-                            }
-                        }
-
-                        handle: Rectangle {
-                            x: fpsBgOpacitySlider.leftPadding + fpsBgOpacitySlider.visualPosition * (fpsBgOpacitySlider.availableWidth - width)
-                            y: fpsBgOpacitySlider.topPadding + fpsBgOpacitySlider.availableHeight / 2 - height / 2
-                            implicitWidth: 16
-                            implicitHeight: 16
-                            radius: 8
-                            color: "#ffffff"
                         }
                     }
                 }
@@ -4424,7 +3595,7 @@ Item {
                     width: 100
                     height: 26
                     radius: 4
-                    color: (steamGameRecordingPage.recordingKeyName === "ScreenshotKey") ? Qt.rgba(Theme.accent.r, Theme.accent.g, Theme.accent.b, 0.1) : "#161616"
+                    color: (steamGameRecordingPage.recordingKeyName === "ScreenshotKey") ? Qt.rgba(Theme.accent.r, Theme.accent.g, Theme.accent.b, 0.1) : Theme.buttonBg
                     border.color: (steamGameRecordingPage.recordingKeyName === "ScreenshotKey") ? Theme.accent : (screenshotKeyMouse_ingame.containsMouse ? Theme.accent : Theme.border)
                     border.width: 1
                     anchors.right: parent.right
@@ -4995,6 +4166,7 @@ Item {
             width: parent.width
             height: 1
             color: Theme.border
+            opacity: 0.4
         }
 
         Column {
@@ -5477,6 +4649,7 @@ Item {
             width: parent.width
             height: 1
             color: Theme.border
+            opacity: 0.4
         }
 
         Column {
@@ -5600,7 +4773,7 @@ Item {
                     font.bold: true
                 }
 
-                Slider {
+                MeguSlider {
                     id: uiScaleSlider
                     width: parent.width
                     height: 32
@@ -5625,7 +4798,7 @@ Item {
                         onPaint: {
                             var ctx = getContext("2d");
                             ctx.reset();
-                            ctx.fillStyle = "#6d7780"; // Steam gray color
+                            ctx.fillStyle = Theme.accent;
                             ctx.beginPath();
                             ctx.moveTo(0, 0);
                             ctx.lineTo(8, 0);
@@ -5636,33 +4809,6 @@ Item {
                         
                         onWidthChanged: requestPaint()
                         onHeightChanged: requestPaint()
-                    }
-
-                    background: Rectangle {
-                        x: uiScaleSlider.leftPadding
-                        y: uiScaleSlider.topPadding + uiScaleSlider.availableHeight / 2 - height / 2
-                        implicitWidth: 200
-                        implicitHeight: 4
-                        width: uiScaleSlider.availableWidth
-                        height: implicitHeight
-                        radius: 2
-                        color: "#3d4450"
-
-                        Rectangle {
-                            width: uiScaleSlider.visualPosition * parent.width
-                            height: parent.height
-                            color: "#1a9fff"
-                            radius: 2
-                        }
-                    }
-
-                    handle: Rectangle {
-                        x: uiScaleSlider.leftPadding + uiScaleSlider.visualPosition * (uiScaleSlider.availableWidth - width)
-                        y: uiScaleSlider.topPadding + uiScaleSlider.availableHeight / 2 - height / 2
-                        implicitWidth: 16
-                        implicitHeight: 16
-                        radius: 8
-                        color: "#ffffff"
                     }
                 }
 
@@ -5959,6 +5105,7 @@ Item {
             width: parent.width
             height: 1
             color: Theme.border
+            opacity: 0.4
         }
 
         Text {
@@ -6247,7 +5394,7 @@ Item {
                     width: 100
                     height: 26
                     radius: 4
-                    color: (steamGameRecordingPage.recordingKeyName === "GR_ToggleKey") ? Qt.rgba(Theme.accent.r, Theme.accent.g, Theme.accent.b, 0.1) : "#161616"
+                    color: (steamGameRecordingPage.recordingKeyName === "GR_ToggleKey") ? Qt.rgba(Theme.accent.r, Theme.accent.g, Theme.accent.b, 0.1) : Theme.buttonBg
                     border.color: (steamGameRecordingPage.recordingKeyName === "GR_ToggleKey") ? Theme.accent : (toggleKeyMouse.containsMouse ? Theme.accent : Theme.border)
                     border.width: 1
                     anchors.right: parent.right
@@ -6289,7 +5436,7 @@ Item {
                     width: 100
                     height: 26
                     radius: 4
-                    color: (steamGameRecordingPage.recordingKeyName === "GR_MarkerKey") ? Qt.rgba(Theme.accent.r, Theme.accent.g, Theme.accent.b, 0.1) : "#161616"
+                    color: (steamGameRecordingPage.recordingKeyName === "GR_MarkerKey") ? Qt.rgba(Theme.accent.r, Theme.accent.g, Theme.accent.b, 0.1) : Theme.buttonBg
                     border.color: (steamGameRecordingPage.recordingKeyName === "GR_MarkerKey") ? Theme.accent : (markerKeyMouse.containsMouse ? Theme.accent : Theme.border)
                     border.width: 1
                     anchors.right: parent.right
@@ -6331,7 +5478,7 @@ Item {
                     width: 100
                     height: 26
                     radius: 4
-                    color: (steamGameRecordingPage.recordingKeyName === "ScreenshotKey") ? Qt.rgba(Theme.accent.r, Theme.accent.g, Theme.accent.b, 0.1) : "#161616"
+                    color: (steamGameRecordingPage.recordingKeyName === "ScreenshotKey") ? Qt.rgba(Theme.accent.r, Theme.accent.g, Theme.accent.b, 0.1) : Theme.buttonBg
                     border.color: (steamGameRecordingPage.recordingKeyName === "ScreenshotKey") ? Theme.accent : (screenshotKeyMouse.containsMouse ? Theme.accent : Theme.border)
                     border.width: 1
                     anchors.right: parent.right
@@ -6427,7 +5574,7 @@ Item {
                     width: 100
                     height: 26
                     radius: 4
-                    color: (steamGameRecordingPage.recordingKeyName === "GR_ClipKey") ? Qt.rgba(Theme.accent.r, Theme.accent.g, Theme.accent.b, 0.1) : "#161616"
+                    color: (steamGameRecordingPage.recordingKeyName === "GR_ClipKey") ? Qt.rgba(Theme.accent.r, Theme.accent.g, Theme.accent.b, 0.1) : Theme.buttonBg
                     border.color: (steamGameRecordingPage.recordingKeyName === "GR_ClipKey") ? Theme.accent : (clipKeyMouse.containsMouse ? Theme.accent : Theme.border)
                     border.width: 1
                     anchors.right: parent.right
@@ -7728,6 +6875,7 @@ Item {
             width: parent.width
             height: 1
             color: Theme.border
+            opacity: 0.4
         }
 
         Column {
@@ -7855,16 +7003,17 @@ Item {
                 Column {
                     anchors.fill: parent
                     spacing: 4
-                    Row {
+                    Item {
                         width: parent.width
+                        height: 16
                         Text {
                             text: qsTr("Input Volume")
                             color: Theme.textPrimary
                             font.family: Theme.fontFamily
                             font.pixelSize: 12
                             font.bold: true
+                            anchors.left: parent.left
                         }
-                        Item { Layout.fillWidth: true }
                         Text {
                             text: Math.round(steamVoicePage.mapSliderToGain(inputVolumeSlider.value) * 100) + "%"
                             color: Theme.accent
@@ -7874,7 +7023,7 @@ Item {
                             anchors.right: parent.right
                         }
                     }
-                    Slider {
+                    MeguSlider {
                         id: inputVolumeSlider
                         width: parent.width
                         from: 0.0
@@ -7884,32 +7033,6 @@ Item {
                         live: true
                         onMoved: {
                             root.toggleSteamFriendsSetting("inputGain", steamVoicePage.mapSliderToGain(value));
-                        }
-                        background: Rectangle {
-                            x: inputVolumeSlider.leftPadding
-                            y: inputVolumeSlider.topPadding + inputVolumeSlider.availableHeight / 2 - height / 2
-                            width: inputVolumeSlider.availableWidth
-                            height: 4
-                            radius: 2
-                            color: Theme.border
-                            Rectangle {
-                                width: inputVolumeSlider.visualPosition * parent.width
-                                height: parent.height
-                                color: Theme.accent
-                                radius: 2
-                            }
-                        }
-                        handle: Rectangle {
-                            x: inputVolumeSlider.leftPadding + inputVolumeSlider.visualPosition * (inputVolumeSlider.availableWidth - width)
-                            y: inputVolumeSlider.topPadding + inputVolumeSlider.availableHeight / 2 - height / 2
-                            implicitWidth: 16
-                            implicitHeight: 16
-                            radius: 8
-                            color: inputVolumeSlider.pressed ? Theme.accent : Theme.textPrimary
-                            border.color: Theme.accent
-                            border.width: inputVolumeSlider.hovered ? 2 : 0
-                            scale: inputVolumeSlider.pressed ? 1.2 : (inputVolumeSlider.hovered ? 1.1 : 1.0)
-                            Behavior on scale { NumberAnimation { duration: Theme.animFast } }
                         }
                     }
                 }
@@ -8016,16 +7139,17 @@ Item {
                 Column {
                     anchors.fill: parent
                     spacing: 4
-                    Row {
+                    Item {
                         width: parent.width
+                        height: 16
                         Text {
                             text: qsTr("Output Volume")
                             color: Theme.textPrimary
                             font.family: Theme.fontFamily
                             font.pixelSize: 12
                             font.bold: true
+                            anchors.left: parent.left
                         }
-                        Item { Layout.fillWidth: true }
                         Text {
                             text: Math.round(steamVoicePage.mapSliderToGain(outputVolumeSlider.value) * 100) + "%"
                             color: Theme.accent
@@ -8035,7 +7159,7 @@ Item {
                             anchors.right: parent.right
                         }
                     }
-                    Slider {
+                    MeguSlider {
                         id: outputVolumeSlider
                         width: parent.width
                         from: 0.0
@@ -8045,32 +7169,6 @@ Item {
                         live: true
                         onMoved: {
                             root.toggleSteamFriendsSetting("outputGain", steamVoicePage.mapSliderToGain(value));
-                        }
-                        background: Rectangle {
-                            x: outputVolumeSlider.leftPadding
-                            y: outputVolumeSlider.topPadding + outputVolumeSlider.availableHeight / 2 - height / 2
-                            width: outputVolumeSlider.availableWidth
-                            height: 4
-                            radius: 2
-                            color: Theme.border
-                            Rectangle {
-                                width: outputVolumeSlider.visualPosition * parent.width
-                                height: parent.height
-                                color: Theme.accent
-                                radius: 2
-                            }
-                        }
-                        handle: Rectangle {
-                            x: outputVolumeSlider.leftPadding + outputVolumeSlider.visualPosition * (outputVolumeSlider.availableWidth - width)
-                            y: outputVolumeSlider.topPadding + outputVolumeSlider.availableHeight / 2 - height / 2
-                            implicitWidth: 16
-                            implicitHeight: 16
-                            radius: 8
-                            color: outputVolumeSlider.pressed ? Theme.accent : Theme.textPrimary
-                            border.color: Theme.accent
-                            border.width: outputVolumeSlider.hovered ? 2 : 0
-                            scale: outputVolumeSlider.pressed ? 1.2 : (outputVolumeSlider.hovered ? 1.1 : 1.0)
-                            Behavior on scale { NumberAnimation { duration: Theme.animFast } }
                         }
                     }
                 }
@@ -8667,6 +7765,7 @@ Item {
             width: parent.width
             height: 1
             color: Theme.border
+            opacity: 0.4
         }
 
         Column {
@@ -9758,7 +8857,7 @@ Item {
                             }
                         }
 
-                        Slider {
+                        MeguSlider {
                             id: audioVolumeSlider
                             width: parent.width
                             from: 0
@@ -9768,39 +8867,6 @@ Item {
                             live: true
                             onMoved: {
                                 root.toggleSteamFriendsSetting("RemotePlay_AudioVolume", Math.round(value));
-                            }
-
-                            background: Rectangle {
-                                x: audioVolumeSlider.leftPadding
-                                y: audioVolumeSlider.topPadding + audioVolumeSlider.availableHeight / 2 - height / 2
-                                implicitWidth: 200
-                                implicitHeight: 4
-                                width: audioVolumeSlider.availableWidth
-                                height: implicitHeight
-                                radius: 2
-                                color: Theme.border
-
-                                Rectangle {
-                                    width: audioVolumeSlider.visualPosition * parent.width
-                                    height: parent.height
-                                    color: Theme.accent
-                                    radius: 2
-                                }
-                            }
-
-                            handle: Rectangle {
-                                x: audioVolumeSlider.leftPadding + audioVolumeSlider.visualPosition * (audioVolumeSlider.availableWidth - width)
-                                y: audioVolumeSlider.topPadding + audioVolumeSlider.availableHeight / 2 - height / 2
-                                implicitWidth: 16
-                                implicitHeight: 16
-                                radius: 8
-                                color: audioVolumeSlider.pressed ? Theme.accent : Theme.textPrimary
-                                border.color: Theme.accent
-                                border.width: audioVolumeSlider.hovered ? 2 : 0
-
-                                Behavior on color { ColorAnimation { duration: Theme.animFast } }
-                                Behavior on scale { NumberAnimation { duration: Theme.animFast } }
-                                scale: audioVolumeSlider.pressed ? 1.2 : (audioVolumeSlider.hovered ? 1.1 : 1.0)
                             }
                         }
                     }
@@ -10651,6 +9717,7 @@ Item {
             width: parent.width
             height: 1
             color: Theme.border
+            opacity: 0.4
         }
 
         Column {
@@ -10827,7 +9894,7 @@ Item {
                         }
                     }
 
-                    Slider {
+                    MeguSlider {
                         id: musicVolumeSlider
                         width: parent.width
                         from: 0
@@ -10837,39 +9904,6 @@ Item {
                         live: true
                         onMoved: {
                             root.toggleSteamFriendsSetting("MusicVolume", Math.round(value));
-                        }
-
-                        background: Rectangle {
-                            x: musicVolumeSlider.leftPadding
-                            y: musicVolumeSlider.topPadding + musicVolumeSlider.availableHeight / 2 - height / 2
-                            implicitWidth: 200
-                            implicitHeight: 4
-                            width: musicVolumeSlider.availableWidth
-                            height: implicitHeight
-                            radius: 2
-                            color: Theme.border
-
-                            Rectangle {
-                                width: musicVolumeSlider.visualPosition * parent.width
-                                height: parent.height
-                                color: Theme.accent
-                                radius: 2
-                            }
-                        }
-
-                        handle: Rectangle {
-                            x: musicVolumeSlider.leftPadding + musicVolumeSlider.visualPosition * (musicVolumeSlider.availableWidth - width)
-                            y: musicVolumeSlider.topPadding + musicVolumeSlider.availableHeight / 2 - height / 2
-                            implicitWidth: 16
-                            implicitHeight: 16
-                            radius: 8
-                            color: musicVolumeSlider.pressed ? Theme.accent : Theme.textPrimary
-                            border.color: Theme.accent
-                            border.width: musicVolumeSlider.hovered ? 2 : 0
-
-                            Behavior on color { ColorAnimation { duration: Theme.animFast } }
-                            Behavior on scale { NumberAnimation { duration: Theme.animFast } }
-                            scale: musicVolumeSlider.pressed ? 1.2 : (musicVolumeSlider.hovered ? 1.1 : 1.0)
                         }
                     }
                 }
@@ -10914,6 +9948,7 @@ Item {
             width: parent.width
             height: 1
             color: Theme.border
+            opacity: 0.4
         }
 
         Column {
@@ -11227,6 +10262,7 @@ Item {
             width: parent.width
             height: 1
             color: Theme.border
+            opacity: 0.4
         }
 
         Column {
@@ -12127,6 +11163,7 @@ Item {
             width: parent.width
             height: 1
             color: Theme.border
+            opacity: 0.4
         }
 
         // Shader Pre-Caching Header
@@ -12327,6 +11364,7 @@ Item {
             width: parent.width
             height: 1
             color: Theme.border
+            opacity: 0.4
         }
 
         // Drive selection box (interactive dropdown)
@@ -12334,7 +11372,7 @@ Item {
             id: driveSelectDropdown
             width: parent.width
             height: 40
-            color: "#161920"
+            color: Theme.panelBg
             border.color: driveSelectMouse.containsMouse ? Theme.accent : Theme.border
             border.width: 1
             radius: Theme.radiusSmall
@@ -12628,6 +11666,7 @@ Item {
             width: parent.width
             height: 1
             color: Theme.border
+            opacity: 0.4
         }
 
         // Game Header
@@ -12666,7 +11705,7 @@ Item {
                     id: gameCard
                     width: parent.width
                     height: 64
-                    color: model.checked ? "#1a2233" : "#11141a"
+                    color: model.checked ? Theme.accentDim : Theme.panelBg
                     border.color: model.checked ? Theme.accent : Theme.border
                     border.width: 1
                     radius: Theme.radiusSmall
@@ -12677,7 +11716,7 @@ Item {
                         width: 80
                         height: 48
                         radius: 4
-                        color: "#1e222b"
+                        color: Theme.buttonBg
                         clip: true
                         anchors.left: parent.left
                         anchors.leftMargin: 8
@@ -12769,7 +11808,7 @@ Item {
                         width: 16
                         height: 16
                         radius: 3
-                        color: model.checked ? Theme.accent : "transparent"
+                        color: model.checked ? Theme.accentDim : Theme.panelBg
                         border.color: model.checked ? Theme.accent : Theme.border
                         border.width: 1
                         anchors.right: parent.right
@@ -13823,7 +12862,7 @@ Item {
         Timer {
             id: controllerRefreshTimer
             interval: 3000
-            running: steamSettingsDrawer.subPage === "controller" && steamSettingsDrawer.opened
+            running: steamSettingsDrawer.subPage === "controller" && steamSettingsDrawer.visible
             repeat: true
             onTriggered: {
                 steamControllerPage.refreshControllers();

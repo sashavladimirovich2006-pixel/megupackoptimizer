@@ -16,17 +16,43 @@ Item {
     signal clicked()
     signal dropdownClicked()
     
+    readonly property bool isHovered: control.enabled && (mouseArea.containsMouse || (control.hasDropdown && dropdownMouseArea.containsMouse))
+    readonly property bool isPressed: control.enabled && (mouseArea.pressed || (control.hasDropdown && dropdownMouseArea.pressed))
+
     implicitWidth: Math.max(control.hasDropdown ? 130 : 90, buttonLayout.implicitWidth + (control.hasDropdown ? 56 : 28))
     implicitHeight: 34 // Compact and extremely clean height matching modern UI standards
     
     opacity: control.enabled ? 1.0 : 0.35
     Behavior on opacity { NumberAnimation { duration: Theme.animFast } }
+
+    scale: control.enabled ? (control.isPressed ? 0.97 : (control.isHovered ? 1.02 : 1.0)) : 1.0
+    Behavior on scale {
+        NumberAnimation {
+            duration: 150
+            easing.type: Easing.OutCubic
+        }
+    }
+
+    // DropShadow glow for accented buttons
+    DropShadow {
+        anchors.fill: bg
+        horizontalOffset: 0
+        verticalOffset: control.accented && control.isHovered ? 4 : 2
+        radius: control.accented && control.isHovered ? 12 : 6
+        color: control.accented ? Qt.rgba(Theme.accent.r, Theme.accent.g, Theme.accent.b, control.isHovered ? 0.35 : 0.20) : "transparent"
+        source: bg
+        visible: control.accented && control.enabled
+        
+        Behavior on verticalOffset { NumberAnimation { duration: 150 } }
+        Behavior on radius { NumberAnimation { duration: 150 } }
+        Behavior on color { ColorAnimation { duration: 150 } }
+    }
     
     // Main Button Plate
     Rectangle {
         id: bg
         anchors.fill: parent
-        radius: 6 // Clean minimal rounded corners
+        radius: 8 // Modern, slightly curved corners
         
         color: {
             if (!control.enabled) {
@@ -35,18 +61,16 @@ Item {
             if (control.hasDropdown && control.dropdownOpen) {
                 return Theme.panelBg;
             }
-            var isPressed = mouseArea.pressed || dropdownMouseArea.pressed;
-            var isHovered = mouseArea.containsMouse || dropdownMouseArea.containsMouse;
             if (control.accented) {
-                return isPressed ? Qt.rgba(Theme.accent.r, Theme.accent.g, Theme.accent.b, 0.30) : 
-                       (isHovered ? Qt.rgba(Theme.accent.r, Theme.accent.g, Theme.accent.b, 0.20) : 
+                return control.isPressed ? Qt.rgba(Theme.accent.r, Theme.accent.g, Theme.accent.b, 0.30) : 
+                       (control.isHovered ? Qt.rgba(Theme.accent.r, Theme.accent.g, Theme.accent.b, 0.20) : 
                         Qt.rgba(Theme.accent.r, Theme.accent.g, Theme.accent.b, 0.12));
             } else if (control.flat) {
-                if (isPressed) return Theme.buttonBgPressed;
-                if (isHovered) return Theme.buttonBgHover;
+                if (control.isPressed) return Theme.buttonBgPressed;
+                if (control.isHovered) return Theme.buttonBgHover;
                 return "transparent";
             } else {
-                return isPressed ? Theme.buttonBgPressed : (isHovered ? Theme.buttonBgHover : Theme.buttonBg);
+                return control.isPressed ? Theme.buttonBgPressed : (control.isHovered ? Theme.buttonBgHover : Theme.buttonBg);
             }
         }
                
@@ -54,23 +78,32 @@ Item {
             if (control.hasDropdown && control.dropdownOpen) {
                 return Theme.border;
             }
-            var isPressed = mouseArea.pressed || dropdownMouseArea.pressed;
-            var isHovered = mouseArea.containsMouse || dropdownMouseArea.containsMouse;
             if (control.accented) {
                 if (!control.enabled) return Qt.rgba(Theme.accent.r, Theme.accent.g, Theme.accent.b, 0.10);
-                return isPressed ? Qt.rgba(Theme.accent.r, Theme.accent.g, Theme.accent.b, 0.50) : 
-                       (isHovered ? Qt.rgba(Theme.accent.r, Theme.accent.g, Theme.accent.b, 0.40) : 
+                return control.isPressed ? Qt.rgba(Theme.accent.r, Theme.accent.g, Theme.accent.b, 0.50) : 
+                       (control.isHovered ? Qt.rgba(Theme.accent.r, Theme.accent.g, Theme.accent.b, 0.40) : 
                         Qt.rgba(Theme.accent.r, Theme.accent.g, Theme.accent.b, 0.25));
             }
             if (control.flat) {
-                return (isHovered && control.enabled) ? Theme.borderHover : "transparent";
+                return (control.isHovered && control.enabled) ? Theme.borderHover : "transparent";
             }
-            return isHovered ? Theme.borderHover : Theme.border;
+            return control.isHovered ? Theme.borderHover : Theme.border;
         }
         border.width: 1
         
         Behavior on color { ColorAnimation { duration: 100 } }
         Behavior on border.color { ColorAnimation { duration: 100 } }
+
+        // Specular highlight bevel
+        Rectangle {
+            anchors.fill: parent
+            radius: parent.radius
+            color: "transparent"
+            border.color: "#15FFFFFF" // very subtle top specular edge
+            border.width: 1
+            anchors.margins: 1
+            visible: !control.flat && control.enabled
+        }
 
         // Seamless merge overlay for bottom corners and bottom border when dropdown is open
         Rectangle {

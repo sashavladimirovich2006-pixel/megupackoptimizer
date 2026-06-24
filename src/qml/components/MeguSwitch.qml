@@ -11,98 +11,120 @@ Item {
     
     signal toggled(bool isChecked)
     
-    implicitWidth: switchLayout.implicitWidth
-    implicitHeight: 28
+    implicitWidth: 200
+    // Height adapts dynamically to the wrapped text height or defaults to 28px
+    implicitHeight: Math.max(28, labelText.visible ? labelText.height + 4 : 22)
     
     opacity: enabled ? 1.0 : 0.4
     Behavior on opacity { NumberAnimation { duration: Theme.animFast } }
     
-    Row {
-        id: switchLayout
+    // Track and Thumb (The Switch)
+    Rectangle {
+        id: track
+        width: 40
+        height: 22
+        anchors.left: parent.left
         anchors.verticalCenter: parent.verticalCenter
-        spacing: 10
+        radius: 11
         
-        // Track and Thumb (The Switch)
+        color: {
+            if (control.steamStyle) {
+                return "#10161f";
+            }
+            return (Theme.currentTheme === "Белоснежная" || Theme.currentTheme === "Розовая") ? Theme.buttonBg : "#121A26";
+        }
+        border.color: {
+            if (control.steamStyle) {
+                return control.checked ? Theme.accent : (mouseArea.containsMouse ? Theme.borderHover : "#3c485c");
+            }
+            return (control.checked || control.indeterminate) ? Theme.accent : (mouseArea.containsMouse ? Theme.borderHover : Theme.border);
+        }
+        border.width: (control.steamStyle && control.checked) ? 2 : 1
+        
+        Behavior on color { ColorAnimation { duration: Theme.animFast } }
+        Behavior on border.color { ColorAnimation { duration: Theme.animFast } }
+        
+        // Gradient fill when checked
         Rectangle {
-            id: track
-            width: 40
-            height: 22
-            radius: 11
-            anchors.verticalCenter: parent.verticalCenter
-            
+            anchors.fill: parent
+            radius: parent.radius
+            visible: control.checked && !control.steamStyle
+            gradient: Gradient {
+                GradientStop { position: 0.0; color: Theme.accent }
+                GradientStop { position: 1.0; color: Theme.accentLight }
+            }
+        }
+
+        // Indeterminate fill
+        Rectangle {
+            anchors.fill: parent
+            radius: parent.radius
+            visible: control.indeterminate && !control.steamStyle
+            color: Theme.accentDim
+        }
+
+        // Subtle glow around track when checked/indeterminate and hovered
+        Rectangle {
+            anchors.fill: parent
+            radius: parent.radius
+            color: "transparent"
+            border.color: Theme.accent
+            border.width: 1.5
+            opacity: (!control.steamStyle && (control.checked || control.indeterminate) && mouseArea.containsMouse && control.enabled) ? 0.5 : 0.0
+            Behavior on opacity { NumberAnimation { duration: Theme.animFast } }
+        }
+        
+        // Thumb capsule
+        Rectangle {
+            id: thumb
+            width: mouseArea.pressed ? 20 : 16
+            height: 16
+            radius: 8
             color: {
                 if (control.steamStyle) {
-                    return "#10161f";
+                    return control.checked ? "#FFFFFF" : "#4b5a6c";
                 }
-                if (control.checked) return Theme.accent;
-                if (control.indeterminate) return Theme.accentDim;
-                return (Theme.currentTheme === "Белоснежная" || Theme.currentTheme === "Розовая") ? Theme.buttonBg : "#121A26";
+                return (control.checked || control.indeterminate) ? Theme.textInverse : Theme.textPrimary;
             }
-            border.color: {
-                if (control.steamStyle) {
-                    return control.checked ? Theme.accent : (mouseArea.containsMouse ? Theme.borderHover : "#3c485c");
-                }
-                return (control.checked || control.indeterminate) ? Theme.accent : (mouseArea.containsMouse ? Theme.borderHover : Theme.border);
-            }
-            border.width: (control.steamStyle && control.checked) ? 2 : 1
-            
-            Behavior on color { ColorAnimation { duration: Theme.animFast } }
-            Behavior on border.color { ColorAnimation { duration: Theme.animFast } }
-            
-            // Subtle glow around track when checked/indeterminate and hovered
-            Rectangle {
-                anchors.fill: parent
-                radius: parent.radius
-                color: "transparent"
-                border.color: Theme.accent
-                border.width: 1.5
-                opacity: (!control.steamStyle && (control.checked || control.indeterminate) && mouseArea.containsMouse && control.enabled) ? 0.4 : 0.0
-                Behavior on opacity { NumberAnimation { duration: Theme.animFast } }
-            }
-            
-            // Thumb capsule
-            Rectangle {
-                id: thumb
-                width: 16
-                height: 16
-                radius: 8
-                color: {
-                    if (control.steamStyle) {
-                        return control.checked ? "#FFFFFF" : "#4b5a6c";
-                    }
-                    return (control.checked || control.indeterminate) ? Theme.textInverse : Theme.textPrimary;
-                }
-                border.color: "transparent"
-                border.width: 0
-                anchors.verticalCenter: parent.verticalCenter
-                
-                // Satisfying scale change when hovered or pressed
-                scale: mouseArea.pressed ? 1.2 : (mouseArea.containsMouse ? 1.1 : 1.0)
-                Behavior on scale { NumberAnimation { duration: 100 } }
-                
-                // Position animation (middle if indeterminate, right if checked, left if unchecked)
-                x: control.indeterminate ? ((track.width - width) / 2) : (control.checked ? (track.width - width - 3) : 3)
-                
-                Behavior on x {
-                    NumberAnimation {
-                        duration: 200
-                        easing.type: Easing.OutBack // удовлетворяющий пружинный отскок
-                    }
-                }
-                Behavior on color { ColorAnimation { duration: Theme.animFast } }
-            }
-        }
-        
-        // Label Text
-        Text {
-            text: control.text
-            color: Theme.textPrimary
-            font.family: Theme.fontFamily
-            font.pixelSize: 13
-            font.bold: false
+            border.color: "transparent"
+            border.width: 0
             anchors.verticalCenter: parent.verticalCenter
-            visible: control.text !== ""
+            
+            // Position animation (middle if indeterminate, right if checked, left if unchecked)
+            x: control.indeterminate ? ((track.width - width) / 2) : (control.checked ? (track.width - width - 3) : 3)
+            
+            Behavior on x {
+                NumberAnimation {
+                    duration: 200
+                    easing.type: Easing.OutBack // satisfying spring bounce!
+                }
+            }
+            Behavior on width {
+                NumberAnimation {
+                    duration: 100
+                    easing.type: Easing.OutQuad
+                }
+            }
+            Behavior on color { ColorAnimation { duration: Theme.animFast } }
         }
+    }
+    
+    // Label Text (Word-wrapped and constrained horizontally)
+    Text {
+        id: labelText
+        text: control.text
+        color: Theme.textPrimary
+        font.family: Theme.fontFamily
+        font.pixelSize: 13
+        font.bold: false
+        
+        anchors.left: track.right
+        anchors.leftMargin: 10
+        anchors.right: parent.right
+        anchors.verticalCenter: parent.verticalCenter
+        
+        wrapMode: Text.WordWrap
+        visible: control.text !== ""
     }
     
     MouseArea {

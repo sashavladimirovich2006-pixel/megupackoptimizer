@@ -25,9 +25,30 @@ ApplicationWindow {
     }
 
     background: Rectangle {
+        id: bgRect
         radius: window.visibility === Window.Maximized ? 0 : 12
-        border.color: Theme.border
         border.width: 1
+        
+        property real pulseFactor: 0.0
+        
+        SequentialAnimation on pulseFactor {
+            running: true
+            loops: Animation.Infinite
+            NumberAnimation { to: 1.0; duration: 3000; easing.type: Easing.InOutQuad }
+            NumberAnimation { to: 0.0; duration: 3000; easing.type: Easing.InOutQuad }
+        }
+        
+        border.color: {
+            var baseColor = Theme.border;
+            var pulseColor = Theme.accent;
+            var factor = bgRect.pulseFactor;
+            return Qt.rgba(
+                baseColor.r + (pulseColor.r - baseColor.r) * 0.25 * factor,
+                baseColor.g + (pulseColor.g - baseColor.g) * 0.25 * factor,
+                baseColor.b + (pulseColor.b - baseColor.b) * 0.25 * factor,
+                1.0
+            );
+        }
         
         color: Theme.currentTheme === "Blackout полностью черная" ? Theme.background : "transparent"
         gradient: Theme.currentTheme === "Blackout полностью черная" ? null : mainGradient
@@ -47,7 +68,6 @@ ApplicationWindow {
         }
         
         Behavior on color { ColorAnimation { duration: Theme.animNormal } }
-        Behavior on border.color { ColorAnimation { duration: Theme.animNormal } }
     }
 
     property int activeTab: 1
@@ -152,7 +172,7 @@ ApplicationWindow {
     header: Item {
         id: header
         width: parent.width
-        height: 88
+        height: 100
 
         Item {
             id: headerContent
@@ -212,11 +232,11 @@ ApplicationWindow {
         // Left Island (Brand Logo + Real-Time Logs button)
         Item {
             id: leftIsland
-            height: 72
+            height: 80
             anchors.left: parent.left
             anchors.leftMargin: 16
             anchors.top: parent.top
-            anchors.topMargin: leftIslandHover.containsMouse ? 7 : 8
+            anchors.topMargin: leftIslandHover.containsMouse ? 8 : 10
             width: leftIslandRow.width + 24
 
             Behavior on anchors.topMargin { NumberAnimation { duration: Theme.animFast } }
@@ -259,14 +279,14 @@ ApplicationWindow {
 
                 // Premium transparent minimalist logo
                 Item {
-                    width: 32
-                    height: 32
+                    width: 36
+                    height: 36
                     anchors.verticalCenter: parent.verticalCenter
                     
                     // Soft glowing backing for the logo
                     Rectangle {
                         anchors.fill: parent
-                        radius: 6
+                        radius: 8
                         color: Theme.accent
                         opacity: 0.12
                         scale: 1.05
@@ -290,7 +310,7 @@ ApplicationWindow {
                         text: "MEGU PACK"
                         color: Theme.textPrimary
                         font.family: Theme.fontFamily
-                        font.pixelSize: 12
+                        font.pixelSize: 13
                         font.bold: true
                         font.letterSpacing: 1.0
                     }
@@ -299,7 +319,7 @@ ApplicationWindow {
                         text: "OPTIMIZER"
                         color: Theme.accent
                         font.family: Theme.fontFamily
-                        font.pixelSize: 9
+                        font.pixelSize: 10
                         font.bold: true
                         font.letterSpacing: 2.0
                     }
@@ -321,8 +341,8 @@ ApplicationWindow {
 
                     Item {
                         id: speedometerCircle
-                        width: 40
-                        height: 40
+                        width: 44
+                        height: 44
                         anchors.verticalCenter: parent.verticalCenter
 
                         property real percentage: window.optimizationPercentage
@@ -359,10 +379,10 @@ ApplicationWindow {
                                 strokeColor: Theme.currentTheme === "Blackout полностью черная" ? "#222" : Qt.rgba(Theme.border.r, Theme.border.g, Theme.border.b, 0.25)
                                 strokeWidth: 2
                                 PathAngleArc {
-                                    centerX: 20
-                                    centerY: 20
-                                    radiusX: 18
-                                    radiusY: 18
+                                    centerX: 22
+                                    centerY: 22
+                                    radiusX: 20
+                                    radiusY: 20
                                     startAngle: 0
                                     sweepAngle: 360
                                 }
@@ -389,10 +409,10 @@ ApplicationWindow {
                                 strokeWidth: 2
                                 capStyle: ShapePath.RoundCap
                                 PathAngleArc {
-                                    centerX: 20
-                                    centerY: 20
-                                    radiusX: 18
-                                    radiusY: 18
+                                    centerX: 22
+                                    centerY: 22
+                                    radiusX: 20
+                                    radiusY: 20
                                     startAngle: -90
                                     sweepAngle: (speedometerCircle.animPercentage / 100) * 360
                                 }
@@ -462,8 +482,8 @@ ApplicationWindow {
                 // Circular Real-Time Logs button inside left island
                 Item {
                     id: realTimeLogsRoundBtn
-                    width: 32
-                    height: 32
+                    width: 36
+                    height: 36
                     anchors.verticalCenter: parent.verticalCenter
                     opacity: !optimizerBackend.isOptimizingSystem ? 1.0 : 0.35
                     Behavior on opacity { NumberAnimation { duration: Theme.animFast } }
@@ -473,7 +493,7 @@ ApplicationWindow {
                     Rectangle {
                         id: roundBtnBg
                         anchors.fill: parent
-                        radius: 16
+                        radius: 18
                         color: {
                             if (realTimeLogsRoundBtn.isSelected) {
                                 return logsBtnMouse.pressed ? Qt.rgba(Theme.accent.r, Theme.accent.g, Theme.accent.b, 0.30) : 
@@ -498,16 +518,16 @@ ApplicationWindow {
                     }
                     
                     Item {
-                        width: 14
-                        height: 14
+                        width: 16
+                        height: 16
                         anchors.centerIn: parent
                         
                         Image {
                             id: logsIcon
                             source: "qrc:/MeguPackOptimizer/src/resources/terminal.svg"
                             anchors.fill: parent
-                            sourceSize.width: 14
-                            sourceSize.height: 14
+                            sourceSize.width: 16
+                            sourceSize.height: 16
                             visible: false
                         }
                         
@@ -540,10 +560,10 @@ ApplicationWindow {
         // Center Island (Navigation Tab Container)
         Item {
             id: centerIsland
-            height: 72
+            height: 80
             anchors.horizontalCenter: parent.horizontalCenter
             anchors.top: parent.top
-            anchors.topMargin: centerIslandHover.containsMouse ? 7 : 8
+            anchors.topMargin: centerIslandHover.containsMouse ? 8 : 10
             width: tabsRow.width + 24
 
             Behavior on anchors.topMargin { NumberAnimation { duration: Theme.animFast } }
@@ -594,7 +614,7 @@ ApplicationWindow {
                     enabled: !optimizerBackend.isOptimizingSystem
                     onClicked: window.activeTab = 0
                     anchors.verticalCenter: parent.verticalCenter
-                    height: 48
+                    height: 54
                 }
                 
                 MeguButton {
@@ -614,7 +634,7 @@ ApplicationWindow {
                         optDropdown.open();
                     }
                     anchors.verticalCenter: parent.verticalCenter
-                    height: 48
+                    height: 54
                 }
                 
                 MeguButton {
@@ -626,7 +646,48 @@ ApplicationWindow {
                     enabled: !optimizerBackend.isOptimizingSystem
                     onClicked: window.activeTab = 1
                     anchors.verticalCenter: parent.verticalCenter
-                    height: 48
+                    height: 54
+                }
+            }
+
+            // Gliding active tab highlight indicator line
+            Rectangle {
+                id: glidingIndicator
+                height: 3
+                radius: 1.5
+                color: Theme.accent
+                y: 69 // aligned neatly under the buttons (buttons are 54px centered in 80px island; bottom edge of button is at 67px)
+                
+                readonly property var activeBtn: {
+                    if (window.activeTab === 0) return tab0;
+                    if (window.activeTab === 3) return tab3;
+                    return tab1;
+                }
+                
+                x: tabsRow.x + (activeBtn ? activeBtn.x : 0)
+                width: activeBtn ? activeBtn.width : 0
+                
+                Behavior on x {
+                    NumberAnimation {
+                        duration: Theme.animNormal
+                        easing.type: Easing.OutCubic
+                    }
+                }
+                Behavior on width {
+                    NumberAnimation {
+                        duration: Theme.animNormal
+                        easing.type: Easing.OutCubic
+                    }
+                }
+                
+                // Add a soft glow underneath the indicator line
+                layer.enabled: true
+                layer.effect: DropShadow {
+                    transparentBorder: true
+                    horizontalOffset: 0
+                    verticalOffset: 1
+                    radius: 4
+                    color: Theme.accent
                 }
             }
         }
@@ -634,11 +695,11 @@ ApplicationWindow {
         // Right Island (Version Label + Window Custom Controls)
         Item {
             id: rightIsland
-            height: 72
+            height: 80
             anchors.right: parent.right
             anchors.rightMargin: 16
             anchors.top: parent.top
-            anchors.topMargin: rightIslandHover.containsMouse ? 7 : 8
+            anchors.topMargin: rightIslandHover.containsMouse ? 8 : 10
             width: rightInfoRow.implicitWidth + 32 + windowControls.implicitWidth
             z: 10
 
@@ -674,207 +735,230 @@ ApplicationWindow {
                 radius: 10
                 clip: true
 
-            MouseArea {
-                id: rightIslandHover
-                anchors.fill: parent
-                hoverEnabled: true
-                acceptedButtons: Qt.NoButton
-                propagateComposedEvents: true
-            }
+                MouseArea {
+                    id: rightIslandHover
+                    anchors.fill: parent
+                    hoverEnabled: true
+                    acceptedButtons: Qt.NoButton
+                    propagateComposedEvents: true
+                }
 
-            Row {
-                id: rightInfoRow
-                anchors.left: parent.left
-                anchors.leftMargin: 16
-                anchors.verticalCenter: parent.verticalCenter
-                spacing: 12
-                
-                Text {
-                    text: qsTr("v1.0.0 Stable")
-                    color: Theme.textMuted
-                    font.family: Theme.fontFamily
-                    font.pixelSize: 11
+                Row {
+                    id: rightInfoRow
+                    anchors.left: parent.left
+                    anchors.leftMargin: 16
                     anchors.verticalCenter: parent.verticalCenter
-                }
-
-                Rectangle {
-                    width: 1
-                    height: 16
-                    color: Theme.border
-                    anchors.verticalCenter: parent.verticalCenter
-                }
-            }
-
-            // Custom Window Control Buttons (Minimize, Maximize, Close)
-            Row {
-                id: windowControls
-                anchors.right: parent.right
-                anchors.top: parent.top
-                anchors.bottom: parent.bottom
-                spacing: 0
-                
-                // Minimize Button
-                Rectangle {
-                    width: 38
-                    height: 72
-                    color: minMouse.containsMouse ? (Theme.currentTheme === "Белоснежная" || Theme.currentTheme === "Розовая" ? "#0F000000" : "#1AFFFFFF") : "transparent"
+                    spacing: 12
                     
+                    // Version Chip Container
                     Rectangle {
-                        width: 10
-                        height: 1
-                        color: Theme.textPrimary
-                        anchors.centerIn: parent
-                    }
-                    
-                    MouseArea {
-                        id: minMouse
-                        anchors.fill: parent
-                        hoverEnabled: true
-                        onClicked: window.showMinimized()
-                    }
-                }
-                
-                // Maximize / Restore Button
-                Rectangle {
-                    width: 38
-                    height: 72
-                    color: maxMouse.containsMouse ? (Theme.currentTheme === "Белоснежная" || Theme.currentTheme === "Розовая" ? "#0F000000" : "#1AFFFFFF") : "transparent"
-                    
-                    // Maximize Icon (when not maximized)
-                    Rectangle {
-                        visible: window.visibility !== Window.Maximized
-                        width: 10
-                        height: 10
-                        color: "transparent"
-                        border.color: Theme.textPrimary
+                        height: 20
+                        width: versionText.implicitWidth + 16
+                        radius: 10
+                        color: Theme.buttonBg
+                        border.color: Theme.border
                         border.width: 1
-                        radius: 1.5
-                        anchors.centerIn: parent
-                    }
+                        anchors.verticalCenter: parent.verticalCenter
 
-                    // Restore Icon (when maximized)
-                    Item {
-                        visible: window.visibility === Window.Maximized
-                        width: 12
-                        height: 12
-                        anchors.centerIn: parent
-
-                        // Background rounded L-shape representing the background square
-                        Shape {
-                            anchors.fill: parent
-                            smooth: true
-                            ShapePath {
-                                fillColor: "transparent"
-                                strokeColor: Theme.textPrimary
-                                strokeWidth: 1
-                                capStyle: ShapePath.FlatCap
-                                
-                                PathMove { x: 4.5; y: 4.5 }
-                                PathLine { x: 4.5; y: 1.5 }
-                                PathArc {
-                                    x: 5.5; y: 0.5
-                                    radiusX: 1
-                                    radiusY: 1
-                                    direction: PathArc.Clockwise
-                                }
-                                PathLine { x: 10.5; y: 0.5 }
-                                PathArc {
-                                    x: 11.5; y: 1.5
-                                    radiusX: 1
-                                    radiusY: 1
-                                    direction: PathArc.Clockwise
-                                }
-                                PathLine { x: 11.5; y: 6.5 }
-                                PathArc {
-                                    x: 10.5; y: 7.5
-                                    radiusX: 1
-                                    radiusY: 1
-                                    direction: PathArc.Clockwise
-                                }
-                                PathLine { x: 7.5; y: 7.5 }
-                            }
-                        }
-
-                        // Foreground square with a solid background color to mask the background square's lines
-                        Rectangle {
-                            width: 8
-                            height: 8
-                            x: 0
-                            y: 4
-                            color: {
-                                if (Theme.currentTheme === "Белоснежная" || Theme.currentTheme === "Розовая") {
-                                    return maxMouse.containsMouse ? "#F0F0F0" : "#FFFFFF"
-                                } else if (Theme.currentTheme === "Blackout полностью черная") {
-                                    return maxMouse.containsMouse ? "#1A1A1A" : "#080808"
-                                } else {
-                                    return maxMouse.containsMouse ? "#252629" : "#0D0E12"
-                                }
-                            }
-                            border.color: Theme.textPrimary
-                            border.width: 1
-                            radius: 1.5
+                        Text {
+                            id: versionText
+                            text: qsTr("v1.0.0 Stable")
+                            color: Theme.textSecondary
+                            font.family: Theme.fontFamily
+                            font.pixelSize: 10
+                            font.bold: true
+                            anchors.centerIn: parent
                         }
                     }
-                    
-                    MouseArea {
-                        id: maxMouse
-                        anchors.fill: parent
-                        hoverEnabled: true
-                        onClicked: {
-                            if (window.visibility === Window.Maximized) {
-                                window.showNormal()
-                            } else {
-                                window.showMaximized()
-                            }
-                        }
+
+                    Rectangle {
+                        width: 1
+                        height: 16
+                        color: Theme.border
+                        anchors.verticalCenter: parent.verticalCenter
                     }
                 }
-                
-                // Close Button
-                Rectangle {
-                    width: 42
-                    height: 72
-                    color: closeMouse.containsMouse ? "#E81123" : "transparent"
+
+                // Custom Window Control Buttons (Minimize, Maximize, Close)
+                Row {
+                    id: windowControls
+                    anchors.right: parent.right
+                    anchors.top: parent.top
+                    anchors.bottom: parent.bottom
+                    spacing: 0
                     
-                    Item {
-                        width: 10
-                        height: 10
-                        anchors.centerIn: parent
-                        opacity: closeMouse.containsMouse ? 1.0 : 0.8
-                        Behavior on opacity { NumberAnimation { duration: 100 } }
+                    // Minimize Button
+                    Rectangle {
+                        id: minBtn
+                        width: 38
+                        height: parent.height
+                        color: minMouse.containsMouse ? Theme.buttonBgHover : "transparent"
                         
+                        scale: minMouse.pressed ? 0.90 : (minMouse.containsMouse ? 1.05 : 1.0)
+                        Behavior on scale { NumberAnimation { duration: 100 } }
+                        Behavior on color { ColorAnimation { duration: 100 } }
+
                         Rectangle {
-                            width: 12
-                            height: 1
-                            color: closeMouse.containsMouse ? "#FFFFFF" : Theme.textPrimary
-                            rotation: 45
-                            transformOrigin: Item.Center
+                            width: 10
+                            height: 1.5
+                            color: minMouse.containsMouse ? Theme.accent : Theme.textPrimary
                             anchors.centerIn: parent
-                            antialiasing: true
+                            Behavior on color { ColorAnimation { duration: 100 } }
                         }
-                        Rectangle {
-                            width: 12
-                            height: 1
-                            color: closeMouse.containsMouse ? "#FFFFFF" : Theme.textPrimary
-                            rotation: -45
-                            transformOrigin: Item.Center
-                            anchors.centerIn: parent
-                            antialiasing: true
+                        
+                        MouseArea {
+                            id: minMouse
+                            anchors.fill: parent
+                            hoverEnabled: true
+                            onClicked: window.showMinimized()
                         }
                     }
                     
-                    MouseArea {
-                        id: closeMouse
-                        anchors.fill: parent
-                        hoverEnabled: true
-                        onClicked: window.close()
+                    // Maximize / Restore Button
+                    Rectangle {
+                        id: maxBtn
+                        width: 38
+                        height: parent.height
+                        color: maxMouse.containsMouse ? Theme.buttonBgHover : "transparent"
+                        
+                        scale: maxMouse.pressed ? 0.90 : (maxMouse.containsMouse ? 1.05 : 1.0)
+                        Behavior on scale { NumberAnimation { duration: 100 } }
+                        Behavior on color { ColorAnimation { duration: 100 } }
+                        
+                        // Maximize Icon (when not maximized)
+                        Rectangle {
+                            visible: window.visibility !== Window.Maximized
+                            width: 10
+                            height: 10
+                            color: "transparent"
+                            border.color: maxMouse.containsMouse ? Theme.accent : Theme.textPrimary
+                            border.width: 1.5
+                            radius: 1.5
+                            anchors.centerIn: parent
+                            Behavior on border.color { ColorAnimation { duration: 100 } }
+                        }
+
+                        // Restore Icon (when maximized)
+                        Item {
+                            visible: window.visibility === Window.Maximized
+                            width: 12
+                            height: 12
+                            anchors.centerIn: parent
+
+                            // Background rounded L-shape representing the background square
+                            Shape {
+                                anchors.fill: parent
+                                smooth: true
+                                ShapePath {
+                                    fillColor: "transparent"
+                                    strokeColor: maxMouse.containsMouse ? Theme.accent : Theme.textPrimary
+                                    strokeWidth: 1.5
+                                    capStyle: ShapePath.FlatCap
+                                    
+                                    PathMove { x: 4.5; y: 4.5 }
+                                    PathLine { x: 4.5; y: 1.5 }
+                                    PathArc {
+                                        x: 5.5; y: 0.5
+                                        radiusX: 1
+                                        radiusY: 1
+                                        direction: PathArc.Clockwise
+                                    }
+                                    PathLine { x: 10.5; y: 0.5 }
+                                    PathArc {
+                                        x: 11.5; y: 1.5
+                                        radiusX: 1
+                                        radiusY: 1
+                                        direction: PathArc.Clockwise
+                                    }
+                                    PathLine { x: 11.5; y: 6.5 }
+                                    PathArc {
+                                        x: 10.5; y: 7.5
+                                        radiusX: 1
+                                        radiusY: 1
+                                        direction: PathArc.Clockwise
+                                    }
+                                    PathLine { x: 7.5; y: 7.5 }
+                                }
+                            }
+
+                            // Foreground square with a solid background color to mask the background square's lines
+                            Rectangle {
+                                width: 8
+                                height: 8
+                                x: 0
+                                y: 4
+                                color: maxMouse.containsMouse ? Theme.buttonBgHover : Theme.panelBg
+                                border.color: maxMouse.containsMouse ? Theme.accent : Theme.textPrimary
+                                border.width: 1.5
+                                radius: 1.5
+                            }
+                        }
+                        
+                        MouseArea {
+                            id: maxMouse
+                            anchors.fill: parent
+                            hoverEnabled: true
+                            onClicked: {
+                                if (window.visibility === Window.Maximized) {
+                                    window.showNormal()
+                                } else {
+                                    window.showMaximized()
+                                }
+                            }
+                        }
+                    }
+                    
+                    // Close Button
+                    Rectangle {
+                        id: closeWinBtn
+                        width: 42
+                        height: parent.height
+                        color: closeMouse.containsMouse ? "#E81123" : "transparent"
+                        
+                        scale: closeMouse.pressed ? 0.90 : (closeMouse.containsMouse ? 1.05 : 1.0)
+                        Behavior on scale { NumberAnimation { duration: 100 } }
+                        Behavior on color { ColorAnimation { duration: 100 } }
+                        
+                        Item {
+                            width: 10
+                            height: 10
+                            anchors.centerIn: parent
+                            opacity: closeMouse.containsMouse ? 1.0 : 0.8
+                            Behavior on opacity { NumberAnimation { duration: 100 } }
+                            
+                            Rectangle {
+                                width: 12
+                                height: 1.5
+                                color: closeMouse.containsMouse ? "#FFFFFF" : Theme.textPrimary
+                                rotation: 45
+                                transformOrigin: Item.Center
+                                anchors.centerIn: parent
+                                antialiasing: true
+                            }
+                            Rectangle {
+                                width: 12
+                                height: 1.5
+                                color: closeMouse.containsMouse ? "#FFFFFF" : Theme.textPrimary
+                                rotation: -45
+                                transformOrigin: Item.Center
+                                anchors.centerIn: parent
+                                antialiasing: true
+                            }
+                        }
+                        
+                        MouseArea {
+                            id: closeMouse
+                            anchors.fill: parent
+                            hoverEnabled: true
+                            onClicked: window.close()
+                        }
                     }
                 }
             }
         }
     }
-        }
-    }
+}
+
 
     // Preloaded views container for buttery-smooth cross-fade tab switching
     Item {

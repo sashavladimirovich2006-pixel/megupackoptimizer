@@ -1,7 +1,7 @@
 import QtQuick
 import MeguPackOptimizer 1.0
 import Qt5Compat.GraphicalEffects
-import QtQuick.Shapes
+import QtQuick.Shapes as QQS
 
 AcrylicPanel {
     id: card
@@ -36,88 +36,112 @@ AcrylicPanel {
                 }
             }
 
-            // Icon Container with clean, premium badge background
-            Rectangle {
-                id: iconBg
+            // Wrapper to contain the icon badge and its drop shadow
+            Item {
+                id: iconContainerWrapper
                 width: 56
                 height: 56
-                radius: 28 // circular
-                color: card.containsMouse ? Qt.rgba(progressBarColor.r, progressBarColor.g, progressBarColor.b, 0.15) : badgeColor
-                border.color: card.showProgressBar ? "transparent" : (card.containsMouse ? progressBarColor : Theme.border)
-                border.width: card.showProgressBar ? 0 : 1
                 anchors.verticalCenter: parent.verticalCenter
-                
-                Behavior on color { ColorAnimation { duration: Theme.animFast } }
-                Behavior on border.color { ColorAnimation { duration: Theme.animFast } }
 
-                // Speedometer Progress Ring (Circular progress)
-                Shape {
-                    id: progressShape
+                DropShadow {
+                    anchors.fill: iconBg
+                    horizontalOffset: 0
+                    verticalOffset: 0
+                    radius: card.containsMouse ? 8 : 0
+                    color: card.progressBarColor
+                    source: iconBg
+                    visible: card.containsMouse
+                    Behavior on radius { NumberAnimation { duration: Theme.animFast } }
+                }
+
+                // Icon Container with clean, premium badge background
+                Rectangle {
+                    id: iconBg
                     anchors.fill: parent
-                    visible: card.showProgressBar
-                    antialiasing: true
-
-                    // Background track ring
-                    ShapePath {
-                        strokeColor: Qt.rgba(progressBarColor.r, progressBarColor.g, progressBarColor.b, 0.1)
-                        strokeWidth: 3.5
-                        fillColor: "transparent"
-                        capStyle: ShapePath.RoundCap
-                        
-                        PathAngleArc {
-                            centerX: 28
-                            centerY: 28
-                            radiusX: 24
-                            radiusY: 24
-                            startAngle: -90
-                            sweepAngle: 360
-                        }
-                    }
+                    radius: 28 // circular
+                    color: card.containsMouse ? Qt.rgba(progressBarColor.r, progressBarColor.g, progressBarColor.b, 0.15) : badgeColor
+                    border.color: card.showProgressBar ? "transparent" : (card.containsMouse ? progressBarColor : Theme.border)
+                    border.width: card.showProgressBar ? 0 : 1
                     
-                    // Active progress arc
-                    ShapePath {
-                        strokeColor: card.progressBarColor
-                        strokeWidth: 3.5
-                        fillColor: "transparent"
-                        capStyle: ShapePath.RoundCap
-                        
-                        PathAngleArc {
-                            centerX: 28
-                            centerY: 28
-                            radiusX: 24
-                            radiusY: 24
-                            startAngle: -90
-                            sweepAngle: 360 * card.progressBarValue
+                    Behavior on color { ColorAnimation { duration: Theme.animFast } }
+                    Behavior on border.color { ColorAnimation { duration: Theme.animFast } }
+
+                    // Speedometer Progress Ring (Circular progress)
+                    QQS.Shape {
+                        id: progressShape
+                        anchors.fill: parent
+                        visible: card.showProgressBar
+                        antialiasing: true
+
+                        // Background track ring
+                        QQS.ShapePath {
+                            strokeColor: Qt.rgba(progressBarColor.r, progressBarColor.g, progressBarColor.b, 0.1)
+                            strokeWidth: 3.5
+                            fillColor: "transparent"
+                            capStyle: QQS.ShapePath.RoundCap
                             
-                            Behavior on sweepAngle {
-                                NumberAnimation {
-                                    duration: 300
-                                    easing.type: Easing.OutQuad
+                            PathAngleArc {
+                                centerX: 28
+                                centerY: 28
+                                radiusX: 24
+                                radiusY: 24
+                                startAngle: -90
+                                sweepAngle: 360
+                            }
+                        }
+                        
+                        // Active progress arc
+                        QQS.ShapePath {
+                            strokeWidth: 3.5
+                            strokeColor: card.progressBarColor
+                            fillColor: "transparent"
+                            capStyle: QQS.ShapePath.RoundCap
+                            
+                            fillGradient: QQS.LinearGradient {
+                                x1: 0; y1: 0
+                                x2: 56; y2: 56
+                                GradientStop { position: 0.0; color: Theme.accent }
+                                GradientStop { position: 1.0; color: Theme.accentLight }
+                            }
+                            
+                            PathAngleArc {
+                                centerX: 28
+                                centerY: 28
+                                radiusX: 24
+                                radiusY: 24
+                                startAngle: -90
+                                sweepAngle: 360 * card.progressBarValue
+                                
+                                Behavior on sweepAngle {
+                                    NumberAnimation {
+                                        duration: 300
+                                        easing.type: Easing.OutQuad
+                                    }
                                 }
                             }
                         }
                     }
-                }
 
-                Item {
-                    width: 28
-                    height: 28
-                    anchors.centerIn: parent
+                    Item {
+                        width: 28
+                        height: 28
+                        anchors.centerIn: parent
 
-                    Image {
-                        id: img
-                        source: card.iconSource
-                        anchors.fill: parent
-                        sourceSize.width: 28
-                        sourceSize.height: 28
-                        visible: false
-                    }
-                    
-                    ColorOverlay {
-                        anchors.fill: img
-                        source: img
-                        color: card.containsMouse ? progressBarColor : iconColor
-                        Behavior on color { ColorAnimation { duration: Theme.animNormal } }
+                        Image {
+                            id: img
+                            source: card.iconSource
+                            anchors.fill: parent
+                            sourceSize.width: 28
+                            sourceSize.height: 28
+                            visible: false
+                        }
+                        
+                        ColorOverlay {
+                            anchors.fill: img
+                            source: img
+                            color: card.containsMouse ? progressBarColor : iconColor
+                            Behavior on color { ColorAnimation { duration: Theme.animNormal } }
+                        }
                     }
                 }
             }

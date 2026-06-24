@@ -33212,7 +33212,7 @@ Item {
 
 
 
-        border.width: 1
+        border.width: 0
 
 
 
@@ -33481,6 +33481,7 @@ Item {
 
                         // Scroll Up Button
                         Rectangle {
+                            id: scrollUpBtn
                             width: 24
                             height: 24
                             radius: 12
@@ -33490,6 +33491,8 @@ Item {
                             enabled: drawerScroll && drawerScroll.contentItem && (drawerScroll.contentItem.contentY > drawerScroll.contentItem.originY)
                             opacity: enabled ? 1.0 : 0.25
 
+                            scale: enabled ? (upMouseArea.pressed ? 0.92 : (upMouseArea.containsMouse ? 1.08 : 1.0)) : 1.0
+                            Behavior on scale { NumberAnimation { duration: 100 } }
                             Behavior on opacity { NumberAnimation { duration: Theme.animFast } }
 
                             Text {
@@ -33517,6 +33520,7 @@ Item {
 
                         // Scroll Down Button
                         Rectangle {
+                            id: scrollDownBtn
                             width: 24
                             height: 24
                             radius: 12
@@ -33530,6 +33534,8 @@ Item {
                             }
                             opacity: enabled ? 1.0 : 0.25
 
+                            scale: enabled ? (downMouseArea.pressed ? 0.92 : (downMouseArea.containsMouse ? 1.08 : 1.0)) : 1.0
+                            Behavior on scale { NumberAnimation { duration: 100 } }
                             Behavior on opacity { NumberAnimation { duration: Theme.animFast } }
 
                             Text {
@@ -33558,6 +33564,7 @@ Item {
 
                         // Close Button
                         Rectangle {
+                            id: closeBtn
                             width: 24
                             height: 24
                             radius: 12
@@ -33565,13 +33572,25 @@ Item {
                             border.color: closeMouseArea.containsMouse ? Theme.accent : "transparent"
                             border.width: 1
 
+                            scale: closeMouseArea.pressed ? 0.92 : (closeMouseArea.containsMouse ? 1.08 : 1.0)
+                            Behavior on scale { NumberAnimation { duration: 100 } }
+
                             Image {
+                                id: closeImg
                                 source: "qrc:/MeguPackOptimizer/src/resources/close.svg"
                                 width: 10
                                 height: 10
                                 sourceSize.width: 10
                                 sourceSize.height: 10
                                 anchors.centerIn: parent
+                                visible: false
+                            }
+
+                            ColorOverlay {
+                                anchors.fill: closeImg
+                                source: closeImg
+                                color: closeMouseArea.containsMouse ? Theme.accent : Theme.textPrimary
+                                Behavior on color { ColorAnimation { duration: 100 } }
                             }
 
                             MouseArea {
@@ -33605,6 +33624,7 @@ Item {
                     anchors.rightMargin: 20
                     height: 1
                     color: Theme.border
+                    opacity: 0.4
                 }
 
 
