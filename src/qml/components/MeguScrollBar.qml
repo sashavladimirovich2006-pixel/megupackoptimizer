@@ -1,5 +1,5 @@
 import QtQuick
-import QtQuick.Controls
+import QtQuick.Controls.Basic
 import MeguPackOptimizer 1.0
 
 ScrollBar {
@@ -12,20 +12,22 @@ ScrollBar {
     policy: control.size < 1.0 ? ScrollBar.AlwaysOn : ScrollBar.AsNeeded
 
     contentItem: Rectangle {
-        // Wider handles (6px normally, 10px when hovered/active) for better visibility and easier dragging
-        implicitWidth: control.orientation === Qt.Vertical ? ((control.hovered || control.pressed || control.active) ? 10 : 6) : undefined
-        implicitHeight: control.orientation === Qt.Horizontal ? ((control.hovered || control.pressed || control.active) ? 10 : 6) : undefined
+        // Sleek handle (4px normally, 8px when hovered/pressed/active) centered in the track
+        implicitWidth: control.orientation === Qt.Vertical ? ((control.hovered || control.pressed || control.active) ? 8 : 4) : undefined
+        implicitHeight: control.orientation === Qt.Horizontal ? ((control.hovered || control.pressed || control.active) ? 8 : 4) : undefined
         radius: Math.min(width, height) / 2
         
         color: {
             if (control.pressed) return Theme.accent;
             if (control.hovered) return Theme.accentLight;
-            // High-contrast, clean semi-transparent handle for both themes
-            return Theme.currentTheme === "Белоснежная" ? "#A0000000" : "#A0FFFFFF";
+            
+            // Premium semi-transparent neutral handle colors adapting to the current theme
+            var isLightTheme = (Theme.currentTheme === "Белоснежная" || Theme.currentTheme === "Розовая");
+            return isLightTheme ? "#50000000" : "#40FFFFFF";
         }
         
-        // Clearly visible opacity when idle, solid when active
-        opacity: (control.hovered || control.pressed || control.active) ? 0.95 : 0.6
+        // Dynamic opacity: slightly softer when idle
+        opacity: (control.hovered || control.pressed || control.active) ? 0.95 : 0.65
         
         Behavior on color { ColorAnimation { duration: Theme.animFast } }
         Behavior on opacity { NumberAnimation { duration: Theme.animFast } }
