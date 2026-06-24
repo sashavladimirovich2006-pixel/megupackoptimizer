@@ -28,13 +28,11 @@ Column {
     }
 
     // Main Card
-    Rectangle {
+    AcrylicPanel {
         width: parent.width
         height: Math.max(120, layout.implicitHeight + 24)
-        radius: 8
-        color: "#05FFFFFF"
-        border.color: Theme.border
-        border.width: 1
+        compact: true
+        contentMargins: 0
 
         Column {
             id: layout

@@ -159,14 +159,12 @@ Column {
     Component {
         id: cleanerRowComponent
         
-        Rectangle {
+        AcrylicPanel {
             id: cardBg
             width: parent.width
             height: expanded ? Math.max(56, mainCol.implicitHeight + 24) : 56
-            radius: 8
-            color: "#05FFFFFF"
-            border.color: Theme.border
-            border.width: 1
+            compact: true
+            contentMargins: 0
             clip: true
 
             property string title: ""

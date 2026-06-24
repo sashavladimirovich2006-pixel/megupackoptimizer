@@ -36,14 +36,12 @@ Column {
                 id: modePanel
                 width: parent.width
                 height: 60
-                
+                compact: true
+                contentMargins: 0
+                accentColor: isActive ? Theme.accent : Theme.info
+                pressed: modeMouseArea.pressed
+
                 property bool isActive: optimizerBackend.windowsUpdateMode === modelData.modeId
-
-                border.color: isActive ? Theme.accent : (modeMouseArea.containsMouse ? Theme.borderHover : Theme.border)
-                color: isActive ? Theme.accentDim : (modeMouseArea.containsMouse ? Theme.buttonBgHover : Theme.buttonBg)
-
-                Behavior on border.color { ColorAnimation { duration: Theme.animFast } }
-                Behavior on color { ColorAnimation { duration: Theme.animFast } }
 
                 Row {
                     anchors.left: parent.left
@@ -117,13 +115,11 @@ Column {
     }
 
     // Driver updates
-    Rectangle {
+    AcrylicPanel {
         width: parent.width
         height: Math.max(56, driverRow.implicitHeight + 16)
-        radius: 8
-        color: "#05FFFFFF"
-        border.color: Theme.border
-        border.width: 1
+        compact: true
+        contentMargins: 0
 
         RowLayout {
             id: driverRow
@@ -201,13 +197,11 @@ Column {
     }
 
     // App updates
-    Rectangle {
+    AcrylicPanel {
         width: parent.width
         height: Math.max(56, appRow.implicitHeight + 16)
-        radius: 8
-        color: "#05FFFFFF"
-        border.color: Theme.border
-        border.width: 1
+        compact: true
+        contentMargins: 0
 
         RowLayout {
             id: appRow

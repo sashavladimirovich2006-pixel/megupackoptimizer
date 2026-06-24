@@ -11321,7 +11321,7 @@ Item {
             id: driveSelectDropdown
             width: parent.width
             height: 40
-            color: Theme.panelBg
+            color: Theme.cardBg
             border.color: driveSelectMouse.containsMouse ? Theme.accent : Theme.border
             border.width: 1
             radius: Theme.radiusSmall

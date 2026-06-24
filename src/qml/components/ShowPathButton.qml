@@ -131,8 +131,8 @@ Item {
         id: customTooltip
         text: control.text
         background: Rectangle {
-            color: Theme.panelBg
-            border.color: Theme.border
+            color: Theme.cardBg
+            border.color: Theme.cardStroke
             border.width: 1
             radius: 4
         }

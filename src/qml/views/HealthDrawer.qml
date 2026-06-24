@@ -20,13 +20,11 @@ Column {
     }
 
     // 1. Graphics Driver Restart Card
-    Rectangle {
+    AcrylicPanel {
         width: parent.width
         height: Math.max(56, graphicsCol.implicitHeight + 16)
-        radius: 8
-        color: "#05FFFFFF"
-        border.color: Theme.border
-        border.width: 1
+        compact: true
+        contentMargins: 0
 
         RowLayout {
             anchors.fill: parent
@@ -98,13 +96,11 @@ Column {
     }
 
     // 2. Rebuild Icons Cache Card
-    Rectangle {
+    AcrylicPanel {
         width: parent.width
         height: Math.max(56, iconsCol.implicitHeight + 16)
-        radius: 8
-        color: "#05FFFFFF"
-        border.color: Theme.border
-        border.width: 1
+        compact: true
+        contentMargins: 0
 
         RowLayout {
             anchors.fill: parent
@@ -176,13 +172,11 @@ Column {
     }
 
     // 3. Memory Diagnostic Card
-    Rectangle {
+    AcrylicPanel {
         width: parent.width
         height: Math.max(56, memCol.implicitHeight + 16)
-        radius: 8
-        color: "#05FFFFFF"
-        border.color: Theme.border
-        border.width: 1
+        compact: true
+        contentMargins: 0
 
         RowLayout {
             anchors.fill: parent
@@ -305,13 +299,11 @@ Column {
     }
 
     // 4. Storage Sense Card
-    Rectangle {
+    AcrylicPanel {
         width: parent.width
         height: Math.max(56, storageSenseCol.implicitHeight + 16)
-        radius: 8
-        color: "#05FFFFFF"
-        border.color: Theme.border
-        border.width: 1
+        compact: true
+        contentMargins: 0
 
         RowLayout {
             anchors.fill: parent
@@ -392,13 +384,11 @@ Column {
     }
 
     // 5. Drive Optimization Card
-    Rectangle {
+    AcrylicPanel {
         width: parent.width
         height: Math.max(56, driveOptCol.implicitHeight + 16)
-        radius: 8
-        color: "#05FFFFFF"
-        border.color: Theme.border
-        border.width: 1
+        compact: true
+        contentMargins: 0
 
         RowLayout {
             anchors.fill: parent

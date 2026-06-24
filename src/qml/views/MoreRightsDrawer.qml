@@ -20,13 +20,11 @@ Column {
     }
 
     // 1. God Mode Card
-    Rectangle {
+    AcrylicPanel {
         width: parent.width
         height: Math.max(56, godModeCol.implicitHeight + 16)
-        radius: 8
-        color: "#05FFFFFF"
-        border.color: Theme.border
-        border.width: 1
+        compact: true
+        contentMargins: 0
 
         Column {
             id: godModeCol
@@ -65,13 +63,11 @@ Column {
     }
 
     // 2. Developer Mode Card
-    Rectangle {
+    AcrylicPanel {
         width: parent.width
         height: Math.max(56, devModeCol.implicitHeight + 16) + (devWarning.visible ? devWarning.implicitHeight + 8 : 0)
-        radius: 8
-        color: "#05FFFFFF"
-        border.color: Theme.border
-        border.width: 1
+        compact: true
+        contentMargins: 0
 
         Column {
             id: devModeCol
@@ -125,13 +121,11 @@ Column {
     }
 
     // 3. User Account Control (UAC) Card
-    Rectangle {
+    AcrylicPanel {
         width: parent.width
         height: Math.max(56, uacCol.implicitHeight + 16) + (uacRebootInfo.visible ? uacRebootInfo.implicitHeight + 8 : 0)
-        radius: 8
-        color: "#05FFFFFF"
-        border.color: Theme.border
-        border.width: 1
+        compact: true
+        contentMargins: 0
 
         Column {
             id: uacCol
@@ -179,8 +173,8 @@ Column {
             width: 140
             height: 32
             radius: 6
-            color: "#05FFFFFF"
-            border.color: Theme.border
+            color: Theme.cardBg
+            border.color: Theme.cardStroke
             border.width: 1
             anchors.right: parent.right
             anchors.rightMargin: 12
@@ -232,7 +226,7 @@ Column {
                     uacMenu.open();
                 }
                 onEntered: uacDropdown.border.color = Theme.accent
-                onExited: uacDropdown.border.color = Theme.border
+                onExited: uacDropdown.border.color = Theme.cardStroke
             }
 
             Menu {
@@ -242,7 +236,7 @@ Column {
                 
                 background: Rectangle {
                     color: Theme.sidebarBg
-                    border.color: Theme.border
+                    border.color: Theme.cardStroke
                     border.width: 1
                     radius: 6
                 }
@@ -280,13 +274,11 @@ Column {
     }
 
     // 4. User Choice Protection Driver (UCPD) Card
-    Rectangle {
+    AcrylicPanel {
         width: parent.width
         height: Math.max(56, ucpdCol.implicitHeight + 16) + (ucpdRebootInfo.visible ? ucpdRebootInfo.implicitHeight + 8 : 0)
-        radius: 8
-        color: "#05FFFFFF"
-        border.color: Theme.border
-        border.width: 1
+        compact: true
+        contentMargins: 0
 
         Column {
             id: ucpdCol

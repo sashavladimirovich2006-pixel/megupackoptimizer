@@ -93,63 +93,12 @@ Item {
                     }
                 }
 
-                AcrylicPanel {
+                MeguActionCard {
                     width: parent.width
-                    height: 104
-
-                    Row {
-                        anchors.left: parent.left
-                        anchors.leftMargin: 16
-                        anchors.verticalCenter: parent.verticalCenter
-                        spacing: 12
-
-                        Rectangle {
-                            width: 46
-                            height: 46
-                            radius: 12
-                            color: Qt.rgba(Theme.accent.r, Theme.accent.g, Theme.accent.b, 0.15)
-                            anchors.verticalCenter: parent.verticalCenter
-
-                            Item {
-                                width: 24
-                                height: 24
-                                anchors.centerIn: parent
-                                Image {
-                                    id: themeIconImg
-                                    source: "qrc:/MeguPackOptimizer/src/resources/settings.svg"
-                                    anchors.fill: parent
-                                    sourceSize.width: 24
-                                    sourceSize.height: 24
-                                    visible: false
-                                }
-                                ColorOverlay {
-                                    anchors.fill: themeIconImg
-                                    source: themeIconImg
-                                    color: Theme.accent
-                                }
-                            }
-                        }
-
-                        Column {
-                            anchors.verticalCenter: parent.verticalCenter
-                            spacing: 2
-
-                            Text {
-                                text: qsTr("Choose Interface Theme:")
-                                color: Theme.textPrimary
-                                font.family: Theme.fontFamily
-                                font.pixelSize: 14
-                                font.bold: true
-                            }
-
-                            Text {
-                                text: qsTr("Select your preferred visual style and color accents for the interface.")
-                                color: Theme.textMuted
-                                font.family: Theme.fontFamily
-                                font.pixelSize: 11
-                            }
-                        }
-                    }
+                    title: qsTr("Choose Interface Theme:")
+                    description: qsTr("Select your preferred visual style and color accents for the interface.")
+                    iconSource: "qrc:/MeguPackOptimizer/src/resources/settings.svg"
+                    accentColor: Theme.accent
 
                     // Interactive Box displaying current theme
                     Rectangle {
@@ -160,8 +109,6 @@ Item {
                         color: themeMouseArea.containsMouse ? Theme.accentDim : "transparent"
                         border.color: themeMouseArea.containsMouse ? Theme.accent : Theme.border
                         border.width: 1
-                        anchors.right: parent.right
-                        anchors.rightMargin: 16
                         anchors.verticalCenter: parent.verticalCenter
 
                         Behavior on color { ColorAnimation { duration: Theme.animFast } }
@@ -246,69 +193,18 @@ Item {
                     }
                 }
 
-                AcrylicPanel {
+                MeguActionCard {
                     width: parent.width
-                    height: 104
-
-                    Row {
-                        anchors.left: parent.left
-                        anchors.leftMargin: 16
-                        anchors.verticalCenter: parent.verticalCenter
-                        spacing: 12
-
-                        Rectangle {
-                            width: 46
-                            height: 46
-                            radius: 12
-                            color: Qt.rgba(Theme.textSecondary.r, Theme.textSecondary.g, Theme.textSecondary.b, 0.15)
-                            anchors.verticalCenter: parent.verticalCenter
-
-                            Item {
-                                width: 20
-                                height: 20
-                                anchors.centerIn: parent
-                                Image {
-                                    id: langIconImg
-                                    source: "qrc:/MeguPackOptimizer/src/resources/info.svg"
-                                    anchors.fill: parent
-                                    sourceSize.width: 20
-                                    sourceSize.height: 20
-                                    visible: false
-                                }
-                                ColorOverlay {
-                                    anchors.fill: langIconImg
-                                    source: langIconImg
-                                    color: Theme.textSecondary
-                                }
-                            }
-                        }
-
-                        Column {
-                            anchors.verticalCenter: parent.verticalCenter
-                            spacing: 2
-
-                            Text {
-                                text: qsTr("Choose Interface Language:")
-                                color: Theme.textPrimary
-                                font.family: Theme.fontFamily
-                                font.pixelSize: 14
-                                font.bold: true
-                            }
-
-                            Text {
-                                text: qsTr("Change the primary localization used across all application screens.")
-                                color: Theme.textMuted
-                                font.family: Theme.fontFamily
-                                font.pixelSize: 11
-                            }
-                        }
-                    }
+                    title: qsTr("Choose Interface Language:")
+                    description: qsTr("Change the primary localization used across all application screens.")
+                    iconSource: "qrc:/MeguPackOptimizer/src/resources/info.svg"
+                    accentColor: Theme.info
 
                     // Row of Language Option Buttons
                     Row {
+                        width: implicitWidth
+                        height: 32
                         spacing: 10
-                        anchors.right: parent.right
-                        anchors.rightMargin: 16
                         anchors.verticalCenter: parent.verticalCenter
 
                         Repeater {
@@ -357,67 +253,16 @@ Item {
                     }
                 }
 
-                AcrylicPanel {
+                MeguActionCard {
                     width: parent.width
-                    height: 104
-
-                    Row {
-                        anchors.left: parent.left
-                        anchors.leftMargin: 16
-                        anchors.verticalCenter: parent.verticalCenter
-                        spacing: 12
-
-                        Rectangle {
-                            width: 46
-                            height: 46
-                            radius: 12
-                            color: Qt.rgba(0.9, 0.3, 0.1, 0.15)
-                            anchors.verticalCenter: parent.verticalCenter
-
-                            Item {
-                                width: 20
-                                height: 20
-                                anchors.centerIn: parent
-                                Image {
-                                    id: backupIconImg
-                                    source: "qrc:/MeguPackOptimizer/src/resources/warning.svg"
-                                    anchors.fill: parent
-                                    sourceSize.width: 20
-                                    sourceSize.height: 20
-                                    visible: false
-                                }
-                                ColorOverlay {
-                                    anchors.fill: backupIconImg
-                                    source: backupIconImg
-                                    color: "#FF5722"
-                                }
-                            }
-                        }
-
-                        Column {
-                            anchors.verticalCenter: parent.verticalCenter
-                            spacing: 2
-
-                            Text {
-                                text: qsTr("Do not create Backup (not recommended):")
-                                color: Theme.textPrimary
-                                font.family: Theme.fontFamily
-                                font.pixelSize: 14
-                                font.bold: true
-                            }
-
-                            Text {
-                                text: qsTr("Skip system restore point creation before executing optimizations.")
-                                color: Theme.textMuted
-                                font.family: Theme.fontFamily
-                                font.pixelSize: 11
-                            }
-                        }
-                    }
+                    title: qsTr("Do not create Backup (not recommended):")
+                    description: qsTr("Skip system restore point creation before executing optimizations.")
+                    iconSource: "qrc:/MeguPackOptimizer/src/resources/warning.svg"
+                    accentColor: Theme.warning
 
                     MeguSwitch {
-                        anchors.right: parent.right
-                        anchors.rightMargin: 16
+                        width: 40
+                        height: 22
                         anchors.verticalCenter: parent.verticalCenter
                         checked: !settingsBackend.createBackup
                         onToggled: (isChecked) => {
@@ -426,70 +271,17 @@ Item {
                     }
                 }
 
-                AcrylicPanel {
+                MeguActionCard {
                     width: parent.width
-                    height: 104
-
-                    Row {
-                        anchors.left: parent.left
-                        anchors.leftMargin: 16
-                        anchors.verticalCenter: parent.verticalCenter
-                        spacing: 12
-
-                        Rectangle {
-                            width: 46
-                            height: 46
-                            radius: 12
-                            color: Qt.rgba(0.1, 0.8, 0.5, 0.15)
-                            anchors.verticalCenter: parent.verticalCenter
-
-                            Item {
-                                width: 20
-                                height: 20
-                                anchors.centerIn: parent
-                                Image {
-                                    id: restoreIconImg
-                                    source: "qrc:/MeguPackOptimizer/src/resources/storage.svg"
-                                    anchors.fill: parent
-                                    sourceSize.width: 20
-                                    sourceSize.height: 20
-                                    visible: false
-                                }
-                                ColorOverlay {
-                                    anchors.fill: restoreIconImg
-                                    source: restoreIconImg
-                                    color: "#00C853"
-                                }
-                            }
-                        }
-
-                        Column {
-                            anchors.verticalCenter: parent.verticalCenter
-                            spacing: 2
-
-                            Text {
-                                text: qsTr("Restore system to a previous state:")
-                                color: Theme.textPrimary
-                                font.family: Theme.fontFamily
-                                font.pixelSize: 14
-                                font.bold: true
-                            }
-
-                            Text {
-                                text: qsTr("Open Windows System Restore (rstrui.exe) to revert changes.")
-                                color: Theme.textMuted
-                                font.family: Theme.fontFamily
-                                font.pixelSize: 11
-                            }
-                        }
-                    }
+                    title: qsTr("Restore system to a previous state:")
+                    description: qsTr("Open Windows System Restore (rstrui.exe) to revert changes.")
+                    iconSource: "qrc:/MeguPackOptimizer/src/resources/storage.svg"
+                    accentColor: Theme.success
 
                     MeguButton {
-                        width: 160
+                        width: 150
                         height: 32
                         text: qsTr("Restore System")
-                        anchors.right: parent.right
-                        anchors.rightMargin: 16
                         anchors.verticalCenter: parent.verticalCenter
                         onClicked: {
                             optimizerBackend.restoreFromBackup("");
@@ -525,70 +317,18 @@ Item {
                     }
                 }
 
-                AcrylicPanel {
+                MeguActionCard {
                     width: parent.width
-                    height: 104
-
-                    Row {
-                        anchors.left: parent.left
-                        anchors.leftMargin: 16
-                        anchors.verticalCenter: parent.verticalCenter
-                        spacing: 12
-
-                        Rectangle {
-                            width: 46
-                            height: 46
-                            radius: 12
-                            color: Qt.rgba(Theme.error.r, Theme.error.g, Theme.error.b, 0.15)
-                            anchors.verticalCenter: parent.verticalCenter
-
-                            Item {
-                                width: 20
-                                height: 20
-                                anchors.centerIn: parent
-                                Image {
-                                    id: dangerIconImg
-                                    source: "qrc:/MeguPackOptimizer/src/resources/warning.svg"
-                                    anchors.fill: parent
-                                    sourceSize.width: 20
-                                    sourceSize.height: 20
-                                    visible: false
-                                }
-                                ColorOverlay {
-                                    anchors.fill: dangerIconImg
-                                    source: dangerIconImg
-                                    color: Theme.error
-                                }
-                            }
-                        }
-
-                        Column {
-                            anchors.verticalCenter: parent.verticalCenter
-                            spacing: 2
-
-                            Text {
-                                text: qsTr("Advanced and risky configurations:")
-                                color: Theme.textPrimary
-                                font.family: Theme.fontFamily
-                                font.pixelSize: 14
-                                font.bold: true
-                            }
-
-                            Text {
-                                text: qsTr("Show or hide advanced features intended only for experienced users.")
-                                color: Theme.textMuted
-                                font.family: Theme.fontFamily
-                                font.pixelSize: 11
-                            }
-                        }
-                    }
+                    title: qsTr("Advanced and risky configurations:")
+                    description: qsTr("Show or hide advanced features intended only for experienced users.")
+                    iconSource: "qrc:/MeguPackOptimizer/src/resources/warning.svg"
+                    accentColor: Theme.error
+                    danger: true
 
                     MeguButton {
-                        width: 160
+                        width: 132
                         height: 32
                         text: qsTr("Configure")
-                        anchors.right: parent.right
-                        anchors.rightMargin: 16
                         anchors.verticalCenter: parent.verticalCenter
                         onClicked: {
                             dangerousZoneSidebar.isOpen = true;
@@ -964,45 +704,18 @@ Item {
                     }
                 }
 
-                // Card with Toggle
-                Rectangle {
+                MeguActionCard {
                     width: parent.width
-                    height: Math.max(72, expertToggleCol.implicitHeight + 16)
-                    radius: 8
-                    color: "#05FFFFFF"
-                    border.color: Theme.border
-                    border.width: 1
-
-                    Column {
-                        id: expertToggleCol
-                        anchors.verticalCenter: parent.verticalCenter
-                        anchors.left: parent.left
-                        anchors.leftMargin: 12
-                        anchors.right: expertSwitch.left
-                        anchors.rightMargin: 12
-                        spacing: 2
-
-                        Text {
-                            text: qsTr("Show expert features")
-                            color: Theme.textPrimary
-                            font.family: Theme.fontFamily
-                            font.pixelSize: 15
-                            font.bold: true
-                        }
-                        Text {
-                            text: qsTr("Toggle visibility of advanced features like More Privileges card in the optimization view.")
-                            color: Theme.textSecondary
-                            font.family: Theme.fontFamily
-                            font.pixelSize: 12
-                            width: parent.width
-                            wrapMode: Text.WordWrap
-                        }
-                    }
+                    title: qsTr("Show expert features")
+                    description: qsTr("Toggle visibility of advanced features like More Privileges card in the optimization view.")
+                    iconSource: "qrc:/MeguPackOptimizer/src/resources/warning.svg"
+                    accentColor: Theme.error
+                    danger: true
 
                     MeguSwitch {
                         id: expertSwitch
-                        anchors.right: parent.right
-                        anchors.rightMargin: 12
+                        width: 40
+                        height: 22
                         anchors.verticalCenter: parent.verticalCenter
                         checked: settingsBackend.showExpertFeatures
                         onToggled: (isChecked) => {

@@ -1,188 +1,173 @@
 import QtQuick
-import MeguPackOptimizer 1.0
+import QtQuick.Layouts
 import Qt5Compat.GraphicalEffects
-import QtQuick.Shapes as QQS
+import MeguPackOptimizer 1.0
 
 AcrylicPanel {
     id: card
-    
+
     property string category: ""
     property string value: ""
     property string subValue: ""
     property string iconSource: ""
-    
-    // Progress bar and styling customizations
+
     property bool showProgressBar: false
     property real progressBarValue: 0.0
     property color progressBarColor: Theme.accent
-    property color badgeColor: Qt.rgba(Theme.accent.r, Theme.accent.g, Theme.accent.b, 0.05)
+    property color badgeColor: Qt.rgba(progressBarColor.r, progressBarColor.g, progressBarColor.b, 0.08)
     property color iconColor: Theme.textSecondary
+
+    accentColor: card.progressBarColor
+    accented: true
+    compact: true
+    interactive: true
 
     Item {
         anchors.fill: parent
-        anchors.margins: 16
-        
-        Row {
-            id: contentRow
+
+        ColumnLayout {
             anchors.fill: parent
-            spacing: 16
-            
-            // Subdued, clean elevation adjustment on hover
-            y: card.containsMouse ? -1 : 0
-            Behavior on y {
-                NumberAnimation {
-                    duration: Theme.animNormal
-                    easing.type: Easing.OutCubic
-                }
-            }
+            spacing: 9
 
-            // Wrapper to contain the icon badge and its drop shadow
-            Item {
-                id: iconContainerWrapper
-                width: 56
-                height: 56
-                anchors.verticalCenter: parent.verticalCenter
+            RowLayout {
+                Layout.fillWidth: true
+                Layout.fillHeight: true
+                spacing: 12
 
-                DropShadow {
-                    anchors.fill: iconBg
-                    horizontalOffset: 0
-                    verticalOffset: 0
-                    radius: card.containsMouse ? 8 : 0
-                    color: card.progressBarColor
-                    source: iconBg
-                    visible: card.containsMouse
-                    Behavior on radius { NumberAnimation { duration: Theme.animFast } }
-                }
-
-                // Icon Container with clean, premium badge background
                 Rectangle {
                     id: iconBg
-                    anchors.fill: parent
-                    radius: 28 // circular
-                    color: card.containsMouse ? Qt.rgba(progressBarColor.r, progressBarColor.g, progressBarColor.b, 0.15) : badgeColor
-                    border.color: card.showProgressBar ? "transparent" : (card.containsMouse ? progressBarColor : Theme.border)
-                    border.width: card.showProgressBar ? 0 : 1
-                    
+                    Layout.preferredWidth: 42
+                    Layout.preferredHeight: 42
+                    Layout.alignment: Qt.AlignVCenter
+                    radius: 12
+                    color: card.containsMouse
+                        ? Qt.rgba(card.progressBarColor.r, card.progressBarColor.g, card.progressBarColor.b, 0.16)
+                        : card.badgeColor
+                    border.color: card.containsMouse
+                        ? Qt.rgba(card.progressBarColor.r, card.progressBarColor.g, card.progressBarColor.b, 0.52)
+                        : Qt.rgba(card.progressBarColor.r, card.progressBarColor.g, card.progressBarColor.b, 0.22)
+                    border.width: 1
+
                     Behavior on color { ColorAnimation { duration: Theme.animFast } }
                     Behavior on border.color { ColorAnimation { duration: Theme.animFast } }
 
-                    // Speedometer Progress Ring (Circular progress)
-                    QQS.Shape {
-                        id: progressShape
+                    DropShadow {
                         anchors.fill: parent
-                        visible: card.showProgressBar
-                        antialiasing: true
+                        horizontalOffset: 0
+                        verticalOffset: 0
+                        radius: card.containsMouse ? 12 : 0
+                        samples: 16
+                        color: Qt.rgba(card.progressBarColor.r, card.progressBarColor.g, card.progressBarColor.b, 0.28)
+                        source: iconBg
+                        visible: Theme.currentTheme !== "Белоснежная"
+                        Behavior on radius { NumberAnimation { duration: Theme.animFast } }
+                    }
 
-                        // Background track ring
-                        QQS.ShapePath {
-                            strokeColor: Qt.rgba(progressBarColor.r, progressBarColor.g, progressBarColor.b, 0.1)
-                            strokeWidth: 3.5
-                            fillColor: "transparent"
-                            capStyle: QQS.ShapePath.RoundCap
-                            
-                            PathAngleArc {
-                                centerX: 28
-                                centerY: 28
-                                radiusX: 24
-                                radiusY: 24
-                                startAngle: -90
-                                sweepAngle: 360
-                            }
+                    Image {
+                        id: img
+                        source: card.iconSource
+                        anchors.centerIn: parent
+                        width: 22
+                        height: 22
+                        sourceSize.width: 22
+                        sourceSize.height: 22
+                        visible: false
+                    }
+
+                    ColorOverlay {
+                        anchors.fill: img
+                        source: img
+                        color: card.containsMouse ? card.progressBarColor : card.iconColor
+                        Behavior on color { ColorAnimation { duration: Theme.animFast } }
+                    }
+                }
+
+                ColumnLayout {
+                    Layout.fillWidth: true
+                    Layout.alignment: Qt.AlignVCenter
+                    spacing: 2
+
+                    RowLayout {
+                        Layout.fillWidth: true
+                        spacing: 6
+
+                        Text {
+                            text: card.category
+                            color: card.containsMouse ? card.progressBarColor : Theme.textSecondary
+                            font.family: Theme.fontFamily
+                            font.pixelSize: 10
+                            font.bold: true
+                            font.letterSpacing: 0.6
+                            Layout.fillWidth: true
+                            elide: Text.ElideRight
+                            Behavior on color { ColorAnimation { duration: Theme.animFast } }
                         }
-                        
-                        // Active progress arc
-                        QQS.ShapePath {
-                            strokeWidth: 3.5
-                            strokeColor: card.progressBarColor
-                            fillColor: "transparent"
-                            capStyle: QQS.ShapePath.RoundCap
-                            
-                            fillGradient: QQS.LinearGradient {
-                                x1: 0; y1: 0
-                                x2: 56; y2: 56
-                                GradientStop { position: 0.0; color: Theme.accent }
-                                GradientStop { position: 1.0; color: Theme.accentLight }
-                            }
-                            
-                            PathAngleArc {
-                                centerX: 28
-                                centerY: 28
-                                radiusX: 24
-                                radiusY: 24
-                                startAngle: -90
-                                sweepAngle: 360 * card.progressBarValue
-                                
-                                Behavior on sweepAngle {
-                                    NumberAnimation {
-                                        duration: 300
-                                        easing.type: Easing.OutQuad
-                                    }
-                                }
+
+                        Rectangle {
+                            visible: card.showProgressBar
+                            Layout.preferredWidth: percentText.implicitWidth + 14
+                            Layout.preferredHeight: 20
+                            radius: 10
+                            color: Qt.rgba(card.progressBarColor.r, card.progressBarColor.g, card.progressBarColor.b, 0.10)
+                            border.color: Qt.rgba(card.progressBarColor.r, card.progressBarColor.g, card.progressBarColor.b, 0.25)
+                            border.width: 1
+
+                            Text {
+                                id: percentText
+                                anchors.centerIn: parent
+                                text: Math.round(card.progressBarValue * 100) + "%"
+                                color: card.progressBarColor
+                                font.family: Theme.fontFamily
+                                font.pixelSize: 10
+                                font.bold: true
                             }
                         }
                     }
 
-                    Item {
-                        width: 28
-                        height: 28
-                        anchors.centerIn: parent
+                    Text {
+                        text: card.value ? card.value : qsTr("Detecting...")
+                        color: Theme.textPrimary
+                        font.family: Theme.fontFamily
+                        font.pixelSize: 15
+                        font.bold: true
+                        Layout.fillWidth: true
+                        elide: Text.ElideRight
+                    }
 
-                        Image {
-                            id: img
-                            source: card.iconSource
-                            anchors.fill: parent
-                            sourceSize.width: 28
-                            sourceSize.height: 28
-                            visible: false
-                        }
-                        
-                        ColorOverlay {
-                            anchors.fill: img
-                            source: img
-                            color: card.containsMouse ? progressBarColor : iconColor
-                            Behavior on color { ColorAnimation { duration: Theme.animNormal } }
-                        }
+                    Text {
+                        text: card.subValue
+                        color: Theme.textMuted
+                        font.family: Theme.fontFamily
+                        font.pixelSize: 10
+                        visible: text !== ""
+                        Layout.fillWidth: true
+                        elide: Text.ElideRight
                     }
                 }
             }
 
-            // Info Text Column
-            Column {
-                anchors.verticalCenter: parent.verticalCenter
-                width: parent.width - iconBg.width - parent.spacing - 10
-                spacing: 3
+            Rectangle {
+                id: progressTrack
+                visible: card.showProgressBar
+                Layout.fillWidth: true
+                Layout.preferredHeight: 3
+                radius: 1.5
+                color: Qt.rgba(card.progressBarColor.r, card.progressBarColor.g, card.progressBarColor.b, 0.13)
 
-                Text {
-                    text: card.showProgressBar ? card.category + " (" + Math.round(card.progressBarValue * 100) + "%)" : card.category
-                    color: card.containsMouse ? progressBarColor : Theme.textSecondary
-                    font.family: Theme.fontFamily
-                    font.pixelSize: 12
-                    font.bold: true
-                    font.letterSpacing: 0.5
-                    elide: Text.ElideRight
-                    width: parent.width
-                    
-                    Behavior on color { ColorAnimation { duration: Theme.animFast } }
-                }
-
-                Text {
-                    text: card.value ? card.value : qsTr("Detecting...")
-                    color: Theme.textPrimary
-                    font.family: Theme.fontFamily
-                    font.pixelSize: 16
-                    font.bold: true
-                    elide: Text.ElideRight
-                    width: parent.width
-                }
-
-                Text {
-                    text: card.subValue
-                    color: Theme.textMuted
-                    font.family: Theme.fontFamily
-                    font.pixelSize: 12
-                    elide: Text.ElideRight
-                    width: parent.width
-                    visible: text !== ""
+                Rectangle {
+                    height: parent.height
+                    width: parent.width * Math.max(0, Math.min(1, card.progressBarValue))
+                    radius: parent.radius
+                    gradient: Gradient {
+                        GradientStop { position: 0.0; color: card.progressBarColor }
+                        GradientStop { position: 1.0; color: Theme.accentLight }
+                    }
+                    Behavior on width {
+                        NumberAnimation {
+                            duration: 280
+                            easing.type: Easing.OutCubic
+                        }
+                    }
                 }
             }
         }

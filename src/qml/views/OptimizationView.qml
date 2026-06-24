@@ -27569,7 +27569,7 @@ Item {
 
 
 
-                                color: Theme.panelBg
+                                color: Theme.cardBg
 
 
 
@@ -27769,7 +27769,7 @@ Item {
 
 
 
-                                color: Theme.panelBg
+                                color: Theme.cardBg
 
 
 
@@ -28081,7 +28081,7 @@ Item {
 
 
 
-                                        color: Theme.panelBg
+                                        color: Theme.cardBg
 
 
 

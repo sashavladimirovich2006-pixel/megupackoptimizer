@@ -118,16 +118,13 @@ Column {
     }
 
     // DISM Checkbox Row
-    Rectangle {
+    AcrylicPanel {
         width: parent.width
         height: Math.max(56, dismCol.implicitHeight + 16)
-        radius: 8
-        color: dismMouseArea.containsMouse ? "#0AFFFFFF" : "#05FFFFFF"
-        border.color: dismMouseArea.containsMouse ? Theme.accentDim : Theme.border
-        border.width: 1
-
-        Behavior on color { ColorAnimation { duration: Theme.animFast } }
-        Behavior on border.color { ColorAnimation { duration: Theme.animFast } }
+        compact: true
+        contentMargins: 0
+        accentColor: repairColumn.dismChecked ? Theme.accent : Theme.info
+        pressed: dismMouseArea.pressed
 
         MouseArea {
             id: dismMouseArea
@@ -192,16 +189,13 @@ Column {
     }
 
     // SFC Checkbox Row
-    Rectangle {
+    AcrylicPanel {
         width: parent.width
         height: Math.max(56, sfcCol.implicitHeight + 16)
-        radius: 8
-        color: sfcMouseArea.containsMouse ? "#0AFFFFFF" : "#05FFFFFF"
-        border.color: sfcMouseArea.containsMouse ? Theme.accentDim : Theme.border
-        border.width: 1
-
-        Behavior on color { ColorAnimation { duration: Theme.animFast } }
-        Behavior on border.color { ColorAnimation { duration: Theme.animFast } }
+        compact: true
+        contentMargins: 0
+        accentColor: repairColumn.sfcChecked ? Theme.accent : Theme.info
+        pressed: sfcMouseArea.pressed
 
         MouseArea {
             id: sfcMouseArea
@@ -266,16 +260,13 @@ Column {
     }
 
     // CHKDSK Checkbox Row
-    Rectangle {
+    AcrylicPanel {
         width: parent.width
         height: Math.max(56, chkdskCol.implicitHeight + 16)
-        radius: 8
-        color: chkdskMouseArea.containsMouse ? "#0AFFFFFF" : "#05FFFFFF"
-        border.color: chkdskMouseArea.containsMouse ? Theme.accentDim : Theme.border
-        border.width: 1
-
-        Behavior on color { ColorAnimation { duration: Theme.animFast } }
-        Behavior on border.color { ColorAnimation { duration: Theme.animFast } }
+        compact: true
+        contentMargins: 0
+        accentColor: repairColumn.chkdskChecked ? Theme.accent : Theme.info
+        pressed: chkdskMouseArea.pressed
 
         MouseArea {
             id: chkdskMouseArea
@@ -488,14 +479,12 @@ Column {
     }
 
     // Scrollable Console Log Box
-    Rectangle {
+    AcrylicPanel {
         id: logBox
         width: parent.width
         height: 200
-        radius: Theme.radiusNormal
-        color: Theme.panelBg
-        border.color: Theme.border
-        border.width: 1
+        compact: true
+        contentMargins: 0
         visible: logText.text.length > 0
         clip: true
 

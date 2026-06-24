@@ -37,19 +37,32 @@ Item {
     Rectangle {
         id: plate
         anchors.fill: parent
-        anchors.leftMargin: control.hovered ? 4 : 0
-        anchors.rightMargin: control.hovered ? -4 : 0
+        anchors.leftMargin: control.hovered ? 3 : 0
+        anchors.rightMargin: control.hovered ? -3 : 0
         radius: Theme.radiusNormal
         color: control.pressed
             ? Theme.buttonBgPressed
-            : (control.hovered ? Qt.rgba(Theme.accent.r, Theme.accent.g, Theme.accent.b, 0.10) : Theme.panelBg)
-        border.color: control.hovered ? Qt.rgba(Theme.accent.r, Theme.accent.g, Theme.accent.b, 0.55) : Theme.border
+            : (control.hovered ? Theme.cardBgHover : Theme.cardBg)
+        border.color: control.hovered ? Theme.cardStrokeHover : Theme.cardStroke
         border.width: 1
 
         Behavior on anchors.leftMargin { NumberAnimation { duration: Theme.animFast; easing.type: Easing.OutCubic } }
         Behavior on anchors.rightMargin { NumberAnimation { duration: Theme.animFast; easing.type: Easing.OutCubic } }
         Behavior on color { ColorAnimation { duration: Theme.animFast } }
         Behavior on border.color { ColorAnimation { duration: Theme.animFast } }
+
+        Rectangle {
+            anchors.left: parent.left
+            anchors.right: parent.right
+            anchors.top: parent.top
+            anchors.leftMargin: 1
+            anchors.rightMargin: 1
+            anchors.topMargin: 1
+            height: 1
+            color: Theme.cardTopSheen
+            opacity: control.hovered ? 0.65 : 0.32
+            Behavior on opacity { NumberAnimation { duration: Theme.animFast } }
+        }
 
         Rectangle {
             width: control.hovered ? 4 : 2
@@ -110,7 +123,7 @@ Item {
                 anchors.fill: parent
                 radius: 14
                 color: control.hovered ? Qt.rgba(Theme.accent.r, Theme.accent.g, Theme.accent.b, 0.14) : Theme.buttonBg
-                border.color: control.hovered ? Theme.accent : Theme.border
+                border.color: control.hovered ? Theme.accent : Theme.cardStroke
                 border.width: 1
                 Behavior on color { ColorAnimation { duration: Theme.animFast } }
                 Behavior on border.color { ColorAnimation { duration: Theme.animFast } }

@@ -60,13 +60,11 @@ Column {
     }
 
     // 1. Show This PC
-    Rectangle {
+    AcrylicPanel {
         width: parent.width
         height: Math.max(56, thisPcCol.implicitHeight + 16)
-        radius: 8
-        color: "#05FFFFFF"
-        border.color: Theme.border
-        border.width: 1
+        compact: true
+        contentMargins: 0
 
         Column {
             id: thisPcCol
@@ -105,13 +103,11 @@ Column {
     }
 
     // 2. Show Recycle Bin
-    Rectangle {
+    AcrylicPanel {
         width: parent.width
         height: Math.max(56, recycleCol.implicitHeight + 16)
-        radius: 8
-        color: "#05FFFFFF"
-        border.color: Theme.border
-        border.width: 1
+        compact: true
+        contentMargins: 0
 
         Column {
             id: recycleCol
@@ -150,13 +146,11 @@ Column {
     }
 
     // 3. Show Widgets button on Taskbar
-    Rectangle {
+    AcrylicPanel {
         width: parent.width
         height: Math.max(56, widgetsCol.implicitHeight + 16)
-        radius: 8
-        color: "#05FFFFFF"
-        border.color: Theme.border
-        border.width: 1
+        compact: true
+        contentMargins: 0
 
         Column {
             id: widgetsCol
@@ -195,13 +189,11 @@ Column {
     }
 
     // 4. Shortcut Arrow Overlays
-    Rectangle {
+    AcrylicPanel {
         width: parent.width
         height: Math.max(56, shortcutCol.implicitHeight + 16)
-        radius: 8
-        color: "#05FFFFFF"
-        border.color: Theme.border
-        border.width: 1
+        compact: true
+        contentMargins: 0
 
         Column {
             id: shortcutCol
@@ -240,13 +232,11 @@ Column {
     }
 
     // 5. Drop Shadows for Icon Labels
-    Rectangle {
+    AcrylicPanel {
         width: parent.width
         height: Math.max(56, shadowsCol.implicitHeight + 16)
-        radius: 8
-        color: "#05FFFFFF"
-        border.color: Theme.border
-        border.width: 1
+        compact: true
+        contentMargins: 0
 
         Column {
             id: shadowsCol
@@ -285,13 +275,11 @@ Column {
     }
 
     // 6. Show desktop button on Taskbar
-    Rectangle {
+    AcrylicPanel {
         width: parent.width
         height: Math.max(56, showDesktopCol.implicitHeight + 16)
-        radius: 8
-        color: "#05FFFFFF"
-        border.color: Theme.border
-        border.width: 1
+        compact: true
+        contentMargins: 0
 
         Column {
             id: showDesktopCol
@@ -330,13 +318,11 @@ Column {
     }
 
     // 7. Aero Shake
-    Rectangle {
+    AcrylicPanel {
         width: parent.width
         height: Math.max(56, shakeCol.implicitHeight + 16)
-        radius: 8
-        color: "#05FFFFFF"
-        border.color: Theme.border
-        border.width: 1
+        compact: true
+        contentMargins: 0
 
         Column {
             id: shakeCol
@@ -375,13 +361,11 @@ Column {
     }
 
     // 8. Classic Context Menu
-    Rectangle {
+    AcrylicPanel {
         width: parent.width
         height: Math.max(56, classicCol.implicitHeight + 16)
-        radius: 8
-        color: "#05FFFFFF"
-        border.color: Theme.border
-        border.width: 1
+        compact: true
+        contentMargins: 0
 
         Column {
             id: classicCol
@@ -420,13 +404,11 @@ Column {
     }
 
     // 9. Wallpaper Quality
-    Rectangle {
+    AcrylicPanel {
         width: parent.width
         height: Math.max(80, sliderCol.implicitHeight + 24)
-        radius: 8
-        color: "#05FFFFFF"
-        border.color: Theme.border
-        border.width: 1
+        compact: true
+        contentMargins: 0
 
         Column {
             id: sliderCol

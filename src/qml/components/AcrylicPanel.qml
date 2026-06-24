@@ -4,44 +4,125 @@ import Qt5Compat.GraphicalEffects
 
 Rectangle {
     id: panel
-    
+
     readonly property bool containsMouse: hoverArea.containsMouse
+    readonly property bool hovered: panel.interactive && hoverArea.containsMouse
 
     property bool isFlashing: false
     property double flashOpacity: 0.0
+    property color accentColor: panel.danger ? Theme.error : Theme.accent
+    property bool accented: true
+    property bool danger: false
+    property bool pressed: false
+    property bool interactive: true
+    property bool compact: false
+    property int contentMargins: compact ? 12 : 14
 
-    color: Theme.panelBg
-    radius: 12 // Modernized rounded corners
-    border.color: isFlashing ? Theme.success : (hoverArea.containsMouse ? Theme.borderHover : Theme.border)
+    color: "transparent"
+    radius: Theme.radiusNormal
+    border.color: isFlashing ? Theme.success : (hovered || pressed ? Theme.cardStrokeHover : Theme.cardStroke)
     border.width: 1
+    clip: false
 
-    Behavior on border.color { enabled: !panel.isFlashing; ColorAnimation { duration: Theme.animNormal } }
-    Behavior on color { ColorAnimation { duration: Theme.animNormal } }
+    Behavior on border.color { enabled: !panel.isFlashing; ColorAnimation { duration: Theme.animFast } }
 
     transform: Translate {
-        y: (hoverArea.containsMouse && !panel.isFlashing) ? -2 : 0
+        y: (panel.hovered && !panel.isFlashing) ? -1 : 0
         Behavior on y {
             NumberAnimation {
-                duration: Theme.animNormal
+                duration: Theme.animFast
                 easing.type: Easing.OutCubic
             }
         }
     }
 
-    // Dynamic soft drop shadow glow under panel
     DropShadow {
-        anchors.fill: panel
+        anchors.fill: backgroundPlate
         horizontalOffset: 0
-        verticalOffset: hoverArea.containsMouse ? 8 : 4
-        radius: hoverArea.containsMouse ? 16 : 8
-        color: hoverArea.containsMouse ? Qt.rgba(0, 0, 0, 0.45) : Qt.rgba(0, 0, 0, 0.25)
-        source: panel
-        z: -1
+        verticalOffset: panel.hovered ? 10 : 4
+        radius: panel.hovered ? 22 : 12
+        samples: 24
+        color: panel.hovered
+            ? Qt.rgba(panel.accentColor.r, panel.accentColor.g, panel.accentColor.b, panel.danger ? 0.22 : 0.16)
+            : Theme.cardShadow
+        source: backgroundPlate
+        z: -2
         visible: Theme.currentTheme !== "Белоснежная"
-        
-        Behavior on verticalOffset { NumberAnimation { duration: Theme.animNormal } }
-        Behavior on radius { NumberAnimation { duration: Theme.animNormal } }
-        Behavior on color { ColorAnimation { duration: Theme.animNormal } }
+
+        Behavior on verticalOffset { NumberAnimation { duration: Theme.animFast } }
+        Behavior on radius { NumberAnimation { duration: Theme.animFast } }
+        Behavior on color { ColorAnimation { duration: Theme.animFast } }
+    }
+
+    Rectangle {
+        id: backgroundPlate
+        anchors.fill: parent
+        radius: panel.radius
+        border.width: 0
+        gradient: Gradient {
+            GradientStop {
+                position: 0.0
+                color: panel.pressed
+                    ? Theme.buttonBgPressed
+                    : (panel.hovered ? Theme.cardBgHover : Theme.cardBg)
+            }
+            GradientStop {
+                position: 1.0
+                color: panel.hovered
+                    ? Qt.rgba(panel.accentColor.r, panel.accentColor.g, panel.accentColor.b, panel.danger ? 0.10 : 0.075)
+                    : Qt.rgba(panel.accentColor.r, panel.accentColor.g, panel.accentColor.b, panel.danger ? 0.055 : 0.028)
+            }
+        }
+    }
+
+    Rectangle {
+        anchors.left: parent.left
+        anchors.right: parent.right
+        anchors.top: parent.top
+        anchors.leftMargin: 1
+        anchors.rightMargin: 1
+        anchors.topMargin: 1
+        height: 1
+        radius: 0.5
+        color: Theme.cardTopSheen
+        opacity: panel.hovered ? 0.72 : 0.38
+        Behavior on opacity { NumberAnimation { duration: Theme.animFast } }
+    }
+
+    Rectangle {
+        width: panel.hovered || panel.pressed || panel.danger ? 4 : 2
+        height: Math.max(18, parent.height - 24)
+        radius: width / 2
+        color: panel.accentColor
+        opacity: (panel.accented || panel.danger || panel.hovered || panel.pressed) ? (panel.hovered || panel.pressed ? 0.95 : 0.55) : 0.0
+        anchors.left: parent.left
+        anchors.leftMargin: 9
+        anchors.verticalCenter: parent.verticalCenter
+
+        Behavior on width { NumberAnimation { duration: Theme.animFast; easing.type: Easing.OutCubic } }
+        Behavior on opacity { NumberAnimation { duration: Theme.animFast } }
+        Behavior on color { ColorAnimation { duration: Theme.animFast } }
+    }
+
+    Rectangle {
+        anchors.fill: parent
+        anchors.margins: 1
+        radius: Math.max(0, panel.radius - 1)
+        color: "transparent"
+        border.color: Qt.rgba(1, 1, 1, panel.hovered ? 0.10 : 0.055)
+        border.width: 1
+        Behavior on border.color { ColorAnimation { duration: Theme.animFast } }
+    }
+
+    Rectangle {
+        anchors.fill: parent
+        radius: panel.radius
+        color: "transparent"
+        border.color: Theme.success
+        border.width: 2
+        opacity: panel.flashOpacity
+        visible: opacity > 0.0
+        anchors.margins: -1
     }
 
     function triggerLocateFlash() {
@@ -51,7 +132,7 @@ Rectangle {
 
     SequentialAnimation {
         id: locateFlashAnim
-        
+
         ScriptAction {
             script: {
                 flashOpacityAnim.stop();
@@ -69,32 +150,10 @@ Rectangle {
         }
     }
 
-    // Thin elegant inner border for that clean physical edge
-    Rectangle {
-        anchors.fill: parent
-        radius: panel.radius
-        color: "transparent"
-        border.color: (Theme.currentTheme === "Белоснежная" || Theme.currentTheme === "Розовая") ? "#11FFFFFF" : "#05FFFFFF"
-        border.width: 1
-        anchors.margins: 1
-    }
-
-    // Premium highlighted outline border for locate/eye function (flashes and fades after 3 seconds)
-    Rectangle {
-        anchors.fill: parent
-        radius: panel.radius
-        color: "transparent"
-        border.color: Theme.success
-        border.width: 2
-        opacity: panel.flashOpacity
-        visible: opacity > 0.0
-        anchors.margins: -1
-    }
-
     MouseArea {
         id: hoverArea
         anchors.fill: parent
-        hoverEnabled: true
+        hoverEnabled: panel.interactive
         acceptedButtons: Qt.NoButton
         propagateComposedEvents: true
     }
@@ -104,6 +163,6 @@ Rectangle {
     Item {
         id: container
         anchors.fill: parent
-        anchors.margins: 16 // spacious and clean padding matching the reference design!
+        anchors.margins: panel.contentMargins
     }
 }

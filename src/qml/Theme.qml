@@ -239,8 +239,58 @@ Item {
         if (currentTheme === "Black pink") return "#15FF2A85";
         return "#1500FFD2";
     }
-    
-    // 5. Functional Colors
+
+    // 5. Compact card system
+    property color cardBg: {
+        if (currentTheme === "Белоснежная") return "#F2FFFFFF";
+        if (currentTheme === "Blackout полностью черная") return "#F0040404";
+        if (currentTheme === "Ргб") return "#EE050508";
+        if (currentTheme === "Розовая") return "#F2FFE8EE";
+        if (currentTheme === "Black pink") return "#F00B0810";
+        return "#F00A0D13";
+    }
+
+    property color cardBgHover: {
+        if (currentTheme === "Белоснежная") return "#FFFFFFFF";
+        if (currentTheme === "Blackout полностью черная") return "#FF070707";
+        if (currentTheme === "Ргб") return "#FF080911";
+        if (currentTheme === "Розовая") return "#FFFFF1F5";
+        if (currentTheme === "Black pink") return "#FF100B17";
+        return "#FF0E131D";
+    }
+
+    property color cardStroke: {
+        if (currentTheme === "Белоснежная") return "#D7E2E8F0";
+        if (currentTheme === "Blackout полностью черная") return "#FF171717";
+        if (currentTheme === "Ргб") return rgbAccentDim;
+        if (currentTheme === "Розовая") return "#E6F7BBC9";
+        if (currentTheme === "Black pink") return "#FF301526";
+        return "#D71A2638";
+    }
+
+    property color cardStrokeHover: {
+        if (currentTheme === "Белоснежная") return "#B30284C7";
+        if (currentTheme === "Blackout полностью черная") return "#8800FF87";
+        if (currentTheme === "Ргб") return rgbAccentLight;
+        if (currentTheme === "Розовая") return "#B3FF758F";
+        if (currentTheme === "Black pink") return "#B3FF2A85";
+        return "#8A00FFD2";
+    }
+
+    property color cardTopSheen: {
+        if (currentTheme === "Белоснежная") return "#CCFFFFFF";
+        if (currentTheme === "Розовая") return "#B3FFFFFF";
+        return "#22FFFFFF";
+    }
+
+    property color cardShadow: {
+        if (currentTheme === "Белоснежная") return "#260284C7";
+        if (currentTheme === "Розовая") return "#24FF758F";
+        if (currentTheme === "Black pink") return "#33000000";
+        return "#55000000";
+    }
+
+    // 6. Functional Colors
     readonly property color success: "#10B981"
     readonly property color warning: "#F59E0B"
     readonly property color error: "#EF4444"

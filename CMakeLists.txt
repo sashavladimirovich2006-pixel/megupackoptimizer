@@ -49,6 +49,7 @@ qt_add_qml_module(megu_pack_optimizer
         src/qml/components/MeguScrollBar.qml
         src/qml/components/MeguSlider.qml
         src/qml/components/MeguIconButton.qml
+        src/qml/components/MeguActionCard.qml
         src/qml/components/MeguMenuRow.qml
         src/qml/components/LogViewer.qml
         src/qml/components/SpecCard.qml

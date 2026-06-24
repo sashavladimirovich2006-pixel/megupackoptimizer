@@ -18,6 +18,9 @@ The following rules must be strictly adhered to by all developers (human or AI) 
 4. **Mandatory Ukrainian Language Translation**:
    All user interface labels, button text, notifications, description lines, and log steps MUST always be translated to the Ukrainian language. Any time new text elements are introduced or modified in QML or C++, you must immediately run `lupdate` to update the TS file, write the appropriate translations in `translations/megu_pack_optimizer_uk.ts`, and compile it using `lrelease` before publishing your changes.
 
+5. **Unified Compact Card System**:
+   Do not build new card-like UI surfaces with ad-hoc `Rectangle + Theme.panelBg + Theme.border` blocks. All cards, settings rows, action rows, metric cards, and wide option panels must use `AcrylicPanel`, `MeguActionCard`, `SpecCard`, `MeguMenuRow`, or a specialized component based on those primitives. Wide cards must always be internally composed into an icon zone, text/content zone, and status/action zone so they never render as empty full-width dark slabs.
+
 ---
 
 ## Technical Architecture
@@ -28,6 +31,7 @@ The following rules must be strictly adhered to by all developers (human or AI) 
 - **Visual Palette (Obsidian Aurora & Emerald Glacier)**:
   - Base Background: Obsidian Midnight (`#07080C`)
   - Panels: Translucent Obsidian Glass (`#E60B0E14`)
+  - Cards: Compact layered obsidian glass using `Theme.cardBg`, `Theme.cardBgHover`, `Theme.cardStroke`, and `Theme.cardStrokeHover`
   - Accent: Mint-Cyan (`#00FFD2`)
   - Accent Light: Glacier Mint (`#66FFDF`)
   - Borders: Glacier Slate (`#182232`)
@@ -188,3 +192,12 @@ The following rules must be strictly adhered to by all developers (human or AI) 
   - **VisualEffectsDrawer.qml**: Added a left 3px vertical accent bar to section headers. Restructured visual preset chips with tactile scale-bouncing and HSL-tinted gradient fills.
   - **OptimizationView.qml & main.qml**: Overhauled sliding drawer scroll buttons, close buttons, separator lines, and main window controls with spring-like scale transitions and accent overlays. Restructured the version label into a clean capsule badge.
   - **Utility Widgets**: Refined ShowPathButton.qml, MeguProgressBar.qml, and SpecCard.qml progress rings to use new mint gradient tokens and outline glows.
+
+### Phase 3: Global Compact Card System Redesign
+- **Action**: Replaced the palette-only panel treatment with a unified compact card system for premium utility layouts.
+- **Detailed Rationale**:
+  - **Card Tokens**: Added `Theme.cardBg`, `Theme.cardBgHover`, `Theme.cardStroke`, `Theme.cardStrokeHover`, `Theme.cardTopSheen`, and `Theme.cardShadow` so card surfaces no longer depend on raw glass literals or generic panel colors.
+  - **AcrylicPanel Foundation**: Rebuilt `AcrylicPanel.qml` as a layered glass card with compact padding, accent rail, top sheen, hover/pressed/danger states, and glow-based elevation while preserving its existing default content API.
+  - **Reusable Action Rows**: Added `MeguActionCard.qml` and registered it in CMake for settings/action rows that need an icon zone, text zone, and trailing action/status zone.
+  - **Dashboard Cards**: Redesigned `SpecCard.qml` into a compact metric card while keeping the same public properties used by `DashboardView.qml`.
+  - **Settings & Drawers**: Converted the wide `SettingsView.qml` cards and the most common drawer action rows (`Desktop`, `Explorer`, `StartMenu`, `Health`, `MoreRights`, `WindowsUpdate`, `SleepingPill`, `Repair`, and `Cleanup`) to the shared card layer without changing backend bindings.

@@ -60,13 +60,11 @@ Column {
     }
 
     // 1. Show file extensions
-    Rectangle {
+    AcrylicPanel {
         width: parent.width
         height: Math.max(56, extCol.implicitHeight + 16)
-        radius: 8
-        color: "#05FFFFFF"
-        border.color: Theme.border
-        border.width: 1
+        compact: true
+        contentMargins: 0
 
         Column {
             id: extCol
@@ -105,13 +103,11 @@ Column {
     }
 
     // 2. Show hidden and system items
-    Rectangle {
+    AcrylicPanel {
         width: parent.width
         height: Math.max(56, hiddenCol.implicitHeight + 16)
-        radius: 8
-        color: "#05FFFFFF"
-        border.color: Theme.border
-        border.width: 1
+        compact: true
+        contentMargins: 0
 
         Column {
             id: hiddenCol
@@ -150,13 +146,11 @@ Column {
     }
 
     // 3. Show files after extraction is complete
-    Rectangle {
+    AcrylicPanel {
         width: parent.width
         height: Math.max(56, extractCol.implicitHeight + 16)
-        radius: 8
-        color: "#05FFFFFF"
-        border.color: Theme.border
-        border.width: 1
+        compact: true
+        contentMargins: 0
 
         Column {
             id: extractCol
@@ -195,13 +189,11 @@ Column {
     }
 
     // 4. Classic interface (Windows 10 ribbon)
-    Rectangle {
+    AcrylicPanel {
         width: parent.width
         height: Math.max(56, ribbonCol.implicitHeight + 16)
-        radius: 8
-        color: "#05FFFFFF"
-        border.color: Theme.border
-        border.width: 1
+        compact: true
+        contentMargins: 0
 
         Column {
             id: ribbonCol
@@ -240,13 +232,11 @@ Column {
     }
 
     // 5. Show the preview pane for files
-    Rectangle {
+    AcrylicPanel {
         width: parent.width
         height: Math.max(56, previewCol.implicitHeight + 16)
-        radius: 8
-        color: "#05FFFFFF"
-        border.color: Theme.border
-        border.width: 1
+        compact: true
+        contentMargins: 0
 
         Column {
             id: previewCol
@@ -285,13 +275,11 @@ Column {
     }
 
     // 6. Recycle Bin navigation pane item
-    Rectangle {
+    AcrylicPanel {
         width: parent.width
         height: Math.max(56, recycleNavCol.implicitHeight + 16)
-        radius: 8
-        color: "#05FFFFFF"
-        border.color: Theme.border
-        border.width: 1
+        compact: true
+        contentMargins: 0
 
         Column {
             id: recycleNavCol
@@ -330,13 +318,11 @@ Column {
     }
 
     // 7. Home navigation pane item
-    Rectangle {
+    AcrylicPanel {
         width: parent.width
         height: Math.max(56, homeCol.implicitHeight + 16)
-        radius: 8
-        color: "#05FFFFFF"
-        border.color: Theme.border
-        border.width: 1
+        compact: true
+        contentMargins: 0
 
         Column {
             id: homeCol
@@ -375,13 +361,11 @@ Column {
     }
 
     // 8. Gallery navigation pane item
-    Rectangle {
+    AcrylicPanel {
         width: parent.width
         height: Math.max(56, galleryCol.implicitHeight + 16)
-        radius: 8
-        color: "#05FFFFFF"
-        border.color: Theme.border
-        border.width: 1
+        compact: true
+        contentMargins: 0
 
         Column {
             id: galleryCol
@@ -420,13 +404,11 @@ Column {
     }
 
     // 9. Use checkboxes to select items
-    Rectangle {
+    AcrylicPanel {
         width: parent.width
         height: Math.max(56, checkboxesCol.implicitHeight + 16)
-        radius: 8
-        color: "#05FFFFFF"
-        border.color: Theme.border
-        border.width: 1
+        compact: true
+        contentMargins: 0
 
         Column {
             id: checkboxesCol
@@ -465,13 +447,11 @@ Column {
     }
 
     // 10. Sync provider notifications
-    Rectangle {
+    AcrylicPanel {
         width: parent.width
         height: Math.max(56, syncCol.implicitHeight + 16)
-        radius: 8
-        color: "#05FFFFFF"
-        border.color: Theme.border
-        border.width: 1
+        compact: true
+        contentMargins: 0
 
         Column {
             id: syncCol
@@ -510,13 +490,11 @@ Column {
     }
 
     // 11. Open to (Launch target dropdown)
-    Rectangle {
+    AcrylicPanel {
         width: parent.width
         height: Math.max(56, openToCol.implicitHeight + 16)
-        radius: 8
-        color: "#05FFFFFF"
-        border.color: Theme.border
-        border.width: 1
+        compact: true
+        contentMargins: 0
 
         Column {
             id: openToCol
@@ -549,8 +527,8 @@ Column {
             width: 140
             height: 32
             radius: 6
-            color: "#05FFFFFF"
-            border.color: Theme.border
+            color: Theme.cardBg
+            border.color: Theme.cardStroke
             border.width: 1
             anchors.right: parent.right
             anchors.rightMargin: 12
@@ -600,7 +578,7 @@ Column {
                     openToMenu.open();
                 }
                 onEntered: openToDropdown.border.color = Theme.accent
-                onExited: openToDropdown.border.color = Theme.border
+                onExited: openToDropdown.border.color = Theme.cardStroke
             }
 
             Menu {
@@ -610,7 +588,7 @@ Column {
                 
                 background: Rectangle {
                     color: Theme.sidebarBg
-                    border.color: Theme.border
+                    border.color: Theme.cardStroke
                     border.width: 1
                     radius: 6
                 }

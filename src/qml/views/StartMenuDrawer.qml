@@ -20,13 +20,11 @@ Column {
     }
 
     // 1. Include web results when searching
-    Rectangle {
+    AcrylicPanel {
         width: parent.width
         height: Math.max(56, webCol.implicitHeight + 16)
-        radius: 8
-        color: "#05FFFFFF"
-        border.color: Theme.border
-        border.width: 1
+        compact: true
+        contentMargins: 0
 
         Column {
             id: webCol
@@ -65,13 +63,11 @@ Column {
     }
 
     // 2. Autoinstall suggestions
-    Rectangle {
+    AcrylicPanel {
         width: parent.width
         height: Math.max(56, suggestionsCol.implicitHeight + 16)
-        radius: 8
-        color: "#05FFFFFF"
-        border.color: Theme.border
-        border.width: 1
+        compact: true
+        contentMargins: 0
 
         Column {
             id: suggestionsCol
@@ -110,13 +106,11 @@ Column {
     }
 
     // 3. Account notifications
-    Rectangle {
+    AcrylicPanel {
         width: parent.width
         height: Math.max(56, accountCol.implicitHeight + 16)
-        radius: 8
-        color: "#05FFFFFF"
-        border.color: Theme.border
-        border.width: 1
+        compact: true
+        contentMargins: 0
 
         Column {
             id: accountCol
@@ -155,13 +149,11 @@ Column {
     }
 
     // 4. Show hibernate in power menu
-    Rectangle {
+    AcrylicPanel {
         width: parent.width
         height: Math.max(56, hibernateCol.implicitHeight + 16)
-        radius: 8
-        color: "#05FFFFFF"
-        border.color: Theme.border
-        border.width: 1
+        compact: true
+        contentMargins: 0
         enabled: optimizerBackend.hibernationActive
         opacity: enabled ? 1.0 : 0.5
 
