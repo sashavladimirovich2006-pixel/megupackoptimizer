@@ -33620,6 +33620,7 @@ Item {
                     anchors.right: parent.right
                     anchors.bottom: parent.bottom
                     clip: true
+                    rightPadding: 14
                     contentWidth: availableWidth
 
 
