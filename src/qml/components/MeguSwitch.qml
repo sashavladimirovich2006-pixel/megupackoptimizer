@@ -11,7 +11,7 @@ Item {
     
     signal toggled(bool isChecked)
     
-    implicitWidth: 200
+    implicitWidth: text !== "" ? 200 : 40
     // Height adapts dynamically to the wrapped text height or defaults to 28px
     implicitHeight: Math.max(28, labelText.visible ? labelText.height + 4 : 22)
     
