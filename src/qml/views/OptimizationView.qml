@@ -7680,6 +7680,11 @@ Item {
 
 
 
+            Grid {
+                columns: 2
+                spacing: 12
+                width: parent.width
+
                 AcrylicPanel {
 
 
@@ -7688,11 +7693,11 @@ Item {
 
 
 
-                    width: parent.width
+                    width: (parent.width - 12) / 2
 
 
 
-                    height: detailsExpanded ? 94 + detailsContainer.implicitHeight + 24 : 94
+                    height: detailsExpanded ? 84 + detailsContainer.implicitHeight + 24 : 84
 
 
 
@@ -9372,11 +9377,11 @@ Item {
 
 
 
-                    width: parent.width
+                    width: (parent.width - 12) / 2
 
 
 
-                    height: 94
+                    height: 84
 
 
 
@@ -9777,6 +9782,7 @@ Item {
 
 
                 }
+            }
 
 
 
@@ -9916,7 +9922,7 @@ Item {
 
 
 
-                    height: 104
+                    height: 84
 
 
 
@@ -10057,6 +10063,7 @@ Item {
 
 
                         Column {
+                    width: parent.parent.width - 180
 
 
 
@@ -10193,6 +10200,10 @@ Item {
 
 
                             Text {
+                                    width: parent.width
+                                    wrapMode: Text.WordWrap
+                                    elide: Text.ElideRight
+                                    maximumLineCount: 2
 
 
 
@@ -10608,6 +10619,11 @@ Item {
 
 
 
+            Grid {
+                columns: 2
+                spacing: 12
+                width: parent.width
+
                 AcrylicPanel {
 
 
@@ -10620,11 +10636,11 @@ Item {
 
 
 
-                    width: parent.width
+                    width: (parent.width - 12) / 2
 
 
 
-                    height: 104
+                    height: 84
 
 
 
@@ -10765,6 +10781,7 @@ Item {
 
 
                         Column {
+                    width: parent.parent.width - 180
 
 
 
@@ -10901,6 +10918,10 @@ Item {
 
 
                             Text {
+                                    width: parent.width
+                                    wrapMode: Text.WordWrap
+                                    elide: Text.ElideRight
+                                    maximumLineCount: 2
 
 
 
@@ -11244,11 +11265,11 @@ Item {
 
 
 
-                    width: parent.width
+                    width: (parent.width - 12) / 2
 
 
 
-                    height: 104
+                    height: 84
 
 
 
@@ -11389,6 +11410,7 @@ Item {
 
 
                         Column {
+                    width: parent.parent.width - 180
 
 
 
@@ -11469,6 +11491,10 @@ Item {
 
 
                             Text {
+                                    width: parent.width
+                                    wrapMode: Text.WordWrap
+                                    elide: Text.ElideRight
+                                    maximumLineCount: 2
 
 
 
@@ -11844,11 +11870,11 @@ Item {
 
 
 
-                    width: parent.width
+                    width: (parent.width - 12) / 2
 
 
 
-                    height: 104
+                    height: 84
 
 
 
@@ -11989,6 +12015,7 @@ Item {
 
 
                         Column {
+                    width: parent.parent.width - 180
 
 
 
@@ -12145,6 +12172,10 @@ Item {
 
 
                             Text {
+                                    width: parent.width
+                                    wrapMode: Text.WordWrap
+                                    elide: Text.ElideRight
+                                    maximumLineCount: 2
 
 
 
@@ -12292,11 +12323,11 @@ Item {
 
 
 
-                    width: parent.width
+                    width: (parent.width - 12) / 2
 
 
 
-                    height: (optimizerBackend.coreIsolationActive !== optimizerBackend.bootCoreIsolationActive) ? 152 : 104
+                    height: (optimizerBackend.coreIsolationActive !== optimizerBackend.bootCoreIsolationActive) ? 152 : 84
 
 
 
@@ -12501,6 +12532,7 @@ Item {
 
 
                         Column {
+                    width: parent.parent.width - 180
 
 
 
@@ -12657,6 +12689,10 @@ Item {
 
 
                             Text {
+                                    width: parent.width
+                                    wrapMode: Text.WordWrap
+                                    elide: Text.ElideRight
+                                    maximumLineCount: 2
 
 
 
@@ -12952,11 +12988,11 @@ Item {
 
 
 
-                    width: parent.width
+                    width: (parent.width - 12) / 2
 
 
 
-                    height: 104
+                    height: 84
 
 
 
@@ -13097,6 +13133,7 @@ Item {
 
 
                         Column {
+                    width: parent.parent.width - 180
 
 
 
@@ -13253,6 +13290,10 @@ Item {
 
 
                             Text {
+                                    width: parent.width
+                                    wrapMode: Text.WordWrap
+                                    elide: Text.ElideRight
+                                    maximumLineCount: 2
 
 
 
@@ -13368,11 +13409,11 @@ Item {
 
 
 
-                    width: parent.width
+                    width: (parent.width - 12) / 2
 
 
 
-                    height: 104
+                    height: 84
 
 
 
@@ -13513,6 +13554,7 @@ Item {
 
 
                         Column {
+                    width: parent.parent.width - 180
 
 
 
@@ -13669,6 +13711,10 @@ Item {
 
 
                             Text {
+                                    width: parent.width
+                                    wrapMode: Text.WordWrap
+                                    elide: Text.ElideRight
+                                    maximumLineCount: 2
 
 
 
@@ -13784,11 +13830,11 @@ Item {
 
 
 
-                    width: parent.width
+                    width: (parent.width - 12) / 2
 
 
 
-                    height: root.isDiscordOpen ? 116 : 104
+                    height: root.isDiscordOpen ? 116 : 84
 
 
 
@@ -13941,6 +13987,7 @@ Item {
 
 
                         Column {
+                    width: parent.parent.width - 180
 
 
 
@@ -14097,6 +14144,10 @@ Item {
 
 
                             Text {
+                                    width: parent.width
+                                    wrapMode: Text.WordWrap
+                                    elide: Text.ElideRight
+                                    maximumLineCount: 2
 
 
 
@@ -14252,11 +14303,11 @@ Item {
 
 
 
-                    width: parent.width
+                    width: (parent.width - 12) / 2
 
 
 
-                    height: 104
+                    height: 84
 
 
 
@@ -14397,6 +14448,7 @@ Item {
 
 
                         Column {
+                    width: parent.parent.width - 180
 
 
 
@@ -14553,6 +14605,10 @@ Item {
 
 
                             Text {
+                                    width: parent.width
+                                    wrapMode: Text.WordWrap
+                                    elide: Text.ElideRight
+                                    maximumLineCount: 2
 
 
 
@@ -14672,11 +14728,11 @@ Item {
 
 
 
-                    width: parent.width
+                    width: (parent.width - 12) / 2
 
 
 
-                    height: 104
+                    height: 84
 
 
 
@@ -14817,6 +14873,7 @@ Item {
 
 
                         Column {
+                    width: parent.parent.width - 180
 
 
 
@@ -14973,6 +15030,10 @@ Item {
 
 
                             Text {
+                                    width: parent.width
+                                    wrapMode: Text.WordWrap
+                                    elide: Text.ElideRight
+                                    maximumLineCount: 2
 
 
 
@@ -15088,11 +15149,11 @@ Item {
 
 
 
-                    width: parent.width
+                    width: (parent.width - 12) / 2
 
 
 
-                    height: 104
+                    height: 84
 
 
 
@@ -15233,6 +15294,7 @@ Item {
 
 
                         Column {
+                    width: parent.parent.width - 180
 
 
 
@@ -15389,6 +15451,10 @@ Item {
 
 
                             Text {
+                                    width: parent.width
+                                    wrapMode: Text.WordWrap
+                                    elide: Text.ElideRight
+                                    maximumLineCount: 2
 
 
 
@@ -15676,11 +15742,11 @@ Item {
 
 
 
-                    width: parent.width
+                    width: (parent.width - 12) / 2
 
 
 
-                    height: detailsExpanded ? adsColumn.implicitHeight + 16 : 104
+                    height: detailsExpanded ? adsColumn.implicitHeight + 16 : 84
 
 
 
@@ -18080,11 +18146,11 @@ Item {
 
 
 
-                    width: parent.width
+                    width: (parent.width - 12) / 2
 
 
 
-                    height: detailsExpanded ? privacyColumn.implicitHeight + 16 : 104
+                    height: detailsExpanded ? privacyColumn.implicitHeight + 16 : 84
 
 
 
@@ -20852,11 +20918,11 @@ Item {
 
 
 
-                    width: parent.width
+                    width: (parent.width - 12) / 2
 
 
 
-                    height: 104
+                    height: 84
 
 
 
@@ -20997,6 +21063,7 @@ Item {
 
 
                         Column {
+                    width: parent.parent.width - 180
 
 
 
@@ -21153,6 +21220,10 @@ Item {
 
 
                             Text {
+                                    width: parent.width
+                                    wrapMode: Text.WordWrap
+                                    elide: Text.ElideRight
+                                    maximumLineCount: 2
 
 
 
@@ -21540,11 +21611,11 @@ Item {
 
 
 
-                    width: parent.width
+                    width: (parent.width - 12) / 2
 
 
 
-                    height: 104
+                    height: 84
 
 
 
@@ -21685,6 +21756,7 @@ Item {
 
 
                         Column {
+                    width: parent.parent.width - 180
 
 
 
@@ -21841,6 +21913,10 @@ Item {
 
 
                             Text {
+                                    width: parent.width
+                                    wrapMode: Text.WordWrap
+                                    elide: Text.ElideRight
+                                    maximumLineCount: 2
 
 
 
@@ -22133,6 +22209,7 @@ Item {
 
 
                 }
+            }
 
 
 
@@ -22180,6 +22257,11 @@ Item {
 
 
 
+            Grid {
+                columns: 2
+                spacing: 12
+                width: parent.width
+
                 AcrylicPanel {
 
 
@@ -22188,11 +22270,11 @@ Item {
 
 
 
-                    width: parent.width
+                    width: (parent.width - 12) / 2
 
 
 
-                    height: 104
+                    height: 84
 
 
 
@@ -22377,6 +22459,7 @@ Item {
 
 
                                 Column {
+                    width: parent.parent.width - 180
 
 
 
@@ -22517,6 +22600,10 @@ Item {
 
 
                                     Text {
+                                    width: parent.width
+                                    wrapMode: Text.WordWrap
+                                    elide: Text.ElideRight
+                                    maximumLineCount: 2
 
 
 
@@ -22760,11 +22847,11 @@ Item {
 
 
 
-                    width: parent.width
+                    width: (parent.width - 12) / 2
 
 
 
-                    height: 104
+                    height: 84
 
 
 
@@ -22953,6 +23040,7 @@ Item {
 
 
                                 Column {
+                    width: parent.parent.width - 180
 
 
 
@@ -23109,6 +23197,10 @@ Item {
 
 
                                     Text {
+                                    width: parent.width
+                                    wrapMode: Text.WordWrap
+                                    elide: Text.ElideRight
+                                    maximumLineCount: 2
 
 
 
@@ -23228,11 +23320,11 @@ Item {
 
 
 
-                    width: parent.width
+                    width: (parent.width - 12) / 2
 
 
 
-                    height: 104
+                    height: 84
 
 
 
@@ -23433,6 +23525,7 @@ Item {
 
 
                                 Column {
+                    width: parent.parent.width - 180
 
 
 
@@ -23589,6 +23682,10 @@ Item {
 
 
                                     Text {
+                                    width: parent.width
+                                    wrapMode: Text.WordWrap
+                                    elide: Text.ElideRight
+                                    maximumLineCount: 2
 
 
 
@@ -23892,11 +23989,11 @@ Item {
 
 
 
-                    width: parent.width
+                    width: (parent.width - 12) / 2
 
 
 
-                    height: 104
+                    height: 84
 
 
 
@@ -24097,6 +24194,7 @@ Item {
 
 
                                 Column {
+                    width: parent.parent.width - 180
 
 
 
@@ -24253,6 +24351,10 @@ Item {
 
 
                                     Text {
+                                    width: parent.width
+                                    wrapMode: Text.WordWrap
+                                    elide: Text.ElideRight
+                                    maximumLineCount: 2
 
 
 
@@ -24556,7 +24658,7 @@ Item {
 
 
 
-                    width: parent.width
+                    width: (parent.width - 12) / 2
 
 
 
@@ -24749,6 +24851,7 @@ Item {
 
 
                                 Column {
+                    width: parent.parent.width - 180
 
 
 
@@ -24961,6 +25064,10 @@ Item {
 
 
                                     Text {
+                                    width: parent.width
+                                    wrapMode: Text.WordWrap
+                                    elide: Text.ElideRight
+                                    maximumLineCount: 2
 
 
 
@@ -25204,11 +25311,11 @@ Item {
 
 
 
-                    width: parent.width
+                    width: (parent.width - 12) / 2
 
 
 
-                    height: 104
+                    height: 84
 
 
 
@@ -25393,6 +25500,7 @@ Item {
 
 
                                 Column {
+                    width: parent.parent.width - 180
 
 
 
@@ -25533,6 +25641,10 @@ Item {
 
 
                                     Text {
+                                    width: parent.width
+                                    wrapMode: Text.WordWrap
+                                    elide: Text.ElideRight
+                                    maximumLineCount: 2
 
 
 
@@ -25776,11 +25888,11 @@ Item {
 
 
 
-                    width: parent.width
+                    width: (parent.width - 12) / 2
 
 
 
-                    height: 104
+                    height: 84
 
 
 
@@ -25965,6 +26077,7 @@ Item {
 
 
                                 Column {
+                    width: parent.parent.width - 180
 
 
 
@@ -26105,6 +26218,10 @@ Item {
 
 
                                     Text {
+                                    width: parent.width
+                                    wrapMode: Text.WordWrap
+                                    elide: Text.ElideRight
+                                    maximumLineCount: 2
 
 
 
@@ -26329,6 +26446,7 @@ Item {
 
 
                 }
+            }
 
 
 
@@ -26464,6 +26582,11 @@ Item {
 
 
 
+            Grid {
+                columns: 2
+                spacing: 12
+                width: parent.width
+
                 AcrylicPanel {
 
 
@@ -26472,11 +26595,11 @@ Item {
 
 
 
-                    width: parent.width
+                    width: (parent.width - 12) / 2
 
 
 
-                    height: 104
+                    height: 84
 
 
 
@@ -26617,6 +26740,7 @@ Item {
 
 
                         Column {
+                    width: parent.parent.width - 180
 
 
 
@@ -26773,6 +26897,10 @@ Item {
 
 
                             Text {
+                                    width: parent.width
+                                    wrapMode: Text.WordWrap
+                                    elide: Text.ElideRight
+                                    maximumLineCount: 2
 
 
 
@@ -26877,8 +27005,8 @@ Item {
                 // Fast Startup Card
                 AcrylicPanel {
                     id: fastStartupPanel
-                    width: parent.width
-                    height: 104
+                    width: (parent.width - 12) / 2
+                    height: 84
 
                     Row {
                         anchors.left: parent.left
@@ -26916,6 +27044,7 @@ Item {
                         }
 
                         Column {
+                    width: parent.parent.width - 180
                             anchors.verticalCenter: parent.verticalCenter
                             spacing: 2
 
@@ -26961,6 +27090,10 @@ Item {
 
                             // Description when Hibernation is enabled
                             Text {
+                                    width: parent.width
+                                    wrapMode: Text.WordWrap
+                                    elide: Text.ElideRight
+                                    maximumLineCount: 2
                                 text: qsTr("Allows the device to open faster after a shutdown, reducing up to 50% of boot-time")
                                 color: Theme.textMuted
                                 font.family: Theme.fontFamily
@@ -27097,11 +27230,11 @@ Item {
 
 
 
-                    width: parent.width
+                    width: (parent.width - 12) / 2
 
 
 
-                    height: 104
+                    height: 84
 
 
 
@@ -27254,6 +27387,7 @@ Item {
 
 
                         Column {
+                    width: parent.parent.width - 180
 
 
 
@@ -28137,11 +28271,11 @@ Item {
 
 
 
-                    width: parent.width
+                    width: (parent.width - 12) / 2
 
 
 
-                    height: 120
+                    height: 84
 
 
 
@@ -28282,6 +28416,7 @@ Item {
 
 
                         Column {
+                    width: parent.parent.width - 180
 
 
 
@@ -28438,6 +28573,10 @@ Item {
 
 
                             Text {
+                                    width: parent.width
+                                    wrapMode: Text.WordWrap
+                                    elide: Text.ElideRight
+                                    maximumLineCount: 2
 
 
 
@@ -28593,11 +28732,11 @@ Item {
 
 
 
-                    width: parent.width
+                    width: (parent.width - 12) / 2
 
 
 
-                    height: !optimizerBackend.defenderActive ? 120 : 104
+                    height: !optimizerBackend.defenderActive ? 120 : 84
 
 
 
@@ -28742,6 +28881,7 @@ Item {
 
 
                         Column {
+                    width: parent.parent.width - 180
 
 
 
@@ -28970,6 +29110,10 @@ Item {
 
 
                             Text {
+                                    width: parent.width
+                                    wrapMode: Text.WordWrap
+                                    elide: Text.ElideRight
+                                    maximumLineCount: 2
 
 
 
@@ -29273,11 +29417,11 @@ Item {
 
 
 
-                    width: parent.width
+                    width: (parent.width - 12) / 2
 
 
 
-                    height: 104
+                    height: 84
 
 
 
@@ -29418,6 +29562,7 @@ Item {
 
 
                         Column {
+                    width: parent.parent.width - 180
 
 
 
@@ -29574,6 +29719,10 @@ Item {
 
 
                             Text {
+                                    width: parent.width
+                                    wrapMode: Text.WordWrap
+                                    elide: Text.ElideRight
+                                    maximumLineCount: 2
 
 
 
@@ -30109,11 +30258,11 @@ Item {
 
 
 
-                    width: parent.width
+                    width: (parent.width - 12) / 2
 
 
 
-                    height: 104
+                    height: 84
 
 
 
@@ -30254,6 +30403,7 @@ Item {
 
 
                         Column {
+                    width: parent.parent.width - 180
 
 
 
@@ -30410,6 +30560,10 @@ Item {
 
 
                             Text {
+                                    width: parent.width
+                                    wrapMode: Text.WordWrap
+                                    elide: Text.ElideRight
+                                    maximumLineCount: 2
 
 
 
@@ -30705,11 +30859,11 @@ Item {
 
 
 
-                    width: parent.width
+                    width: (parent.width - 12) / 2
 
 
 
-                    height: 104
+                    height: 84
 
 
 
@@ -30850,6 +31004,7 @@ Item {
 
 
                         Column {
+                    width: parent.parent.width - 180
 
 
 
@@ -31006,6 +31161,10 @@ Item {
 
 
                             Text {
+                                    width: parent.width
+                                    wrapMode: Text.WordWrap
+                                    elide: Text.ElideRight
+                                    maximumLineCount: 2
 
 
 
@@ -31117,11 +31276,11 @@ Item {
 
 
 
-                    width: parent.width
+                    width: (parent.width - 12) / 2
 
 
 
-                    height: 104
+                    height: 84
 
 
 
@@ -31262,6 +31421,7 @@ Item {
 
 
                         Column {
+                    width: parent.parent.width - 180
 
 
 
@@ -31326,6 +31486,10 @@ Item {
 
 
                             Text {
+                                    width: parent.width
+                                    wrapMode: Text.WordWrap
+                                    elide: Text.ElideRight
+                                    maximumLineCount: 2
 
 
 
@@ -31566,6 +31730,7 @@ Item {
 
 
                 }
+            }
 
 
 
@@ -31693,6 +31858,11 @@ Item {
 
 
 
+            Grid {
+                columns: 2
+                spacing: 12
+                width: parent.width
+
                 AcrylicPanel {
 
 
@@ -31701,11 +31871,11 @@ Item {
 
 
 
-                    width: parent.width
+                    width: (parent.width - 12) / 2
 
 
 
-                    height: 104
+                    height: 84
 
 
 
@@ -31854,6 +32024,7 @@ Item {
 
 
                         Column {
+                    width: parent.parent.width - 180
 
 
 
@@ -31902,6 +32073,10 @@ Item {
 
 
                             Text {
+                                    width: parent.width
+                                    wrapMode: Text.WordWrap
+                                    elide: Text.ElideRight
+                                    maximumLineCount: 2
 
 
 
@@ -32160,11 +32335,11 @@ Item {
 
 
 
-                    width: parent.width
+                    width: (parent.width - 12) / 2
 
 
 
-                    height: 104
+                    height: 84
 
 
 
@@ -32313,6 +32488,7 @@ Item {
 
 
                         Column {
+                    width: parent.parent.width - 180
 
 
 
@@ -32361,6 +32537,10 @@ Item {
 
 
                             Text {
+                                    width: parent.width
+                                    wrapMode: Text.WordWrap
+                                    elide: Text.ElideRight
+                                    maximumLineCount: 2
 
 
 
@@ -32601,6 +32781,7 @@ Item {
 
 
                 }
+            }
 
 
 
@@ -37506,7 +37687,7 @@ Item {
 
 
 
-            height: 180
+            height: 184
 
 
 
@@ -37895,4 +38076,3 @@ Item {
 
 
 }
-
