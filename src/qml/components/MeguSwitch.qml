@@ -48,7 +48,8 @@ Item {
         Rectangle {
             anchors.fill: parent
             radius: parent.radius
-            visible: control.checked && !control.steamStyle
+            opacity: (control.checked && !control.steamStyle) ? 1.0 : 0.0
+            Behavior on opacity { NumberAnimation { duration: 180; easing.type: Easing.OutQuad } }
             gradient: Gradient {
                 GradientStop { position: 0.0; color: Theme.accent }
                 GradientStop { position: 1.0; color: Theme.accentLight }
@@ -59,7 +60,8 @@ Item {
         Rectangle {
             anchors.fill: parent
             radius: parent.radius
-            visible: control.indeterminate && !control.steamStyle
+            opacity: (control.indeterminate && !control.steamStyle) ? 1.0 : 0.0
+            Behavior on opacity { NumberAnimation { duration: 180; easing.type: Easing.OutQuad } }
             color: Theme.accentDim
         }
 
@@ -77,15 +79,27 @@ Item {
         // Thumb capsule
         Rectangle {
             id: thumb
-            width: mouseArea.pressed ? 20 : 16
-            height: 16
-            radius: 8
-            color: {
-                if (control.steamStyle) {
-                    return control.checked ? "#FFFFFF" : "#4b5a6c";
+            width: mouseArea.pressed ? 20 : (mouseArea.containsMouse ? 18 : 16)
+            height: mouseArea.pressed ? 14 : 16
+            radius: height / 2
+            
+            gradient: Gradient {
+                GradientStop {
+                    position: 0.0
+                    color: {
+                        if (control.steamStyle) return control.checked ? "#FFFFFF" : "#5d6d7e";
+                        return (control.checked || control.indeterminate) ? "#FFFFFF" : "#F8FAFC"
+                    }
                 }
-                return (control.checked || control.indeterminate) ? Theme.textInverse : Theme.textPrimary;
+                GradientStop {
+                    position: 1.0
+                    color: {
+                        if (control.steamStyle) return control.checked ? "#E0E0E0" : "#4b5a6c";
+                        return (control.checked || control.indeterminate) ? "#E2E8F0" : "#CBD5E1"
+                    }
+                }
             }
+            
             border.color: "transparent"
             border.width: 0
             anchors.verticalCenter: parent.verticalCenter
@@ -95,17 +109,22 @@ Item {
             
             Behavior on x {
                 NumberAnimation {
-                    duration: 200
+                    duration: 250
                     easing.type: Easing.OutBack // satisfying spring bounce!
                 }
             }
             Behavior on width {
                 NumberAnimation {
-                    duration: 100
+                    duration: 150
                     easing.type: Easing.OutQuad
                 }
             }
-            Behavior on color { ColorAnimation { duration: Theme.animFast } }
+            Behavior on height {
+                NumberAnimation {
+                    duration: 150
+                    easing.type: Easing.OutQuad
+                }
+            }
         }
     }
     
