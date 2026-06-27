@@ -9910,6 +9910,11 @@ Item {
 
 
 
+            Grid {
+                columns: 2
+                spacing: 12
+                width: parent.width
+
                 AcrylicPanel {
 
 
@@ -9918,7 +9923,7 @@ Item {
 
 
 
-                    width: parent.width
+                    width: (parent.width - 12) / 2
 
 
 
@@ -10063,7 +10068,7 @@ Item {
 
 
                         Column {
-                    width: parent.parent.width - 180
+                    width: parent.parent.parent.width - 240
 
 
 
@@ -10219,7 +10224,7 @@ Item {
 
 
 
-                                font.pixelSize: 12
+                                font.pixelSize: 11
 
 
 
@@ -10260,50 +10265,6 @@ Item {
 
 
 
-
-
-
-                        MeguSwitch {
-
-
-
-                            id: mainIndexingSwitch
-
-
-
-                            checked: root.mainChecked
-
-
-
-                            indeterminate: root.mainIndeterminate
-
-
-
-                            anchors.verticalCenter: parent.verticalCenter
-
-
-
-                            onToggled: (isChecked) => {
-
-
-
-                                root.toggleMain();
-
-
-
-                            }
-
-
-
-                        }
-
-
-
-
-
-
-
-                        // Arrow button that slides right on hover & opens sidebar drawer
 
 
 
@@ -10479,11 +10440,1952 @@ Item {
 
 
 
+
+
+
+
+                        // Arrow button that slides right on hover & opens sidebar drawer
+
+
+
+                        MeguSwitch {
+
+
+
+                            id: mainIndexingSwitch
+
+
+
+                            checked: root.mainChecked
+
+
+
+                            indeterminate: root.mainIndeterminate
+
+
+
+                            anchors.verticalCenter: parent.verticalCenter
+
+
+
+                            onToggled: (isChecked) => {
+
+
+
+                                root.toggleMain();
+
+
+
+                            }
+
+
+
+                        }
+
+
+
                     }
 
 
 
                 }
+
+                AcrylicPanel {
+
+
+
+                    id: hibernationPanel
+
+
+
+                    width: (parent.width - 12) / 2
+
+
+
+                    height: 84
+
+
+
+
+
+
+
+                    Row {
+
+
+
+                        anchors.left: parent.left
+
+
+
+                        anchors.leftMargin: 16
+
+
+
+                        anchors.verticalCenter: parent.verticalCenter
+
+
+
+                        spacing: 12
+
+
+
+
+
+
+
+                        Rectangle {
+
+
+
+                            width: 40
+
+
+
+                            height: 40
+
+
+
+                            radius: 10
+
+
+
+                            color: Qt.rgba(Theme.accent.r, Theme.accent.g, Theme.accent.b, 0.15)
+
+
+
+                            anchors.verticalCenter: parent.verticalCenter
+
+
+
+
+
+
+
+                            Item {
+
+
+
+                                width: 20
+
+
+
+                                height: 20
+
+
+
+                                anchors.centerIn: parent
+
+
+
+                                Image {
+
+
+
+                                    id: hibernationPanel_iconImg
+
+
+
+                                    source: "qrc:/MeguPackOptimizer/src/resources/folder.svg"
+
+
+
+                                    anchors.fill: parent
+
+
+
+                                    sourceSize.width: 20
+
+
+
+                                    sourceSize.height: 20
+
+
+
+                                    visible: false
+
+
+
+                                }
+
+
+
+                                ColorOverlay {
+
+
+
+                                    anchors.fill: hibernationPanel_iconImg
+
+
+
+                                    source: hibernationPanel_iconImg
+
+
+
+                                    color: Theme.accent
+
+
+
+                                }
+
+
+
+                            }
+
+
+
+                        }
+
+
+
+
+
+
+
+                        Column {
+                    width: parent.parent.parent.width - 240
+
+
+
+                            anchors.verticalCenter: parent.verticalCenter
+
+
+
+                            spacing: 2
+
+
+
+
+
+
+
+                            Row {
+
+
+
+                                spacing: 8
+
+
+
+                                Text {
+
+
+
+                                    text: qsTr("System Hibernation")
+
+
+
+                                    color: Theme.textPrimary
+
+
+
+                                    font.family: Theme.fontFamily
+
+
+
+                                    font.pixelSize: 16
+
+
+
+                                    font.bold: true
+
+
+
+                                    anchors.verticalCenter: parent.verticalCenter
+
+
+
+                                } 
+
+
+
+                                ShowPathButton {
+
+
+
+                                    anchors.verticalCenter: parent.verticalCenter
+
+
+
+                                    onClicked: { optimizerBackend.showPath("hibernation"); }
+
+
+
+                                }
+
+
+
+                                Rectangle {
+
+
+
+                                    visible: root.hibernationChanged
+
+
+
+                                    height: 16
+
+
+
+                                    width: selectedTextHibern.contentWidth + 10
+
+
+
+                                    radius: 4
+
+
+
+                                    color: Qt.rgba(Theme.success.r, Theme.success.g, Theme.success.b, 0.15)
+
+
+
+                                    border.color: Theme.success
+
+
+
+                                    border.width: 1
+
+
+
+                                    anchors.verticalCenter: parent.verticalCenter
+
+
+
+                                    Text {
+
+
+
+                                        id: selectedTextHibern
+
+
+
+                                        text: qsTr("Selected for application")
+
+
+
+                                        color: Theme.success
+
+
+
+                                        font.family: Theme.fontFamily
+
+
+
+                                        font.pixelSize: 8
+
+
+
+                                        font.bold: true
+
+
+
+                                        anchors.centerIn: parent
+
+
+
+                                    }
+
+
+
+                                }
+
+
+
+                            }
+
+
+
+
+
+
+
+                            Text {
+                                    width: parent.width
+                                    wrapMode: Text.WordWrap
+                                    elide: Text.ElideRight
+                                    maximumLineCount: 2
+
+
+
+                                text: qsTr("Enables or disables system hibernation to clean storage drive space and optimize SSD lifetime.")
+
+
+
+                                color: Theme.textMuted
+
+
+
+                                font.family: Theme.fontFamily
+
+
+
+                                font.pixelSize: 11
+
+
+
+                            }
+
+
+
+                        }
+
+
+
+                    }
+
+
+
+
+
+
+
+                    Row {
+                        anchors.right: parent.right
+                        anchors.rightMargin: 16
+                        anchors.verticalCenter: parent.verticalCenter
+                        spacing: 16
+
+                        // Hibernation Size Button
+                        Rectangle {
+                            id: hiberSizeBtn
+                            width: 52
+                            height: 28
+                            radius: 6
+                            color: isEnabled ? (hiberSizeMouse.containsMouse ? "#1AFFFFFF" : "#0AFFFFFF") : "#03FFFFFF"
+                            border.color: isEnabled ? (hiberSizeMouse.containsMouse ? Theme.accent : Theme.border) : Theme.border
+                            border.width: 1
+                            opacity: isEnabled ? 1.0 : 0.4
+                            anchors.verticalCenter: parent.verticalCenter
+                            
+                            property bool isEnabled: optimizerBackend.hibernationActive
+
+                            Behavior on color { ColorAnimation { duration: Theme.animFast } }
+                            Behavior on border.color { ColorAnimation { duration: Theme.animFast } }
+                            Behavior on opacity { NumberAnimation { duration: Theme.animFast } }
+
+                            Text {
+                                anchors.centerIn: parent
+                                text: hiberSizeBtn.isEnabled ? (optimizerBackend.hibernationSize + "%") : "0%"
+                                color: hiberSizeBtn.isEnabled ? Theme.textPrimary : Theme.textMuted
+                                font.family: Theme.fontFamily
+                                font.pixelSize: 11
+                                font.bold: true
+                            }
+
+                            MouseArea {
+                                id: hiberSizeMouse
+                                anchors.fill: parent
+                                hoverEnabled: true
+                                enabled: hiberSizeBtn.isEnabled
+                                cursorShape: enabled ? Qt.PointingHandCursor : Qt.ArrowCursor
+                                onClicked: {
+                                    var current = optimizerBackend.hibernationSize;
+                                    var next = 40;
+                                    if (current === 40) next = 50;
+                                    else if (current === 50) next = 75;
+                                    else if (current === 75) next = 100;
+                                    else next = 40;
+                                    optimizerBackend.hibernationSize = next;
+                                }
+                            }
+                        }
+
+                        MeguSwitch {
+                            checked: optimizerBackend.hibernationActive
+                            anchors.verticalCenter: parent.verticalCenter
+                            onToggled: (isChecked) => {
+                                optimizerBackend.hibernationActive = isChecked;
+                            }
+                        }
+                    }
+
+
+
+                }
+
+                AcrylicPanel {
+
+
+
+                    id: pageFilePanel
+
+
+
+                    width: (parent.width - 12) / 2
+
+
+
+                    height: 84
+
+
+
+                    visible: root.currentSection === "core"
+
+
+
+
+
+
+
+                    Row {
+
+
+
+                        anchors.left: parent.left
+
+
+
+                        anchors.leftMargin: 16
+
+
+
+                        anchors.verticalCenter: parent.verticalCenter
+
+
+
+                        spacing: 12
+
+
+
+
+
+
+
+                        // Rounded square badge
+
+
+
+                        Rectangle {
+
+
+
+                            width: 40
+
+
+
+                            height: 40
+
+
+
+                            radius: 10
+
+
+
+                            color: Qt.rgba(0.9, 0.6, 0.1, 0.15)
+
+
+
+                            anchors.verticalCenter: parent.verticalCenter
+
+
+
+
+
+
+
+                            Item {
+
+
+
+                                width: 20
+
+
+
+                                height: 20
+
+
+
+                                anchors.centerIn: parent
+
+
+
+
+
+
+
+                                Image {
+
+
+
+                                    id: ramIconImg
+
+
+
+                                    source: "qrc:/MeguPackOptimizer/src/resources/ram.svg"
+
+
+
+                                    anchors.fill: parent
+
+
+
+                                    sourceSize.width: 20
+
+
+
+                                    sourceSize.height: 20
+
+
+
+                                    visible: false
+
+
+
+                                }
+
+
+
+                                ColorOverlay {
+
+
+
+                                    anchors.fill: ramIconImg
+
+
+
+                                    source: ramIconImg
+
+
+
+                                    color: "#FFA000"
+
+
+
+                                }
+
+
+
+                            }
+
+
+
+                        }
+
+
+
+
+
+
+
+                        Column {
+                    width: parent.parent.parent.width - 240
+
+
+
+                            anchors.verticalCenter: parent.verticalCenter
+
+
+
+                            spacing: 2
+
+
+
+
+
+
+
+                            Row {
+
+
+
+                                spacing: 8
+
+
+
+                                Text {
+
+
+
+                                    text: qsTr("Page File")
+
+
+
+                                    color: Theme.textPrimary
+
+
+
+                                    font.family: Theme.fontFamily
+
+
+
+                                    font.pixelSize: 16
+
+
+
+                                    font.bold: true
+
+
+
+                                    anchors.verticalCenter: parent.verticalCenter
+
+
+
+                                }
+
+
+
+                                ShowPathButton {
+
+
+
+                                    anchors.verticalCenter: parent.verticalCenter
+
+
+
+                                    onClicked: { optimizerBackend.showPath("pagefile"); }
+
+
+
+                                }
+
+
+
+                                Rectangle {
+
+
+
+                                    visible: root.pagefileChanged
+
+
+
+                                    height: 16
+
+
+
+                                    width: selectedTextPagefile.contentWidth + 10
+
+
+
+                                    radius: 4
+
+
+
+                                    color: Qt.rgba(Theme.success.r, Theme.success.g, Theme.success.b, 0.15)
+
+
+
+                                    border.color: Theme.success
+
+
+
+                                    border.width: 1
+
+
+
+                                    anchors.verticalCenter: parent.verticalCenter
+
+
+
+                                    Text {
+
+
+
+                                        id: selectedTextPagefile
+
+
+
+                                        text: qsTr("Selected for application")
+
+
+
+                                        color: Theme.success
+
+
+
+                                        font.family: Theme.fontFamily
+
+
+
+                                        font.pixelSize: 8
+
+
+
+                                        font.bold: true
+
+
+
+                                        anchors.centerIn: parent
+
+
+
+                                    }
+
+
+
+                                }
+
+
+
+                            }
+
+
+
+
+
+
+
+                            Text {
+
+
+
+                                text: !root.isPagefileInputValid ? 
+
+
+
+                                          (optimizerBackend.pagefileMin > optimizerBackend.pagefileMax ? 
+
+
+
+                                              qsTr("Warning: Minimum size cannot be greater than maximum size!") : 
+
+
+
+                                              (optimizerBackend.pagefileMin < 1024 || optimizerBackend.pagefileMax < 1024 || optimizerBackend.pagefileMin > 99999 || optimizerBackend.pagefileMax > 99999) ?
+
+
+
+                                                  qsTr("Warning: Size must be between 1024 and 99999 MB!") :
+
+
+
+                                                  qsTr("Error: Not enough disk space! C: drive will be overfilled.")) :
+
+
+
+                                      root.isPagefileSpaceLow ? 
+
+
+
+                                          qsTr("Warning: C: drive will have less than 10 GB of free space left. Continue anyway?") :
+
+
+
+                                          qsTr("Configure system virtual memory limits (initial/maximum size in MB).")
+
+
+
+                                color: !root.isPagefileInputValid ? Theme.error : 
+
+
+
+                                       root.isPagefileSpaceLow ? Theme.warning : 
+
+
+
+                                       Theme.textMuted
+
+
+
+                                font.family: Theme.fontFamily
+
+
+
+                                font.pixelSize: 12
+
+
+
+                                font.bold: !root.isPagefileInputValid || root.isPagefileSpaceLow
+
+
+
+                            }
+
+
+
+                        }
+
+
+
+                    }
+
+
+
+
+
+
+
+                    Row {
+
+
+
+                        anchors.right: parent.right
+
+
+
+                        anchors.rightMargin: 16
+
+
+
+                        anchors.verticalCenter: parent.verticalCenter
+
+
+
+                        spacing: 12
+
+
+
+
+
+
+
+                        // Initial/Min size field
+
+
+
+                        Row {
+
+
+
+                            spacing: 4
+
+
+
+                            anchors.verticalCenter: parent.verticalCenter
+
+
+
+                            Text {
+
+
+
+                                text: qsTr("Min:")
+
+
+
+                                color: Theme.textSecondary
+
+
+
+                                font.family: Theme.fontFamily
+
+
+
+                                font.pixelSize: 10
+
+
+
+                                anchors.verticalCenter: parent.verticalCenter
+
+
+
+                            }
+
+
+
+                            Rectangle {
+
+
+
+                                width: 60
+
+
+
+                                height: 24
+
+
+
+                                color: Theme.cardBg
+
+
+
+                                radius: 4
+
+
+
+                                border.color: !root.isPagefileInputValid ? Theme.error : root.isPagefileSpaceLow ? Theme.warning : (minInput.activeFocus ? Theme.accent : Qt.rgba(Theme.border.r, Theme.border.g, Theme.border.b, 0.4))
+
+
+
+                                border.width: 1
+
+
+
+
+
+
+
+                                TextInput {
+
+
+
+                                    id: minInput
+
+
+
+                                    anchors.fill: parent
+
+
+
+                                    anchors.leftMargin: 6
+
+
+
+                                    anchors.rightMargin: 6
+
+
+
+                                    verticalAlignment: TextInput.AlignVCenter
+
+
+
+                                    color: Theme.textPrimary
+
+
+
+                                    font.family: Theme.fontFamily
+
+
+
+                                    font.pixelSize: 10
+
+
+
+                                    selectByMouse: true
+
+
+
+                                    validator: IntValidator { bottom: 0; top: 99999 }
+
+
+
+                                    
+
+
+
+                                    Binding on text {
+
+
+
+                                        value: optimizerBackend.pagefileMin.toString()
+
+
+
+                                    }
+
+
+
+
+
+
+
+                                    onTextChanged: {
+
+
+
+                                        var val = parseInt(text);
+
+
+
+                                        optimizerBackend.pagefileMin = isNaN(val) ? 0 : val;
+
+
+
+                                    }
+
+
+
+
+
+
+
+                                    Keys.onEscapePressed: {
+
+
+
+                                        root.forceActiveFocus();
+
+
+
+                                    }
+
+
+
+                                    Keys.onReturnPressed: {
+
+
+
+                                        root.forceActiveFocus();
+
+
+
+                                    }
+
+
+
+                                }
+
+
+
+                            }
+
+
+
+                        }
+
+
+
+
+
+
+
+                        // Maximum/Max size field
+
+
+
+                        Row {
+
+
+
+                            spacing: 4
+
+
+
+                            anchors.verticalCenter: parent.verticalCenter
+
+
+
+                            Text {
+
+
+
+                                text: qsTr("Max:")
+
+
+
+                                color: Theme.textSecondary
+
+
+
+                                font.family: Theme.fontFamily
+
+
+
+                                font.pixelSize: 10
+
+
+
+                                anchors.verticalCenter: parent.verticalCenter
+
+
+
+                            }
+
+
+
+                            Rectangle {
+
+
+
+                                width: 60
+
+
+
+                                height: 24
+
+
+
+                                color: Theme.cardBg
+
+
+
+                                radius: 4
+
+
+
+                                border.color: !root.isPagefileInputValid ? Theme.error : root.isPagefileSpaceLow ? Theme.warning : (maxInput.activeFocus ? Theme.accent : Qt.rgba(Theme.border.r, Theme.border.g, Theme.border.b, 0.4))
+
+
+
+                                border.width: 1
+
+
+
+
+
+
+
+                                TextInput {
+
+
+
+                                    id: maxInput
+
+
+
+                                    anchors.fill: parent
+
+
+
+                                    anchors.leftMargin: 6
+
+
+
+                                    anchors.rightMargin: 6
+
+
+
+                                    verticalAlignment: TextInput.AlignVCenter
+
+
+
+                                    color: Theme.textPrimary
+
+
+
+                                    font.family: Theme.fontFamily
+
+
+
+                                    font.pixelSize: 10
+
+
+
+                                    selectByMouse: true
+
+
+
+                                    validator: IntValidator { bottom: 0; top: 99999 }
+
+
+
+                                    
+
+
+
+                                    Binding on text {
+
+
+
+                                        value: optimizerBackend.pagefileMax.toString()
+
+
+
+                                    }
+
+
+
+
+
+
+
+                                    onTextChanged: {
+
+
+
+                                        var val = parseInt(text);
+
+
+
+                                        optimizerBackend.pagefileMax = isNaN(val) ? 0 : val;
+
+
+
+                                    }
+
+
+
+
+
+
+
+                                    Keys.onEscapePressed: {
+
+
+
+                                        root.forceActiveFocus();
+
+
+
+                                    }
+
+
+
+                                    Keys.onReturnPressed: {
+
+
+
+                                        root.forceActiveFocus();
+
+
+
+                                    }
+
+
+
+                                }
+
+
+
+                            }
+
+
+
+                        }
+
+
+
+
+
+
+
+                        // Help/Info question mark icon with hover ToolTip
+
+
+
+                        Item {
+
+
+
+                            width: 24
+
+
+
+                            height: 24
+
+
+
+                            anchors.verticalCenter: parent.verticalCenter
+
+
+
+
+
+
+
+                            Image {
+
+
+
+                                id: helpIconImg
+
+
+
+                                source: "qrc:/MeguPackOptimizer/src/resources/help.svg"
+
+
+
+                                anchors.fill: parent
+
+
+
+                                sourceSize.width: 14
+
+
+
+                                sourceSize.height: 14
+
+
+
+                                anchors.centerIn: parent
+
+
+
+                                visible: false
+
+
+
+                            }
+
+
+
+                            ColorOverlay {
+
+
+
+                                anchors.fill: helpIconImg
+
+
+
+                                source: helpIconImg
+
+
+
+                                color: helpMouseArea.containsMouse ? Theme.accentLight : Theme.textSecondary
+
+
+
+                            }
+
+
+
+                            MouseArea {
+
+
+
+                                id: helpMouseArea
+
+
+
+                                anchors.fill: parent
+
+
+
+                                hoverEnabled: true
+
+
+
+                                cursorShape: Qt.PointingHandCursor
+
+
+
+
+
+
+
+                                ToolTip {
+
+
+
+                                    id: helpTooltip
+
+
+
+                                    visible: helpMouseArea.containsMouse
+
+
+
+                                    delay: 100
+
+
+
+                                    timeout: 10000
+
+
+
+                                    text: qsTr("Recommended values for RAM sizes:\n• 4 GB RAM: Min = 4096, Max = 8192\n• 8 GB RAM: Min = 4096, Max = 8192\n• 16 GB RAM: Min = 4096, Max = 8192\n• 32 GB+ RAM: Min = 2048, Max = 4096")
+
+
+
+                                    
+
+
+
+                                    contentItem: Text {
+
+
+
+                                        text: helpTooltip.text
+
+
+
+                                        color: Theme.textPrimary
+
+
+
+                                        font.family: Theme.fontFamily
+
+
+
+                                        font.pixelSize: 10
+
+
+
+                                        lineHeight: 1.2
+
+
+
+                                    }
+
+
+
+
+
+
+
+                                    background: Rectangle {
+
+
+
+                                        color: Theme.cardBg
+
+
+
+                                        border.color: Theme.accent
+
+
+
+                                        border.width: 1
+
+
+
+                                        radius: 6
+
+
+
+                                    }
+
+
+
+                                }
+
+
+
+                            }
+
+
+
+                        }
+
+
+
+                    }
+
+
+
+                }
+
+                AcrylicPanel {
+
+
+
+                    id: bitlockerPanel
+
+
+
+                    width: (parent.width - 12) / 2
+
+
+
+                    height: 84
+
+
+
+
+
+
+
+                    Row {
+
+
+
+                        anchors.left: parent.left
+
+
+
+                        anchors.leftMargin: 16
+
+
+
+                        anchors.verticalCenter: parent.verticalCenter
+
+
+
+                        spacing: 12
+
+
+
+
+
+
+
+                        Rectangle {
+
+
+
+                            width: 40
+
+
+
+                            height: 40
+
+
+
+                            radius: 10
+
+
+
+                            color: Qt.rgba(Theme.accent.r, Theme.accent.g, Theme.accent.b, 0.15)
+
+
+
+                            anchors.verticalCenter: parent.verticalCenter
+
+
+
+
+
+
+
+                            Item {
+
+
+
+                                width: 20
+
+
+
+                                height: 20
+
+
+
+                                anchors.centerIn: parent
+
+
+
+                                Image {
+
+
+
+                                    id: bitlockerPanel_iconImg
+
+
+
+                                    source: "qrc:/MeguPackOptimizer/src/resources/info.svg"
+
+
+
+                                    anchors.fill: parent
+
+
+
+                                    sourceSize.width: 20
+
+
+
+                                    sourceSize.height: 20
+
+
+
+                                    visible: false
+
+
+
+                                }
+
+
+
+                                ColorOverlay {
+
+
+
+                                    anchors.fill: bitlockerPanel_iconImg
+
+
+
+                                    source: bitlockerPanel_iconImg
+
+
+
+                                    color: Theme.accent
+
+
+
+                                }
+
+
+
+                            }
+
+
+
+                        }
+
+
+
+
+
+
+
+                        Column {
+                    width: parent.parent.parent.width - 240
+
+
+
+                            anchors.verticalCenter: parent.verticalCenter
+
+
+
+                            spacing: 2
+
+
+
+
+
+
+
+                            Row {
+
+
+
+                                spacing: 8
+
+
+
+                                Text {
+
+
+
+                                    text: qsTr("BitLocker Drive Encryption")
+
+
+
+                                    color: Theme.textPrimary
+
+
+
+                                    font.family: Theme.fontFamily
+
+
+
+                                    font.pixelSize: 16
+
+
+
+                                    font.bold: true
+
+
+
+                                    anchors.verticalCenter: parent.verticalCenter
+
+
+
+                                } 
+
+
+
+                                ShowPathButton {
+
+
+
+                                    anchors.verticalCenter: parent.verticalCenter
+
+
+
+                                    onClicked: { optimizerBackend.showPath("bitlocker"); }
+
+
+
+                                }
+
+
+
+                                Rectangle {
+
+
+
+                                    visible: root.bitlockerChanged
+
+
+
+                                    height: 16
+
+
+
+                                    width: selectedTextBitl.contentWidth + 10
+
+
+
+                                    radius: 4
+
+
+
+                                    color: Qt.rgba(Theme.success.r, Theme.success.g, Theme.success.b, 0.15)
+
+
+
+                                    border.color: Theme.success
+
+
+
+                                    border.width: 1
+
+
+
+                                    anchors.verticalCenter: parent.verticalCenter
+
+
+
+                                    Text {
+
+
+
+                                        id: selectedTextBitl
+
+
+
+                                        text: qsTr("Selected for application")
+
+
+
+                                        color: Theme.success
+
+
+
+                                        font.family: Theme.fontFamily
+
+
+
+                                        font.pixelSize: 8
+
+
+
+                                        font.bold: true
+
+
+
+                                        anchors.centerIn: parent
+
+
+
+                                    }
+
+
+
+                                }
+
+
+
+                            }
+
+
+
+
+
+
+
+                            Text {
+                                    width: parent.width
+                                    wrapMode: Text.WordWrap
+                                    elide: Text.ElideRight
+                                    maximumLineCount: 2
+
+
+
+                                text: qsTr("Deactivate the BitLocker background monitoring driver/service or decrypt drive C: to recover I/O throughput.")
+
+
+
+                                color: Theme.textMuted
+
+
+
+                                font.family: Theme.fontFamily
+
+
+
+                                font.pixelSize: 11
+
+
+
+                            }
+
+
+
+                        }
+
+
+
+                    }
+
+
+
+
+
+
+
+                    Row {
+
+
+
+                        anchors.right: parent.right
+
+
+
+                        anchors.rightMargin: 16
+
+
+
+                        anchors.verticalCenter: parent.verticalCenter
+
+
+
+                        spacing: 16
+
+
+
+
+
+
+
+                        ShowPathButton {
+
+
+
+                            id: decryptButton
+
+
+
+                            enabled: optimizerBackend.bitlockerDriveEncrypted
+
+
+
+                            text: qsTr("Decrypt C:")
+
+
+
+                            iconSource: "qrc:/MeguPackOptimizer/src/resources/bolt.svg"
+
+
+
+                            anchors.verticalCenter: parent.verticalCenter
+
+
+
+                            onClicked: {
+
+
+
+                                optimizerBackend.decryptBitLocker();
+
+
+
+                            }
+
+
+
+                        }
+
+
+
+
+
+
+
+                        MeguSwitch {
+
+
+
+                            checked: optimizerBackend.bitlockerActive
+
+
+
+                            anchors.verticalCenter: parent.verticalCenter
+
+
+
+                            onToggled: (isChecked) => {
+
+
+
+                                optimizerBackend.bitlockerActive = isChecked;
+
+
+
+                            }
+
+
+
+                        }
+
+
+
+                    }
+
+
+
+                }
+            }
+
 
 
 
@@ -10781,7 +12683,7 @@ Item {
 
 
                         Column {
-                    width: parent.parent.width - 180
+                    width: parent.parent.parent.width - 240
 
 
 
@@ -10937,7 +12839,7 @@ Item {
 
 
 
-                                font.pixelSize: 12
+                                font.pixelSize: 11
 
 
 
@@ -11410,7 +13312,7 @@ Item {
 
 
                         Column {
-                    width: parent.parent.width - 180
+                    width: parent.parent.parent.width - 240
 
 
 
@@ -11510,7 +13412,7 @@ Item {
 
 
 
-                                font.pixelSize: 12
+                                font.pixelSize: 11
 
 
 
@@ -12015,7 +13917,7 @@ Item {
 
 
                         Column {
-                    width: parent.parent.width - 180
+                    width: parent.parent.parent.width - 240
 
 
 
@@ -12191,7 +14093,7 @@ Item {
 
 
 
-                                font.pixelSize: 12
+                                font.pixelSize: 11
 
 
 
@@ -12532,7 +14434,7 @@ Item {
 
 
                         Column {
-                    width: parent.parent.width - 180
+                    width: parent.parent.parent.width - 240
 
 
 
@@ -12708,7 +14610,7 @@ Item {
 
 
 
-                                font.pixelSize: 12
+                                font.pixelSize: 11
 
 
 
@@ -13133,7 +15035,7 @@ Item {
 
 
                         Column {
-                    width: parent.parent.width - 180
+                    width: parent.parent.parent.width - 240
 
 
 
@@ -13309,7 +15211,7 @@ Item {
 
 
 
-                                font.pixelSize: 12
+                                font.pixelSize: 11
 
 
 
@@ -13554,7 +15456,7 @@ Item {
 
 
                         Column {
-                    width: parent.parent.width - 180
+                    width: parent.parent.parent.width - 240
 
 
 
@@ -13730,7 +15632,7 @@ Item {
 
 
 
-                                font.pixelSize: 12
+                                font.pixelSize: 11
 
 
 
@@ -13987,7 +15889,7 @@ Item {
 
 
                         Column {
-                    width: parent.parent.width - 180
+                    width: parent.parent.parent.width - 240
 
 
 
@@ -14163,7 +16065,7 @@ Item {
 
 
 
-                                font.pixelSize: 12
+                                font.pixelSize: 11
 
 
 
@@ -14448,7 +16350,7 @@ Item {
 
 
                         Column {
-                    width: parent.parent.width - 180
+                    width: parent.parent.parent.width - 240
 
 
 
@@ -14624,7 +16526,7 @@ Item {
 
 
 
-                                font.pixelSize: 12
+                                font.pixelSize: 11
 
 
 
@@ -14873,7 +16775,7 @@ Item {
 
 
                         Column {
-                    width: parent.parent.width - 180
+                    width: parent.parent.parent.width - 240
 
 
 
@@ -15049,7 +16951,7 @@ Item {
 
 
 
-                                font.pixelSize: 12
+                                font.pixelSize: 11
 
 
 
@@ -15294,7 +17196,7 @@ Item {
 
 
                         Column {
-                    width: parent.parent.width - 180
+                    width: parent.parent.parent.width - 240
 
 
 
@@ -15470,7 +17372,7 @@ Item {
 
 
 
-                                font.pixelSize: 12
+                                font.pixelSize: 11
 
 
 
@@ -21063,7 +22965,7 @@ Item {
 
 
                         Column {
-                    width: parent.parent.width - 180
+                    width: parent.parent.parent.width - 240
 
 
 
@@ -21239,7 +23141,7 @@ Item {
 
 
 
-                                font.pixelSize: 12
+                                font.pixelSize: 11
 
 
 
@@ -21756,7 +23658,7 @@ Item {
 
 
                         Column {
-                    width: parent.parent.width - 180
+                    width: parent.parent.parent.width - 240
 
 
 
@@ -21932,7 +23834,7 @@ Item {
 
 
 
-                                font.pixelSize: 12
+                                font.pixelSize: 11
 
 
 
@@ -21973,62 +23875,6 @@ Item {
 
 
 
-
-
-
-                        MeguSwitch {
-
-
-
-                            checked: root.notificationsChecked
-
-
-
-                            indeterminate: root.notificationsIndeterminate
-
-
-
-                            anchors.verticalCenter: parent.verticalCenter
-
-
-
-                            onToggled: (isChecked) => {
-
-
-
-                                optimizerBackend.notificationsActive = isChecked;
-
-
-
-                                optimizerBackend.notifGlobalActive = isChecked;
-
-
-
-                                optimizerBackend.notifAppActive = isChecked;
-
-
-
-                                optimizerBackend.notifSoundsActive = isChecked;
-
-
-
-                                optimizerBackend.notifLockscreenActive = isChecked;
-
-
-
-                            }
-
-
-
-                        }
-
-
-
-
-
-
-
-                        // Arrow button that slides right on hover & opens sidebar drawer for notifications config
 
 
 
@@ -22193,6 +24039,62 @@ Item {
 
 
                                 }
+
+
+
+                            }
+
+
+
+                        }
+
+
+
+
+
+
+
+                        // Arrow button that slides right on hover & opens sidebar drawer for notifications config
+
+
+
+                        MeguSwitch {
+
+
+
+                            checked: root.notificationsChecked
+
+
+
+                            indeterminate: root.notificationsIndeterminate
+
+
+
+                            anchors.verticalCenter: parent.verticalCenter
+
+
+
+                            onToggled: (isChecked) => {
+
+
+
+                                optimizerBackend.notificationsActive = isChecked;
+
+
+
+                                optimizerBackend.notifGlobalActive = isChecked;
+
+
+
+                                optimizerBackend.notifAppActive = isChecked;
+
+
+
+                                optimizerBackend.notifSoundsActive = isChecked;
+
+
+
+                                optimizerBackend.notifLockscreenActive = isChecked;
 
 
 
@@ -22459,7 +24361,7 @@ Item {
 
 
                                 Column {
-                    width: parent.parent.width - 180
+                    width: parent.parent.parent.width - 240
 
 
 
@@ -22619,7 +24521,7 @@ Item {
 
 
 
-                                        font.pixelSize: 12
+                                        font.pixelSize: 11
 
 
 
@@ -23040,7 +24942,7 @@ Item {
 
 
                                 Column {
-                    width: parent.parent.width - 180
+                    width: parent.parent.parent.width - 240
 
 
 
@@ -23216,7 +25118,7 @@ Item {
 
 
 
-                                        font.pixelSize: 12
+                                        font.pixelSize: 11
 
 
 
@@ -23525,7 +25427,7 @@ Item {
 
 
                                 Column {
-                    width: parent.parent.width - 180
+                    width: parent.parent.parent.width - 240
 
 
 
@@ -23701,7 +25603,7 @@ Item {
 
 
 
-                                        font.pixelSize: 12
+                                        font.pixelSize: 11
 
 
 
@@ -24194,7 +26096,7 @@ Item {
 
 
                                 Column {
-                    width: parent.parent.width - 180
+                    width: parent.parent.parent.width - 240
 
 
 
@@ -24370,7 +26272,7 @@ Item {
 
 
 
-                                        font.pixelSize: 12
+                                        font.pixelSize: 11
 
 
 
@@ -24851,7 +26753,7 @@ Item {
 
 
                                 Column {
-                    width: parent.parent.width - 180
+                    width: parent.parent.parent.width - 240
 
 
 
@@ -25083,7 +26985,7 @@ Item {
 
 
 
-                                        font.pixelSize: 12
+                                        font.pixelSize: 11
 
 
 
@@ -25500,7 +27402,7 @@ Item {
 
 
                                 Column {
-                    width: parent.parent.width - 180
+                    width: parent.parent.parent.width - 240
 
 
 
@@ -25660,7 +27562,7 @@ Item {
 
 
 
-                                        font.pixelSize: 12
+                                        font.pixelSize: 11
 
 
 
@@ -26077,7 +27979,7 @@ Item {
 
 
                                 Column {
-                    width: parent.parent.width - 180
+                    width: parent.parent.parent.width - 240
 
 
 
@@ -26237,7 +28139,7 @@ Item {
 
 
 
-                                        font.pixelSize: 12
+                                        font.pixelSize: 11
 
 
 
@@ -26582,427 +28484,15 @@ Item {
 
 
 
+
+
+                // Fast Startup Card
+                // Fast Startup Card
             Grid {
                 columns: 2
                 spacing: 12
                 width: parent.width
 
-                AcrylicPanel {
-
-
-
-                    id: hibernationPanel
-
-
-
-                    width: (parent.width - 12) / 2
-
-
-
-                    height: 84
-
-
-
-
-
-
-
-                    Row {
-
-
-
-                        anchors.left: parent.left
-
-
-
-                        anchors.leftMargin: 16
-
-
-
-                        anchors.verticalCenter: parent.verticalCenter
-
-
-
-                        spacing: 12
-
-
-
-
-
-
-
-                        Rectangle {
-
-
-
-                            width: 40
-
-
-
-                            height: 40
-
-
-
-                            radius: 10
-
-
-
-                            color: Qt.rgba(Theme.accent.r, Theme.accent.g, Theme.accent.b, 0.15)
-
-
-
-                            anchors.verticalCenter: parent.verticalCenter
-
-
-
-
-
-
-
-                            Item {
-
-
-
-                                width: 20
-
-
-
-                                height: 20
-
-
-
-                                anchors.centerIn: parent
-
-
-
-                                Image {
-
-
-
-                                    id: hibernationPanel_iconImg
-
-
-
-                                    source: "qrc:/MeguPackOptimizer/src/resources/folder.svg"
-
-
-
-                                    anchors.fill: parent
-
-
-
-                                    sourceSize.width: 20
-
-
-
-                                    sourceSize.height: 20
-
-
-
-                                    visible: false
-
-
-
-                                }
-
-
-
-                                ColorOverlay {
-
-
-
-                                    anchors.fill: hibernationPanel_iconImg
-
-
-
-                                    source: hibernationPanel_iconImg
-
-
-
-                                    color: Theme.accent
-
-
-
-                                }
-
-
-
-                            }
-
-
-
-                        }
-
-
-
-
-
-
-
-                        Column {
-                    width: parent.parent.width - 180
-
-
-
-                            anchors.verticalCenter: parent.verticalCenter
-
-
-
-                            spacing: 2
-
-
-
-
-
-
-
-                            Row {
-
-
-
-                                spacing: 8
-
-
-
-                                Text {
-
-
-
-                                    text: qsTr("System Hibernation")
-
-
-
-                                    color: Theme.textPrimary
-
-
-
-                                    font.family: Theme.fontFamily
-
-
-
-                                    font.pixelSize: 16
-
-
-
-                                    font.bold: true
-
-
-
-                                    anchors.verticalCenter: parent.verticalCenter
-
-
-
-                                } 
-
-
-
-                                ShowPathButton {
-
-
-
-                                    anchors.verticalCenter: parent.verticalCenter
-
-
-
-                                    onClicked: { optimizerBackend.showPath("hibernation"); }
-
-
-
-                                }
-
-
-
-                                Rectangle {
-
-
-
-                                    visible: root.hibernationChanged
-
-
-
-                                    height: 16
-
-
-
-                                    width: selectedTextHibern.contentWidth + 10
-
-
-
-                                    radius: 4
-
-
-
-                                    color: Qt.rgba(Theme.success.r, Theme.success.g, Theme.success.b, 0.15)
-
-
-
-                                    border.color: Theme.success
-
-
-
-                                    border.width: 1
-
-
-
-                                    anchors.verticalCenter: parent.verticalCenter
-
-
-
-                                    Text {
-
-
-
-                                        id: selectedTextHibern
-
-
-
-                                        text: qsTr("Selected for application")
-
-
-
-                                        color: Theme.success
-
-
-
-                                        font.family: Theme.fontFamily
-
-
-
-                                        font.pixelSize: 8
-
-
-
-                                        font.bold: true
-
-
-
-                                        anchors.centerIn: parent
-
-
-
-                                    }
-
-
-
-                                }
-
-
-
-                            }
-
-
-
-
-
-
-
-                            Text {
-                                    width: parent.width
-                                    wrapMode: Text.WordWrap
-                                    elide: Text.ElideRight
-                                    maximumLineCount: 2
-
-
-
-                                text: qsTr("Enables or disables system hibernation to clean storage drive space and optimize SSD lifetime.")
-
-
-
-                                color: Theme.textMuted
-
-
-
-                                font.family: Theme.fontFamily
-
-
-
-                                font.pixelSize: 12
-
-
-
-                            }
-
-
-
-                        }
-
-
-
-                    }
-
-
-
-
-
-
-
-                    Row {
-                        anchors.right: parent.right
-                        anchors.rightMargin: 16
-                        anchors.verticalCenter: parent.verticalCenter
-                        spacing: 16
-
-                        // Hibernation Size Button
-                        Rectangle {
-                            id: hiberSizeBtn
-                            width: 52
-                            height: 28
-                            radius: 6
-                            color: isEnabled ? (hiberSizeMouse.containsMouse ? "#1AFFFFFF" : "#0AFFFFFF") : "#03FFFFFF"
-                            border.color: isEnabled ? (hiberSizeMouse.containsMouse ? Theme.accent : Theme.border) : Theme.border
-                            border.width: 1
-                            opacity: isEnabled ? 1.0 : 0.4
-                            anchors.verticalCenter: parent.verticalCenter
-                            
-                            property bool isEnabled: optimizerBackend.hibernationActive
-
-                            Behavior on color { ColorAnimation { duration: Theme.animFast } }
-                            Behavior on border.color { ColorAnimation { duration: Theme.animFast } }
-                            Behavior on opacity { NumberAnimation { duration: Theme.animFast } }
-
-                            Text {
-                                anchors.centerIn: parent
-                                text: hiberSizeBtn.isEnabled ? (optimizerBackend.hibernationSize + "%") : "0%"
-                                color: hiberSizeBtn.isEnabled ? Theme.textPrimary : Theme.textMuted
-                                font.family: Theme.fontFamily
-                                font.pixelSize: 11
-                                font.bold: true
-                            }
-
-                            MouseArea {
-                                id: hiberSizeMouse
-                                anchors.fill: parent
-                                hoverEnabled: true
-                                enabled: hiberSizeBtn.isEnabled
-                                cursorShape: enabled ? Qt.PointingHandCursor : Qt.ArrowCursor
-                                onClicked: {
-                                    var current = optimizerBackend.hibernationSize;
-                                    var next = 40;
-                                    if (current === 40) next = 50;
-                                    else if (current === 50) next = 75;
-                                    else if (current === 75) next = 100;
-                                    else next = 40;
-                                    optimizerBackend.hibernationSize = next;
-                                }
-                            }
-                        }
-
-                        MeguSwitch {
-                            checked: optimizerBackend.hibernationActive
-                            anchors.verticalCenter: parent.verticalCenter
-                            onToggled: (isChecked) => {
-                                optimizerBackend.hibernationActive = isChecked;
-                            }
-                        }
-                    }
-
-
-
-                }
-
-
-                // Fast Startup Card
-                // Fast Startup Card
                 AcrylicPanel {
                     id: fastStartupPanel
                     width: (parent.width - 12) / 2
@@ -27044,7 +28534,7 @@ Item {
                         }
 
                         Column {
-                    width: parent.parent.width - 180
+                    width: parent.parent.parent.width - 240
                             anchors.verticalCenter: parent.verticalCenter
                             spacing: 2
 
@@ -27097,7 +28587,7 @@ Item {
                                 text: qsTr("Allows the device to open faster after a shutdown, reducing up to 50% of boot-time")
                                 color: Theme.textMuted
                                 font.family: Theme.fontFamily
-                                font.pixelSize: 12
+                                font.pixelSize: 11
                                 visible: optimizerBackend.hibernationActive
                             }
 
@@ -27222,1036 +28712,6 @@ Item {
 
 
 
-                AcrylicPanel {
-
-
-
-                    id: pageFilePanel
-
-
-
-                    width: (parent.width - 12) / 2
-
-
-
-                    height: 84
-
-
-
-                    visible: root.currentSection === "core"
-
-
-
-
-
-
-
-                    Row {
-
-
-
-                        anchors.left: parent.left
-
-
-
-                        anchors.leftMargin: 16
-
-
-
-                        anchors.verticalCenter: parent.verticalCenter
-
-
-
-                        spacing: 12
-
-
-
-
-
-
-
-                        // Rounded square badge
-
-
-
-                        Rectangle {
-
-
-
-                            width: 40
-
-
-
-                            height: 40
-
-
-
-                            radius: 10
-
-
-
-                            color: Qt.rgba(0.9, 0.6, 0.1, 0.15)
-
-
-
-                            anchors.verticalCenter: parent.verticalCenter
-
-
-
-
-
-
-
-                            Item {
-
-
-
-                                width: 20
-
-
-
-                                height: 20
-
-
-
-                                anchors.centerIn: parent
-
-
-
-
-
-
-
-                                Image {
-
-
-
-                                    id: ramIconImg
-
-
-
-                                    source: "qrc:/MeguPackOptimizer/src/resources/ram.svg"
-
-
-
-                                    anchors.fill: parent
-
-
-
-                                    sourceSize.width: 20
-
-
-
-                                    sourceSize.height: 20
-
-
-
-                                    visible: false
-
-
-
-                                }
-
-
-
-                                ColorOverlay {
-
-
-
-                                    anchors.fill: ramIconImg
-
-
-
-                                    source: ramIconImg
-
-
-
-                                    color: "#FFA000"
-
-
-
-                                }
-
-
-
-                            }
-
-
-
-                        }
-
-
-
-
-
-
-
-                        Column {
-                    width: parent.parent.width - 180
-
-
-
-                            anchors.verticalCenter: parent.verticalCenter
-
-
-
-                            spacing: 2
-
-
-
-
-
-
-
-                            Row {
-
-
-
-                                spacing: 8
-
-
-
-                                Text {
-
-
-
-                                    text: qsTr("Page File")
-
-
-
-                                    color: Theme.textPrimary
-
-
-
-                                    font.family: Theme.fontFamily
-
-
-
-                                    font.pixelSize: 16
-
-
-
-                                    font.bold: true
-
-
-
-                                    anchors.verticalCenter: parent.verticalCenter
-
-
-
-                                }
-
-
-
-                                ShowPathButton {
-
-
-
-                                    anchors.verticalCenter: parent.verticalCenter
-
-
-
-                                    onClicked: { optimizerBackend.showPath("pagefile"); }
-
-
-
-                                }
-
-
-
-                                Rectangle {
-
-
-
-                                    visible: root.pagefileChanged
-
-
-
-                                    height: 16
-
-
-
-                                    width: selectedTextPagefile.contentWidth + 10
-
-
-
-                                    radius: 4
-
-
-
-                                    color: Qt.rgba(Theme.success.r, Theme.success.g, Theme.success.b, 0.15)
-
-
-
-                                    border.color: Theme.success
-
-
-
-                                    border.width: 1
-
-
-
-                                    anchors.verticalCenter: parent.verticalCenter
-
-
-
-                                    Text {
-
-
-
-                                        id: selectedTextPagefile
-
-
-
-                                        text: qsTr("Selected for application")
-
-
-
-                                        color: Theme.success
-
-
-
-                                        font.family: Theme.fontFamily
-
-
-
-                                        font.pixelSize: 8
-
-
-
-                                        font.bold: true
-
-
-
-                                        anchors.centerIn: parent
-
-
-
-                                    }
-
-
-
-                                }
-
-
-
-                            }
-
-
-
-
-
-
-
-                            Text {
-
-
-
-                                text: !root.isPagefileInputValid ? 
-
-
-
-                                          (optimizerBackend.pagefileMin > optimizerBackend.pagefileMax ? 
-
-
-
-                                              qsTr("Warning: Minimum size cannot be greater than maximum size!") : 
-
-
-
-                                              (optimizerBackend.pagefileMin < 1024 || optimizerBackend.pagefileMax < 1024 || optimizerBackend.pagefileMin > 99999 || optimizerBackend.pagefileMax > 99999) ?
-
-
-
-                                                  qsTr("Warning: Size must be between 1024 and 99999 MB!") :
-
-
-
-                                                  qsTr("Error: Not enough disk space! C: drive will be overfilled.")) :
-
-
-
-                                      root.isPagefileSpaceLow ? 
-
-
-
-                                          qsTr("Warning: C: drive will have less than 10 GB of free space left. Continue anyway?") :
-
-
-
-                                          qsTr("Configure system virtual memory limits (initial/maximum size in MB).")
-
-
-
-                                color: !root.isPagefileInputValid ? Theme.error : 
-
-
-
-                                       root.isPagefileSpaceLow ? Theme.warning : 
-
-
-
-                                       Theme.textMuted
-
-
-
-                                font.family: Theme.fontFamily
-
-
-
-                                font.pixelSize: 12
-
-
-
-                                font.bold: !root.isPagefileInputValid || root.isPagefileSpaceLow
-
-
-
-                            }
-
-
-
-                        }
-
-
-
-                    }
-
-
-
-
-
-
-
-                    Row {
-
-
-
-                        anchors.right: parent.right
-
-
-
-                        anchors.rightMargin: 16
-
-
-
-                        anchors.verticalCenter: parent.verticalCenter
-
-
-
-                        spacing: 12
-
-
-
-
-
-
-
-                        // Initial/Min size field
-
-
-
-                        Row {
-
-
-
-                            spacing: 4
-
-
-
-                            anchors.verticalCenter: parent.verticalCenter
-
-
-
-                            Text {
-
-
-
-                                text: qsTr("Min:")
-
-
-
-                                color: Theme.textSecondary
-
-
-
-                                font.family: Theme.fontFamily
-
-
-
-                                font.pixelSize: 10
-
-
-
-                                anchors.verticalCenter: parent.verticalCenter
-
-
-
-                            }
-
-
-
-                            Rectangle {
-
-
-
-                                width: 60
-
-
-
-                                height: 24
-
-
-
-                                color: Theme.cardBg
-
-
-
-                                radius: 4
-
-
-
-                                border.color: !root.isPagefileInputValid ? Theme.error : root.isPagefileSpaceLow ? Theme.warning : (minInput.activeFocus ? Theme.accent : Qt.rgba(Theme.border.r, Theme.border.g, Theme.border.b, 0.4))
-
-
-
-                                border.width: 1
-
-
-
-
-
-
-
-                                TextInput {
-
-
-
-                                    id: minInput
-
-
-
-                                    anchors.fill: parent
-
-
-
-                                    anchors.leftMargin: 6
-
-
-
-                                    anchors.rightMargin: 6
-
-
-
-                                    verticalAlignment: TextInput.AlignVCenter
-
-
-
-                                    color: Theme.textPrimary
-
-
-
-                                    font.family: Theme.fontFamily
-
-
-
-                                    font.pixelSize: 10
-
-
-
-                                    selectByMouse: true
-
-
-
-                                    validator: IntValidator { bottom: 0; top: 99999 }
-
-
-
-                                    
-
-
-
-                                    Binding on text {
-
-
-
-                                        value: optimizerBackend.pagefileMin.toString()
-
-
-
-                                    }
-
-
-
-
-
-
-
-                                    onTextChanged: {
-
-
-
-                                        var val = parseInt(text);
-
-
-
-                                        optimizerBackend.pagefileMin = isNaN(val) ? 0 : val;
-
-
-
-                                    }
-
-
-
-
-
-
-
-                                    Keys.onEscapePressed: {
-
-
-
-                                        root.forceActiveFocus();
-
-
-
-                                    }
-
-
-
-                                    Keys.onReturnPressed: {
-
-
-
-                                        root.forceActiveFocus();
-
-
-
-                                    }
-
-
-
-                                }
-
-
-
-                            }
-
-
-
-                        }
-
-
-
-
-
-
-
-                        // Maximum/Max size field
-
-
-
-                        Row {
-
-
-
-                            spacing: 4
-
-
-
-                            anchors.verticalCenter: parent.verticalCenter
-
-
-
-                            Text {
-
-
-
-                                text: qsTr("Max:")
-
-
-
-                                color: Theme.textSecondary
-
-
-
-                                font.family: Theme.fontFamily
-
-
-
-                                font.pixelSize: 10
-
-
-
-                                anchors.verticalCenter: parent.verticalCenter
-
-
-
-                            }
-
-
-
-                            Rectangle {
-
-
-
-                                width: 60
-
-
-
-                                height: 24
-
-
-
-                                color: Theme.cardBg
-
-
-
-                                radius: 4
-
-
-
-                                border.color: !root.isPagefileInputValid ? Theme.error : root.isPagefileSpaceLow ? Theme.warning : (maxInput.activeFocus ? Theme.accent : Qt.rgba(Theme.border.r, Theme.border.g, Theme.border.b, 0.4))
-
-
-
-                                border.width: 1
-
-
-
-
-
-
-
-                                TextInput {
-
-
-
-                                    id: maxInput
-
-
-
-                                    anchors.fill: parent
-
-
-
-                                    anchors.leftMargin: 6
-
-
-
-                                    anchors.rightMargin: 6
-
-
-
-                                    verticalAlignment: TextInput.AlignVCenter
-
-
-
-                                    color: Theme.textPrimary
-
-
-
-                                    font.family: Theme.fontFamily
-
-
-
-                                    font.pixelSize: 10
-
-
-
-                                    selectByMouse: true
-
-
-
-                                    validator: IntValidator { bottom: 0; top: 99999 }
-
-
-
-                                    
-
-
-
-                                    Binding on text {
-
-
-
-                                        value: optimizerBackend.pagefileMax.toString()
-
-
-
-                                    }
-
-
-
-
-
-
-
-                                    onTextChanged: {
-
-
-
-                                        var val = parseInt(text);
-
-
-
-                                        optimizerBackend.pagefileMax = isNaN(val) ? 0 : val;
-
-
-
-                                    }
-
-
-
-
-
-
-
-                                    Keys.onEscapePressed: {
-
-
-
-                                        root.forceActiveFocus();
-
-
-
-                                    }
-
-
-
-                                    Keys.onReturnPressed: {
-
-
-
-                                        root.forceActiveFocus();
-
-
-
-                                    }
-
-
-
-                                }
-
-
-
-                            }
-
-
-
-                        }
-
-
-
-
-
-
-
-                        // Help/Info question mark icon with hover ToolTip
-
-
-
-                        Item {
-
-
-
-                            width: 24
-
-
-
-                            height: 24
-
-
-
-                            anchors.verticalCenter: parent.verticalCenter
-
-
-
-
-
-
-
-                            Image {
-
-
-
-                                id: helpIconImg
-
-
-
-                                source: "qrc:/MeguPackOptimizer/src/resources/help.svg"
-
-
-
-                                anchors.fill: parent
-
-
-
-                                sourceSize.width: 14
-
-
-
-                                sourceSize.height: 14
-
-
-
-                                anchors.centerIn: parent
-
-
-
-                                visible: false
-
-
-
-                            }
-
-
-
-                            ColorOverlay {
-
-
-
-                                anchors.fill: helpIconImg
-
-
-
-                                source: helpIconImg
-
-
-
-                                color: helpMouseArea.containsMouse ? Theme.accentLight : Theme.textSecondary
-
-
-
-                            }
-
-
-
-                            MouseArea {
-
-
-
-                                id: helpMouseArea
-
-
-
-                                anchors.fill: parent
-
-
-
-                                hoverEnabled: true
-
-
-
-                                cursorShape: Qt.PointingHandCursor
-
-
-
-
-
-
-
-                                ToolTip {
-
-
-
-                                    id: helpTooltip
-
-
-
-                                    visible: helpMouseArea.containsMouse
-
-
-
-                                    delay: 100
-
-
-
-                                    timeout: 10000
-
-
-
-                                    text: qsTr("Recommended values for RAM sizes:\n• 4 GB RAM: Min = 4096, Max = 8192\n• 8 GB RAM: Min = 4096, Max = 8192\n• 16 GB RAM: Min = 4096, Max = 8192\n• 32 GB+ RAM: Min = 2048, Max = 4096")
-
-
-
-                                    
-
-
-
-                                    contentItem: Text {
-
-
-
-                                        text: helpTooltip.text
-
-
-
-                                        color: Theme.textPrimary
-
-
-
-                                        font.family: Theme.fontFamily
-
-
-
-                                        font.pixelSize: 10
-
-
-
-                                        lineHeight: 1.2
-
-
-
-                                    }
-
-
-
-
-
-
-
-                                    background: Rectangle {
-
-
-
-                                        color: Theme.cardBg
-
-
-
-                                        border.color: Theme.accent
-
-
-
-                                        border.width: 1
-
-
-
-                                        radius: 6
-
-
-
-                                    }
-
-
-
-                                }
-
-
-
-                            }
-
-
-
-                        }
-
-
-
-                    }
-
-
-
-                }
 
 
 
@@ -28263,456 +28723,6 @@ Item {
 
 
 
-                AcrylicPanel {
-
-
-
-                    id: bitlockerPanel
-
-
-
-                    width: (parent.width - 12) / 2
-
-
-
-                    height: 84
-
-
-
-
-
-
-
-                    Row {
-
-
-
-                        anchors.left: parent.left
-
-
-
-                        anchors.leftMargin: 16
-
-
-
-                        anchors.verticalCenter: parent.verticalCenter
-
-
-
-                        spacing: 12
-
-
-
-
-
-
-
-                        Rectangle {
-
-
-
-                            width: 40
-
-
-
-                            height: 40
-
-
-
-                            radius: 10
-
-
-
-                            color: Qt.rgba(Theme.accent.r, Theme.accent.g, Theme.accent.b, 0.15)
-
-
-
-                            anchors.verticalCenter: parent.verticalCenter
-
-
-
-
-
-
-
-                            Item {
-
-
-
-                                width: 20
-
-
-
-                                height: 20
-
-
-
-                                anchors.centerIn: parent
-
-
-
-                                Image {
-
-
-
-                                    id: bitlockerPanel_iconImg
-
-
-
-                                    source: "qrc:/MeguPackOptimizer/src/resources/info.svg"
-
-
-
-                                    anchors.fill: parent
-
-
-
-                                    sourceSize.width: 20
-
-
-
-                                    sourceSize.height: 20
-
-
-
-                                    visible: false
-
-
-
-                                }
-
-
-
-                                ColorOverlay {
-
-
-
-                                    anchors.fill: bitlockerPanel_iconImg
-
-
-
-                                    source: bitlockerPanel_iconImg
-
-
-
-                                    color: Theme.accent
-
-
-
-                                }
-
-
-
-                            }
-
-
-
-                        }
-
-
-
-
-
-
-
-                        Column {
-                    width: parent.parent.width - 180
-
-
-
-                            anchors.verticalCenter: parent.verticalCenter
-
-
-
-                            spacing: 2
-
-
-
-
-
-
-
-                            Row {
-
-
-
-                                spacing: 8
-
-
-
-                                Text {
-
-
-
-                                    text: qsTr("BitLocker Drive Encryption")
-
-
-
-                                    color: Theme.textPrimary
-
-
-
-                                    font.family: Theme.fontFamily
-
-
-
-                                    font.pixelSize: 16
-
-
-
-                                    font.bold: true
-
-
-
-                                    anchors.verticalCenter: parent.verticalCenter
-
-
-
-                                } 
-
-
-
-                                ShowPathButton {
-
-
-
-                                    anchors.verticalCenter: parent.verticalCenter
-
-
-
-                                    onClicked: { optimizerBackend.showPath("bitlocker"); }
-
-
-
-                                }
-
-
-
-                                Rectangle {
-
-
-
-                                    visible: root.bitlockerChanged
-
-
-
-                                    height: 16
-
-
-
-                                    width: selectedTextBitl.contentWidth + 10
-
-
-
-                                    radius: 4
-
-
-
-                                    color: Qt.rgba(Theme.success.r, Theme.success.g, Theme.success.b, 0.15)
-
-
-
-                                    border.color: Theme.success
-
-
-
-                                    border.width: 1
-
-
-
-                                    anchors.verticalCenter: parent.verticalCenter
-
-
-
-                                    Text {
-
-
-
-                                        id: selectedTextBitl
-
-
-
-                                        text: qsTr("Selected for application")
-
-
-
-                                        color: Theme.success
-
-
-
-                                        font.family: Theme.fontFamily
-
-
-
-                                        font.pixelSize: 8
-
-
-
-                                        font.bold: true
-
-
-
-                                        anchors.centerIn: parent
-
-
-
-                                    }
-
-
-
-                                }
-
-
-
-                            }
-
-
-
-
-
-
-
-                            Text {
-                                    width: parent.width
-                                    wrapMode: Text.WordWrap
-                                    elide: Text.ElideRight
-                                    maximumLineCount: 2
-
-
-
-                                text: qsTr("Deactivate the BitLocker background monitoring driver/service or decrypt drive C: to recover I/O throughput.")
-
-
-
-                                color: Theme.textMuted
-
-
-
-                                font.family: Theme.fontFamily
-
-
-
-                                font.pixelSize: 12
-
-
-
-                            }
-
-
-
-                        }
-
-
-
-                    }
-
-
-
-
-
-
-
-                    Row {
-
-
-
-                        anchors.right: parent.right
-
-
-
-                        anchors.rightMargin: 16
-
-
-
-                        anchors.verticalCenter: parent.verticalCenter
-
-
-
-                        spacing: 16
-
-
-
-
-
-
-
-                        ShowPathButton {
-
-
-
-                            id: decryptButton
-
-
-
-                            enabled: optimizerBackend.bitlockerDriveEncrypted
-
-
-
-                            text: qsTr("Decrypt C:")
-
-
-
-                            iconSource: "qrc:/MeguPackOptimizer/src/resources/bolt.svg"
-
-
-
-                            anchors.verticalCenter: parent.verticalCenter
-
-
-
-                            onClicked: {
-
-
-
-                                optimizerBackend.decryptBitLocker();
-
-
-
-                            }
-
-
-
-                        }
-
-
-
-
-
-
-
-                        MeguSwitch {
-
-
-
-                            checked: optimizerBackend.bitlockerActive
-
-
-
-                            anchors.verticalCenter: parent.verticalCenter
-
-
-
-                            onToggled: (isChecked) => {
-
-
-
-                                optimizerBackend.bitlockerActive = isChecked;
-
-
-
-                            }
-
-
-
-                        }
-
-
-
-                    }
-
-
-
-                }
 
 
 
@@ -28881,7 +28891,7 @@ Item {
 
 
                         Column {
-                    width: parent.parent.width - 180
+                    width: parent.parent.parent.width - 240
 
 
 
@@ -29129,7 +29139,7 @@ Item {
 
 
 
-                                font.pixelSize: 12
+                                font.pixelSize: 11
 
 
 
@@ -29562,7 +29572,7 @@ Item {
 
 
                         Column {
-                    width: parent.parent.width - 180
+                    width: parent.parent.parent.width - 240
 
 
 
@@ -29738,7 +29748,7 @@ Item {
 
 
 
-                                font.pixelSize: 12
+                                font.pixelSize: 11
 
 
 
@@ -30403,7 +30413,7 @@ Item {
 
 
                         Column {
-                    width: parent.parent.width - 180
+                    width: parent.parent.parent.width - 240
 
 
 
@@ -30579,7 +30589,7 @@ Item {
 
 
 
-                                font.pixelSize: 12
+                                font.pixelSize: 11
 
 
 
@@ -31004,7 +31014,7 @@ Item {
 
 
                         Column {
-                    width: parent.parent.width - 180
+                    width: parent.parent.parent.width - 240
 
 
 
@@ -31180,7 +31190,7 @@ Item {
 
 
 
-                                font.pixelSize: 12
+                                font.pixelSize: 11
 
 
 
@@ -31421,7 +31431,7 @@ Item {
 
 
                         Column {
-                    width: parent.parent.width - 180
+                    width: parent.parent.parent.width - 240
 
 
 
@@ -31505,7 +31515,7 @@ Item {
 
 
 
-                                font.pixelSize: 12
+                                font.pixelSize: 11
 
 
 
@@ -32024,7 +32034,7 @@ Item {
 
 
                         Column {
-                    width: parent.parent.width - 180
+                    width: parent.parent.parent.width - 240
 
 
 
@@ -32092,7 +32102,7 @@ Item {
 
 
 
-                                font.pixelSize: 12
+                                font.pixelSize: 11
 
 
 
@@ -32488,7 +32498,7 @@ Item {
 
 
                         Column {
-                    width: parent.parent.width - 180
+                    width: parent.parent.parent.width - 240
 
 
 
@@ -32556,7 +32566,7 @@ Item {
 
 
 
-                                font.pixelSize: 12
+                                font.pixelSize: 11
 
 
 
