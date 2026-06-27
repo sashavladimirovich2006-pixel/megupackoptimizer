@@ -16,25 +16,28 @@ Item {
     implicitHeight: Math.max(28, labelText.visible ? labelText.height + 4 : 22)
     
     opacity: enabled ? 1.0 : 0.4
+    Behavior on opacity { NumberAnimation { duration: Theme.animFast } }
+    
+    // Track and Thumb (The Switch)
     // Soft outer neon glow behind the track when checked/active (subtle tech aura)
     Rectangle {
         anchors.centerIn: track
-        width: track.width + 4
-        height: track.height + 4
-        radius: track.radius + 2
+        width: track.width + 6
+        height: track.height + 6
+        radius: track.radius + 3
         color: Theme.accent
-        opacity: (control.checked && !control.steamStyle) ? (mouseArea.containsMouse ? 0.22 : 0.1) : 0.0
+        opacity: (control.checked && !control.steamStyle) ? (mouseArea.containsMouse ? 0.3 : 0.15) : 0.0
         visible: opacity > 0.0
-        Behavior on opacity { NumberAnimation { duration: 150; easing.type: Easing.OutQuad } }
+        Behavior on opacity { NumberAnimation { duration: 180; easing.type: Easing.OutQuad } }
     }
 
     Rectangle {
         id: track
-        width: 42
-        height: 18
+        width: 40
+        height: 20
         anchors.left: parent.left
         anchors.verticalCenter: parent.verticalCenter
-        radius: 3
+        radius: 10
         
         color: {
             if (control.steamStyle) {
@@ -53,12 +56,12 @@ Item {
         Behavior on color { ColorAnimation { duration: Theme.animFast } }
         Behavior on border.color { ColorAnimation { duration: Theme.animFast } }
         
-        // Gradient fill when checked (vibrant tech gradient)
+        // Gradient fill when checked (vibrant gradient)
         Rectangle {
             anchors.fill: parent
             radius: parent.radius
             opacity: (control.checked && !control.steamStyle) ? 1.0 : 0.0
-            Behavior on opacity { NumberAnimation { duration: 150; easing.type: Easing.OutQuad } }
+            Behavior on opacity { NumberAnimation { duration: 180; easing.type: Easing.OutQuad } }
             gradient: Gradient {
                 GradientStop { position: 0.0; color: Theme.accent }
                 GradientStop { position: 1.0; color: Theme.accentLight }
@@ -73,7 +76,7 @@ Item {
                 height: 1
                 radius: 0.5
                 color: "#FFFFFF"
-                opacity: 0.2
+                opacity: 0.22
             }
         }
 
@@ -82,7 +85,7 @@ Item {
             anchors.fill: parent
             radius: parent.radius
             opacity: (control.indeterminate && !control.steamStyle) ? 1.0 : 0.0
-            Behavior on opacity { NumberAnimation { duration: 150; easing.type: Easing.OutQuad } }
+            Behavior on opacity { NumberAnimation { duration: 180; easing.type: Easing.OutQuad } }
             color: Theme.accentDim
         }
 
@@ -97,26 +100,56 @@ Item {
             Behavior on opacity { NumberAnimation { duration: Theme.animFast } }
         }
         
-        // Tech Slider Thumb (Sleek Angular block)
+        // Zero-overhead high-fidelity Drop Shadow under the thumb bead
+        Rectangle {
+            width: thumb.width + 2
+            height: thumb.height + 2
+            radius: width / 2
+            color: "#000000"
+            opacity: 0.3
+            x: thumb.x - 1
+            y: thumb.y + 1.2
+            
+            Behavior on x {
+                NumberAnimation {
+                    duration: 250
+                    easing.type: Easing.OutBack
+                }
+            }
+            Behavior on width {
+                NumberAnimation {
+                    duration: 150
+                    easing.type: Easing.OutQuad
+                }
+            }
+            Behavior on height {
+                NumberAnimation {
+                    duration: 150
+                    easing.type: Easing.OutQuad
+                }
+            }
+        }
+
+        // Volumetric 3D Slider Thumb
         Rectangle {
             id: thumb
             width: mouseArea.pressed ? 18 : (mouseArea.containsMouse ? 16 : 14)
-            height: 12
-            radius: 2
+            height: mouseArea.pressed ? 12 : 14
+            radius: height / 2
             
             gradient: Gradient {
                 GradientStop {
                     position: 0.0
                     color: {
                         if (control.steamStyle) return control.checked ? "#FFFFFF" : "#5d6d7e";
-                        return (control.checked || control.indeterminate) ? "#FFFFFF" : "#E2E8F0"
+                        return (control.checked || control.indeterminate) ? "#FFFFFF" : "#F8FAFC"
                     }
                 }
                 GradientStop {
                     position: 1.0
                     color: {
                         if (control.steamStyle) return control.checked ? "#E2E8F0" : "#4b5a6c";
-                        return (control.checked || control.indeterminate) ? "#CBD5E1" : "#94A3B8"
+                        return (control.checked || control.indeterminate) ? "#E2E8F0" : "#CBD5E1"
                     }
                 }
             }
@@ -125,7 +158,7 @@ Item {
             border.width: 0
             anchors.verticalCenter: parent.verticalCenter
             
-            // Top highlight line for thumb
+            // Specular top highlight line for glossy 3D look
             Rectangle {
                 anchors.left: parent.left
                 anchors.right: parent.right
@@ -134,15 +167,15 @@ Item {
                 height: 1
                 radius: 0.5
                 color: "#FFFFFF"
-                opacity: 0.4
+                opacity: 0.6
             }
 
-            // Tech center line details (two vertical micro-dots/groove for instrument feel)
+            // Tactile vertical indicator line in the center for micro-details
             Rectangle {
                 width: 2
-                height: 4
-                radius: 0.5
-                color: control.checked ? Theme.accent : Qt.rgba(0, 0, 0, 0.25)
+                height: parent.height - 8
+                radius: 1
+                color: control.checked ? Theme.accent : Qt.rgba(0, 0, 0, 0.2)
                 anchors.centerIn: parent
                 Behavior on color { ColorAnimation { duration: Theme.animFast } }
             }
@@ -152,19 +185,19 @@ Item {
             
             Behavior on x {
                 NumberAnimation {
-                    duration: 200
-                    easing.type: Easing.OutCubic // Fast, precise decelaration for pro-tweaker aesthetic
+                    duration: 250
+                    easing.type: Easing.OutBack // satisfying spring bounce!
                 }
             }
             Behavior on width {
                 NumberAnimation {
-                    duration: 120
+                    duration: 150
                     easing.type: Easing.OutQuad
                 }
             }
             Behavior on height {
                 NumberAnimation {
-                    duration: 120
+                    duration: 150
                     easing.type: Easing.OutQuad
                 }
             }
