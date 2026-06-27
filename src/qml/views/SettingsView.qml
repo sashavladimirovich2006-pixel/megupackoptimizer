@@ -15,7 +15,7 @@ Item {
     function getTranslatedThemeName(themeName) {
         if (themeName === "Белоснежная") return qsTr("Snow White");
         if (themeName === "Темная") return qsTr("Dark");
-        if (themeName === "Blackout полностью черная") return qsTr("OLED Blackout");
+        if (themeName === "Blackout полностью черная") return qsTr("Blackout");
         if (themeName === "Ргб") return qsTr("RGB Gamer");
         if (themeName === "Розовая") return qsTr("Sakura Pink");
         if (themeName === "Black pink") return qsTr("Black Pink");
@@ -449,7 +449,7 @@ Item {
                                 return [
                                     { name: "Белоснежная", desc: qsTr("Pure snow white theme"), hasSub: false },
                                     { name: "Темная", desc: qsTr("Glacier Mint & Obsidian theme"), hasSub: false },
-                                    { name: "Blackout полностью черная", desc: qsTr("Absolute black OLED theme"), hasSub: false },
+                                    { name: "Blackout полностью черная", desc: qsTr("Absolute black theme"), hasSub: false },
                                     { name: "Ргб", desc: qsTr("Dynamic RGB gaming theme"), hasSub: false },
                                     { name: "Розовая", desc: qsTr("Cyber Rose-Gold soft theme"), hasSub: true }
                                 ];
