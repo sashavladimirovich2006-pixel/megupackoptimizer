@@ -37,6 +37,7 @@ Rectangle {
     }
 
     DropShadow {
+        cached: true
         anchors.fill: backgroundPlate
         horizontalOffset: 0
         verticalOffset: panel.hovered ? 10 : 4

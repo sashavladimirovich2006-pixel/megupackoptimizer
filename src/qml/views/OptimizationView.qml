@@ -9518,6 +9518,7 @@ Item {
 
 
                             ColorOverlay {
+                                    cached: true
 
 
 
@@ -10036,6 +10037,7 @@ Item {
 
 
                                 ColorOverlay {
+                                    cached: true
 
 
 
@@ -10373,6 +10375,7 @@ Item {
 
 
                                 ColorOverlay {
+                                    cached: true
 
 
 
@@ -10611,6 +10614,7 @@ Item {
 
 
                                 ColorOverlay {
+                                    cached: true
 
 
 
@@ -11036,6 +11040,7 @@ Item {
 
 
                                 ColorOverlay {
+                                    cached: true
 
 
 
@@ -11789,6 +11794,7 @@ Item {
 
 
                             ColorOverlay {
+                                    cached: true
 
 
 
@@ -12055,6 +12061,7 @@ Item {
 
 
                                 ColorOverlay {
+                                    cached: true
 
 
 
@@ -12651,6 +12658,7 @@ Item {
 
 
                                 ColorOverlay {
+                                    cached: true
 
 
 
@@ -13072,6 +13080,7 @@ Item {
 
 
                                 ColorOverlay {
+                                    cached: true
 
 
 
@@ -13280,6 +13289,7 @@ Item {
 
 
                                 ColorOverlay {
+                                    cached: true
 
 
 
@@ -13677,6 +13687,7 @@ Item {
 
 
                                 ColorOverlay {
+                                    cached: true
 
 
 
@@ -13885,6 +13896,7 @@ Item {
 
 
                                 ColorOverlay {
+                                    cached: true
 
 
 
@@ -14402,6 +14414,7 @@ Item {
 
 
                                 ColorOverlay {
+                                    cached: true
 
 
 
@@ -14799,6 +14812,7 @@ Item {
 
 
                                 ColorOverlay {
+                                    cached: true
 
 
 
@@ -15003,6 +15017,7 @@ Item {
 
 
                                 ColorOverlay {
+                                    cached: true
 
 
 
@@ -15424,6 +15439,7 @@ Item {
 
 
                                 ColorOverlay {
+                                    cached: true
 
 
 
@@ -15857,6 +15873,7 @@ Item {
 
 
                                 ColorOverlay {
+                                    cached: true
 
 
 
@@ -16318,6 +16335,7 @@ Item {
 
 
                                 ColorOverlay {
+                                    cached: true
 
 
 
@@ -16743,6 +16761,7 @@ Item {
 
 
                                 ColorOverlay {
+                                    cached: true
 
 
 
@@ -17164,6 +17183,7 @@ Item {
 
 
                                 ColorOverlay {
+                                    cached: true
 
 
 
@@ -17513,6 +17533,7 @@ Item {
 
 
                                 ColorOverlay {
+                                    cached: true
 
 
 
@@ -17825,6 +17846,7 @@ Item {
 
 
                                     ColorOverlay {
+                                    cached: true
 
 
 
@@ -18193,6 +18215,7 @@ Item {
 
 
                                     ColorOverlay {
+                                    cached: true
 
 
 
@@ -18449,6 +18472,7 @@ Item {
 
 
                                     ColorOverlay {
+                                    cached: true
 
 
 
@@ -18633,6 +18657,7 @@ Item {
 
 
                                     ColorOverlay {
+                                    cached: true
 
 
 
@@ -18817,6 +18842,7 @@ Item {
 
 
                                     ColorOverlay {
+                                    cached: true
 
 
 
@@ -19001,6 +19027,7 @@ Item {
 
 
                                     ColorOverlay {
+                                    cached: true
 
 
 
@@ -19185,6 +19212,7 @@ Item {
 
 
                                     ColorOverlay {
+                                    cached: true
 
 
 
@@ -19369,6 +19397,7 @@ Item {
 
 
                                     ColorOverlay {
+                                    cached: true
 
 
 
@@ -19553,6 +19582,7 @@ Item {
 
 
                                     ColorOverlay {
+                                    cached: true
 
 
 
@@ -19737,6 +19767,7 @@ Item {
 
 
                                     ColorOverlay {
+                                    cached: true
 
 
 
@@ -19921,6 +19952,7 @@ Item {
 
 
                                     ColorOverlay {
+                                    cached: true
 
 
 
@@ -20229,6 +20261,7 @@ Item {
 
 
                                     ColorOverlay {
+                                    cached: true
 
 
 
@@ -20597,6 +20630,7 @@ Item {
 
 
                                     ColorOverlay {
+                                    cached: true
 
 
 
@@ -20853,6 +20887,7 @@ Item {
 
 
                                     ColorOverlay {
+                                    cached: true
 
 
 
@@ -21037,6 +21072,7 @@ Item {
 
 
                                     ColorOverlay {
+                                    cached: true
 
 
 
@@ -21221,6 +21257,7 @@ Item {
 
 
                                     ColorOverlay {
+                                    cached: true
 
 
 
@@ -21405,6 +21442,7 @@ Item {
 
 
                                     ColorOverlay {
+                                    cached: true
 
 
 
@@ -21589,6 +21627,7 @@ Item {
 
 
                                     ColorOverlay {
+                                    cached: true
 
 
 
@@ -21773,6 +21812,7 @@ Item {
 
 
                                     ColorOverlay {
+                                    cached: true
 
 
 
@@ -21957,6 +21997,7 @@ Item {
 
 
                                     ColorOverlay {
+                                    cached: true
 
 
 
@@ -22141,6 +22182,7 @@ Item {
 
 
                                     ColorOverlay {
+                                    cached: true
 
 
 
@@ -22325,6 +22367,7 @@ Item {
 
 
                                     ColorOverlay {
+                                    cached: true
 
 
 
@@ -22509,6 +22552,7 @@ Item {
 
 
                                     ColorOverlay {
+                                    cached: true
 
 
 
@@ -22693,6 +22737,7 @@ Item {
 
 
                                     ColorOverlay {
+                                    cached: true
 
 
 
@@ -22933,6 +22978,7 @@ Item {
 
 
                                 ColorOverlay {
+                                    cached: true
 
 
 
@@ -23410,6 +23456,7 @@ Item {
 
 
                                 ColorOverlay {
+                                    cached: true
 
 
 
@@ -23626,6 +23673,7 @@ Item {
 
 
                                 ColorOverlay {
+                                    cached: true
 
 
 
@@ -23983,6 +24031,7 @@ Item {
 
 
                                 ColorOverlay {
+                                    cached: true
 
 
 
@@ -24329,6 +24378,7 @@ Item {
 
 
                                         ColorOverlay {
+                                    cached: true
 
 
 
@@ -24650,6 +24700,7 @@ Item {
 
 
                                         ColorOverlay {
+                                    cached: true
 
 
 
@@ -24910,6 +24961,7 @@ Item {
 
 
                                         ColorOverlay {
+                                    cached: true
 
 
 
@@ -25395,6 +25447,7 @@ Item {
 
 
                                         ColorOverlay {
+                                    cached: true
 
 
 
@@ -26064,6 +26117,7 @@ Item {
 
 
                                         ColorOverlay {
+                                    cached: true
 
 
 
@@ -26721,6 +26775,7 @@ Item {
 
 
                                         ColorOverlay {
+                                    cached: true
 
 
 
@@ -27114,6 +27169,7 @@ Item {
 
 
                                         ColorOverlay {
+                                    cached: true
 
 
 
@@ -27370,6 +27426,7 @@ Item {
 
 
                                         ColorOverlay {
+                                    cached: true
 
 
 
@@ -27691,6 +27748,7 @@ Item {
 
 
                                         ColorOverlay {
+                                    cached: true
 
 
 
@@ -27947,6 +28005,7 @@ Item {
 
 
                                         ColorOverlay {
+                                    cached: true
 
 
 
@@ -28268,6 +28327,7 @@ Item {
 
 
                                         ColorOverlay {
+                                    cached: true
 
 
 
@@ -28526,6 +28586,7 @@ Item {
                                     visible: false
                                 }
                                 ColorOverlay {
+                                    cached: true
                                     anchors.fill: fastStartupPanel_iconImg
                                     source: fastStartupPanel_iconImg
                                     color: Theme.accent
@@ -28609,6 +28670,7 @@ Item {
                                         visible: false
                                     }
                                     ColorOverlay {
+                                    cached: true
                                         anchors.fill: fastStartupWarningIcon
                                         source: fastStartupWarningIcon
                                         color: Theme.warning
@@ -28648,6 +28710,7 @@ Item {
                                             visible: false
                                         }
                                         ColorOverlay {
+                                    cached: true
                                             anchors.fill: fastStartupEyeIconImg
                                             source: fastStartupEyeIconImg
                                             color: fastStartupEyeMouse.containsMouse ? Theme.accent : Theme.textSecondary
@@ -28859,6 +28922,7 @@ Item {
 
 
                                 ColorOverlay {
+                                    cached: true
 
 
 
@@ -29284,6 +29348,7 @@ Item {
 
 
                                 ColorOverlay {
+                                    cached: true
 
 
 
@@ -29540,6 +29605,7 @@ Item {
 
 
                                 ColorOverlay {
+                                    cached: true
 
 
 
@@ -30177,6 +30243,7 @@ Item {
 
 
                                 ColorOverlay {
+                                    cached: true
 
 
 
@@ -30381,6 +30448,7 @@ Item {
 
 
                                 ColorOverlay {
+                                    cached: true
 
 
 
@@ -30742,6 +30810,7 @@ Item {
 
 
                                 ColorOverlay {
+                                    cached: true
 
 
 
@@ -30982,6 +31051,7 @@ Item {
 
 
                                 ColorOverlay {
+                                    cached: true
 
 
 
@@ -31399,6 +31469,7 @@ Item {
 
 
                                 ColorOverlay {
+                                    cached: true
 
 
 
@@ -31668,6 +31739,7 @@ Item {
 
 
                                 ColorOverlay {
+                                    cached: true
 
 
 
@@ -32002,6 +32074,7 @@ Item {
 
 
                                 ColorOverlay {
+                                    cached: true
 
 
 
@@ -32255,6 +32328,7 @@ Item {
 
 
                                 ColorOverlay {
+                                    cached: true
 
 
 
@@ -32466,6 +32540,7 @@ Item {
 
 
                                 ColorOverlay {
+                                    cached: true
 
 
 
@@ -32719,6 +32794,7 @@ Item {
 
 
                                 ColorOverlay {
+                                    cached: true
 
 
 
@@ -32924,6 +33000,7 @@ Item {
 
 
                 ColorOverlay {
+                                    cached: true
 
 
 
@@ -33104,6 +33181,7 @@ Item {
 
 
                     ColorOverlay {
+                                    cached: true
 
 
 
@@ -34809,6 +34887,7 @@ Item {
 
 
                     ColorOverlay {
+                                    cached: true
 
 
 
@@ -34925,6 +35004,7 @@ Item {
 
 
                     ColorOverlay {
+                                    cached: true
 
 
 
@@ -35169,6 +35249,7 @@ Item {
 
 
                             ColorOverlay {
+                                    cached: true
 
 
 
@@ -35405,6 +35486,7 @@ Item {
 
 
                                     ColorOverlay {
+                                    cached: true
 
 
 
@@ -35525,6 +35607,7 @@ Item {
 
 
                                     ColorOverlay {
+                                    cached: true
 
 
 
@@ -35689,6 +35772,7 @@ Item {
 
 
                                     ColorOverlay {
+                                    cached: true
 
 
 
@@ -35853,6 +35937,7 @@ Item {
 
 
                                     ColorOverlay {
+                                    cached: true
 
 
 
@@ -36085,6 +36170,7 @@ Item {
 
 
                             ColorOverlay {
+                                    cached: true
 
 
 
@@ -36285,6 +36371,7 @@ Item {
 
 
                             ColorOverlay {
+                                    cached: true
 
 
 
@@ -36521,6 +36608,7 @@ Item {
 
 
                                     ColorOverlay {
+                                    cached: true
 
 
 
@@ -36725,6 +36813,7 @@ Item {
 
 
                                     ColorOverlay {
+                                    cached: true
 
 
 
@@ -36906,6 +36995,7 @@ Item {
                     }
                     
                     ColorOverlay {
+                                    cached: true
                         anchors.fill: statIcon
                         source: statIcon
                         color: statCardRoot.accentColor
@@ -37484,6 +37574,7 @@ Item {
                                         }
 
                                         ColorOverlay {
+                                    cached: true
                                             anchors.fill: warnIcon
                                             source: warnIcon
                                             color: Theme.warning
@@ -37806,6 +37897,7 @@ Item {
 
 
                         ColorOverlay {
+                                    cached: true
 
 
 
