@@ -200,26 +200,32 @@ Item {
                     iconSource: "qrc:/MeguPackOptimizer/src/resources/info.svg"
                     accentColor: Theme.info
 
-                    // Row of Language Option Buttons
-                    Row {
-                        width: implicitWidth
+                    MeguDropdown {
+                        id: languageDropdown
+                        width: 160
                         height: 32
-                        spacing: 10
                         anchors.verticalCenter: parent.verticalCenter
+                        model: ["en", "uk"]
+                        currentIndex: settingsBackend.language === "en" ? 0 : 1
+                        
+                        textFormatter: function(item) {
+                            if (item === "en") return qsTr("English");
+                            if (item === "uk") return qsTr("Ukrainian");
+                            return item;
+                        }
+                        
+                        onActivated: (index) => {
+                            var code = model[index];
+                            console.log("[QML] Language dropdown selected code:", code);
+                            settingsBackend.language = code;
+                            console.log("[QML] After setting, backend language is:", settingsBackend.language);
+                        }
 
-                        Repeater {
-                            model: ["en", "uk"]
-
-                            delegate: MeguButton {
-                                width: 100
-                                height: 32
-                                text: modelData === "en" ? qsTr("English") : qsTr("Ukrainian")
-                                accented: settingsBackend.language === modelData
-                                onClicked: {
-                                    console.log("[QML] Language button clicked for code:", modelData);
-                                    settingsBackend.language = modelData;
-                                    console.log("[QML] After setting, backend language is:", settingsBackend.language);
-                                }
+                        // Update current index if backend language changes externally
+                        Connections {
+                            target: settingsBackend
+                            function onLanguageChanged() {
+                                languageDropdown.currentIndex = settingsBackend.language === "en" ? 0 : 1;
                             }
                         }
                     }

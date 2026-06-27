@@ -1,5 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
-<!DOCTYPE TS>
+<?xml version='1.0' encoding='utf-8'?>
 <TS version="2.1" language="uk_UA">
 <context>
     <name>CleanupDrawer</name>
@@ -48,7 +47,7 @@
     </message>
     <message>
         <source>Memory (RAM)</source>
-        <translation type="vanished">Оперативна пам&apos;ять (RAM)</translation>
+        <translation type="vanished">Оперативна пам'ять (RAM)</translation>
     </message>
     <message>
         <source>Graphics Card (GPU)</source>
@@ -112,7 +111,7 @@
     </message>
     <message>
         <source>MEMORY INTEGRITY</source>
-        <translation type="vanished">ЦІЛІСНІСТЬ ПАМ&apos;ЯТІ</translation>
+        <translation type="vanished">ЦІЛІСНІСТЬ ПАМ'ЯТІ</translation>
     </message>
     <message>
         <source>VBS / HVCI Security</source>
@@ -328,7 +327,7 @@
     </message>
     <message>
         <source>Disabling the print spooler frees memory and reduces background latency for gaming.</source>
-        <translation type="vanished">Вимкнення служби друку звільняє пам&apos;ять та зменшує фонову затримку для ігор.</translation>
+        <translation type="vanished">Вимкнення служби друку звільняє пам'ять та зменшує фонову затримку для ігор.</translation>
     </message>
     <message>
         <source>Windows Notifications</source>
@@ -476,7 +475,7 @@
     </message>
     <message>
         <source>Run Steam when my computer starts</source>
-        <translation type="vanished">Запускати Steam під час запуску комп&apos;ютера</translation>
+        <translation type="vanished">Запускати Steam під час запуску комп'ютера</translation>
     </message>
     <message>
         <source>Ask which account to use each time Steam starts</source>
@@ -591,8 +590,8 @@
         <translation type="vanished">Відкрити</translation>
     </message>
     <message>
-        <source>Launch Options (Click name to toggle, will apply on &apos;Optimize&apos;)</source>
-        <translation type="vanished">Параметри запуску (Клацніть для перемикання, буде застосовано після &apos;Оптимізувати&apos;)</translation>
+        <source>Launch Options (Click name to toggle, will apply on 'Optimize')</source>
+        <translation type="vanished">Параметри запуску (Клацніть для перемикання, буде застосовано після 'Оптимізувати')</translation>
     </message>
     <message>
         <source>Allows third-party software (OBS, overlays, etc.) to hook into the game.</source>
@@ -620,7 +619,7 @@
     </message>
     <message>
         <source>Disables joystick initialization, freeing up memory and reducing startup time.</source>
-        <translation type="vanished">Вимикає ініціалізацію джойстика, звільняючи пам&apos;ять і зменшуючи час запуску.</translation>
+        <translation type="vanished">Вимикає ініціалізацію джойстика, звільняючи пам'ять і зменшуючи час запуску.</translation>
     </message>
     <message>
         <source>Launches the game in high CPU priority mode.</source>
@@ -636,7 +635,7 @@
     </message>
     <message>
         <source>Disables soft blending for particles, improving performance near smoke.</source>
-        <translation type="vanished">Вимикає м&apos;яке змішування часток, покращуючи продуктивність поблизу диму.</translation>
+        <translation type="vanished">Вимикає м'яке змішування часток, покращуючи продуктивність поблизу диму.</translation>
     </message>
     <message>
         <source>Disables dynamic lighting, removing FPS drops during gunfights.</source>
@@ -664,10 +663,10 @@
     </message>
     <message>
         <source>Please restart your PC to apply Core Isolation changes.</source>
-        <translation type="vanished">Будь ласка, перезавантажте комп&apos;ютер для застосування змін ізоляції ядра.</translation>
+        <translation type="vanished">Будь ласка, перезавантажте комп'ютер для застосування змін ізоляції ядра.</translation>
     </message>
     <message>
-        <source>Disable Discord&apos;s in-game overlay DLL injection to reduce CPU overhead and eliminate graphics micro-stutters.</source>
+        <source>Disable Discord's in-game overlay DLL injection to reduce CPU overhead and eliminate graphics micro-stutters.</source>
         <translation type="vanished">Відключення інжекції DLL ігрового оверлея Discord для зниження навантаження на процесор та усунення мікро-фризів.</translation>
     </message>
     <message>
@@ -704,7 +703,7 @@
     </message>
     <message>
         <source>Configure system virtual memory limits (initial/maximum size in MB).</source>
-        <translation type="vanished">Налаштування лімітів віртуальної пам&apos;яті системи (початковий/максимальний розмір у МБ).</translation>
+        <translation type="vanished">Налаштування лімітів віртуальної пам'яті системи (початковий/максимальний розмір у МБ).</translation>
     </message>
     <message>
         <source>Min:</source>
@@ -848,7 +847,7 @@ Would you like to close Discord now and proceed?</source>
     </message>
     <message>
         <source>Disabling kernel memory integrity reduces CPU overhead and input latency.</source>
-        <translation type="vanished">Вимкнення цілісності пам&apos;яті ядра знижує навантаження на процесор та затримку введення.</translation>
+        <translation type="vanished">Вимкнення цілісності пам'яті ядра знижує навантаження на процесор та затримку введення.</translation>
     </message>
     <message>
         <source>Mouse Acceleration</source>
@@ -884,7 +883,7 @@ Would you like to close Discord now and proceed?</source>
     </message>
     <message>
         <source>Prevent Windows from turning off USB 3.0 ports to save power, avoiding connection dropouts and peripheral latency.</source>
-        <translation type="vanished">Запобігає вимкненню портів USB 3.0 системою Windows для збереження енергії, уникаючи обривів з&apos;єднання та затримок периферії.</translation>
+        <translation type="vanished">Запобігає вимкненню портів USB 3.0 системою Windows для збереження енергії, уникаючи обривів з'єднання та затримок периферії.</translation>
     </message>
     <message>
         <source>Steam Overlay</source>
@@ -991,7 +990,7 @@ Would you like to close Discord now and proceed?</source>
         <translation type="vanished">Налаштування Steam</translation>
     </message>
     <message>
-        <source>Append nicknames to friends&apos; names</source>
+        <source>Append nicknames to friends' names</source>
         <translation type="vanished">Додавати нікнейми до імен друзів</translation>
     </message>
     <message>
@@ -1007,8 +1006,8 @@ Would you like to close Discord now and proceed?</source>
         <translation type="vanished">Приховувати категорованих друзів у загальних списках</translation>
     </message>
     <message>
-        <source>Ignore &apos;Away&apos; status when sorting friends</source>
-        <translation type="vanished">Ігнорувати статус &apos;Відсутній&apos; при сортуванні друзів</translation>
+        <source>Ignore 'Away' status when sorting friends</source>
+        <translation type="vanished">Ігнорувати статус 'Відсутній' при сортуванні друзів</translation>
     </message>
     <message>
         <source>Sign in to friends when Steam starts</source>
@@ -1035,12 +1034,12 @@ Would you like to close Discord now and proceed?</source>
         <translation type="vanished">Відкривати нове вікно для нових чатів</translation>
     </message>
     <message>
-        <source>Don&apos;t embed images and other media inline</source>
+        <source>Don't embed images and other media inline</source>
         <translation type="vanished">Не вбудовувати зображення та інші медіафайли в повідомлення</translation>
     </message>
     <message>
         <source>Remember my open chats</source>
-        <translation type="vanished">Запам&apos;ятовувати мої відкриті чати</translation>
+        <translation type="vanished">Запам'ятовувати мої відкриті чати</translation>
     </message>
     <message>
         <source>Disable spellcheck in chat message entry</source>
@@ -1072,7 +1071,7 @@ Would you like to close Discord now and proceed?</source>
     </message>
     <message>
         <source>Optimize the Steam client, friends list, and chat interface to reduce background memory and latency.</source>
-        <translation type="vanished">Оптимізуйте клієнт Steam, список друзів та інтерфейс чату для зменшення фонової пам&apos;яті та затримок.</translation>
+        <translation type="vanished">Оптимізуйте клієнт Steam, список друзів та інтерфейс чату для зменшення фонової пам'яті та затримок.</translation>
     </message>
     <message>
         <source>Steam client not detected on this system.</source>
@@ -1223,7 +1222,7 @@ Would you like to close Discord now and proceed?</source>
     </message>
     <message>
         <source>Please restart your PC to apply Core Isolation changes.</source>
-        <translation type="vanished">Будь ласка, перезавантажте комп&apos;ютер для застосування змін ізоляції ядра.</translation>
+        <translation type="vanished">Будь ласка, перезавантажте комп'ютер для застосування змін ізоляції ядра.</translation>
     </message>
     <message>
         <source>Enabled</source>
@@ -1235,23 +1234,23 @@ Would you like to close Discord now and proceed?</source>
     </message>
     <message>
         <source>Processing virtual memory (pagefile)...</source>
-        <translation type="vanished">Налаштування віртуальної пам&apos;яті (файлу підкачки)...</translation>
+        <translation type="vanished">Налаштування віртуальної пам'яті (файлу підкачки)...</translation>
     </message>
     <message>
         <source>Virtual memory limits updated successfully to Min: %1 MB, Max: %2 MB. A reboot is required to recreate the pagefile on disk.</source>
-        <translation type="vanished">Ліміти віртуальної пам&apos;яті успішно оновлено до Мін: %1 МБ, Макс: %2 МБ. Необхідно перезавантажити комп&apos;ютер для оновлення файлу підкачки на диску.</translation>
+        <translation type="vanished">Ліміти віртуальної пам'яті успішно оновлено до Мін: %1 МБ, Макс: %2 МБ. Необхідно перезавантажити комп'ютер для оновлення файлу підкачки на диску.</translation>
     </message>
     <message>
         <source>Failed to apply virtual memory limits. PowerShell Error: %1</source>
-        <translation type="vanished">Не вдалося застосувати ліміти віртуальної пам&apos;яті. Помилка PowerShell: %1</translation>
+        <translation type="vanished">Не вдалося застосувати ліміти віртуальної пам'яті. Помилка PowerShell: %1</translation>
     </message>
     <message>
         <source>Powershell command execution timed out while setting virtual memory limits.</source>
-        <translation type="vanished">Час очікування команди PowerShell для налаштування віртуальної пам&apos;яті вичерпано.</translation>
+        <translation type="vanished">Час очікування команди PowerShell для налаштування віртуальної пам'яті вичерпано.</translation>
     </message>
     <message>
         <source>[Simulation] Virtual memory limits set to Min: %1 MB, Max: %2 MB.</source>
-        <translation type="vanished">[Симуляція] Ліміти віртуальної пам&apos;яті встановлено до Мін: %1 МБ, Макс: %2 МБ.</translation>
+        <translation type="vanished">[Симуляція] Ліміти віртуальної пам'яті встановлено до Мін: %1 МБ, Макс: %2 МБ.</translation>
     </message>
     <message>
         <source>Initiating BitLocker decryption for C: drive...</source>
@@ -1377,12 +1376,12 @@ Would you like to close Discord now and proceed?</source>
 <context>
     <name>SettingsView</name>
     <message>
-        <location filename="../src/qml/views/SettingsView.qml" line="16"/>
+        <location filename="../src/qml/views/SettingsView.qml" line="16" />
         <source>Snow White</source>
         <translation>Білосніжна</translation>
     </message>
     <message>
-        <location filename="../src/qml/views/SettingsView.qml" line="17"/>
+        <location filename="../src/qml/views/SettingsView.qml" line="17" />
         <source>Dark</source>
         <translation>Темна</translation>
     </message>
@@ -1391,17 +1390,17 @@ Would you like to close Discord now and proceed?</source>
         <translation type="vanished">Blackout</translation>
     </message>
     <message>
-        <location filename="../src/qml/views/SettingsView.qml" line="19"/>
+        <location filename="../src/qml/views/SettingsView.qml" line="19" />
         <source>RGB Gamer</source>
         <translation>РГБ</translation>
     </message>
     <message>
-        <location filename="../src/qml/views/SettingsView.qml" line="20"/>
+        <location filename="../src/qml/views/SettingsView.qml" line="20" />
         <source>Sakura Pink</source>
         <translation>Рожева</translation>
     </message>
     <message>
-        <location filename="../src/qml/views/SettingsView.qml" line="21"/>
+        <location filename="../src/qml/views/SettingsView.qml" line="21" />
         <source>Black Pink</source>
         <translation>Black Pink</translation>
     </message>
@@ -1410,7 +1409,7 @@ Would you like to close Discord now and proceed?</source>
         <translation type="vanished">НАЛАШТУВАННЯ ТЕМИ</translation>
     </message>
     <message>
-        <location filename="../src/qml/views/SettingsView.qml" line="98"/>
+        <location filename="../src/qml/views/SettingsView.qml" line="98" />
         <source>Choose Interface Theme:</source>
         <translation>Оберіть тему інтерфейсу:</translation>
     </message>
@@ -1419,132 +1418,132 @@ Would you like to close Discord now and proceed?</source>
         <translation type="vanished">НАЛАШТУВАННЯ МОВИ</translation>
     </message>
     <message>
-        <location filename="../src/qml/views/SettingsView.qml" line="18"/>
+        <location filename="../src/qml/views/SettingsView.qml" line="18" />
         <source>Blackout</source>
         <translation>Blackout</translation>
     </message>
     <message>
-        <location filename="../src/qml/views/SettingsView.qml" line="87"/>
+        <location filename="../src/qml/views/SettingsView.qml" line="87" />
         <source>Theme Settings</source>
-        <translation type="unfinished"></translation>
+        <translation>Налаштування теми</translation>
     </message>
     <message>
-        <location filename="../src/qml/views/SettingsView.qml" line="99"/>
+        <location filename="../src/qml/views/SettingsView.qml" line="99" />
         <source>Select your preferred visual style and color accents for the interface.</source>
-        <translation type="unfinished"></translation>
+        <translation>Виберіть бажаний візуальний стиль та колірні акценти для інтерфейсу.</translation>
     </message>
     <message>
-        <location filename="../src/qml/views/SettingsView.qml" line="187"/>
+        <location filename="../src/qml/views/SettingsView.qml" line="187" />
         <source>Language Settings</source>
-        <translation type="unfinished"></translation>
+        <translation>Налаштування мови</translation>
     </message>
     <message>
-        <location filename="../src/qml/views/SettingsView.qml" line="198"/>
+        <location filename="../src/qml/views/SettingsView.qml" line="198" />
         <source>Choose Interface Language:</source>
         <translation>Оберіть мову інтерфейсу:</translation>
     </message>
     <message>
-        <location filename="../src/qml/views/SettingsView.qml" line="199"/>
+        <location filename="../src/qml/views/SettingsView.qml" line="199" />
         <source>Change the primary localization used across all application screens.</source>
-        <translation type="unfinished"></translation>
+        <translation>Змініть основну локалізацію, яка використовується на всіх екранах програми.</translation>
     </message>
     <message>
-        <location filename="../src/qml/views/SettingsView.qml" line="216"/>
+        <location filename="../src/qml/views/SettingsView.qml" line="216" />
         <source>English</source>
         <translation>Англійська</translation>
     </message>
     <message>
-        <location filename="../src/qml/views/SettingsView.qml" line="216"/>
+        <location filename="../src/qml/views/SettingsView.qml" line="216" />
         <source>Ukrainian</source>
         <translation>Українська</translation>
     </message>
     <message>
-        <location filename="../src/qml/views/SettingsView.qml" line="247"/>
+        <location filename="../src/qml/views/SettingsView.qml" line="247" />
         <source>Backup Settings</source>
-        <translation type="unfinished"></translation>
+        <translation>Налаштування резервного копіювання</translation>
     </message>
     <message>
-        <location filename="../src/qml/views/SettingsView.qml" line="258"/>
+        <location filename="../src/qml/views/SettingsView.qml" line="258" />
         <source>Do not create Backup (not recommended):</source>
-        <translation type="unfinished"></translation>
+        <translation>Не створювати резервну копію (не рекомендовано):</translation>
     </message>
     <message>
-        <location filename="../src/qml/views/SettingsView.qml" line="259"/>
+        <location filename="../src/qml/views/SettingsView.qml" line="259" />
         <source>Skip system restore point creation before executing optimizations.</source>
-        <translation type="unfinished"></translation>
+        <translation>Пропустити створення точки відновлення системи перед виконанням оптимізацій.</translation>
     </message>
     <message>
-        <location filename="../src/qml/views/SettingsView.qml" line="276"/>
+        <location filename="../src/qml/views/SettingsView.qml" line="276" />
         <source>Restore system to a previous state:</source>
-        <translation type="unfinished"></translation>
+        <translation>Відновити систему до попереднього стану:</translation>
     </message>
     <message>
-        <location filename="../src/qml/views/SettingsView.qml" line="277"/>
+        <location filename="../src/qml/views/SettingsView.qml" line="277" />
         <source>Open Windows System Restore (rstrui.exe) to revert changes.</source>
-        <translation type="unfinished"></translation>
+        <translation>Відкрийте відновлення системи Windows (rstrui.exe), щоб повернути зміни.</translation>
     </message>
     <message>
-        <location filename="../src/qml/views/SettingsView.qml" line="284"/>
+        <location filename="../src/qml/views/SettingsView.qml" line="284" />
         <source>Restore System</source>
-        <translation type="unfinished"></translation>
+        <translation>Відновити систему</translation>
     </message>
     <message>
-        <location filename="../src/qml/views/SettingsView.qml" line="311"/>
+        <location filename="../src/qml/views/SettingsView.qml" line="311" />
         <source>Dangerous Zone</source>
-        <translation type="unfinished"></translation>
+        <translation>Небезпечна зона</translation>
     </message>
     <message>
-        <location filename="../src/qml/views/SettingsView.qml" line="322"/>
+        <location filename="../src/qml/views/SettingsView.qml" line="322" />
         <source>Advanced and risky configurations:</source>
-        <translation type="unfinished"></translation>
+        <translation>Додаткові та ризиковані конфігурації:</translation>
     </message>
     <message>
-        <location filename="../src/qml/views/SettingsView.qml" line="323"/>
+        <location filename="../src/qml/views/SettingsView.qml" line="323" />
         <source>Show or hide advanced features intended only for experienced users.</source>
-        <translation type="unfinished"></translation>
+        <translation>Показати або приховати додаткові функції, призначені лише для досвідчених користувачів.</translation>
     </message>
     <message>
-        <location filename="../src/qml/views/SettingsView.qml" line="331"/>
+        <location filename="../src/qml/views/SettingsView.qml" line="331" />
         <source>Configure</source>
-        <translation type="unfinished"></translation>
+        <translation>Налаштувати</translation>
     </message>
     <message>
-        <location filename="../src/qml/views/SettingsView.qml" line="342"/>
+        <location filename="../src/qml/views/SettingsView.qml" line="342" />
         <source>* Changes are automatically applied and saved to config in real-time.</source>
         <translation>* Зміни застосовуються автоматично та зберігаються в реальному часі.</translation>
     </message>
     <message>
-        <location filename="../src/qml/views/SettingsView.qml" line="426"/>
+        <location filename="../src/qml/views/SettingsView.qml" line="426" />
         <source>THEME SELECTION</source>
         <translation>ВИБІР ТЕМИ</translation>
     </message>
     <message>
-        <location filename="../src/qml/views/SettingsView.qml" line="450"/>
+        <location filename="../src/qml/views/SettingsView.qml" line="450" />
         <source>Pure snow white theme</source>
         <translation>Чиста біла тема</translation>
     </message>
     <message>
-        <location filename="../src/qml/views/SettingsView.qml" line="451"/>
+        <location filename="../src/qml/views/SettingsView.qml" line="451" />
         <source>Glacier Mint &amp; Obsidian theme</source>
-        <translation>М&apos;ятно-льодяна та обсидіанова тема</translation>
+        <translation>М'ятно-льодяна та обсидіанова тема</translation>
     </message>
     <message>
-        <location filename="../src/qml/views/SettingsView.qml" line="452"/>
+        <location filename="../src/qml/views/SettingsView.qml" line="452" />
         <source>Absolute black theme</source>
         <translation>Абсолютно чорна тема</translation>
     </message>
     <message>
-        <location filename="../src/qml/views/SettingsView.qml" line="453"/>
+        <location filename="../src/qml/views/SettingsView.qml" line="453" />
         <source>Dynamic RGB gaming theme</source>
         <translation>Динамічна RGB ігрова тема</translation>
     </message>
     <message>
-        <location filename="../src/qml/views/SettingsView.qml" line="454"/>
+        <location filename="../src/qml/views/SettingsView.qml" line="454" />
         <source>Cyber Rose-Gold soft theme</source>
         <translation>Ніжна кібер рожево-золота тема</translation>
     </message>
     <message>
-        <location filename="../src/qml/views/SettingsView.qml" line="584"/>
+        <location filename="../src/qml/views/SettingsView.qml" line="584" />
         <source>High contrast black and hot pink accents</source>
         <translation>Контрастна чорна тема з яскравими рожевими акцентами</translation>
     </message>
@@ -1565,13 +1564,13 @@ Would you like to close Discord now and proceed?</source>
         <translation type="vanished">Ніжна рожева тема</translation>
     </message>
     <message>
-        <location filename="../src/qml/views/SettingsView.qml" line="535"/>
-        <location filename="../src/qml/views/SettingsView.qml" line="647"/>
+        <location filename="../src/qml/views/SettingsView.qml" line="535" />
+        <location filename="../src/qml/views/SettingsView.qml" line="647" />
         <source>Back</source>
         <translation>Назад</translation>
     </message>
     <message>
-        <location filename="../src/qml/views/SettingsView.qml" line="542"/>
+        <location filename="../src/qml/views/SettingsView.qml" line="542" />
         <source>SPECIAL THEME</source>
         <translation>СПЕЦІАЛЬНА ТЕМА</translation>
     </message>
@@ -1580,29 +1579,29 @@ Would you like to close Discord now and proceed?</source>
         <translation type="vanished">Контрастна чорна тема з рожевими акцентами</translation>
     </message>
     <message>
-        <location filename="../src/qml/views/SettingsView.qml" line="654"/>
+        <location filename="../src/qml/views/SettingsView.qml" line="654" />
         <source>DANGEROUS ZONE</source>
-        <translation type="unfinished"></translation>
+        <translation>НЕБЕЗПЕЧНА ЗОНА</translation>
     </message>
     <message>
-        <location filename="../src/qml/views/SettingsView.qml" line="690"/>
+        <location filename="../src/qml/views/SettingsView.qml" line="690" />
         <source>⚠️ WARNING:</source>
-        <translation type="unfinished"></translation>
+        <translation>⚠️ ПОПЕРЕДЖЕННЯ:</translation>
     </message>
     <message>
-        <location filename="../src/qml/views/SettingsView.qml" line="697"/>
+        <location filename="../src/qml/views/SettingsView.qml" line="697" />
         <source>Enabling expert settings can expose critical system controls. Ensure you know the consequences before activating them.</source>
-        <translation type="unfinished"></translation>
+        <translation>Увімкнення експертних налаштувань може відкрити доступ до важливих елементів керування системою. Переконайтеся, що ви знаєте наслідки, перш ніж активувати їх.</translation>
     </message>
     <message>
-        <location filename="../src/qml/views/SettingsView.qml" line="709"/>
+        <location filename="../src/qml/views/SettingsView.qml" line="709" />
         <source>Show expert features</source>
-        <translation type="unfinished"></translation>
+        <translation>Показувати експертні функції</translation>
     </message>
     <message>
-        <location filename="../src/qml/views/SettingsView.qml" line="710"/>
+        <location filename="../src/qml/views/SettingsView.qml" line="710" />
         <source>Toggle visibility of advanced features like More Privileges card in the optimization view.</source>
-        <translation type="unfinished"></translation>
+        <translation>Перемкнути видимість розширених функцій, таких як картка «Більше привілеїв» у вікні оптимізації.</translation>
     </message>
 </context>
 <context>
@@ -1720,7 +1719,7 @@ Would you like to close Discord now and proceed?</source>
         <translation type="vanished">ДРУЗІ ТА ЧАТ</translation>
     </message>
     <message>
-        <source>Append nicknames to friends&apos; names</source>
+        <source>Append nicknames to friends' names</source>
         <translation type="vanished">Додавати нікнейми до імен друзів</translation>
     </message>
     <message>
@@ -1741,7 +1740,7 @@ Would you like to close Discord now and proceed?</source>
     </message>
     <message>
         <source>Reduces Steam client memory usage by hiding inactive list items.</source>
-        <translation type="vanished">Зменшує використання пам&apos;яті клієнтом Steam шляхом приховування неактивних елементів списку.</translation>
+        <translation type="vanished">Зменшує використання пам'яті клієнтом Steam шляхом приховування неактивних елементів списку.</translation>
     </message>
     <message>
         <source>Hide categorized friends in Online/Offline Friends</source>
@@ -1752,8 +1751,8 @@ Would you like to close Discord now and proceed?</source>
         <translation type="vanished">Запобігає подвійному рендерингу елементів інтерфейсу списку друзів.</translation>
     </message>
     <message>
-        <source>Ignore &apos;Away&apos; status when sorting friends</source>
-        <translation type="vanished">Ігнорувати статус &apos;Відсутній&apos; при сортуванні друзів</translation>
+        <source>Ignore 'Away' status when sorting friends</source>
+        <translation type="vanished">Ігнорувати статус 'Відсутній' при сортуванні друзів</translation>
     </message>
     <message>
         <source>Reduces friends list sorting calculation frequency during user status updates.</source>
@@ -1801,7 +1800,7 @@ Would you like to close Discord now and proceed?</source>
     </message>
     <message>
         <source>Merges chat and friends list windows, preventing creation of extra CEF rendering processes.</source>
-        <translation type="vanished">Об&apos;єднує вікна чату та списку друзів, запобігаючи створенню додаткових процесів рендерингу CEF.</translation>
+        <translation type="vanished">Об'єднує вікна чату та списку друзів, запобігаючи створенню додаткових процесів рендерингу CEF.</translation>
     </message>
     <message>
         <source>Open a new window for new chats</source>
@@ -1812,7 +1811,7 @@ Would you like to close Discord now and proceed?</source>
         <translation type="vanished">Вимкнення запобігає відкриттю нових ресурсомістких вікон ОС для кожного учасника.</translation>
     </message>
     <message>
-        <source>Don&apos;t embed images and other media inline</source>
+        <source>Don't embed images and other media inline</source>
         <translation type="vanished">Не вбудовувати зображення та інші медіафайли в повідомлення</translation>
     </message>
     <message>
@@ -1821,7 +1820,7 @@ Would you like to close Discord now and proceed?</source>
     </message>
     <message>
         <source>Remember my open chats</source>
-        <translation type="vanished">Запам&apos;ятовувати мої відкриті чати</translation>
+        <translation type="vanished">Запам'ятовувати мої відкриті чати</translation>
     </message>
     <message>
         <source>Disabling reduces disk reads/writes during Steam startup by skipping previous session restorations.</source>
@@ -1896,7 +1895,7 @@ Would you like to close Discord now and proceed?</source>
         <translation type="vanished">Коли я підключаю контролер</translation>
     </message>
     <message>
-        <source>When a controller&apos;s battery is low</source>
+        <source>When a controller's battery is low</source>
         <translation type="vanished">Коли батарея контролера розряджена</translation>
     </message>
     <message>
@@ -1945,7 +1944,7 @@ Would you like to close Discord now and proceed?</source>
     </message>
     <message>
         <source>Run Steam when my computer starts</source>
-        <translation type="vanished">Запускати Steam під час запуску комп&apos;ютера</translation>
+        <translation type="vanished">Запускати Steam під час запуску комп'ютера</translation>
     </message>
     <message>
         <source>Launches Steam automatically during system logon.</source>
@@ -1992,7 +1991,7 @@ Would you like to close Discord now and proceed?</source>
         <translation type="vanished">Використовує виділені апаратні декодери на GPU для медіаплеєрів магазину.</translation>
     </message>
     <message>
-        <source>&quot;Enable GPU accelerated rendering in web views&quot; setting must be enabled</source>
+        <source>"Enable GPU accelerated rendering in web views" setting must be enabled</source>
         <translation type="vanished">Параметр «Увімкнути прискорення рендерингу GPU у веб-перегляді» має бути увімкнений</translation>
     </message>
     <message>
@@ -2012,8 +2011,8 @@ Would you like to close Discord now and proceed?</source>
         <translation type="vanished">Монітор продуктивності оверлея</translation>
     </message>
     <message>
-        <source>The In-Game overlay is designed to help you understand your game and PC performance. It can render a variety of game and hardware performance information over a running game. &lt;a href=&apos;https://support.steampowered.com/kb_article.php?ref=2235-QOMF-3286&apos; style=&apos;color:#63b1e2; text-decoration:underline;&apos;&gt;Learn about the performance monitor numbers here.&lt;/a&gt;</source>
-        <translation type="vanished">Внутрішньоігровий оверлей розроблений, щоб допомогти вам зрозуміти продуктивність гри та ПК. Він може відображати різноманітну інформацію про продуктивність гри та обладнання поверх запущеної гри. &lt;a href=&apos;https://support.steampowered.com/kb_article.php?ref=2235-QOMF-3286&apos; style=&apos;color:#63b1e2; text-decoration:underline;&apos;&gt;Дізнайтеся більше про значення монітора продуктивності тут.&lt;/a&gt;</translation>
+        <source>The In-Game overlay is designed to help you understand your game and PC performance. It can render a variety of game and hardware performance information over a running game. &lt;a href='https://support.steampowered.com/kb_article.php?ref=2235-QOMF-3286' style='color:#63b1e2; text-decoration:underline;'&gt;Learn about the performance monitor numbers here.&lt;/a&gt;</source>
+        <translation type="vanished">Внутрішньоігровий оверлей розроблений, щоб допомогти вам зрозуміти продуктивність гри та ПК. Він може відображати різноманітну інформацію про продуктивність гри та обладнання поверх запущеної гри. &lt;a href='https://support.steampowered.com/kb_article.php?ref=2235-QOMF-3286' style='color:#63b1e2; text-decoration:underline;'&gt;Дізнайтеся більше про значення монітора продуктивності тут.&lt;/a&gt;</translation>
     </message>
     <message>
         <source>Show performance monitor</source>
@@ -2045,7 +2044,7 @@ Would you like to close Discord now and proceed?</source>
     </message>
     <message>
         <source>Computers &amp; Devices</source>
-        <translation type="vanished">Комп&apos;ютери та пристрої</translation>
+        <translation type="vanished">Комп'ютери та пристрої</translation>
     </message>
     <message>
         <source>No devices available</source>
@@ -2061,7 +2060,7 @@ Would you like to close Discord now and proceed?</source>
     </message>
     <message>
         <source>Pair Steam Link</source>
-        <translation type="vanished">Прив&apos;язати Steam Link</translation>
+        <translation type="vanished">Прив'язати Steam Link</translation>
     </message>
     <message>
         <source>Connection Security</source>
@@ -2292,11 +2291,11 @@ Would you like to close Discord now and proceed?</source>
         <translation type="vanished">Перенаправлення в Steam...</translation>
     </message>
     <message>
-        <source>Device pairing requires a live network connection managed by the Steam client. We have launched Steam and opened its Settings window for you. Please click &quot;Pair Steam Link&quot; inside Steam and enter your code (%1) there.</source>
+        <source>Device pairing requires a live network connection managed by the Steam client. We have launched Steam and opened its Settings window for you. Please click "Pair Steam Link" inside Steam and enter your code (%1) there.</source>
         <translation type="vanished">Для прив’язки пристрою потрібне живе мережеве з’єднання, яке контролюється клієнтом Steam. Ми запустили Steam і відкрили для вас вікно налаштувань. Будь ласка, натисніть «Прив’язати Steam Link» всередині Steam і введіть свій код (%1) туди.</translation>
     </message>
     <message>
-        <source>To pair a new device (like a phone, tablet, or VR headset) with Steam Remote Play, please open the official Steam client, go to Settings -&gt; Remote Play, and click &quot;Pair Steam Link&quot;. This handles the secure live network authorization protocol.</source>
+        <source>To pair a new device (like a phone, tablet, or VR headset) with Steam Remote Play, please open the official Steam client, go to Settings -&gt; Remote Play, and click "Pair Steam Link". This handles the secure live network authorization protocol.</source>
         <translation type="vanished">Щоб прив’язати новий пристрій (наприклад, телефон, планшет або VR-шолом) до Steam Remote Play, будь ласка, відкрийте офіційний клієнт Steam, перейдіть до Налаштування -&gt; Remote Play і натисніть «Прив’язати Steam Link». Це запускає безпечний протокол авторизації в реальному часі.</translation>
     </message>
     <message>
@@ -2341,11 +2340,11 @@ Would you like to close Discord now and proceed?</source>
     </message>
     <message>
         <source>Ready to Play should include streamable games</source>
-        <translation type="vanished">Розділ &apos;Готові до гри&apos; має включати ігри для стрімінгу</translation>
+        <translation type="vanished">Розділ 'Готові до гри' має включати ігри для стрімінгу</translation>
     </message>
     <message>
-        <source>Should the library include streamable games that aren&apos;t installed locally in Ready to Play and also show streaming by default for those games?</source>
-        <translation type="vanished">Чи повинна бібліотека включати ігри для стрімінгу, які не встановлені локально, в розділ &apos;Готові до гри&apos;, а також показувати стрімінг за замовчуванням для цих ігор?</translation>
+        <source>Should the library include streamable games that aren't installed locally in Ready to Play and also show streaming by default for those games?</source>
+        <translation type="vanished">Чи повинна бібліотека включати ігри для стрімінгу, які не встановлені локально, в розділ 'Готові до гри', а також показувати стрімінг за замовчуванням для цих ігор?</translation>
     </message>
     <message>
         <source>Show Steam Deck compatibility information in library</source>
@@ -2560,7 +2559,7 @@ Would you like to close Discord now and proceed?</source>
         <translation type="vanished">Найкраща продуктивність</translation>
     </message>
     <message>
-        <source>Show viewers&apos; chat in game</source>
+        <source>Show viewers' chat in game</source>
         <translation type="vanished">Показувати чат глядачів у грі</translation>
     </message>
     <message>
@@ -2748,7 +2747,7 @@ Would you like to close Discord now and proceed?</source>
         <translation type="vanished">Записувати у фоновому режимі</translation>
     </message>
     <message>
-        <source>Steam will automatically record your gameplay when you start playing, so you don&apos;t miss those unexpected moments.&lt;br&gt;&lt;br&gt;The last &lt;b&gt;120&lt;/b&gt; minutes of video will be kept in a temporary format for you to replay or save as permanent clips.</source>
+        <source>Steam will automatically record your gameplay when you start playing, so you don't miss those unexpected moments.&lt;br&gt;&lt;br&gt;The last &lt;b&gt;120&lt;/b&gt; minutes of video will be kept in a temporary format for you to replay or save as permanent clips.</source>
         <translation type="vanished">Steam автоматично записуватиме ігровий процес під час гри, щоб ви не пропустили неочікувані моменти.&lt;br&gt;&lt;br&gt;Останні &lt;b&gt;120&lt;/b&gt; хвилин відео зберігатимуться в тимчасовому форматі, тож ви зможете переглянути їх або зберегти як постійні кліпи.</translation>
     </message>
     <message>
@@ -2852,7 +2851,7 @@ Would you like to close Discord now and proceed?</source>
         <translation type="vanished">Увімкнути Remote Play</translation>
     </message>
     <message>
-        <source>Stream gameplay between this computer and other devices. To connect, simply log into this same Steam account on another computer, or choose &quot;Other Computer&quot; on your Steam Link.</source>
+        <source>Stream gameplay between this computer and other devices. To connect, simply log into this same Steam account on another computer, or choose "Other Computer" on your Steam Link.</source>
         <translation type="vanished">Транслюйте ігровий процес між цим комп’ютером та іншими пристроями. Для підключення просто увійдіть у цей самий акаунт Steam на іншому комп’ютері або виберіть «Інший комп’ютер» на вашому Steam Link.</translation>
     </message>
     <message>
@@ -2880,16 +2879,16 @@ Would you like to close Discord now and proceed?</source>
         <translation type="vanished">Увімкнути додаткові налаштування клієнта</translation>
     </message>
     <message>
-        <source>To improve performance streaming a game running on another computer, try reducing your game&apos;s resolution or adjusting these settings.</source>
-        <translation type="vanished">Щоб покращити продуктивність трансляції гри, запущеної на іншому комп&apos;ютері, спробуйте зменшити роздільну здатність гри або змінити ці налаштування.</translation>
+        <source>To improve performance streaming a game running on another computer, try reducing your game's resolution or adjusting these settings.</source>
+        <translation type="vanished">Щоб покращити продуктивність трансляції гри, запущеної на іншому комп'ютері, спробуйте зменшити роздільну здатність гри або змінити ці налаштування.</translation>
     </message>
     <message>
         <source>Enable Advanced Host Options</source>
         <translation type="vanished">Увімкнути додаткові налаштування хоста</translation>
     </message>
     <message>
-        <source>To improve performance streaming a game running on this computer, try reducing your game&apos;s resolution or adjusting these settings.</source>
-        <translation type="vanished">Щоб покращити продуктивність трансляції гри, запущеної на цьому комп&apos;ютері, спробуйте зменшити роздільну здатність гри або змінити ці налаштування.</translation>
+        <source>To improve performance streaming a game running on this computer, try reducing your game's resolution or adjusting these settings.</source>
+        <translation type="vanished">Щоб покращити продуктивність трансляції гри, запущеної на цьому комп'ютері, спробуйте зменшити роздільну здатність гри або змінити ці налаштування.</translation>
     </message>
     <message>
         <source>Enhanced 1080p</source>

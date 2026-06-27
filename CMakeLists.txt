@@ -44,6 +44,7 @@ qt_add_qml_module(megu_pack_optimizer
         src/qml/Theme.qml
         src/qml/components/AcrylicPanel.qml
         src/qml/components/MeguButton.qml
+        src/qml/components/MeguDropdown.qml
         src/qml/components/MeguSwitch.qml
         src/qml/components/MeguProgressBar.qml
         src/qml/components/MeguScrollBar.qml
