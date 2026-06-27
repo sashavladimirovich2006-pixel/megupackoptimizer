@@ -36,24 +36,6 @@ Rectangle {
         }
     }
 
-    DropShadow {
-        cached: true
-        anchors.fill: backgroundPlate
-        horizontalOffset: 0
-        verticalOffset: panel.hovered ? 10 : 4
-        radius: panel.hovered ? 22 : 12
-        samples: 24
-        color: panel.hovered
-            ? Qt.rgba(panel.accentColor.r, panel.accentColor.g, panel.accentColor.b, panel.danger ? 0.22 : 0.16)
-            : Theme.cardShadow
-        source: backgroundPlate
-        z: -2
-        visible: Theme.currentTheme !== "Белоснежная"
-
-        Behavior on verticalOffset { NumberAnimation { duration: Theme.animFast } }
-        Behavior on radius { NumberAnimation { duration: Theme.animFast } }
-        Behavior on color { ColorAnimation { duration: Theme.animFast } }
-    }
 
     Rectangle {
         id: backgroundPlate
