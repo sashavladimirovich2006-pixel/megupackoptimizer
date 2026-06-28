@@ -22,15 +22,7 @@ Item {
     readonly property color quantumPrimaryContainer: "#6063ee"
     readonly property color quantumGlowColor: "#c0c1ff"
     
-    // Spin angle for the decorative inner dashed ring
-    property real spinAngle: 0
-    NumberAnimation on spinAngle {
-        from: 0
-        to: 360
-        duration: 30000
-        loops: Animation.Infinite
-        running: true
-    }
+
     
     // Smooth check transition progress (0.0 to 1.0)
     property real checkedProgress: control.checked ? 1.0 : 0.0
@@ -224,45 +216,7 @@ Item {
                     }
                 }
             }
-            
-            // --- 5. Inner Decorative Rotating Dashed Ring ---
-            Canvas {
-                anchors.fill: parent
-                anchors.margins: Math.max(3, parent.height * 0.12)
-                rotation: control.spinAngle
-                visible: !control.steamStyle
-                
-                property real progress: control.checkedProgress
-                onProgressChanged: requestPaint()
-                
-                onPaint: {
-                    var ctx = getContext("2d");
-                    ctx.clearRect(0, 0, width, height);
-                    
-                    var cx = width / 2;
-                    var cy = height / 2;
-                    var r = width / 2;
-                    
-                    ctx.save();
-                    
-                    var isLightTheme = (Theme.currentTheme === "Белоснежная" || Theme.currentTheme === "Розовая");
-                    ctx.strokeStyle = isLightTheme 
-                        ? "rgba(13, 28, 45, 0.08)" 
-                        : "rgba(255, 255, 255, 0.08)";
-                        
-                    ctx.lineWidth = 1.0;
-                    ctx.setLineDash([2, 4]); // 2px dash, 4px gap
-                    
-                    ctx.beginPath();
-                    ctx.arc(cx, cy, r - 0.5, 0, 2 * Math.PI);
-                    ctx.stroke();
-                    
-                    ctx.restore();
-                }
-                
-                onWidthChanged: requestPaint()
-                onHeightChanged: requestPaint()
-            }
+
             
             // --- 6. Dense Glowing Core (Expands and fades in at center when checked) ---
             Canvas {
