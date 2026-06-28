@@ -21,28 +21,41 @@ Item {
     readonly property real thumbPadding: Math.max(3, Math.round(track.height * 0.1))
     readonly property real thumbSize: track.height - (thumbPadding * 2)
     
-    // Soft outer neon glow behind the track (horizontal purple-to-cyan gradient matching the mockup)
-    Rectangle {
+    // Ambient soft glow behind the entire track (matching the .toggle-active-glow class from Stitch)
+    Canvas {
+        id: trackGlow
         anchors.centerIn: track
-        width: track.width + 6
-        height: track.height + 6
-        radius: track.radius + 3
+        width: track.width * 2.5
+        height: track.height * 4.0
+        z: -2
+        visible: control.checked && !control.steamStyle
         
-        gradient: Gradient {
-            orientation: Gradient.Horizontal
-            GradientStop { position: 0.0; color: Qt.rgba(162, 82, 248, 0.22) } // Purple glow (left)
-            GradientStop { position: 1.0; color: Qt.rgba(0, 210, 255, 0.32) }  // Cyan glow (right)
+        property bool checkedState: control.checked
+        onCheckedStateChanged: requestPaint()
+        
+        onPaint: {
+            var ctx = getContext("2d");
+            ctx.clearRect(0, 0, width, height);
+            
+            var cx = width / 2;
+            var cy = height / 2;
+            var r = width / 2;
+            
+            // radial-gradient(circle at center, rgba(0, 210, 255, 0.25) 0%, rgba(162, 82, 248, 0.12) 40%, transparent 70%)
+            var grad = ctx.createRadialGradient(cx, cy, 0, cx, cy, r);
+            grad.addColorStop(0.0, "rgba(0, 210, 255, 0.28)");
+            grad.addColorStop(0.4, "rgba(162, 82, 248, 0.14)");
+            grad.addColorStop(0.7, "rgba(162, 82, 248, 0.02)");
+            grad.addColorStop(1.0, "rgba(0, 0, 0, 0.0)");
+            
+            ctx.fillStyle = grad;
+            ctx.beginPath();
+            ctx.arc(cx, cy, r, 0, 2 * Math.PI);
+            ctx.fill();
         }
         
-        opacity: (control.checked && !control.steamStyle) ? (mouseArea.containsMouse ? 1.0 : 0.65) : 0.0
-        visible: opacity > 0.0
-        
-        Behavior on opacity { 
-            NumberAnimation { 
-                duration: 250 
-                easing.type: Easing.OutQuad 
-            } 
-        }
+        onWidthChanged: requestPaint()
+        onHeightChanged: requestPaint()
     }
 
     Rectangle {
@@ -252,88 +265,73 @@ Item {
                 }
             }
             
-            // --- Simulated Checked Gaussian Blur Glow Stack (zero RHI bugs, extremely soft & premium) ---
-            // Glow Layer 1 (Largest, most diffused ambient bloom)
-            Rectangle {
+            // --- High-Fidelity Vector Radial Gradient Shadow Stack (zero banding, zero RHI bugs) ---
+            Canvas {
+                id: shadowCanvas
                 anchors.centerIn: parent
-                width: parent.height + 12
-                height: parent.height + 12
-                radius: width / 2
-                color: control.checked ? "#00D2FF" : "transparent"
-                opacity: control.checked ? 0.05 : 0.0
-                z: -4
-                visible: !control.steamStyle
-                Behavior on opacity { NumberAnimation { duration: 250 } }
-            }
-            
-            // Glow Layer 2 (Medium diffused ambient bloom)
-            Rectangle {
-                anchors.centerIn: parent
-                width: parent.height + 8
-                height: parent.height + 8
-                radius: width / 2
-                color: control.checked ? "#00D2FF" : "transparent"
-                opacity: control.checked ? 0.10 : 0.0
-                z: -3
-                visible: !control.steamStyle
-                Behavior on opacity { NumberAnimation { duration: 250 } }
-            }
-
-            // Glow Layer 3 (Inner cyan shadow layer, shifted down)
-            Rectangle {
-                anchors.centerIn: parent
-                anchors.verticalCenterOffset: 1.5 // Shift down for y-offset shadow
-                width: parent.height + 4
-                height: parent.height + 4
-                radius: width / 2
-                color: control.checked ? "#00D2FF" : "transparent"
-                opacity: control.checked ? 0.22 : 0.0
-                z: -2
-                visible: !control.steamStyle
-                Behavior on opacity { NumberAnimation { duration: 250 } }
-            }
-
-            // Glow Layer 4 (Core purple shadow layer, shifted down)
-            Rectangle {
-                anchors.centerIn: parent
-                anchors.verticalCenterOffset: 1.0 // Shift down for y-offset shadow
-                width: parent.height + 1
-                height: parent.height + 1
-                radius: width / 2
-                color: control.checked ? "#A252F8" : "transparent"
-                opacity: control.checked ? 0.30 : 0.0
+                width: parent.height * 4.5 // Larger bounds for wide blur profile
+                height: parent.height * 4.5
                 z: -1
                 visible: !control.steamStyle
-                Behavior on opacity { NumberAnimation { duration: 250 } }
-            }
-
-            // --- Unchecked State Shadow Stack (soft dark navy shadows) ---
-            // Unchecked Shadow Layer 1 (Outer soft shadow)
-            Rectangle {
-                anchors.centerIn: parent
-                anchors.verticalCenterOffset: 1.5
-                width: parent.height + 3
-                height: parent.height + 3
-                radius: width / 2
-                color: "#0D1C2D"
-                opacity: (!control.checked && !control.steamStyle) ? 0.12 : 0.0
-                z: -2
-                visible: !control.steamStyle
-                Behavior on opacity { NumberAnimation { duration: 250 } }
-            }
-            
-            // Unchecked Shadow Layer 2 (Inner crisp shadow)
-            Rectangle {
-                anchors.centerIn: parent
-                anchors.verticalCenterOffset: 0.8
-                width: parent.height
-                height: parent.height
-                radius: width / 2
-                color: "#0D1C2D"
-                opacity: (!control.checked && !control.steamStyle) ? 0.18 : 0.0
-                z: -1
-                visible: !control.steamStyle
-                Behavior on opacity { NumberAnimation { duration: 250 } }
+                
+                property bool checkedState: control.checked
+                onCheckedStateChanged: requestPaint()
+                
+                onPaint: {
+                    var ctx = getContext("2d");
+                    ctx.clearRect(0, 0, width, height);
+                    
+                    var cx = width / 2;
+                    var cy = height / 2;
+                    
+                    if (control.checked) {
+                        // 1. Cyan Ambient Glow (offset y: 10px on 44px thumb, blur: 24px on 44px thumb)
+                        var cyanY = cy + (thumb.height * (10.0 / 44.0));
+                        var cyanRadius = thumb.height * (24.0 / 44.0) * 1.8;
+                        
+                        var gradCyan = ctx.createRadialGradient(cx, cyanY, 0, cx, cyanY, cyanRadius);
+                        gradCyan.addColorStop(0.0, "rgba(0, 210, 255, 0.45)");
+                        gradCyan.addColorStop(0.3, "rgba(0, 210, 255, 0.22)");
+                        gradCyan.addColorStop(0.6, "rgba(0, 210, 255, 0.08)");
+                        gradCyan.addColorStop(1.0, "rgba(0, 210, 255, 0.0)");
+                        
+                        ctx.fillStyle = gradCyan;
+                        ctx.beginPath();
+                        ctx.arc(cx, cyanY, cyanRadius, 0, 2 * Math.PI);
+                        ctx.fill();
+                        
+                        // 2. Purple Directional Glow (offset y: 6px on 44px thumb, blur: 12px on 44px thumb)
+                        var purpleY = cy + (thumb.height * (6.0 / 44.0));
+                        var purpleRadius = thumb.height * (12.0 / 44.0) * 1.8;
+                        
+                        var gradPurple = ctx.createRadialGradient(cx, purpleY, 0, cx, purpleY, purpleRadius);
+                        gradPurple.addColorStop(0.0, "rgba(162, 82, 248, 0.38)");
+                        gradPurple.addColorStop(0.4, "rgba(162, 82, 248, 0.16)");
+                        gradPurple.addColorStop(1.0, "rgba(162, 82, 248, 0.0)");
+                        
+                        ctx.fillStyle = gradPurple;
+                        ctx.beginPath();
+                        ctx.arc(cx, purpleY, purpleRadius, 0, 2 * Math.PI);
+                        ctx.fill();
+                    } else {
+                        // 3. Dark Inactive Drop Shadow (offset y: 4px on 44px thumb, blur: 16px on 44px thumb)
+                        var darkY = cy + (thumb.height * (4.0 / 44.0));
+                        var darkRadius = thumb.height * (16.0 / 44.0) * 2.0;
+                        
+                        var gradDark = ctx.createRadialGradient(cx, darkY, 0, cx, darkY, darkRadius);
+                        gradDark.addColorStop(0.0, "rgba(13, 28, 45, 0.18)");
+                        gradDark.addColorStop(0.4, "rgba(13, 28, 45, 0.08)");
+                        gradDark.addColorStop(1.0, "rgba(13, 28, 45, 0.0)");
+                        
+                        ctx.fillStyle = gradDark;
+                        ctx.beginPath();
+                        ctx.arc(cx, darkY, darkRadius, 0, 2 * Math.PI);
+                        ctx.fill();
+                    }
+                }
+                
+                onWidthChanged: requestPaint()
+                onHeightChanged: requestPaint()
             }
         }
     }
