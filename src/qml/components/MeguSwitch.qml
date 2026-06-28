@@ -26,8 +26,8 @@ Item {
         
         gradient: Gradient {
             orientation: Gradient.Horizontal
-            GradientStop { position: 0.0; color: Qt.rgba(168, 85, 247, 0.22) } // Purple glow (left)
-            GradientStop { position: 1.0; color: Qt.rgba(0, 240, 255, 0.32) }  // Cyan glow (right)
+            GradientStop { position: 0.0; color: Qt.rgba(162, 82, 248, 0.22) } // Purple glow (left)
+            GradientStop { position: 1.0; color: Qt.rgba(0, 210, 255, 0.32) }  // Cyan glow (right)
         }
         
         opacity: (control.checked && !control.steamStyle) ? (mouseArea.containsMouse ? 1.0 : 0.65) : 0.0
@@ -58,7 +58,7 @@ Item {
                 position: 0.0
                 color: {
                     if (control.steamStyle) return "#10161f";
-                    if (control.checked) return Qt.rgba(168, 85, 247, 0.12); // Soft purple (left)
+                    if (control.checked) return Qt.rgba(162, 82, 248, 0.12); // Soft purple (left)
                     var isLightTheme = (Theme.currentTheme === "Белоснежная" || Theme.currentTheme === "Розовая");
                     return isLightTheme ? "#D3DAE2" : "#080C14"; // Recessed top shade
                 }
@@ -67,7 +67,7 @@ Item {
                 position: 1.0
                 color: {
                     if (control.steamStyle) return "#10161f";
-                    if (control.checked) return Qt.rgba(0, 240, 255, 0.16);  // Soft cyan (right)
+                    if (control.checked) return Qt.rgba(0, 210, 255, 0.16);  // Soft cyan (right)
                     var isLightTheme = (Theme.currentTheme === "Белоснежная" || Theme.currentTheme === "Розовая");
                     return isLightTheme ? "#EDF2F7" : "#131C2E"; // Lighter bottom
                 }
@@ -79,7 +79,7 @@ Item {
                 return control.checked ? Theme.accent : (mouseArea.containsMouse ? Theme.borderHover : "#3c485c");
             }
             if (control.checked) {
-                return Qt.rgba(0, 240, 255, 0.25); // Extremely soft, premium cyan border
+                return Qt.rgba(0, 210, 255, 0.25); // Extremely soft, premium cyan border matching the mockup
             }
             var isLightTheme = (Theme.currentTheme === "Белоснежная" || Theme.currentTheme === "Розовая");
             return mouseArea.containsMouse 
@@ -124,8 +124,8 @@ Item {
             
             gradient: Gradient {
                 orientation: Gradient.Horizontal
-                GradientStop { position: 0.0; color: Qt.rgba(168, 85, 247, 0.35) } // Purple bleed
-                GradientStop { position: 1.0; color: Qt.rgba(0, 240, 255, 0.45) }  // Cyan bleed
+                GradientStop { position: 0.0; color: Qt.rgba(162, 82, 248, 0.35) } // Purple bleed
+                GradientStop { position: 1.0; color: Qt.rgba(0, 210, 255, 0.45) }  // Cyan bleed
             }
             
             opacity: (control.checked && !control.steamStyle) ? 1.0 : 0.0
@@ -167,7 +167,7 @@ Item {
             border.width: 0
             anchors.verticalCenter: parent.verticalCenter
             
-            // Specular top highlight line for glossy 3D look in steam style
+            // Specular top highlight line for glossy 3D look in standard style (inset 0 2px 4px #ffffff)
             Rectangle {
                 anchors.left: parent.left
                 anchors.right: parent.right
@@ -176,15 +176,17 @@ Item {
                 height: 1
                 radius: 0.5
                 color: "#FFFFFF"
-                opacity: 0.3
-                visible: control.steamStyle
+                opacity: 0.5
+                visible: !control.steamStyle
             }
 
-            // --- Glassmorphic Glowing Checked Sphere (nested multi-layer vector stack, zero RHI bugs) ---
-            Item {
+            // --- Glassmorphic Glowing Checked Sphere (pure vector diagonal gradient, zero RHI bugs) ---
+            Rectangle {
                 id: checkedSphere
                 anchors.fill: parent
+                radius: parent.radius
                 opacity: (control.checked && !control.steamStyle) ? 1.0 : 0.0
+                rotation: -45 // Diagonally shifts the gradient to 135deg matching CSS!
                 
                 Behavior on opacity {
                     NumberAnimation {
@@ -193,91 +195,26 @@ Item {
                     }
                 }
                 
-                // Layer 1: Outer softest glow boundary (slight bleed)
-                Rectangle {
-                    anchors.centerIn: parent
-                    width: parent.width + 4
-                    height: parent.height + 4
-                    radius: width / 2
-                    opacity: 0.22
-                    
-                    gradient: Gradient {
-                        orientation: Gradient.Horizontal
-                        GradientStop { position: 0.0; color: "#A855F7" } // Purple
-                        GradientStop { position: 1.0; color: "#00F0FF" } // Cyan
-                    }
+                // 1. Base Gradient (vibrant purple-to-cyan diagonal matching #a252f8 to #00d2ff)
+                gradient: Gradient {
+                    orientation: Gradient.Horizontal
+                    GradientStop { position: 0.0; color: "#A252F8" } // Purple (top-left when rotated)
+                    GradientStop { position: 1.0; color: "#00D2FF" } // Cyan (bottom-right when rotated)
                 }
                 
-                // Layer 2: Main outer envelope
+                // 2. Diffused white core glow (matching .orb-core in CSS radial-gradient)
                 Rectangle {
                     anchors.centerIn: parent
-                    width: parent.width
-                    height: parent.height
+                    width: parent.width * 0.62
+                    height: parent.height * 0.62
                     radius: width / 2
-                    opacity: 0.65
+                    rotation: 45 // Counter-rotate so it remains centered
                     
                     gradient: Gradient {
-                        orientation: Gradient.Horizontal
-                        GradientStop { position: 0.0; color: "#A855F7" }
-                        GradientStop { position: 1.0; color: "#00F0FF" }
-                    }
-                }
-                
-                // Layer 3: Solid core body
-                Rectangle {
-                    anchors.centerIn: parent
-                    width: parent.width - 2
-                    height: parent.height - 2
-                    radius: width / 2
-                    opacity: 0.95
-                    
-                    gradient: Gradient {
-                        orientation: Gradient.Horizontal
-                        GradientStop { position: 0.0; color: "#8B5CF6" } // Purple
-                        GradientStop { position: 0.5; color: "#3B82F6" } // Royal Blue
-                        GradientStop { position: 1.0; color: "#06B6D4" } // Cyan
-                    }
-                }
-                
-                // Layer 4: Diffused highlight envelope (rotated diagonal)
-                Rectangle {
-                    anchors.centerIn: parent
-                    width: parent.width - 4
-                    height: parent.height - 4
-                    radius: width / 2
-                    rotation: -45
-                    opacity: 0.45
-                    
-                    gradient: Gradient {
-                        GradientStop { position: 0.0; color: "#FFFFFF" }
+                        GradientStop { position: 0.0; color: Qt.rgba(255, 255, 255, 0.85) }
+                        GradientStop { position: 0.7; color: Qt.rgba(255, 255, 255, 0.0) }
                         GradientStop { position: 1.0; color: "transparent" }
                     }
-                }
-                
-                // Layer 5: Glowing white core (very soft centered highlight)
-                Rectangle {
-                    anchors.centerIn: parent
-                    width: parent.width * 0.44
-                    height: parent.height * 0.44
-                    radius: width / 2
-                    opacity: 0.85
-                    
-                    gradient: Gradient {
-                        GradientStop { position: 0.0; color: "#FFFFFF" }
-                        GradientStop { position: 1.0; color: "transparent" }
-                    }
-                }
-                
-                // Layer 6: Sharp intense hot-spot center
-                Rectangle {
-                    anchors.centerIn: parent
-                    anchors.horizontalCenterOffset: 0.5
-                    anchors.verticalCenterOffset: -0.5
-                    width: parent.width * 0.22
-                    height: parent.height * 0.22
-                    radius: width / 2
-                    color: "#FFFFFF"
-                    opacity: 0.95
                 }
             }
             
@@ -285,13 +222,17 @@ Item {
             Rectangle {
                 anchors.fill: parent
                 radius: parent.radius
-                color: control.checked ? "#00A6FF" : "#000000"
-                opacity: control.checked ? 0.35 : 0.24
+                color: control.checked ? "#00D2FF" : (control.steamStyle ? "#000000" : "#0D1C2D")
+                opacity: control.checked ? 0.40 : 0.15
                 z: -1
                 
-                // Shift down for offset shadow
-                anchors.topMargin: 1.8
-                anchors.bottomMargin: -1.8
+                // Shift down for offset shadow (y: 2px)
+                anchors.topMargin: 2.0
+                anchors.bottomMargin: -2.0
+                
+                // Slightly wider for soft blur simulation
+                anchors.leftMargin: -1
+                anchors.rightMargin: -1
                 
                 visible: !control.steamStyle
                 Behavior on color { ColorAnimation { duration: 250 } }
@@ -300,19 +241,15 @@ Item {
 
             // --- Shadow Layer 2 (inside thumb, moves and scales automatically, z: -2) ---
             Rectangle {
-                anchors.left: parent.left
-                anchors.right: parent.right
-                anchors.top: parent.top
-                anchors.bottom: parent.bottom
-                anchors.margins: -1
-                radius: parent.radius + 1
-                color: control.checked ? "#00A6FF" : "#000000"
-                opacity: control.checked ? 0.12 : 0.10
+                anchors.fill: parent
+                radius: parent.radius
+                color: control.checked ? "#A252F8" : (control.steamStyle ? "#000000" : "#0D1C2D")
+                opacity: control.checked ? 0.30 : 0.10
                 z: -2
                 
-                // Shift down for offset shadow
-                anchors.topMargin: 1.4
-                anchors.bottomMargin: -3.4
+                // Shift down for offset shadow (y: 1.2px)
+                anchors.topMargin: 1.2
+                anchors.bottomMargin: -1.2
                 
                 visible: !control.steamStyle
                 Behavior on color { ColorAnimation { duration: 250 } }
