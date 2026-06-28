@@ -79,7 +79,7 @@ Item {
                 return control.checked ? Theme.accent : (mouseArea.containsMouse ? Theme.borderHover : "#3c485c");
             }
             if (control.checked) {
-                return Qt.rgba(0, 240, 255, 0.45); // Glowing cyan border
+                return Qt.rgba(0, 240, 255, 0.25); // Extremely soft, premium cyan border
             }
             var isLightTheme = (Theme.currentTheme === "Белоснежная" || Theme.currentTheme === "Розовая");
             return mouseArea.containsMouse 
@@ -180,11 +180,10 @@ Item {
                 visible: control.steamStyle
             }
 
-            // --- Glassmorphic Glowing Checked Sphere (pure vector multi-layer layout, zero RHI bugs) ---
-            Rectangle {
+            // --- Glassmorphic Glowing Checked Sphere (nested multi-layer vector stack, zero RHI bugs) ---
+            Item {
                 id: checkedSphere
                 anchors.fill: parent
-                radius: parent.radius
                 opacity: (control.checked && !control.steamStyle) ? 1.0 : 0.0
                 
                 Behavior on opacity {
@@ -194,39 +193,91 @@ Item {
                     }
                 }
                 
-                // 1. Base Gradient (rich purple-to-cyan horizontal body matching the mockup perfectly)
-                gradient: Gradient {
-                    orientation: Gradient.Horizontal
-                    GradientStop { position: 0.0; color: "#A855F7" } // Vibrant purple (left)
-                    GradientStop { position: 0.5; color: "#3B82F6" } // Royal blue (middle)
-                    GradientStop { position: 1.0; color: "#00F0FF" } // Glowing cyan (right)
-                }
-                
-                // 2. Diffused Specification Highlight 1 (Outer soft white glow)
+                // Layer 1: Outer softest glow boundary (slight bleed)
                 Rectangle {
                     anchors.centerIn: parent
-                    width: parent.width * 0.65
-                    height: parent.height * 0.65
+                    width: parent.width + 4
+                    height: parent.height + 4
                     radius: width / 2
+                    opacity: 0.22
                     
                     gradient: Gradient {
-                        GradientStop { position: 0.0; color: Qt.rgba(255, 255, 255, 0.55) }
+                        orientation: Gradient.Horizontal
+                        GradientStop { position: 0.0; color: "#A855F7" } // Purple
+                        GradientStop { position: 1.0; color: "#00F0FF" } // Cyan
+                    }
+                }
+                
+                // Layer 2: Main outer envelope
+                Rectangle {
+                    anchors.centerIn: parent
+                    width: parent.width
+                    height: parent.height
+                    radius: width / 2
+                    opacity: 0.65
+                    
+                    gradient: Gradient {
+                        orientation: Gradient.Horizontal
+                        GradientStop { position: 0.0; color: "#A855F7" }
+                        GradientStop { position: 1.0; color: "#00F0FF" }
+                    }
+                }
+                
+                // Layer 3: Solid core body
+                Rectangle {
+                    anchors.centerIn: parent
+                    width: parent.width - 2
+                    height: parent.height - 2
+                    radius: width / 2
+                    opacity: 0.95
+                    
+                    gradient: Gradient {
+                        orientation: Gradient.Horizontal
+                        GradientStop { position: 0.0; color: "#8B5CF6" } // Purple
+                        GradientStop { position: 0.5; color: "#3B82F6" } // Royal Blue
+                        GradientStop { position: 1.0; color: "#06B6D4" } // Cyan
+                    }
+                }
+                
+                // Layer 4: Diffused highlight envelope (rotated diagonal)
+                Rectangle {
+                    anchors.centerIn: parent
+                    width: parent.width - 4
+                    height: parent.height - 4
+                    radius: width / 2
+                    rotation: -45
+                    opacity: 0.45
+                    
+                    gradient: Gradient {
+                        GradientStop { position: 0.0; color: "#FFFFFF" }
                         GradientStop { position: 1.0; color: "transparent" }
                     }
                 }
                 
-                // 3. Diffused Specification Highlight 2 (Inner bright core, slightly offset right)
+                // Layer 5: Glowing white core (very soft centered highlight)
                 Rectangle {
                     anchors.centerIn: parent
-                    anchors.horizontalCenterOffset: 0.6
-                    width: parent.width * 0.34
-                    height: parent.height * 0.34
+                    width: parent.width * 0.44
+                    height: parent.height * 0.44
                     radius: width / 2
+                    opacity: 0.85
                     
                     gradient: Gradient {
-                        GradientStop { position: 0.0; color: Qt.rgba(255, 255, 255, 0.9) }
+                        GradientStop { position: 0.0; color: "#FFFFFF" }
                         GradientStop { position: 1.0; color: "transparent" }
                     }
+                }
+                
+                // Layer 6: Sharp intense hot-spot center
+                Rectangle {
+                    anchors.centerIn: parent
+                    anchors.horizontalCenterOffset: 0.5
+                    anchors.verticalCenterOffset: -0.5
+                    width: parent.width * 0.22
+                    height: parent.height * 0.22
+                    radius: width / 2
+                    color: "#FFFFFF"
+                    opacity: 0.95
                 }
             }
             
