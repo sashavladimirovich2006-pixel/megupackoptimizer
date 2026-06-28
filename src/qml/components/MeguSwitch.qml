@@ -153,29 +153,6 @@ Item {
             visible: !control.steamStyle
         }
         
-        // Soft glowing aura behind the thumb (simulates the light bleed / glow of the glass orb)
-        Rectangle {
-            anchors.centerIn: thumb
-            width: thumb.width + 6
-            height: thumb.height + 6
-            radius: width / 2
-            
-            gradient: Gradient {
-                orientation: Gradient.Horizontal
-                GradientStop { position: 0.0; color: Qt.rgba(162, 82, 248, 0.35) } // Purple bleed
-                GradientStop { position: 1.0; color: Qt.rgba(0, 210, 255, 0.45) }  // Cyan bleed
-            }
-            
-            opacity: (control.checked && !control.steamStyle) ? 1.0 : 0.0
-            visible: opacity > 0.0
-            
-            Behavior on opacity { 
-                NumberAnimation { 
-                    duration: 250 
-                    easing.type: Easing.OutQuad 
-                } 
-            }
-        }
 
         // Thumb capsule
         Item {
