@@ -125,10 +125,15 @@ int main(int argc, char* argv[]) {
     engine.addImportPath("qrc:/");
 
     // Translator setup
-    QTranslator* translator = new QTranslator(&app);
-    auto loadLanguage = [&app, &engine, translator](const QString &lang) {
-        app.removeTranslator(translator);
+    QTranslator* translator = nullptr;
+    auto loadLanguage = [&app, &engine, &translator](const QString &lang) {
+        if (translator) {
+            app.removeTranslator(translator);
+            delete translator;
+            translator = nullptr;
+        }
         if (lang != "en") {
+            translator = new QTranslator(&app);
             QString baseName = QString("megu_pack_optimizer_%1").arg(lang);
             bool loaded = translator->load(baseName, ":/MeguPackOptimizer/translations");
             if (!loaded) {
@@ -139,11 +144,13 @@ int main(int argc, char* argv[]) {
                 Logger::log(QString("%1 translation loaded successfully").arg(lang), "INFO");
             } else {
                 Logger::log(QString("Failed to load %1 translation from resource path").arg(lang), "WARNING");
+                delete translator;
+                translator = nullptr;
             }
         } else {
             Logger::log("Default language (English) selected", "INFO");
         }
-        engine.retranslate();
+        QMetaObject::invokeMethod(&engine, "retranslate", Qt::QueuedConnection);
     };
 
     // Load initial language
