@@ -17,6 +17,10 @@ Item {
     opacity: enabled ? 1.0 : 0.4
     Behavior on opacity { NumberAnimation { duration: Theme.animFast } }
     
+    // --- Dynamic Proportion Metrics (scales perfectly from 54x24 up to 140x56) ---
+    readonly property real thumbPadding: Math.max(3, Math.round(track.height * 0.1))
+    readonly property real thumbSize: track.height - (thumbPadding * 2)
+    
     // Soft outer neon glow behind the track (horizontal purple-to-cyan gradient matching the mockup)
     Rectangle {
         anchors.centerIn: track
@@ -43,11 +47,11 @@ Item {
 
     Rectangle {
         id: track
-        width: 54
-        height: 24
         anchors.left: parent.left
         anchors.verticalCenter: parent.verticalCenter
-        radius: control.steamStyle ? 5 : 12 // Perfect capsule when not steam style
+        width: parent.width - (labelText.visible ? labelText.width - 10 : 0)
+        height: parent.height
+        radius: control.steamStyle ? 5 : height / 2 // Perfect capsule
         
         color: "transparent" // Controlled entirely by gradient
         
@@ -58,18 +62,22 @@ Item {
                 position: 0.0
                 color: {
                     if (control.steamStyle) return "#10161f";
-                    if (control.checked) return Qt.rgba(162, 82, 248, 0.12); // Soft purple (left)
                     var isLightTheme = (Theme.currentTheme === "Белоснежная" || Theme.currentTheme === "Розовая");
-                    return isLightTheme ? "#D3DAE2" : "#080C14"; // Recessed top shade
+                    if (control.checked) {
+                        return isLightTheme ? "#e5efff" : Qt.rgba(162, 82, 248, 0.12); // Soft purple (left)
+                    }
+                    return isLightTheme ? "#eef4ff" : "#080C14"; // Recessed top shade
                 }
             }
             GradientStop { 
                 position: 1.0
                 color: {
                     if (control.steamStyle) return "#10161f";
-                    if (control.checked) return Qt.rgba(0, 210, 255, 0.16);  // Soft cyan (right)
                     var isLightTheme = (Theme.currentTheme === "Белоснежная" || Theme.currentTheme === "Розовая");
-                    return isLightTheme ? "#EDF2F7" : "#131C2E"; // Lighter bottom
+                    if (control.checked) {
+                        return isLightTheme ? "#e5efff" : Qt.rgba(0, 210, 255, 0.16);  // Soft cyan (right)
+                    }
+                    return isLightTheme ? "#eef4ff" : "#131C2E"; // Lighter bottom
                 }
             }
         }
@@ -142,8 +150,8 @@ Item {
         // Thumb circle
         Rectangle {
             id: thumb
-            height: 18
-            radius: control.steamStyle ? 4 : 9 // Perfect circle if not steam style
+            height: control.thumbSize
+            radius: control.steamStyle ? 4 : height / 2 // Perfect pill rounded shape
             
             // Base background gradient of the thumb (smooth 3D plastic ball for unchecked state)
             gradient: Gradient {
@@ -158,7 +166,8 @@ Item {
                     position: 1.0
                     color: {
                         if (control.steamStyle) return control.checked ? "#E2E8F0" : "#4b5a6c";
-                        return "#CBD5E1"; // Soft shadow at the bottom of unchecked marble
+                        var isLightTheme = (Theme.currentTheme === "Белоснежная" || Theme.currentTheme === "Розовая");
+                        return isLightTheme ? "#F1F5F9" : "#CBD5E1"; // Soft shadow at the bottom of unchecked marble
                     }
                 }
             }
@@ -180,7 +189,7 @@ Item {
                 visible: !control.steamStyle
             }
 
-            // --- Glassmorphic Glowing Checked Sphere (pure vector diagonal gradient, zero RHI bugs) ---
+            // --- Glassmorphic Glowing Checked Sphere (pure vector horizontal gradient, zero RHI bugs) ---
             Rectangle {
                 id: checkedSphere
                 anchors.fill: parent
@@ -210,13 +219,14 @@ Item {
                     border.width: 1
                 }
                 
-                // 3. Diffused white specular core (rotated diagonally to align with 135deg light source)
+                // 3. Diffused white specular core (kept circular and anchored to top-left for realistic reflection)
                 Rectangle {
-                    anchors.centerIn: parent
-                    anchors.horizontalCenterOffset: -0.5
-                    anchors.verticalCenterOffset: -0.5
-                    width: parent.width * 0.74
-                    height: parent.height * 0.74
+                    anchors.top: parent.top
+                    anchors.left: parent.left
+                    anchors.topMargin: parent.height * 0.1
+                    anchors.leftMargin: parent.height * 0.1
+                    width: parent.height * 0.65
+                    height: parent.height * 0.65
                     radius: width / 2
                     rotation: -45
                     
@@ -228,13 +238,14 @@ Item {
                     }
                 }
                 
-                // 4. Center hot-spot highlight (makes the core look intensely luminous)
+                // 4. Center hot-spot highlight (positioned on top-left to make the reflection pop)
                 Rectangle {
-                    anchors.centerIn: parent
-                    anchors.horizontalCenterOffset: -1
-                    anchors.verticalCenterOffset: -1
-                    width: parent.width * 0.32
-                    height: parent.height * 0.32
+                    anchors.top: parent.top
+                    anchors.left: parent.left
+                    anchors.topMargin: parent.height * 0.22
+                    anchors.leftMargin: parent.height * 0.22
+                    width: parent.height * 0.25
+                    height: parent.height * 0.25
                     radius: width / 2
                     color: "#FFFFFF"
                     opacity: 0.8
@@ -245,7 +256,7 @@ Item {
             // Glow Layer 1 (Largest, most diffused ambient bloom)
             Rectangle {
                 anchors.centerIn: parent
-                width: parent.width + 12
+                width: parent.height + 12
                 height: parent.height + 12
                 radius: width / 2
                 color: control.checked ? "#00D2FF" : "transparent"
@@ -258,7 +269,7 @@ Item {
             // Glow Layer 2 (Medium diffused ambient bloom)
             Rectangle {
                 anchors.centerIn: parent
-                width: parent.width + 8
+                width: parent.height + 8
                 height: parent.height + 8
                 radius: width / 2
                 color: control.checked ? "#00D2FF" : "transparent"
@@ -272,7 +283,7 @@ Item {
             Rectangle {
                 anchors.centerIn: parent
                 anchors.verticalCenterOffset: 1.5 // Shift down for y-offset shadow
-                width: parent.width + 4
+                width: parent.height + 4
                 height: parent.height + 4
                 radius: width / 2
                 color: control.checked ? "#00D2FF" : "transparent"
@@ -286,7 +297,7 @@ Item {
             Rectangle {
                 anchors.centerIn: parent
                 anchors.verticalCenterOffset: 1.0 // Shift down for y-offset shadow
-                width: parent.width + 1
+                width: parent.height + 1
                 height: parent.height + 1
                 radius: width / 2
                 color: control.checked ? "#A252F8" : "transparent"
@@ -301,7 +312,7 @@ Item {
             Rectangle {
                 anchors.centerIn: parent
                 anchors.verticalCenterOffset: 1.5
-                width: parent.width + 3
+                width: parent.height + 3
                 height: parent.height + 3
                 radius: width / 2
                 color: "#0D1C2D"
@@ -315,7 +326,7 @@ Item {
             Rectangle {
                 anchors.centerIn: parent
                 anchors.verticalCenterOffset: 0.8
-                width: parent.width
+                width: parent.height
                 height: parent.height
                 radius: width / 2
                 color: "#0D1C2D"
@@ -364,15 +375,15 @@ Item {
     states: [
         State {
             name: "unchecked"
-            PropertyChanges { target: thumb; x: 3; width: 18 }
+            PropertyChanges { target: thumb; x: control.thumbPadding; width: control.thumbSize }
         },
         State {
             name: "checked"
-            PropertyChanges { target: thumb; x: track.width - 18 - 3; width: 18 }
+            PropertyChanges { target: thumb; x: track.width - control.thumbSize - control.thumbPadding; width: control.thumbSize }
         },
         State {
             name: "indeterminate"
-            PropertyChanges { target: thumb; x: (track.width - 18) / 2; width: 18 }
+            PropertyChanges { target: thumb; x: (track.width - control.thumbSize) / 2; width: control.thumbSize }
         }
     ]
 
@@ -387,19 +398,19 @@ Item {
                     easing.type: Easing.OutQuint // Luxurious decelerating slide
                 }
                 SequentialAnimation {
-                    // Quick stretch to 26px during the first part of the slide
+                    // Quick stretch during the first part of the slide
                     NumberAnimation {
                         target: thumb
                         property: "width"
-                        to: 26
+                        to: control.thumbSize * 1.44
                         duration: 120
                         easing.type: Easing.OutQuad
                     }
-                    // Slow recovery to 18px as it lands
+                    // Slow recovery as it lands
                     NumberAnimation {
                         target: thumb
                         property: "width"
-                        to: 18
+                        to: control.thumbSize
                         duration: 200
                         easing.type: Easing.OutQuad
                     }
@@ -419,14 +430,14 @@ Item {
                     NumberAnimation {
                         target: thumb
                         property: "width"
-                        to: 26
+                        to: control.thumbSize * 1.44
                         duration: 120
                         easing.type: Easing.OutQuad
                     }
                     NumberAnimation {
                         target: thumb
                         property: "width"
-                        to: 18
+                        to: control.thumbSize
                         duration: 200
                         easing.type: Easing.OutQuad
                     }
