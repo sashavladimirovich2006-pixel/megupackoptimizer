@@ -123,6 +123,14 @@ qt_add_qml_module(megu_pack_optimizer
         src/resources/vlc.svg
         src/resources/generic_audio.svg
         translations/megu_pack_optimizer_uk.qm
+        translations/megu_pack_optimizer_ru.qm
+        translations/megu_pack_optimizer_de.qm
+        translations/megu_pack_optimizer_es.qm
+        translations/megu_pack_optimizer_fr.qm
+        translations/megu_pack_optimizer_it.qm
+        translations/megu_pack_optimizer_pl.qm
+        translations/megu_pack_optimizer_sv.qm
+        translations/megu_pack_optimizer_cs.qm
 )
 
 # Link Qt6 Libraries

@@ -11,8 +11,8 @@ if %ERRORLEVEL% neq 0 (
     exit /b %ERRORLEVEL%
 )
 
-echo [2/5] Compiling translations with lrelease...
-"D:\Aps\Qt\6.11.1\msvc2022_64\bin\lrelease.exe" translations\megu_pack_optimizer_uk.ts -qm translations\megu_pack_optimizer_uk.qm
+for %%f in (translations\*.ts) do "D:\Aps\Qt\6.11.1\msvc2022_64\bin\lrelease.exe" "%%f"
+
 
 if %ERRORLEVEL% neq 0 (
     echo [WARNING] lrelease failed to compile translations! Proceeding anyway...

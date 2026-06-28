@@ -205,12 +205,20 @@ Item {
                         width: 160
                         height: 32
                         anchors.verticalCenter: parent.verticalCenter
-                        model: ["en", "uk"]
-                        currentIndex: settingsBackend.language === "en" ? 0 : 1
+                        model: ["en", "uk", "ru", "de", "es", "fr", "it", "pl", "sv", "cs"]
+                        currentIndex: model.indexOf(settingsBackend.language) !== -1 ? model.indexOf(settingsBackend.language) : 0
                         
                         textFormatter: function(item) {
                             if (item === "en") return qsTr("English");
                             if (item === "uk") return qsTr("Ukrainian");
+                            if (item === "ru") return qsTr("Russian");
+                            if (item === "de") return qsTr("German");
+                            if (item === "es") return qsTr("Spanish");
+                            if (item === "fr") return qsTr("French");
+                            if (item === "it") return qsTr("Italian");
+                            if (item === "pl") return qsTr("Polish");
+                            if (item === "sv") return qsTr("Swedish");
+                            if (item === "cs") return qsTr("Czech");
                             return item;
                         }
                         
@@ -225,7 +233,8 @@ Item {
                         Connections {
                             target: settingsBackend
                             function onLanguageChanged() {
-                                languageDropdown.currentIndex = settingsBackend.language === "en" ? 0 : 1;
+                                var idx = languageDropdown.model.indexOf(settingsBackend.language);
+                                languageDropdown.currentIndex = idx !== -1 ? idx : 0;
                             }
                         }
                     }

@@ -128,16 +128,17 @@ int main(int argc, char* argv[]) {
     QTranslator* translator = new QTranslator(&app);
     auto loadLanguage = [&app, &engine, translator](const QString &lang) {
         app.removeTranslator(translator);
-        if (lang == "uk") {
-            bool loaded = translator->load("megu_pack_optimizer_uk", ":/MeguPackOptimizer/translations");
+        if (lang != "en") {
+            QString baseName = QString("megu_pack_optimizer_%1").arg(lang);
+            bool loaded = translator->load(baseName, ":/MeguPackOptimizer/translations");
             if (!loaded) {
-                loaded = translator->load(":/MeguPackOptimizer/translations/megu_pack_optimizer_uk.qm");
+                loaded = translator->load(QString(":/MeguPackOptimizer/translations/%1.qm").arg(baseName));
             }
             if (loaded) {
                 app.installTranslator(translator);
-                Logger::log("Ukrainian translation loaded successfully", "INFO");
+                Logger::log(QString("%1 translation loaded successfully").arg(lang), "INFO");
             } else {
-                Logger::log("Failed to load Ukrainian translation from resource path", "WARNING");
+                Logger::log(QString("Failed to load %1 translation from resource path").arg(lang), "WARNING");
             }
         } else {
             Logger::log("Default language (English) selected", "INFO");
