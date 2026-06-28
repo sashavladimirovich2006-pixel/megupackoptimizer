@@ -151,7 +151,7 @@
     <message>
         <location filename="../src/qml/views/CleanupDrawer.qml" line="654" />
         <source>Storage</source>
-        <translation>Сховище</translation>
+        <translation>Накопичувач</translation>
     </message>
     <message>
         <location filename="../src/qml/views/CleanupDrawer.qml" line="656" />
@@ -203,114 +203,114 @@
     <name>DashboardView</name>
     <message>
         <source>SYSTEM SPECIFICATIONS</source>
-        <translation type="vanished">ХАРАКТЕРИСТИКИ СИСТЕМИ</translation>
+        <translation>ХАРАКТЕРИСТИКИ СИСТЕМИ</translation>
     </message>
     <message>
         <source>Operating System</source>
-        <translation type="vanished">Операційна система</translation>
+        <translation>Операційна система</translation>
     </message>
     <message>
         <source>Processor (CPU)</source>
-        <translation type="vanished">Процесор (CPU)</translation>
+        <translation>Процесор (CPU)</translation>
     </message>
     <message>
         <source>Logical Cores</source>
-        <translation type="vanished">Логічні ядра</translation>
+        <translation>Логічні ядра</translation>
     </message>
     <message>
         <source>Memory (RAM)</source>
-        <translation type="vanished">Оперативна пам'ять (RAM)</translation>
+        <translation>Оперативна пам'ять (RAM)</translation>
     </message>
     <message>
         <source>Graphics Card (GPU)</source>
-        <translation type="vanished">Відеокарта (GPU)</translation>
+        <translation>Відеокарта (GPU)</translation>
     </message>
     <message>
         <source>Motherboard</source>
-        <translation type="vanished">Материнська плата</translation>
+        <translation>Материнська плата</translation>
     </message>
     <message>
         <source>Storage (C:)</source>
-        <translation type="vanished">Накопичувач (C:)</translation>
+        <translation>Накопичувач (C:)</translation>
     </message>
     <message>
         <source>Primary Display</source>
-        <translation type="vanished">Основний дисплей</translation>
+        <translation>Основний дисплей</translation>
     </message>
     <message>
         <location filename="../src/qml/views/DashboardView.qml" line="49" />
         <source>Detecting...</source>
-        <translation type="unfinished" />
+        <translation>Виявлення...</translation>
     </message>
     <message>
         <location filename="../src/qml/views/DashboardView.qml" line="65" />
         <source>6-Core</source>
-        <translation type="unfinished" />
+        <translation>Шестиядерний</translation>
     </message>
     <message>
         <location filename="../src/qml/views/DashboardView.qml" line="66" />
         <source>8-Core</source>
-        <translation type="unfinished" />
+        <translation>Восьмиядерний</translation>
     </message>
     <message>
         <location filename="../src/qml/views/DashboardView.qml" line="67" />
         <source>12-Core</source>
-        <translation type="unfinished" />
+        <translation>12-ядерний</translation>
     </message>
     <message>
         <location filename="../src/qml/views/DashboardView.qml" line="68" />
         <source>16-Core</source>
-        <translation type="unfinished" />
+        <translation>16-ядерний</translation>
     </message>
     <message>
         <location filename="../src/qml/views/DashboardView.qml" line="69" />
         <source>4-Core</source>
-        <translation type="unfinished" />
+        <translation>Чотириядерний</translation>
     </message>
     <message>
         <location filename="../src/qml/views/DashboardView.qml" line="74" />
         <source>-Core</source>
-        <translation type="unfinished" />
+        <translation>-Ядро</translation>
     </message>
     <message>
         <location filename="../src/qml/views/DashboardView.qml" line="76" />
         <source>Multi-Core</source>
-        <translation type="unfinished" />
+        <translation>Багатоядерний</translation>
     </message>
     <message>
         <location filename="../src/qml/views/DashboardView.qml" line="167" />
         <source>System Specifications</source>
-        <translation type="unfinished" />
+        <translation>Технічні характеристики системи</translation>
     </message>
     <message>
         <location filename="../src/qml/views/DashboardView.qml" line="188" />
         <source>Windows NT Kernel</source>
-        <translation type="unfinished" />
+        <translation>Ядро Windows NT</translation>
     </message>
     <message>
         <location filename="../src/qml/views/DashboardView.qml" line="215" />
         <source>Hyper-Threading Active</source>
-        <translation type="unfinished" />
+        <translation>Функція Hyper-Threading увімкнена</translation>
     </message>
     <message>
         <location filename="../src/qml/views/DashboardView.qml" line="227" />
         <source>DDR4 / Dual-Channel</source>
-        <translation type="unfinished" />
+        <translation>DDR4 / Двоканальний</translation>
     </message>
     <message>
         <location filename="../src/qml/views/DashboardView.qml" line="242" />
         <source>PCIe x16 Gen 4.0</source>
-        <translation type="unfinished" />
+        <translation>PCIe x16, покоління 4.0</translation>
     </message>
     <message>
         <location filename="../src/qml/views/DashboardView.qml" line="269" />
         <source>C: System Drive</source>
-        <translation type="unfinished" />
+        <translation>C: Системний диск</translation>
     </message>
     <message>
         <location filename="../src/qml/views/DashboardView.qml" line="284" />
         <source>DirectX 12 Compatible</source>
-        <translation type="unfinished" />
+        <translation>Сумісність із DirectX 12</translation>
     </message>
     <message>
         <location filename="../src/qml/views/DashboardView.qml" line="304" />
@@ -383,12 +383,12 @@
     <message>
         <location filename="../src/qml/views/DefenderDrawer.qml" line="15" />
         <source>Configure custom Windows Defender protection settings and services.</source>
-        <translation type="unfinished" />
+        <translation>Налаштуйте власні параметри захисту та служби Windows Defender.</translation>
     </message>
     <message>
         <location filename="../src/qml/views/DefenderDrawer.qml" line="54" />
         <source>Disable the startup of WinDefend, Sense, WdFilter, and WdBoot services. Note: Requires disabling Tamper Protection.</source>
-        <translation type="unfinished" />
+        <translation>Вимкніть запуск служб WinDefend, Sense, WdFilter та WdBoot. Примітка: для цього потрібно вимкнути функцію захисту від несанкціонованого втручання.</translation>
     </message>
     <message>
         <location filename="../src/qml/views/DefenderDrawer.qml" line="71" />
@@ -408,22 +408,22 @@
     <message>
         <location filename="../src/qml/views/DefenderDrawer.qml" line="100" />
         <source>Complete Defender Deletion:</source>
-        <translation type="unfinished" />
+        <translation>Повне видалення Defender:</translation>
     </message>
     <message>
         <location filename="../src/qml/views/DefenderDrawer.qml" line="108" />
         <source>Removes, unregisters, and disables all Defender services, drivers, components, and scheduled tasks just like BoosterX.</source>
-        <translation type="unfinished" />
+        <translation>Видаляє, скасовує реєстрацію та вимикає всі служби, драйвери, компоненти та заплановані завдання Defender, так само як і BoosterX.</translation>
     </message>
     <message>
         <location filename="../src/qml/views/DefenderDrawer.qml" line="120" />
         <source>Cancel Deletion</source>
-        <translation type="unfinished" />
+        <translation>Скасувати видалення</translation>
     </message>
     <message>
         <location filename="../src/qml/views/DefenderDrawer.qml" line="122" />
         <source>Completely Delete Windows Defender</source>
-        <translation type="unfinished" />
+        <translation>Повністю видалити Windows Defender</translation>
     </message>
 </context>
 <context>
@@ -431,12 +431,12 @@
     <message>
         <location filename="../src/qml/views/DesktopDrawer.qml" line="14" />
         <source>Customization of desktop icons, taskbar elements, window behavior, and wallpaper quality.</source>
-        <translation type="unfinished" />
+        <translation>Налаштування піктограм на робочому столі, елементів панелі завдань, поведінки вікон та якості фонових зображень.</translation>
     </message>
     <message>
         <location filename="../src/qml/views/DesktopDrawer.qml" line="44" />
         <source>🔄 Some changes (Classic Context Menu, Shortcut Arrows) require restarting Windows Explorer to take effect.</source>
-        <translation type="unfinished" />
+        <translation>🔄 Деякі зміни (класичне контекстне меню, стрілки швидкого доступу) вимагають перезапуску Провідника Windows, щоб набути чинності.</translation>
     </message>
     <message>
         <location filename="../src/qml/views/DesktopDrawer.qml" line="53" />
@@ -446,72 +446,72 @@
     <message>
         <location filename="../src/qml/views/DesktopDrawer.qml" line="79" />
         <source>Show "This PC" icon on Desktop</source>
-        <translation type="unfinished" />
+        <translation>Показати піктограму «Цей ПК» на робочому столі</translation>
     </message>
     <message>
         <location filename="../src/qml/views/DesktopDrawer.qml" line="86" />
         <source>Display the "This PC" folder icon on the Windows desktop.</source>
-        <translation type="unfinished" />
+        <translation>Відобразити піктограму папки «Цей ПК» на робочому столі Windows.</translation>
     </message>
     <message>
         <location filename="../src/qml/views/DesktopDrawer.qml" line="122" />
         <source>Show Recycle Bin icon on Desktop</source>
-        <translation type="unfinished" />
+        <translation>Показати піктограму «Кошик» на робочому столі</translation>
     </message>
     <message>
         <location filename="../src/qml/views/DesktopDrawer.qml" line="129" />
         <source>Display the Recycle Bin icon on the Windows desktop.</source>
-        <translation type="unfinished" />
+        <translation>Відобразити піктограму «Кошик» на робочому столі Windows.</translation>
     </message>
     <message>
         <location filename="../src/qml/views/DesktopDrawer.qml" line="165" />
         <source>Show Widgets button on Taskbar</source>
-        <translation type="unfinished" />
+        <translation>Кнопка «Показати віджети» на панелі завдань</translation>
     </message>
     <message>
         <location filename="../src/qml/views/DesktopDrawer.qml" line="172" />
         <source>Show the Widgets (weather and interests) icon on the taskbar.</source>
-        <translation type="unfinished" />
+        <translation>Відобразити піктограму «Віджети» (погода та інтереси) на панелі завдань.</translation>
     </message>
     <message>
         <location filename="../src/qml/views/DesktopDrawer.qml" line="208" />
         <source>Shortcut Arrow Overlays</source>
-        <translation type="unfinished" />
+        <translation>Накладки зі стрілками-скороченнями</translation>
     </message>
     <message>
         <location filename="../src/qml/views/DesktopDrawer.qml" line="215" />
         <source>Show or hide the arrow overlay icon on desktop and Explorer shortcuts.</source>
-        <translation type="unfinished" />
+        <translation>Показати або приховати значок у вигляді стрілки на ярликах на робочому столі та в Провіднику.</translation>
     </message>
     <message>
         <location filename="../src/qml/views/DesktopDrawer.qml" line="251" />
         <source>Drop shadows for icon labels</source>
-        <translation type="unfinished" />
+        <translation>Тіні для підписів до піктограм</translation>
     </message>
     <message>
         <location filename="../src/qml/views/DesktopDrawer.qml" line="258" />
         <source>Display drop shadows under shortcut and folder labels on the desktop to make text more readable.</source>
-        <translation type="unfinished" />
+        <translation>Відображати тіні під назвами ярликів і папок на робочому столі, щоб текст було легше читати.</translation>
     </message>
     <message>
         <location filename="../src/qml/views/DesktopDrawer.qml" line="294" />
         <source>Show desktop button on Taskbar</source>
-        <translation type="unfinished" />
+        <translation>Кнопка «Показати робочий стіл» на панелі завдань</translation>
     </message>
     <message>
         <location filename="../src/qml/views/DesktopDrawer.qml" line="301" />
         <source>Enable the thin vertical strip button at the far right corner of the taskbar to minimize all windows.</source>
-        <translation type="unfinished" />
+        <translation>Натисніть на вузьку вертикальну смужку в крайньому правому куті панелі завдань, щоб згорнути всі вікна.</translation>
     </message>
     <message>
         <location filename="../src/qml/views/DesktopDrawer.qml" line="337" />
         <source>Titlebar window shake (Aero Shake)</source>
-        <translation type="unfinished" />
+        <translation>Струшування вікна за допомогою панелі заголовка (Aero Shake)</translation>
     </message>
     <message>
         <location filename="../src/qml/views/DesktopDrawer.qml" line="344" />
         <source>When enabled, shaking a window's title bar will minimize all other open windows.</source>
-        <translation type="unfinished" />
+        <translation>Якщо ця функція увімкнена, струшування заголовка вікна призведе до згорнення всіх інших відкритих вікон.</translation>
     </message>
     <message>
         <location filename="../src/qml/views/DesktopDrawer.qml" line="380" />
@@ -521,17 +521,17 @@
     <message>
         <location filename="../src/qml/views/DesktopDrawer.qml" line="387" />
         <source>Disable the Windows 11 Fluent context menu and restore the classic Windows 10 style context menu.</source>
-        <translation type="unfinished" />
+        <translation>Вимкнути контекстне меню Windows 11 у стилі Fluent та відновити класичне контекстне меню у стилі Windows 10.</translation>
     </message>
     <message>
         <location filename="../src/qml/views/DesktopDrawer.qml" line="429" />
         <source>Wallpaper quality</source>
-        <translation type="unfinished" />
+        <translation>Якість шпалер</translation>
     </message>
     <message>
         <location filename="../src/qml/views/DesktopDrawer.qml" line="436" />
         <source>Specify the compression quality of imported JPEG wallpapers. 100% means no compression (highest quality).</source>
-        <translation type="unfinished" />
+        <translation>Вкажіть якість стиснення імпортованих шпалер у форматі JPEG. 100% означає відсутність стиснення (найвища якість).</translation>
     </message>
 </context>
 <context>
@@ -539,12 +539,12 @@
     <message>
         <location filename="../src/qml/views/ExplorerDrawer.qml" line="14" />
         <source>Customization of Windows Explorer settings, views, and defaults.</source>
-        <translation type="unfinished" />
+        <translation>Налаштування параметрів, режимів перегляду та значень за замовчуванням у Провіднику Windows.</translation>
     </message>
     <message>
         <location filename="../src/qml/views/ExplorerDrawer.qml" line="44" />
         <source>🔄 Some changes (Classic Ribbon, Preview Pane, Recycle Bin, Home, Gallery) require restarting Windows Explorer to take effect.</source>
-        <translation type="unfinished" />
+        <translation>🔄 Деякі зміни (класична стрічка, панель попереднього перегляду, кошик, вкладка «Головна», галерея) вимагають перезапуску Провідника Windows, щоб набути чинності.</translation>
     </message>
     <message>
         <location filename="../src/qml/views/ExplorerDrawer.qml" line="53" />
@@ -554,123 +554,123 @@
     <message>
         <location filename="../src/qml/views/ExplorerDrawer.qml" line="79" />
         <source>Show file extensions</source>
-        <translation type="unfinished" />
+        <translation>Показати розширення файлів</translation>
     </message>
     <message>
         <location filename="../src/qml/views/ExplorerDrawer.qml" line="86" />
         <source>Display file extensions (e.g. .txt, .exe) in File Explorer.</source>
-        <translation type="unfinished" />
+        <translation>Відображати розширення файлів (наприклад, .txt, .exe) у Провіднику файлів.</translation>
     </message>
     <message>
         <location filename="../src/qml/views/ExplorerDrawer.qml" line="122" />
         <source>Show hidden files and folders</source>
-        <translation type="unfinished" />
+        <translation>Показати приховані файли та папки</translation>
     </message>
     <message>
         <location filename="../src/qml/views/ExplorerDrawer.qml" line="129" />
         <source>Display hidden files, folders, and protected operating system files.</source>
-        <translation type="unfinished" />
+        <translation>Відобразити приховані файли, папки та захищені файли операційної системи.</translation>
     </message>
     <message>
         <location filename="../src/qml/views/ExplorerDrawer.qml" line="165" />
         <source>Show extracted files</source>
-        <translation type="unfinished" />
+        <translation>Показати витягнуті файли</translation>
     </message>
     <message>
         <location filename="../src/qml/views/ExplorerDrawer.qml" line="172" />
         <source>Automatically open File Explorer to display extracted files when ZIP archive extraction completes.</source>
-        <translation type="unfinished" />
+        <translation>Автоматично відкрити Провідник, щоб відобразити розпаковані файли після завершення розпакування ZIP-архіву.</translation>
     </message>
     <message>
         <location filename="../src/qml/views/ExplorerDrawer.qml" line="208" />
         <source>Classic Windows 10 Ribbon</source>
-        <translation type="unfinished" />
+        <translation>Класична стрічка Windows 10</translation>
     </message>
     <message>
         <location filename="../src/qml/views/ExplorerDrawer.qml" line="215" />
         <source>Restore the Windows 10 style top ribbon menu in File Explorer (requires restart).</source>
-        <translation type="unfinished" />
+        <translation>Відновити верхнє стрічкове меню у стилі Windows 10 у Провіднику файлів (потрібно перезапустити систему).</translation>
     </message>
     <message>
         <location filename="../src/qml/views/ExplorerDrawer.qml" line="251" />
         <source>Show preview pane</source>
-        <translation type="unfinished" />
+        <translation>Показати панель попереднього перегляду</translation>
     </message>
     <message>
         <location filename="../src/qml/views/ExplorerDrawer.qml" line="258" />
         <source>Enable the preview pane to view contents of text, images, and other files without opening them.</source>
-        <translation type="unfinished" />
+        <translation>Увімкніть панель попереднього перегляду, щоб переглядати вміст текстових файлів, зображень та інших файлів без їхнього відкриття.</translation>
     </message>
     <message>
         <location filename="../src/qml/views/ExplorerDrawer.qml" line="294" />
         <source>Show Recycle Bin in navigation pane</source>
-        <translation type="unfinished" />
+        <translation>Показати «Кошик» у навігаційній панелі</translation>
     </message>
     <message>
         <location filename="../src/qml/views/ExplorerDrawer.qml" line="301" />
         <source>Pin the 'Recycle Bin' navigation link to the left sidebar of File Explorer (requires restart).</source>
-        <translation type="unfinished" />
+        <translation>Прикріпіть навігаційне посилання «Кошик» до лівої бічної панелі Провідника (потрібно перезапустити систему).</translation>
     </message>
     <message>
         <location filename="../src/qml/views/ExplorerDrawer.qml" line="337" />
         <source>Show Home in navigation pane</source>
-        <translation type="unfinished" />
+        <translation>Показати «Головну сторінку» у навігаційній панелі</translation>
     </message>
     <message>
         <location filename="../src/qml/views/ExplorerDrawer.qml" line="344" />
         <source>Pin the 'Home' navigation link to the left sidebar of File Explorer (requires restart).</source>
-        <translation type="unfinished" />
+        <translation>Прикріпіть навігаційне посилання «Головна» до лівої бічної панелі Провідника (потрібно перезапустити систему).</translation>
     </message>
     <message>
         <location filename="../src/qml/views/ExplorerDrawer.qml" line="380" />
         <source>Show Gallery in navigation pane</source>
-        <translation type="unfinished" />
+        <translation>Показати галерею в навігаційній панелі</translation>
     </message>
     <message>
         <location filename="../src/qml/views/ExplorerDrawer.qml" line="387" />
         <source>Pin the 'Gallery' photo navigation link to the left sidebar of File Explorer (requires restart).</source>
-        <translation type="unfinished" />
+        <translation>Прикріпіть посилання на навігацію по фотографіях «Галерея» до лівої бічної панелі Провідника (потрібно перезапустити систему).</translation>
     </message>
     <message>
         <location filename="../src/qml/views/ExplorerDrawer.qml" line="423" />
         <source>Use checkboxes to select items</source>
-        <translation type="unfinished" />
+        <translation>Використовуйте прапорці для вибору елементів</translation>
     </message>
     <message>
         <location filename="../src/qml/views/ExplorerDrawer.qml" line="430" />
         <source>Show a checkbox next to items in File Explorer to make multi-selection easier.</source>
-        <translation type="unfinished" />
+        <translation>Відобразити прапорець поруч із елементами у Провіднику, щоб полегшити вибір декількох елементів.</translation>
     </message>
     <message>
         <location filename="../src/qml/views/ExplorerDrawer.qml" line="466" />
         <source>Sync provider notifications</source>
-        <translation type="unfinished" />
+        <translation>Синхронізувати сповіщення провайдера</translation>
     </message>
     <message>
         <location filename="../src/qml/views/ExplorerDrawer.qml" line="473" />
         <source>Show notifications from your cloud storage providers (e.g. OneDrive) in File Explorer.</source>
-        <translation type="unfinished" />
+        <translation>Відображати сповіщення від постачальників хмарних сховищ (наприклад, OneDrive) у Провіднику файлів.</translation>
     </message>
     <message>
         <location filename="../src/qml/views/ExplorerDrawer.qml" line="509" />
         <source>Open File Explorer to</source>
-        <translation type="unfinished" />
+        <translation>Відкрийте Провідник, щоб</translation>
     </message>
     <message>
         <location filename="../src/qml/views/ExplorerDrawer.qml" line="516" />
         <source>Choose the default folder to open when starting File Explorer.</source>
-        <translation type="unfinished" />
+        <translation>Виберіть папку, яка відкриватиметься за замовчуванням під час запуску Провідника файлів.</translation>
     </message>
     <message>
         <location filename="../src/qml/views/ExplorerDrawer.qml" line="540" />
         <location filename="../src/qml/views/ExplorerDrawer.qml" line="549" />
         <source>This PC</source>
-        <translation type="unfinished" />
+        <translation>Цей ПК</translation>
     </message>
     <message>
         <location filename="../src/qml/views/ExplorerDrawer.qml" line="541" />
         <source>Home</source>
-        <translation type="unfinished" />
+        <translation>Головна</translation>
     </message>
     <message>
         <location filename="../src/qml/views/ExplorerDrawer.qml" line="542" />
@@ -733,17 +733,17 @@
     <message>
         <location filename="../src/qml/views/HealthDrawer.qml" line="276" />
         <source>Diagnostic: healthy</source>
-        <translation type="unfinished" />
+        <translation>Діагноз: здоровий</translation>
     </message>
     <message>
         <location filename="../src/qml/views/HealthDrawer.qml" line="277" />
         <source>Diagnostic: errors found</source>
-        <translation type="unfinished" />
+        <translation>Діагностика: виявлено помилки</translation>
     </message>
     <message>
         <location filename="../src/qml/views/HealthDrawer.qml" line="278" />
         <source>Diagnostic: not checked</source>
-        <translation type="unfinished" />
+        <translation>Діагностика: не перевірено</translation>
     </message>
     <message>
         <location filename="../src/qml/views/HealthDrawer.qml" line="291" />
@@ -791,22 +791,22 @@
     <message>
         <location filename="../src/qml/views/IndexingDrawer.qml" line="129" />
         <source>Deep Indexing Options</source>
-        <translation type="unfinished" />
+        <translation>Параметри глибокого індексування</translation>
     </message>
     <message>
         <location filename="../src/qml/views/IndexingDrawer.qml" line="156" />
         <source>Recursively disables content indexing for all files and folders across all active drives. This process runs in the background (takes 10-15 minutes) and completely frees up drive I/O overhead.</source>
-        <translation type="unfinished" />
+        <translation>Рекурсивно вимикає індексацію вмісту для всіх файлів і папок на всіх активних дисках. Цей процес виконується у фоновому режимі (триває 10–15 хвилин) і повністю звільняє диски від навантаження на введення-виведення.</translation>
     </message>
     <message>
         <location filename="../src/qml/views/IndexingDrawer.qml" line="166" />
         <source>Disable indexing on all files/folders (10-15 mins)</source>
-        <translation type="unfinished" />
+        <translation>Вимкнути індексацію всіх файлів/папок (10–15 хвилин)</translation>
     </message>
     <message>
         <location filename="../src/qml/views/IndexingDrawer.qml" line="167" />
         <source>Force deep indexing removal (10-15 mins)</source>
-        <translation type="unfinished" />
+        <translation>Примусове видалення глибоких індексів (10–15 хвилин)</translation>
     </message>
 </context>
 <context>
@@ -814,7 +814,7 @@
     <message>
         <location filename="../src/qml/components/LogViewer.qml" line="50" />
         <source>System Terminal Log</source>
-        <translation type="unfinished" />
+        <translation>Журнал системного терміналу</translation>
     </message>
     <message>
         <location filename="../src/qml/components/LogViewer.qml" line="66" />
@@ -827,83 +827,83 @@
     <message>
         <location filename="../src/qml/views/MoreRightsDrawer.qml" line="14" />
         <source>Advanced system privilege and security settings.</source>
-        <translation type="unfinished" />
+        <translation>Розширені налаштування системних прав та безпеки.</translation>
     </message>
     <message>
         <location filename="../src/qml/views/MoreRightsDrawer.qml" line="39" />
         <source>God Mode</source>
-        <translation type="unfinished" />
+        <translation>Режим «God Mode»</translation>
     </message>
     <message>
         <location filename="../src/qml/views/MoreRightsDrawer.qml" line="46" />
         <source>Creates a special folder with all Windows settings shortcuts on the desktop.</source>
-        <translation type="unfinished" />
+        <translation>Створює на робочому столі спеціальну папку, що містить ярлики всіх налаштувань Windows.</translation>
     </message>
     <message>
         <location filename="../src/qml/views/MoreRightsDrawer.qml" line="83" />
         <source>Developer Mode</source>
-        <translation type="unfinished" />
+        <translation>Режим розробника</translation>
     </message>
     <message>
         <location filename="../src/qml/views/MoreRightsDrawer.qml" line="90" />
         <source>Enables installation and running of applications from any sources (sideloading) without signatures.</source>
-        <translation type="unfinished" />
+        <translation>Дозволяє встановлювати та запускати програми з будь-яких джерел (самостійне завантаження) без підписів.</translation>
     </message>
     <message>
         <location filename="../src/qml/views/MoreRightsDrawer.qml" line="101" />
         <source>⚠️ Enabling developer mode can reduce system security.</source>
-        <translation type="unfinished" />
+        <translation>⚠️ Увімкнення режиму розробника може знизити рівень безпеки системи.</translation>
     </message>
     <message>
         <location filename="../src/qml/views/MoreRightsDrawer.qml" line="141" />
         <source>User Account Control (UAC)</source>
-        <translation type="unfinished" />
+        <translation>Контроль облікових записів користувачів (UAC)</translation>
     </message>
     <message>
         <location filename="../src/qml/views/MoreRightsDrawer.qml" line="148" />
         <source>The warning level for programs attempting to make changes to your computer.</source>
-        <translation type="unfinished" />
+        <translation>Рівень попередження щодо програм, які намагаються внести зміни до вашого комп’ютера.</translation>
     </message>
     <message>
         <location filename="../src/qml/views/MoreRightsDrawer.qml" line="159" />
         <source>🔄 A system reboot is required to apply UAC changes.</source>
-        <translation type="unfinished" />
+        <translation>🔄 Для застосування змін у налаштуваннях UAC потрібно перезавантажити систему.</translation>
     </message>
     <message>
         <location filename="../src/qml/views/MoreRightsDrawer.qml" line="187" />
         <source>Always notify</source>
-        <translation type="unfinished" />
+        <translation>Завжди повідомляйте</translation>
     </message>
     <message>
         <location filename="../src/qml/views/MoreRightsDrawer.qml" line="188" />
         <location filename="../src/qml/views/MoreRightsDrawer.qml" line="197" />
         <source>With dimming</source>
-        <translation type="unfinished" />
+        <translation>З регулюванням яскравості</translation>
     </message>
     <message>
         <location filename="../src/qml/views/MoreRightsDrawer.qml" line="189" />
         <source>Without dimming</source>
-        <translation type="unfinished" />
+        <translation>Без регулювання яскравості</translation>
     </message>
     <message>
         <location filename="../src/qml/views/MoreRightsDrawer.qml" line="190" />
         <source>Never notify</source>
-        <translation type="unfinished" />
+        <translation>Ніколи не повідомляти</translation>
     </message>
     <message>
         <location filename="../src/qml/views/MoreRightsDrawer.qml" line="294" />
         <source>User Choice Protection Driver (UCPD)</source>
-        <translation type="unfinished" />
+        <translation>Драйвер захисту вибору користувача (UCPD)</translation>
     </message>
     <message>
         <location filename="../src/qml/views/MoreRightsDrawer.qml" line="301" />
         <source>Blocks the bypass of Windows protection, resetting file associations and default changes by other utilities.</source>
-        <translation type="unfinished" />
+        <translation>Запобігає обходу засобів захисту Windows, скиданню асоціацій файлів та змінам налаштувань за замовчуванням, що здійснюються іншими програмами.</translation>
     </message>
     <message>
         <location filename="../src/qml/views/MoreRightsDrawer.qml" line="312" />
         <source>🔄 A system reboot is required to apply UCPD changes.</source>
-        <translation type="unfinished" />
+        <translation>🔄 Для застосування змін UCPD необхідно перезавантажити систему.</translation>
     </message>
 </context>
 <context>
@@ -911,53 +911,53 @@
     <message>
         <location filename="../src/qml/views/MpoDrawer.qml" line="18" />
         <source>Multi-Plane Overlay Value</source>
-        <translation type="unfinished" />
+        <translation>Значення багатоплощинного накладання</translation>
     </message>
     <message>
         <location filename="../src/qml/views/MpoDrawer.qml" line="25" />
         <source>Choose any MPO overlay flag from 0 to 5. 5 disables MPO completely to resolve driver bugs, while 0 restores Windows default.</source>
-        <translation type="unfinished" />
+        <translation>Виберіть будь-який прапорець накладення MPO від 0 до 5. Значення 5 повністю вимикає MPO для усунення помилок драйвера, а значення 0 відновлює налаштування Windows за замовчуванням.</translation>
     </message>
     <message>
         <location filename="../src/qml/views/MpoDrawer.qml" line="79" />
         <location filename="../src/qml/views/MpoDrawer.qml" line="351" />
         <source>0 (Default): Dynamic overlays are fully active. Lowest latency in windowed games, but causes micro-stuttering, Chromium browser lags, or black screen flickering on modern GPU drivers.</source>
-        <translation type="unfinished" />
+        <translation>0 (за замовчуванням): Динамічні накладки повністю активні. Найнижча затримка у вікнах ігор, але це може спричиняти мікрозатримки, затримки в роботі браузера Chromium або мерехтіння чорного екрана на сучасних драйверах відеокарт.</translation>
     </message>
     <message>
         <location filename="../src/qml/views/MpoDrawer.qml" line="128" />
         <location filename="../src/qml/views/MpoDrawer.qml" line="352" />
         <source>1: Disables hardware MPO overlay promotion. Direct GPU rendering is bypassed, which can fix dual-monitor desktop stuttering.</source>
-        <translation type="unfinished" />
+        <translation>1: Вимикає апаратне перенесення накладення MPO. Пряме рендеринг на графічному процесорі обходиться, що може усунути затримки на робочому столі з двома моніторами.</translation>
     </message>
     <message>
         <location filename="../src/qml/views/MpoDrawer.qml" line="177" />
         <location filename="../src/qml/views/MpoDrawer.qml" line="353" />
         <source>2: Disables software-emulated MPO overlays, forcing DWM to only allocate native hardware paths.</source>
-        <translation type="unfinished" />
+        <translation>2: Вимикає програмно емульовані накладки MPO, змушуючи DWM виділяти лише нативні апаратні шляхи.</translation>
     </message>
     <message>
         <location filename="../src/qml/views/MpoDrawer.qml" line="226" />
         <location filename="../src/qml/views/MpoDrawer.qml" line="354" />
         <source>3: Disables both hardware and software overlays. Forces legacy composition limits.</source>
-        <translation type="unfinished" />
+        <translation>3: Вимикає як апаратні, так і програмні накладки. Примусово застосовує обмеження композиції, що діяли раніше.</translation>
     </message>
     <message>
         <location filename="../src/qml/views/MpoDrawer.qml" line="275" />
         <location filename="../src/qml/views/MpoDrawer.qml" line="355" />
         <source>4: Forces complete DWM composition. Promotes zero window structures to independent planes.</source>
-        <translation type="unfinished" />
+        <translation>4: Примусове завершення формування композиції DWM. Переведення структур із нульовою кількістю вікон у незалежні площини.</translation>
     </message>
     <message>
         <location filename="../src/qml/views/MpoDrawer.qml" line="324" />
         <location filename="../src/qml/views/MpoDrawer.qml" line="356" />
         <source>5 (Recommended): Completely disables all MPO modes. Official NVIDIA/AMD hotfix to eliminate stuttering, browser lag, and screen flickers.</source>
-        <translation type="unfinished" />
+        <translation>5 (Рекомендовано): Повністю вимикає всі режими MPO. Офіційне виправлення від NVIDIA/AMD для усунення затримок, гальмування браузера та мерехтіння екрана.</translation>
     </message>
     <message>
         <location filename="../src/qml/views/MpoDrawer.qml" line="367" />
         <source>Apply</source>
-        <translation type="unfinished" />
+        <translation>Подати заявку</translation>
     </message>
 </context>
 <context>
@@ -965,7 +965,7 @@
     <message>
         <location filename="../src/qml/views/NotificationsDrawer.qml" line="14" />
         <source>Configure custom Windows notification and sound alert rules.</source>
-        <translation type="unfinished" />
+        <translation>Налаштуйте власні правила сповіщень та звукових сигналів у Windows.</translation>
     </message>
     <message>
         <location filename="../src/qml/views/NotificationsDrawer.qml" line="26" />
@@ -980,7 +980,7 @@
     <message>
         <location filename="../src/qml/views/NotificationsDrawer.qml" line="116" />
         <source>Per-App Notification Permissions:</source>
-        <translation type="unfinished" />
+        <translation>Дозволи на отримання сповіщень для окремих додатків:</translation>
     </message>
     <message>
         <location filename="../src/qml/views/NotificationsDrawer.qml" line="143" />
@@ -997,7 +997,7 @@
     <name>OptimizationView</name>
     <message>
         <source>SYSTEM OPTIMIZATION</source>
-        <translation type="vanished">СИСТЕМНА ОПТИМІЗАЦІЯ</translation>
+        <translation>СИСТЕМНА ОПТИМІЗАЦІЯ</translation>
     </message>
     <message>
         <location filename="../src/qml/views/OptimizationView.qml" line="2584" />
@@ -1054,7 +1054,7 @@
     </message>
     <message>
         <source>Finished system modifications.</source>
-        <translation type="vanished">Модифікацію системи завершено.</translation>
+        <translation>Модифікацію системи завершено.</translation>
     </message>
     <message>
         <location filename="../src/qml/views/OptimizationView.qml" line="8084" />
@@ -1094,7 +1094,7 @@
     </message>
     <message>
         <source>DRIVES &amp; INDEXING</source>
-        <translation type="vanished">ДИСКИ ТА ІНДЕКСАЦІЯ</translation>
+        <translation>ДИСКИ ТА ІНДЕКСАЦІЯ</translation>
     </message>
     <message>
         <location filename="../src/qml/views/OptimizationView.qml" line="7992" />
@@ -1134,7 +1134,7 @@
     </message>
     <message>
         <source>LATENCY &amp; MOUSE TWEAKS</source>
-        <translation type="vanished">ЗАТРИМКА ТА МИША</translation>
+        <translation>ЗАТРИМКА ТА МИША</translation>
     </message>
     <message>
         <location filename="../src/qml/views/OptimizationView.qml" line="2620" />
@@ -1171,11 +1171,11 @@
     </message>
     <message>
         <source>Print Spooler (Printer)</source>
-        <translation type="vanished">Служба друку (Принтер)</translation>
+        <translation>Служба друку (Принтер)</translation>
     </message>
     <message>
         <source>Disabling the print spooler frees memory and reduces background latency for gaming.</source>
-        <translation type="vanished">Вимкнення служби друку звільняє пам'ять та зменшує фонову затримку для ігор.</translation>
+        <translation>Вимкнення служби друку звільняє пам'ять та зменшує фонову затримку для ігор.</translation>
     </message>
     <message>
         <location filename="../src/qml/views/OptimizationView.qml" line="2780" />
@@ -1192,7 +1192,7 @@
     </message>
     <message>
         <source>POWER &amp; STORAGE</source>
-        <translation type="vanished">ЖИВЛЕННЯ ТА НАКОПИЧУВАЧІ</translation>
+        <translation>ЖИВЛЕННЯ ТА НАКОПИЧУВАЧІ</translation>
     </message>
     <message>
         <location filename="../src/qml/views/OptimizationView.qml" line="2837" />
@@ -1203,7 +1203,7 @@
     </message>
     <message>
         <source>Enable or disable Windows hibernation mode to free up disk space.</source>
-        <translation type="vanished">Увімкнення або вимкнення режиму гібернації Windows для звільнення місця на диску.</translation>
+        <translation>Увімкнення або вимкнення режиму гібернації Windows для звільнення місця на диску.</translation>
     </message>
     <message>
         <location filename="../src/qml/views/OptimizationView.qml" line="2964" />
@@ -1226,7 +1226,7 @@
     </message>
     <message>
         <source>Select system power plans and unlock the hidden Ultimate Performance mode.</source>
-        <translation type="vanished">Вибір системних схем живлення та розблокування прихованого режиму максимальної продуктивності.</translation>
+        <translation>Вибір системних схем живлення та розблокування прихованого режиму максимальної продуктивності.</translation>
     </message>
     <message>
         <location filename="../src/qml/views/OptimizationView.qml" line="4284" />
@@ -1508,7 +1508,7 @@
     </message>
     <message>
         <source>Print Spooler</source>
-        <translation type="vanished">Диспетчер друку</translation>
+        <translation>Диспетчер друку</translation>
     </message>
     <message>
         <location filename="../src/qml/views/OptimizationView.qml" line="4256" />
@@ -1596,7 +1596,7 @@
     </message>
     <message>
         <source>Start Steam in Big Picture Mode</source>
-        <translation type="vanished">Запускати Steam у режимі Big Picture</translation>
+        <translation>Запускати Steam у режимі Big Picture</translation>
     </message>
     <message>
         <location filename="../src/qml/views/OptimizationView.qml" line="5020" />
@@ -1710,11 +1710,11 @@
     </message>
     <message>
         <source>VIDEO GAMES OPTIMIZATION</source>
-        <translation type="vanished">ОПТИМІЗАЦІЯ ВІДЕОІГОР</translation>
+        <translation>ОПТИМІЗАЦІЯ ВІДЕОІГОР</translation>
     </message>
     <message>
         <source>CUSTOMIZATION SETTINGS</source>
-        <translation type="vanished">НАЛАШТУВАННЯ КАСТОМІЗАЦІЇ</translation>
+        <translation>НАЛАШТУВАННЯ КАСТОМІЗАЦІЇ</translation>
     </message>
     <message>
         <location filename="../src/qml/views/OptimizationView.qml" line="8036" />
@@ -1810,11 +1810,11 @@
     </message>
     <message>
         <source>Разработка</source>
-        <translation type="vanished">Розробка</translation>
+        <translation>Розробка</translation>
     </message>
     <message>
         <source>TELEMETRY</source>
-        <translation type="vanished">ТЕЛЕМЕТРІЯ</translation>
+        <translation>ТЕЛЕМЕТРІЯ</translation>
     </message>
     <message>
         <location filename="../src/qml/views/OptimizationView.qml" line="14847" />
@@ -1833,27 +1833,27 @@
     </message>
     <message>
         <source>Enables or disables Remote Desktop connections (RDP) to securely connect and manage this computer from another device.</source>
-        <translation type="vanished">Увімкнення або вимкнення підключень до віддаленого робочого столу (RDP) для безпечного керування цим комп’ютером з іншого пристрою.</translation>
+        <translation>Увімкнення або вимкнення підключень до віддаленого робочого столу (RDP) для безпечного керування цим комп’ютером з іншого пристрою.</translation>
     </message>
     <message>
         <source>Disables system diagnostic data collection, CEIP telemetry policies, error reporting, and Connected User Experiences services.</source>
-        <translation type="vanished">Вимикає збір діагностичних даних системи, політики телеметрії CEIP, звітування про помилки та службу функціональних можливостей для підключених користувачів.</translation>
+        <translation>Вимикає збір діагностичних даних системи, політики телеметрії CEIP, звітування про помилки та службу функціональних можливостей для підключених користувачів.</translation>
     </message>
     <message>
         <source>Configure system update modes: enable all, only security patches, manual check, or disable updates entirely.</source>
-        <translation type="vanished">Налаштування режимів оновлення системи: увімкнення всіх, лише виправлення безпеки, перевірка вручну або повне вимкнення оновлень.</translation>
+        <translation>Налаштування режимів оновлення системи: увімкнення всіх, лише виправлення безпеки, перевірка вручну або повне вимкнення оновлень.</translation>
     </message>
     <message>
         <source>CUSTOMIZATION</source>
-        <translation type="vanished">КАСТОМІЗАЦІЯ</translation>
+        <translation>КАСТОМІЗАЦІЯ</translation>
     </message>
     <message>
         <source>Disables the modern Windows 11 Fluent context menu and restores the classic Windows 10 style context menu.</source>
-        <translation type="vanished">Вимкнення сучасного контекстного меню Windows 11 Fluent та відновлення класичного стилю Windows 10.</translation>
+        <translation>Вимкнення сучасного контекстного меню Windows 11 Fluent та відновлення класичного стилю Windows 10.</translation>
     </message>
     <message>
         <source>Restart Windows Explorer to apply context menu changes.</source>
-        <translation type="vanished">Перезапустіть Windows Explorer (Провідник) для застосування змін контекстного меню.</translation>
+        <translation>Перезапустіть Windows Explorer (Провідник) для застосування змін контекстного меню.</translation>
     </message>
     <message>
         <location filename="../src/qml/views/OptimizationView.qml" line="25875" />
@@ -1892,27 +1892,27 @@
     </message>
     <message>
         <source>Enable or disable the BitLocker drive encryption background manager service.</source>
-        <translation type="vanished">Увімкнення або вимкнення служби фонового диспетчера шифрування дисків BitLocker.</translation>
+        <translation>Увімкнення або вимкнення служби фонового диспетчера шифрування дисків BitLocker.</translation>
     </message>
     <message>
         <source>Before disabling BitLocker, it is recommended to first disable indexing on all drives.</source>
-        <translation type="vanished">Перед вимкненням BitLocker рекомендується спочатку вимкнути індексацію всіх дисків.</translation>
+        <translation>Перед вимкненням BitLocker рекомендується спочатку вимкнути індексацію всіх дисків.</translation>
     </message>
     <message>
         <source>Status: Service: %1 | Encryption (C:): %2</source>
-        <translation type="vanished">Статус: Служба: %1 | Шифрування (C:): %2</translation>
+        <translation>Статус: Служба: %1 | Шифрування (C:): %2</translation>
     </message>
     <message>
         <source>Active</source>
-        <translation type="vanished">Активна</translation>
+        <translation>Активна</translation>
     </message>
     <message>
         <source>Encrypted</source>
-        <translation type="vanished">Зашифровано</translation>
+        <translation>Зашифровано</translation>
     </message>
     <message>
         <source>Not Encrypted</source>
-        <translation type="vanished">Не зашифровано</translation>
+        <translation>Не зашифровано</translation>
     </message>
     <message>
         <location filename="../src/qml/views/OptimizationView.qml" line="12329" />
@@ -1936,7 +1936,7 @@
     </message>
     <message>
         <source>PRINTER TWEAKS</source>
-        <translation type="vanished">НАЛАШТУВАННЯ ПРИНТЕРІВ</translation>
+        <translation>НАЛАШТУВАННЯ ПРИНТЕРІВ</translation>
     </message>
     <message>
         <location filename="../src/qml/views/OptimizationView.qml" line="33657" />
@@ -1971,7 +1971,7 @@
     <message>
         <location filename="../src/qml/views/OptimizationView.qml" line="33705" />
         <source>HEALTH</source>
-        <translation type="unfinished" />
+        <translation>ЗДОРОВ’Я</translation>
     </message>
     <message>
         <location filename="../src/qml/views/OptimizationView.qml" line="33713" />
@@ -1986,7 +1986,7 @@
     <message>
         <location filename="../src/qml/views/OptimizationView.qml" line="37216" />
         <source>OPTIMIZING SYSTEM</source>
-        <translation type="unfinished" />
+        <translation>ОПТИМІЗАЦІЯ СИСТЕМИ</translation>
     </message>
     <message>
         <location filename="../src/qml/views/OptimizationView.qml" line="37389" />
@@ -2000,19 +2000,19 @@
     </message>
     <message>
         <source>Applying system configuration adjustments...</source>
-        <translation type="vanished">Застосування системних налаштувань...</translation>
+        <translation>Застосування системних налаштувань...</translation>
     </message>
     <message>
         <source>Analyzing optimization plan...</source>
-        <translation type="vanished">Аналіз плану оптимізації...</translation>
+        <translation>Аналіз плану оптимізації...</translation>
     </message>
     <message>
         <source>Verifying changes and syncing state...</source>
-        <translation type="vanished">Перевірка змін та синхронізація стану...</translation>
+        <translation>Перевірка змін та синхронізація стану...</translation>
     </message>
     <message>
         <source>Optimization completed successfully!</source>
-        <translation type="vanished">Оптимізацію успішно завершено!</translation>
+        <translation>Оптимізацію успішно завершено!</translation>
     </message>
     <message>
         <location filename="../src/qml/views/OptimizationView.qml" line="37928" />
@@ -2093,7 +2093,7 @@ Would you like to close Discord now and proceed?</source>
     </message>
     <message>
         <source>Note: Requires disabling Tamper Protection.</source>
-        <translation type="vanished">Примітка: Вимагає відключення захисту від несанкціонованого доступу (Tamper Protection).</translation>
+        <translation>Примітка: Вимагає відключення захисту від несанкціонованого доступу (Tamper Protection).</translation>
     </message>
     <message>
         <location filename="../src/qml/views/OptimizationView.qml" line="3112" />
@@ -2131,7 +2131,7 @@ Would you like to close Discord now and proceed?</source>
     </message>
     <message>
         <source>Enable or disable the global Steam Overlay in games to reduce input latency and CPU overhead.</source>
-        <translation type="vanished">Увімкнення або вимкнення глобального оверлею Steam в іграх для зменшення затримки введення та зниження навантаження на процесор.</translation>
+        <translation>Увімкнення або вимкнення глобального оверлею Steam в іграх для зменшення затримки введення та зниження навантаження на процесор.</translation>
     </message>
     <message>
         <location filename="../src/qml/views/OptimizationView.qml" line="3688" />
@@ -2252,28 +2252,28 @@ Would you like to close Discord now and proceed?</source>
         <location filename="../src/qml/views/OptimizationView.qml" line="24442" />
         <location filename="../src/qml/views/OptimizationView.qml" line="33701" />
         <source>Desktop Customization</source>
-        <translation type="unfinished" />
+        <translation>Налаштування робочого столу</translation>
     </message>
     <message>
         <location filename="../src/qml/views/OptimizationView.qml" line="2488" />
         <location filename="../src/qml/views/OptimizationView.qml" line="7165" />
         <location filename="../src/qml/views/OptimizationView.qml" line="25025" />
         <source>Clipboard History</source>
-        <translation type="unfinished" />
+        <translation>Історія буфера обміну</translation>
     </message>
     <message>
         <location filename="../src/qml/views/OptimizationView.qml" line="2520" />
         <location filename="../src/qml/views/OptimizationView.qml" line="7169" />
         <location filename="../src/qml/views/OptimizationView.qml" line="25511" />
         <source>Taskbar 'End task'</source>
-        <translation type="unfinished" />
+        <translation>Панель завдань «Завершити завдання»</translation>
     </message>
     <message>
         <location filename="../src/qml/views/OptimizationView.qml" line="2552" />
         <location filename="../src/qml/views/OptimizationView.qml" line="7173" />
         <location filename="../src/qml/views/OptimizationView.qml" line="26181" />
         <source>Clock with seconds</source>
-        <translation type="unfinished" />
+        <translation>Годинник із секундною стрілкою</translation>
     </message>
     <message>
         <location filename="../src/qml/views/OptimizationView.qml" line="2870" />
@@ -2294,7 +2294,7 @@ Would you like to close Discord now and proceed?</source>
         <location filename="../src/qml/views/OptimizationView.qml" line="26839" />
         <location filename="../src/qml/views/OptimizationView.qml" line="33689" />
         <source>More Privileges</source>
-        <translation type="unfinished" />
+        <translation>Більше привілеїв</translation>
     </message>
     <message>
         <location filename="../src/qml/views/OptimizationView.qml" line="3188" />
@@ -2303,7 +2303,7 @@ Would you like to close Discord now and proceed?</source>
         <location filename="../src/qml/views/OptimizationView.qml" line="27490" />
         <location filename="../src/qml/views/OptimizationView.qml" line="33693" />
         <source>File Explorer Customization</source>
-        <translation type="unfinished" />
+        <translation>Налаштування Провідника файлів</translation>
     </message>
     <message>
         <location filename="../src/qml/views/OptimizationView.qml" line="3260" />
@@ -2312,30 +2312,30 @@ Would you like to close Discord now and proceed?</source>
         <location filename="../src/qml/views/OptimizationView.qml" line="28069" />
         <location filename="../src/qml/views/OptimizationView.qml" line="33697" />
         <source>Start Menu Customization</source>
-        <translation type="unfinished" />
+        <translation>Налаштування меню «Пуск»</translation>
     </message>
     <message>
         <location filename="../src/qml/views/OptimizationView.qml" line="3384" />
         <location filename="../src/qml/views/OptimizationView.qml" line="7177" />
         <source>Ads &amp; Privacy</source>
-        <translation type="unfinished" />
+        <translation>Реклама та конфіденційність</translation>
     </message>
     <message>
         <location filename="../src/qml/views/OptimizationView.qml" line="3448" />
         <location filename="../src/qml/views/OptimizationView.qml" line="7181" />
         <location filename="../src/qml/views/OptimizationView.qml" line="20344" />
         <source>Privacy</source>
-        <translation type="unfinished" />
+        <translation>Конфіденційність</translation>
     </message>
     <message>
         <location filename="../src/qml/views/OptimizationView.qml" line="4756" />
         <source>Driver Updates</source>
-        <translation type="unfinished" />
+        <translation>Оновлення драйверів</translation>
     </message>
     <message>
         <location filename="../src/qml/views/OptimizationView.qml" line="4788" />
         <source>App Updates</source>
-        <translation type="unfinished" />
+        <translation>Оновлення додатків</translation>
     </message>
     <message>
         <location filename="../src/qml/views/OptimizationView.qml" line="4944" />
@@ -2436,98 +2436,98 @@ Would you like to close Discord now and proceed?</source>
     <message>
         <location filename="../src/qml/views/OptimizationView.qml" line="5844" />
         <source>God Mode</source>
-        <translation type="unfinished" />
+        <translation>Режим «God Mode»</translation>
     </message>
     <message>
         <location filename="../src/qml/views/OptimizationView.qml" line="5876" />
         <source>Developer Mode</source>
-        <translation type="unfinished" />
+        <translation>Режим розробника</translation>
     </message>
     <message>
         <location filename="../src/qml/views/OptimizationView.qml" line="5904" />
         <source>Always notify</source>
-        <translation type="unfinished" />
+        <translation>Завжди повідомляйте</translation>
     </message>
     <message>
         <location filename="../src/qml/views/OptimizationView.qml" line="5904" />
         <source>Changes dim</source>
-        <translation type="unfinished" />
+        <translation>Зміни тьмяніють</translation>
     </message>
     <message>
         <location filename="../src/qml/views/OptimizationView.qml" line="5904" />
         <source>Changes no dim</source>
-        <translation type="unfinished" />
+        <translation>Зміни не приглушують світло</translation>
     </message>
     <message>
         <location filename="../src/qml/views/OptimizationView.qml" line="5904" />
         <source>Never notify</source>
-        <translation type="unfinished" />
+        <translation>Ніколи не повідомляти</translation>
     </message>
     <message>
         <location filename="../src/qml/views/OptimizationView.qml" line="5912" />
         <source>UAC Level</source>
-        <translation type="unfinished" />
+        <translation>Рівень UAC</translation>
     </message>
     <message>
         <location filename="../src/qml/views/OptimizationView.qml" line="5944" />
         <source>UCPD Driver</source>
-        <translation type="unfinished" />
+        <translation>Драйвер UCPD</translation>
     </message>
     <message>
         <location filename="../src/qml/views/OptimizationView.qml" line="5980" />
         <source>Show file extensions</source>
-        <translation type="unfinished" />
+        <translation>Показати розширення файлів</translation>
     </message>
     <message>
         <location filename="../src/qml/views/OptimizationView.qml" line="6012" />
         <source>Show hidden files</source>
-        <translation type="unfinished" />
+        <translation>Показати приховані файли</translation>
     </message>
     <message>
         <location filename="../src/qml/views/OptimizationView.qml" line="6044" />
         <source>Show extracted files</source>
-        <translation type="unfinished" />
+        <translation>Показати витягнуті файли</translation>
     </message>
     <message>
         <location filename="../src/qml/views/OptimizationView.qml" line="6076" />
         <source>Classic Windows 10 Ribbon</source>
-        <translation type="unfinished" />
+        <translation>Класична стрічка Windows 10</translation>
     </message>
     <message>
         <location filename="../src/qml/views/OptimizationView.qml" line="6108" />
         <source>Show preview pane</source>
-        <translation type="unfinished" />
+        <translation>Показати панель попереднього перегляду</translation>
     </message>
     <message>
         <location filename="../src/qml/views/OptimizationView.qml" line="6140" />
         <location filename="../src/qml/views/OptimizationView.qml" line="6536" />
         <source>Show Recycle Bin</source>
-        <translation type="unfinished" />
+        <translation>Показати кошик</translation>
     </message>
     <message>
         <location filename="../src/qml/views/OptimizationView.qml" line="6172" />
         <source>Show Recycle Bin in navigation</source>
-        <translation type="unfinished" />
+        <translation>Показати «Кошик» у навігації</translation>
     </message>
     <message>
         <location filename="../src/qml/views/OptimizationView.qml" line="6204" />
         <source>Show Home in navigation</source>
-        <translation type="unfinished" />
+        <translation>Показати «Головну» у навігації</translation>
     </message>
     <message>
         <location filename="../src/qml/views/OptimizationView.qml" line="6236" />
         <source>Show Gallery in navigation</source>
-        <translation type="unfinished" />
+        <translation>Показати галерею в меню навігації</translation>
     </message>
     <message>
         <location filename="../src/qml/views/OptimizationView.qml" line="6268" />
         <source>Use checkboxes</source>
-        <translation type="unfinished" />
+        <translation>Використовуйте прапорці</translation>
     </message>
     <message>
         <location filename="../src/qml/views/OptimizationView.qml" line="6300" />
         <source>Sync notifications</source>
-        <translation type="unfinished" />
+        <translation>Синхронізація сповіщень</translation>
     </message>
     <message>
         <location filename="../src/qml/views/OptimizationView.qml" line="6328" />
@@ -2537,99 +2537,99 @@ Would you like to close Discord now and proceed?</source>
     <message>
         <location filename="../src/qml/views/OptimizationView.qml" line="6328" />
         <source>This PC</source>
-        <translation type="unfinished" />
+        <translation>Цей ПК</translation>
     </message>
     <message>
         <location filename="../src/qml/views/OptimizationView.qml" line="6328" />
         <source>Home</source>
-        <translation type="unfinished" />
+        <translation>Головна</translation>
     </message>
     <message>
         <location filename="../src/qml/views/OptimizationView.qml" line="6336" />
         <source>Open File Explorer to</source>
-        <translation type="unfinished" />
+        <translation>Відкрийте Провідник, щоб</translation>
     </message>
     <message>
         <location filename="../src/qml/views/OptimizationView.qml" line="6372" />
         <source>Include web results when searching</source>
-        <translation type="unfinished" />
+        <translation>Включати результати з веб-сторінок під час пошуку</translation>
     </message>
     <message>
         <location filename="../src/qml/views/OptimizationView.qml" line="6404" />
         <source>Autoinstall suggestions</source>
-        <translation type="unfinished" />
+        <translation>Пропозиції щодо автоматичної інсталяції</translation>
     </message>
     <message>
         <location filename="../src/qml/views/OptimizationView.qml" line="6436" />
         <source>Account notifications</source>
-        <translation type="unfinished" />
+        <translation>Повідомлення про обліковий запис</translation>
     </message>
     <message>
         <location filename="../src/qml/views/OptimizationView.qml" line="6468" />
         <source>Show hibernate in power menu</source>
-        <translation type="unfinished" />
+        <translation>Показати режим глибокого сну в меню живлення</translation>
     </message>
     <message>
         <location filename="../src/qml/views/OptimizationView.qml" line="6504" />
         <source>Show "This PC" icon</source>
-        <translation type="unfinished" />
+        <translation>Показати піктограму «Цей ПК»</translation>
     </message>
     <message>
         <location filename="../src/qml/views/OptimizationView.qml" line="6568" />
         <source>Show Widgets</source>
-        <translation type="unfinished" />
+        <translation>Показати віджети</translation>
     </message>
     <message>
         <location filename="../src/qml/views/OptimizationView.qml" line="6600" />
         <location filename="../src/qml/views/OptimizationView.qml" line="7161" />
         <source>Shortcut Arrow Overlays</source>
-        <translation type="unfinished" />
+        <translation>Накладки зі стрілками-скороченнями</translation>
     </message>
     <message>
         <location filename="../src/qml/views/OptimizationView.qml" line="6632" />
         <source>Drop shadows for icon labels</source>
-        <translation type="unfinished" />
+        <translation>Тіні для підписів до піктограм</translation>
     </message>
     <message>
         <location filename="../src/qml/views/OptimizationView.qml" line="6664" />
         <source>Show desktop button</source>
-        <translation type="unfinished" />
+        <translation>Кнопка «Показати робочий стіл»</translation>
     </message>
     <message>
         <location filename="../src/qml/views/OptimizationView.qml" line="6696" />
         <source>Titlebar window shake (Aero Shake)</source>
-        <translation type="unfinished" />
+        <translation>Струшування вікна за допомогою панелі заголовка (Aero Shake)</translation>
     </message>
     <message>
         <location filename="../src/qml/views/OptimizationView.qml" line="6760" />
         <source>Wallpaper quality</source>
-        <translation type="unfinished" />
+        <translation>Якість шпалер</translation>
     </message>
     <message>
         <location filename="../src/qml/views/OptimizationView.qml" line="7177" />
         <location filename="../src/qml/views/OptimizationView.qml" line="17929" />
         <source>Ads</source>
-        <translation type="unfinished" />
+        <translation>Реклама</translation>
     </message>
     <message>
         <location filename="../src/qml/views/OptimizationView.qml" line="7177" />
         <source>Ad</source>
-        <translation type="unfinished" />
+        <translation>До</translation>
     </message>
     <message>
         <location filename="../src/qml/views/OptimizationView.qml" line="7607" />
         <source>Telemetry Settings</source>
-        <translation type="unfinished" />
+        <translation>Налаштування телеметрії</translation>
     </message>
     <message>
         <location filename="../src/qml/views/OptimizationView.qml" line="7609" />
         <source>Video Games Optimization</source>
-        <translation type="unfinished" />
+        <translation>Оптимізація відеоігор</translation>
     </message>
     <message>
         <location filename="../src/qml/views/OptimizationView.qml" line="7611" />
         <source>Customization Settings</source>
-        <translation type="unfinished" />
+        <translation>Налаштування персоналізації</translation>
     </message>
     <message>
         <location filename="../src/qml/views/OptimizationView.qml" line="7613" />
@@ -2639,7 +2639,7 @@ Would you like to close Discord now and proceed?</source>
     <message>
         <location filename="../src/qml/views/OptimizationView.qml" line="7615" />
         <source>System Optimization</source>
-        <translation type="unfinished" />
+        <translation>Оптимізація системи</translation>
     </message>
     <message>
         <location filename="../src/qml/views/OptimizationView.qml" line="8364" />
@@ -2654,12 +2654,12 @@ Would you like to close Discord now and proceed?</source>
     <message>
         <location filename="../src/qml/views/OptimizationView.qml" line="8396" />
         <source>To configure and optimize Counter-Strike 2, please launch the Steam client first.</source>
-        <translation type="unfinished" />
+        <translation>Щоб налаштувати та оптимізувати гру Counter-Strike 2, спочатку запустіть клієнт Steam.</translation>
     </message>
     <message>
         <location filename="../src/qml/views/OptimizationView.qml" line="8396" />
         <source>Please log in to your Steam account to load and configure your Counter-Strike 2 settings.</source>
-        <translation type="unfinished" />
+        <translation>Будь ласка, увійдіть у свій обліковий запис Steam, щоб завантажити та налаштувати параметри Counter-Strike 2.</translation>
     </message>
     <message>
         <location filename="../src/qml/views/OptimizationView.qml" line="8440" />
@@ -2679,223 +2679,223 @@ Would you like to close Discord now and proceed?</source>
     <message>
         <location filename="../src/qml/views/OptimizationView.qml" line="9878" />
         <source>Drives &amp; Indexing</source>
-        <translation type="unfinished" />
+        <translation>Диски та індексація</translation>
     </message>
     <message>
         <location filename="../src/qml/views/OptimizationView.qml" line="10814" />
         <source>Enables or disables system hibernation to clean storage drive space and optimize SSD lifetime.</source>
-        <translation type="unfinished" />
+        <translation>Увімкнення або вимкнення режиму глибокого сну системи для звільнення місця на накопичувачі та оптимізації терміну служби SSD.</translation>
     </message>
     <message>
         <location filename="../src/qml/views/OptimizationView.qml" line="11244" />
         <source>Warning: Minimum size cannot be greater than maximum size!</source>
-        <translation type="unfinished" />
+        <translation>Попередження: Мінімальний розмір не може перевищувати максимальний розмір!</translation>
     </message>
     <message>
         <location filename="../src/qml/views/OptimizationView.qml" line="11252" />
         <source>Warning: Size must be between 1024 and 99999 MB!</source>
-        <translation type="unfinished" />
+        <translation>Увага: розмір повинен становити від 1024 до 99999 МБ!</translation>
     </message>
     <message>
         <location filename="../src/qml/views/OptimizationView.qml" line="11256" />
         <source>Error: Not enough disk space! C: drive will be overfilled.</source>
-        <translation type="unfinished" />
+        <translation>Помилка: Недостатньо місця на диску! Диск C: переповниться.</translation>
     </message>
     <message>
         <location filename="../src/qml/views/OptimizationView.qml" line="11264" />
         <source>Warning: C: drive will have less than 10 GB of free space left. Continue anyway?</source>
-        <translation type="unfinished" />
+        <translation>Попередження: на диску C: залишиться менше 10 ГБ вільного місця. Продовжити?</translation>
     </message>
     <message>
         <location filename="../src/qml/views/OptimizationView.qml" line="12261" />
         <source>Deactivate the BitLocker background monitoring driver/service or decrypt drive C: to recover I/O throughput.</source>
-        <translation type="unfinished" />
+        <translation>Вимкніть драйвер/службу фонового моніторингу BitLocker або розшифруйте диск C:, щоб відновити пропускну здатність вводу-виводу.</translation>
     </message>
     <message>
         <location filename="../src/qml/views/OptimizationView.qml" line="12483" />
         <source>Latency &amp; Mouse Tweaks</source>
-        <translation type="unfinished" />
+        <translation>Налаштування затримки та миші</translation>
     </message>
     <message>
         <location filename="../src/qml/views/OptimizationView.qml" line="16961" />
         <source>Disable Remote Desktop (RDP) and Remote Assistance services to secure system and save background resources.</source>
-        <translation type="unfinished" />
+        <translation>Вимкніть служби «Віддалений робочий стіл» (RDP) та «Віддалена допомога», щоб забезпечити безпеку системи та заощадити ресурси, що використовуються у фоновому режимі.</translation>
     </message>
     <message>
         <location filename="../src/qml/views/OptimizationView.qml" line="17383" />
         <source>Neutralize diagnostics data collecting tracking, CEIP program and WER error report services to protect privacy.</source>
-        <translation type="unfinished" />
+        <translation>Вимкніть відстеження збору діагностичних даних, програму CEIP та служби звітування про помилки WER для захисту конфіденційності.</translation>
     </message>
     <message>
         <location filename="../src/qml/views/OptimizationView.qml" line="18061" />
         <source>Change ads related settings that might display content promoting products or new features.</source>
-        <translation type="unfinished" />
+        <translation>Змініть налаштування, пов’язані з рекламою, які можуть сприяти показу вмісту, що просуває товари або нові функції.</translation>
     </message>
     <message>
         <location filename="../src/qml/views/OptimizationView.qml" line="18507" />
         <source>Tailored experiences</source>
-        <translation type="unfinished" />
+        <translation>Індивідуальні враження</translation>
     </message>
     <message>
         <location filename="../src/qml/views/OptimizationView.qml" line="18692" />
         <source>Advertising ID</source>
-        <translation type="unfinished" />
+        <translation>Ідентифікатор реклами</translation>
     </message>
     <message>
         <location filename="../src/qml/views/OptimizationView.qml" line="18877" />
         <source>Suggested content in settings</source>
-        <translation type="unfinished" />
+        <translation>Рекомендований контент у налаштуваннях</translation>
     </message>
     <message>
         <location filename="../src/qml/views/OptimizationView.qml" line="19062" />
         <source>Home page in the settings app</source>
-        <translation type="unfinished" />
+        <translation>Головна сторінка в додатку «Налаштування»</translation>
     </message>
     <message>
         <location filename="../src/qml/views/OptimizationView.qml" line="19247" />
         <source>Suggested notifications</source>
-        <translation type="unfinished" />
+        <translation>Рекомендовані сповіщення</translation>
     </message>
     <message>
         <location filename="../src/qml/views/OptimizationView.qml" line="19432" />
         <source>Lock screen fun facts, tips and tricks</source>
-        <translation type="unfinished" />
+        <translation>Цікаві факти, поради та хитрощі щодо екрану блокування</translation>
     </message>
     <message>
         <location filename="../src/qml/views/OptimizationView.qml" line="19617" />
         <source>Windows tips and suggestions</source>
-        <translation type="unfinished" />
+        <translation>Поради та рекомендації щодо роботи з Windows</translation>
     </message>
     <message>
         <location filename="../src/qml/views/OptimizationView.qml" line="19802" />
         <source>Windows welcome experience</source>
-        <translation type="unfinished" />
+        <translation>Вступна процедура налаштування Windows</translation>
     </message>
     <message>
         <location filename="../src/qml/views/OptimizationView.qml" line="19987" />
         <source>Finish setting up your device</source>
-        <translation type="unfinished" />
+        <translation>Завершіть налаштування пристрою</translation>
     </message>
     <message>
         <location filename="../src/qml/views/OptimizationView.qml" line="20476" />
         <source>Change privacy related settings that send data to Microsoft about your usage patterns.</source>
-        <translation type="unfinished" />
+        <translation>Змініть налаштування конфіденційності, які передбачають надсилання даних до Microsoft щодо ваших звичок користування.</translation>
     </message>
     <message>
         <location filename="../src/qml/views/OptimizationView.qml" line="20922" />
         <source>Location</source>
-        <translation type="unfinished" />
+        <translation>Місцезнаходження</translation>
     </message>
     <message>
         <location filename="../src/qml/views/OptimizationView.qml" line="21292" />
         <source>CEIP</source>
-        <translation type="unfinished" />
+        <translation>Обов’язкова початкова освіта</translation>
     </message>
     <message>
         <location filename="../src/qml/views/OptimizationView.qml" line="21477" />
         <source>Apps telemetry</source>
-        <translation type="unfinished" />
+        <translation>Телеметрія додатків</translation>
     </message>
     <message>
         <location filename="../src/qml/views/OptimizationView.qml" line="21662" />
         <source>App launches</source>
-        <translation type="unfinished" />
+        <translation>Запуск додатків</translation>
     </message>
     <message>
         <location filename="../src/qml/views/OptimizationView.qml" line="21847" />
         <source>Improve inking &amp; typing</source>
-        <translation type="unfinished" />
+        <translation>Покращити нанесення чорнила та друкування</translation>
     </message>
     <message>
         <location filename="../src/qml/views/OptimizationView.qml" line="22032" />
         <source>Personalize inking &amp; typing</source>
-        <translation type="unfinished" />
+        <translation>Налаштування рукописного введення та набору тексту</translation>
     </message>
     <message>
         <location filename="../src/qml/views/OptimizationView.qml" line="22217" />
         <source>Error reporting</source>
-        <translation type="unfinished" />
+        <translation>Повідомлення про помилки</translation>
     </message>
     <message>
         <location filename="../src/qml/views/OptimizationView.qml" line="22402" />
         <source>Camera on lock screen</source>
-        <translation type="unfinished" />
+        <translation>Камера на екрані блокування</translation>
     </message>
     <message>
         <location filename="../src/qml/views/OptimizationView.qml" line="22587" />
         <source>Camera indicator</source>
-        <translation type="unfinished" />
+        <translation>Камера індикатора</translation>
     </message>
     <message>
         <location filename="../src/qml/views/OptimizationView.qml" line="22772" />
         <source>Online speech</source>
-        <translation type="unfinished" />
+        <translation>Онлайн-виступ</translation>
     </message>
     <message>
         <location filename="../src/qml/views/OptimizationView.qml" line="23178" />
         <source>Block auto-updates, schedule manual checks, or download security patches only to prevent unexpected reboots.</source>
-        <translation type="unfinished" />
+        <translation>Заблокуйте автоматичні оновлення, заплануйте ручну перевірку або завантажуйте лише виправлення безпеки, щоб уникнути несподіваних перезавантажень.</translation>
     </message>
     <message>
         <location filename="../src/qml/views/OptimizationView.qml" line="24562" />
         <source>Customize desktop icons, taskbar elements, window shake, and wallpaper quality.</source>
-        <translation type="unfinished" />
+        <translation>Налаштуйте іконки на робочому столі, елементи панелі завдань, ефект «потрушування» вікна та якість фонового зображення.</translation>
     </message>
     <message>
         <location filename="../src/qml/views/OptimizationView.qml" line="25161" />
         <source>Enables or disables the clipboard history buffer accessed via the Win + V shortcut.</source>
-        <translation type="unfinished" />
+        <translation>Увімкнення або вимкнення буфера історії буфера обміну, доступ до якого здійснюється за допомогою комбінації клавіш Win + V.</translation>
     </message>
     <message>
         <location filename="../src/qml/views/OptimizationView.qml" line="25647" />
         <source>Enables the 'End task' context menu item on taskbar applications to close them directly.</source>
-        <translation type="unfinished" />
+        <translation>Увімкнення пункту контекстного меню «Завершити завдання» у програмах на панелі завдань дозволяє закривати їх безпосередньо.</translation>
     </message>
     <message>
         <location filename="../src/qml/views/OptimizationView.qml" line="25827" />
         <location filename="../src/qml/views/OptimizationView.qml" line="26497" />
         <source>Changes require a Windows Explorer restart to take effect.</source>
-        <translation type="unfinished" />
+        <translation>Щоб зміни набули чинності, необхідно перезапустити Провідник Windows.</translation>
     </message>
     <message>
         <location filename="../src/qml/views/OptimizationView.qml" line="26317" />
         <source>Enables or disables showing seconds in the Windows taskbar system clock.</source>
-        <translation type="unfinished" />
+        <translation>Увімкнення або вимкнення відображення секунд на системному годиннику панелі завдань Windows.</translation>
     </message>
     <message>
         <location filename="../src/qml/views/OptimizationView.qml" line="26907" />
         <source>Expert feature</source>
-        <translation type="unfinished" />
+        <translation>Стаття експерта</translation>
     </message>
     <message>
         <location filename="../src/qml/views/OptimizationView.qml" line="27031" />
         <source>Manage advanced system privileges and Windows security settings.</source>
-        <translation type="unfinished" />
+        <translation>Керуйте розширеними системними правами та налаштуваннями безпеки Windows.</translation>
     </message>
     <message>
         <location filename="../src/qml/views/OptimizationView.qml" line="27610" />
         <source>Customize File Explorer settings, navigation pane, and system view defaults.</source>
-        <translation type="unfinished" />
+        <translation>Налаштуйте параметри Провідника, панелі навігації та стандартні параметри системного перегляду.</translation>
     </message>
     <message>
         <location filename="../src/qml/views/OptimizationView.qml" line="28189" />
         <source>Customize Start Menu search web results, apps autoinstall, notifications, and power menu.</source>
-        <translation type="unfinished" />
+        <translation>Налаштуйте результати веб-пошуку в меню «Пуск», автоматичну інсталяцію програм, сповіщення та меню живлення.</translation>
     </message>
     <message>
         <location filename="../src/qml/views/OptimizationView.qml" line="28511" />
         <source>Power &amp; Storage</source>
-        <translation type="unfinished" />
+        <translation>Енергопостачання та зберігання енергії</translation>
     </message>
     <message>
         <location filename="../src/qml/views/OptimizationView.qml" line="29070" />
         <source>разработка</source>
-        <translation type="unfinished" />
+        <translation>розробка</translation>
     </message>
     <message>
         <location filename="../src/qml/views/OptimizationView.qml" line="29805" />
         <source>Select or deploy custom high-performance energy profiles and unlock the Ultimate Performance plan.</source>
-        <translation type="unfinished" />
+        <translation>Виберіть або налаштуйте власні високоефективні енергетичні профілі та активуйте тарифний план «Ultimate Performance».</translation>
     </message>
     <message>
         <location filename="../src/qml/views/OptimizationView.qml" line="31251" />
@@ -2940,27 +2940,27 @@ Would you like to close Discord now and proceed?</source>
     <message>
         <location filename="../src/qml/views/OptimizationView.qml" line="33043" />
         <source>Invalid limits: Min size exceeds Max!</source>
-        <translation type="unfinished" />
+        <translation>Неправильні межі: мінімальний розмір перевищує максимальний!</translation>
     </message>
     <message>
         <location filename="../src/qml/views/OptimizationView.qml" line="33051" />
         <source>Invalid limits: Size must be 1024-99999 MB!</source>
-        <translation type="unfinished" />
+        <translation>Неправильні межі: розмір повинен становити від 1024 до 99999 МБ!</translation>
     </message>
     <message>
         <location filename="../src/qml/views/OptimizationView.qml" line="33055" />
         <source>Not enough disk space for page file!</source>
-        <translation type="unfinished" />
+        <translation>Недостатньо місця на диску для файлу підкачки!</translation>
     </message>
     <message>
         <location filename="../src/qml/views/OptimizationView.qml" line="33059" />
         <source>C: drive space will be less than 10 GB. Continue?</source>
-        <translation type="unfinished" />
+        <translation>Обсяг диска C: становитиме менше 10 ГБ. Продовжити?</translation>
     </message>
     <message>
         <location filename="../src/qml/views/OptimizationView.qml" line="33264" />
         <source>Locate Page File option</source>
-        <translation type="unfinished" />
+        <translation>Параметр «Визначити файл підкачки»</translation>
     </message>
     <message>
         <location filename="../src/qml/views/OptimizationView.qml" line="33685" />
@@ -2970,61 +2970,61 @@ Would you like to close Discord now and proceed?</source>
     <message>
         <location filename="../src/qml/views/OptimizationView.qml" line="37397" />
         <source>Applying chosen tweaks and configuring system modules...</source>
-        <translation type="unfinished" />
+        <translation>Застосування вибраних налаштувань та конфігурація системних модулів...</translation>
     </message>
     <message>
         <location filename="../src/qml/views/OptimizationView.qml" line="37397" />
         <source>Finished system modifications successfully.</source>
-        <translation type="unfinished" />
+        <translation>Модифікації системи успішно завершено.</translation>
     </message>
     <message>
         <location filename="../src/qml/views/OptimizationView.qml" line="37479" />
         <source>Analyzing system configuration...</source>
-        <translation type="unfinished" />
+        <translation>Аналізується конфігурація системи...</translation>
     </message>
     <message>
         <location filename="../src/qml/views/OptimizationView.qml" line="37502" />
         <source>Breakdown of optimizations:</source>
-        <translation type="unfinished" />
+        <translation>Розподіл оптимізацій:</translation>
     </message>
     <message>
         <location filename="../src/qml/views/OptimizationView.qml" line="37516" />
         <source>Settings Applied</source>
-        <translation type="unfinished" />
+        <translation>Налаштування застосовано</translation>
     </message>
     <message>
         <location filename="../src/qml/views/OptimizationView.qml" line="37524" />
         <source>Services Disabled</source>
-        <translation type="unfinished" />
+        <translation>Послуги вимкнені</translation>
     </message>
     <message>
         <location filename="../src/qml/views/OptimizationView.qml" line="37532" />
         <source>Drives Configured</source>
-        <translation type="unfinished" />
+        <translation>Налаштовані диски</translation>
     </message>
     <message>
         <location filename="../src/qml/views/OptimizationView.qml" line="37540" />
         <source>Apps &amp; Startup</source>
-        <translation type="unfinished" />
+        <translation>Додатки та стартапи</translation>
     </message>
     <message>
         <location filename="../src/qml/views/OptimizationView.qml" line="37586" />
         <source>A Windows Explorer restart is required to apply the taskbar/shell customizations.</source>
-        <translation type="unfinished" />
+        <translation>Щоб зміни налаштувань панелі завдань та оболонки набули чинності, необхідно перезапустити Провідник Windows.</translation>
     </message>
     <message>
         <location filename="../src/qml/views/OptimizationView.qml" line="37604" />
         <source>Restart PC</source>
-        <translation type="unfinished" />
+        <translation>Перезапустити ПК</translation>
     </message>
     <message>
         <location filename="../src/qml/views/OptimizationView.qml" line="37614" />
         <source>Continue</source>
-        <translation type="unfinished" />
+        <translation>Продовжити</translation>
     </message>
     <message>
         <source>Show toolbar as list view</source>
-        <translation type="vanished">Показувати панель інструментів списком</translation>
+        <translation>Показувати панель інструментів списком</translation>
     </message>
     <message>
         <location filename="../src/qml/views/OptimizationView.qml" line="5100" />
@@ -3034,7 +3034,7 @@ Would you like to close Discord now and proceed?</source>
     </message>
     <message>
         <source>Use the Big Picture Overlay when using a controller</source>
-        <translation type="vanished">Використовувати оверлей Big Picture при використанні контролера</translation>
+        <translation>Використовувати оверлей Big Picture при використанні контролера</translation>
     </message>
     <message>
         <location filename="../src/qml/views/OptimizationView.qml" line="5104" />
@@ -3128,11 +3128,11 @@ Would you like to close Discord now and proceed?</source>
     </message>
     <message>
         <source>OPTIMIZATION</source>
-        <translation type="vanished">ОПТИМІЗАЦІЯ</translation>
+        <translation>ОПТИМІЗАЦІЯ</translation>
     </message>
     <message>
         <source>CURRENT LEVEL</source>
-        <translation type="vanished">ПОТОЧНИЙ РІВЕНЬ</translation>
+        <translation>ПОТОЧНИЙ РІВЕНЬ</translation>
     </message>
     <message>
         <location filename="../src/qml/views/OptimizationView.qml" line="37365" />
@@ -3146,11 +3146,11 @@ Would you like to close Discord now and proceed?</source>
     </message>
     <message>
         <source>Cleanup</source>
-        <translation type="vanished">Очищення</translation>
+        <translation>Очищення</translation>
     </message>
     <message>
         <source>Free up storage space, clear cache, delete system restore points and more.</source>
-        <translation type="vanished">Звільніть місце на диску, очистіть кеш, видаліть точки відновлення системи тощо.</translation>
+        <translation>Звільніть місце на диску, очистіть кеш, видаліть точки відновлення системи тощо.</translation>
     </message>
     <message>
         <location filename="../src/qml/views/OptimizationView.qml" line="33706" />
@@ -3183,175 +3183,175 @@ Would you like to close Discord now and proceed?</source>
     <name>Optimizer</name>
     <message>
         <source>Processing Classic Context Menu configuration...</source>
-        <translation type="vanished">Налаштування класичного контекстного меню...</translation>
+        <translation>Налаштування класичного контекстного меню...</translation>
     </message>
     <message>
         <source>Classic Context Menu is now ENABLED. Please restart Windows Explorer to apply changes.</source>
-        <translation type="vanished">Класичне контекстне меню УВІМКНЕНО. Будь ласка, перезапустіть провідник Windows, щоб застосувати зміни.</translation>
+        <translation>Класичне контекстне меню УВІМКНЕНО. Будь ласка, перезапустіть провідник Windows, щоб застосувати зміни.</translation>
     </message>
     <message>
         <source>Classic Context Menu is now DISABLED. Please restart Windows Explorer to apply changes.</source>
-        <translation type="vanished">Класичне контекстне меню ВИМКНЕНО. Будь ласка, перезапустіть провідник Windows, щоб застосувати зміни.</translation>
+        <translation>Класичне контекстне меню ВИМКНЕНО. Будь ласка, перезапустіть провідник Windows, щоб застосувати зміни.</translation>
     </message>
     <message>
         <source>Failed to update Classic Context Menu state.</source>
-        <translation type="vanished">Не вдалося оновити стан класичного контекстного меню.</translation>
+        <translation>Не вдалося оновити стан класичного контекстного меню.</translation>
     </message>
     <message>
         <source>[Simulation] Classic Context Menu set to: %1</source>
-        <translation type="vanished">[Симуляція] Класичне контекстне меню встановлено на: %1</translation>
+        <translation>[Симуляція] Класичне контекстне меню встановлено на: %1</translation>
     </message>
     <message>
         <source>Please restart your PC to apply Core Isolation changes.</source>
-        <translation type="vanished">Будь ласка, перезавантажте комп'ютер для застосування змін ізоляції ядра.</translation>
+        <translation>Будь ласка, перезавантажте комп'ютер для застосування змін ізоляції ядра.</translation>
     </message>
     <message>
         <source>Enabled</source>
-        <translation type="vanished">Увімкнено</translation>
+        <translation>Увімкнено</translation>
     </message>
     <message>
         <source>Disabled</source>
-        <translation type="vanished">Вимкнено</translation>
+        <translation>Вимкнено</translation>
     </message>
     <message>
         <source>Processing virtual memory (pagefile)...</source>
-        <translation type="vanished">Налаштування віртуальної пам'яті (файлу підкачки)...</translation>
+        <translation>Налаштування віртуальної пам'яті (файлу підкачки)...</translation>
     </message>
     <message>
         <source>Virtual memory limits updated successfully to Min: %1 MB, Max: %2 MB. A reboot is required to recreate the pagefile on disk.</source>
-        <translation type="vanished">Ліміти віртуальної пам'яті успішно оновлено до Мін: %1 МБ, Макс: %2 МБ. Необхідно перезавантажити комп'ютер для оновлення файлу підкачки на диску.</translation>
+        <translation>Ліміти віртуальної пам'яті успішно оновлено до Мін: %1 МБ, Макс: %2 МБ. Необхідно перезавантажити комп'ютер для оновлення файлу підкачки на диску.</translation>
     </message>
     <message>
         <source>Failed to apply virtual memory limits. PowerShell Error: %1</source>
-        <translation type="vanished">Не вдалося застосувати ліміти віртуальної пам'яті. Помилка PowerShell: %1</translation>
+        <translation>Не вдалося застосувати ліміти віртуальної пам'яті. Помилка PowerShell: %1</translation>
     </message>
     <message>
         <source>Powershell command execution timed out while setting virtual memory limits.</source>
-        <translation type="vanished">Час очікування команди PowerShell для налаштування віртуальної пам'яті вичерпано.</translation>
+        <translation>Час очікування команди PowerShell для налаштування віртуальної пам'яті вичерпано.</translation>
     </message>
     <message>
         <source>[Simulation] Virtual memory limits set to Min: %1 MB, Max: %2 MB.</source>
-        <translation type="vanished">[Симуляція] Ліміти віртуальної пам'яті встановлено до Мін: %1 МБ, Макс: %2 МБ.</translation>
+        <translation>[Симуляція] Ліміти віртуальної пам'яті встановлено до Мін: %1 МБ, Макс: %2 МБ.</translation>
     </message>
     <message>
         <source>Initiating BitLocker decryption for C: drive...</source>
-        <translation type="vanished">Запуск процесу розшифрування диска C:...</translation>
+        <translation>Запуск процесу розшифрування диска C:...</translation>
     </message>
     <message>
         <source>BitLocker decryption command successfully sent to Windows. Decryption is running in the background.</source>
-        <translation type="vanished">Команду дешифрування BitLocker успішно надіслано Windows. Розшифрування триває у фоновому режимі.</translation>
+        <translation>Команду дешифрування BitLocker успішно надіслано Windows. Розшифрування триває у фоновому режимі.</translation>
     </message>
     <message>
         <source>Failed to start manage-bde.exe to disable BitLocker.</source>
-        <translation type="vanished">Не вдалося запустити manage-bde.exe для вимкнення BitLocker.</translation>
+        <translation>Не вдалося запустити manage-bde.exe для вимкнення BitLocker.</translation>
     </message>
     <message>
         <source>Local Disk</source>
-        <translation type="vanished">Локальний диск</translation>
+        <translation>Локальний диск</translation>
     </message>
     <message>
         <source>Closing Steam process if running...</source>
-        <translation type="vanished">Закриття процесу Steam, якщо він запущений...</translation>
+        <translation>Закриття процесу Steam, якщо він запущений...</translation>
     </message>
     <message>
         <source>Successfully deleted local browser cache: %1</source>
-        <translation type="vanished">Успішно видалено локальний кеш браузера: %1</translation>
+        <translation>Успішно видалено локальний кеш браузера: %1</translation>
     </message>
     <message>
         <source>Steam path not found. Cannot clear browser data.</source>
-        <translation type="vanished">Шлях до Steam не знайдено. Не вдалося видалити дані браузера.</translation>
+        <translation>Шлях до Steam не знайдено. Не вдалося видалити дані браузера.</translation>
     </message>
     <message>
         <source>Successfully deleted browser cache folder: %1</source>
-        <translation type="vanished">Успішно видалено папку кешу браузера: %1</translation>
+        <translation>Успішно видалено папку кешу браузера: %1</translation>
     </message>
     <message>
         <source>Failed to delete browser cache folder: %1 (Files may be locked)</source>
-        <translation type="vanished">Не вдалося видалити папку кешу браузера: %1 (файли можуть бути заблоковані)</translation>
+        <translation>Не вдалося видалити папку кешу браузера: %1 (файли можуть бути заблоковані)</translation>
     </message>
     <message>
         <source>Failed to delete local browser cache: %1 (Files may be locked)</source>
-        <translation type="vanished">Не вдалося видалити локальний кеш браузера: %1 (файли можуть бути заблоковані)</translation>
+        <translation>Не вдалося видалити локальний кеш браузера: %1 (файли можуть бути заблоковані)</translation>
     </message>
     <message>
         <source>Steam web browser data cleared successfully! Freed %1 MB.</source>
-        <translation type="vanished">Дані веб-браузера Steam успішно очищено! Звільнено %1 МБ.</translation>
+        <translation>Дані веб-браузера Steam успішно очищено! Звільнено %1 МБ.</translation>
     </message>
     <message>
         <source>Configuring Drive Optimization...</source>
-        <translation type="vanished">Налаштування оптимізації дисків...</translation>
+        <translation>Налаштування оптимізації дисків...</translation>
     </message>
     <message>
         <source>Drive optimization enabled successfully.</source>
-        <translation type="vanished">Оптимізація дисків успішно увімкнена.</translation>
+        <translation>Оптимізація дисків успішно увімкнена.</translation>
     </message>
     <message>
         <source>Drive optimization disabled successfully.</source>
-        <translation type="vanished">Оптимізація дисків успішно вимкнена.</translation>
+        <translation>Оптимізація дисків успішно вимкнена.</translation>
     </message>
     <message>
         <source>Failed to configure Drive Optimization completely (Service: %1, Task: %2).</source>
-        <translation type="vanished">Не вдалося повністю налаштувати оптимізацію дисків (Служба: %1, Завдання: %2).</translation>
+        <translation>Не вдалося повністю налаштувати оптимізацію дисків (Служба: %1, Завдання: %2).</translation>
     </message>
     <message>
         <source>Success</source>
-        <translation type="vanished">Успішно</translation>
+        <translation>Успішно</translation>
     </message>
     <message>
         <source>Failed</source>
-        <translation type="vanished">Помилка</translation>
+        <translation>Помилка</translation>
     </message>
     <message>
         <source>Configuring Fast Startup...</source>
-        <translation type="vanished">Налаштування швидкого запуску...</translation>
+        <translation>Налаштування швидкого запуску...</translation>
     </message>
     <message>
         <source>Fast Startup is now ENABLED.</source>
-        <translation type="vanished">Швидкий запуск тепер УВІМКНЕНО.</translation>
+        <translation>Швидкий запуск тепер УВІМКНЕНО.</translation>
     </message>
     <message>
         <source>Fast Startup is now DISABLED.</source>
-        <translation type="vanished">Швидкий запуск тепер ВИМКНЕНО.</translation>
+        <translation>Швидкий запуск тепер ВИМКНЕНО.</translation>
     </message>
     <message>
         <source>Failed to update Fast Startup registry value.</source>
-        <translation type="vanished">Не вдалося оновити значення реєстру швидкого запуску.</translation>
+        <translation>Не вдалося оновити значення реєстру швидкого запуску.</translation>
     </message>
     <message>
         <source>Failed to open Session Manager\Power registry key.</source>
-        <translation type="vanished">Не вдалося відкрити розділ реєстру Session Manager\Power.</translation>
+        <translation>Не вдалося відкрити розділ реєстру Session Manager\Power.</translation>
     </message>
     <message>
         <source>Legacy BIOS Boot Mode</source>
-        <translation type="vanished">Режим завантаження Legacy BIOS</translation>
+        <translation>Режим завантаження Legacy BIOS</translation>
     </message>
     <message>
         <source>UEFI Boot Mode Enabled</source>
-        <translation type="vanished">Увімкнено режим завантаження UEFI</translation>
+        <translation>Увімкнено режим завантаження UEFI</translation>
     </message>
     <message>
         <source>Disabled / Not Found</source>
-        <translation type="vanished">Вимкнено / Не знайдено</translation>
+        <translation>Вимкнено / Не знайдено</translation>
     </message>
     <message>
         <source>TPM 1.2 Active</source>
-        <translation type="vanished">TPM 1.2 активний</translation>
+        <translation>TPM 1.2 активний</translation>
     </message>
     <message>
         <source>TPM 2.0 Active</source>
-        <translation type="vanished">TPM 2.0 активний</translation>
+        <translation>TPM 2.0 активний</translation>
     </message>
     <message>
         <source>TPM Active (Unknown Version)</source>
-        <translation type="vanished">TPM активний (невідома версія)</translation>
+        <translation>TPM активний (невідома версія)</translation>
     </message>
     <message>
         <source>Enabled (%1)</source>
-        <translation type="vanished">Увімкнено (%1)</translation>
+        <translation>Увімкнено (%1)</translation>
     </message>
     <message>
         <source>Disabled (%1)</source>
-        <translation type="vanished">Вимкнено (%1)</translation>
+        <translation>Вимкнено (%1)</translation>
     </message>
 </context>
 <context>
@@ -3359,37 +3359,37 @@ Would you like to close Discord now and proceed?</source>
     <message>
         <location filename="../src/qml/views/PowerDrawer.qml" line="18" />
         <source>Ultimate Performance Scheme</source>
-        <translation type="unfinished" />
+        <translation>Програма «Максимальна ефективність»</translation>
     </message>
     <message>
         <location filename="../src/qml/views/PowerDrawer.qml" line="25" />
         <source>Unlocks and enables the hidden Windows Ultimate Performance power scheme for zero latencies.</source>
-        <translation type="unfinished" />
+        <translation>Розблоковує та вмикає приховану схему енергоспоживання Windows «Максимальна продуктивність» для усунення затримок.</translation>
     </message>
     <message>
         <location filename="../src/qml/views/PowerDrawer.qml" line="37" />
         <source>Cancel Deletion</source>
-        <translation type="unfinished" />
+        <translation>Скасувати видалення</translation>
     </message>
     <message>
         <location filename="../src/qml/views/PowerDrawer.qml" line="39" />
         <source>Delete Ultimate Performance Scheme</source>
-        <translation type="unfinished" />
+        <translation>Видалити схему «Ultimate Performance»</translation>
     </message>
     <message>
         <location filename="../src/qml/views/PowerDrawer.qml" line="39" />
         <source>Activate Ultimate Performance</source>
-        <translation type="unfinished" />
+        <translation>Увімкнути режим «Ultimate Performance»</translation>
     </message>
     <message>
         <location filename="../src/qml/views/PowerDrawer.qml" line="78" />
         <source>Available Power Schemes:</source>
-        <translation type="unfinished" />
+        <translation>Доступні схеми живлення:</translation>
     </message>
     <message>
         <location filename="../src/qml/views/PowerDrawer.qml" line="159" />
         <source>Staged for deletion</source>
-        <translation type="unfinished" />
+        <translation>Позначено для видалення</translation>
     </message>
 </context>
 <context>
@@ -3459,7 +3459,7 @@ CHKDSK: Сканує цілісність файлової системи та �
     <message>
         <location filename="../src/qml/views/RepairDrawer.qml" line="426" />
         <source>System Reboot Required</source>
-        <translation type="unfinished" />
+        <translation>Необхідно перезавантажити систему</translation>
     </message>
     <message>
         <location filename="../src/qml/views/RepairDrawer.qml" line="436" />
@@ -3469,17 +3469,17 @@ CHKDSK: Сканує цілісність файлової системи та �
     <message>
         <location filename="../src/qml/views/RepairDrawer.qml" line="450" />
         <source>Later</source>
-        <translation type="unfinished" />
+        <translation>Пізніше</translation>
     </message>
     <message>
         <location filename="../src/qml/views/RepairDrawer.qml" line="459" />
         <source>Restart Now</source>
-        <translation type="unfinished" />
+        <translation>Перезапустити зараз</translation>
     </message>
     <message>
         <location filename="../src/qml/views/RepairDrawer.qml" line="473" />
         <source>Detailed Results:</source>
-        <translation type="unfinished" />
+        <translation>Детальні результати:</translation>
     </message>
     <message>
         <location filename="../src/qml/views/RepairDrawer.qml" line="542" />
@@ -3530,7 +3530,7 @@ CHKDSK: Сканує цілісність файлової системи та �
     </message>
     <message>
         <source>THEME SETTINGS</source>
-        <translation type="vanished">НАЛАШТУВАННЯ ТЕМИ</translation>
+        <translation>НАЛАШТУВАННЯ ТЕМИ</translation>
     </message>
     <message>
         <location filename="../src/qml/views/SettingsView.qml" line="98" />
@@ -3539,7 +3539,7 @@ CHKDSK: Сканує цілісність файлової системи та �
     </message>
     <message>
         <source>LANGUAGE SETTINGS</source>
-        <translation type="vanished">НАЛАШТУВАННЯ МОВИ</translation>
+        <translation>НАЛАШТУВАННЯ МОВИ</translation>
     </message>
     <message>
         <location filename="../src/qml/views/SettingsView.qml" line="18" />
@@ -3673,19 +3673,19 @@ CHKDSK: Сканує цілісність файлової системи та �
     </message>
     <message>
         <source>Classic deep slate dark theme</source>
-        <translation type="vanished">Класична темна тема</translation>
+        <translation>Класична темна тема</translation>
     </message>
     <message>
         <source>Absolute black OLED theme</source>
-        <translation type="vanished">Абсолютно чорна тема OLED</translation>
+        <translation>Абсолютно чорна тема OLED</translation>
     </message>
     <message>
         <source>Glowing orange gaming theme</source>
-        <translation type="vanished">Яскрава помаранчева ігрова тема</translation>
+        <translation>Яскрава помаранчева ігрова тема</translation>
     </message>
     <message>
         <source>Vibrant soft pink theme</source>
-        <translation type="vanished">Ніжна рожева тема</translation>
+        <translation>Ніжна рожева тема</translation>
     </message>
     <message>
         <location filename="../src/qml/views/SettingsView.qml" line="541" />
@@ -3700,7 +3700,7 @@ CHKDSK: Сканує цілісність файлової системи та �
     </message>
     <message>
         <source>High contrast black and glowing pink accents</source>
-        <translation type="vanished">Контрастна чорна тема з рожевими акцентами</translation>
+        <translation>Контрастна чорна тема з рожевими акцентами</translation>
     </message>
     <message>
         <location filename="../src/qml/views/SettingsView.qml" line="660" />
@@ -3735,7 +3735,7 @@ CHKDSK: Сканує цілісність файлової системи та �
         <location filename="../src/qml/components/ShowPathButton.qml" line="10" />
         <location filename="../src/qml/components/ShowPathButton.qml" line="12" />
         <source>Show Path</source>
-        <translation type="unfinished" />
+        <translation>Показати шлях</translation>
     </message>
 </context>
 <context>
@@ -3748,52 +3748,52 @@ CHKDSK: Сканує цілісність файлової системи та �
     <message>
         <location filename="../src/qml/views/SleepingPillDrawer.qml" line="81" />
         <source>Task Scheduler Wakeup Tasks</source>
-        <translation type="unfinished" />
+        <translation>Завдання пробудження в Планувальнику завдань</translation>
     </message>
     <message>
         <location filename="../src/qml/views/SleepingPillDrawer.qml" line="88" />
         <source>Scan and disable tasks in Windows Task Scheduler that are allowed to wake up the system.</source>
-        <translation type="unfinished" />
+        <translation>Скануйте та вимкніть у Планувальнику завдань Windows ті завдання, яким дозволено виводити систему з режиму сну.</translation>
     </message>
     <message>
         <location filename="../src/qml/views/SleepingPillDrawer.qml" line="117" />
         <source>Status: Not scanned yet</source>
-        <translation type="unfinished" />
+        <translation>Статус: Ще не відскановано</translation>
     </message>
     <message>
         <location filename="../src/qml/views/SleepingPillDrawer.qml" line="119" />
         <source>Status: No tasks configured to wake the computer.</source>
-        <translation type="unfinished" />
+        <translation>Стан: Не налаштовано жодних завдань для виведення комп’ютера зі сплячого режиму.</translation>
     </message>
     <message>
         <location filename="../src/qml/views/SleepingPillDrawer.qml" line="121" />
         <source>Status: Found %1 task(s) configured to wake the computer.</source>
-        <translation type="unfinished" />
+        <translation>Статус: Виявлено %1 завдання, налаштовані на виведення комп’ютера з режиму сну.</translation>
     </message>
     <message>
         <location filename="../src/qml/views/SleepingPillDrawer.qml" line="137" />
         <source>SUCCESS</source>
-        <translation type="unfinished" />
+        <translation>УСПІХ</translation>
     </message>
     <message>
         <location filename="../src/qml/views/SleepingPillDrawer.qml" line="152" />
         <source>Scan Tasks</source>
-        <translation type="unfinished" />
+        <translation>Завдання сканування</translation>
     </message>
     <message>
         <location filename="../src/qml/views/SleepingPillDrawer.qml" line="160" />
         <source>Scan complete: No wake tasks found.</source>
-        <translation type="unfinished" />
+        <translation>Сканування завершено: завдань у режимі сну не виявлено.</translation>
     </message>
     <message>
         <location filename="../src/qml/views/SleepingPillDrawer.qml" line="162" />
         <source>Scan complete: Found %1 wake tasks.</source>
-        <translation type="unfinished" />
+        <translation>Сканування завершено: знайдено %1 завдань, що вимагають пробудження.</translation>
     </message>
     <message>
         <location filename="../src/qml/views/SleepingPillDrawer.qml" line="169" />
         <source>Disable Wakeup</source>
-        <translation type="unfinished" />
+        <translation>Вимкнути функцію пробудження</translation>
     </message>
 </context>
 <context>
@@ -3801,7 +3801,7 @@ CHKDSK: Сканує цілісність файлової системи та �
     <message>
         <location filename="../src/qml/components/SpecCard.qml" line="128" />
         <source>Detecting...</source>
-        <translation type="unfinished" />
+        <translation>Виявлення...</translation>
     </message>
 </context>
 <context>
@@ -3809,52 +3809,52 @@ CHKDSK: Сканує цілісність файлової системи та �
     <message>
         <location filename="../src/qml/views/StartMenuDrawer.qml" line="14" />
         <source>Customization of the Windows Start Menu search, notifications, and power options.</source>
-        <translation type="unfinished" />
+        <translation>Налаштування пошуку в меню «Пуск» Windows, сповіщень та параметрів живлення.</translation>
     </message>
     <message>
         <location filename="../src/qml/views/StartMenuDrawer.qml" line="39" />
         <source>Include web results when searching</source>
-        <translation type="unfinished" />
+        <translation>Включати результати з веб-сторінок під час пошуку</translation>
     </message>
     <message>
         <location filename="../src/qml/views/StartMenuDrawer.qml" line="46" />
         <source>Disable this to stop Bing search from showing web results in the Start Menu search bar.</source>
-        <translation type="unfinished" />
+        <translation>Вимкніть цю опцію, щоб пошукова система Bing не відображала результати з Інтернету в рядку пошуку меню «Пуск».</translation>
     </message>
     <message>
         <location filename="../src/qml/views/StartMenuDrawer.qml" line="82" />
         <source>Autoinstall suggestions</source>
-        <translation type="unfinished" />
+        <translation>Пропозиції щодо автоматичної інсталяції</translation>
     </message>
     <message>
         <location filename="../src/qml/views/StartMenuDrawer.qml" line="89" />
         <source>Disable this to prevent Windows from silently installing recommended apps and sponsored shortcuts.</source>
-        <translation type="unfinished" />
+        <translation>Вимкніть цю опцію, щоб Windows не встановлював у прихованому режимі рекомендовані програми та спонсоровані ярлики.</translation>
     </message>
     <message>
         <location filename="../src/qml/views/StartMenuDrawer.qml" line="125" />
         <source>Account notifications</source>
-        <translation type="unfinished" />
+        <translation>Повідомлення про обліковий запис</translation>
     </message>
     <message>
         <location filename="../src/qml/views/StartMenuDrawer.qml" line="132" />
         <source>Disable notifications and badges related to your Microsoft account on the Start Menu.</source>
-        <translation type="unfinished" />
+        <translation>Вимкніть сповіщення та значки, пов’язані з вашим обліковим записом Microsoft, у меню «Пуск».</translation>
     </message>
     <message>
         <location filename="../src/qml/views/StartMenuDrawer.qml" line="172" />
         <source>Show hibernate in power menu</source>
-        <translation type="unfinished" />
+        <translation>Показати режим глибокого сну в меню живлення</translation>
     </message>
     <message>
         <location filename="../src/qml/views/StartMenuDrawer.qml" line="179" />
         <source>Show or hide the Hibernate option in the Start Menu power options menu.</source>
-        <translation type="unfinished" />
+        <translation>Показати або приховати параметр «Гібернація» у меню «Параметри живлення» меню «Пуск».</translation>
     </message>
     <message>
         <location filename="../src/qml/views/StartMenuDrawer.qml" line="180" />
         <source>Show or hide the Hibernate option in the Start Menu. (Requires Hibernation to be enabled in Power Plan settings)</source>
-        <translation type="unfinished" />
+        <translation>Показати або приховати опцію «Гібернація» у меню «Пуск». (Для цього у налаштуваннях режиму енергозбереження має бути увімкнено гібернацію)</translation>
     </message>
 </context>
 <context>
@@ -3947,12 +3947,12 @@ CHKDSK: Сканує цілісність файлової системи та �
     <message>
         <location filename="../src/qml/views/SteamSettingsDrawer.qml" line="241" />
         <source>In-Game Overlay</source>
-        <translation type="unfinished" />
+        <translation>Ігровий оверлей</translation>
     </message>
     <message>
         <location filename="../src/qml/views/SteamSettingsDrawer.qml" line="241" />
         <source>Performance monitor, overlay shortcuts, and browser options</source>
-        <translation type="unfinished" />
+        <translation>Монітор продуктивності, комбінації клавіш для накладення вікон та параметри браузера</translation>
     </message>
     <message>
         <location filename="../src/qml/views/SteamSettingsDrawer.qml" line="242" />
@@ -3961,7 +3961,7 @@ CHKDSK: Сканує цілісність файлової системи та �
     </message>
     <message>
         <source>Scale text, startup location, and GPU accelerated rendering</source>
-        <translation type="vanished">Масштабування тексту, розташування при запуску та прискорення GPU</translation>
+        <translation>Масштабування тексту, розташування при запуску та прискорення GPU</translation>
     </message>
     <message>
         <location filename="../src/qml/views/SteamSettingsDrawer.qml" line="243" />
@@ -3972,7 +3972,7 @@ CHKDSK: Сканує цілісність файлової системи та �
     </message>
     <message>
         <source>Bandwidth, performance, and community options</source>
-        <translation type="vanished">Пропускна здатність, продуктивність та параметри спільноти</translation>
+        <translation>Пропускна здатність, продуктивність та параметри спільноти</translation>
     </message>
     <message>
         <location filename="../src/qml/views/SteamSettingsDrawer.qml" line="244" />
@@ -3982,7 +3982,7 @@ CHKDSK: Сканує цілісність файлової системи та �
     </message>
     <message>
         <source>Speed limits, gameplay download rules, and shader pre-caching</source>
-        <translation type="vanished">Обмеження швидкості, правила завантаження під час гри та кешування шейдерів</translation>
+        <translation>Обмеження швидкості, правила завантаження під час гри та кешування шейдерів</translation>
     </message>
     <message>
         <location filename="../src/qml/views/SteamSettingsDrawer.qml" line="245" />
@@ -3992,7 +3992,7 @@ CHKDSK: Сканує цілісність файлової системи та �
     </message>
     <message>
         <source>Manage installed games, DLCs, and workshop content sizes</source>
-        <translation type="vanished">Керування встановленими іграми, DLC та розмірами вмісту майстерні</translation>
+        <translation>Керування встановленими іграми, DLC та розмірами вмісту майстерні</translation>
     </message>
     <message>
         <location filename="../src/qml/views/SteamSettingsDrawer.qml" line="251" />
@@ -4001,7 +4001,7 @@ CHKDSK: Сканує цілісність файлової системи та �
     </message>
     <message>
         <source>Configure game broadcasting and stream preferences</source>
-        <translation type="vanished">Налаштування трансляції гри та параметрів трансляції</translation>
+        <translation>Налаштування трансляції гри та параметрів трансляції</translation>
     </message>
     <message>
         <location filename="../src/qml/views/SteamSettingsDrawer.qml" line="279" />
@@ -4031,11 +4031,11 @@ CHKDSK: Сканує цілісність файлової системи та �
     </message>
     <message>
         <source>Append nicknames to friends' names</source>
-        <translation type="vanished">Додавати нікнейми до імен друзів</translation>
+        <translation>Додавати нікнейми до імен друзів</translation>
     </message>
     <message>
         <source>Decreases processor load during friends list updates in real-time.</source>
-        <translation type="vanished">Зменшує навантаження на процесор під час оновлення списку друзів у реальному часі.</translation>
+        <translation>Зменшує навантаження на процесор під час оновлення списку друзів у реальному часі.</translation>
     </message>
     <message>
         <location filename="../src/qml/views/SteamSettingsDrawer.qml" line="321" />
@@ -4310,92 +4310,92 @@ CHKDSK: Сканує цілісність файлової системи та �
     <message>
         <location filename="../src/qml/views/SteamSettingsDrawer.qml" line="1509" />
         <source>Steam Client Language</source>
-        <translation type="unfinished" />
+        <translation>Мова клієнта Steam</translation>
     </message>
     <message>
         <location filename="../src/qml/views/SteamSettingsDrawer.qml" line="1516" />
         <source>Select the language you want Steam to use (requires restart)</source>
-        <translation type="unfinished" />
+        <translation>Виберіть мову, яку ви хочете використовувати в Steam (потрібно перезапустити програму)</translation>
     </message>
     <message>
         <location filename="../src/qml/views/SteamSettingsDrawer.qml" line="1654" />
         <source>24-hour clock</source>
-        <translation type="unfinished" />
+        <translation>24-годинний формат часу</translation>
     </message>
     <message>
         <location filename="../src/qml/views/SteamSettingsDrawer.qml" line="1661" />
         <source>Always display timestamps in 24-hour format</source>
-        <translation type="unfinished" />
+        <translation>Завжди відображати позначки часу у 24-годинному форматі</translation>
     </message>
     <message>
         <location filename="../src/qml/views/SteamSettingsDrawer.qml" line="1692" />
         <source>Client Beta Participation</source>
-        <translation type="unfinished" />
+        <translation>Участь у бета-тестуванні для клієнтів</translation>
     </message>
     <message>
         <location filename="../src/qml/views/SteamSettingsDrawer.qml" line="1699" />
         <source>You can choose to participate in testing the latest Steam Client before it's widely released</source>
-        <translation type="unfinished" />
+        <translation>Ви можете взяти участь у тестуванні нової версії клієнта Steam до її офіційного випуску</translation>
     </message>
     <message>
         <location filename="../src/qml/views/SteamSettingsDrawer.qml" line="1721" />
         <location filename="../src/qml/views/SteamSettingsDrawer.qml" line="1729" />
         <source>No beta chosen</source>
-        <translation type="unfinished" />
+        <translation>Бета-версія не обрана</translation>
     </message>
     <message>
         <location filename="../src/qml/views/SteamSettingsDrawer.qml" line="1722" />
         <source>Steam Beta Update</source>
-        <translation type="unfinished" />
+        <translation>Оновлення бета-версії Steam</translation>
     </message>
     <message>
         <location filename="../src/qml/views/SteamSettingsDrawer.qml" line="1810" />
         <source>Start Up Location</source>
-        <translation type="unfinished" />
+        <translation>Місце запуску</translation>
     </message>
     <message>
         <location filename="../src/qml/views/SteamSettingsDrawer.qml" line="1817" />
         <source>Select your default Steam window</source>
-        <translation type="unfinished" />
+        <translation>Виберіть вікно Steam, яке буде відкриватися за замовчуванням</translation>
     </message>
     <message>
         <location filename="../src/qml/views/SteamSettingsDrawer.qml" line="1839" />
         <location filename="../src/qml/views/SteamSettingsDrawer.qml" line="1850" />
         <location filename="../src/qml/views/SteamSettingsDrawer.qml" line="2328" />
         <source>Store</source>
-        <translation type="unfinished" />
+        <translation>Великі</translation>
     </message>
     <message>
         <location filename="../src/qml/views/SteamSettingsDrawer.qml" line="1841" />
         <source>News</source>
-        <translation type="unfinished" />
+        <translation>Новини</translation>
     </message>
     <message>
         <location filename="../src/qml/views/SteamSettingsDrawer.qml" line="1842" />
         <location filename="../src/qml/views/SteamSettingsDrawer.qml" line="2416" />
         <source>Friend Activity</source>
-        <translation type="unfinished" />
+        <translation>Активність друзів</translation>
     </message>
     <message>
         <location filename="../src/qml/views/SteamSettingsDrawer.qml" line="1843" />
         <source>Community Home</source>
-        <translation type="unfinished" />
+        <translation>Головна сторінка спільноти</translation>
     </message>
     <message>
         <location filename="../src/qml/views/SteamSettingsDrawer.qml" line="2001" />
         <source>Taskbar Preferences</source>
-        <translation type="unfinished" />
+        <translation>Налаштування панелі завдань</translation>
     </message>
     <message>
         <location filename="../src/qml/views/SteamSettingsDrawer.qml" line="2008" />
         <source>Customize the shortcuts and status options displayed in the Windows taskbar right-click menu.</source>
-        <translation type="unfinished" />
+        <translation>Налаштуйте комбінації клавіш та параметри стану, що відображаються в контекстному меню панелі завдань Windows.</translation>
     </message>
     <message>
         <location filename="../src/qml/views/SteamSettingsDrawer.qml" line="2018" />
         <location filename="../src/qml/views/SteamSettingsDrawer.qml" line="2978" />
         <source>Customize</source>
-        <translation type="unfinished" />
+        <translation>Налаштувати</translation>
     </message>
     <message>
         <location filename="../src/qml/views/SteamSettingsDrawer.qml" line="2038" />
@@ -4424,7 +4424,7 @@ CHKDSK: Сканує цілісність файлової системи та �
     </message>
     <message>
         <source>Prompts the account selector window on every Steam login.</source>
-        <translation type="vanished">Показує вікно вибору акаунта при кожному вході в Steam.</translation>
+        <translation>Показує вікно вибору акаунта при кожному вході в Steam.</translation>
     </message>
     <message>
         <location filename="../src/qml/views/SteamSettingsDrawer.qml" line="1931" />
@@ -4433,7 +4433,7 @@ CHKDSK: Сканує цілісність файлової системи та �
     </message>
     <message>
         <source>Launches Steam directly in the gamepad-friendly Big Picture Mode interface.</source>
-        <translation type="vanished">Запускає Steam безпосередньо в інтерфейсі Big Picture, зручному для геймпадів.</translation>
+        <translation>Запускає Steam безпосередньо в інтерфейсі Big Picture, зручному для геймпадів.</translation>
     </message>
     <message>
         <location filename="../src/qml/views/SteamSettingsDrawer.qml" line="2115" />
@@ -4492,7 +4492,7 @@ CHKDSK: Сканує цілісність файлової системи та �
     </message>
     <message>
         <source>The In-Game overlay is designed to help you understand your game and PC performance. It can render a variety of game and hardware performance information over a running game. &lt;a href='https://support.steampowered.com/kb_article.php?ref=2235-QOMF-3286' style='color:#63b1e2; text-decoration:underline;'&gt;Learn about the performance monitor numbers here.&lt;/a&gt;</source>
-        <translation type="vanished">Внутрішньоігровий оверлей розроблений, щоб допомогти вам зрозуміти продуктивність гри та ПК. Він може відображати різноманітну інформацію про продуктивність гри та обладнання поверх запущеної гри. &lt;a href='https://support.steampowered.com/kb_article.php?ref=2235-QOMF-3286' style='color:#63b1e2; text-decoration:underline;'&gt;Дізнайтеся більше про значення монітора продуктивності тут.&lt;/a&gt;</translation>
+        <translation>Внутрішньоігровий оверлей розроблений, щоб допомогти вам зрозуміти продуктивність гри та ПК. Він може відображати різноманітну інформацію про продуктивність гри та обладнання поверх запущеної гри. &lt;a href='https://support.steampowered.com/kb_article.php?ref=2235-QOMF-3286' style='color:#63b1e2; text-decoration:underline;'&gt;Дізнайтеся більше про значення монітора продуктивності тут.&lt;/a&gt;</translation>
     </message>
     <message>
         <location filename="../src/qml/views/SteamSettingsDrawer.qml" line="3068" />
@@ -4558,7 +4558,7 @@ CHKDSK: Сканує цілісність файлової системи та �
     </message>
     <message>
         <source>Pair Steam Link</source>
-        <translation type="vanished">Прив'язати Steam Link</translation>
+        <translation>Прив'язати Steam Link</translation>
     </message>
     <message>
         <location filename="../src/qml/views/SteamSettingsDrawer.qml" line="7938" />
@@ -4589,145 +4589,145 @@ CHKDSK: Сканує цілісність файлової системи та �
     <message>
         <location filename="../src/qml/views/SteamSettingsDrawer.qml" line="242" />
         <source>Taskbar preferences, UI scale, and language settings</source>
-        <translation type="unfinished" />
+        <translation>Параметри панелі завдань, масштаб інтерфейсу та налаштування мови</translation>
     </message>
     <message>
         <location filename="../src/qml/views/SteamSettingsDrawer.qml" line="243" />
         <source>Game details, library layouts, and dynamic updates</source>
-        <translation type="unfinished" />
+        <translation>Деталі гри, макети бібліотек та динамічні оновлення</translation>
     </message>
     <message>
         <location filename="../src/qml/views/SteamSettingsDrawer.qml" line="244" />
         <source>Download speeds, background throttling, and region options</source>
-        <translation type="unfinished" />
+        <translation>Швидкість завантаження, обмеження пропускної здатності у фоновому режимі та параметри регіону</translation>
     </message>
     <message>
         <location filename="../src/qml/views/SteamSettingsDrawer.qml" line="245" />
         <source>Steam libraries, dynamic space usage, and uninstaller</source>
-        <translation type="unfinished" />
+        <translation>Бібліотеки Steam, динамічне використання простору та програма видалення</translation>
     </message>
     <message>
         <location filename="../src/qml/views/SteamSettingsDrawer.qml" line="246" />
         <source>Text scaling, screen reader support, and color options</source>
-        <translation type="unfinished" />
+        <translation>Масштабування тексту, підтримка програм для читання з екрану та налаштування кольорів</translation>
     </message>
     <message>
         <location filename="../src/qml/views/SteamSettingsDrawer.qml" line="247" />
         <source>Background capture, clip markers, and storage limits</source>
-        <translation type="unfinished" />
+        <translation>Запис фонового зображення, маркери кліпів та обмеження обсягу зберігання</translation>
     </message>
     <message>
         <location filename="../src/qml/views/SteamSettingsDrawer.qml" line="248" />
         <source>In-Game Voice</source>
-        <translation type="unfinished" />
+        <translation>Голосовий чат у грі</translation>
     </message>
     <message>
         <location filename="../src/qml/views/SteamSettingsDrawer.qml" line="248" />
         <source>Microphone test, input volumes, and voice activation thresholds</source>
-        <translation type="unfinished" />
+        <translation>Перевірка мікрофона, рівні гучності на вході та пороги голосової активації</translation>
     </message>
     <message>
         <location filename="../src/qml/views/SteamSettingsDrawer.qml" line="249" />
         <source>Steam Link pairing, hardware encoding, and quality profiles</source>
-        <translation type="unfinished" />
+        <translation>Синхронізація Steam Link, апаратне кодування та профілі якості</translation>
     </message>
     <message>
         <location filename="../src/qml/views/SteamSettingsDrawer.qml" line="250" />
         <source>Local soundtrack indexing, database scan, and volume rules</source>
-        <translation type="unfinished" />
+        <translation>Індексація локальних звукових доріжок, сканування бази даних та правила щодо обсягу</translation>
     </message>
     <message>
         <location filename="../src/qml/views/SteamSettingsDrawer.qml" line="251" />
         <source>Stream resolution, audio channels, and viewer privacy rules</source>
-        <translation type="unfinished" />
+        <translation>Роздільна здатність потокового відео, аудіоканали та правила щодо конфіденційності глядачів</translation>
     </message>
     <message>
         <location filename="../src/qml/views/SteamSettingsDrawer.qml" line="252" />
         <source>Controller</source>
-        <translation type="unfinished" />
+        <translation>Контролер</translation>
     </message>
     <message>
         <location filename="../src/qml/views/SteamSettingsDrawer.qml" line="252" />
         <source>Steam Input configurations, calibration, and desktop layouts</source>
-        <translation type="unfinished" />
+        <translation>Налаштування введення пари, калібрування та компоновка робочого столу</translation>
     </message>
     <message>
         <location filename="../src/qml/views/SteamSettingsDrawer.qml" line="2292" />
         <source>TASKBAR PREFERENCES</source>
-        <translation type="unfinished" />
+        <translation>НАЛАШТУВАННЯ ПАНЕЛІ ЗАВДАНЬ</translation>
     </message>
     <message>
         <location filename="../src/qml/views/SteamSettingsDrawer.qml" line="2314" />
         <source>Task bar - Select destinations to display</source>
-        <translation type="unfinished" />
+        <translation>Панель завдань — виберіть пункти призначення для відображення</translation>
     </message>
     <message>
         <location filename="../src/qml/views/SteamSettingsDrawer.qml" line="2372" />
         <source>Community</source>
-        <translation type="unfinished" />
+        <translation>Спільнота</translation>
     </message>
     <message>
         <location filename="../src/qml/views/SteamSettingsDrawer.qml" line="2394" />
         <location filename="../src/qml/views/SteamSettingsDrawer.qml" line="4364" />
         <location filename="../src/qml/views/SteamSettingsDrawer.qml" line="10986" />
         <source>Friends</source>
-        <translation type="unfinished" />
+        <translation>Друзі</translation>
     </message>
     <message>
         <location filename="../src/qml/views/SteamSettingsDrawer.qml" line="2438" />
         <location filename="../src/qml/views/SteamSettingsDrawer.qml" line="3514" />
         <source>Screenshots</source>
-        <translation type="unfinished" />
+        <translation>Скріншоти</translation>
     </message>
     <message>
         <location filename="../src/qml/views/SteamSettingsDrawer.qml" line="2460" />
         <source>Servers</source>
-        <translation type="unfinished" />
+        <translation>Сервери</translation>
     </message>
     <message>
         <location filename="../src/qml/views/SteamSettingsDrawer.qml" line="2504" />
         <source>Big Picture</source>
-        <translation type="unfinished" />
+        <translation>Загальна картина</translation>
     </message>
     <message>
         <location filename="../src/qml/views/SteamSettingsDrawer.qml" line="2526" />
         <source>SteamVR</source>
-        <translation type="unfinished" />
+        <translation>SteamVR</translation>
     </message>
     <message>
         <location filename="../src/qml/views/SteamSettingsDrawer.qml" line="2548" />
         <source>Exit Steam</source>
-        <translation type="unfinished" />
+        <translation>Вийти зі Steam</translation>
     </message>
     <message>
         <location filename="../src/qml/views/SteamSettingsDrawer.qml" line="2571" />
         <source>Task bar - Select player status options to display</source>
-        <translation type="unfinished" />
+        <translation>Панель завдань — виберіть параметри відображення статусу гравців</translation>
     </message>
     <message>
         <location filename="../src/qml/views/SteamSettingsDrawer.qml" line="2585" />
         <source>Online</source>
-        <translation type="unfinished" />
+        <translation>Онлайн</translation>
     </message>
     <message>
         <location filename="../src/qml/views/SteamSettingsDrawer.qml" line="2607" />
         <source>Away</source>
-        <translation type="unfinished" />
+        <translation>На виїзді</translation>
     </message>
     <message>
         <location filename="../src/qml/views/SteamSettingsDrawer.qml" line="2629" />
         <source>Invisible</source>
-        <translation type="unfinished" />
+        <translation>Невидимий</translation>
     </message>
     <message>
         <location filename="../src/qml/views/SteamSettingsDrawer.qml" line="2651" />
         <source>Offline</source>
-        <translation type="unfinished" />
+        <translation>Офлайн</translation>
     </message>
     <message>
         <location filename="../src/qml/views/SteamSettingsDrawer.qml" line="2763" />
         <source>Overlay shortcut key(s)</source>
-        <translation type="unfinished" />
+        <translation>Клавіші швидкого доступу для накладення</translation>
     </message>
     <message>
         <location filename="../src/qml/views/SteamSettingsDrawer.qml" line="2780" />
@@ -4737,633 +4737,633 @@ CHKDSK: Сканує цілісність файлової системи та �
         <location filename="../src/qml/views/SteamSettingsDrawer.qml" line="5430" />
         <location filename="../src/qml/views/SteamSettingsDrawer.qml" line="5526" />
         <source>Press key...</source>
-        <translation type="unfinished" />
+        <translation>Натисніть клавішу...</translation>
     </message>
     <message>
         <location filename="../src/qml/views/SteamSettingsDrawer.qml" line="2819" />
         <source>Displays overlay toolbar options in a list layout instead of grid icons.</source>
-        <translation type="unfinished" />
+        <translation>Відображає параметри накладної панелі інструментів у вигляді списку, а не у вигляді піктограм у сітці.</translation>
     </message>
     <message>
         <location filename="../src/qml/views/SteamSettingsDrawer.qml" line="2893" />
         <source>Forces controller-friendly UI scaling and interface in the overlay.</source>
-        <translation type="unfinished" />
+        <translation>Забезпечує масштабування інтерфейсу користувача, зручне для контролера, та відповідний інтерфейс у накладному вікні.</translation>
     </message>
     <message>
         <location filename="../src/qml/views/SteamSettingsDrawer.qml" line="2968" />
         <source>Choose which items are visible in the Steam Overlay toolbar.</source>
-        <translation type="unfinished" />
+        <translation>Виберіть, які елементи будуть відображатися на панелі інструментів оверлея Steam.</translation>
     </message>
     <message>
         <location filename="../src/qml/views/SteamSettingsDrawer.qml" line="2992" />
         <source>Web browser home page</source>
-        <translation type="unfinished" />
+        <translation>Головна сторінка веб-браузера</translation>
     </message>
     <message>
         <location filename="../src/qml/views/SteamSettingsDrawer.qml" line="3056" />
         <source>The In-Game overlay is designed to help you understand your game and PC performance. It can render a variety of game and hardware performance information over a running game. &lt;a href='https://support.steampowered.com/kb_article.php?ref=2235-QOMF-3286' style='color:#00FFD2; text-decoration:underline;'&gt;Learn about the performance monitor numbers here.&lt;/a&gt;</source>
-        <translation type="unfinished" />
+        <translation>Ігровий оверлей призначений для того, щоб допомогти вам зрозуміти продуктивність гри та ПК. Він може відображати різноманітну інформацію про продуктивність гри та апаратного забезпечення поверх екрана запущеної гри. &lt;a href='https://support.steampowered.com/kb_article.php?ref=2235-QOMF-3286' style='color:#00FFD2; text-decoration:underline;'&gt;Дізнайтеся про показники монітора продуктивності тут.&lt;/a&gt;</translation>
     </message>
     <message>
         <location filename="../src/qml/views/SteamSettingsDrawer.qml" line="3196" />
         <source>Performance detail level</source>
-        <translation type="unfinished" />
+        <translation>Рівень деталізації продуктивності</translation>
     </message>
     <message>
         <location filename="../src/qml/views/SteamSettingsDrawer.qml" line="3220" />
         <location filename="../src/qml/views/SteamSettingsDrawer.qml" line="3230" />
         <source>FPS Only</source>
-        <translation type="unfinished" />
+        <translation>Тільки FPS</translation>
     </message>
     <message>
         <location filename="../src/qml/views/SteamSettingsDrawer.qml" line="3221" />
         <source>FPS Details</source>
-        <translation type="unfinished" />
+        <translation>Деталі про FPS</translation>
     </message>
     <message>
         <location filename="../src/qml/views/SteamSettingsDrawer.qml" line="3222" />
         <source>FPS, CPU &amp; GPU Utilization</source>
-        <translation type="unfinished" />
+        <translation>FPS, завантаження процесора та відеокарти</translation>
     </message>
     <message>
         <location filename="../src/qml/views/SteamSettingsDrawer.qml" line="3223" />
         <source>FPS, CPU, GPU &amp; RAM Full Details</source>
-        <translation type="unfinished" />
+        <translation>FPS, процесор, відеокарта та оперативна пам'ять: повна інформація</translation>
     </message>
     <message>
         <location filename="../src/qml/views/SteamSettingsDrawer.qml" line="3323" />
         <source>Show FPS Avg/Min Graph</source>
-        <translation type="unfinished" />
+        <translation>Показати графік середнього та мінімального FPS</translation>
     </message>
     <message>
         <location filename="../src/qml/views/SteamSettingsDrawer.qml" line="3354" />
         <source>Show CPU Utilization Per-Core Graph</source>
-        <translation type="unfinished" />
+        <translation>Показати графік завантаження процесора для кожного ядра</translation>
     </message>
     <message>
         <location filename="../src/qml/views/SteamSettingsDrawer.qml" line="3385" />
         <source>Enable kernel driver based metrics (CPU Temperature)</source>
-        <translation type="unfinished" />
+        <translation>Увімкнути показники на основі драйвера ядра (температура процесора)</translation>
     </message>
     <message>
         <location filename="../src/qml/views/SteamSettingsDrawer.qml" line="3409" />
         <source>Text size scaling</source>
-        <translation type="unfinished" />
+        <translation>Зміна розміру тексту</translation>
     </message>
     <message>
         <location filename="../src/qml/views/SteamSettingsDrawer.qml" line="3442" />
         <source>Text contrast/saturation</source>
-        <translation type="unfinished" />
+        <translation>Контрастність/насиченість тексту</translation>
     </message>
     <message>
         <location filename="../src/qml/views/SteamSettingsDrawer.qml" line="3475" />
         <source>Background opacity</source>
-        <translation type="unfinished" />
+        <translation>Непрозорість фону</translation>
     </message>
     <message>
         <location filename="../src/qml/views/SteamSettingsDrawer.qml" line="3529" />
         <location filename="../src/qml/views/SteamSettingsDrawer.qml" line="5412" />
         <source>Take a screenshot</source>
-        <translation type="unfinished" />
+        <translation>Зробити знімок екрана</translation>
     </message>
     <message>
         <location filename="../src/qml/views/SteamSettingsDrawer.qml" line="3578" />
         <source>Display a notification when screenshot is taken</source>
-        <translation type="unfinished" />
+        <translation>Відображати сповіщення під час створення знімка екрана</translation>
     </message>
     <message>
         <location filename="../src/qml/views/SteamSettingsDrawer.qml" line="3585" />
         <source>Shows a toast notification in the corner of your screen.</source>
-        <translation type="unfinished" />
+        <translation>Відображає спливаюче повідомлення у куті екрана.</translation>
     </message>
     <message>
         <location filename="../src/qml/views/SteamSettingsDrawer.qml" line="3615" />
         <source>Play a sound when screenshot is taken</source>
-        <translation type="unfinished" />
+        <translation>Відтворювати звук під час створення знімка екрана</translation>
     </message>
     <message>
         <location filename="../src/qml/views/SteamSettingsDrawer.qml" line="3622" />
         <source>Plays the camera shutter sound effect when capturing screenshots.</source>
-        <translation type="unfinished" />
+        <translation>Відтворює звуковий ефект спрацьовування затвора камери під час створення знімків екрана.</translation>
     </message>
     <message>
         <location filename="../src/qml/views/SteamSettingsDrawer.qml" line="3652" />
         <source>Save an uncompressed external copy of screenshots</source>
-        <translation type="unfinished" />
+        <translation>Зберегти нестиснуту зовнішню копію скріншотів</translation>
     </message>
     <message>
         <location filename="../src/qml/views/SteamSettingsDrawer.qml" line="3659" />
         <source>Saves a high-quality copy of screenshots to a custom folder.</source>
-        <translation type="unfinished" />
+        <translation>Зберігає високоякісні копії скріншотів у вказаній папці.</translation>
     </message>
     <message>
         <location filename="../src/qml/views/SteamSettingsDrawer.qml" line="3690" />
         <source>Save external HDR screenshots as AVIF</source>
-        <translation type="unfinished" />
+        <translation>Зберегти зовнішні HDR-скріншоти у форматі AVIF</translation>
     </message>
     <message>
         <location filename="../src/qml/views/SteamSettingsDrawer.qml" line="3697" />
         <source>Saves HDR screenshots using the AVIF container instead of standard SDR formats.</source>
-        <translation type="unfinished" />
+        <translation>Зберігає HDR-скріншоти у форматі AVIF замість стандартних SDR-форматів.</translation>
     </message>
     <message>
         <location filename="../src/qml/views/SteamSettingsDrawer.qml" line="3730" />
         <source>External screenshots folder</source>
-        <translation type="unfinished" />
+        <translation>Зовнішня папка зі знімками екрана</translation>
     </message>
     <message>
         <location filename="../src/qml/views/SteamSettingsDrawer.qml" line="3742" />
         <source>Default Steam Directory</source>
-        <translation type="unfinished" />
+        <translation>Стандартна папка Steam</translation>
     </message>
     <message>
         <location filename="../src/qml/views/SteamSettingsDrawer.qml" line="3761" />
         <location filename="../src/qml/views/SteamSettingsDrawer.qml" line="5846" />
         <source>Change folder</source>
-        <translation type="unfinished" />
+        <translation>Змінити папку</translation>
     </message>
     <message>
         <location filename="../src/qml/views/SteamSettingsDrawer.qml" line="3765" />
         <source>Select Screenshots Folder</source>
-        <translation type="unfinished" />
+        <translation>Вибрати папку зі знімками екрана</translation>
     </message>
     <message>
         <location filename="../src/qml/views/SteamSettingsDrawer.qml" line="3796" />
         <source>Other Settings</source>
-        <translation type="unfinished" />
+        <translation>Інші налаштування</translation>
     </message>
     <message>
         <location filename="../src/qml/views/SteamSettingsDrawer.qml" line="3811" />
         <source>Server browser pings / minute</source>
-        <translation type="unfinished" />
+        <translation>Кількість запитів «ping» у браузері сервера за хвилину</translation>
     </message>
     <message>
         <location filename="../src/qml/views/SteamSettingsDrawer.qml" line="3834" />
         <location filename="../src/qml/views/SteamSettingsDrawer.qml" line="3844" />
         <source>Automatic (5000)</source>
-        <translation type="unfinished" />
+        <translation>Автоматичний (5000)</translation>
     </message>
     <message>
         <location filename="../src/qml/views/SteamSettingsDrawer.qml" line="3925" />
         <source>Steam Networking</source>
-        <translation type="unfinished" />
+        <translation>Мережа Steam</translation>
     </message>
     <message>
         <location filename="../src/qml/views/SteamSettingsDrawer.qml" line="4120" />
         <source>Visibility of Overlay Toolbar Items</source>
-        <translation type="unfinished" />
+        <translation>Видимість елементів панелі інструментів накладення</translation>
     </message>
     <message>
         <location filename="../src/qml/views/SteamSettingsDrawer.qml" line="4129" />
         <source>Select which items should appear in the overlay toolbar. Individual visibility is managed by Steam overlay.</source>
-        <translation type="unfinished" />
+        <translation>Виберіть елементи, які мають відображатися на панелі інструментів оверлея. Налаштування видимості окремих елементів здійснюється в оверлеї Steam.</translation>
     </message>
     <message>
         <location filename="../src/qml/views/SteamSettingsDrawer.qml" line="4157" />
         <source>Game Overview</source>
-        <translation type="unfinished" />
+        <translation>Огляд гри</translation>
     </message>
     <message>
         <location filename="../src/qml/views/SteamSettingsDrawer.qml" line="4180" />
         <source>Achievements</source>
-        <translation type="unfinished" />
+        <translation>Досягнення</translation>
     </message>
     <message>
         <location filename="../src/qml/views/SteamSettingsDrawer.qml" line="4203" />
         <source>Notes</source>
-        <translation type="unfinished" />
+        <translation>Примітки</translation>
     </message>
     <message>
         <location filename="../src/qml/views/SteamSettingsDrawer.qml" line="4226" />
         <source>Clock</source>
-        <translation type="unfinished" />
+        <translation>Годинник</translation>
     </message>
     <message>
         <location filename="../src/qml/views/SteamSettingsDrawer.qml" line="4249" />
         <source>Guides</source>
-        <translation type="unfinished" />
+        <translation>Посібники</translation>
     </message>
     <message>
         <location filename="../src/qml/views/SteamSettingsDrawer.qml" line="4272" />
         <source>Discussions</source>
-        <translation type="unfinished" />
+        <translation>Обговорення</translation>
     </message>
     <message>
         <location filename="../src/qml/views/SteamSettingsDrawer.qml" line="4318" />
         <source>Steam Workshop</source>
-        <translation type="unfinished" />
+        <translation>Steam Workshop</translation>
     </message>
     <message>
         <location filename="../src/qml/views/SteamSettingsDrawer.qml" line="4341" />
         <source>Recordings &amp; Screenshots</source>
-        <translation type="unfinished" />
+        <translation>Записи та скріншоти</translation>
     </message>
     <message>
         <location filename="../src/qml/views/SteamSettingsDrawer.qml" line="4387" />
         <source>Remote Play Together</source>
-        <translation type="unfinished" />
+        <translation>Спільна гра в режимі Remote Play</translation>
     </message>
     <message>
         <location filename="../src/qml/views/SteamSettingsDrawer.qml" line="4410" />
         <source>Web Browser</source>
-        <translation type="unfinished" />
+        <translation>Веб-браузер</translation>
     </message>
     <message>
         <location filename="../src/qml/views/SteamSettingsDrawer.qml" line="4433" />
         <source>Controller Settings</source>
-        <translation type="unfinished" />
+        <translation>Налаштування контролера</translation>
     </message>
     <message>
         <location filename="../src/qml/views/SteamSettingsDrawer.qml" line="4456" />
         <source>Soundtrack Player</source>
-        <translation type="unfinished" />
+        <translation>Програвач саундтреків</translation>
     </message>
     <message>
         <location filename="../src/qml/views/SteamSettingsDrawer.qml" line="4479" />
         <source>Report AI Content</source>
-        <translation type="unfinished" />
+        <translation>Повідомити про контент, створений штучним інтелектом</translation>
     </message>
     <message>
         <location filename="../src/qml/views/SteamSettingsDrawer.qml" line="4502" />
         <source>Get Invite Link</source>
-        <translation type="unfinished" />
+        <translation>Отримати посилання на запрошення</translation>
     </message>
     <message>
         <location filename="../src/qml/views/SteamSettingsDrawer.qml" line="4525" />
         <source>Game Servers</source>
-        <translation type="unfinished" />
+        <translation>Ігрові сервери</translation>
     </message>
     <message>
         <location filename="../src/qml/views/SteamSettingsDrawer.qml" line="4664" />
         <source>High Contrast Mode</source>
-        <translation type="unfinished" />
+        <translation>Режим високої контрастності</translation>
     </message>
     <message>
         <location filename="../src/qml/views/SteamSettingsDrawer.qml" line="4671" />
         <source>Make Steam text, buttons and icons more distinct from the background.</source>
-        <translation type="unfinished" />
+        <translation>Зробити текст, кнопки та іконки Steam більш помітними на тлі.</translation>
     </message>
     <message>
         <location filename="../src/qml/views/SteamSettingsDrawer.qml" line="4712" />
         <source>UI Scale</source>
-        <translation type="unfinished" />
+        <translation>Масштаб інтерфейсу користувача</translation>
     </message>
     <message>
         <location filename="../src/qml/views/SteamSettingsDrawer.qml" line="4762" />
         <source>SMALLER TEXT</source>
-        <translation type="unfinished" />
+        <translation>МЕНШИЙ ШРИФТ</translation>
     </message>
     <message>
         <location filename="../src/qml/views/SteamSettingsDrawer.qml" line="4770" />
         <source>LARGER TEXT</source>
-        <translation type="unfinished" />
+        <translation>БІЛЬШИЙ ШРИФТ</translation>
     </message>
     <message>
         <location filename="../src/qml/views/SteamSettingsDrawer.qml" line="5315" />
         <source>Shortcut Keys</source>
-        <translation type="unfinished" />
+        <translation>Комбінації клавіш</translation>
     </message>
     <message>
         <location filename="../src/qml/views/SteamSettingsDrawer.qml" line="5328" />
         <source>Start/stop saving a clip</source>
-        <translation type="unfinished" />
+        <translation>Почати/припинити збереження кліпу</translation>
     </message>
     <message>
         <location filename="../src/qml/views/SteamSettingsDrawer.qml" line="5328" />
         <source>Start/stop recording</source>
-        <translation type="unfinished" />
+        <translation>Почати/припинити запис</translation>
     </message>
     <message>
         <location filename="../src/qml/views/SteamSettingsDrawer.qml" line="5370" />
         <source>Add a timeline marker</source>
-        <translation type="unfinished" />
+        <translation>Додати маркер на часовій шкалі</translation>
     </message>
     <message>
         <location filename="../src/qml/views/SteamSettingsDrawer.qml" line="5461" />
         <source>Save the last</source>
-        <translation type="unfinished" />
+        <translation>Залиште останнє</translation>
     </message>
     <message>
         <location filename="../src/qml/views/SteamSettingsDrawer.qml" line="5507" />
         <source>seconds...</source>
-        <translation type="unfinished" />
+        <translation>секунди...</translation>
     </message>
     <message>
         <location filename="../src/qml/views/SteamSettingsDrawer.qml" line="5553" />
         <source>Game-specific Settings</source>
-        <translation type="unfinished" />
+        <translation>Налаштування для конкретної гри</translation>
     </message>
     <message>
         <location filename="../src/qml/views/SteamSettingsDrawer.qml" line="5562" />
         <source>All Games</source>
-        <translation type="unfinished" />
+        <translation>Усі ігри</translation>
     </message>
     <message>
         <location filename="../src/qml/views/SteamSettingsDrawer.qml" line="5578" />
         <source>Length</source>
-        <translation type="unfinished" />
+        <translation>Довжина</translation>
     </message>
     <message>
         <location filename="../src/qml/views/SteamSettingsDrawer.qml" line="5595" />
         <location filename="../src/qml/views/SteamSettingsDrawer.qml" line="13150" />
         <location filename="../src/qml/views/SteamSettingsDrawer.qml" line="13159" />
         <source>15 Minutes</source>
-        <translation type="unfinished" />
+        <translation>15 хвилин</translation>
     </message>
     <message>
         <location filename="../src/qml/views/SteamSettingsDrawer.qml" line="5596" />
         <location filename="../src/qml/views/SteamSettingsDrawer.qml" line="13151" />
         <source>30 Minutes</source>
-        <translation type="unfinished" />
+        <translation>30 хвилин</translation>
     </message>
     <message>
         <location filename="../src/qml/views/SteamSettingsDrawer.qml" line="5597" />
         <source>60 Minutes</source>
-        <translation type="unfinished" />
+        <translation>60 хвилин</translation>
     </message>
     <message>
         <location filename="../src/qml/views/SteamSettingsDrawer.qml" line="5598" />
         <source>120 Minutes</source>
-        <translation type="unfinished" />
+        <translation>120 хвилин</translation>
     </message>
     <message>
         <location filename="../src/qml/views/SteamSettingsDrawer.qml" line="5606" />
         <source>%1 Minutes</source>
-        <translation type="unfinished" />
+        <translation>%1 хвилин</translation>
     </message>
     <message>
         <location filename="../src/qml/views/SteamSettingsDrawer.qml" line="5681" />
         <source>Quality</source>
-        <translation type="unfinished" />
+        <translation>Якість</translation>
     </message>
     <message>
         <location filename="../src/qml/views/SteamSettingsDrawer.qml" line="5698" />
         <source>Low</source>
-        <translation type="unfinished" />
+        <translation>Низький</translation>
     </message>
     <message>
         <location filename="../src/qml/views/SteamSettingsDrawer.qml" line="5699" />
         <location filename="../src/qml/views/SteamSettingsDrawer.qml" line="9922" />
         <source>Medium</source>
-        <translation type="unfinished" />
+        <translation>Середній</translation>
     </message>
     <message>
         <location filename="../src/qml/views/SteamSettingsDrawer.qml" line="5700" />
         <location filename="../src/qml/views/SteamSettingsDrawer.qml" line="5708" />
         <source>High (Default)</source>
-        <translation type="unfinished" />
+        <translation>Високий (за замовчуванням)</translation>
     </message>
     <message>
         <location filename="../src/qml/views/SteamSettingsDrawer.qml" line="5701" />
         <source>Ultra</source>
-        <translation type="unfinished" />
+        <translation>Ultra</translation>
     </message>
     <message>
         <location filename="../src/qml/views/SteamSettingsDrawer.qml" line="5784" />
         <source>Estimated Disk Space:</source>
-        <translation type="unfinished" />
+        <translation>Орієнтовний обсяг місця на диску:</translation>
     </message>
     <message>
         <location filename="../src/qml/views/SteamSettingsDrawer.qml" line="5806" />
         <source>Recordings Folder</source>
-        <translation type="unfinished" />
+        <translation>Папка «Записи»</translation>
     </message>
     <message>
         <location filename="../src/qml/views/SteamSettingsDrawer.qml" line="5850" />
         <source>Select Recordings Folder</source>
-        <translation type="unfinished" />
+        <translation>Вибрати папку «Записи»</translation>
     </message>
     <message>
         <location filename="../src/qml/views/SteamSettingsDrawer.qml" line="5877" />
         <source>Video Recording</source>
-        <translation type="unfinished" />
+        <translation>Відеозапис</translation>
     </message>
     <message>
         <location filename="../src/qml/views/SteamSettingsDrawer.qml" line="5898" />
         <source>Enable GPU hardware encoding</source>
-        <translation type="unfinished" />
+        <translation>Увімкнути апаратне кодування на графічному процесорі</translation>
     </message>
     <message>
         <location filename="../src/qml/views/SteamSettingsDrawer.qml" line="5935" />
         <source>Enable HEVC (H.265) video codec</source>
-        <translation type="unfinished" />
+        <translation>Увімкнути відеокодек HEVC (H.265)</translation>
     </message>
     <message>
         <location filename="../src/qml/views/SteamSettingsDrawer.qml" line="5942" />
         <source>Requires Steam Client GPU Acceleration</source>
-        <translation type="unfinished" />
+        <translation>Потрібне прискорення за допомогою графічного процесора в клієнті Steam</translation>
     </message>
     <message>
         <location filename="../src/qml/views/SteamSettingsDrawer.qml" line="5966" />
         <source>Maximum frame rate</source>
-        <translation type="unfinished" />
+        <translation>Максимальна частота кадрів</translation>
     </message>
     <message>
         <location filename="../src/qml/views/SteamSettingsDrawer.qml" line="6073" />
         <source>Maximum video height</source>
-        <translation type="unfinished" />
+        <translation>Максимальна висота відео</translation>
     </message>
     <message>
         <location filename="../src/qml/views/SteamSettingsDrawer.qml" line="6095" />
         <location filename="../src/qml/views/SteamSettingsDrawer.qml" line="6108" />
         <source>No Limit</source>
-        <translation type="unfinished" />
+        <translation>Без обмежень</translation>
     </message>
     <message>
         <location filename="../src/qml/views/SteamSettingsDrawer.qml" line="6096" />
         <source>2160 pixels</source>
-        <translation type="unfinished" />
+        <translation>2160 пікселів</translation>
     </message>
     <message>
         <location filename="../src/qml/views/SteamSettingsDrawer.qml" line="6097" />
         <source>1440 pixels</source>
-        <translation type="unfinished" />
+        <translation>1440 пікселів</translation>
     </message>
     <message>
         <location filename="../src/qml/views/SteamSettingsDrawer.qml" line="6098" />
         <source>1200 pixels</source>
-        <translation type="unfinished" />
+        <translation>1200 пікселів</translation>
     </message>
     <message>
         <location filename="../src/qml/views/SteamSettingsDrawer.qml" line="6099" />
         <source>1080 pixels</source>
-        <translation type="unfinished" />
+        <translation>1080 пікселів</translation>
     </message>
     <message>
         <location filename="../src/qml/views/SteamSettingsDrawer.qml" line="6100" />
         <source>720 pixels</source>
-        <translation type="unfinished" />
+        <translation>720 пікселів</translation>
     </message>
     <message>
         <location filename="../src/qml/views/SteamSettingsDrawer.qml" line="6101" />
         <source>480 pixels</source>
-        <translation type="unfinished" />
+        <translation>480 пікселів</translation>
     </message>
     <message>
         <location filename="../src/qml/views/SteamSettingsDrawer.qml" line="6187" />
         <source>Audio Recording</source>
-        <translation type="unfinished" />
+        <translation>Аудіозапис</translation>
     </message>
     <message>
         <location filename="../src/qml/views/SteamSettingsDrawer.qml" line="6208" />
         <source>Record Microphone</source>
-        <translation type="unfinished" />
+        <translation>Мікрофон для запису</translation>
     </message>
     <message>
         <location filename="../src/qml/views/SteamSettingsDrawer.qml" line="6215" />
         <source>Enables recording of your system microphone in clips</source>
-        <translation type="unfinished" />
+        <translation>Дозволяє записувати звук із системного мікрофона у кліпах</translation>
     </message>
     <message>
         <location filename="../src/qml/views/SteamSettingsDrawer.qml" line="6247" />
         <source>Force microphone to mono</source>
-        <translation type="unfinished" />
+        <translation>Примусовий перехід мікрофона в монорежим</translation>
     </message>
     <message>
         <location filename="../src/qml/views/SteamSettingsDrawer.qml" line="6278" />
         <source>Enable automatic gain control (AGC)</source>
-        <translation type="unfinished" />
+        <translation>Увімкнути автоматичне регулювання посилення (AGC)</translation>
     </message>
     <message>
         <location filename="../src/qml/views/SteamSettingsDrawer.qml" line="6301" />
         <source>Record Audio from...</source>
-        <translation type="unfinished" />
+        <translation>Записати аудіо з...</translation>
     </message>
     <message>
         <location filename="../src/qml/views/SteamSettingsDrawer.qml" line="6323" />
         <location filename="../src/qml/views/SteamSettingsDrawer.qml" line="6332" />
         <source>Game Audio Only</source>
-        <translation type="unfinished" />
+        <translation>Тільки звук гри</translation>
     </message>
     <message>
         <location filename="../src/qml/views/SteamSettingsDrawer.qml" line="6324" />
         <source>All System Audio</source>
-        <translation type="unfinished" />
+        <translation>Аудіо всієї системи</translation>
     </message>
     <message>
         <location filename="../src/qml/views/SteamSettingsDrawer.qml" line="6325" />
         <source>Game and Selected Programs</source>
-        <translation type="unfinished" />
+        <translation>Ігри та вибрані програми</translation>
     </message>
     <message>
         <location filename="../src/qml/views/SteamSettingsDrawer.qml" line="6410" />
         <source>Select additional programs to record audio from:</source>
-        <translation type="unfinished" />
+        <translation>Виберіть додаткові програми, з яких потрібно записувати аудіо:</translation>
     </message>
     <message>
         <location filename="../src/qml/views/SteamSettingsDrawer.qml" line="6840" />
         <source>Hardware &amp; Volume</source>
-        <translation type="unfinished" />
+        <translation>Апаратне забезпечення та обсяг</translation>
     </message>
     <message>
         <location filename="../src/qml/views/SteamSettingsDrawer.qml" line="6854" />
         <source>Voice Input Device</source>
-        <translation type="unfinished" />
+        <translation>Пристрій голосового введення</translation>
     </message>
     <message>
         <location filename="../src/qml/views/SteamSettingsDrawer.qml" line="6953" />
         <source>Input Volume</source>
-        <translation type="unfinished" />
+        <translation>Об'єм вхідного сигналу</translation>
     </message>
     <message>
         <location filename="../src/qml/views/SteamSettingsDrawer.qml" line="6990" />
         <source>Voice Output Device</source>
-        <translation type="unfinished" />
+        <translation>Пристрій голосового виведення</translation>
     </message>
     <message>
         <location filename="../src/qml/views/SteamSettingsDrawer.qml" line="7089" />
         <source>Output Volume</source>
-        <translation type="unfinished" />
+        <translation>Гучність виходу</translation>
     </message>
     <message>
         <location filename="../src/qml/views/SteamSettingsDrawer.qml" line="7128" />
         <source>Microphone Test</source>
-        <translation type="unfinished" />
+        <translation>Перевірка мікрофона</translation>
     </message>
     <message>
         <location filename="../src/qml/views/SteamSettingsDrawer.qml" line="7143" />
         <source>Stop Test</source>
-        <translation type="unfinished" />
+        <translation>Тест на зупинку</translation>
     </message>
     <message>
         <location filename="../src/qml/views/SteamSettingsDrawer.qml" line="7143" />
         <source>Start Microphone Test</source>
-        <translation type="unfinished" />
+        <translation>Почати перевірку мікрофона</translation>
     </message>
     <message>
         <location filename="../src/qml/views/SteamSettingsDrawer.qml" line="7182" />
         <source>Voice Transmission Type</source>
-        <translation type="unfinished" />
+        <translation>Тип передачі голосу</translation>
     </message>
     <message>
         <location filename="../src/qml/views/SteamSettingsDrawer.qml" line="7196" />
         <source>Open Microphone</source>
-        <translation type="unfinished" />
+        <translation>«Відкритий мікрофон»</translation>
     </message>
     <message>
         <location filename="../src/qml/views/SteamSettingsDrawer.qml" line="7197" />
         <source>Push-to-Talk</source>
-        <translation type="unfinished" />
+        <translation>«Натисни та говори»</translation>
     </message>
     <message>
         <location filename="../src/qml/views/SteamSettingsDrawer.qml" line="7198" />
         <source>Push-to-Mute</source>
-        <translation type="unfinished" />
+        <translation>Функція «Натисни, щоб вимкнути звук»</translation>
     </message>
     <message>
         <location filename="../src/qml/views/SteamSettingsDrawer.qml" line="7241" />
         <source>Push-to-Talk Hotkey</source>
-        <translation type="unfinished" />
+        <translation>Гаряча клавіша «Push-to-Talk»</translation>
     </message>
     <message>
         <location filename="../src/qml/views/SteamSettingsDrawer.qml" line="7242" />
         <source>Push-to-Mute Hotkey</source>
-        <translation type="unfinished" />
+        <translation>Гаряча клавіша «Натисни, щоб вимкнути звук»</translation>
     </message>
     <message>
         <location filename="../src/qml/views/SteamSettingsDrawer.qml" line="7243" />
         <source>Mute Toggle Hotkey</source>
-        <translation type="unfinished" />
+        <translation>Гаряча клавіша для ввімкнення/вимкнення звуку</translation>
     </message>
     <message>
         <location filename="../src/qml/views/SteamSettingsDrawer.qml" line="7277" />
         <source>Press any key...</source>
-        <translation type="unfinished" />
+        <translation>Натисніть будь-яку клавішу...</translation>
     </message>
     <message>
         <location filename="../src/qml/views/SteamSettingsDrawer.qml" line="7285" />
         <source>None</source>
-        <translation type="unfinished" />
+        <translation>Немає</translation>
     </message>
     <message>
         <location filename="../src/qml/views/SteamSettingsDrawer.qml" line="7380" />
         <source>Cyrillic hotkeys are not supported!</source>
-        <translation type="unfinished" />
+        <translation>Гарячі клавіші з кирилицею не підтримуються!</translation>
     </message>
     <message>
         <location filename="../src/qml/views/SteamSettingsDrawer.qml" line="7388" />
         <source>Please switch your keyboard layout to English and try again.</source>
-        <translation type="unfinished" />
+        <translation>Будь ласка, переведіть розкладку клавіатури на англійську та спробуйте ще раз.</translation>
     </message>
     <message>
         <location filename="../src/qml/views/SteamSettingsDrawer.qml" line="7611" />
         <source>Play short sound on mic activation/deactivation</source>
-        <translation type="unfinished" />
+        <translation>Відтворити короткий звуковий сигнал при увімкненні/вимкненні мікрофона</translation>
     </message>
     <message>
         <location filename="../src/qml/views/SteamSettingsDrawer.qml" line="7618" />
         <source>Plays a brief chime whenever you begin or end voice transmission.</source>
-        <translation type="unfinished" />
+        <translation>Видає короткий звуковий сигнал щоразу, коли ви починаєте або закінчуєте голосову передачу.</translation>
     </message>
     <message>
         <location filename="../src/qml/views/SteamSettingsDrawer.qml" line="7649" />
         <source>Use Steam Audio Spatialization</source>
-        <translation type="unfinished" />
+        <translation>Використовувати функцію просторового звуку Steam Audio</translation>
     </message>
     <message>
         <location filename="../src/qml/views/SteamSettingsDrawer.qml" line="7656" />
         <source>Enables binaural spatialization for voice channels using Steam Audio.</source>
-        <translation type="unfinished" />
+        <translation>Увімкнення бінауральної просторової локалізації для голосових каналів за допомогою Steam Audio.</translation>
     </message>
     <message>
         <location filename="../src/qml/views/SteamSettingsDrawer.qml" line="8099" />
@@ -5425,17 +5425,17 @@ CHKDSK: Сканує цілісність файлової системи та �
     <message>
         <location filename="../src/qml/views/SteamSettingsDrawer.qml" line="11844" />
         <source>Broadcast customization</source>
-        <translation type="unfinished" />
+        <translation>Налаштування трансляції</translation>
     </message>
     <message>
         <location filename="../src/qml/views/SteamSettingsDrawer.qml" line="13882" />
         <source>Press a key combination...</source>
-        <translation type="unfinished" />
+        <translation>Натисніть комбінацію клавіш...</translation>
     </message>
     <message>
         <location filename="../src/qml/views/SteamSettingsDrawer.qml" line="13891" />
         <source>Press ESC to cancel</source>
-        <translation type="unfinished" />
+        <translation>Натисніть клавішу ESC, щоб скасувати</translation>
     </message>
     <message>
         <location filename="../src/qml/views/SteamSettingsDrawer.qml" line="8547" />
@@ -5471,23 +5471,23 @@ CHKDSK: Сканує цілісність файлової системи та �
     </message>
     <message>
         <source>On</source>
-        <translation type="vanished">Увімкнено</translation>
+        <translation>Увімкнено</translation>
     </message>
     <message>
         <source>Overlay activation button</source>
-        <translation type="vanished">Кнопка активації оверлея</translation>
+        <translation>Кнопка активації оверлея</translation>
     </message>
     <message>
         <source>Steam / Guide</source>
-        <translation type="vanished">Steam / Guide</translation>
+        <translation>Steam / Guide</translation>
     </message>
     <message>
         <source>Back / View</source>
-        <translation type="vanished">Назад / Перегляд</translation>
+        <translation>Назад / Перегляд</translation>
     </message>
     <message>
         <source>Start / Menu</source>
-        <translation type="vanished">Пуск / Меню</translation>
+        <translation>Пуск / Меню</translation>
     </message>
     <message>
         <location filename="../src/qml/views/SteamSettingsDrawer.qml" line="8929" />
@@ -5532,7 +5532,7 @@ CHKDSK: Сканує цілісність файлової системи та �
     </message>
     <message>
         <source>Play in window</source>
-        <translation type="vanished">Грати у вікні</translation>
+        <translation>Грати у вікні</translation>
     </message>
     <message>
         <location filename="../src/qml/views/SteamSettingsDrawer.qml" line="9109" />
@@ -5641,19 +5641,19 @@ CHKDSK: Сканує цілісність файлової системи та �
     </message>
     <message>
         <source>Authorize Device</source>
-        <translation type="vanished">Авторизувати пристрій</translation>
+        <translation>Авторизувати пристрій</translation>
     </message>
     <message>
         <source>Enter the 4 digit authorization code showing on your device to allow it to connect and play games.</source>
-        <translation type="vanished">Введіть 4-значний код авторизації, що відображається на вашому пристрої, щоб дозволити йому підключитися та запускати ігри.</translation>
+        <translation>Введіть 4-значний код авторизації, що відображається на вашому пристрої, щоб дозволити йому підключитися та запускати ігри.</translation>
     </message>
     <message>
         <source>Redirecting to Steam...</source>
-        <translation type="vanished">Перенаправлення в Steam...</translation>
+        <translation>Перенаправлення в Steam...</translation>
     </message>
     <message>
         <source>Device pairing requires a live network connection managed by the Steam client. We have launched Steam and opened its Settings window for you. Please click "Pair Steam Link" inside Steam and enter your code (%1) there.</source>
-        <translation type="vanished">Для прив’язки пристрою потрібне живе мережеве з’єднання, яке контролюється клієнтом Steam. Ми запустили Steam і відкрили для вас вікно налаштувань. Будь ласка, натисніть «Прив’язати Steam Link» всередині Steam і введіть свій код (%1) туди.</translation>
+        <translation>Для прив’язки пристрою потрібне живе мережеве з’єднання, яке контролюється клієнтом Steam. Ми запустили Steam і відкрили для вас вікно налаштувань. Будь ласка, натисніть «Прив’язати Steam Link» всередині Steam і введіть свій код (%1) туди.</translation>
     </message>
     <message>
         <location filename="../src/qml/views/SteamSettingsDrawer.qml" line="7922" />
@@ -5662,7 +5662,7 @@ CHKDSK: Сканує цілісність файлової системи та �
     </message>
     <message>
         <source>Got it</source>
-        <translation type="vanished">Зрозуміло</translation>
+        <translation>Зрозуміло</translation>
     </message>
     <message>
         <location filename="../src/qml/views/SteamSettingsDrawer.qml" line="8786" />
@@ -5678,7 +5678,7 @@ CHKDSK: Сканує цілісність файлової системи та �
     <message>
         <location filename="../src/qml/views/SteamSettingsDrawer.qml" line="9907" />
         <source>Display size for Library user interface elements</source>
-        <translation type="unfinished" />
+        <translation>Розмір відображення елементів інтерфейсу користувача бібліотеки</translation>
     </message>
     <message>
         <location filename="../src/qml/views/SteamSettingsDrawer.qml" line="9971" />
@@ -5738,17 +5738,17 @@ CHKDSK: Сканує цілісність файлової системи та �
     <message>
         <location filename="../src/qml/views/SteamSettingsDrawer.qml" line="10236" />
         <source>Download region</source>
-        <translation type="unfinished" />
+        <translation>Завантажити регіон</translation>
     </message>
     <message>
         <location filename="../src/qml/views/SteamSettingsDrawer.qml" line="10243" />
         <source>Select the download region closest to your physical location.</source>
-        <translation type="unfinished" />
+        <translation>Виберіть регіон завантаження, який найближче до вашого фізичного місцезнаходження.</translation>
     </message>
     <message>
         <location filename="../src/qml/views/SteamSettingsDrawer.qml" line="10273" />
         <source>Default / Auto</source>
-        <translation type="unfinished" />
+        <translation>За замовчуванням / Автоматично</translation>
     </message>
     <message>
         <location filename="../src/qml/views/SteamSettingsDrawer.qml" line="10355" />
@@ -5758,43 +5758,43 @@ CHKDSK: Сканує цілісність файлової системи та �
     <message>
         <location filename="../src/qml/views/SteamSettingsDrawer.qml" line="10362" />
         <source>Limit the bandwidth Steam is permitted to use for downloading updates and games.</source>
-        <translation type="unfinished" />
+        <translation>Обмежте пропускну здатність, яку Steam може використовувати для завантаження оновлень та ігор.</translation>
     </message>
     <message>
         <location filename="../src/qml/views/SteamSettingsDrawer.qml" line="10394" />
         <source>Enter limit in kilobytes per second</source>
-        <translation type="unfinished" />
+        <translation>Введіть обмеження в кілобайтах за секунду</translation>
     </message>
     <message>
         <location filename="../src/qml/views/SteamSettingsDrawer.qml" line="10439" />
         <source>KB/s</source>
-        <translation type="unfinished" />
+        <translation>КБ/с</translation>
     </message>
     <message>
         <location filename="../src/qml/views/SteamSettingsDrawer.qml" line="10450" />
         <source>Game Updates</source>
-        <translation type="unfinished" />
+        <translation>Оновлення гри</translation>
     </message>
     <message>
         <location filename="../src/qml/views/SteamSettingsDrawer.qml" line="10469" />
         <source>Game update timing</source>
-        <translation type="unfinished" />
+        <translation>Графік оновлень гри</translation>
     </message>
     <message>
         <location filename="../src/qml/views/SteamSettingsDrawer.qml" line="10476" />
         <source>To set exceptions for individual games, go to your Library &gt; Game &gt; Properties.</source>
-        <translation type="unfinished" />
+        <translation>Щоб встановити винятки для окремих ігор, перейдіть у «Бібліотека» &gt; «Гра» &gt; «Властивості».</translation>
     </message>
     <message>
         <location filename="../src/qml/views/SteamSettingsDrawer.qml" line="10498" />
         <location filename="../src/qml/views/SteamSettingsDrawer.qml" line="10506" />
         <source>Let Steam decide when to update</source>
-        <translation type="unfinished" />
+        <translation>Нехай Steam сам вирішує, коли оновлюватися</translation>
     </message>
     <message>
         <location filename="../src/qml/views/SteamSettingsDrawer.qml" line="10499" />
         <source>Wait to update until the game is launched</source>
-        <translation type="unfinished" />
+        <translation>Зачекайте з оновленням до запуску гри</translation>
     </message>
     <message>
         <location filename="../src/qml/views/SteamSettingsDrawer.qml" line="10588" />
@@ -5804,17 +5804,17 @@ CHKDSK: Сканує цілісність файлової системи та �
     <message>
         <location filename="../src/qml/views/SteamSettingsDrawer.qml" line="10595" />
         <source>Only auto-update games during a specific time window.</source>
-        <translation type="unfinished" />
+        <translation>Оновлювати ігри автоматично лише протягом певного проміжку часу.</translation>
     </message>
     <message>
         <location filename="../src/qml/views/SteamSettingsDrawer.qml" line="10625" />
         <source>Restrict updates to between</source>
-        <translation type="unfinished" />
+        <translation>Обмежити оновлення в межах</translation>
     </message>
     <message>
         <location filename="../src/qml/views/SteamSettingsDrawer.qml" line="10712" />
         <source>and</source>
-        <translation type="unfinished" />
+        <translation>та</translation>
     </message>
     <message>
         <location filename="../src/qml/views/SteamSettingsDrawer.qml" line="10811" />
@@ -5854,17 +5854,17 @@ CHKDSK: Сканує цілісність файлової системи та �
     <message>
         <location filename="../src/qml/views/SteamSettingsDrawer.qml" line="10956" />
         <source>Allow transfers from this device to</source>
-        <translation type="unfinished" />
+        <translation>Дозволити пересилання з цього пристрою на</translation>
     </message>
     <message>
         <location filename="../src/qml/views/SteamSettingsDrawer.qml" line="10963" />
         <source>Allow other users on your local network to download game files from this PC.</source>
-        <translation type="unfinished" />
+        <translation>Дозвольте іншим користувачам у вашій локальній мережі завантажувати ігрові файли з цього ПК.</translation>
     </message>
     <message>
         <location filename="../src/qml/views/SteamSettingsDrawer.qml" line="10985" />
         <source>Only me</source>
-        <translation type="unfinished" />
+        <translation>Тільки я</translation>
     </message>
     <message>
         <location filename="../src/qml/views/SteamSettingsDrawer.qml" line="11077" />
@@ -5969,7 +5969,7 @@ CHKDSK: Сканує цілісність файлової системи та �
     </message>
     <message>
         <source>BROADCASTING</source>
-        <translation type="vanished">ТРАНСЛЯЦІЯ</translation>
+        <translation>ТРАНСЛЯЦІЯ</translation>
     </message>
     <message>
         <location filename="../src/qml/views/SteamSettingsDrawer.qml" line="11889" />
@@ -6116,12 +6116,12 @@ CHKDSK: Сканує цілісність файлової системи та �
     <message>
         <location filename="../src/qml/views/SteamSettingsDrawer.qml" line="12752" />
         <source>Recommended to turn off for optimization. To do this, turn off the Steam Overlay.</source>
-        <translation type="unfinished" />
+        <translation>Для оптимізації рекомендується вимкнути цю функцію. Для цього вимкніть оверлей Steam.</translation>
     </message>
     <message>
         <location filename="../src/qml/views/SteamSettingsDrawer.qml" line="12835" />
         <source>Controller customization</source>
-        <translation type="unfinished" />
+        <translation>Налаштування контролера</translation>
     </message>
     <message>
         <location filename="../src/qml/views/SteamSettingsDrawer.qml" line="12866" />
@@ -6131,7 +6131,7 @@ CHKDSK: Сканує цілісність файлової системи та �
     <message>
         <location filename="../src/qml/views/SteamSettingsDrawer.qml" line="12888" />
         <source>CONNECTED CONTROLLERS</source>
-        <translation type="unfinished" />
+        <translation>ПІДКЛЮЧЕНІ КОНТРОЛЕРИ</translation>
     </message>
     <message>
         <location filename="../src/qml/views/SteamSettingsDrawer.qml" line="12899" />
@@ -6141,32 +6141,32 @@ CHKDSK: Сканує цілісність файлової системи та �
     <message>
         <location filename="../src/qml/views/SteamSettingsDrawer.qml" line="12921" />
         <source>No connected controllers found.</source>
-        <translation type="unfinished" />
+        <translation>Не знайдено підключених контролерів.</translation>
     </message>
     <message>
         <location filename="../src/qml/views/SteamSettingsDrawer.qml" line="13006" />
         <source>Bluetooth</source>
-        <translation type="unfinished" />
+        <translation>Bluetooth</translation>
     </message>
     <message>
         <location filename="../src/qml/views/SteamSettingsDrawer.qml" line="13006" />
         <source>USB</source>
-        <translation type="unfinished" />
+        <translation>Універсальна послідовна шина</translation>
     </message>
     <message>
         <location filename="../src/qml/views/SteamSettingsDrawer.qml" line="13007" />
         <source>Connected</source>
-        <translation type="unfinished" />
+        <translation>Підключено</translation>
     </message>
     <message>
         <location filename="../src/qml/views/SteamSettingsDrawer.qml" line="13007" />
         <source>Paired (Offline)</source>
-        <translation type="unfinished" />
+        <translation>У парі (офлайн)</translation>
     </message>
     <message>
         <location filename="../src/qml/views/SteamSettingsDrawer.qml" line="13022" />
         <source>Forget</source>
-        <translation type="unfinished" />
+        <translation>Забудьте</translation>
     </message>
     <message>
         <location filename="../src/qml/views/SteamSettingsDrawer.qml" line="13062" />
@@ -6176,58 +6176,58 @@ CHKDSK: Сканує цілісність файлової системи та �
     <message>
         <location filename="../src/qml/views/SteamSettingsDrawer.qml" line="13082" />
         <source>EXTERNAL GAMEPAD SETTINGS</source>
-        <translation type="unfinished" />
+        <translation>НАЛАШТУВАННЯ ЗОВНІШНЬОГО ГЕЙМПЕДА</translation>
     </message>
     <message>
         <location filename="../src/qml/views/SteamSettingsDrawer.qml" line="13118" />
         <source>Idle Gamepad Shutdown Timeout</source>
-        <translation type="unfinished" />
+        <translation>Тайм-аут вимкнення геймпада в режимі очікування</translation>
     </message>
     <message>
         <location filename="../src/qml/views/SteamSettingsDrawer.qml" line="13125" />
         <source>Automatically turn off controllers after a period of inactivity.</source>
-        <translation type="unfinished" />
+        <translation>Автоматично вимикати контролери після певного періоду бездіяльності.</translation>
     </message>
     <message>
         <location filename="../src/qml/views/SteamSettingsDrawer.qml" line="13148" />
         <source>5 Minutes</source>
-        <translation type="unfinished" />
+        <translation>5 хвилин</translation>
     </message>
     <message>
         <location filename="../src/qml/views/SteamSettingsDrawer.qml" line="13149" />
         <source>10 Minutes</source>
-        <translation type="unfinished" />
+        <translation>10 хвилин</translation>
     </message>
     <message>
         <location filename="../src/qml/views/SteamSettingsDrawer.qml" line="13152" />
         <source>1 Hour</source>
-        <translation type="unfinished" />
+        <translation>1 година</translation>
     </message>
     <message>
         <location filename="../src/qml/views/SteamSettingsDrawer.qml" line="13241" />
         <source>Xbox Controller Support</source>
-        <translation type="unfinished" />
+        <translation>Підтримка контролерів Xbox</translation>
     </message>
     <message>
         <location filename="../src/qml/views/SteamSettingsDrawer.qml" line="13248" />
         <source>Enable Steam Input for Xbox controllers to configure mappings and options.</source>
-        <translation type="unfinished" />
+        <translation>Увімкніть функцію Steam Input для контролерів Xbox, щоб налаштувати прив’язки клавіш та параметри.</translation>
     </message>
     <message>
         <location filename="../src/qml/views/SteamSettingsDrawer.qml" line="13280" />
         <source>PlayStation Controller Support</source>
-        <translation type="unfinished" />
+        <translation>Підтримка контролерів PlayStation</translation>
     </message>
     <message>
         <location filename="../src/qml/views/SteamSettingsDrawer.qml" line="13287" />
         <source>Enable Steam Input for PlayStation controllers to customize buttons and lightbars.</source>
-        <translation type="unfinished" />
+        <translation>Увімкніть функцію Steam Input для контролерів PlayStation, щоб налаштувати кнопки та світлові смуги.</translation>
     </message>
     <message>
         <location filename="../src/qml/views/SteamSettingsDrawer.qml" line="13310" />
         <location filename="../src/qml/views/SteamSettingsDrawer.qml" line="13318" />
         <source>Enabled in Games w/o Support</source>
-        <translation type="unfinished" />
+        <translation>Увімкнено в іграх без підтримки</translation>
     </message>
     <message>
         <location filename="../src/qml/views/SteamSettingsDrawer.qml" line="13311" />
@@ -6237,57 +6237,57 @@ CHKDSK: Сканує цілісність файлової системи та �
     <message>
         <location filename="../src/qml/views/SteamSettingsDrawer.qml" line="13400" />
         <source>Switch Pro Controller Support</source>
-        <translation type="unfinished" />
+        <translation>Підтримка контролера Switch Pro</translation>
     </message>
     <message>
         <location filename="../src/qml/views/SteamSettingsDrawer.qml" line="13407" />
         <source>Enable Steam Input for Nintendo Switch Pro controllers.</source>
-        <translation type="unfinished" />
+        <translation>Увімкніть Steam Input для контролерів Nintendo Switch Pro.</translation>
     </message>
     <message>
         <location filename="../src/qml/views/SteamSettingsDrawer.qml" line="13439" />
         <source>Enable Steam Input for generic controllers</source>
-        <translation type="unfinished" />
+        <translation>Увімкнути Steam Input для універсальних контролерів</translation>
     </message>
     <message>
         <location filename="../src/qml/views/SteamSettingsDrawer.qml" line="13446" />
         <source>Enable Steam Input for generic/directinput gamepads.</source>
-        <translation type="unfinished" />
+        <translation>Увімкніть Steam Input для геймпадів типу «generic» та «directinput».</translation>
     </message>
     <message>
         <location filename="../src/qml/views/SteamSettingsDrawer.qml" line="13478" />
         <source>Turn off controllers when exiting Big Picture Mode</source>
-        <translation type="unfinished" />
+        <translation>Вимикайте контролери при виході з режиму Big Picture</translation>
     </message>
     <message>
         <location filename="../src/qml/views/SteamSettingsDrawer.qml" line="13485" />
         <source>Automatically shut down wireless gamepads when exiting Big Picture Mode.</source>
-        <translation type="unfinished" />
+        <translation>Автоматично вимикати бездротові ігрові контролери при виході з режиму Big Picture.</translation>
     </message>
     <message>
         <location filename="../src/qml/views/SteamSettingsDrawer.qml" line="13508" />
         <source>GENERAL CONTROLLER SETTINGS</source>
-        <translation type="unfinished" />
+        <translation>ЗАГАЛЬНІ НАЛАШТУВАННЯ КОНТРОЛЕРА</translation>
     </message>
     <message>
         <location filename="../src/qml/views/SteamSettingsDrawer.qml" line="13543" />
         <source>Guide button focuses Steam</source>
-        <translation type="unfinished" />
+        <translation>Натискання кнопки «Guide» активує Steam</translation>
     </message>
     <message>
         <location filename="../src/qml/views/SteamSettingsDrawer.qml" line="13550" />
         <source>Pressing the controller Guide button will bring Steam window to the front.</source>
-        <translation type="unfinished" />
+        <translation>Натискання кнопки «Guide» на контролері виведе вікно Steam на передній план.</translation>
     </message>
     <message>
         <location filename="../src/qml/views/SteamSettingsDrawer.qml" line="13580" />
         <source>Guide Button Chord Configuration</source>
-        <translation type="unfinished" />
+        <translation>Налаштування комбінацій кнопок у режимі «Guide»</translation>
     </message>
     <message>
         <location filename="../src/qml/views/SteamSettingsDrawer.qml" line="13587" />
         <source>Enable custom combinations using the controller Guide button.</source>
-        <translation type="unfinished" />
+        <translation>Увімкніть можливість створення власних комбінацій за допомогою кнопки «Guide» на контролері.</translation>
     </message>
     <message>
         <location filename="../src/qml/views/SteamSettingsDrawer.qml" line="13692" />
@@ -6308,11 +6308,11 @@ CHKDSK: Сканує цілісність файлової системи та �
     </message>
     <message>
         <source>In Game</source>
-        <translation type="vanished">В грі</translation>
+        <translation>В грі</translation>
     </message>
     <message>
         <source>Steam Overlay settings and in-game preferences</source>
-        <translation type="vanished">Налаштування оверлея Steam та внутрішньоігрових параметрів</translation>
+        <translation>Налаштування оверлея Steam та внутрішньоігрових параметрів</translation>
     </message>
     <message>
         <location filename="../src/qml/views/SteamSettingsDrawer.qml" line="2690" />
@@ -6341,7 +6341,7 @@ CHKDSK: Сканує цілісність файлової системи та �
     </message>
     <message>
         <source>Displays overlay buttons in a list instead of icons.</source>
-        <translation type="vanished">Відображає кнопки оверлея списком замість значків.</translation>
+        <translation>Відображає кнопки оверлея списком замість значків.</translation>
     </message>
     <message>
         <location filename="../src/qml/views/SteamSettingsDrawer.qml" line="2849" />
@@ -6360,7 +6360,7 @@ CHKDSK: Сканує цілісність файлової системи та �
     </message>
     <message>
         <source>Optimizes the overlay UI for controller and gamepad navigation.</source>
-        <translation type="vanished">Оптимізує інтерфейс оверлея для навігації з контролера та геймпада.</translation>
+        <translation>Оптимізує інтерфейс оверлея для навігації з контролера та геймпада.</translation>
     </message>
     <message>
         <location filename="../src/qml/views/SteamSettingsDrawer.qml" line="2923" />
@@ -6395,7 +6395,7 @@ CHKDSK: Сканує цілісність файлової системи та �
     </message>
     <message>
         <source>Configure which buttons are displayed in the overlay toolbar.</source>
-        <translation type="vanished">Налаштувати, які кнопки відображаються на панелі інструментів оверлея.</translation>
+        <translation>Налаштувати, які кнопки відображаються на панелі інструментів оверлея.</translation>
     </message>
     <message>
         <location filename="../src/qml/views/SteamSettingsDrawer.qml" line="4098" />
@@ -6404,19 +6404,19 @@ CHKDSK: Сканує цілісність файлової системи та �
     </message>
     <message>
         <source>This feature is currently configured automatically by the optimizer for best performance.</source>
-        <translation type="vanished">Ця функція наразі налаштовується оптимізатором автоматично для найкращої продуктивності.</translation>
+        <translation>Ця функція наразі налаштовується оптимізатором автоматично для найкращої продуктивності.</translation>
     </message>
     <message>
         <source>Show Web Browser</source>
-        <translation type="vanished">Показувати веб-браузер</translation>
+        <translation>Показувати веб-браузер</translation>
     </message>
     <message>
         <source>Show Friends List</source>
-        <translation type="vanished">Показувати список друзів</translation>
+        <translation>Показувати список друзів</translation>
     </message>
     <message>
         <source>Show Achievements</source>
-        <translation type="vanished">Показувати досягнення</translation>
+        <translation>Показувати досягнення</translation>
     </message>
     <message>
         <location filename="../src/qml/views/SteamSettingsDrawer.qml" line="13813" />
@@ -6430,7 +6430,7 @@ CHKDSK: Сканує цілісність файлової системи та �
     </message>
     <message>
         <source>Configure accessibility and user interface options</source>
-        <translation type="vanished">Налаштування спеціальних можливостей та інтерфейсу користувача</translation>
+        <translation>Налаштування спеціальних можливостей та інтерфейсу користувача</translation>
     </message>
     <message>
         <location filename="../src/qml/views/SteamSettingsDrawer.qml" line="4581" />
@@ -6455,7 +6455,7 @@ CHKDSK: Сканує цілісність файлової системи та �
     </message>
     <message>
         <source>Configure game recording and capture options</source>
-        <translation type="vanished">Налаштування запису гри та параметрів захоплення</translation>
+        <translation>Налаштування запису гри та параметрів захоплення</translation>
     </message>
     <message>
         <location filename="../src/qml/views/SteamSettingsDrawer.qml" line="5055" />
@@ -6499,11 +6499,11 @@ CHKDSK: Сканує цілісність файлової системи та �
     </message>
     <message>
         <source>Voice</source>
-        <translation type="vanished">Голос</translation>
+        <translation>Голос</translation>
     </message>
     <message>
         <source>Configure voice transmission and advanced voice settings</source>
-        <translation type="vanished">Налаштування передачі голосу та розширені параметри</translation>
+        <translation>Налаштування передачі голосу та розширені параметри</translation>
     </message>
     <message>
         <location filename="../src/qml/views/SteamSettingsDrawer.qml" line="6807" />
@@ -6570,19 +6570,19 @@ CHKDSK: Сканує цілісність файлової системи та �
     </message>
     <message>
         <source>Diagnostics</source>
-        <translation type="vanished">Діагностика</translation>
+        <translation>Діагностика</translation>
     </message>
     <message>
         <source>Copy Voice Logs To Clipboard</source>
-        <translation type="vanished">Копіювати журнали голосового чату в буфер обміну</translation>
+        <translation>Копіювати журнали голосового чату в буфер обміну</translation>
     </message>
     <message>
         <source>Copy diagnostic logs of your voice chat to clipboard</source>
-        <translation type="vanished">Скопіювати діагностичні журнали вашого голосового чату в буфер обміну</translation>
+        <translation>Скопіювати діагностичні журнали вашого голосового чату в буфер обміну</translation>
     </message>
     <message>
         <source>Copy</source>
-        <translation type="vanished">Копіювати</translation>
+        <translation>Копіювати</translation>
     </message>
     <message>
         <location filename="../src/qml/views/SteamSettingsDrawer.qml" line="249" />
@@ -6591,7 +6591,7 @@ CHKDSK: Сканує цілісність файлової системи та �
     </message>
     <message>
         <source>Configure Remote Play and streaming options</source>
-        <translation type="vanished">Налаштування Remote Play та параметрів трансляції</translation>
+        <translation>Налаштування Remote Play та параметрів трансляції</translation>
     </message>
     <message>
         <location filename="../src/qml/views/SteamSettingsDrawer.qml" line="7697" />
@@ -6615,7 +6615,7 @@ CHKDSK: Сканує цілісність файлової системи та �
     </message>
     <message>
         <source>Configure Music and soundtrack download options</source>
-        <translation type="vanished">Налаштування музики та параметрів завантаження саундтреків</translation>
+        <translation>Налаштування музики та параметрів завантаження саундтреків</translation>
     </message>
     <message>
         <location filename="../src/qml/views/SteamSettingsDrawer.qml" line="9649" />
@@ -6684,7 +6684,7 @@ CHKDSK: Сканує цілісність файлової системи та �
     <message>
         <location filename="../src/qml/views/TelemetryDrawer.qml" line="15" />
         <source>Configure custom Windows telemetry and error reporting options.</source>
-        <translation type="unfinished" />
+        <translation>Налаштуйте власні параметри телеметрії та звітування про помилки в Windows.</translation>
     </message>
     <message>
         <location filename="../src/qml/views/TelemetryDrawer.qml" line="27" />
@@ -6712,12 +6712,12 @@ CHKDSK: Сканує цілісність файлової системи та �
     <message>
         <location filename="../src/qml/views/UsbDrawer.qml" line="15" />
         <source>Configure power saving settings for individual USB 3.0 ports.</source>
-        <translation type="unfinished" />
+        <translation>Налаштуйте параметри енергозбереження для окремих портів USB 3.0.</translation>
     </message>
     <message>
         <location filename="../src/qml/views/UsbDrawer.qml" line="40" />
         <source>No USB 3.0 controllers or hubs found.</source>
-        <translation type="unfinished" />
+        <translation>Контролерів або концентраторів USB 3.0 не виявлено.</translation>
     </message>
 </context>
 <context>
@@ -6725,42 +6725,42 @@ CHKDSK: Сканує цілісність файлової системи та �
     <message>
         <location filename="../src/qml/views/VisualEffectsDrawer.qml" line="27" />
         <source>Visual Effects Preset:</source>
-        <translation type="unfinished" />
+        <translation>Пресет візуальних ефектів:</translation>
     </message>
     <message>
         <location filename="../src/qml/views/VisualEffectsDrawer.qml" line="44" />
         <source>Let Windows choose</source>
-        <translation type="unfinished" />
+        <translation>Дозвольте Windows вибрати</translation>
     </message>
     <message>
         <location filename="../src/qml/views/VisualEffectsDrawer.qml" line="45" />
         <source>Best appearance</source>
-        <translation type="unfinished" />
+        <translation>Найкращий зовнішній вигляд</translation>
     </message>
     <message>
         <location filename="../src/qml/views/VisualEffectsDrawer.qml" line="46" />
         <source>Best performance</source>
-        <translation type="unfinished" />
+        <translation>Найкращі результати</translation>
     </message>
     <message>
         <location filename="../src/qml/views/VisualEffectsDrawer.qml" line="47" />
         <source>Custom</source>
-        <translation type="unfinished" />
+        <translation>На замовлення</translation>
     </message>
     <message>
         <location filename="../src/qml/views/VisualEffectsDrawer.qml" line="111" />
         <source>Individual Settings:</source>
-        <translation type="unfinished" />
+        <translation>Індивідуальні налаштування:</translation>
     </message>
     <message>
         <location filename="../src/qml/views/VisualEffectsDrawer.qml" line="127" />
         <source>Animate controls and elements inside windows</source>
-        <translation type="unfinished" />
+        <translation>Анімувати елементи керування та інші елементи всередині вікон</translation>
     </message>
     <message>
         <location filename="../src/qml/views/VisualEffectsDrawer.qml" line="133" />
         <source>Animate windows when minimizing and maximizing</source>
-        <translation type="unfinished" />
+        <translation>Анімувати вікна під час згорнення та розгортання</translation>
     </message>
     <message>
         <location filename="../src/qml/views/VisualEffectsDrawer.qml" line="139" />
@@ -6848,7 +6848,7 @@ CHKDSK: Сканує цілісність файлової системи та �
     <message>
         <location filename="../src/qml/views/WindowsUpdateDrawer.qml" line="15" />
         <source>Automatic updates, notifications, drivers, and upgrades are all enabled.</source>
-        <translation type="unfinished" />
+        <translation>Увімкнено автоматичні оновлення, сповіщення, драйвери та модернізації.</translation>
     </message>
     <message>
         <location filename="../src/qml/views/WindowsUpdateDrawer.qml" line="16" />
@@ -6858,7 +6858,7 @@ CHKDSK: Сканує цілісність файлової системи та �
     <message>
         <location filename="../src/qml/views/WindowsUpdateDrawer.qml" line="16" />
         <source>Only cumulative security and quality patches will install. Driver and major version updates are blocked.</source>
-        <translation type="unfinished" />
+        <translation>Встановлюватимуться лише накопичувальні оновлення безпеки та якості. Оновлення драйверів та оновлення основних версій заблоковано.</translation>
     </message>
     <message>
         <location filename="../src/qml/views/WindowsUpdateDrawer.qml" line="17" />
@@ -6868,7 +6868,7 @@ CHKDSK: Сканує цілісність файлової системи та �
     <message>
         <location filename="../src/qml/views/WindowsUpdateDrawer.qml" line="17" />
         <source>Automatic background updates are disabled. Check and install on your own schedule.</source>
-        <translation type="unfinished" />
+        <translation>Автоматичне оновлення у фоновому режимі вимкнено. Перевіряйте наявність оновлень та встановлюйте їх у зручний для вас час.</translation>
     </message>
     <message>
         <location filename="../src/qml/views/WindowsUpdateDrawer.qml" line="18" />
@@ -6878,37 +6878,37 @@ CHKDSK: Сканує цілісність файлової системи та �
     <message>
         <location filename="../src/qml/views/WindowsUpdateDrawer.qml" line="18" />
         <source>Updates are completely blocked. Disables update services and Windows Update Medic.</source>
-        <translation type="unfinished" />
+        <translation>Оновлення повністю заблоковано. Вимикає служби оновлення та Windows Update Medic.</translation>
     </message>
     <message>
         <location filename="../src/qml/views/WindowsUpdateDrawer.qml" line="22" />
         <source>Configure system update modes:</source>
-        <translation type="unfinished" />
+        <translation>Налаштування режимів оновлення системи:</translation>
     </message>
     <message>
         <location filename="../src/qml/views/WindowsUpdateDrawer.qml" line="109" />
         <source>Additional update settings:</source>
-        <translation type="unfinished" />
+        <translation>Додаткові параметри оновлення:</translation>
     </message>
     <message>
         <location filename="../src/qml/views/WindowsUpdateDrawer.qml" line="167" />
         <source>Driver updates</source>
-        <translation type="unfinished" />
+        <translation>Оновлення драйверів</translation>
     </message>
     <message>
         <location filename="../src/qml/views/WindowsUpdateDrawer.qml" line="180" />
         <source>Automatically update or search drivers as part of cumulative updates or when connecting new hardware</source>
-        <translation type="unfinished" />
+        <translation>Автоматичне оновлення або пошук драйверів у складі накопичувальних оновлень або під час підключення нового обладнання</translation>
     </message>
     <message>
         <location filename="../src/qml/views/WindowsUpdateDrawer.qml" line="249" />
         <source>App updates</source>
-        <translation type="unfinished" />
+        <translation>Оновлення додатків</translation>
     </message>
     <message>
         <location filename="../src/qml/views/WindowsUpdateDrawer.qml" line="262" />
         <source>Automatically download and install app updates</source>
-        <translation type="unfinished" />
+        <translation>Автоматично завантажувати та встановлювати оновлення додатків</translation>
     </message>
 </context>
 <context>
@@ -6916,37 +6916,37 @@ CHKDSK: Сканує цілісність файлової системи та �
     <message>
         <location filename="../src/qml/views/XboxDrawer.qml" line="19" />
         <source>Xbox Suite (Bulk Actions)</source>
-        <translation type="unfinished" />
+        <translation>Xbox Suite (Масові дії)</translation>
     </message>
     <message>
         <location filename="../src/qml/views/XboxDrawer.qml" line="26" />
         <source>Purge or restore the entire Xbox app and telemetry suite for maximum performance.</source>
-        <translation type="unfinished" />
+        <translation>Очистіть або відновите весь додаток Xbox та набір інструментів телеметрії для забезпечення максимальної продуктивності.</translation>
     </message>
     <message>
         <location filename="../src/qml/views/XboxDrawer.qml" line="39" />
         <source>Remove All</source>
-        <translation type="unfinished" />
+        <translation>Видалити все</translation>
     </message>
     <message>
         <location filename="../src/qml/views/XboxDrawer.qml" line="52" />
         <source>Restore All</source>
-        <translation type="unfinished" />
+        <translation>Відновити все</translation>
     </message>
     <message>
         <location filename="../src/qml/views/XboxDrawer.qml" line="74" />
         <source>Individual Packages</source>
-        <translation type="unfinished" />
+        <translation>Індивідуальні пакети</translation>
     </message>
     <message>
         <location filename="../src/qml/views/XboxDrawer.qml" line="94" />
         <source>Xbox App</source>
-        <translation type="unfinished" />
+        <translation>Додаток Xbox</translation>
     </message>
     <message>
         <location filename="../src/qml/views/XboxDrawer.qml" line="101" />
         <source>Get-AppxPackage XboxApp | ...</source>
-        <translation type="unfinished" />
+        <translation>Get-AppxPackage XboxApp | ...</translation>
     </message>
     <message>
         <location filename="../src/qml/views/XboxDrawer.qml" line="109" />
@@ -6955,7 +6955,7 @@ CHKDSK: Сканує цілісність файлової системи та �
         <location filename="../src/qml/views/XboxDrawer.qml" line="247" />
         <location filename="../src/qml/views/XboxDrawer.qml" line="293" />
         <source>Restore</source>
-        <translation type="unfinished" />
+        <translation>Відновити</translation>
     </message>
     <message>
         <location filename="../src/qml/views/XboxDrawer.qml" line="120" />
@@ -6964,47 +6964,47 @@ CHKDSK: Сканує цілісність файлової системи та �
         <location filename="../src/qml/views/XboxDrawer.qml" line="258" />
         <location filename="../src/qml/views/XboxDrawer.qml" line="304" />
         <source>Remove</source>
-        <translation type="unfinished" />
+        <translation>Видалити</translation>
     </message>
     <message>
         <location filename="../src/qml/views/XboxDrawer.qml" line="140" />
         <source>Xbox Gaming Overlay</source>
-        <translation type="unfinished" />
+        <translation>Ігровий оверлей Xbox</translation>
     </message>
     <message>
         <location filename="../src/qml/views/XboxDrawer.qml" line="147" />
         <source>Get-AppxPackage XboxGamingOverlay | ...</source>
-        <translation type="unfinished" />
+        <translation>Get-AppxPackage XboxGamingOverlay | ...</translation>
     </message>
     <message>
         <location filename="../src/qml/views/XboxDrawer.qml" line="186" />
         <source>Xbox TCUI Dialogue</source>
-        <translation type="unfinished" />
+        <translation>Діалогове вікно Xbox TCUI</translation>
     </message>
     <message>
         <location filename="../src/qml/views/XboxDrawer.qml" line="193" />
         <source>Get-AppxPackage XboxTCUI | ...</source>
-        <translation type="unfinished" />
+        <translation>Get-AppxPackage XboxTCUI | ...</translation>
     </message>
     <message>
         <location filename="../src/qml/views/XboxDrawer.qml" line="232" />
         <source>Xbox Game Speech Window</source>
-        <translation type="unfinished" />
+        <translation>Вікно голосового управління в грі для Xbox</translation>
     </message>
     <message>
         <location filename="../src/qml/views/XboxDrawer.qml" line="239" />
         <source>Get-AppxPackage XboxGameSpeechWindow | ...</source>
-        <translation type="unfinished" />
+        <translation>Get-AppxPackage XboxGameSpeechWindow | ...</translation>
     </message>
     <message>
         <location filename="../src/qml/views/XboxDrawer.qml" line="278" />
         <source>System Provisioned Packages</source>
-        <translation type="unfinished" />
+        <translation>Пакетів, наданих системою</translation>
     </message>
     <message>
         <location filename="../src/qml/views/XboxDrawer.qml" line="285" />
         <source>Get-AppxProvisionedPackage -Online | ...</source>
-        <translation type="unfinished" />
+        <translation>Get-AppxProvisionedPackage -Online | ...</translation>
     </message>
     <message>
         <location filename="../src/qml/views/XboxDrawer.qml" line="327" />
@@ -7014,7 +7014,7 @@ CHKDSK: Сканує цілісність файлової системи та �
     <message>
         <location filename="../src/qml/views/XboxDrawer.qml" line="334" />
         <source>Neutralize ms-gamingoverlay triggers to stop 'You'll need a new app to open this link' errors when launching games.</source>
-        <translation type="unfinished" />
+        <translation>Нейтралізуйте тригери ms-gamingoverlay, щоб усунути помилки «Для відкриття цього посилання потрібна нова програма» під час запуску ігор.</translation>
     </message>
 </context>
 <context>
