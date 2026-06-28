@@ -10,143 +10,143 @@
     <message>
         <location filename="../src/qml/views/CleanupDrawer.qml" line="446" />
         <source>User Temp Files:</source>
-        <translation type="unfinished" />
+        <translation>Тимчасові файли користувача:</translation>
     </message>
     <message>
         <location filename="../src/qml/views/CleanupDrawer.qml" line="451" />
         <source>System Temp Files:</source>
-        <translation type="unfinished" />
+        <translation>Тимчасові файли системи:</translation>
     </message>
     <message>
         <location filename="../src/qml/views/CleanupDrawer.qml" line="464" />
         <source>Web Browsers Cache:</source>
-        <translation type="unfinished" />
+        <translation>Кеш веб-браузерів:</translation>
     </message>
     <message>
         <location filename="../src/qml/views/CleanupDrawer.qml" line="469" />
         <source>Apps Cache (Discord/Spotify/Steam):</source>
-        <translation type="unfinished" />
+        <translation>Кеш додатків (Discord/Spotify/Steam):</translation>
     </message>
     <message>
         <location filename="../src/qml/views/CleanupDrawer.qml" line="474" />
         <source>GPU Shader Cache (NVIDIA/AMD):</source>
-        <translation type="unfinished" />
+        <translation>Кеш шейдерів GPU (NVIDIA/AMD):</translation>
     </message>
     <message>
         <location filename="../src/qml/views/CleanupDrawer.qml" line="480" />
         <source>Developer Cache (pip/npm/NuGet):</source>
-        <translation type="unfinished" />
+        <translation>Кеш розробника (pip/npm/NuGet):</translation>
     </message>
     <message>
         <location filename="../src/qml/views/CleanupDrawer.qml" line="493" />
         <source>Temporary Files:</source>
-        <translation type="unfinished" />
+        <translation>Тимчасові файли:</translation>
     </message>
     <message>
         <location filename="../src/qml/views/CleanupDrawer.qml" line="498" />
         <source>Windows Prefetch Cache:</source>
-        <translation type="unfinished" />
+        <translation>Кеш попередньої вибірки Windows (Prefetch):</translation>
     </message>
     <message>
         <location filename="../src/qml/views/CleanupDrawer.qml" line="503" />
         <source>Windows Update Download Cache:</source>
-        <translation type="unfinished" />
+        <translation>Кеш завантажень Windows Update:</translation>
     </message>
     <message>
         <location filename="../src/qml/views/CleanupDrawer.qml" line="508" />
         <source>Recycle Bin Items:</source>
-        <translation type="unfinished" />
+        <translation>Елементи в кошику:</translation>
     </message>
     <message>
         <location filename="../src/qml/views/CleanupDrawer.qml" line="521" />
         <source>Recent files links size:</source>
-        <translation type="unfinished" />
+        <translation>Розмір ярликів нещодавніх файлів:</translation>
     </message>
     <message>
         <location filename="../src/qml/views/CleanupDrawer.qml" line="526" />
         <source>Registry MRU lists entries:</source>
-        <translation type="unfinished" />
+        <translation>Записи списків MRU у реєстрі:</translation>
     </message>
     <message>
         <location filename="../src/qml/views/CleanupDrawer.qml" line="539" />
         <source>Store Local Cache:</source>
-        <translation type="unfinished" />
+        <translation>Локальний кеш магазину Store:</translation>
     </message>
     <message>
         <location filename="../src/qml/views/CleanupDrawer.qml" line="552" />
         <source>DNS Resolver Cache:</source>
-        <translation type="unfinished" />
+        <translation>Кеш DNS-резолвера:</translation>
     </message>
     <message>
         <location filename="../src/qml/views/CleanupDrawer.qml" line="553" />
         <source>entries</source>
-        <translation type="unfinished" />
+        <translation>записів</translation>
     </message>
     <message>
         <location filename="../src/qml/views/CleanupDrawer.qml" line="557" />
         <source>Active Network Connections:</source>
-        <translation type="unfinished" />
+        <translation>Активні мережеві підключення:</translation>
     </message>
     <message>
         <location filename="../src/qml/views/CleanupDrawer.qml" line="558" />
         <source>sockets</source>
-        <translation type="unfinished" />
+        <translation>сокетів</translation>
     </message>
     <message>
         <location filename="../src/qml/views/CleanupDrawer.qml" line="562" />
         <location filename="../src/qml/views/CleanupDrawer.qml" line="585" />
         <source>Operation details:</source>
-        <translation type="unfinished" />
+        <translation>Деталі операції:</translation>
     </message>
     <message>
         <location filename="../src/qml/views/CleanupDrawer.qml" line="563" />
         <source>Flush DNS Cache &amp; Winsock Reset</source>
-        <translation type="unfinished" />
+        <translation>Очищення кешу DNS та скидання Winsock</translation>
     </message>
     <message>
         <location filename="../src/qml/views/CleanupDrawer.qml" line="575" />
         <source>System Restore Points:</source>
-        <translation type="unfinished" />
+        <translation>Точки відновлення системи:</translation>
     </message>
     <message>
         <location filename="../src/qml/views/CleanupDrawer.qml" line="576" />
         <source>points</source>
-        <translation type="unfinished" />
+        <translation>точок</translation>
     </message>
     <message>
         <location filename="../src/qml/views/CleanupDrawer.qml" line="580" />
         <source>Storage Space Used:</source>
-        <translation type="unfinished" />
+        <translation>Використане місце на диску:</translation>
     </message>
     <message>
         <location filename="../src/qml/views/CleanupDrawer.qml" line="586" />
         <source>Deletes system recovery rollback points</source>
-        <translation type="unfinished" />
+        <translation>Видаляє точки відновлення системи для відкату</translation>
     </message>
     <message>
         <location filename="../src/qml/views/CleanupDrawer.qml" line="597" />
         <source>Total Selected for Cleanup:</source>
-        <translation type="unfinished" />
+        <translation>Всього вибрано для очищення:</translation>
     </message>
     <message>
         <location filename="../src/qml/views/CleanupDrawer.qml" line="614" />
         <source>Temporary Files</source>
-        <translation type="unfinished" />
+        <translation>Тимчасові файли</translation>
     </message>
     <message>
         <location filename="../src/qml/views/CleanupDrawer.qml" line="616" />
         <source>Clears temporary files generated by the operating system and installed software. Deleting these files is safe and helps resolve app crashes.</source>
-        <translation type="unfinished" />
+        <translation>Очищає тимчасові файли, створені операційною системою та встановленим програмним забезпеченням. Видалення цих файлів є безпечним і допомагає вирішити збої додатків.</translation>
     </message>
     <message>
         <location filename="../src/qml/views/CleanupDrawer.qml" line="634" />
         <source>AppData Local Cache</source>
-        <translation type="unfinished" />
+        <translation>Кеш AppData Local</translation>
     </message>
     <message>
         <location filename="../src/qml/views/CleanupDrawer.qml" line="636" />
         <source>Clears app caches, web browser history caches, Steam, Spotify, Discord, shader caches, and developer packages cache (pip, npm, NuGet). Speeds up app loading and frees significant space.</source>
-        <translation type="unfinished" />
+        <translation>Очищає кеш додатків, історію веб-браузерів, Steam, Spotify, Discord, кеш шейдерів та кеш пакетів розробника (pip, npm, NuGet). Прискорює завантаження додатків та звільняє значний простір.</translation>
     </message>
     <message>
         <location filename="../src/qml/views/CleanupDrawer.qml" line="654" />
@@ -156,7 +156,7 @@
     <message>
         <location filename="../src/qml/views/CleanupDrawer.qml" line="656" />
         <source>Clears Windows temporary folders, Prefetch cache, Windows Update download cache, and empties the Recycle Bin to clean up disk storage.</source>
-        <translation type="unfinished" />
+        <translation>Очищає тимчасові папки Windows, кеш Prefetch, кеш завантажень оновлень Windows та очищає кошик для звільнення місця на диску.</translation>
     </message>
     <message>
         <location filename="../src/qml/views/CleanupDrawer.qml" line="674" />
@@ -166,7 +166,7 @@
     <message>
         <location filename="../src/qml/views/CleanupDrawer.qml" line="676" />
         <source>Clears address bar TypedPaths history, Run dialog history list, and recent documents history links to improve private file system navigation privacy.</source>
-        <translation type="unfinished" />
+        <translation>Очищає історію TypedPaths в адресному рядку, історію діалогового вікна «Виконати» та ярлики нещодавніх документів для покращення конфіденційності навігації файловою системою.</translation>
     </message>
     <message>
         <location filename="../src/qml/views/CleanupDrawer.qml" line="694" />
@@ -176,7 +176,7 @@
     <message>
         <location filename="../src/qml/views/CleanupDrawer.qml" line="696" />
         <source>Resets Microsoft Store local configuration cache by executing wsreset.exe and clearing Store package cache folders to fix download errors.</source>
-        <translation type="unfinished" />
+        <translation>Скидає локальний кеш конфігурації Microsoft Store за допомогою запуску wsreset.exe та очищення папок кешу пакетів Store для виправлення помилок завантаження.</translation>
     </message>
     <message>
         <location filename="../src/qml/views/CleanupDrawer.qml" line="714" />
@@ -186,7 +186,7 @@
     <message>
         <location filename="../src/qml/views/CleanupDrawer.qml" line="716" />
         <source>Resets current network state, resets Winsock catalog, flushes the DNS resolver cache, and resets IP configurations to resolve internet issues.</source>
-        <translation type="unfinished" />
+        <translation>Скидає поточний стан мережі, каталог Winsock, очищає кеш DNS-резолвера та скидає конфігурації IP для вирішення проблем з інтернетом.</translation>
     </message>
     <message>
         <location filename="../src/qml/views/CleanupDrawer.qml" line="734" />
@@ -196,7 +196,7 @@
     <message>
         <location filename="../src/qml/views/CleanupDrawer.qml" line="736" />
         <source>Clears old Windows shadow copy system restore points. WARNING: You will not be able to roll back your OS updates after running this.</source>
-        <translation type="unfinished" />
+        <translation>Видаляє старі точки відновлення системи тіньових копій Windows. ПОПЕРЕДЖЕННЯ: Ви не зможете повернутися до попереднього стану після оновлення ОС.</translation>
     </message>
 </context>
 <context>
@@ -2634,7 +2634,7 @@ Would you like to close Discord now and proceed?</source>
     <message>
         <location filename="../src/qml/views/OptimizationView.qml" line="7613" />
         <source>System Cleanup</source>
-        <translation type="unfinished" />
+        <translation>Очищення системи</translation>
     </message>
     <message>
         <location filename="../src/qml/views/OptimizationView.qml" line="7615" />
