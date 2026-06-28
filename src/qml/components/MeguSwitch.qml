@@ -17,11 +17,16 @@ Item {
     opacity: enabled ? 1.0 : 0.4
     Behavior on opacity { NumberAnimation { duration: Theme.animFast } }
     
-    // --- Dynamic Proportion Metrics (scales perfectly from 54x24 up to 140x56) ---
+    // --- Dynamic Proportion Metrics ---
     readonly property real thumbPadding: Math.max(3, Math.round(track.height * 0.1))
     readonly property real thumbSize: track.height - (thumbPadding * 2)
     
-    // Ambient soft glow behind the entire track (matching the .toggle-active-glow class from Stitch)
+    // --- Quantum Theme Accent Colors (extracted directly from Stitch Quantum Gate Toggle) ---
+    readonly property color quantumPrimary: "#4648d4"
+    readonly property color quantumPrimaryContainer: "#6063ee"
+    readonly property color quantumGlowColor: "#c0c1ff"
+    
+    // Ambient soft glow behind the entire track
     Canvas {
         id: trackGlow
         anchors.centerIn: track
@@ -41,12 +46,9 @@ Item {
             var cy = height / 2;
             var r = width / 2;
             
-            // Matches the radial ambient glow from the CSS exactly:
-            // radial-gradient(circle at center, rgba(0, 210, 255, 0.28) 0%, rgba(162, 82, 248, 0.14) 40%, transparent 70%)
             var grad = ctx.createRadialGradient(cx, cy, 0, cx, cy, r);
-            grad.addColorStop(0.0, "rgba(0, 210, 255, 0.28)");
-            grad.addColorStop(0.4, "rgba(162, 82, 248, 0.14)");
-            grad.addColorStop(0.7, "rgba(162, 82, 248, 0.02)");
+            grad.addColorStop(0.0, "rgba(96, 99, 238, 0.24)");
+            grad.addColorStop(0.5, "rgba(70, 72, 212, 0.10)");
             grad.addColorStop(1.0, "rgba(0, 0, 0, 0.0)");
             
             ctx.fillStyle = grad;
@@ -116,7 +118,7 @@ Item {
                     color: {
                         if (control.steamStyle) return "#10161f";
                         var isLightTheme = (Theme.currentTheme === "Белоснежная" || Theme.currentTheme === "Розовая");
-                        return isLightTheme ? "#e5efff" : Qt.rgba(162, 82, 248, 0.12);
+                        return isLightTheme ? "#e5efff" : Qt.rgba(70, 72, 212, 0.12);
                     }
                 }
                 GradientStop { 
@@ -124,14 +126,15 @@ Item {
                     color: {
                         if (control.steamStyle) return "#10161f";
                         var isLightTheme = (Theme.currentTheme === "Белоснежная" || Theme.currentTheme === "Розовая");
-                        return isLightTheme ? "#e5efff" : Qt.rgba(0, 210, 255, 0.16);
+                        return isLightTheme ? "#e5efff" : Qt.rgba(96, 99, 238, 0.16);
                     }
                 }
             }
             
             border.color: {
                 if (control.steamStyle) return Theme.accent;
-                return Qt.rgba(0, 210, 255, 0.25);
+                var isLightTheme = (Theme.currentTheme === "Белоснежная" || Theme.currentTheme === "Розовая");
+                return isLightTheme ? Qt.rgba(70, 72, 212, 0.3) : Qt.rgba(96, 99, 238, 0.35);
             }
             border.width: 1
         }
@@ -152,20 +155,48 @@ Item {
             border.width: 1
             visible: !control.steamStyle
         }
-        
 
-        // Thumb capsule
+        // Thumb Container
         Item {
             id: thumb
             height: control.thumbSize
             anchors.verticalCenter: parent.verticalCenter
             
-            // --- High-Fidelity Vector Radial Gradient Shadow Stack (zero banding, zero RHI bugs) ---
+            // --- 1. Pulsing Quantum Ring (Off state only, breathes and fades out) ---
+            Rectangle {
+                anchors.centerIn: parent
+                width: parent.height
+                height: parent.height
+                radius: width / 2
+                color: "transparent"
+                border.width: 1.0
+                border.color: control.steamStyle ? "#4b5a6c" : control.quantumPrimaryContainer
+                visible: !control.checked && !control.steamStyle
+                
+                PropertyAnimation on scale {
+                    running: !control.checked && !control.steamStyle
+                    loops: Animation.Infinite
+                    from: 0.85
+                    to: 1.45
+                    duration: 2500
+                    easing.type: Easing.OutQuad
+                }
+                PropertyAnimation on opacity {
+                    running: !control.checked && !control.steamStyle
+                    loops: Animation.Infinite
+                    from: 0.60
+                    to: 0.0
+                    duration: 2500
+                    easing.type: Easing.OutQuad
+                }
+            }
+
+            // --- 2. High-Fidelity Vector Radial Gradient Shadow Stack (Canvas) ---
             Canvas {
                 id: shadowCanvas
                 anchors.centerIn: parent
-                width: parent.height * 4.5 // Larger bounds for wide blur profile
-                height: parent.height * 4.5
+                width: parent.height * 5.0
+                height: parent.height * 5.0
                 z: -1
                 visible: !control.steamStyle
                 
@@ -179,59 +210,41 @@ Item {
                     var cx = width / 2;
                     var cy = height / 2;
                     
-                    // --- 1. Draw Inactive State Soft Shadow ---
-                    if (checkedProgress < 1.0) {
-                        ctx.save();
-                        ctx.globalAlpha = 1.0 - checkedProgress;
-                        
-                        var darkY = cy + (thumb.height * (4.0 / 44.0));
-                        var darkRadius = thumb.height * (16.0 / 44.0) * 2.0;
-                        
-                        var gradDark = ctx.createRadialGradient(cx, darkY, 0, cx, darkY, darkRadius);
-                        gradDark.addColorStop(0.0, "rgba(13, 28, 45, 0.18)");
-                        gradDark.addColorStop(0.4, "rgba(13, 28, 45, 0.08)");
-                        gradDark.addColorStop(1.0, "rgba(13, 28, 45, 0.0)");
-                        
-                        ctx.fillStyle = gradDark;
-                        ctx.beginPath();
-                        ctx.arc(cx, darkY, darkRadius, 0, 2 * Math.PI);
-                        ctx.fill();
-                        
-                        ctx.restore();
-                    }
-                    
-                    // --- 2. Draw Active State Glowing Shadows ---
                     if (checkedProgress > 0.0) {
                         ctx.save();
                         ctx.globalAlpha = checkedProgress;
                         
-                        // Cyan Glow on the right side: offset y (10px on 44px thumb), blur: (24px on 44px)
-                        var cyanY = cy + (thumb.height * (10.0 / 44.0));
-                        var cyanRadius = thumb.height * (24.0 / 44.0) * 1.8;
+                        // Quantum Gate Active Glow: 0 0 30px var(--tw-colors-primary-fixed-dim)
+                        var glowRadius = thumb.height * (30.0 / 44.0) * 2.0;
                         
-                        var gradCyan = ctx.createRadialGradient(cx, cyanY, 0, cx, cyanY, cyanRadius);
-                        gradCyan.addColorStop(0.0, "rgba(0, 210, 255, 0.45)");
-                        gradCyan.addColorStop(0.3, "rgba(0, 210, 255, 0.22)");
-                        gradCyan.addColorStop(0.6, "rgba(0, 210, 255, 0.08)");
-                        gradCyan.addColorStop(1.0, "rgba(0, 210, 255, 0.0)");
+                        var grad = ctx.createRadialGradient(cx, cy, 0, cx, cy, glowRadius);
+                        grad.addColorStop(0.0, "rgba(192, 193, 255, 0.45)"); // Primary fixed dim glow
+                        grad.addColorStop(0.3, "rgba(70, 72, 212, 0.22)");   // Primary glow
+                        grad.addColorStop(0.7, "rgba(70, 72, 212, 0.05)");
+                        grad.addColorStop(1.0, "rgba(0, 0, 0, 0.0)");
                         
-                        ctx.fillStyle = gradCyan;
+                        ctx.fillStyle = grad;
                         ctx.beginPath();
-                        ctx.arc(cx, cyanY, cyanRadius, 0, 2 * Math.PI);
+                        ctx.arc(cx, cy, glowRadius, 0, 2 * Math.PI);
                         ctx.fill();
                         
-                        // Purple Glow on the left side: offset y (6px on 44px thumb), blur: (12px on 44px)
-                        var purpleY = cy + (thumb.height * (6.0 / 44.0));
-                        var purpleRadius = thumb.height * (12.0 / 44.0) * 1.8;
+                        ctx.restore();
+                    } else {
+                        // Inactive soft drop shadow
+                        ctx.save();
+                        ctx.globalAlpha = 1.0;
                         
-                        var gradPurple = ctx.createRadialGradient(cx, purpleY, 0, cx, purpleY, purpleRadius);
-                        gradPurple.addColorStop(0.0, "rgba(162, 82, 248, 0.38)");
-                        gradPurple.addColorStop(0.4, "rgba(162, 82, 248, 0.16)");
-                        gradPurple.addColorStop(1.0, "rgba(162, 82, 248, 0.0)");
+                        var darkY = cy + (thumb.height * (2.0 / 44.0));
+                        var darkRadius = thumb.height * (12.0 / 44.0) * 1.5;
                         
-                        ctx.fillStyle = gradPurple;
+                        var gradDark = ctx.createRadialGradient(cx, darkY, 0, cx, darkY, darkRadius);
+                        gradDark.addColorStop(0.0, "rgba(13, 28, 45, 0.12)");
+                        gradDark.addColorStop(0.5, "rgba(13, 28, 45, 0.04)");
+                        gradDark.addColorStop(1.0, "rgba(0, 0, 0, 0.0)");
+                        
+                        ctx.fillStyle = gradDark;
                         ctx.beginPath();
-                        ctx.arc(cx, purpleY, purpleRadius, 0, 2 * Math.PI);
+                        ctx.arc(cx, darkY, darkRadius, 0, 2 * Math.PI);
                         ctx.fill();
                         
                         ctx.restore();
@@ -242,7 +255,7 @@ Item {
                 onHeightChanged: requestPaint()
             }
             
-            // --- Pure 2D Canvas-Based Glassmorphic Morphing Thumb (morps colors during slide!) ---
+            // --- 3. Pure 2D Canvas-Based Quantum Gate Morphing Thumb ---
             Canvas {
                 id: thumbCanvas
                 anchors.fill: parent
@@ -256,6 +269,15 @@ Item {
                     }
                 }
                 
+                // Ring scale expands smoothly from 1.0 to 1.15 when active (Quantum Ring scaling!)
+                scale: control.steamStyle ? 1.0 : (1.0 + (0.15 * checkedProgress))
+                Behavior on scale { 
+                    NumberAnimation { 
+                        duration: 250 
+                        easing.type: Easing.OutQuad 
+                    } 
+                }
+                
                 onCheckedProgressChanged: requestPaint()
                 onWidthChanged: requestPaint()
                 onHeightChanged: requestPaint()
@@ -266,84 +288,66 @@ Item {
                     
                     var cx = width / 2;
                     var cy = height / 2;
-                    var r = height / 2; // Radius is half-height to keep pill ends rounded
+                    var r = height / 2; // Keep perfectly circular
                     
-                    // Capsule drawing helper path (handles circle and squished pill geometries)
-                    var drawCapsule = function() {
-                        ctx.beginPath();
-                        ctx.moveTo(r, 0);
-                        ctx.lineTo(width - r, 0);
-                        ctx.arc(width - r, r, r - 0.2, 1.5 * Math.PI, 0.5 * Math.PI, false);
-                        ctx.lineTo(r, height);
-                        ctx.arc(r, r, r - 0.2, 0.5 * Math.PI, 1.5 * Math.PI, false);
-                        ctx.closePath();
-                    };
+                    // --- 1. Draw Hollow Quantum Ring ---
+                    ctx.save();
                     
-                    // --- 1. Draw Unchecked State (3D White Marble) ---
-                    if (checkedProgress < 1.0) {
-                        ctx.save();
-                        ctx.globalAlpha = 1.0 - checkedProgress;
+                    // Stroke color interpolates from grey (unchecked) to quantumPrimary (checked)
+                    var isLightTheme = (Theme.currentTheme === "Белоснежная" || Theme.currentTheme === "Розовая");
+                    var borderUnchecked = isLightTheme ? "rgba(13, 28, 45, 0.35)" : "rgba(255, 255, 255, 0.35)";
+                    var borderChecked = control.quantumPrimary.toString();
+                    
+                    ctx.beginPath();
+                    ctx.arc(cx, cy, r - 1.0, 0, 2 * Math.PI);
+                    
+                    // Set stroke gradient or interpolated color
+                    ctx.strokeStyle = isLightTheme 
+                        ? (control.checked ? "rgba(70, 72, 212, 0.85)" : borderUnchecked)
+                        : (control.checked ? "rgba(192, 193, 255, 0.90)" : borderUnchecked);
                         
-                        drawCapsule();
-                        
-                        var gradUnchecked = ctx.createLinearGradient(0, 0, width, height);
-                        gradUnchecked.addColorStop(0.0, "#FFFFFF");
-                        var isLightTheme = (Theme.currentTheme === "Белоснежная" || Theme.currentTheme === "Розовая");
-                        gradUnchecked.addColorStop(1.0, isLightTheme ? "#F1F5F9" : "#CBD5E1");
-                        
-                        ctx.fillStyle = gradUnchecked;
+                    ctx.lineWidth = control.steamStyle ? 0.0 : (control.checked ? 1.6 : 1.2);
+                    
+                    // If not steam style, fill background with transparent/hollow color
+                    if (!control.steamStyle) {
+                        ctx.fillStyle = "transparent";
                         ctx.fill();
-                        
-                        ctx.restore();
+                    } else {
+                        // Steam style has solid fill
+                        var gradSteam = ctx.createLinearGradient(0, 0, width, height);
+                        gradSteam.addColorStop(0.0, control.checked ? "#FFFFFF" : "#5d6d7e");
+                        gradSteam.addColorStop(1.0, control.checked ? "#E2E8F0" : "#4b5a6c");
+                        ctx.fillStyle = gradSteam;
+                        ctx.fill();
                     }
                     
-                    // --- 2. Draw Checked State (Glowing Glass Orb) ---
-                    if (checkedProgress > 0.0) {
+                    if (!control.steamStyle) {
+                        ctx.stroke();
+                    }
+                    ctx.restore();
+                    
+                    // --- 2. Draw Dense Core (fades in and expands inside ring when checked) ---
+                    if (checkedProgress > 0.0 && !control.steamStyle) {
                         ctx.save();
                         ctx.globalAlpha = checkedProgress;
                         
-                        drawCapsule();
+                        // Dense core expands slightly outside the ring boundaries (up to inset -20%, which is scale 1.4x)
+                        var coreRadius = r * 1.25;
+                        var gradCore = ctx.createRadialGradient(cx, cy, 0, cx, cy, coreRadius);
                         
-                        // Base Purple-to-Cyan linear gradient (135deg diagonal matching #a252f8 to #00d2ff)
-                        var gradChecked = ctx.createLinearGradient(0, 0, width, height);
-                        gradChecked.addColorStop(0.0, "#a252f8"); // Premium purple-indigo
-                        gradChecked.addColorStop(1.0, "#00d2ff"); // Premium sky-blue/cyan
-                        
-                        ctx.fillStyle = gradChecked;
-                        ctx.fill();
-                        
-                        // Soft white core radial glow right at the center of the orb
-                        var gradCore = ctx.createRadialGradient(cx, cy, 0, cx, cy, r * 0.76);
-                        gradCore.addColorStop(0.0, "rgba(255, 255, 255, 0.88)");
-                        gradCore.addColorStop(0.4, "rgba(255, 255, 255, 0.40)");
-                        gradCore.addColorStop(0.75, "rgba(255, 255, 255, 0.08)");
-                        gradCore.addColorStop(1.0, "rgba(255, 255, 255, 0.0)");
+                        // Matches: radial-gradient(circle, var(--tw-colors-primary-container) 0%, transparent 70%)
+                        gradCore.addColorStop(0.0, "rgba(96, 99, 238, 0.85)"); // Intense primary-container
+                        gradCore.addColorStop(0.4, "rgba(70, 72, 212, 0.40)");
+                        gradCore.addColorStop(0.7, "rgba(70, 72, 212, 0.12)");
+                        gradCore.addColorStop(1.0, "rgba(0, 0, 0, 0.0)");
                         
                         ctx.fillStyle = gradCore;
                         ctx.beginPath();
-                        ctx.arc(cx, cy, r * 0.76, 0, 2 * Math.PI);
+                        ctx.arc(cx, cy, coreRadius, 0, 2 * Math.PI);
                         ctx.fill();
                         
                         ctx.restore();
                     }
-                    
-                    // --- 3. Draw Common Specular Top Highlight Rim ---
-                    ctx.save();
-                    ctx.globalAlpha = 1.0;
-                    
-                    var rimGrad = ctx.createLinearGradient(cx, 0, cx, 3);
-                    rimGrad.addColorStop(0.0, "rgba(255, 255, 255, 0.60)");
-                    rimGrad.addColorStop(1.0, "rgba(255, 255, 255, 0.0)");
-                    
-                    ctx.strokeStyle = rimGrad;
-                    ctx.lineWidth = 1.2;
-                    ctx.beginPath();
-                    ctx.arc(r, r, r - 0.75, 1.15 * Math.PI, 1.5 * Math.PI, false);
-                    ctx.lineTo(width - r, 0.75);
-                    ctx.arc(width - r, r, r - 0.75, 1.5 * Math.PI, 1.85 * Math.PI, false);
-                    ctx.stroke();
-                    
-                    ctx.restore();
                 }
             }
         }
