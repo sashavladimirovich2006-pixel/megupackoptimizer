@@ -17,14 +17,20 @@ Item {
     opacity: enabled ? 1.0 : 0.4
     Behavior on opacity { NumberAnimation { duration: Theme.animFast } }
     
-    // Soft outer neon glow behind the track (zero-overhead native vector glow)
+    // Soft outer neon glow behind the track (horizontal purple-to-cyan gradient matching the mockup)
     Rectangle {
         anchors.centerIn: track
         width: track.width + 6
         height: track.height + 6
         radius: track.radius + 3
-        color: "#00A6FF"
-        opacity: (control.checked && !control.steamStyle) ? (mouseArea.containsMouse ? 0.24 : 0.14) : 0.0
+        
+        gradient: Gradient {
+            orientation: Gradient.Horizontal
+            GradientStop { position: 0.0; color: Qt.rgba(168, 85, 247, 0.22) } // Purple glow (left)
+            GradientStop { position: 1.0; color: Qt.rgba(0, 240, 255, 0.32) }  // Cyan glow (right)
+        }
+        
+        opacity: (control.checked && !control.steamStyle) ? (mouseArea.containsMouse ? 1.0 : 0.65) : 0.0
         visible: opacity > 0.0
         
         Behavior on opacity { 
@@ -46,11 +52,13 @@ Item {
         color: "transparent" // Controlled entirely by gradient
         
         gradient: Gradient {
+            orientation: (control.checked && !control.steamStyle) ? Gradient.Horizontal : Gradient.Vertical
+            
             GradientStop { 
                 position: 0.0
                 color: {
                     if (control.steamStyle) return "#10161f";
-                    if (control.checked) return Qt.rgba(0, 166, 255, 0.15);
+                    if (control.checked) return Qt.rgba(168, 85, 247, 0.12); // Soft purple (left)
                     var isLightTheme = (Theme.currentTheme === "Белоснежная" || Theme.currentTheme === "Розовая");
                     return isLightTheme ? "#D3DAE2" : "#080C14"; // Recessed top shade
                 }
@@ -59,7 +67,7 @@ Item {
                 position: 1.0
                 color: {
                     if (control.steamStyle) return "#10161f";
-                    if (control.checked) return Qt.rgba(0, 166, 255, 0.08);
+                    if (control.checked) return Qt.rgba(0, 240, 255, 0.16);  // Soft cyan (right)
                     var isLightTheme = (Theme.currentTheme === "Белоснежная" || Theme.currentTheme === "Розовая");
                     return isLightTheme ? "#EDF2F7" : "#131C2E"; // Lighter bottom
                 }
@@ -71,7 +79,7 @@ Item {
                 return control.checked ? Theme.accent : (mouseArea.containsMouse ? Theme.borderHover : "#3c485c");
             }
             if (control.checked) {
-                return Qt.rgba(0, 166, 255, 0.45);
+                return Qt.rgba(0, 240, 255, 0.45); // Glowing cyan border
             }
             var isLightTheme = (Theme.currentTheme === "Белоснежная" || Theme.currentTheme === "Розовая");
             return mouseArea.containsMouse 
@@ -105,6 +113,30 @@ Item {
             }
             border.width: 1
             visible: !control.steamStyle
+        }
+
+        // Soft glowing aura behind the thumb (simulates the light bleed / glow of the glass orb)
+        Rectangle {
+            anchors.centerIn: thumb
+            width: thumb.width + 6
+            height: thumb.height + 6
+            radius: width / 2
+            
+            gradient: Gradient {
+                orientation: Gradient.Horizontal
+                GradientStop { position: 0.0; color: Qt.rgba(168, 85, 247, 0.35) } // Purple bleed
+                GradientStop { position: 1.0; color: Qt.rgba(0, 240, 255, 0.45) }  // Cyan bleed
+            }
+            
+            opacity: (control.checked && !control.steamStyle) ? 1.0 : 0.0
+            visible: opacity > 0.0
+            
+            Behavior on opacity { 
+                NumberAnimation { 
+                    duration: 250 
+                    easing.type: Easing.OutQuad 
+                } 
+            }
         }
 
         // Thumb circle
@@ -162,41 +194,37 @@ Item {
                     }
                 }
                 
-                // 1. Base Gradient (rich cyan-to-purple body)
+                // 1. Base Gradient (rich purple-to-cyan horizontal body matching the mockup perfectly)
                 gradient: Gradient {
-                    GradientStop { position: 0.0; color: "#00E5FF" } // Glowing bright cyan
-                    GradientStop { position: 0.5; color: "#0055FF" } // Vibrant blue
-                    GradientStop { position: 1.0; color: "#8000FF" } // Deep purple edge
+                    orientation: Gradient.Horizontal
+                    GradientStop { position: 0.0; color: "#A855F7" } // Vibrant purple (left)
+                    GradientStop { position: 0.5; color: "#3B82F6" } // Royal blue (middle)
+                    GradientStop { position: 1.0; color: "#00F0FF" } // Glowing cyan (right)
                 }
                 
-                // 2. Specular Highlight Layer 1 (Soft overall top-left light blend, rotated for diagonal alignment)
+                // 2. Diffused Specification Highlight 1 (Outer soft white glow)
                 Rectangle {
-                    width: parent.width * 0.72
-                    height: parent.height * 0.72
+                    anchors.centerIn: parent
+                    width: parent.width * 0.65
+                    height: parent.height * 0.65
                     radius: width / 2
-                    x: parent.width * 0.07
-                    y: parent.height * 0.07
-                    rotation: -45
                     
                     gradient: Gradient {
-                        GradientStop { position: 0.0; color: Qt.rgba(255, 255, 255, 0.75) }
-                        GradientStop { position: 0.5; color: Qt.rgba(255, 255, 255, 0.25) }
+                        GradientStop { position: 0.0; color: Qt.rgba(255, 255, 255, 0.55) }
                         GradientStop { position: 1.0; color: "transparent" }
                     }
                 }
                 
-                // 3. Specular Highlight Layer 2 (Intense hot-spot core, rotated for diagonal alignment)
+                // 3. Diffused Specification Highlight 2 (Inner bright core, slightly offset right)
                 Rectangle {
-                    width: parent.width * 0.38
-                    height: parent.height * 0.38
+                    anchors.centerIn: parent
+                    anchors.horizontalCenterOffset: 0.6
+                    width: parent.width * 0.34
+                    height: parent.height * 0.34
                     radius: width / 2
-                    x: parent.width * 0.18
-                    y: parent.height * 0.18
-                    rotation: -45
                     
                     gradient: Gradient {
-                        GradientStop { position: 0.0; color: Qt.rgba(255, 255, 255, 0.95) }
-                        GradientStop { position: 0.6; color: Qt.rgba(255, 255, 255, 0.40) }
+                        GradientStop { position: 0.0; color: Qt.rgba(255, 255, 255, 0.9) }
                         GradientStop { position: 1.0; color: "transparent" }
                     }
                 }
