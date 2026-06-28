@@ -98,10 +98,6 @@ private:
 
 
 int main(int argc, char* argv[]) {
-    QSurfaceFormat format;
-    format.setSamples(8);
-    QSurfaceFormat::setDefaultFormat(format);
-
     // Instantiate QGuiApplication first so QCoreApplication properties (like applicationDirPath) are available
     QGuiApplication app(argc, argv);
     app.setApplicationName("Megu Pack Optimizer");
