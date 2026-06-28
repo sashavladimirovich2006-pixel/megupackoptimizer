@@ -12,7 +12,7 @@ Item {
     
     signal toggled(bool isChecked)
     
-    implicitWidth: text !== "" ? 200 : 46
+    implicitWidth: text !== "" ? 200 : 54
     implicitHeight: Math.max(28, labelText.visible ? labelText.height + 4 : 24)
     
     opacity: enabled ? 1.0 : 0.4
@@ -34,14 +34,14 @@ Item {
         
         Behavior on color {
             ColorAnimation {
-                duration: 200
+                duration: 250
             }
         }
     }
 
     Rectangle {
         id: track
-        width: 46
+        width: 54
         height: 24
         anchors.left: parent.left
         anchors.verticalCenter: parent.verticalCenter
@@ -92,7 +92,7 @@ Item {
             anchors.fill: parent
             radius: parent.radius
             opacity: (control.indeterminate && !control.steamStyle) ? 1.0 : 0.0
-            Behavior on opacity { NumberAnimation { duration: 200; easing.type: Easing.OutQuad } }
+            Behavior on opacity { NumberAnimation { duration: 250; easing.type: Easing.OutQuad } }
             color: Theme.accentDim
         }
 
@@ -111,22 +111,34 @@ Item {
             visible: !control.steamStyle
         }
 
-        // Soft drop shadow under the thumb circle
-        DropShadow {
+        // --- High-Performance 3D Volumetric Soft Shadow (RadialGradient instead of live DropShadow) ---
+        RadialGradient {
             id: thumbShadow
-            anchors.fill: thumb
+            width: thumb.width + 16 // Extra width for soft fade
+            height: thumb.height + 16 // Extra height for soft fade
+            anchors.centerIn: thumb
             horizontalOffset: 0
-            verticalOffset: 2.5
-            radius: 5
-            samples: 11
-            color: control.checked ? Qt.rgba(0, 166, 255, 0.38) : Qt.rgba(0, 0, 0, 0.26)
-            source: thumb
-            cached: true
+            verticalOffset: 2.2
             visible: !control.steamStyle
+            
+            gradient: Gradient {
+                GradientStop { 
+                    position: 0.0 
+                    color: control.checked ? Qt.rgba(0, 166, 255, 0.38) : Qt.rgba(0, 0, 0, 0.30) 
+                }
+                GradientStop { 
+                    position: 0.35 
+                    color: control.checked ? Qt.rgba(0, 166, 255, 0.12) : Qt.rgba(0, 0, 0, 0.10) 
+                }
+                GradientStop { 
+                    position: 1.0 
+                    color: "transparent" 
+                }
+            }
             
             Behavior on color {
                 ColorAnimation {
-                    duration: 200
+                    duration: 250
                 }
             }
         }
@@ -134,7 +146,7 @@ Item {
         // Thumb circle
         Rectangle {
             id: thumb
-            width: mouseArea.pressed ? 22 : 18
+            width: mouseArea.pressed ? 26 : 18 // High-fidelity squish (reaches 26px when pressed)
             height: 18
             radius: control.steamStyle ? 4 : 9 // Perfect circle if not steam style
             
@@ -173,11 +185,22 @@ Item {
                 visible: control.steamStyle
             }
 
-            // Beautiful 3D Glowing Radial Gradient Overlay (for the checked state, matches the photo)
-            RadialGradient {
-                id: checkedGradient
+            // --- Glassmorphic Glowing Checked Sphere (using OpacityMask to clip the RadialGradient to a circle) ---
+            
+            // 1. Mask Source (defines the shape of the clip - tracks the thumb's width/height/radius)
+            Rectangle {
+                id: thumbMask
                 anchors.fill: parent
-                opacity: (control.checked && !control.steamStyle) ? 1.0 : 0.0
+                radius: parent.radius
+                color: "black"
+                visible: false
+            }
+
+            // 2. Gradient Source (defines the colors)
+            RadialGradient {
+                id: checkedRadialSource
+                anchors.fill: parent
+                visible: false
                 
                 // Shift center slightly top-left to simulate light source
                 horizontalOffset: -2
@@ -190,30 +213,38 @@ Item {
                     GradientStop { position: 0.85; color: "#553CFF" }       // Blue-violet shade
                     GradientStop { position: 1.0; color: "#8B2CFF" }        // Deep purple outer edge
                 }
+            }
+
+            // 3. Combined Masked Output
+            OpacityMask {
+                anchors.fill: parent
+                source: checkedRadialSource
+                maskSource: thumbMask
+                opacity: (control.checked && !control.steamStyle) ? 1.0 : 0.0
                 
                 Behavior on opacity {
                     NumberAnimation {
-                        duration: 200
+                        duration: 250
                         easing.type: Easing.InOutQuad
                     }
                 }
             }
             
-            // Slide positioning
+            // Slide positioning (horizontal limits: 3px padding from left/right)
             x: control.indeterminate 
                 ? ((track.width - width) / 2) 
                 : (control.checked ? (track.width - width - 3) : 3)
             
             Behavior on x {
                 NumberAnimation {
-                    duration: 260
-                    easing.type: Easing.OutQuart // Smooth decelerating slide
+                    duration: 320 // Ultra-smooth deceleration
+                    easing.type: Easing.OutQuint
                 }
             }
             Behavior on width {
                 NumberAnimation {
-                    duration: 180
-                    easing.type: Easing.OutQuad // Elastic stretching on press
+                    duration: 280 // Organic squash & stretch timing
+                    easing.type: Easing.OutQuint
                 }
             }
         }
