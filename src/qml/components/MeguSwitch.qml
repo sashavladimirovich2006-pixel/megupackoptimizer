@@ -186,7 +186,6 @@ Item {
                 anchors.fill: parent
                 radius: parent.radius
                 opacity: (control.checked && !control.steamStyle) ? 1.0 : 0.0
-                rotation: -45 // Diagonally shifts the gradient to 135deg matching CSS!
                 
                 Behavior on opacity {
                     NumberAnimation {
@@ -195,64 +194,134 @@ Item {
                     }
                 }
                 
-                // 1. Base Gradient (vibrant purple-to-cyan diagonal matching #a252f8 to #00d2ff)
+                // 1. Base Gradient (completely opaque, vibrant purple-to-cyan matching the mockup)
                 gradient: Gradient {
                     orientation: Gradient.Horizontal
-                    GradientStop { position: 0.0; color: "#A252F8" } // Purple (top-left when rotated)
-                    GradientStop { position: 1.0; color: "#00D2FF" } // Cyan (bottom-right when rotated)
+                    GradientStop { position: 0.0; color: "#B766FF" } // Glowing purple
+                    GradientStop { position: 1.0; color: "#00F0FF" } // Glowing cyan
                 }
                 
-                // 2. Diffused white core glow (matching .orb-core in CSS radial-gradient)
+                // 2. Inner Glass Border (simulates light refraction at the edge of the glass sphere)
+                Rectangle {
+                    anchors.fill: parent
+                    radius: parent.radius
+                    color: "transparent"
+                    border.color: Qt.rgba(255, 255, 255, 0.25)
+                    border.width: 1
+                }
+                
+                // 3. Diffused white specular core (rotated diagonally to align with 135deg light source)
                 Rectangle {
                     anchors.centerIn: parent
-                    width: parent.width * 0.62
-                    height: parent.height * 0.62
+                    anchors.horizontalCenterOffset: -0.5
+                    anchors.verticalCenterOffset: -0.5
+                    width: parent.width * 0.74
+                    height: parent.height * 0.74
                     radius: width / 2
-                    rotation: 45 // Counter-rotate so it remains centered
+                    rotation: -45
                     
                     gradient: Gradient {
-                        GradientStop { position: 0.0; color: Qt.rgba(255, 255, 255, 0.85) }
-                        GradientStop { position: 0.7; color: Qt.rgba(255, 255, 255, 0.0) }
+                        GradientStop { position: 0.0; color: Qt.rgba(255, 255, 255, 0.90) } // Intense white top-left
+                        GradientStop { position: 0.4; color: Qt.rgba(255, 255, 255, 0.55) } // Diffused glow
+                        GradientStop { position: 0.8; color: Qt.rgba(255, 255, 255, 0.10) } // Fading edge
                         GradientStop { position: 1.0; color: "transparent" }
                     }
                 }
+                
+                // 4. Center hot-spot highlight (makes the core look intensely luminous)
+                Rectangle {
+                    anchors.centerIn: parent
+                    anchors.horizontalCenterOffset: -1
+                    anchors.verticalCenterOffset: -1
+                    width: parent.width * 0.32
+                    height: parent.height * 0.32
+                    radius: width / 2
+                    color: "#FFFFFF"
+                    opacity: 0.8
+                }
             }
             
-            // --- Shadow Layer 1 (inside thumb, moves and scales automatically, z: -1) ---
+            // --- Simulated Checked Gaussian Blur Glow Stack (zero RHI bugs, extremely soft & premium) ---
+            // Glow Layer 1 (Largest, most diffused ambient bloom)
             Rectangle {
-                anchors.fill: parent
-                radius: parent.radius
-                color: control.checked ? "#00D2FF" : (control.steamStyle ? "#000000" : "#0D1C2D")
-                opacity: control.checked ? 0.40 : 0.15
-                z: -1
-                
-                // Shift down for offset shadow (y: 2px)
-                anchors.topMargin: 2.0
-                anchors.bottomMargin: -2.0
-                
-                // Slightly wider for soft blur simulation
-                anchors.leftMargin: -1
-                anchors.rightMargin: -1
-                
+                anchors.centerIn: parent
+                width: parent.width + 12
+                height: parent.height + 12
+                radius: width / 2
+                color: control.checked ? "#00D2FF" : "transparent"
+                opacity: control.checked ? 0.05 : 0.0
+                z: -4
                 visible: !control.steamStyle
-                Behavior on color { ColorAnimation { duration: 250 } }
+                Behavior on opacity { NumberAnimation { duration: 250 } }
+            }
+            
+            // Glow Layer 2 (Medium diffused ambient bloom)
+            Rectangle {
+                anchors.centerIn: parent
+                width: parent.width + 8
+                height: parent.height + 8
+                radius: width / 2
+                color: control.checked ? "#00D2FF" : "transparent"
+                opacity: control.checked ? 0.10 : 0.0
+                z: -3
+                visible: !control.steamStyle
                 Behavior on opacity { NumberAnimation { duration: 250 } }
             }
 
-            // --- Shadow Layer 2 (inside thumb, moves and scales automatically, z: -2) ---
+            // Glow Layer 3 (Inner cyan shadow layer, shifted down)
             Rectangle {
-                anchors.fill: parent
-                radius: parent.radius
-                color: control.checked ? "#A252F8" : (control.steamStyle ? "#000000" : "#0D1C2D")
-                opacity: control.checked ? 0.30 : 0.10
+                anchors.centerIn: parent
+                anchors.verticalCenterOffset: 1.5 // Shift down for y-offset shadow
+                width: parent.width + 4
+                height: parent.height + 4
+                radius: width / 2
+                color: control.checked ? "#00D2FF" : "transparent"
+                opacity: control.checked ? 0.22 : 0.0
                 z: -2
-                
-                // Shift down for offset shadow (y: 1.2px)
-                anchors.topMargin: 1.2
-                anchors.bottomMargin: -1.2
-                
                 visible: !control.steamStyle
-                Behavior on color { ColorAnimation { duration: 250 } }
+                Behavior on opacity { NumberAnimation { duration: 250 } }
+            }
+
+            // Glow Layer 4 (Core purple shadow layer, shifted down)
+            Rectangle {
+                anchors.centerIn: parent
+                anchors.verticalCenterOffset: 1.0 // Shift down for y-offset shadow
+                width: parent.width + 1
+                height: parent.height + 1
+                radius: width / 2
+                color: control.checked ? "#A252F8" : "transparent"
+                opacity: control.checked ? 0.30 : 0.0
+                z: -1
+                visible: !control.steamStyle
+                Behavior on opacity { NumberAnimation { duration: 250 } }
+            }
+
+            // --- Unchecked State Shadow Stack (soft dark navy shadows) ---
+            // Unchecked Shadow Layer 1 (Outer soft shadow)
+            Rectangle {
+                anchors.centerIn: parent
+                anchors.verticalCenterOffset: 1.5
+                width: parent.width + 3
+                height: parent.height + 3
+                radius: width / 2
+                color: "#0D1C2D"
+                opacity: (!control.checked && !control.steamStyle) ? 0.12 : 0.0
+                z: -2
+                visible: !control.steamStyle
+                Behavior on opacity { NumberAnimation { duration: 250 } }
+            }
+            
+            // Unchecked Shadow Layer 2 (Inner crisp shadow)
+            Rectangle {
+                anchors.centerIn: parent
+                anchors.verticalCenterOffset: 0.8
+                width: parent.width
+                height: parent.height
+                radius: width / 2
+                color: "#0D1C2D"
+                opacity: (!control.checked && !control.steamStyle) ? 0.18 : 0.0
+                z: -1
+                visible: !control.steamStyle
                 Behavior on opacity { NumberAnimation { duration: 250 } }
             }
         }
