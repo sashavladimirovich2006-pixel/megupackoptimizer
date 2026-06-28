@@ -4,714 +4,714 @@
     <name>CleanupDrawer</name>
     <message>
         <source>Free up storage space, clear cache, delete system restore points and more.</source>
-        <translation type="vanished">Звільніть місце на диску, очистіть кеш, видаліть точки відновлення системи тощо.</translation>
+        <translation>Звільніть місце на диску, очистіть кеш, видаліть точки відновлення системи тощо.</translation>
     </message>
     <message>
         <source>Storage</source>
-        <translation type="vanished">Сховище</translation>
+        <translation>Сховище</translation>
     </message>
     <message>
         <source>File Explorer</source>
-        <translation type="vanished">Провідник</translation>
+        <translation>Провідник</translation>
     </message>
     <message>
         <source>Microsoft Store</source>
-        <translation type="vanished">Microsoft Store</translation>
+        <translation>Microsoft Store</translation>
     </message>
     <message>
         <source>Network</source>
-        <translation type="vanished">Мережа</translation>
+        <translation>Мережа</translation>
     </message>
     <message>
         <source>System restore</source>
-        <translation type="vanished">Відновлення системи</translation>
+        <translation>Відновлення системи</translation>
     </message>
 </context>
 <context>
     <name>DashboardView</name>
     <message>
         <source>SYSTEM SPECIFICATIONS</source>
-        <translation type="vanished">ХАРАКТЕРИСТИКИ СИСТЕМИ</translation>
+        <translation>ХАРАКТЕРИСТИКИ СИСТЕМИ</translation>
     </message>
     <message>
         <source>Operating System</source>
-        <translation type="vanished">Операційна система</translation>
+        <translation>Операційна система</translation>
     </message>
     <message>
         <source>Processor (CPU)</source>
-        <translation type="vanished">Процесор (CPU)</translation>
+        <translation>Процесор (CPU)</translation>
     </message>
     <message>
         <source>Logical Cores</source>
-        <translation type="vanished">Логічні ядра</translation>
+        <translation>Логічні ядра</translation>
     </message>
     <message>
         <source>Memory (RAM)</source>
-        <translation type="vanished">Оперативна пам'ять (RAM)</translation>
+        <translation>Оперативна пам'ять (RAM)</translation>
     </message>
     <message>
         <source>Graphics Card (GPU)</source>
-        <translation type="vanished">Відеокарта (GPU)</translation>
+        <translation>Відеокарта (GPU)</translation>
     </message>
     <message>
         <source>Motherboard</source>
-        <translation type="vanished">Материнська плата</translation>
+        <translation>Материнська плата</translation>
     </message>
     <message>
         <source>Storage (C:)</source>
-        <translation type="vanished">Накопичувач (C:)</translation>
+        <translation>Накопичувач (C:)</translation>
     </message>
     <message>
         <source>Primary Display</source>
-        <translation type="vanished">Основний дисплей</translation>
+        <translation>Основний дисплей</translation>
     </message>
     <message>
         <source>BIOS &amp; Advanced Settings</source>
-        <translation type="vanished">Налаштування BIOS та додаткові параметри</translation>
+        <translation>Налаштування BIOS та додаткові параметри</translation>
     </message>
     <message>
         <source>GPU TEMP</source>
-        <translation type="vanished">ТЕМПЕРАТУРА GPU</translation>
+        <translation>ТЕМПЕРАТУРА GPU</translation>
     </message>
     <message>
         <source>Real-time GPU Telemetry</source>
-        <translation type="vanished">Телеметрія GPU в реальному часі</translation>
+        <translation>Телеметрія GPU в реальному часі</translation>
     </message>
     <message>
         <source>RESIZABLE BAR</source>
-        <translation type="vanished">RESIZABLE BAR</translation>
+        <translation>RESIZABLE BAR</translation>
     </message>
     <message>
         <source>PCIe Resizable BAR</source>
-        <translation type="vanished">PCIe Resizable BAR</translation>
+        <translation>PCIe Resizable BAR</translation>
     </message>
     <message>
         <source>SECURE BOOT</source>
-        <translation type="vanished">SECURE BOOT</translation>
+        <translation>SECURE BOOT</translation>
     </message>
     <message>
         <source>System Boot Security</source>
-        <translation type="vanished">Безпека завантаження системи</translation>
+        <translation>Безпека завантаження системи</translation>
     </message>
     <message>
         <source>TPM</source>
-        <translation type="vanished">TPM</translation>
+        <translation>TPM</translation>
     </message>
     <message>
         <source>Trusted Platform Module</source>
-        <translation type="vanished">Довірений платформовий модуль</translation>
+        <translation>Довірений платформовий модуль</translation>
     </message>
     <message>
         <source>HAGS</source>
-        <translation type="vanished">HAGS</translation>
+        <translation>HAGS</translation>
     </message>
     <message>
         <source>Hardware GPU Scheduling</source>
-        <translation type="vanished">Апаратне планування графічного процесора</translation>
+        <translation>Апаратне планування графічного процесора</translation>
     </message>
     <message>
         <source>MEMORY INTEGRITY</source>
-        <translation type="vanished">ЦІЛІСНІСТЬ ПАМ'ЯТІ</translation>
+        <translation>ЦІЛІСНІСТЬ ПАМ'ЯТІ</translation>
     </message>
     <message>
         <source>VBS / HVCI Security</source>
-        <translation type="vanished">Безпека VBS / HVCI</translation>
+        <translation>Безпека VBS / HVCI</translation>
     </message>
 </context>
 <context>
     <name>DefenderDrawer</name>
     <message>
         <source>Registry Disablement Policies</source>
-        <translation type="vanished">Політики відключення через реєстр</translation>
+        <translation>Політики відключення через реєстр</translation>
     </message>
     <message>
         <source>PowerShell Preference Adjustments</source>
-        <translation type="vanished">Параметри через PowerShell</translation>
+        <translation>Параметри через PowerShell</translation>
     </message>
     <message>
         <source>Antivirus Services &amp; Drivers</source>
-        <translation type="vanished">Антивірусні служби та драйвери</translation>
+        <translation>Антивірусні служби та драйвери</translation>
     </message>
 </context>
 <context>
     <name>DesktopDrawer</name>
     <message>
         <source>Restart Explorer</source>
-        <translation type="obsolete">Перезапустити Провідник</translation>
+        <translation>Перезапустити Провідник</translation>
     </message>
     <message>
         <source>Classic Context Menu</source>
-        <translation type="obsolete">Класичне контекстне меню</translation>
+        <translation>Класичне контекстне меню</translation>
     </message>
 </context>
 <context>
     <name>ExplorerDrawer</name>
     <message>
         <source>Restart Explorer</source>
-        <translation type="obsolete">Перезапустити Провідник</translation>
+        <translation>Перезапустити Провідник</translation>
     </message>
     <message>
         <source>Downloads</source>
-        <translation type="obsolete">Завантаження</translation>
+        <translation>Завантаження</translation>
     </message>
 </context>
 <context>
     <name>HealthDrawer</name>
     <message>
         <source>Drive optimization</source>
-        <translation type="vanished">Оптимізація дисків</translation>
+        <translation>Оптимізація дисків</translation>
     </message>
     <message>
         <source>Helps your device run more efficiently</source>
-        <translation type="vanished">Допомагає вашому пристрою працювати більш ефективно</translation>
+        <translation>Допомагає вашому пристрою працювати більш ефективно</translation>
     </message>
 </context>
 <context>
     <name>IndexingDrawer</name>
     <message>
         <source>Windows Search service</source>
-        <translation type="vanished">Служба Windows Search</translation>
+        <translation>Служба Windows Search</translation>
     </message>
     <message>
         <source>Drive C: indexing</source>
-        <translation type="vanished">Індексація диска С</translation>
+        <translation>Індексація диска С</translation>
     </message>
     <message>
         <source>Drive %1 indexing</source>
-        <translation type="vanished">Індексація диска %1</translation>
+        <translation>Індексація диска %1</translation>
     </message>
 </context>
 <context>
     <name>LogViewer</name>
     <message>
         <source>Clear</source>
-        <translation type="obsolete">Очистити</translation>
+        <translation>Очистити</translation>
     </message>
 </context>
 <context>
     <name>NotificationsDrawer</name>
     <message>
         <source>Global Toast Notifications</source>
-        <translation type="vanished">Глобальні спливаючі сповіщення</translation>
+        <translation>Глобальні спливаючі сповіщення</translation>
     </message>
     <message>
         <source>App Notifications</source>
-        <translation type="vanished">Сповіщення від додатків</translation>
+        <translation>Сповіщення від додатків</translation>
     </message>
     <message>
         <source>Notification Sounds</source>
-        <translation type="vanished">Звуки сповіщень</translation>
+        <translation>Звуки сповіщень</translation>
     </message>
     <message>
         <source>Lock Screen Notifications</source>
-        <translation type="vanished">Сповіщення на екрані блокування</translation>
+        <translation>Сповіщення на екрані блокування</translation>
     </message>
 </context>
 <context>
     <name>OptimizationView</name>
     <message>
         <source>SYSTEM OPTIMIZATION</source>
-        <translation type="vanished">СИСТЕМНА ОПТИМІЗАЦІЯ</translation>
+        <translation>СИСТЕМНА ОПТИМІЗАЦІЯ</translation>
     </message>
     <message>
         <source>File Indexing</source>
-        <translation type="vanished">Індексація файлів</translation>
+        <translation>Індексація файлів</translation>
     </message>
     <message>
         <source>Controls file search indexing services and drive index properties.</source>
-        <translation type="vanished">Керує службами індексації пошуку файлів та властивостями індексації дисків.</translation>
+        <translation>Керує службами індексації пошуку файлів та властивостями індексації дисків.</translation>
     </message>
     <message>
         <source>Optimize</source>
-        <translation type="vanished">Оптимізувати</translation>
+        <translation>Оптимізувати</translation>
     </message>
     <message>
         <source>Windows Search service</source>
-        <translation type="vanished">Служба Windows Search</translation>
+        <translation>Служба Windows Search</translation>
     </message>
     <message>
         <source>Drive C: indexing</source>
-        <translation type="vanished">Індексація диска С</translation>
+        <translation>Індексація диска С</translation>
     </message>
     <message>
         <source>Global Toast Notifications</source>
-        <translation type="vanished">Глобальні спливаючі сповіщення</translation>
+        <translation>Глобальні спливаючі сповіщення</translation>
     </message>
     <message>
         <source>App Notifications</source>
-        <translation type="vanished">Сповіщення від додатків</translation>
+        <translation>Сповіщення від додатків</translation>
     </message>
     <message>
         <source>Notification Sounds</source>
-        <translation type="vanished">Звуки сповіщень</translation>
+        <translation>Звуки сповіщень</translation>
     </message>
     <message>
         <source>Lock Screen Notifications</source>
-        <translation type="vanished">Сповіщення на екрані блокування</translation>
+        <translation>Сповіщення на екрані блокування</translation>
     </message>
     <message>
         <source>%1 Details</source>
-        <translation type="vanished">Деталі %1</translation>
+        <translation>Деталі %1</translation>
     </message>
     <message>
         <source>Finished system modifications.</source>
-        <translation type="vanished">Модифікацію системи завершено.</translation>
+        <translation>Модифікацію системи завершено.</translation>
     </message>
     <message>
         <source>Close</source>
-        <translation type="vanished">Закрити</translation>
+        <translation>Закрити</translation>
     </message>
     <message>
         <source>Removed</source>
-        <translation type="vanished">Видалено</translation>
+        <translation>Видалено</translation>
     </message>
     <message>
         <source>Drive %1 indexing</source>
-        <translation type="vanished">Індексація диска %1</translation>
+        <translation>Індексація диска %1</translation>
     </message>
     <message>
         <source>Disable Game Bar Popup</source>
-        <translation type="vanished">Вимкнути помилку ms-gamingoverlay</translation>
+        <translation>Вимкнути помилку ms-gamingoverlay</translation>
     </message>
     <message>
         <source>Multi-Plane Overlay (MPO)</source>
-        <translation type="vanished">Multi-Plane Overlay (MPO)</translation>
+        <translation>Multi-Plane Overlay (MPO)</translation>
     </message>
     <message>
         <source>Configure DWM multi-plane overlay modes to optimize latency and eliminate game stuttering.</source>
-        <translation type="vanished">Налаштуйте режими оверлею DWM для оптимізації затримки та усунення фризів в іграх.</translation>
+        <translation>Налаштуйте режими оверлею DWM для оптимізації затримки та усунення фризів в іграх.</translation>
     </message>
     <message>
         <source>INDEXING OPTIONS</source>
-        <translation type="vanished">НАЛАШТУВАННЯ ІНДЕКСАЦІЇ</translation>
+        <translation>НАЛАШТУВАННЯ ІНДЕКСАЦІЇ</translation>
     </message>
     <message>
         <source>DRIVES &amp; INDEXING</source>
-        <translation type="vanished">ДИСКИ ТА ІНДЕКСАЦІЯ</translation>
+        <translation>ДИСКИ ТА ІНДЕКСАЦІЯ</translation>
     </message>
     <message>
         <source>Selected for application</source>
-        <translation type="vanished">Обрано для застосування</translation>
+        <translation>Обрано для застосування</translation>
     </message>
     <message>
         <source>LATENCY &amp; MOUSE TWEAKS</source>
-        <translation type="vanished">ЗАТРИМКА ТА МИША</translation>
+        <translation>ЗАТРИМКА ТА МИША</translation>
     </message>
     <message>
         <source>Xbox App &amp; Game Bar</source>
-        <translation type="vanished">Додаток Xbox та Game Bar</translation>
+        <translation>Додаток Xbox та Game Bar</translation>
     </message>
     <message>
         <source>Completely remove all Xbox overlays, TCUI, and game bar apps to optimize mouse input latency.</source>
-        <translation type="vanished">Повне видалення оверлеїв Xbox, TCUI та ігрової панелі для оптимізації затримки введення миші.</translation>
+        <translation>Повне видалення оверлеїв Xbox, TCUI та ігрової панелі для оптимізації затримки введення миші.</translation>
     </message>
     <message>
         <source>Installed</source>
-        <translation type="vanished">Встановлено</translation>
+        <translation>Встановлено</translation>
     </message>
     <message>
         <source>Disabled (5)</source>
-        <translation type="vanished">Вимкнено (5)</translation>
+        <translation>Вимкнено (5)</translation>
     </message>
     <message>
         <source>Default (0)</source>
-        <translation type="vanished">За замовчуванням (0)</translation>
+        <translation>За замовчуванням (0)</translation>
     </message>
     <message>
         <source>Mode %1</source>
-        <translation type="vanished">Режим %1</translation>
+        <translation>Режим %1</translation>
     </message>
     <message>
         <source>Print Spooler (Printer)</source>
-        <translation type="vanished">Служба друку (Принтер)</translation>
+        <translation>Служба друку (Принтер)</translation>
     </message>
     <message>
         <source>Disabling the print spooler frees memory and reduces background latency for gaming.</source>
-        <translation type="vanished">Вимкнення служби друку звільняє пам'ять та зменшує фонову затримку для ігор.</translation>
+        <translation>Вимкнення служби друку звільняє пам'ять та зменшує фонову затримку для ігор.</translation>
     </message>
     <message>
         <source>Windows Notifications</source>
-        <translation type="vanished">Сповіщення Windows</translation>
+        <translation>Сповіщення Windows</translation>
     </message>
     <message>
         <source>Disabling background notifications frees CPU interrupts and stabilizes FPS.</source>
-        <translation type="vanished">Вимкнення фонових сповіщень звільняє переривання процесора та стабілізує FPS.</translation>
+        <translation>Вимкнення фонових сповіщень звільняє переривання процесора та стабілізує FPS.</translation>
     </message>
     <message>
         <source>POWER &amp; STORAGE</source>
-        <translation type="vanished">ЖИВЛЕННЯ ТА НАКОПИЧУВАЧІ</translation>
+        <translation>ЖИВЛЕННЯ ТА НАКОПИЧУВАЧІ</translation>
     </message>
     <message>
         <source>System Hibernation</source>
-        <translation type="vanished">Гібернація системи</translation>
+        <translation>Гібернація системи</translation>
     </message>
     <message>
         <source>Enable or disable Windows hibernation mode to free up disk space.</source>
-        <translation type="vanished">Увімкнення або вимкнення режиму гібернації Windows для звільнення місця на диску.</translation>
+        <translation>Увімкнення або вимкнення режиму гібернації Windows для звільнення місця на диску.</translation>
     </message>
     <message>
         <source>Power Plan</source>
-        <translation type="vanished">Режим живлення</translation>
+        <translation>Режим живлення</translation>
     </message>
     <message>
         <source>%1 changes pending</source>
-        <translation type="vanished">%1 змін очікує</translation>
+        <translation>%1 змін очікує</translation>
     </message>
     <message>
         <source>Pending Changes:</source>
-        <translation type="vanished">Очікують змін:</translation>
+        <translation>Очікують змін:</translation>
     </message>
     <message>
         <source>Select system power plans and unlock the hidden Ultimate Performance mode.</source>
-        <translation type="vanished">Вибір системних схем живлення та розблокування прихованого режиму максимальної продуктивності.</translation>
+        <translation>Вибір системних схем живлення та розблокування прихованого режиму максимальної продуктивності.</translation>
     </message>
     <message>
         <source>Unknown</source>
-        <translation type="vanished">Невідомо</translation>
+        <translation>Невідомо</translation>
     </message>
     <message>
         <source>Classic Context Menu</source>
-        <translation type="vanished">Класичне контекстне меню</translation>
+        <translation>Класичне контекстне меню</translation>
     </message>
     <message>
         <source>BitLocker Drive Encryption</source>
-        <translation type="vanished">Шифрування дисків BitLocker</translation>
+        <translation>Шифрування дисків BitLocker</translation>
     </message>
     <message>
         <source>Discord In-Game Overlay</source>
-        <translation type="vanished">Ігровий оверлей Discord</translation>
+        <translation>Ігровий оверлей Discord</translation>
     </message>
     <message>
         <source>Windows Defender</source>
-        <translation type="vanished">Windows Defender</translation>
+        <translation>Windows Defender</translation>
     </message>
     <message>
         <source>Remote Access (RDP)</source>
-        <translation type="vanished">Віддалений доступ (RDP)</translation>
+        <translation>Віддалений доступ (RDP)</translation>
     </message>
     <message>
         <source>Telemetry</source>
-        <translation type="vanished">Телеметрія</translation>
+        <translation>Телеметрія</translation>
     </message>
     <message>
         <source>Windows Update</source>
-        <translation type="vanished">Оновлення Windows</translation>
+        <translation>Оновлення Windows</translation>
     </message>
     <message>
         <source>Counter-Strike 2 Launch Options</source>
-        <translation type="vanished">Параметри запуску Counter-Strike 2</translation>
+        <translation>Параметри запуску Counter-Strike 2</translation>
     </message>
     <message>
         <source>Page File</source>
-        <translation type="vanished">Файл підкачки</translation>
+        <translation>Файл підкачки</translation>
     </message>
     <message>
         <source>Enabled</source>
-        <translation type="vanished">Увімкнено</translation>
+        <translation>Увімкнено</translation>
     </message>
     <message>
         <source>Disabled</source>
-        <translation type="vanished">Вимкнено</translation>
+        <translation>Вимкнено</translation>
     </message>
     <message>
         <source>Print Spooler</source>
-        <translation type="vanished">Диспетчер друку</translation>
+        <translation>Диспетчер друку</translation>
     </message>
     <message>
         <source>Remove Ultimate Performance scheme from system</source>
-        <translation type="vanished">Видалити схему Ultimate Performance із системи</translation>
+        <translation>Видалити схему Ultimate Performance із системи</translation>
     </message>
     <message>
         <source>Completely delete Windows Defender from system</source>
-        <translation type="vanished">Повністю видалити Windows Defender із системи</translation>
+        <translation>Повністю видалити Windows Defender із системи</translation>
     </message>
     <message>
         <source>Registry Disablement Policies</source>
-        <translation type="vanished">Політики відключення через реєстр</translation>
+        <translation>Політики відключення через реєстр</translation>
     </message>
     <message>
         <source>PowerShell Preference Adjustments</source>
-        <translation type="vanished">Параметри через PowerShell</translation>
+        <translation>Параметри через PowerShell</translation>
     </message>
     <message>
         <source>Antivirus Services &amp; Drivers</source>
-        <translation type="vanished">Антивірусні служби та драйвери</translation>
+        <translation>Антивірусні служби та драйвери</translation>
     </message>
     <message>
         <source>Connected User Experiences (DiagTrack)</source>
-        <translation type="vanished">Функціональні можливості для підключених користувачів і телеметрія (DiagTrack)</translation>
+        <translation>Функціональні можливості для підключених користувачів і телеметрія (DiagTrack)</translation>
     </message>
     <message>
         <source>Device Management WAP Service (dmwappushservice)</source>
-        <translation type="vanished">Служба WAP для керування пристроями (dmwappushservice)</translation>
+        <translation>Служба WAP для керування пристроями (dmwappushservice)</translation>
     </message>
     <message>
         <source>Customer Experience Improvement Program (CEIP)</source>
-        <translation type="vanished">Програма покращення взаємодії з користувачем (CEIP)</translation>
+        <translation>Програма покращення взаємодії з користувачем (CEIP)</translation>
     </message>
     <message>
         <source>Windows Error Reporting (WER)</source>
-        <translation type="vanished">Служба звітування про помилки Windows (WER)</translation>
+        <translation>Служба звітування про помилки Windows (WER)</translation>
     </message>
     <message>
         <source>Default</source>
-        <translation type="vanished">За замовчуванням</translation>
+        <translation>За замовчуванням</translation>
     </message>
     <message>
         <source>Security Only</source>
-        <translation type="vanished">Лише безпека</translation>
+        <translation>Лише безпека</translation>
     </message>
     <message>
         <source>Manual Check</source>
-        <translation type="vanished">Вручну</translation>
+        <translation>Вручну</translation>
     </message>
     <message>
         <source>Update Mode</source>
-        <translation type="vanished">Режим оновлень</translation>
+        <translation>Режим оновлень</translation>
     </message>
     <message>
         <source>Scale text and icons to match monitor settings (requires restart)</source>
-        <translation type="vanished">Масштабувати текст та іконки відповідно до налаштувань монітора (потрібен перезапуск)</translation>
+        <translation>Масштабувати текст та іконки відповідно до налаштувань монітора (потрібен перезапуск)</translation>
     </message>
     <message>
         <source>Run Steam when my computer starts</source>
-        <translation type="vanished">Запускати Steam під час запуску комп'ютера</translation>
+        <translation>Запускати Steam під час запуску комп'ютера</translation>
     </message>
     <message>
         <source>Ask which account to use each time Steam starts</source>
-        <translation type="vanished">Запитувати, який акаунт використовувати під час кожного запуску Steam</translation>
+        <translation>Запитувати, який акаунт використовувати під час кожного запуску Steam</translation>
     </message>
     <message>
         <source>Start Steam in Big Picture Mode</source>
-        <translation type="vanished">Запускати Steam у режимі Big Picture</translation>
+        <translation>Запускати Steam у режимі Big Picture</translation>
     </message>
     <message>
         <source>Enable smooth scrolling in web views (requires restart)</source>
-        <translation type="vanished">Увімкнути плавне прокручування у веб-переглядах (потрібен перезапуск)</translation>
+        <translation>Увімкнути плавне прокручування у веб-переглядах (потрібен перезапуск)</translation>
     </message>
     <message>
         <source>Enable GPU accelerated rendering in web views (requires restart)</source>
-        <translation type="vanished">Увімкнути рендерення з апаратним прискоренням GPU у веб-переглядах (потрібен перезапуск)</translation>
+        <translation>Увімкнути рендерення з апаратним прискоренням GPU у веб-переглядах (потрібен перезапуск)</translation>
     </message>
     <message>
         <source>Enable hardware video decoding, if supported (requires restart)</source>
-        <translation type="vanished">Увімкнути апаратне декодування відео, якщо підтримується (потрібен перезапуск)</translation>
+        <translation>Увімкнути апаратне декодування відео, якщо підтримується (потрібен перезапуск)</translation>
     </message>
     <message>
         <source>Notify me about additions or changes to my games, new releases, and upcoming releases</source>
-        <translation type="vanished">Сповіщати мене про додавання чи зміни в моїх іграх, нові релізи та майбутні випуски</translation>
+        <translation>Сповіщати мене про додавання чи зміни в моїх іграх, нові релізи та майбутні випуски</translation>
     </message>
     <message>
         <source>Play a sound when a toast is displayed</source>
-        <translation type="vanished">Відтворювати звук при появі спливаючих сповіщень</translation>
+        <translation>Відтворювати звук при появі спливаючих сповіщень</translation>
     </message>
     <message>
         <source>Achievement toast notification</source>
-        <translation type="vanished">Спливаюче сповіщення про досягнення</translation>
+        <translation>Спливаюче сповіщення про досягнення</translation>
     </message>
     <message>
         <source>Achievement notification sound</source>
-        <translation type="vanished">Звук сповіщення про досягнення</translation>
+        <translation>Звук сповіщення про досягнення</translation>
     </message>
     <message>
         <source>Controller connection toast notification</source>
-        <translation type="vanished">Спливаюче сповіщення про підключення контролера</translation>
+        <translation>Спливаюче сповіщення про підключення контролера</translation>
     </message>
     <message>
         <source>Controller connection notification sound</source>
-        <translation type="vanished">Звук сповіщення про підключення контролера</translation>
+        <translation>Звук сповіщення про підключення контролера</translation>
     </message>
     <message>
         <source>Controller low battery toast notification</source>
-        <translation type="vanished">Спливаюче сповіщення про низький заряд батареї контролера</translation>
+        <translation>Спливаюче сповіщення про низький заряд батареї контролера</translation>
     </message>
     <message>
         <source>Controller low battery notification sound</source>
-        <translation type="vanished">Звук сповіщення про низький заряд батареї контролера</translation>
+        <translation>Звук сповіщення про низький заряд батареї контролера</translation>
     </message>
     <message>
         <source>Friend joins game toast notification</source>
-        <translation type="vanished">Сповіщення про приєднання друга до гри</translation>
+        <translation>Сповіщення про приєднання друга до гри</translation>
     </message>
     <message>
         <source>Friend joins game notification sound</source>
-        <translation type="vanished">Звук сповіщення про приєднання друга до гри</translation>
+        <translation>Звук сповіщення про приєднання друга до гри</translation>
     </message>
     <message>
         <source>Friend online toast notification</source>
-        <translation type="vanished">Сповіщення про те, що друг увійшов у мережу</translation>
+        <translation>Сповіщення про те, що друг увійшов у мережу</translation>
     </message>
     <message>
         <source>Friend online notification sound</source>
-        <translation type="vanished">Звук сповіщення про те, що друг увійшов у мережу</translation>
+        <translation>Звук сповіщення про те, що друг увійшов у мережу</translation>
     </message>
     <message>
         <source>Friend message toast notification</source>
-        <translation type="vanished">Сповіщення про повідомлення від друга</translation>
+        <translation>Сповіщення про повідомлення від друга</translation>
     </message>
     <message>
         <source>Friend message notification sound</source>
-        <translation type="vanished">Звук сповіщення про повідомлення від друга</translation>
+        <translation>Звук сповіщення про повідомлення від друга</translation>
     </message>
     <message>
         <source>Chat room toast notification</source>
-        <translation type="vanished">Спливаюче сповіщення про чат-кімнату</translation>
+        <translation>Спливаюче сповіщення про чат-кімнату</translation>
     </message>
     <message>
         <source>Chat room notification sound</source>
-        <translation type="vanished">Звук сповіщення про чат-кімнату</translation>
+        <translation>Звук сповіщення про чат-кімнату</translation>
     </message>
     <message>
         <source>Flash window when receive chat message</source>
-        <translation type="vanished">Миготіння вікна при отриманні повідомлення в чаті</translation>
+        <translation>Миготіння вікна при отриманні повідомлення в чаті</translation>
     </message>
     <message>
         <source>Min size: %1 MB -&gt; %2 MB</source>
-        <translation type="vanished">Мінімальний розмір: %1 МБ -&gt; %2 МБ</translation>
+        <translation>Мінімальний розмір: %1 МБ -&gt; %2 МБ</translation>
     </message>
     <message>
         <source>Max size: %1 MB -&gt; %2 MB</source>
-        <translation type="vanished">Максимальний розмір: %1 МБ -&gt; %2 МБ</translation>
+        <translation>Максимальний розмір: %1 МБ -&gt; %2 МБ</translation>
     </message>
     <message>
         <source>VIDEO GAMES OPTIMIZATION</source>
-        <translation type="vanished">ОПТИМІЗАЦІЯ ВІДЕОІГОР</translation>
+        <translation>ОПТИМІЗАЦІЯ ВІДЕОІГОР</translation>
     </message>
     <message>
         <source>CUSTOMIZATION SETTINGS</source>
-        <translation type="vanished">НАЛАШТУВАННЯ КАСТОМІЗАЦІЇ</translation>
+        <translation>НАЛАШТУВАННЯ КАСТОМІЗАЦІЇ</translation>
     </message>
     <message>
         <source>Launch parameters and performance optimization</source>
-        <translation type="vanished">Параметри запуску та оптимізація продуктивності</translation>
+        <translation>Параметри запуску та оптимізація продуктивності</translation>
     </message>
     <message>
         <source>Open</source>
-        <translation type="vanished">Відкрити</translation>
+        <translation>Відкрити</translation>
     </message>
     <message>
         <source>Launch Options (Click name to toggle, will apply on 'Optimize')</source>
-        <translation type="vanished">Параметри запуску (Клацніть для перемикання, буде застосовано після 'Оптимізувати')</translation>
+        <translation>Параметри запуску (Клацніть для перемикання, буде застосовано після 'Оптимізувати')</translation>
     </message>
     <message>
         <source>Allows third-party software (OBS, overlays, etc.) to hook into the game.</source>
-        <translation type="vanished">Дозволяє сторонньому програмному забезпеченню (OBS, оверлеї тощо) підключатися до гри.</translation>
+        <translation>Дозволяє сторонньому програмному забезпеченню (OBS, оверлеї тощо) підключатися до гри.</translation>
     </message>
     <message>
         <source>Disables NVIDIA Reflex, useful if you experience stutters with it.</source>
-        <translation type="vanished">Вимикає NVIDIA Reflex, корисно якщо ви спостерігаєте мікрофризи.</translation>
+        <translation>Вимикає NVIDIA Reflex, корисно якщо ви спостерігаєте мікрофризи.</translation>
     </message>
     <message>
         <source>Disables anti-aliasing for screen fonts, slightly improving text rendering performance.</source>
-        <translation type="vanished">Вимикає згладжування екранних шрифтів, що трохи підвищує продуктивність рендерингу тексту.</translation>
+        <translation>Вимикає згладжування екранних шрифтів, що трохи підвищує продуктивність рендерингу тексту.</translation>
     </message>
     <message>
         <source>Forces the game language to English.</source>
-        <translation type="vanished">Примусово встановлює англійську мову гри.</translation>
+        <translation>Примусово встановлює англійську мову гри.</translation>
     </message>
     <message>
         <source>Removes the frame rate cap for maximum FPS.</source>
-        <translation type="vanished">Знімає обмеження частоти кадрів для максимального FPS.</translation>
+        <translation>Знімає обмеження частоти кадрів для максимального FPS.</translation>
     </message>
     <message>
         <source>Forces the monitor refresh rate to 170Hz (adjust to your monitor).</source>
-        <translation type="vanished">Встановлює частоту оновлення монітора на 170 Гц (налаштуйте під свій монітор).</translation>
+        <translation>Встановлює частоту оновлення монітора на 170 Гц (налаштуйте під свій монітор).</translation>
     </message>
     <message>
         <source>Disables joystick initialization, freeing up memory and reducing startup time.</source>
-        <translation type="vanished">Вимикає ініціалізацію джойстика, звільняючи пам'ять і зменшуючи час запуску.</translation>
+        <translation>Вимикає ініціалізацію джойстика, звільняючи пам'ять і зменшуючи час запуску.</translation>
     </message>
     <message>
         <source>Launches the game in high CPU priority mode.</source>
-        <translation type="vanished">Запускає гру в режимі високого пріоритету процесора.</translation>
+        <translation>Запускає гру в режимі високого пріоритету процесора.</translation>
     </message>
     <message>
         <source>Forces the game to start in fullscreen mode.</source>
-        <translation type="vanished">Примусово запускає гру в повноекранному режимі.</translation>
+        <translation>Примусово запускає гру в повноекранному режимі.</translation>
     </message>
     <message>
         <source>Forces V-Sync to be disabled to minimize input lag.</source>
-        <translation type="vanished">Вимкнення вертикальної синхронізації (V-Sync) для мінімізації затримки введення.</translation>
+        <translation>Вимкнення вертикальної синхронізації (V-Sync) для мінімізації затримки введення.</translation>
     </message>
     <message>
         <source>Disables soft blending for particles, improving performance near smoke.</source>
-        <translation type="vanished">Вимикає м'яке змішування часток, покращуючи продуктивність поблизу диму.</translation>
+        <translation>Вимикає м'яке змішування часток, покращуючи продуктивність поблизу диму.</translation>
     </message>
     <message>
         <source>Disables dynamic lighting, removing FPS drops during gunfights.</source>
-        <translation type="vanished">Вимикає динамічне освітлення, усуваючи просідання FPS під час перестрілок.</translation>
+        <translation>Вимикає динамічне освітлення, усуваючи просідання FPS під час перестрілок.</translation>
     </message>
     <message>
         <source>Sets interpolation to minimum, making network hit registration faster.</source>
-        <translation type="vanished">Встановлює мінімальну інтерполяцію, роблячи реєстрацію попадань по мережі швидшою.</translation>
+        <translation>Встановлює мінімальну інтерполяцію, роблячи реєстрацію попадань по мережі швидшою.</translation>
     </message>
     <message>
         <source>Hides the server IP address in console and status to prevent DDoS.</source>
-        <translation type="vanished">Приховує IP-адресу сервера в консолі та статусі для запобігання DDoS-атакам.</translation>
+        <translation>Приховує IP-адресу сервера в консолі та статусі для запобігання DDoS-атакам.</translation>
     </message>
     <message>
         <source>Forces multi-threaded material queue mode for multi-core processors.</source>
-        <translation type="vanished">Примусово вмикає багатопотоковий режим черги матеріалів для багатоядерних процесорів.</translation>
+        <translation>Примусово вмикає багатопотоковий режим черги матеріалів для багатоядерних процесорів.</translation>
     </message>
     <message>
         <source>Разработка</source>
-        <translation type="vanished">Розробка</translation>
+        <translation>Розробка</translation>
     </message>
     <message>
         <source>TELEMETRY</source>
-        <translation type="vanished">ТЕЛЕМЕТРІЯ</translation>
+        <translation>ТЕЛЕМЕТРІЯ</translation>
     </message>
     <message>
         <source>Please restart your PC to apply Core Isolation changes.</source>
-        <translation type="vanished">Будь ласка, перезавантажте комп'ютер для застосування змін ізоляції ядра.</translation>
+        <translation>Будь ласка, перезавантажте комп'ютер для застосування змін ізоляції ядра.</translation>
     </message>
     <message>
         <source>Disable Discord's in-game overlay DLL injection to reduce CPU overhead and eliminate graphics micro-stutters.</source>
-        <translation type="vanished">Відключення інжекції DLL ігрового оверлея Discord для зниження навантаження на процесор та усунення мікро-фризів.</translation>
+        <translation>Відключення інжекції DLL ігрового оверлея Discord для зниження навантаження на процесор та усунення мікро-фризів.</translation>
     </message>
     <message>
         <source>Close Discord before optimization</source>
-        <translation type="vanished">Закрийте Discord перед оптимізацією</translation>
+        <translation>Закрийте Discord перед оптимізацією</translation>
     </message>
     <message>
         <source>Enables or disables Remote Desktop connections (RDP) to securely connect and manage this computer from another device.</source>
-        <translation type="vanished">Увімкнення або вимкнення підключень до віддаленого робочого столу (RDP) для безпечного керування цим комп’ютером з іншого пристрою.</translation>
+        <translation>Увімкнення або вимкнення підключень до віддаленого робочого столу (RDP) для безпечного керування цим комп’ютером з іншого пристрою.</translation>
     </message>
     <message>
         <source>Disables system diagnostic data collection, CEIP telemetry policies, error reporting, and Connected User Experiences services.</source>
-        <translation type="vanished">Вимикає збір діагностичних даних системи, політики телеметрії CEIP, звітування про помилки та службу функціональних можливостей для підключених користувачів.</translation>
+        <translation>Вимикає збір діагностичних даних системи, політики телеметрії CEIP, звітування про помилки та службу функціональних можливостей для підключених користувачів.</translation>
     </message>
     <message>
         <source>Configure system update modes: enable all, only security patches, manual check, or disable updates entirely.</source>
-        <translation type="vanished">Налаштування режимів оновлення системи: увімкнення всіх, лише виправлення безпеки, перевірка вручну або повне вимкнення оновлень.</translation>
+        <translation>Налаштування режимів оновлення системи: увімкнення всіх, лише виправлення безпеки, перевірка вручну або повне вимкнення оновлень.</translation>
     </message>
     <message>
         <source>CUSTOMIZATION</source>
-        <translation type="vanished">КАСТОМІЗАЦІЯ</translation>
+        <translation>КАСТОМІЗАЦІЯ</translation>
     </message>
     <message>
         <source>Disables the modern Windows 11 Fluent context menu and restores the classic Windows 10 style context menu.</source>
-        <translation type="vanished">Вимкнення сучасного контекстного меню Windows 11 Fluent та відновлення класичного стилю Windows 10.</translation>
+        <translation>Вимкнення сучасного контекстного меню Windows 11 Fluent та відновлення класичного стилю Windows 10.</translation>
     </message>
     <message>
         <source>Restart Windows Explorer to apply context menu changes.</source>
-        <translation type="vanished">Перезапустіть Windows Explorer (Провідник) для застосування змін контекстного меню.</translation>
+        <translation>Перезапустіть Windows Explorer (Провідник) для застосування змін контекстного меню.</translation>
     </message>
     <message>
         <source>Restart Explorer</source>
-        <translation type="vanished">Перезапустити Провідник</translation>
+        <translation>Перезапустити Провідник</translation>
     </message>
     <message>
         <source>Configure system virtual memory limits (initial/maximum size in MB).</source>
-        <translation type="vanished">Налаштування лімітів віртуальної пам'яті системи (початковий/максимальний розмір у МБ).</translation>
+        <translation>Налаштування лімітів віртуальної пам'яті системи (початковий/максимальний розмір у МБ).</translation>
     </message>
     <message>
         <source>Min:</source>
-        <translation type="vanished">Мін:</translation>
+        <translation>Мін:</translation>
     </message>
     <message>
         <source>Max:</source>
-        <translation type="vanished">Макс:</translation>
+        <translation>Макс:</translation>
     </message>
     <message>
         <source>Recommended values for RAM sizes:
@@ -719,7 +719,7 @@
 • 8 GB RAM: Min = 4096, Max = 8192
 • 16 GB RAM: Min = 4096, Max = 8192
 • 32 GB+ RAM: Min = 2048, Max = 4096</source>
-        <translation type="vanished">Рекомендовані значення файлу підкачки для обсягу ОЗУ:
+        <translation>Рекомендовані значення файлу підкачки для обсягу ОЗУ:
 • 4 ГБ ОЗУ: Мін = 4096, Макс = 8192
 • 8 ГБ ОЗУ: Мін = 4096, Макс = 8192
 • 16 ГБ ОЗУ: Мін = 4096, Макс = 8192
@@ -727,650 +727,650 @@
     </message>
     <message>
         <source>Enable or disable the BitLocker drive encryption background manager service.</source>
-        <translation type="vanished">Увімкнення або вимкнення служби фонового диспетчера шифрування дисків BitLocker.</translation>
+        <translation>Увімкнення або вимкнення служби фонового диспетчера шифрування дисків BitLocker.</translation>
     </message>
     <message>
         <source>Before disabling BitLocker, it is recommended to first disable indexing on all drives.</source>
-        <translation type="vanished">Перед вимкненням BitLocker рекомендується спочатку вимкнути індексацію всіх дисків.</translation>
+        <translation>Перед вимкненням BitLocker рекомендується спочатку вимкнути індексацію всіх дисків.</translation>
     </message>
     <message>
         <source>Status: Service: %1 | Encryption (C:): %2</source>
-        <translation type="vanished">Статус: Служба: %1 | Шифрування (C:): %2</translation>
+        <translation>Статус: Служба: %1 | Шифрування (C:): %2</translation>
     </message>
     <message>
         <source>Active</source>
-        <translation type="vanished">Активна</translation>
+        <translation>Активна</translation>
     </message>
     <message>
         <source>Encrypted</source>
-        <translation type="vanished">Зашифровано</translation>
+        <translation>Зашифровано</translation>
     </message>
     <message>
         <source>Not Encrypted</source>
-        <translation type="vanished">Не зашифровано</translation>
+        <translation>Не зашифровано</translation>
     </message>
     <message>
         <source>Decrypt C:</source>
-        <translation type="vanished">Розшифрувати C:</translation>
+        <translation>Розшифрувати C:</translation>
     </message>
     <message>
         <source>Disable Microsoft Defender Antivirus protection, real-time scanning, and services to minimize system latency and resource consumption.</source>
-        <translation type="vanished">Вимкнення антивірусного захисту Microsoft Defender, сканування в реальному часі та служб для мінімізації затримок і споживання ресурсів.</translation>
+        <translation>Вимкнення антивірусного захисту Microsoft Defender, сканування в реальному часі та служб для мінімізації затримок і споживання ресурсів.</translation>
     </message>
     <message>
         <source>XBOX APP &amp; GAME BAR</source>
-        <translation type="vanished">XBOX APP ТА GAME BAR</translation>
+        <translation>XBOX APP ТА GAME BAR</translation>
     </message>
     <message>
         <source>MPO LATENCY TWEAK</source>
-        <translation type="vanished">НАЛАШТУВАННЯ MPO</translation>
+        <translation>НАЛАШТУВАННЯ MPO</translation>
     </message>
     <message>
         <source>PRINTER TWEAKS</source>
-        <translation type="vanished">НАЛАШТУВАННЯ ПРИНТЕРІВ</translation>
+        <translation>НАЛАШТУВАННЯ ПРИНТЕРІВ</translation>
     </message>
     <message>
         <source>NOTIFICATION SETTINGS</source>
-        <translation type="vanished">НАЛАШТУВАННЯ СПОВІЩЕНЬ</translation>
+        <translation>НАЛАШТУВАННЯ СПОВІЩЕНЬ</translation>
     </message>
     <message>
         <source>POWER PLANS</source>
-        <translation type="vanished">СХЕМИ ЖИВЛЕННЯ</translation>
+        <translation>СХЕМИ ЖИВЛЕННЯ</translation>
     </message>
     <message>
         <source>WINDOWS DEFENDER</source>
-        <translation type="vanished">ЗАХИСНИК WINDOWS</translation>
+        <translation>ЗАХИСНИК WINDOWS</translation>
     </message>
     <message>
         <source>USB 3.0 POWER SAVING</source>
-        <translation type="vanished">ЕНЕРГОЗБЕРЕЖЕННЯ USB 3.0</translation>
+        <translation>ЕНЕРГОЗБЕРЕЖЕННЯ USB 3.0</translation>
     </message>
     <message>
         <source>TELEMETRY SETTINGS</source>
-        <translation type="vanished">НАЛАШТУВАННЯ ТЕЛЕМЕТРІЇ</translation>
+        <translation>НАЛАШТУВАННЯ ТЕЛЕМЕТРІЇ</translation>
     </message>
     <message>
         <source>WINDOWS UPDATE</source>
-        <translation type="vanished">ОНОВЛЕННЯ WINDOWS</translation>
+        <translation>ОНОВЛЕННЯ WINDOWS</translation>
     </message>
     <message>
         <source>Optimization in Progress</source>
-        <translation type="vanished">Оптимізація триває</translation>
+        <translation>Оптимізація триває</translation>
     </message>
     <message>
         <source>Optimization Complete</source>
-        <translation type="vanished">Оптимізацію завершено</translation>
+        <translation>Оптимізацію завершено</translation>
     </message>
     <message>
         <source>Applying system configuration adjustments...</source>
-        <translation type="vanished">Застосування системних налаштувань...</translation>
+        <translation>Застосування системних налаштувань...</translation>
     </message>
     <message>
         <source>Analyzing optimization plan...</source>
-        <translation type="vanished">Аналіз плану оптимізації...</translation>
+        <translation>Аналіз плану оптимізації...</translation>
     </message>
     <message>
         <source>Verifying changes and syncing state...</source>
-        <translation type="vanished">Перевірка змін та синхронізація стану...</translation>
+        <translation>Перевірка змін та синхронізація стану...</translation>
     </message>
     <message>
         <source>Optimization completed successfully!</source>
-        <translation type="vanished">Оптимізацію успішно завершено!</translation>
+        <translation>Оптимізацію успішно завершено!</translation>
     </message>
     <message>
         <source>Discord Process Detected</source>
-        <translation type="vanished">Виявлено процес Discord</translation>
+        <translation>Виявлено процес Discord</translation>
     </message>
     <message>
         <source>Discord is currently running. It must be closed to safely lock/unlock overlay files.
 
 Would you like to close Discord now and proceed?</source>
-        <translation type="vanished">Discord зараз запущено. Його необхідно закрити, щоб безпечно заблокувати/розблокувати файли оверлея.
+        <translation>Discord зараз запущено. Його необхідно закрити, щоб безпечно заблокувати/розблокувати файли оверлея.
 
 Бажаєте закрити Discord зараз і продовжити?</translation>
     </message>
     <message>
         <source>Close &amp; Optimize</source>
-        <translation type="vanished">Закрити та оптимізувати</translation>
+        <translation>Закрити та оптимізувати</translation>
     </message>
     <message>
         <source>Skip Overlay</source>
-        <translation type="vanished">Пропустити оверлей</translation>
+        <translation>Пропустити оверлей</translation>
     </message>
     <message>
         <source>Cancel</source>
-        <translation type="vanished">Скасувати</translation>
+        <translation>Скасувати</translation>
     </message>
     <message>
         <source>Core Isolation</source>
-        <translation type="vanished">Ізоляція ядра</translation>
+        <translation>Ізоляція ядра</translation>
     </message>
     <message>
         <source>Disabling kernel memory integrity reduces CPU overhead and input latency.</source>
-        <translation type="vanished">Вимкнення цілісності пам'яті ядра знижує навантаження на процесор та затримку введення.</translation>
+        <translation>Вимкнення цілісності пам'яті ядра знижує навантаження на процесор та затримку введення.</translation>
     </message>
     <message>
         <source>Mouse Acceleration</source>
-        <translation type="vanished">Акселерація миші</translation>
+        <translation>Акселерація миші</translation>
     </message>
     <message>
         <source>Enhance pointer precision toggle to enable or disable system mouse acceleration.</source>
-        <translation type="vanished">Перемикач підвищення точності покажчика для увімкнення або вимкнення системного прискорення миші.</translation>
+        <translation>Перемикач підвищення точності покажчика для увімкнення або вимкнення системного прискорення миші.</translation>
     </message>
     <message>
         <source>Game Mode</source>
-        <translation type="vanished">Ігровий режим</translation>
+        <translation>Ігровий режим</translation>
     </message>
     <message>
         <source>Enables or disables Windows Game Mode to prioritize gaming performance and stabilize FPS.</source>
-        <translation type="vanished">Увімкнення або вимкнення ігрового режиму Windows для пріоритезації ігрової продуктивності та стабілізації FPS.</translation>
+        <translation>Увімкнення або вимкнення ігрового режиму Windows для пріоритезації ігрової продуктивності та стабілізації FPS.</translation>
     </message>
     <message>
         <source>Windows Defender Firewall</source>
-        <translation type="vanished">Брандмауер Windows</translation>
+        <translation>Брандмауер Windows</translation>
     </message>
     <message>
         <source>Enables or disables Windows Defender Firewall to control network traffic protection.</source>
-        <translation type="vanished">Увімкнення або вимкнення брандмауера Windows для контролю захисту мережевого трафіку.</translation>
+        <translation>Увімкнення або вимкнення брандмауера Windows для контролю захисту мережевого трафіку.</translation>
     </message>
     <message>
         <source>Note: Requires disabling Tamper Protection.</source>
-        <translation type="vanished">Примітка: Вимагає відключення захисту від несанкціонованого доступу (Tamper Protection).</translation>
+        <translation>Примітка: Вимагає відключення захисту від несанкціонованого доступу (Tamper Protection).</translation>
     </message>
     <message>
         <source>USB 3.0 Power Saving</source>
-        <translation type="vanished">Енергозбереження USB 3.0</translation>
+        <translation>Енергозбереження USB 3.0</translation>
     </message>
     <message>
         <source>Prevent Windows from turning off USB 3.0 ports to save power, avoiding connection dropouts and peripheral latency.</source>
-        <translation type="vanished">Запобігає вимкненню портів USB 3.0 системою Windows для збереження енергії, уникаючи обривів з'єднання та затримок периферії.</translation>
+        <translation>Запобігає вимкненню портів USB 3.0 системою Windows для збереження енергії, уникаючи обривів з'єднання та затримок периферії.</translation>
     </message>
     <message>
         <source>Steam Overlay</source>
-        <translation type="vanished">Оверлей Steam</translation>
+        <translation>Оверлей Steam</translation>
     </message>
     <message>
         <source>CS2 Steam Overlay</source>
-        <translation type="vanished">Оверлей Steam для CS 2</translation>
+        <translation>Оверлей Steam для CS 2</translation>
     </message>
     <message>
         <source>Steam Overlay for Counter-Strike 2</source>
-        <translation type="vanished">Оверлей Steam для Counter-Strike 2</translation>
+        <translation>Оверлей Steam для Counter-Strike 2</translation>
     </message>
     <message>
         <source>Toggle the Steam Overlay exclusively for Counter-Strike 2.</source>
-        <translation type="vanished">Увімкнення або вимкнення оверлею Steam виключно для Counter-Strike 2.</translation>
+        <translation>Увімкнення або вимкнення оверлею Steam виключно для Counter-Strike 2.</translation>
     </message>
     <message>
         <source>Enable or disable the global Steam Overlay in games to reduce input latency and CPU overhead.</source>
-        <translation type="vanished">Увімкнення або вимкнення глобального оверлею Steam в іграх для зменшення затримки введення та зниження навантаження на процесор.</translation>
+        <translation>Увімкнення або вимкнення глобального оверлею Steam в іграх для зменшення затримки введення та зниження навантаження на процесор.</translation>
     </message>
     <message>
         <source>Visual Effects</source>
-        <translation type="vanished">Візуальні ефекти</translation>
+        <translation>Візуальні ефекти</translation>
     </message>
     <message>
         <source>Animate controls inside windows</source>
-        <translation type="vanished">Анімація елементів керування всередині вікон</translation>
+        <translation>Анімація елементів керування всередині вікон</translation>
     </message>
     <message>
         <source>Animate windows when minimizing/maximizing</source>
-        <translation type="vanished">Анімація вікон при згортанні/розгортанні</translation>
+        <translation>Анімація вікон при згортанні/розгортанні</translation>
     </message>
     <message>
         <source>Animations in the taskbar</source>
-        <translation type="vanished">Анімація на панелі завдань</translation>
+        <translation>Анімація на панелі завдань</translation>
     </message>
     <message>
         <source>Enable Peek</source>
-        <translation type="vanished">Увімкнути Peek</translation>
+        <translation>Увімкнути Peek</translation>
     </message>
     <message>
         <source>Fade or slide menus into view</source>
-        <translation type="vanished">Ефекти згасання або ковзання при появі меню</translation>
+        <translation>Ефекти згасання або ковзання при появі меню</translation>
     </message>
     <message>
         <source>Fade or slide ToolTips into view</source>
-        <translation type="vanished">Ефекти згасання або ковзання при появі підказок</translation>
+        <translation>Ефекти згасання або ковзання при появі підказок</translation>
     </message>
     <message>
         <source>Fade out menu items after clicking</source>
-        <translation type="vanished">Згасання пунктів меню після натискання</translation>
+        <translation>Згасання пунктів меню після натискання</translation>
     </message>
     <message>
         <source>Save taskbar thumbnail previews</source>
-        <translation type="vanished">Збереження ескізів панелі завдань</translation>
+        <translation>Збереження ескізів панелі завдань</translation>
     </message>
     <message>
         <source>Show shadows under mouse pointer</source>
-        <translation type="vanished">Відображення тіні під вказівником миші</translation>
+        <translation>Відображення тіні під вказівником миші</translation>
     </message>
     <message>
         <source>Show shadows under windows</source>
-        <translation type="vanished">Відображення тіні під вікнами</translation>
+        <translation>Відображення тіні під вікнами</translation>
     </message>
     <message>
         <source>Show thumbnails instead of icons</source>
-        <translation type="vanished">Відображення ескізів замість піктограм</translation>
+        <translation>Відображення ескізів замість піктограм</translation>
     </message>
     <message>
         <source>Show translucent selection rectangle</source>
-        <translation type="vanished">Відображення напівпрозорого прямокутника виділення</translation>
+        <translation>Відображення напівпрозорого прямокутника виділення</translation>
     </message>
     <message>
         <source>Show window contents while dragging</source>
-        <translation type="vanished">Відображення вмісту вікна під час перетягування</translation>
+        <translation>Відображення вмісту вікна під час перетягування</translation>
     </message>
     <message>
         <source>Slide open combo boxes</source>
-        <translation type="vanished">Ефекти розгортання списків, що випадають</translation>
+        <translation>Ефекти розгортання списків, що випадають</translation>
     </message>
     <message>
         <source>Smooth edges of screen fonts</source>
-        <translation type="vanished">Згладжування нерівностей екранних шрифтів</translation>
+        <translation>Згладжування нерівностей екранних шрифтів</translation>
     </message>
     <message>
         <source>Smooth-scroll list boxes</source>
-        <translation type="vanished">Плавне прокручування списків</translation>
+        <translation>Плавне прокручування списків</translation>
     </message>
     <message>
         <source>Use drop shadows for icon labels on the desktop</source>
-        <translation type="vanished">Тіні під підписами піктограм на робочому столі</translation>
+        <translation>Тіні під підписами піктограм на робочому столі</translation>
     </message>
     <message>
         <source>Optimize Windows animations, shadows, and rendering effects to improve system responsiveness.</source>
-        <translation type="vanished">Оптимізуйте анімацію, тіні та ефекти рендерингу Windows для покращення чуйності системи.</translation>
+        <translation>Оптимізуйте анімацію, тіні та ефекти рендерингу Windows для покращення чуйності системи.</translation>
     </message>
     <message>
         <source>VISUAL EFFECTS</source>
-        <translation type="vanished">ВІЗУАЛЬНІ ЕФЕКТИ</translation>
+        <translation>ВІЗУАЛЬНІ ЕФЕКТИ</translation>
     </message>
     <message>
         <source>Steam Settings</source>
-        <translation type="vanished">Налаштування Steam</translation>
+        <translation>Налаштування Steam</translation>
     </message>
     <message>
         <source>Append nicknames to friends' names</source>
-        <translation type="vanished">Додавати нікнейми до імен друзів</translation>
+        <translation>Додавати нікнейми до імен друзів</translation>
     </message>
     <message>
         <source>Group friends together by game</source>
-        <translation type="vanished">Групувати друзів за грою</translation>
+        <translation>Групувати друзів за грою</translation>
     </message>
     <message>
         <source>Hide offline friends in custom categories</source>
-        <translation type="vanished">Приховувати офлайн-друзів у створених категоріях</translation>
+        <translation>Приховувати офлайн-друзів у створених категоріях</translation>
     </message>
     <message>
         <source>Hide categorized friends in Online/Offline Friends</source>
-        <translation type="vanished">Приховувати категорованих друзів у загальних списках</translation>
+        <translation>Приховувати категорованих друзів у загальних списках</translation>
     </message>
     <message>
         <source>Ignore 'Away' status when sorting friends</source>
-        <translation type="vanished">Ігнорувати статус 'Відсутній' при сортуванні друзів</translation>
+        <translation>Ігнорувати статус 'Відсутній' при сортуванні друзів</translation>
     </message>
     <message>
         <source>Sign in to friends when Steam starts</source>
-        <translation type="vanished">Входити в мережу друзів при запуску Steam</translation>
+        <translation>Входити в мережу друзів при запуску Steam</translation>
     </message>
     <message>
         <source>Enable Animated Avatars &amp; Animated Avatar Frames</source>
-        <translation type="vanished">Увімкнути анімовані аватари та рамки</translation>
+        <translation>Увімкнути анімовані аватари та рамки</translation>
     </message>
     <message>
         <source>Compact friends list &amp; chat view</source>
-        <translation type="vanished">Компактний вигляд списку друзів та чату</translation>
+        <translation>Компактний вигляд списку друзів та чату</translation>
     </message>
     <message>
         <source>Compact favorite friends area</source>
-        <translation type="vanished">Компактна область обраних друзів</translation>
+        <translation>Компактна область обраних друзів</translation>
     </message>
     <message>
         <source>Dock chats to the friends list</source>
-        <translation type="vanished">Прикріплювати чати до списку друзів</translation>
+        <translation>Прикріплювати чати до списку друзів</translation>
     </message>
     <message>
         <source>Open a new window for new chats</source>
-        <translation type="vanished">Відкривати нове вікно для нових чатів</translation>
+        <translation>Відкривати нове вікно для нових чатів</translation>
     </message>
     <message>
         <source>Don't embed images and other media inline</source>
-        <translation type="vanished">Не вбудовувати зображення та інші медіафайли в повідомлення</translation>
+        <translation>Не вбудовувати зображення та інші медіафайли в повідомлення</translation>
     </message>
     <message>
         <source>Remember my open chats</source>
-        <translation type="vanished">Запам'ятовувати мої відкриті чати</translation>
+        <translation>Запам'ятовувати мої відкриті чати</translation>
     </message>
     <message>
         <source>Disable spellcheck in chat message entry</source>
-        <translation type="vanished">Вимкнути перевірку орфографії в полі введення повідомлень</translation>
+        <translation>Вимкнути перевірку орфографії в полі введення повідомлень</translation>
     </message>
     <message>
         <source>Disable animated room effects</source>
-        <translation type="vanished">Вимкнути анімовані ефекти кімнати</translation>
+        <translation>Вимкнути анімовані ефекти кімнати</translation>
     </message>
     <message>
         <source>Chat font size</source>
-        <translation type="vanished">Розмір шрифту чату</translation>
+        <translation>Розмір шрифту чату</translation>
     </message>
     <message>
         <source>Downloads</source>
-        <translation type="obsolete">Завантаження</translation>
+        <translation>Завантаження</translation>
     </message>
     <message>
         <source>Steam is not running</source>
-        <translation type="obsolete">Steam не запущено</translation>
+        <translation>Steam не запущено</translation>
     </message>
     <message>
         <source>Steam is running but no user is logged in</source>
-        <translation type="obsolete">Steam запущено, але жоден користувач не увійшов у систему</translation>
+        <translation>Steam запущено, але жоден користувач не увійшов у систему</translation>
     </message>
     <message>
         <source>Launch Steam</source>
-        <translation type="obsolete">Запустити Steam</translation>
+        <translation>Запустити Steam</translation>
     </message>
     <message>
         <source>Optimize the Steam client, friends list, and chat interface to reduce background memory and latency.</source>
-        <translation type="vanished">Оптимізуйте клієнт Steam, список друзів та інтерфейс чату для зменшення фонової пам'яті та затримок.</translation>
+        <translation>Оптимізуйте клієнт Steam, список друзів та інтерфейс чату для зменшення фонової пам'яті та затримок.</translation>
     </message>
     <message>
         <source>Steam client not detected on this system.</source>
-        <translation type="vanished">Клієнт Steam не виявлено в цій системі.</translation>
+        <translation>Клієнт Steam не виявлено в цій системі.</translation>
     </message>
     <message>
         <source>STEAM SETTINGS</source>
-        <translation type="vanished">НАЛАШТУВАННЯ STEAM</translation>
+        <translation>НАЛАШТУВАННЯ STEAM</translation>
     </message>
     <message>
         <source>Show toolbar as list view</source>
-        <translation type="vanished">Показувати панель інструментів списком</translation>
+        <translation>Показувати панель інструментів списком</translation>
     </message>
     <message>
         <source>Restore my previous browser tabs when starting a game</source>
-        <translation type="vanished">Відновлювати попередні вкладки браузера під час запуску гри</translation>
+        <translation>Відновлювати попередні вкладки браузера під час запуску гри</translation>
     </message>
     <message>
         <source>Use the Big Picture Overlay when using a controller</source>
-        <translation type="vanished">Використовувати оверлей Big Picture при використанні контролера</translation>
+        <translation>Використовувати оверлей Big Picture при використанні контролера</translation>
     </message>
     <message>
         <source>Scale Steam Overlay text and icons to match monitor settings</source>
-        <translation type="vanished">Масштабувати текст і значки оверлея Steam відповідно до налаштувань монітора</translation>
+        <translation>Масштабувати текст і значки оверлея Steam відповідно до налаштувань монітора</translation>
     </message>
     <message>
         <source>Reduce Motion</source>
-        <translation type="vanished">Зменшення руху</translation>
+        <translation>Зменшення руху</translation>
     </message>
     <message>
         <source>Game Recording Mode</source>
-        <translation type="vanished">Режим запису гри</translation>
+        <translation>Режим запису гри</translation>
     </message>
     <message>
         <source>Recording Off</source>
-        <translation type="vanished">Запис вимкнено</translation>
+        <translation>Запис вимкнено</translation>
     </message>
     <message>
         <source>Record in Background</source>
-        <translation type="vanished">Записувати у фоновому режимі</translation>
+        <translation>Записувати у фоновому режимі</translation>
     </message>
     <message>
         <source>Record Manually</source>
-        <translation type="vanished">Записувати вручну</translation>
+        <translation>Записувати вручну</translation>
     </message>
     <message>
         <source>Voice Transmission Threshold</source>
-        <translation type="vanished">Поріг передачі голосу</translation>
+        <translation>Поріг передачі голосу</translation>
     </message>
     <message>
         <source>Echo cancellation</source>
-        <translation type="vanished">Ехопоглинання</translation>
+        <translation>Ехопоглинання</translation>
     </message>
     <message>
         <source>Noise cancellation</source>
-        <translation type="vanished">Шумопоглинання</translation>
+        <translation>Шумопоглинання</translation>
     </message>
     <message>
         <source>Automatic volume/gain control</source>
-        <translation type="vanished">Автоматичне регулювання посилення звуку</translation>
+        <translation>Автоматичне регулювання посилення звуку</translation>
     </message>
     <message>
         <source>Off</source>
-        <translation type="vanished">Вимкнено</translation>
+        <translation>Вимкнено</translation>
     </message>
     <message>
         <source>Medium (Recommended)</source>
-        <translation type="vanished">Середній (рекомендовано)</translation>
+        <translation>Середній (рекомендовано)</translation>
     </message>
     <message>
         <source>High</source>
-        <translation type="vanished">Високий</translation>
+        <translation>Високий</translation>
     </message>
     <message>
         <source>Enable Remote Play</source>
-        <translation type="vanished">Увімкнути Remote Play</translation>
+        <translation>Увімкнути Remote Play</translation>
     </message>
     <message>
         <source>Download high quality audio files</source>
-        <translation type="vanished">Завантажувати високоякісні аудіофайли</translation>
+        <translation>Завантажувати високоякісні аудіофайли</translation>
     </message>
     <message>
         <source>OPTIMIZATION</source>
-        <translation type="vanished">ОПТИМІЗАЦІЯ</translation>
+        <translation>ОПТИМІЗАЦІЯ</translation>
     </message>
     <message>
         <source>CURRENT LEVEL</source>
-        <translation type="vanished">ПОТОЧНИЙ РІВЕНЬ</translation>
+        <translation>ПОТОЧНИЙ РІВЕНЬ</translation>
     </message>
     <message>
         <source>Good luck in games!</source>
-        <translation type="vanished">Удачі в іграх!</translation>
+        <translation>Удачі в іграх!</translation>
     </message>
     <message>
         <source>Drive optimization</source>
-        <translation type="vanished">Оптимізація дисків</translation>
+        <translation>Оптимізація дисків</translation>
     </message>
     <message>
         <source>Cleanup</source>
-        <translation type="vanished">Очищення</translation>
+        <translation>Очищення</translation>
     </message>
     <message>
         <source>Free up storage space, clear cache, delete system restore points and more.</source>
-        <translation type="vanished">Звільніть місце на диску, очистіть кеш, видаліть точки відновлення системи тощо.</translation>
+        <translation>Звільніть місце на диску, очистіть кеш, видаліть точки відновлення системи тощо.</translation>
     </message>
     <message>
         <source>CLEANUP</source>
-        <translation type="vanished">ОЧИЩЕННЯ</translation>
+        <translation>ОЧИЩЕННЯ</translation>
     </message>
     <message>
         <source>Fast Startup</source>
-        <translation type="vanished">Швидкий запуск</translation>
+        <translation>Швидкий запуск</translation>
     </message>
     <message>
         <source>Fast startup</source>
-        <translation type="vanished">Швидкий запуск</translation>
+        <translation>Швидкий запуск</translation>
     </message>
     <message>
         <source>Allows the device to open faster after a shutdown, reducing up to 50% of boot-time</source>
-        <translation type="vanished">Дозволяє пристрою відкриватися швидше після вимкнення, скорочуючи час завантаження до 50%</translation>
+        <translation>Дозволяє пристрою відкриватися швидше після вимкнення, скорочуючи час завантаження до 50%</translation>
     </message>
     <message>
         <source>To enable Fast startup, system hibernation must be enabled.</source>
-        <translation type="vanished">Щоб увімкнути швидкий запуск, необхідно увімкнути гібернацію системи.</translation>
+        <translation>Щоб увімкнути швидкий запуск, необхідно увімкнути гібернацію системи.</translation>
     </message>
 </context>
 <context>
     <name>Optimizer</name>
     <message>
         <source>Processing Classic Context Menu configuration...</source>
-        <translation type="vanished">Налаштування класичного контекстного меню...</translation>
+        <translation>Налаштування класичного контекстного меню...</translation>
     </message>
     <message>
         <source>Classic Context Menu is now ENABLED. Please restart Windows Explorer to apply changes.</source>
-        <translation type="vanished">Класичне контекстне меню УВІМКНЕНО. Будь ласка, перезапустіть провідник Windows, щоб застосувати зміни.</translation>
+        <translation>Класичне контекстне меню УВІМКНЕНО. Будь ласка, перезапустіть провідник Windows, щоб застосувати зміни.</translation>
     </message>
     <message>
         <source>Classic Context Menu is now DISABLED. Please restart Windows Explorer to apply changes.</source>
-        <translation type="vanished">Класичне контекстне меню ВИМКНЕНО. Будь ласка, перезапустіть провідник Windows, щоб застосувати зміни.</translation>
+        <translation>Класичне контекстне меню ВИМКНЕНО. Будь ласка, перезапустіть провідник Windows, щоб застосувати зміни.</translation>
     </message>
     <message>
         <source>Failed to update Classic Context Menu state.</source>
-        <translation type="vanished">Не вдалося оновити стан класичного контекстного меню.</translation>
+        <translation>Не вдалося оновити стан класичного контекстного меню.</translation>
     </message>
     <message>
         <source>[Simulation] Classic Context Menu set to: %1</source>
-        <translation type="vanished">[Симуляція] Класичне контекстне меню встановлено на: %1</translation>
+        <translation>[Симуляція] Класичне контекстне меню встановлено на: %1</translation>
     </message>
     <message>
         <source>Please restart your PC to apply Core Isolation changes.</source>
-        <translation type="vanished">Будь ласка, перезавантажте комп'ютер для застосування змін ізоляції ядра.</translation>
+        <translation>Будь ласка, перезавантажте комп'ютер для застосування змін ізоляції ядра.</translation>
     </message>
     <message>
         <source>Enabled</source>
-        <translation type="vanished">Увімкнено</translation>
+        <translation>Увімкнено</translation>
     </message>
     <message>
         <source>Disabled</source>
-        <translation type="vanished">Вимкнено</translation>
+        <translation>Вимкнено</translation>
     </message>
     <message>
         <source>Processing virtual memory (pagefile)...</source>
-        <translation type="vanished">Налаштування віртуальної пам'яті (файлу підкачки)...</translation>
+        <translation>Налаштування віртуальної пам'яті (файлу підкачки)...</translation>
     </message>
     <message>
         <source>Virtual memory limits updated successfully to Min: %1 MB, Max: %2 MB. A reboot is required to recreate the pagefile on disk.</source>
-        <translation type="vanished">Ліміти віртуальної пам'яті успішно оновлено до Мін: %1 МБ, Макс: %2 МБ. Необхідно перезавантажити комп'ютер для оновлення файлу підкачки на диску.</translation>
+        <translation>Ліміти віртуальної пам'яті успішно оновлено до Мін: %1 МБ, Макс: %2 МБ. Необхідно перезавантажити комп'ютер для оновлення файлу підкачки на диску.</translation>
     </message>
     <message>
         <source>Failed to apply virtual memory limits. PowerShell Error: %1</source>
-        <translation type="vanished">Не вдалося застосувати ліміти віртуальної пам'яті. Помилка PowerShell: %1</translation>
+        <translation>Не вдалося застосувати ліміти віртуальної пам'яті. Помилка PowerShell: %1</translation>
     </message>
     <message>
         <source>Powershell command execution timed out while setting virtual memory limits.</source>
-        <translation type="vanished">Час очікування команди PowerShell для налаштування віртуальної пам'яті вичерпано.</translation>
+        <translation>Час очікування команди PowerShell для налаштування віртуальної пам'яті вичерпано.</translation>
     </message>
     <message>
         <source>[Simulation] Virtual memory limits set to Min: %1 MB, Max: %2 MB.</source>
-        <translation type="vanished">[Симуляція] Ліміти віртуальної пам'яті встановлено до Мін: %1 МБ, Макс: %2 МБ.</translation>
+        <translation>[Симуляція] Ліміти віртуальної пам'яті встановлено до Мін: %1 МБ, Макс: %2 МБ.</translation>
     </message>
     <message>
         <source>Initiating BitLocker decryption for C: drive...</source>
-        <translation type="vanished">Запуск процесу розшифрування диска C:...</translation>
+        <translation>Запуск процесу розшифрування диска C:...</translation>
     </message>
     <message>
         <source>BitLocker decryption command successfully sent to Windows. Decryption is running in the background.</source>
-        <translation type="vanished">Команду дешифрування BitLocker успішно надіслано Windows. Розшифрування триває у фоновому режимі.</translation>
+        <translation>Команду дешифрування BitLocker успішно надіслано Windows. Розшифрування триває у фоновому режимі.</translation>
     </message>
     <message>
         <source>Failed to start manage-bde.exe to disable BitLocker.</source>
-        <translation type="vanished">Не вдалося запустити manage-bde.exe для вимкнення BitLocker.</translation>
+        <translation>Не вдалося запустити manage-bde.exe для вимкнення BitLocker.</translation>
     </message>
     <message>
         <source>Local Disk</source>
-        <translation type="obsolete">Локальний диск</translation>
+        <translation>Локальний диск</translation>
     </message>
     <message>
         <source>Closing Steam process if running...</source>
-        <translation type="vanished">Закриття процесу Steam, якщо він запущений...</translation>
+        <translation>Закриття процесу Steam, якщо він запущений...</translation>
     </message>
     <message>
         <source>Successfully deleted local browser cache: %1</source>
-        <translation type="vanished">Успішно видалено локальний кеш браузера: %1</translation>
+        <translation>Успішно видалено локальний кеш браузера: %1</translation>
     </message>
     <message>
         <source>Steam path not found. Cannot clear browser data.</source>
-        <translation type="vanished">Шлях до Steam не знайдено. Не вдалося видалити дані браузера.</translation>
+        <translation>Шлях до Steam не знайдено. Не вдалося видалити дані браузера.</translation>
     </message>
     <message>
         <source>Successfully deleted browser cache folder: %1</source>
-        <translation type="vanished">Успішно видалено папку кешу браузера: %1</translation>
+        <translation>Успішно видалено папку кешу браузера: %1</translation>
     </message>
     <message>
         <source>Failed to delete browser cache folder: %1 (Files may be locked)</source>
-        <translation type="vanished">Не вдалося видалити папку кешу браузера: %1 (файли можуть бути заблоковані)</translation>
+        <translation>Не вдалося видалити папку кешу браузера: %1 (файли можуть бути заблоковані)</translation>
     </message>
     <message>
         <source>Failed to delete local browser cache: %1 (Files may be locked)</source>
-        <translation type="vanished">Не вдалося видалити локальний кеш браузера: %1 (файли можуть бути заблоковані)</translation>
+        <translation>Не вдалося видалити локальний кеш браузера: %1 (файли можуть бути заблоковані)</translation>
     </message>
     <message>
         <source>Steam web browser data cleared successfully! Freed %1 MB.</source>
-        <translation type="vanished">Дані веб-браузера Steam успішно очищено! Звільнено %1 МБ.</translation>
+        <translation>Дані веб-браузера Steam успішно очищено! Звільнено %1 МБ.</translation>
     </message>
     <message>
         <source>Configuring Drive Optimization...</source>
-        <translation type="vanished">Налаштування оптимізації дисків...</translation>
+        <translation>Налаштування оптимізації дисків...</translation>
     </message>
     <message>
         <source>Drive optimization enabled successfully.</source>
-        <translation type="vanished">Оптимізація дисків успішно увімкнена.</translation>
+        <translation>Оптимізація дисків успішно увімкнена.</translation>
     </message>
     <message>
         <source>Drive optimization disabled successfully.</source>
-        <translation type="vanished">Оптимізація дисків успішно вимкнена.</translation>
+        <translation>Оптимізація дисків успішно вимкнена.</translation>
     </message>
     <message>
         <source>Failed to configure Drive Optimization completely (Service: %1, Task: %2).</source>
-        <translation type="vanished">Не вдалося повністю налаштувати оптимізацію дисків (Служба: %1, Завдання: %2).</translation>
+        <translation>Не вдалося повністю налаштувати оптимізацію дисків (Служба: %1, Завдання: %2).</translation>
     </message>
     <message>
         <source>Success</source>
-        <translation type="vanished">Успішно</translation>
+        <translation>Успішно</translation>
     </message>
     <message>
         <source>Failed</source>
-        <translation type="vanished">Помилка</translation>
+        <translation>Помилка</translation>
     </message>
     <message>
         <source>Configuring Fast Startup...</source>
-        <translation type="vanished">Налаштування швидкого запуску...</translation>
+        <translation>Налаштування швидкого запуску...</translation>
     </message>
     <message>
         <source>Fast Startup is now ENABLED.</source>
-        <translation type="vanished">Швидкий запуск тепер УВІМКНЕНО.</translation>
+        <translation>Швидкий запуск тепер УВІМКНЕНО.</translation>
     </message>
     <message>
         <source>Fast Startup is now DISABLED.</source>
-        <translation type="vanished">Швидкий запуск тепер ВИМКНЕНО.</translation>
+        <translation>Швидкий запуск тепер ВИМКНЕНО.</translation>
     </message>
     <message>
         <source>Failed to update Fast Startup registry value.</source>
-        <translation type="vanished">Не вдалося оновити значення реєстру швидкого запуску.</translation>
+        <translation>Не вдалося оновити значення реєстру швидкого запуску.</translation>
     </message>
     <message>
         <source>Failed to open Session Manager\Power registry key.</source>
-        <translation type="vanished">Не вдалося відкрити розділ реєстру Session Manager\Power.</translation>
+        <translation>Не вдалося відкрити розділ реєстру Session Manager\Power.</translation>
     </message>
     <message>
         <source>Legacy BIOS Boot Mode</source>
-        <translation type="vanished">Режим завантаження Legacy BIOS</translation>
+        <translation>Режим завантаження Legacy BIOS</translation>
     </message>
     <message>
         <source>UEFI Boot Mode Enabled</source>
-        <translation type="vanished">Увімкнено режим завантаження UEFI</translation>
+        <translation>Увімкнено режим завантаження UEFI</translation>
     </message>
     <message>
         <source>Disabled / Not Found</source>
-        <translation type="vanished">Вимкнено / Не знайдено</translation>
+        <translation>Вимкнено / Не знайдено</translation>
     </message>
     <message>
         <source>TPM 1.2 Active</source>
-        <translation type="vanished">TPM 1.2 активний</translation>
+        <translation>TPM 1.2 активний</translation>
     </message>
     <message>
         <source>TPM 2.0 Active</source>
-        <translation type="vanished">TPM 2.0 активний</translation>
+        <translation>TPM 2.0 активний</translation>
     </message>
     <message>
         <source>TPM Active (Unknown Version)</source>
-        <translation type="vanished">TPM активний (невідома версія)</translation>
+        <translation>TPM активний (невідома версія)</translation>
     </message>
     <message>
         <source>Enabled (%1)</source>
-        <translation type="vanished">Увімкнено (%1)</translation>
+        <translation>Увімкнено (%1)</translation>
     </message>
     <message>
         <source>Disabled (%1)</source>
-        <translation type="vanished">Вимкнено (%1)</translation>
+        <translation>Вимкнено (%1)</translation>
     </message>
 </context>
 <context>
@@ -1387,7 +1387,7 @@ Would you like to close Discord now and proceed?</source>
     </message>
     <message>
         <source>OLED Blackout</source>
-        <translation type="vanished">Blackout</translation>
+        <translation>Blackout</translation>
     </message>
     <message>
         <location filename="../src/qml/views/SettingsView.qml" line="19" />
@@ -1406,7 +1406,7 @@ Would you like to close Discord now and proceed?</source>
     </message>
     <message>
         <source>THEME SETTINGS</source>
-        <translation type="vanished">НАЛАШТУВАННЯ ТЕМИ</translation>
+        <translation>НАЛАШТУВАННЯ ТЕМИ</translation>
     </message>
     <message>
         <location filename="../src/qml/views/SettingsView.qml" line="98" />
@@ -1415,7 +1415,7 @@ Would you like to close Discord now and proceed?</source>
     </message>
     <message>
         <source>LANGUAGE SETTINGS</source>
-        <translation type="vanished">НАЛАШТУВАННЯ МОВИ</translation>
+        <translation>НАЛАШТУВАННЯ МОВИ</translation>
     </message>
     <message>
         <location filename="../src/qml/views/SettingsView.qml" line="18" />
@@ -1549,19 +1549,19 @@ Would you like to close Discord now and proceed?</source>
     </message>
     <message>
         <source>Classic deep slate dark theme</source>
-        <translation type="vanished">Класична темна тема</translation>
+        <translation>Класична темна тема</translation>
     </message>
     <message>
         <source>Absolute black OLED theme</source>
-        <translation type="vanished">Абсолютно чорна тема OLED</translation>
+        <translation>Абсолютно чорна тема OLED</translation>
     </message>
     <message>
         <source>Glowing orange gaming theme</source>
-        <translation type="vanished">Яскрава помаранчева ігрова тема</translation>
+        <translation>Яскрава помаранчева ігрова тема</translation>
     </message>
     <message>
         <source>Vibrant soft pink theme</source>
-        <translation type="vanished">Ніжна рожева тема</translation>
+        <translation>Ніжна рожева тема</translation>
     </message>
     <message>
         <location filename="../src/qml/views/SettingsView.qml" line="535" />
@@ -1576,7 +1576,7 @@ Would you like to close Discord now and proceed?</source>
     </message>
     <message>
         <source>High contrast black and glowing pink accents</source>
-        <translation type="vanished">Контрастна чорна тема з рожевими акцентами</translation>
+        <translation>Контрастна чорна тема з рожевими акцентами</translation>
     </message>
     <message>
         <location filename="../src/qml/views/SettingsView.qml" line="654" />
@@ -1608,1470 +1608,1470 @@ Would you like to close Discord now and proceed?</source>
     <name>SteamSettingsDrawer</name>
     <message>
         <source>Automatic (enabled)</source>
-        <translation type="vanished">Автоматично (увімкнено)</translation>
+        <translation>Автоматично (увімкнено)</translation>
     </message>
     <message>
         <source>Disabled</source>
-        <translation type="vanished">Вимкнено</translation>
+        <translation>Вимкнено</translation>
     </message>
     <message>
         <source>My Devices</source>
-        <translation type="vanished">Мої пристрої</translation>
+        <translation>Мої пристрої</translation>
     </message>
     <message>
         <source>All Devices</source>
-        <translation type="vanished">Усі пристрої</translation>
+        <translation>Усі пристрої</translation>
     </message>
     <message>
         <source>STEAM CONFIGURATION</source>
-        <translation type="vanished">КОНФІГУРАЦІЯ STEAM</translation>
+        <translation>КОНФІГУРАЦІЯ STEAM</translation>
     </message>
     <message>
         <source>Steam is not running</source>
-        <translation type="vanished">Steam не запущено</translation>
+        <translation>Steam не запущено</translation>
     </message>
     <message>
         <source>Steam is running but no user is logged in</source>
-        <translation type="vanished">Steam запущено, але жоден користувач не увійшов у систему</translation>
+        <translation>Steam запущено, але жоден користувач не увійшов у систему</translation>
     </message>
     <message>
         <source>To configure and optimize Steam, please launch the Steam client first.</source>
-        <translation type="vanished">Щоб налаштувати та оптимізувати Steam, будь ласка, спочатку запустіть клієнт Steam.</translation>
+        <translation>Щоб налаштувати та оптимізувати Steam, будь ласка, спочатку запустіть клієнт Steam.</translation>
     </message>
     <message>
         <source>Please log in to your Steam account to load and configure your profile settings.</source>
-        <translation type="vanished">Будь ласка, увійдіть у свій акаунт Steam, щоб завантажити та налаштувати параметри профілю.</translation>
+        <translation>Будь ласка, увійдіть у свій акаунт Steam, щоб завантажити та налаштувати параметри профілю.</translation>
     </message>
     <message>
         <source>Launch Steam</source>
-        <translation type="vanished">Запустити Steam</translation>
+        <translation>Запустити Steam</translation>
     </message>
     <message>
         <source>Friends &amp; Chat</source>
-        <translation type="vanished">Друзі та чат</translation>
+        <translation>Друзі та чат</translation>
     </message>
     <message>
         <source>Friends list, avatars, and sign-in preferences</source>
-        <translation type="vanished">Список друзів, аватари та налаштування входу</translation>
+        <translation>Список друзів, аватари та налаштування входу</translation>
     </message>
     <message>
         <source>Chat Settings</source>
-        <translation type="vanished">Налаштування чату</translation>
+        <translation>Налаштування чату</translation>
     </message>
     <message>
         <source>Media embedding, spellcheck, and text sizes</source>
-        <translation type="vanished">Вбудовування медіа, перевірка орфографії та розміри тексту</translation>
+        <translation>Вбудовування медіа, перевірка орфографії та розміри тексту</translation>
     </message>
     <message>
         <source>Notifications</source>
-        <translation type="vanished">Сповіщення</translation>
+        <translation>Сповіщення</translation>
     </message>
     <message>
         <source>Client alerts, sounds, and toast rules</source>
-        <translation type="vanished">Попередження клієнта, звуки та правила спливаючих сповіщень</translation>
+        <translation>Попередження клієнта, звуки та правила спливаючих сповіщень</translation>
     </message>
     <message>
         <source>Interface</source>
-        <translation type="vanished">Інтерфейс</translation>
+        <translation>Інтерфейс</translation>
     </message>
     <message>
         <source>Scale text, startup location, and GPU accelerated rendering</source>
-        <translation type="vanished">Масштабування тексту, розташування при запуску та прискорення GPU</translation>
+        <translation>Масштабування тексту, розташування при запуску та прискорення GPU</translation>
     </message>
     <message>
         <source>Library</source>
-        <translation type="vanished">Бібліотека</translation>
+        <translation>Бібліотека</translation>
     </message>
     <message>
         <source>Bandwidth, performance, and community options</source>
-        <translation type="vanished">Пропускна здатність, продуктивність та параметри спільноти</translation>
+        <translation>Пропускна здатність, продуктивність та параметри спільноти</translation>
     </message>
     <message>
         <source>Downloads</source>
-        <translation type="vanished">Завантаження</translation>
+        <translation>Завантаження</translation>
     </message>
     <message>
         <source>Speed limits, gameplay download rules, and shader pre-caching</source>
-        <translation type="vanished">Обмеження швидкості, правила завантаження під час гри та кешування шейдерів</translation>
+        <translation>Обмеження швидкості, правила завантаження під час гри та кешування шейдерів</translation>
     </message>
     <message>
         <source>Storage</source>
-        <translation type="vanished">Накопичувач</translation>
+        <translation>Накопичувач</translation>
     </message>
     <message>
         <source>Manage installed games, DLCs, and workshop content sizes</source>
-        <translation type="vanished">Керування встановленими іграми, DLC та розмірами вмісту майстерні</translation>
+        <translation>Керування встановленими іграми, DLC та розмірами вмісту майстерні</translation>
     </message>
     <message>
         <source>Broadcasting</source>
-        <translation type="vanished">Трансляція</translation>
+        <translation>Трансляція</translation>
     </message>
     <message>
         <source>Configure game broadcasting and stream preferences</source>
-        <translation type="vanished">Налаштування трансляції гри та параметрів трансляції</translation>
+        <translation>Налаштування трансляції гри та параметрів трансляції</translation>
     </message>
     <message>
         <source>Back</source>
-        <translation type="vanished">Назад</translation>
+        <translation>Назад</translation>
     </message>
     <message>
         <source>FRIENDS &amp; CHAT</source>
-        <translation type="vanished">ДРУЗІ ТА ЧАТ</translation>
+        <translation>ДРУЗІ ТА ЧАТ</translation>
     </message>
     <message>
         <source>Append nicknames to friends' names</source>
-        <translation type="vanished">Додавати нікнейми до імен друзів</translation>
+        <translation>Додавати нікнейми до імен друзів</translation>
     </message>
     <message>
         <source>Decreases processor load during friends list updates in real-time.</source>
-        <translation type="vanished">Зменшує навантаження на процесор під час оновлення списку друзів у реальному часі.</translation>
+        <translation>Зменшує навантаження на процесор під час оновлення списку друзів у реальному часі.</translation>
     </message>
     <message>
         <source>Group friends together by game</source>
-        <translation type="vanished">Групувати друзів за грою</translation>
+        <translation>Групувати друзів за грою</translation>
     </message>
     <message>
         <source>Optimizes friends list processing by disabling real-time dynamic group sorting.</source>
-        <translation type="vanished">Оптимізує обробку списку друзів шляхом вимкнення динамічного сортування груп у реальному часі.</translation>
+        <translation>Оптимізує обробку списку друзів шляхом вимкнення динамічного сортування груп у реальному часі.</translation>
     </message>
     <message>
         <source>Hide offline friends in custom categories</source>
-        <translation type="vanished">Приховувати офлайн-друзів у створених категоріях</translation>
+        <translation>Приховувати офлайн-друзів у створених категоріях</translation>
     </message>
     <message>
         <source>Reduces Steam client memory usage by hiding inactive list items.</source>
-        <translation type="vanished">Зменшує використання пам'яті клієнтом Steam шляхом приховування неактивних елементів списку.</translation>
+        <translation>Зменшує використання пам'яті клієнтом Steam шляхом приховування неактивних елементів списку.</translation>
     </message>
     <message>
         <source>Hide categorized friends in Online/Offline Friends</source>
-        <translation type="vanished">Приховувати категорованих друзів у загальних списках</translation>
+        <translation>Приховувати категорованих друзів у загальних списках</translation>
     </message>
     <message>
         <source>Prevents duplicate rendering of friends list interface elements.</source>
-        <translation type="vanished">Запобігає подвійному рендерингу елементів інтерфейсу списку друзів.</translation>
+        <translation>Запобігає подвійному рендерингу елементів інтерфейсу списку друзів.</translation>
     </message>
     <message>
         <source>Ignore 'Away' status when sorting friends</source>
-        <translation type="vanished">Ігнорувати статус 'Відсутній' при сортуванні друзів</translation>
+        <translation>Ігнорувати статус 'Відсутній' при сортуванні друзів</translation>
     </message>
     <message>
         <source>Reduces friends list sorting calculation frequency during user status updates.</source>
-        <translation type="vanished">Зменшує частоту обчислень сортування списку друзів під час оновлення статусів користувачів.</translation>
+        <translation>Зменшує частоту обчислень сортування списку друзів під час оновлення статусів користувачів.</translation>
     </message>
     <message>
         <source>Sign in to friends when Steam starts</source>
-        <translation type="vanished">Входити в мережу друзів при запуску Steam</translation>
+        <translation>Входити в мережу друзів при запуску Steam</translation>
     </message>
     <message>
         <source>Disabling accelerates Steam client startup and minimizes initial network/CPU overhead.</source>
-        <translation type="vanished">Вимкнення прискорює запуск клієнта Steam та мінімізує початкове навантаження на мережу та процесор.</translation>
+        <translation>Вимкнення прискорює запуск клієнта Steam та мінімізує початкове навантаження на мережу та процесор.</translation>
     </message>
     <message>
         <source>Enable Animated Avatars &amp; Animated Avatar Frames</source>
-        <translation type="vanished">Увімкнути анімовані аватари та рамки</translation>
+        <translation>Увімкнути анімовані аватари та рамки</translation>
     </message>
     <message>
         <source>Disabling completely stops animated avatars in CEF, heavily reducing GPU load and in-game input latency.</source>
-        <translation type="vanished">Вимкнення повністю зупиняє анімовані аватари в CEF, значно знижуючи навантаження на GPU та затримку введення в іграх.</translation>
+        <translation>Вимкнення повністю зупиняє анімовані аватари в CEF, значно знижуючи навантаження на GPU та затримку введення в іграх.</translation>
     </message>
     <message>
         <source>Compact friends list &amp; chat view</source>
-        <translation type="vanished">Компактний вигляд списку друзів та чату</translation>
+        <translation>Компактний вигляд списку друзів та чату</translation>
     </message>
     <message>
         <source>Minimizes Steam client rendering surface area to save GPU resources.</source>
-        <translation type="vanished">Мінімізує площу рендерингу клієнта Steam для економії ресурсів GPU.</translation>
+        <translation>Мінімізує площу рендерингу клієнта Steam для економії ресурсів GPU.</translation>
     </message>
     <message>
         <source>Compact favorite friends area</source>
-        <translation type="vanished">Компактна область обраних друзів</translation>
+        <translation>Компактна область обраних друзів</translation>
     </message>
     <message>
         <source>Shrinks avatar sizes in the top section, minimizing layout computation overhead.</source>
-        <translation type="vanished">Зменшує розміри аватарів у верхній секції, мінімізуючи навантаження на розрахунок макета.</translation>
+        <translation>Зменшує розміри аватарів у верхній секції, мінімізуючи навантаження на розрахунок макета.</translation>
     </message>
     <message>
         <source>CHAT SETTINGS</source>
-        <translation type="vanished">НАЛАШТУВАННЯ ЧАТУ</translation>
+        <translation>НАЛАШТУВАННЯ ЧАТУ</translation>
     </message>
     <message>
         <source>Dock chats to the friends list</source>
-        <translation type="vanished">Прикріплювати чати до списку друзів</translation>
+        <translation>Прикріплювати чати до списку друзів</translation>
     </message>
     <message>
         <source>Merges chat and friends list windows, preventing creation of extra CEF rendering processes.</source>
-        <translation type="vanished">Об'єднує вікна чату та списку друзів, запобігаючи створенню додаткових процесів рендерингу CEF.</translation>
+        <translation>Об'єднує вікна чату та списку друзів, запобігаючи створенню додаткових процесів рендерингу CEF.</translation>
     </message>
     <message>
         <source>Open a new window for new chats</source>
-        <translation type="vanished">Відкривати нове вікно для нових чатів</translation>
+        <translation>Відкривати нове вікно для нових чатів</translation>
     </message>
     <message>
         <source>Disabling prevents resource-intensive new OS windows from launching for every participant.</source>
-        <translation type="vanished">Вимкнення запобігає відкриттю нових ресурсомістких вікон ОС для кожного учасника.</translation>
+        <translation>Вимкнення запобігає відкриттю нових ресурсомістких вікон ОС для кожного учасника.</translation>
     </message>
     <message>
         <source>Don't embed images and other media inline</source>
-        <translation type="vanished">Не вбудовувати зображення та інші медіафайли в повідомлення</translation>
+        <translation>Не вбудовувати зображення та інші медіафайли в повідомлення</translation>
     </message>
     <message>
         <source>Enabling stops automatic media loading and rendering, preventing sudden in-game frame drops.</source>
-        <translation type="vanished">Увімкнення зупиняє автоматичне завантаження та рендеринг медіа, запобігаючи раптовим просіданням FPS в іграх.</translation>
+        <translation>Увімкнення зупиняє автоматичне завантаження та рендеринг медіа, запобігаючи раптовим просіданням FPS в іграх.</translation>
     </message>
     <message>
         <source>Remember my open chats</source>
-        <translation type="vanished">Запам'ятовувати мої відкриті чати</translation>
+        <translation>Запам'ятовувати мої відкриті чати</translation>
     </message>
     <message>
         <source>Disabling reduces disk reads/writes during Steam startup by skipping previous session restorations.</source>
-        <translation type="vanished">Вимкнення зменшує операції читання/запису на диску під час запуску Steam шляхом пропуску відновлення попередніх сесій.</translation>
+        <translation>Вимкнення зменшує операції читання/запису на диску під час запуску Steam шляхом пропуску відновлення попередніх сесій.</translation>
     </message>
     <message>
         <source>Disable spellcheck in chat message entry</source>
-        <translation type="vanished">Вимкнути перевірку орфографії в полі введення повідомлень</translation>
+        <translation>Вимкнути перевірку орфографії в полі введення повідомлень</translation>
     </message>
     <message>
         <source>Disables the real-time spellcheck engine, reducing CPU usage during text typing.</source>
-        <translation type="vanished">Вимикає рушій перевірки орфографії в реальному часі, зменшуючи використання процесора при введенні тексту.</translation>
+        <translation>Вимикає рушій перевірки орфографії в реальному часі, зменшуючи використання процесора при введенні тексту.</translation>
     </message>
     <message>
         <source>Disable animated room effects</source>
-        <translation type="vanished">Вимкнути анімовані ефекти кімнати</translation>
+        <translation>Вимкнути анімовані ефекти кімнати</translation>
     </message>
     <message>
         <source>Stops CPU/GPU-intensive graphical effects (emoji showers, confetti) inside chat rooms.</source>
-        <translation type="vanished">Зупиняє інтенсивні графічні ефекти для процесора/відеокарти (зливи емодзі, конфеті) в чат-кімнатах.</translation>
+        <translation>Зупиняє інтенсивні графічні ефекти для процесора/відеокарти (зливи емодзі, конфеті) в чат-кімнатах.</translation>
     </message>
     <message>
         <source>Chat Font Size</source>
-        <translation type="vanished">Розмір шрифту чату</translation>
+        <translation>Розмір шрифту чату</translation>
     </message>
     <message>
         <source>Small</source>
-        <translation type="vanished">Малий</translation>
+        <translation>Малий</translation>
     </message>
     <message>
         <source>Default</source>
-        <translation type="vanished">За замовчуванням</translation>
+        <translation>За замовчуванням</translation>
     </message>
     <message>
         <source>Large</source>
-        <translation type="vanished">Великий</translation>
+        <translation>Великий</translation>
     </message>
     <message>
         <source>Sets the font size of the Steam chat interface.</source>
-        <translation type="vanished">Встановлює розмір шрифту інтерфейсу чату Steam.</translation>
+        <translation>Встановлює розмір шрифту інтерфейсу чату Steam.</translation>
     </message>
     <message>
         <source>NOTIFICATIONS</source>
-        <translation type="vanished">СПОВІЩЕННЯ</translation>
+        <translation>СПОВІЩЕННЯ</translation>
     </message>
     <message>
         <source>Play a sound when a toast is displayed</source>
-        <translation type="vanished">Відтворювати звук при появі спливаючих сповіщень</translation>
+        <translation>Відтворювати звук при появі спливаючих сповіщень</translation>
     </message>
     <message>
         <source>Enables or disables standard sound notifications inside the Steam client interface.</source>
-        <translation type="vanished">Увімкнення або вимкнення стандартних звукових сповіщень в інтерфейсі клієнта Steam.</translation>
+        <translation>Увімкнення або вимкнення стандартних звукових сповіщень в інтерфейсі клієнта Steam.</translation>
     </message>
     <message>
         <source>CLIENT &amp; FRIEND EVENTS</source>
-        <translation type="vanished">ПОДІЇ КЛІЄНТА ТА ДРУЗІВ</translation>
+        <translation>ПОДІЇ КЛІЄНТА ТА ДРУЗІВ</translation>
     </message>
     <message>
         <source>TOAST</source>
-        <translation type="vanished">СПОВІЩЕННЯ</translation>
+        <translation>СПОВІЩЕННЯ</translation>
     </message>
     <message>
         <source>SOUND</source>
-        <translation type="vanished">ЗВУК</translation>
+        <translation>ЗВУК</translation>
     </message>
     <message>
         <source>When I unlock an achievement</source>
-        <translation type="vanished">Коли я розблоковую досягнення</translation>
+        <translation>Коли я розблоковую досягнення</translation>
     </message>
     <message>
         <source>When I connect a controller</source>
-        <translation type="vanished">Коли я підключаю контролер</translation>
+        <translation>Коли я підключаю контролер</translation>
     </message>
     <message>
         <source>When a controller's battery is low</source>
-        <translation type="vanished">Коли батарея контролера розряджена</translation>
+        <translation>Коли батарея контролера розряджена</translation>
     </message>
     <message>
         <source>When a friend joins a game</source>
-        <translation type="vanished">Коли друг приєднується до гри</translation>
+        <translation>Коли друг приєднується до гри</translation>
     </message>
     <message>
         <source>When a friend comes online</source>
-        <translation type="vanished">Коли друг входить в мережу</translation>
+        <translation>Коли друг входить в мережу</translation>
     </message>
     <message>
         <source>When I receive a direct chat message</source>
-        <translation type="vanished">Коли я отримую пряме повідомлення в чаті</translation>
+        <translation>Коли я отримую пряме повідомлення в чаті</translation>
     </message>
     <message>
         <source>When I receive a chat room notification</source>
-        <translation type="vanished">Коли я отримую сповіщення чат-кімнати</translation>
+        <translation>Коли я отримую сповіщення чат-кімнати</translation>
     </message>
     <message>
         <source>Flash window when receive chat message:</source>
-        <translation type="vanished">Миготіння вікна при отриманні повідомлення в чаті:</translation>
+        <translation>Миготіння вікна при отриманні повідомлення в чаті:</translation>
     </message>
     <message>
         <source>Always</source>
-        <translation type="vanished">Завжди</translation>
+        <translation>Завжди</translation>
     </message>
     <message>
         <source>Only when minimized</source>
-        <translation type="vanished">Тільки коли згорнуто</translation>
+        <translation>Тільки коли згорнуто</translation>
     </message>
     <message>
         <source>Never</source>
-        <translation type="vanished">Ніколи</translation>
+        <translation>Ніколи</translation>
     </message>
     <message>
         <source>INTERFACE</source>
-        <translation type="vanished">ІНТЕРФЕЙС</translation>
+        <translation>ІНТЕРФЕЙС</translation>
     </message>
     <message>
         <source>Scale text and icons to match monitor settings (requires restart)</source>
-        <translation type="vanished">Масштабувати текст та іконки відповідно до налаштувань монітора (потрібен перезапуск)</translation>
+        <translation>Масштабувати текст та іконки відповідно до налаштувань монітора (потрібен перезапуск)</translation>
     </message>
     <message>
         <source>Scales Steam interface to monitor DPI settings automatically.</source>
-        <translation type="vanished">Автоматично масштабує інтерфейс Steam відповідно до налаштувань DPI монітора.</translation>
+        <translation>Автоматично масштабує інтерфейс Steam відповідно до налаштувань DPI монітора.</translation>
     </message>
     <message>
         <source>Run Steam when my computer starts</source>
-        <translation type="vanished">Запускати Steam під час запуску комп'ютера</translation>
+        <translation>Запускати Steam під час запуску комп'ютера</translation>
     </message>
     <message>
         <source>Launches Steam automatically during system logon.</source>
-        <translation type="vanished">Автоматично запускає Steam під час входу в систему.</translation>
+        <translation>Автоматично запускає Steam під час входу в систему.</translation>
     </message>
     <message>
         <source>Ask which account to use each time Steam starts</source>
-        <translation type="vanished">Запитувати, який акаунт використовувати під час кожного запуску Steam</translation>
+        <translation>Запитувати, який акаунт використовувати під час кожного запуску Steam</translation>
     </message>
     <message>
         <source>Prompts the account selector window on every Steam login.</source>
-        <translation type="vanished">Показує вікно вибору акаунта при кожному вході в Steam.</translation>
+        <translation>Показує вікно вибору акаунта при кожному вході в Steam.</translation>
     </message>
     <message>
         <source>Start Steam in Big Picture Mode</source>
-        <translation type="vanished">Запускати Steam у режимі Big Picture</translation>
+        <translation>Запускати Steam у режимі Big Picture</translation>
     </message>
     <message>
         <source>Launches Steam directly in the gamepad-friendly Big Picture Mode interface.</source>
-        <translation type="vanished">Запускає Steam безпосередньо в інтерфейсі Big Picture, зручному для геймпадів.</translation>
+        <translation>Запускає Steam безпосередньо в інтерфейсі Big Picture, зручному для геймпадів.</translation>
     </message>
     <message>
         <source>Enable smooth scrolling in web views (requires restart)</source>
-        <translation type="vanished">Увімкнути плавне прокручування у веб-переглядах (потрібен перезапуск)</translation>
+        <translation>Увімкнути плавне прокручування у веб-переглядах (потрібен перезапуск)</translation>
     </message>
     <message>
         <source>Enables kinetic smooth scrolling transitions in Store and Community pages.</source>
-        <translation type="vanished">Увімкнення кінетичного плавного прокручування на сторінках магазину та спільноти.</translation>
+        <translation>Увімкнення кінетичного плавного прокручування на сторінках магазину та спільноти.</translation>
     </message>
     <message>
         <source>Enable GPU accelerated rendering in web views (requires restart)</source>
-        <translation type="vanished">Увімкнути рендерення з апаратним прискоренням GPU у веб-переглядах (потрібен перезапуск)</translation>
+        <translation>Увімкнути рендерення з апаратним прискоренням GPU у веб-переглядах (потрібен перезапуск)</translation>
     </message>
     <message>
         <source>Leverages graphics card processor resources to render Steam UI elements faster.</source>
-        <translation type="vanished">Використовує ресурси відеокарти для швидшого рендерингу елементів інтерфейсу Steam.</translation>
+        <translation>Використовує ресурси відеокарти для швидшого рендерингу елементів інтерфейсу Steam.</translation>
     </message>
     <message>
         <source>Enable hardware video decoding, if supported (requires restart)</source>
-        <translation type="vanished">Увімкнути апаратне декодування відео, якщо підтримується (потрібен перезапуск)</translation>
+        <translation>Увімкнути апаратне декодування відео, якщо підтримується (потрібен перезапуск)</translation>
     </message>
     <message>
         <source>Uses dedicated hardware video decoder units on the GPU for storefront media players.</source>
-        <translation type="vanished">Використовує виділені апаратні декодери на GPU для медіаплеєрів магазину.</translation>
+        <translation>Використовує виділені апаратні декодери на GPU для медіаплеєрів магазину.</translation>
     </message>
     <message>
         <source>"Enable GPU accelerated rendering in web views" setting must be enabled</source>
-        <translation type="vanished">Параметр «Увімкнути прискорення рендерингу GPU у веб-перегляді» має бути увімкнений</translation>
+        <translation>Параметр «Увімкнути прискорення рендерингу GPU у веб-перегляді» має бути увімкнений</translation>
     </message>
     <message>
         <source>Notify me about additions or changes to my games, new releases, and upcoming releases</source>
-        <translation type="vanished">Сповіщати мене про додавання чи зміни в моїх іграх, нові релізи та майбутні випуски</translation>
+        <translation>Сповіщати мене про додавання чи зміни в моїх іграх, нові релізи та майбутні випуски</translation>
     </message>
     <message>
         <source>Enables storefront marketing and service notifications in the client.</source>
-        <translation type="vanished">Увімкнення маркетингових та сервісних сповіщень магазину в клієнті.</translation>
+        <translation>Увімкнення маркетингових та сервісних сповіщень магазину в клієнті.</translation>
     </message>
     <message>
         <source>Settings</source>
-        <translation type="obsolete">Налаштування</translation>
+        <translation>Налаштування</translation>
     </message>
     <message>
         <source>Overlay Performance Monitor</source>
-        <translation type="vanished">Монітор продуктивності оверлея</translation>
+        <translation>Монітор продуктивності оверлея</translation>
     </message>
     <message>
         <source>The In-Game overlay is designed to help you understand your game and PC performance. It can render a variety of game and hardware performance information over a running game. &lt;a href='https://support.steampowered.com/kb_article.php?ref=2235-QOMF-3286' style='color:#63b1e2; text-decoration:underline;'&gt;Learn about the performance monitor numbers here.&lt;/a&gt;</source>
-        <translation type="vanished">Внутрішньоігровий оверлей розроблений, щоб допомогти вам зрозуміти продуктивність гри та ПК. Він може відображати різноманітну інформацію про продуктивність гри та обладнання поверх запущеної гри. &lt;a href='https://support.steampowered.com/kb_article.php?ref=2235-QOMF-3286' style='color:#63b1e2; text-decoration:underline;'&gt;Дізнайтеся більше про значення монітора продуктивності тут.&lt;/a&gt;</translation>
+        <translation>Внутрішньоігровий оверлей розроблений, щоб допомогти вам зрозуміти продуктивність гри та ПК. Він може відображати різноманітну інформацію про продуктивність гри та обладнання поверх запущеної гри. &lt;a href='https://support.steampowered.com/kb_article.php?ref=2235-QOMF-3286' style='color:#63b1e2; text-decoration:underline;'&gt;Дізнайтеся більше про значення монітора продуктивності тут.&lt;/a&gt;</translation>
     </message>
     <message>
         <source>Show performance monitor</source>
-        <translation type="vanished">Показувати монітор продуктивності</translation>
+        <translation>Показувати монітор продуктивності</translation>
     </message>
     <message>
         <source>Top-left</source>
-        <translation type="vanished">Вгорі ліворуч</translation>
+        <translation>Вгорі ліворуч</translation>
     </message>
     <message>
         <source>Top-center</source>
-        <translation type="vanished">Вгорі по центру</translation>
+        <translation>Вгорі по центру</translation>
     </message>
     <message>
         <source>Top-right</source>
-        <translation type="vanished">Вгорі праворуч</translation>
+        <translation>Вгорі праворуч</translation>
     </message>
     <message>
         <source>Bottom-right</source>
-        <translation type="vanished">Внизу праворуч</translation>
+        <translation>Внизу праворуч</translation>
     </message>
     <message>
         <source>Bottom-center</source>
-        <translation type="vanished">Внизу по центру</translation>
+        <translation>Внизу по центру</translation>
     </message>
     <message>
         <source>Bottom-left</source>
-        <translation type="vanished">Внизу ліворуч</translation>
+        <translation>Внизу ліворуч</translation>
     </message>
     <message>
         <source>Computers &amp; Devices</source>
-        <translation type="vanished">Комп'ютери та пристрої</translation>
+        <translation>Комп'ютери та пристрої</translation>
     </message>
     <message>
         <source>No devices available</source>
-        <translation type="vanished">Немає доступних пристроїв</translation>
+        <translation>Немає доступних пристроїв</translation>
     </message>
     <message>
         <source>Authorized</source>
-        <translation type="vanished">Авторизовано</translation>
+        <translation>Авторизовано</translation>
     </message>
     <message>
         <source>Unpair</source>
-        <translation type="vanished">Розірвати пару</translation>
+        <translation>Розірвати пару</translation>
     </message>
     <message>
         <source>Pair Steam Link</source>
-        <translation type="vanished">Прив'язати Steam Link</translation>
+        <translation>Прив'язати Steam Link</translation>
     </message>
     <message>
         <source>Connection Security</source>
-        <translation type="vanished">Безпека підключення</translation>
+        <translation>Безпека підключення</translation>
     </message>
     <message>
         <source>Allow Direct Connection (IP sharing)</source>
-        <translation type="vanished">Дозволити пряме підключення (передача IP)</translation>
+        <translation>Дозволити пряме підключення (передача IP)</translation>
     </message>
     <message>
         <source>Friends Only</source>
-        <translation type="vanished">Тільки для друзів</translation>
+        <translation>Тільки для друзів</translation>
     </message>
     <message>
         <source>Anyone</source>
-        <translation type="vanished">Будь-хто</translation>
+        <translation>Будь-хто</translation>
     </message>
     <message>
         <source>Connection security PIN</source>
-        <translation type="vanished">PIN-код безпеки підключення</translation>
+        <translation>PIN-код безпеки підключення</translation>
     </message>
     <message>
         <source>PIN is active (***)</source>
-        <translation type="vanished">PIN-код активний (***)</translation>
+        <translation>PIN-код активний (***)</translation>
     </message>
     <message>
         <source>Not set</source>
-        <translation type="vanished">Не встановлено</translation>
+        <translation>Не встановлено</translation>
     </message>
     <message>
         <source>Set PIN</source>
-        <translation type="vanished">Встановити PIN</translation>
+        <translation>Встановити PIN</translation>
     </message>
     <message>
         <source>Clear</source>
-        <translation type="vanished">Очистити</translation>
+        <translation>Очистити</translation>
     </message>
     <message>
         <source>Advanced Client Options</source>
-        <translation type="vanished">Додаткові налаштування клієнта</translation>
+        <translation>Додаткові налаштування клієнта</translation>
     </message>
     <message>
         <source>Video Quality</source>
-        <translation type="vanished">Якість відео</translation>
+        <translation>Якість відео</translation>
     </message>
     <message>
         <source>Fast</source>
-        <translation type="vanished">Швидко</translation>
+        <translation>Швидко</translation>
     </message>
     <message>
         <source>Balanced</source>
-        <translation type="vanished">Збалансовано</translation>
+        <translation>Збалансовано</translation>
     </message>
     <message>
         <source>Beautiful</source>
-        <translation type="vanished">Красиво</translation>
+        <translation>Красиво</translation>
     </message>
     <message>
         <source>Resolution Limit</source>
-        <translation type="vanished">Обмеження роздільної здатності</translation>
+        <translation>Обмеження роздільної здатності</translation>
     </message>
     <message>
         <source>Display Resolution</source>
-        <translation type="vanished">Роздільна здатність дисплея</translation>
+        <translation>Роздільна здатність дисплея</translation>
     </message>
     <message>
         <source>Framerate Limit</source>
-        <translation type="vanished">Обмеження частоти кадрів</translation>
+        <translation>Обмеження частоти кадрів</translation>
     </message>
     <message>
         <source>Automatic</source>
-        <translation type="vanished">Автоматично</translation>
+        <translation>Автоматично</translation>
     </message>
     <message>
         <source>Bandwidth Limit</source>
-        <translation type="vanished">Обмеження пропускної здатності</translation>
+        <translation>Обмеження пропускної здатності</translation>
     </message>
     <message>
         <source>Unlimited</source>
-        <translation type="vanished">Без обмежень</translation>
+        <translation>Без обмежень</translation>
     </message>
     <message>
         <source>Performance Overlay</source>
-        <translation type="vanished">Монітор продуктивності</translation>
+        <translation>Монітор продуктивності</translation>
     </message>
     <message>
         <source>On</source>
-        <translation type="vanished">Увімкнено</translation>
+        <translation>Увімкнено</translation>
     </message>
     <message>
         <source>Overlay activation button</source>
-        <translation type="vanished">Кнопка активації оверлея</translation>
+        <translation>Кнопка активації оверлея</translation>
     </message>
     <message>
         <source>Steam / Guide</source>
-        <translation type="vanished">Steam / Guide</translation>
+        <translation>Steam / Guide</translation>
     </message>
     <message>
         <source>Back / View</source>
-        <translation type="vanished">Назад / Перегляд</translation>
+        <translation>Назад / Перегляд</translation>
     </message>
     <message>
         <source>Start / Menu</source>
-        <translation type="vanished">Пуск / Меню</translation>
+        <translation>Пуск / Меню</translation>
     </message>
     <message>
         <source>Controller Overlay</source>
-        <translation type="vanished">Оверлей контролера</translation>
+        <translation>Оверлей контролера</translation>
     </message>
     <message>
         <source>Start Button</source>
-        <translation type="vanished">Кнопка Start</translation>
+        <translation>Кнопка Start</translation>
     </message>
     <message>
         <source>Back Button</source>
-        <translation type="vanished">Кнопка Back</translation>
+        <translation>Кнопка Back</translation>
     </message>
     <message>
         <source>Guide Button</source>
-        <translation type="vanished">Кнопка Guide</translation>
+        <translation>Кнопка Guide</translation>
     </message>
     <message>
         <source>Y Button</source>
-        <translation type="vanished">Кнопка Y</translation>
+        <translation>Кнопка Y</translation>
     </message>
     <message>
         <source>Microphone</source>
-        <translation type="vanished">Мікрофон</translation>
+        <translation>Мікрофон</translation>
     </message>
     <message>
         <source>Windowed Mode</source>
-        <translation type="vanished">Віконний режим</translation>
+        <translation>Віконний режим</translation>
     </message>
     <message>
         <source>Default Button</source>
-        <translation type="vanished">Кнопка за замовчуванням</translation>
+        <translation>Кнопка за замовчуванням</translation>
     </message>
     <message>
         <source>Play in window</source>
-        <translation type="vanished">Грати у вікні</translation>
+        <translation>Грати у вікні</translation>
     </message>
     <message>
         <source>Enable hardware decoding</source>
-        <translation type="vanished">Увімкнути апаратне декодування</translation>
+        <translation>Увімкнути апаратне декодування</translation>
     </message>
     <message>
         <source>Low latency networking</source>
-        <translation type="vanished">Мережа з низькою затримкою</translation>
+        <translation>Мережа з низькою затримкою</translation>
     </message>
     <message>
         <source>HEVC video</source>
-        <translation type="vanished">Відео HEVC</translation>
+        <translation>Відео HEVC</translation>
     </message>
     <message>
         <source>AV1 video</source>
-        <translation type="vanished">Відео AV1</translation>
+        <translation>Відео AV1</translation>
     </message>
     <message>
         <source>Advanced Host Options</source>
-        <translation type="vanished">Додаткові налаштування хоста</translation>
+        <translation>Додаткові налаштування хоста</translation>
     </message>
     <message>
         <source>Change desktop resolution to match streaming client</source>
-        <translation type="vanished">Змінювати роздільну здатність робочого столу відповідно до клієнта трансляції</translation>
+        <translation>Змінювати роздільну здатність робочого столу відповідно до клієнта трансляції</translation>
     </message>
     <message>
         <source>Play audio on host</source>
-        <translation type="vanished">Відтворювати аудіо на хості</translation>
+        <translation>Відтворювати аудіо на хості</translation>
     </message>
     <message>
         <source>Display Resolution Limit</source>
-        <translation type="vanished">Обмеження роздільної здатності дисплея</translation>
+        <translation>Обмеження роздільної здатності дисплея</translation>
     </message>
     <message>
         <source>Limit to client resolution</source>
-        <translation type="vanished">Обмежити роздільною здатністю клієнта</translation>
+        <translation>Обмежити роздільною здатністю клієнта</translation>
     </message>
     <message>
         <source>Enable NVFBC capture on NVIDIA GPU</source>
-        <translation type="vanished">Увімкнути захоплення NVFBC на графічному процесорі NVIDIA</translation>
+        <translation>Увімкнути захоплення NVFBC на графічному процесорі NVIDIA</translation>
     </message>
     <message>
         <source>Enable hardware encoding</source>
-        <translation type="vanished">Увімкнути апаратне кодування</translation>
+        <translation>Увімкнути апаратне кодування</translation>
     </message>
     <message>
         <source>Number of software encoding threads</source>
-        <translation type="vanished">Кількість потоків програмного кодування</translation>
+        <translation>Кількість потоків програмного кодування</translation>
     </message>
     <message>
         <source>Prioritize network traffic</source>
-        <translation type="vanished">Пріоритезація мережевого трафіку</translation>
+        <translation>Пріоритезація мережевого трафіку</translation>
     </message>
     <message>
         <source>Optimization</source>
-        <translation type="vanished">Оптимізація</translation>
+        <translation>Оптимізація</translation>
     </message>
     <message>
         <source>Pause music when starting an application</source>
-        <translation type="vanished">Призупиняти музику при запуску програми</translation>
+        <translation>Призупиняти музику при запуску програми</translation>
     </message>
     <message>
         <source>Pause music playback automatically when starting a game or application.</source>
-        <translation type="vanished">Автоматично призупиняти відтворення музики при запуску гри або програми.</translation>
+        <translation>Автоматично призупиняти відтворення музики при запуску гри або програми.</translation>
     </message>
     <message>
         <source>Pause music when voice chatting</source>
-        <translation type="vanished">Призупиняти музику під час голосового чату</translation>
+        <translation>Призупиняти музику під час голосового чату</translation>
     </message>
     <message>
         <source>Pause music playback automatically when starting or joining a voice chat.</source>
-        <translation type="vanished">Автоматично призупиняти відтворення музики при початку або приєднанні до голосового чату.</translation>
+        <translation>Автоматично призупиняти відтворення музики при початку або приєднанні до голосового чату.</translation>
     </message>
     <message>
         <source>Customization</source>
-        <translation type="vanished">Кастомізація</translation>
+        <translation>Кастомізація</translation>
     </message>
     <message>
         <source>Authorize Device</source>
-        <translation type="vanished">Авторизувати пристрій</translation>
+        <translation>Авторизувати пристрій</translation>
     </message>
     <message>
         <source>Enter the 4 digit authorization code showing on your device to allow it to connect and play games.</source>
-        <translation type="vanished">Введіть 4-значний код авторизації, що відображається на вашому пристрої, щоб дозволити йому підключитися та запускати ігри.</translation>
+        <translation>Введіть 4-значний код авторизації, що відображається на вашому пристрої, щоб дозволити йому підключитися та запускати ігри.</translation>
     </message>
     <message>
         <source>Redirecting to Steam...</source>
-        <translation type="vanished">Перенаправлення в Steam...</translation>
+        <translation>Перенаправлення в Steam...</translation>
     </message>
     <message>
         <source>Device pairing requires a live network connection managed by the Steam client. We have launched Steam and opened its Settings window for you. Please click "Pair Steam Link" inside Steam and enter your code (%1) there.</source>
-        <translation type="vanished">Для прив’язки пристрою потрібне живе мережеве з’єднання, яке контролюється клієнтом Steam. Ми запустили Steam і відкрили для вас вікно налаштувань. Будь ласка, натисніть «Прив’язати Steam Link» всередині Steam і введіть свій код (%1) туди.</translation>
+        <translation>Для прив’язки пристрою потрібне живе мережеве з’єднання, яке контролюється клієнтом Steam. Ми запустили Steam і відкрили для вас вікно налаштувань. Будь ласка, натисніть «Прив’язати Steam Link» всередині Steam і введіть свій код (%1) туди.</translation>
     </message>
     <message>
         <source>To pair a new device (like a phone, tablet, or VR headset) with Steam Remote Play, please open the official Steam client, go to Settings -&gt; Remote Play, and click "Pair Steam Link". This handles the secure live network authorization protocol.</source>
-        <translation type="vanished">Щоб прив’язати новий пристрій (наприклад, телефон, планшет або VR-шолом) до Steam Remote Play, будь ласка, відкрийте офіційний клієнт Steam, перейдіть до Налаштування -&gt; Remote Play і натисніть «Прив’язати Steam Link». Це запускає безпечний протокол авторизації в реальному часі.</translation>
+        <translation>Щоб прив’язати новий пристрій (наприклад, телефон, планшет або VR-шолом) до Steam Remote Play, будь ласка, відкрийте офіційний клієнт Steam, перейдіть до Налаштування -&gt; Remote Play і натисніть «Прив’язати Steam Link». Це запускає безпечний протокол авторизації в реальному часі.</translation>
     </message>
     <message>
         <source>Got it</source>
-        <translation type="vanished">Зрозуміло</translation>
+        <translation>Зрозуміло</translation>
     </message>
     <message>
         <source>Volume</source>
-        <translation type="vanished">Гучність</translation>
+        <translation>Гучність</translation>
     </message>
     <message>
         <source>LIBRARY</source>
-        <translation type="vanished">БІБЛІОТЕКА</translation>
+        <translation>БІБЛІОТЕКА</translation>
     </message>
     <message>
         <source>Low Bandwidth Mode</source>
-        <translation type="vanished">Режим низької пропускної здатності</translation>
+        <translation>Режим низької пропускної здатності</translation>
     </message>
     <message>
         <source>Reduces bandwidth use by disabling features like auto-load of community content</source>
-        <translation type="vanished">Зменшує використання пропускної здатності, вимикаючи такі функції, як автозавантаження вмісту спільноти</translation>
+        <translation>Зменшує використання пропускної здатності, вимикаючи такі функції, як автозавантаження вмісту спільноти</translation>
     </message>
     <message>
         <source>Low Performance Mode</source>
-        <translation type="vanished">Режим низької продуктивності</translation>
+        <translation>Режим низької продуктивності</translation>
     </message>
     <message>
         <source>Improves library performance by disabling certain graphical improvements and transitions</source>
-        <translation type="vanished">Покращує продуктивність бібліотеки, вимикаючи певні графічні покращення та переходи</translation>
+        <translation>Покращує продуктивність бібліотеки, вимикаючи певні графічні покращення та переходи</translation>
     </message>
     <message>
         <source>Disable Community Content</source>
-        <translation type="vanished">Вимкнути вміст спільноти</translation>
+        <translation>Вимкнути вміст спільноти</translation>
     </message>
     <message>
         <source>Prevents the automatic load of community content when viewing game details</source>
-        <translation type="vanished">Запобігає автоматичному завантаженню вмісту спільноти під час перегляду інформації про гру</translation>
+        <translation>Запобігає автоматичному завантаженню вмісту спільноти під час перегляду інформації про гру</translation>
     </message>
     <message>
         <source>Show game icons in the left column</source>
-        <translation type="vanished">Показувати іконки ігор у лівій колонці</translation>
+        <translation>Показувати іконки ігор у лівій колонці</translation>
     </message>
     <message>
         <source>Ready to Play should include streamable games</source>
-        <translation type="vanished">Розділ 'Готові до гри' має включати ігри для стрімінгу</translation>
+        <translation>Розділ 'Готові до гри' має включати ігри для стрімінгу</translation>
     </message>
     <message>
         <source>Should the library include streamable games that aren't installed locally in Ready to Play and also show streaming by default for those games?</source>
-        <translation type="vanished">Чи повинна бібліотека включати ігри для стрімінгу, які не встановлені локально, в розділ 'Готові до гри', а також показувати стрімінг за замовчуванням для цих ігор?</translation>
+        <translation>Чи повинна бібліотека включати ігри для стрімінгу, які не встановлені локально, в розділ 'Готові до гри', а також показувати стрімінг за замовчуванням для цих ігор?</translation>
     </message>
     <message>
         <source>Show Steam Deck compatibility information in library</source>
-        <translation type="vanished">Показувати інформацію про сумісність зі Steam Deck у бібліотеці</translation>
+        <translation>Показувати інформацію про сумісність зі Steam Deck у бібліотеці</translation>
     </message>
     <message>
         <source>Download</source>
-        <translation type="vanished">Завантаження</translation>
+        <translation>Завантаження</translation>
     </message>
     <message>
         <source>Limit download speed</source>
-        <translation type="vanished">Обмежити швидкість завантаження</translation>
+        <translation>Обмежити швидкість завантаження</translation>
     </message>
     <message>
         <source>Schedule auto-updates</source>
-        <translation type="vanished">Планувати автооновлення</translation>
+        <translation>Планувати автооновлення</translation>
     </message>
     <message>
         <source>Allow downloads during gameplay</source>
-        <translation type="vanished">Дозволити завантаження під час гри</translation>
+        <translation>Дозволити завантаження під час гри</translation>
     </message>
     <message>
         <source>Enabling this may degrade gameplay performance or lead to higher in-game ping.</source>
-        <translation type="vanished">Увімкнення цього режиму може погіршити продуктивність гри або призвести до вищого пінгу.</translation>
+        <translation>Увімкнення цього режиму може погіршити продуктивність гри або призвести до вищого пінгу.</translation>
     </message>
     <message>
         <source>Throttle downloads while streaming</source>
-        <translation type="vanished">Обмежувати завантаження під час трансляції</translation>
+        <translation>Обмежувати завантаження під час трансляції</translation>
     </message>
     <message>
         <source>Throttles downloading bandwidth when streaming a game with Remote Play.</source>
-        <translation type="vanished">Обмежує швидкість завантаження під час стрімінгу гри через Remote Play.</translation>
+        <translation>Обмежує швидкість завантаження під час стрімінгу гри через Remote Play.</translation>
     </message>
     <message>
         <source>Display download rates in bits per second</source>
-        <translation type="vanished">Відображати швидкість завантаження в бітах за секунду</translation>
+        <translation>Відображати швидкість завантаження в бітах за секунду</translation>
     </message>
     <message>
         <source>Game File Transfer over Local Network</source>
-        <translation type="vanished">Передача файлів гри через локальну мережу</translation>
+        <translation>Передача файлів гри через локальну мережу</translation>
     </message>
     <message>
         <source>Allows transfers of game files from other PCs on the local network.</source>
-        <translation type="vanished">Дозволяє передавати файли ігор з інших ПК у локальній мережі.</translation>
+        <translation>Дозволяє передавати файли ігор з інших ПК у локальній мережі.</translation>
     </message>
     <message>
         <source>Clear Download Cache</source>
-        <translation type="vanished">Очистити кеш завантажень</translation>
+        <translation>Очистити кеш завантажень</translation>
     </message>
     <message>
         <source>Clearing download cache might resolve issues with downloading or starting games.</source>
-        <translation type="vanished">Очищення кешу завантажень може вирішити проблеми з завантаженням або запуском ігор.</translation>
+        <translation>Очищення кешу завантажень може вирішити проблеми з завантаженням або запуском ігор.</translation>
     </message>
     <message>
         <source>Clear Cache</source>
-        <translation type="vanished">Очистити кеш</translation>
+        <translation>Очистити кеш</translation>
     </message>
     <message>
         <source>Shader Pre-Caching</source>
-        <translation type="vanished">Попереднє кешування шейдерів</translation>
+        <translation>Попереднє кешування шейдерів</translation>
     </message>
     <message>
         <source>Shader Pre-Caching allows Steam to download pre-compiled Vulkan and OpenGL shaders tailored to your hardware. This reduces game load times and mitigates in-game stuttering.</source>
-        <translation type="vanished">Попереднє кешування шейдерів дозволяє Steam завантажувати попередньо компильовані шейдери Vulkan та OpenGL, адаптовані під ваше обладнання. Це зменшує час завантаження ігор та усува фризи.</translation>
+        <translation>Попереднє кешування шейдерів дозволяє Steam завантажувати попередньо компильовані шейдери Vulkan та OpenGL, адаптовані під ваше обладнання. Це зменшує час завантаження ігор та усува фризи.</translation>
     </message>
     <message>
         <source>Enable Shader Pre-caching</source>
-        <translation type="vanished">Увімкнути попереднє кешування шейдерів</translation>
+        <translation>Увімкнути попереднє кешування шейдерів</translation>
     </message>
     <message>
         <source>Allow background processing of Vulkan shaders</source>
-        <translation type="vanished">Дозволити фонову обробку шейдерів Vulkan</translation>
+        <translation>Дозволити фонову обробку шейдерів Vulkan</translation>
     </message>
     <message>
         <source>Local Disk</source>
-        <translation type="vanished">Локальний диск</translation>
+        <translation>Локальний диск</translation>
     </message>
     <message>
         <source>GAMES</source>
-        <translation type="vanished">ІГРИ</translation>
+        <translation>ІГРИ</translation>
     </message>
     <message>
         <source>DLC</source>
-        <translation type="vanished">DLC</translation>
+        <translation>DLC</translation>
     </message>
     <message>
         <source>WORKSHOP</source>
-        <translation type="vanished">МАЙСТЕРНЯ</translation>
+        <translation>МАЙСТЕРНЯ</translation>
     </message>
     <message>
         <source>SHADERS</source>
-        <translation type="vanished">ШЕЙДЕРИ</translation>
+        <translation>ШЕЙДЕРИ</translation>
     </message>
     <message>
         <source>NON-STEAM</source>
-        <translation type="vanished">ІНШІ ФАЙЛИ</translation>
+        <translation>ІНШІ ФАЙЛИ</translation>
     </message>
     <message>
         <source>FREE</source>
-        <translation type="vanished">ВІЛЬНО</translation>
+        <translation>ВІЛЬНО</translation>
     </message>
     <message>
         <source>Items %1</source>
-        <translation type="vanished">Елементів: %1</translation>
+        <translation>Елементів: %1</translation>
     </message>
     <message>
         <source>Size on Disk ↕</source>
-        <translation type="vanished">Розмір на диску ↕</translation>
+        <translation>Розмір на диску ↕</translation>
     </message>
     <message>
         <source>Uninstall Selected</source>
-        <translation type="vanished">Видалити вибране</translation>
+        <translation>Видалити вибране</translation>
     </message>
     <message>
         <source>Requested Steam to uninstall: %1</source>
-        <translation type="vanished">Надіслано запит у Steam на видалення: %1</translation>
+        <translation>Надіслано запит у Steam на видалення: %1</translation>
     </message>
     <message>
         <source>BROADCASTING</source>
-        <translation type="vanished">ТРАНСЛЯЦІЯ</translation>
+        <translation>ТРАНСЛЯЦІЯ</translation>
     </message>
     <message>
         <source>Steam Overlay is globally disabled. Broadcasting settings are locked until it is enabled.</source>
-        <translation type="vanished">Оверлей Steam вимкнено глобально. Налаштування трансляції заблоковано, доки його не буде увімкнено.</translation>
+        <translation>Оверлей Steam вимкнено глобально. Налаштування трансляції заблоковано, доки його не буде увімкнено.</translation>
     </message>
     <message>
         <source>Privacy setting</source>
-        <translation type="vanished">Налаштування приватності</translation>
+        <translation>Налаштування приватності</translation>
     </message>
     <message>
         <source>Broadcasting disabled</source>
-        <translation type="vanished">Трансляція вимкнена</translation>
+        <translation>Трансляція вимкнена</translation>
     </message>
     <message>
         <source>Friends can request to watch my games</source>
-        <translation type="vanished">Друзі можуть надсилати запит на перегляд моїх ігор</translation>
+        <translation>Друзі можуть надсилати запит на перегляд моїх ігор</translation>
     </message>
     <message>
         <source>Friends can watch my games</source>
-        <translation type="vanished">Друзі можуть дивитися мої ігри</translation>
+        <translation>Друзі можуть дивитися мої ігри</translation>
     </message>
     <message>
         <source>Anyone can watch my games</source>
-        <translation type="vanished">Будь-хто може дивитися мої ігри</translation>
+        <translation>Будь-хто може дивитися мої ігри</translation>
     </message>
     <message>
         <source>Always show Live status</source>
-        <translation type="vanished">Завжди показувати статус трансляції</translation>
+        <translation>Завжди показувати статус трансляції</translation>
     </message>
     <message>
         <source>Video Dimensions</source>
-        <translation type="vanished">Роздільна здатність відео</translation>
+        <translation>Роздільна здатність відео</translation>
     </message>
     <message>
         <source>1920x1080 (1080p)</source>
-        <translation type="vanished">1920x1080 (1080p)</translation>
+        <translation>1920x1080 (1080p)</translation>
     </message>
     <message>
         <source>1280x720 (720p)</source>
-        <translation type="vanished">1280x720 (720p)</translation>
+        <translation>1280x720 (720p)</translation>
     </message>
     <message>
         <source>854x480 (480p)</source>
-        <translation type="vanished">854x480 (480p)</translation>
+        <translation>854x480 (480p)</translation>
     </message>
     <message>
         <source>640x360 (360p)</source>
-        <translation type="vanished">640x360 (360p)</translation>
+        <translation>640x360 (360p)</translation>
     </message>
     <message>
         <source>Maximum Bitrate</source>
-        <translation type="vanished">Максимальний бітрейт</translation>
+        <translation>Максимальний бітрейт</translation>
     </message>
     <message>
         <source>3500 Kbps</source>
-        <translation type="vanished">3500 Кбіт/с</translation>
+        <translation>3500 Кбіт/с</translation>
     </message>
     <message>
         <source>3000 Kbps</source>
-        <translation type="vanished">3000 Кбіт/с</translation>
+        <translation>3000 Кбіт/с</translation>
     </message>
     <message>
         <source>2500 Kbps</source>
-        <translation type="vanished">2500 Кбіт/с</translation>
+        <translation>2500 Кбіт/с</translation>
     </message>
     <message>
         <source>2000 Kbps</source>
-        <translation type="vanished">2000 Кбіт/с</translation>
+        <translation>2000 Кбіт/с</translation>
     </message>
     <message>
         <source>1500 Kbps</source>
-        <translation type="vanished">1500 Кбіт/с</translation>
+        <translation>1500 Кбіт/с</translation>
     </message>
     <message>
         <source>1000 Kbps</source>
-        <translation type="vanished">1000 Кбіт/с</translation>
+        <translation>1000 Кбіт/с</translation>
     </message>
     <message>
         <source>750 Kbps</source>
-        <translation type="vanished">750 Кбіт/с</translation>
+        <translation>750 Кбіт/с</translation>
     </message>
     <message>
         <source>Optimize encoding for</source>
-        <translation type="vanished">Оптимізувати кодування для</translation>
+        <translation>Оптимізувати кодування для</translation>
     </message>
     <message>
         <source>Best Quality</source>
-        <translation type="vanished">Найкраща якість</translation>
+        <translation>Найкраща якість</translation>
     </message>
     <message>
         <source>Best Performance</source>
-        <translation type="vanished">Найкраща продуктивність</translation>
+        <translation>Найкраща продуктивність</translation>
     </message>
     <message>
         <source>Show viewers' chat in game</source>
-        <translation type="vanished">Показувати чат глядачів у грі</translation>
+        <translation>Показувати чат глядачів у грі</translation>
     </message>
     <message>
         <source>Record video from all applications on this machine</source>
-        <translation type="vanished">Записувати відео з усіх програм на цій машині</translation>
+        <translation>Записувати відео з усіх програм на цій машині</translation>
     </message>
     <message>
         <source>Record audio from all applications on this machine</source>
-        <translation type="vanished">Записувати звук з усіх програм на цій машині</translation>
+        <translation>Записувати звук з усіх програм на цій машині</translation>
     </message>
     <message>
         <source>Record my microphone</source>
-        <translation type="vanished">Записувати мій мікрофон</translation>
+        <translation>Записувати мій мікрофон</translation>
     </message>
     <message>
         <source>Show upload stats</source>
-        <translation type="vanished">Показувати статистику завантаження</translation>
+        <translation>Показувати статистику завантаження</translation>
     </message>
     <message>
         <source>OPTIMIZATION</source>
-        <translation type="obsolete">ОПТИМІЗАЦІЯ</translation>
+        <translation>ОПТИМІЗАЦІЯ</translation>
     </message>
     <message>
         <source>CUSTOMIZATION</source>
-        <translation type="obsolete">КАСТОМІЗАЦІЯ</translation>
+        <translation>КАСТОМІЗАЦІЯ</translation>
     </message>
     <message>
         <source>Enabled</source>
-        <translation type="obsolete">Увімкнено</translation>
+        <translation>Увімкнено</translation>
     </message>
     <message>
         <source>This will clear your local download cache and restart Steam. You will need to login to Steam again. Do you wish to continue?</source>
-        <translation type="vanished">Це очистить ваш локальний кеш завантажень і перезапустить Steam. Вам потрібно буде знову увійти в Steam. Бажаєте продовжити?</translation>
+        <translation>Це очистить ваш локальний кеш завантажень і перезапустить Steam. Вам потрібно буде знову увійти в Steam. Бажаєте продовжити?</translation>
     </message>
     <message>
         <source>Confirm</source>
-        <translation type="vanished">Підтвердити</translation>
+        <translation>Підтвердити</translation>
     </message>
     <message>
         <source>Cancel</source>
-        <translation type="vanished">Скасувати</translation>
+        <translation>Скасувати</translation>
     </message>
     <message>
         <source>In Game</source>
-        <translation type="vanished">В грі</translation>
+        <translation>В грі</translation>
     </message>
     <message>
         <source>Steam Overlay settings and in-game preferences</source>
-        <translation type="vanished">Налаштування оверлея Steam та внутрішньоігрових параметрів</translation>
+        <translation>Налаштування оверлея Steam та внутрішньоігрових параметрів</translation>
     </message>
     <message>
         <source>IN GAME</source>
-        <translation type="vanished">В ГРІ</translation>
+        <translation>В ГРІ</translation>
     </message>
     <message>
         <source>The Steam Overlay</source>
-        <translation type="vanished">Оверлей Steam</translation>
+        <translation>Оверлей Steam</translation>
     </message>
     <message>
         <source>Enable the Steam Overlay while in-game</source>
-        <translation type="vanished">Увімкнути оверлей Steam у грі</translation>
+        <translation>Увімкнути оверлей Steam у грі</translation>
     </message>
     <message>
         <source>Allows access to Steam features while playing games.</source>
-        <translation type="vanished">Дозволяє доступ до функцій Steam під час гри.</translation>
+        <translation>Дозволяє доступ до функцій Steam під час гри.</translation>
     </message>
     <message>
         <source>Show toolbar as list view</source>
-        <translation type="vanished">Показувати панель інструментів списком</translation>
+        <translation>Показувати панель інструментів списком</translation>
     </message>
     <message>
         <source>Displays overlay buttons in a list instead of icons.</source>
-        <translation type="vanished">Відображає кнопки оверлея списком замість значків.</translation>
+        <translation>Відображає кнопки оверлея списком замість значків.</translation>
     </message>
     <message>
         <source>Restore my previous browser tabs when starting a game</source>
-        <translation type="vanished">Відновлювати попередні вкладки браузера під час запуску гри</translation>
+        <translation>Відновлювати попередні вкладки браузера під час запуску гри</translation>
     </message>
     <message>
         <source>Saves open browser tabs when you close a game and restores them.</source>
-        <translation type="vanished">Зберігає відкриті вкладки браузера при закритті гри та відновлює їх.</translation>
+        <translation>Зберігає відкриті вкладки браузера при закритті гри та відновлює їх.</translation>
     </message>
     <message>
         <source>Use the Big Picture Overlay when using a controller</source>
-        <translation type="vanished">Використовувати оверлей Big Picture при використанні контролера</translation>
+        <translation>Використовувати оверлей Big Picture при використанні контролера</translation>
     </message>
     <message>
         <source>Optimizes the overlay UI for controller and gamepad navigation.</source>
-        <translation type="vanished">Оптимізує інтерфейс оверлея для навігації з контролера та геймпада.</translation>
+        <translation>Оптимізує інтерфейс оверлея для навігації з контролера та геймпада.</translation>
     </message>
     <message>
         <source>Scale Steam Overlay text and icons to match monitor settings</source>
-        <translation type="vanished">Масштабувати текст і значки оверлея Steam відповідно до налаштувань монітора</translation>
+        <translation>Масштабувати текст і значки оверлея Steam відповідно до налаштувань монітора</translation>
     </message>
     <message>
         <source>Adjusts overlay text size and UI scale according to your monitor DPI.</source>
-        <translation type="vanished">Налаштовує розмір тексту оверлея та масштаб інтерфейсу відповідно до DPI вашого монітора.</translation>
+        <translation>Налаштовує розмір тексту оверлея та масштаб інтерфейсу відповідно до DPI вашого монітора.</translation>
     </message>
     <message>
         <source>Delete Web Browser Data</source>
-        <translation type="vanished">Видалити дані веб-браузера</translation>
+        <translation>Видалити дані веб-браузера</translation>
     </message>
     <message>
         <source>Delete all Steam browser cached files, cookies, and history?</source>
-        <translation type="vanished">Видалити всі кешовані файли, файли cookie та історію браузера Steam?</translation>
+        <translation>Видалити всі кешовані файли, файли cookie та історію браузера Steam?</translation>
     </message>
     <message>
         <source>Delete</source>
-        <translation type="vanished">Видалити</translation>
+        <translation>Видалити</translation>
     </message>
     <message>
         <source>Toolbar Preferences</source>
-        <translation type="vanished">Налаштування панелі інструментів</translation>
+        <translation>Налаштування панелі інструментів</translation>
     </message>
     <message>
         <source>Configure which buttons are displayed in the overlay toolbar.</source>
-        <translation type="vanished">Налаштувати, які кнопки відображаються на панелі інструментів оверлея.</translation>
+        <translation>Налаштувати, які кнопки відображаються на панелі інструментів оверлея.</translation>
     </message>
     <message>
         <source>TOOLBAR PREFERENCES</source>
-        <translation type="vanished">НАЛАШТУВАННЯ ПАНЕЛІ ІНСТРУМЕНТІВ</translation>
+        <translation>НАЛАШТУВАННЯ ПАНЕЛІ ІНСТРУМЕНТІВ</translation>
     </message>
     <message>
         <source>This feature is currently configured automatically by the optimizer for best performance.</source>
-        <translation type="vanished">Ця функція наразі налаштовується оптимізатором автоматично для найкращої продуктивності.</translation>
+        <translation>Ця функція наразі налаштовується оптимізатором автоматично для найкращої продуктивності.</translation>
     </message>
     <message>
         <source>Show Web Browser</source>
-        <translation type="vanished">Показувати веб-браузер</translation>
+        <translation>Показувати веб-браузер</translation>
     </message>
     <message>
         <source>Show Friends List</source>
-        <translation type="vanished">Показувати список друзів</translation>
+        <translation>Показувати список друзів</translation>
     </message>
     <message>
         <source>Show Achievements</source>
-        <translation type="vanished">Показувати досягнення</translation>
+        <translation>Показувати досягнення</translation>
     </message>
     <message>
         <source>This will close Steam and delete all Steam web browser cached files, cookies, and history. Do you wish to continue?</source>
-        <translation type="vanished">Це закриє Steam і видалить усі кешовані файли, файли cookie та історію веб-браузера Steam. Бажаєте продовжити?</translation>
+        <translation>Це закриє Steam і видалить усі кешовані файли, файли cookie та історію веб-браузера Steam. Бажаєте продовжити?</translation>
     </message>
     <message>
         <source>Accessibility</source>
-        <translation type="vanished">Спеціальні можливості</translation>
+        <translation>Спеціальні можливості</translation>
     </message>
     <message>
         <source>Configure accessibility and user interface options</source>
-        <translation type="vanished">Налаштування спеціальних можливостей та інтерфейсу користувача</translation>
+        <translation>Налаштування спеціальних можливостей та інтерфейсу користувача</translation>
     </message>
     <message>
         <source>ACCESSIBILITY</source>
-        <translation type="vanished">СПЕЦІАЛЬНІ МОЖЛИВОСТІ</translation>
+        <translation>СПЕЦІАЛЬНІ МОЖЛИВОСТІ</translation>
     </message>
     <message>
         <source>Reduce Motion</source>
-        <translation type="vanished">Зменшення руху</translation>
+        <translation>Зменшення руху</translation>
     </message>
     <message>
         <source>Disable certain Steam animations, effects and transitions to reduce on-screen movement.</source>
-        <translation type="vanished">Вимкнути певні анімації, ефекти та переходи Steam для зменшення руху на екрані.</translation>
+        <translation>Вимкнути певні анімації, ефекти та переходи Steam для зменшення руху на екрані.</translation>
     </message>
     <message>
         <source>Game Recording</source>
-        <translation type="vanished">Запис гри</translation>
+        <translation>Запис гри</translation>
     </message>
     <message>
         <source>Configure game recording and capture options</source>
-        <translation type="vanished">Налаштування запису гри та параметрів захоплення</translation>
+        <translation>Налаштування запису гри та параметрів захоплення</translation>
     </message>
     <message>
         <source>Select your recording mode:</source>
-        <translation type="vanished">Виберіть режим запису:</translation>
+        <translation>Виберіть режим запису:</translation>
     </message>
     <message>
         <source>Recording Off</source>
-        <translation type="vanished">Запис вимкнено</translation>
+        <translation>Запис вимкнено</translation>
     </message>
     <message>
         <source>Steam will not record your gameplay.</source>
-        <translation type="vanished">Steam не записуватиме ігровий процес.</translation>
+        <translation>Steam не записуватиме ігровий процес.</translation>
     </message>
     <message>
         <source>Record in Background</source>
-        <translation type="vanished">Записувати у фоновому режимі</translation>
+        <translation>Записувати у фоновому режимі</translation>
     </message>
     <message>
         <source>Steam will automatically record your gameplay when you start playing, so you don't miss those unexpected moments.&lt;br&gt;&lt;br&gt;The last &lt;b&gt;120&lt;/b&gt; minutes of video will be kept in a temporary format for you to replay or save as permanent clips.</source>
-        <translation type="vanished">Steam автоматично записуватиме ігровий процес під час гри, щоб ви не пропустили неочікувані моменти.&lt;br&gt;&lt;br&gt;Останні &lt;b&gt;120&lt;/b&gt; хвилин відео зберігатимуться в тимчасовому форматі, тож ви зможете переглянути їх або зберегти як постійні кліпи.</translation>
+        <translation>Steam автоматично записуватиме ігровий процес під час гри, щоб ви не пропустили неочікувані моменти.&lt;br&gt;&lt;br&gt;Останні &lt;b&gt;120&lt;/b&gt; хвилин відео зберігатимуться в тимчасовому форматі, тож ви зможете переглянути їх або зберегти як постійні кліпи.</translation>
     </message>
     <message>
         <source>Record Manually</source>
-        <translation type="vanished">Записувати вручну</translation>
+        <translation>Записувати вручну</translation>
     </message>
     <message>
         <source>Steam will record video only after you press &lt;b&gt;Ctrl+F11&lt;/b&gt;.</source>
-        <translation type="vanished">Steam записуватиме відео лише після натискання &lt;b&gt;Ctrl+F11&lt;/b&gt;.</translation>
+        <translation>Steam записуватиме відео лише після натискання &lt;b&gt;Ctrl+F11&lt;/b&gt;.</translation>
     </message>
     <message>
         <source>GAME RECORDING</source>
-        <translation type="vanished">ЗАПИС ГРИ</translation>
+        <translation>ЗАПИС ГРИ</translation>
     </message>
     <message>
         <source>Voice</source>
-        <translation type="vanished">Голос</translation>
+        <translation>Голос</translation>
     </message>
     <message>
         <source>Configure voice transmission and advanced voice settings</source>
-        <translation type="vanished">Налаштування передачі голосу та розширені параметри</translation>
+        <translation>Налаштування передачі голосу та розширені параметри</translation>
     </message>
     <message>
         <source>VOICE</source>
-        <translation type="vanished">ГОЛОС</translation>
+        <translation>ГОЛОС</translation>
     </message>
     <message>
         <source>Voice Transmission Threshold</source>
-        <translation type="vanished">Поріг передачі голосу</translation>
+        <translation>Поріг передачі голосу</translation>
     </message>
     <message>
         <source>Off</source>
-        <translation type="vanished">Вимкнено</translation>
+        <translation>Вимкнено</translation>
     </message>
     <message>
         <source>Medium (Recommended)</source>
-        <translation type="vanished">Середній (рекомендовано)</translation>
+        <translation>Середній (рекомендовано)</translation>
     </message>
     <message>
         <source>High</source>
-        <translation type="vanished">Високий</translation>
+        <translation>Високий</translation>
     </message>
     <message>
         <source>Advanced Settings</source>
-        <translation type="vanished">Розширені налаштування</translation>
+        <translation>Розширені налаштування</translation>
     </message>
     <message>
         <source>Echo cancellation</source>
-        <translation type="vanished">Ехопоглинання</translation>
+        <translation>Ехопоглинання</translation>
     </message>
     <message>
         <source>Reduces echo from your speakers/microphone</source>
-        <translation type="vanished">Зменшує луну з ваших динаміків/мікрофона</translation>
+        <translation>Зменшує луну з ваших динаміків/мікрофона</translation>
     </message>
     <message>
         <source>Noise cancellation</source>
-        <translation type="vanished">Шумопоглинання</translation>
+        <translation>Шумопоглинання</translation>
     </message>
     <message>
         <source>Reduces background noise from your microphone</source>
-        <translation type="vanished">Зменшує фоновий шум з вашого мікрофона</translation>
+        <translation>Зменшує фоновий шум з вашого мікрофона</translation>
     </message>
     <message>
         <source>Automatic volume/gain control</source>
-        <translation type="vanished">Автоматичне регулювання посилення звуку</translation>
+        <translation>Автоматичне регулювання посилення звуку</translation>
     </message>
     <message>
         <source>Automatically adjusts your microphone volume/gain level</source>
-        <translation type="vanished">Автоматично регулює рівень гучності/посилення вашого мікрофона</translation>
+        <translation>Автоматично регулює рівень гучності/посилення вашого мікрофона</translation>
     </message>
     <message>
         <source>Diagnostics</source>
-        <translation type="vanished">Діагностика</translation>
+        <translation>Діагностика</translation>
     </message>
     <message>
         <source>Copy Voice Logs To Clipboard</source>
-        <translation type="vanished">Копіювати журнали голосового чату в буфер обміну</translation>
+        <translation>Копіювати журнали голосового чату в буфер обміну</translation>
     </message>
     <message>
         <source>Copy diagnostic logs of your voice chat to clipboard</source>
-        <translation type="vanished">Скопіювати діагностичні журнали вашого голосового чату в буфер обміну</translation>
+        <translation>Скопіювати діагностичні журнали вашого голосового чату в буфер обміну</translation>
     </message>
     <message>
         <source>Copy</source>
-        <translation type="vanished">Копіювати</translation>
+        <translation>Копіювати</translation>
     </message>
     <message>
         <source>Remote Play</source>
-        <translation type="vanished">Remote Play</translation>
+        <translation>Remote Play</translation>
     </message>
     <message>
         <source>Configure Remote Play and streaming options</source>
-        <translation type="vanished">Налаштування Remote Play та параметрів трансляції</translation>
+        <translation>Налаштування Remote Play та параметрів трансляції</translation>
     </message>
     <message>
         <source>REMOTE PLAY</source>
-        <translation type="vanished">REMOTE PLAY</translation>
+        <translation>REMOTE PLAY</translation>
     </message>
     <message>
         <source>Enable Remote Play</source>
-        <translation type="vanished">Увімкнути Remote Play</translation>
+        <translation>Увімкнути Remote Play</translation>
     </message>
     <message>
         <source>Stream gameplay between this computer and other devices. To connect, simply log into this same Steam account on another computer, or choose "Other Computer" on your Steam Link.</source>
-        <translation type="vanished">Транслюйте ігровий процес між цим комп’ютером та іншими пристроями. Для підключення просто увійдіть у цей самий акаунт Steam на іншому комп’ютері або виберіть «Інший комп’ютер» на вашому Steam Link.</translation>
+        <translation>Транслюйте ігровий процес між цим комп’ютером та іншими пристроями. Для підключення просто увійдіть у цей самий акаунт Steam на іншому комп’ютері або виберіть «Інший комп’ютер» на вашому Steam Link.</translation>
     </message>
     <message>
         <source>Music</source>
-        <translation type="vanished">Музика</translation>
+        <translation>Музика</translation>
     </message>
     <message>
         <source>Configure Music and soundtrack download options</source>
-        <translation type="vanished">Налаштування музики та параметрів завантаження саундтреків</translation>
+        <translation>Налаштування музики та параметрів завантаження саундтреків</translation>
     </message>
     <message>
         <source>MUSIC</source>
-        <translation type="vanished">МУЗИКА</translation>
+        <translation>МУЗИКА</translation>
     </message>
     <message>
         <source>Download high quality audio files</source>
-        <translation type="vanished">Завантажувати високоякісні аудіофайли</translation>
+        <translation>Завантажувати високоякісні аудіофайли</translation>
     </message>
     <message>
         <source>When checked, Steam will download high-quality files if they are available for a soundtrack. Otherwise, Steam will only download standard quality MP3s.</source>
-        <translation type="vanished">Коли позначено, Steam завантажуватиме високоякісні аудіофайли, якщо вони доступні для саундтреку. В іншому разі Steam завантажуватиме лише MP3 стандартної якості.</translation>
+        <translation>Коли позначено, Steam завантажуватиме високоякісні аудіофайли, якщо вони доступні для саундтреку. В іншому разі Steam завантажуватиме лише MP3 стандартної якості.</translation>
     </message>
     <message>
         <source>Enable Advanced Client Options</source>
-        <translation type="vanished">Увімкнути додаткові налаштування клієнта</translation>
+        <translation>Увімкнути додаткові налаштування клієнта</translation>
     </message>
     <message>
         <source>To improve performance streaming a game running on another computer, try reducing your game's resolution or adjusting these settings.</source>
-        <translation type="vanished">Щоб покращити продуктивність трансляції гри, запущеної на іншому комп'ютері, спробуйте зменшити роздільну здатність гри або змінити ці налаштування.</translation>
+        <translation>Щоб покращити продуктивність трансляції гри, запущеної на іншому комп'ютері, спробуйте зменшити роздільну здатність гри або змінити ці налаштування.</translation>
     </message>
     <message>
         <source>Enable Advanced Host Options</source>
-        <translation type="vanished">Увімкнути додаткові налаштування хоста</translation>
+        <translation>Увімкнути додаткові налаштування хоста</translation>
     </message>
     <message>
         <source>To improve performance streaming a game running on this computer, try reducing your game's resolution or adjusting these settings.</source>
-        <translation type="vanished">Щоб покращити продуктивність трансляції гри, запущеної на цьому комп'ютері, спробуйте зменшити роздільну здатність гри або змінити ці налаштування.</translation>
+        <translation>Щоб покращити продуктивність трансляції гри, запущеної на цьому комп'ютері, спробуйте зменшити роздільну здатність гри або змінити ці налаштування.</translation>
     </message>
     <message>
         <source>Enhanced 1080p</source>
-        <translation type="vanished">Покращена 1080p</translation>
+        <translation>Покращена 1080p</translation>
     </message>
     <message>
         <source>Enhanced 4K</source>
-        <translation type="vanished">Покращена 4K</translation>
+        <translation>Покращена 4K</translation>
     </message>
     <message>
         <source>Automatic (recommended)</source>
-        <translation type="vanished">Автоматично (рекомендовано)</translation>
+        <translation>Автоматично (рекомендовано)</translation>
     </message>
     <message>
         <source>Show Icons</source>
-        <translation type="vanished">Показувати значки</translation>
+        <translation>Показувати значки</translation>
     </message>
     <message>
         <source>Show Details</source>
-        <translation type="vanished">Показувати деталі</translation>
+        <translation>Показувати деталі</translation>
     </message>
 </context>
 <context>
     <name>TelemetryDrawer</name>
     <message>
         <source>Connected User Experiences (DiagTrack)</source>
-        <translation type="vanished">Функціональні можливості для підключених користувачів і телеметрія (DiagTrack)</translation>
+        <translation>Функціональні можливості для підключених користувачів і телеметрія (DiagTrack)</translation>
     </message>
     <message>
         <source>Device Management WAP Service (dmwappushservice)</source>
-        <translation type="vanished">Служба WAP для керування пристроями (dmwappushservice)</translation>
+        <translation>Служба WAP для керування пристроями (dmwappushservice)</translation>
     </message>
     <message>
         <source>Customer Experience Improvement Program (CEIP)</source>
-        <translation type="vanished">Програма покращення взаємодії з користувачем (CEIP)</translation>
+        <translation>Програма покращення взаємодії з користувачем (CEIP)</translation>
     </message>
     <message>
         <source>Windows Error Reporting (WER)</source>
-        <translation type="vanished">Служба звітування про помилки Windows (WER)</translation>
+        <translation>Служба звітування про помилки Windows (WER)</translation>
     </message>
 </context>
 <context>
     <name>VisualEffectsDrawer</name>
     <message>
         <source>Animations in the taskbar</source>
-        <translation type="vanished">Анімація на панелі завдань</translation>
+        <translation>Анімація на панелі завдань</translation>
     </message>
     <message>
         <source>Enable Peek</source>
-        <translation type="vanished">Увімкнути Peek</translation>
+        <translation>Увімкнути Peek</translation>
     </message>
     <message>
         <source>Fade or slide menus into view</source>
-        <translation type="vanished">Ефекти згасання або ковзання при появі меню</translation>
+        <translation>Ефекти згасання або ковзання при появі меню</translation>
     </message>
     <message>
         <source>Fade or slide ToolTips into view</source>
-        <translation type="vanished">Ефекти згасання або ковзання при появі підказок</translation>
+        <translation>Ефекти згасання або ковзання при появі підказок</translation>
     </message>
     <message>
         <source>Fade out menu items after clicking</source>
-        <translation type="vanished">Згасання пунктів меню після натискання</translation>
+        <translation>Згасання пунктів меню після натискання</translation>
     </message>
     <message>
         <source>Save taskbar thumbnail previews</source>
-        <translation type="vanished">Збереження ескізів панелі завдань</translation>
+        <translation>Збереження ескізів панелі завдань</translation>
     </message>
     <message>
         <source>Show shadows under mouse pointer</source>
-        <translation type="vanished">Відображення тіні під вказівником миші</translation>
+        <translation>Відображення тіні під вказівником миші</translation>
     </message>
     <message>
         <source>Show shadows under windows</source>
-        <translation type="vanished">Відображення тіні під вікнами</translation>
+        <translation>Відображення тіні під вікнами</translation>
     </message>
     <message>
         <source>Show thumbnails instead of icons</source>
-        <translation type="vanished">Відображення ескізів замість піктограм</translation>
+        <translation>Відображення ескізів замість піктограм</translation>
     </message>
     <message>
         <source>Show translucent selection rectangle</source>
-        <translation type="vanished">Відображення напівпрозорого прямокутника виділення</translation>
+        <translation>Відображення напівпрозорого прямокутника виділення</translation>
     </message>
     <message>
         <source>Show window contents while dragging</source>
-        <translation type="vanished">Відображення вмісту вікна під час перетягування</translation>
+        <translation>Відображення вмісту вікна під час перетягування</translation>
     </message>
     <message>
         <source>Slide open combo boxes</source>
-        <translation type="vanished">Ефекти розгортання списків, що випадають</translation>
+        <translation>Ефекти розгортання списків, що випадають</translation>
     </message>
     <message>
         <source>Smooth edges of screen fonts</source>
-        <translation type="vanished">Згладжування нерівностей екранних шрифтів</translation>
+        <translation>Згладжування нерівностей екранних шрифтів</translation>
     </message>
     <message>
         <source>Smooth-scroll list boxes</source>
-        <translation type="vanished">Плавне прокручування списків</translation>
+        <translation>Плавне прокручування списків</translation>
     </message>
     <message>
         <source>Use drop shadows for icon labels on the desktop</source>
-        <translation type="vanished">Тіні під підписами піктограм на робочому столі</translation>
+        <translation>Тіні під підписами піктограм на робочому столі</translation>
     </message>
 </context>
 <context>
     <name>WindowsUpdateDrawer</name>
     <message>
         <source>Default</source>
-        <translation type="vanished">За замовчуванням</translation>
+        <translation>За замовчуванням</translation>
     </message>
     <message>
         <source>Security Only</source>
-        <translation type="vanished">Лише безпека</translation>
+        <translation>Лише безпека</translation>
     </message>
     <message>
         <source>Manual Check</source>
-        <translation type="vanished">Вручну</translation>
+        <translation>Вручну</translation>
     </message>
     <message>
         <source>Disabled</source>
-        <translation type="vanished">Вимкнено</translation>
+        <translation>Вимкнено</translation>
     </message>
 </context>
 <context>
     <name>XboxDrawer</name>
     <message>
         <source>Disable Game Bar Popup</source>
-        <translation type="vanished">Вимкнути помилку ms-gamingoverlay</translation>
+        <translation>Вимкнути помилку ms-gamingoverlay</translation>
     </message>
 </context>
 <context>
     <name>main</name>
     <message>
         <source>Dashboard</source>
-        <translation type="vanished">Панель керування</translation>
+        <translation>Панель керування</translation>
     </message>
     <message>
         <source>Optimization</source>
-        <translation type="vanished">Оптимізація</translation>
+        <translation>Оптимізація</translation>
     </message>
     <message>
         <source>Settings</source>
-        <translation type="vanished">Налаштування</translation>
+        <translation>Налаштування</translation>
     </message>
     <message>
         <source>Real-Time Logs</source>
-        <translation type="vanished">Логи в реальному часі</translation>
+        <translation>Логи в реальному часі</translation>
     </message>
     <message>
         <source>v1.0.0 Stable</source>
-        <translation type="vanished">v1.0.0 Стабільна</translation>
+        <translation>v1.0.0 Стабільна</translation>
     </message>
     <message>
         <source>Video Games</source>
-        <translation type="vanished">Відеоігри</translation>
+        <translation>Відеоігри</translation>
     </message>
     <message>
         <source>Telemetry</source>
-        <translation type="vanished">Телеметрія</translation>
+        <translation>Телеметрія</translation>
     </message>
     <message>
         <source>Core Optimization</source>
-        <translation type="vanished">Основна оптимізація</translation>
+        <translation>Основна оптимізація</translation>
     </message>
     <message>
         <source>Customization</source>
-        <translation type="vanished">Кастомізація</translation>
+        <translation>Кастомізація</translation>
     </message>
     <message>
         <source>Cleanup</source>
-        <translation type="obsolete">Очищення</translation>
+        <translation>Очищення</translation>
     </message>
     <message>
         <source>Poor Level</source>
-        <translation type="vanished">Поганий рівень</translation>
+        <translation>Поганий рівень</translation>
     </message>
     <message>
         <source>Average Level</source>
-        <translation type="vanished">Середній рівень</translation>
+        <translation>Середній рівень</translation>
     </message>
     <message>
         <source>Optimal Level</source>
-        <translation type="vanished">Оптимальний рівень</translation>
+        <translation>Оптимальний рівень</translation>
     </message>
 </context>
 </TS>
