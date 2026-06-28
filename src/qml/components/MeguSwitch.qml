@@ -1,6 +1,5 @@
 import QtQuick
 import MeguPackOptimizer 1.0
-import Qt5Compat.GraphicalEffects
 
 Item {
     id: control
@@ -120,16 +119,14 @@ Item {
                     position: 0.0
                     color: {
                         if (control.steamStyle) return control.checked ? "#FFFFFF" : "#5d6d7e";
-                        var isLightTheme = (Theme.currentTheme === "Белоснежная" || Theme.currentTheme === "Розовая");
-                        return isLightTheme ? "#FFFFFF" : "#FFFFFF"; // Keep unchecked white
+                        return "#FFFFFF"; // Solid white top
                     }
                 }
                 GradientStop {
                     position: 1.0
                     color: {
                         if (control.steamStyle) return control.checked ? "#E2E8F0" : "#4b5a6c";
-                        var isLightTheme = (Theme.currentTheme === "Белоснежная" || Theme.currentTheme === "Розовая");
-                        return isLightTheme ? "#E2E8F0" : "#CBD5E1"; // Subtle shade at bottom of white marble
+                        return "#CBD5E1"; // Soft shadow at the bottom of unchecked marble
                     }
                 }
             }
@@ -151,7 +148,7 @@ Item {
                 visible: control.steamStyle
             }
 
-            // --- Glassmorphic Glowing Checked Sphere (using a RadialGradient that fades to transparent to prevent square RHI bugs) ---
+            // --- Glassmorphic Glowing Checked Sphere (pure vector multi-layer layout, zero RHI bugs) ---
             Rectangle {
                 id: checkedSphere
                 anchors.fill: parent
@@ -172,18 +169,35 @@ Item {
                     GradientStop { position: 1.0; color: "#8000FF" } // Deep purple edge
                 }
                 
-                // 2. Diffused Specification Highlight (fades to transparent at 1.0 to prevent square RHI bugs)
-                RadialGradient {
-                    anchors.fill: parent
-                    anchors.margins: -1
-                    horizontalOffset: -2.2
-                    verticalOffset: -2.2
+                // 2. Specular Highlight Layer 1 (Soft overall top-left light blend, rotated for diagonal alignment)
+                Rectangle {
+                    width: parent.width * 0.72
+                    height: parent.height * 0.72
+                    radius: width / 2
+                    x: parent.width * 0.07
+                    y: parent.height * 0.07
+                    rotation: -45
                     
                     gradient: Gradient {
-                        GradientStop { position: 0.0; color: Qt.rgba(255, 255, 255, 0.95) }  // White core
-                        GradientStop { position: 0.30; color: Qt.rgba(255, 255, 255, 0.75) } // Glowing envelope
-                        GradientStop { position: 0.65; color: Qt.rgba(255, 255, 255, 0.15) } // Soft blur edge
-                        GradientStop { position: 1.0; color: "transparent" }                // Completely transparent!
+                        GradientStop { position: 0.0; color: Qt.rgba(255, 255, 255, 0.75) }
+                        GradientStop { position: 0.5; color: Qt.rgba(255, 255, 255, 0.25) }
+                        GradientStop { position: 1.0; color: "transparent" }
+                    }
+                }
+                
+                // 3. Specular Highlight Layer 2 (Intense hot-spot core, rotated for diagonal alignment)
+                Rectangle {
+                    width: parent.width * 0.38
+                    height: parent.height * 0.38
+                    radius: width / 2
+                    x: parent.width * 0.18
+                    y: parent.height * 0.18
+                    rotation: -45
+                    
+                    gradient: Gradient {
+                        GradientStop { position: 0.0; color: Qt.rgba(255, 255, 255, 0.95) }
+                        GradientStop { position: 0.6; color: Qt.rgba(255, 255, 255, 0.40) }
+                        GradientStop { position: 1.0; color: "transparent" }
                     }
                 }
             }
