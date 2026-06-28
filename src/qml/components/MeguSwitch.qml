@@ -124,21 +124,17 @@ Item {
             gradient: Gradient {
                 GradientStop { 
                     position: 0.0 
-                    color: control.checked ? Qt.rgba(0, 166, 255, 0.38) : Qt.rgba(0, 0, 0, 0.30) 
+                    color: control.checked ? Qt.rgba(0, 166, 255, 0.38) : Qt.rgba(0, 0, 0, 0.30)
+                    Behavior on color { ColorAnimation { duration: 250 } }
                 }
                 GradientStop { 
                     position: 0.35 
-                    color: control.checked ? Qt.rgba(0, 166, 255, 0.12) : Qt.rgba(0, 0, 0, 0.10) 
+                    color: control.checked ? Qt.rgba(0, 166, 255, 0.12) : Qt.rgba(0, 0, 0, 0.10)
+                    Behavior on color { ColorAnimation { duration: 250 } }
                 }
                 GradientStop { 
                     position: 1.0 
                     color: "transparent" 
-                }
-            }
-            
-            Behavior on color {
-                ColorAnimation {
-                    duration: 250
                 }
             }
         }
