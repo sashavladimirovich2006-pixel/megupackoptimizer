@@ -279,8 +279,8 @@ Item {
                     accentColor: Theme.warning
 
                     MeguSwitch {
-                        width: 40
-                        height: 22
+                        width: 54
+                        height: 24
                         anchors.verticalCenter: parent.verticalCenter
                         checked: !settingsBackend.createBackup
                         onToggled: (isChecked) => {
@@ -732,8 +732,8 @@ Item {
 
                     MeguSwitch {
                         id: expertSwitch
-                        width: 40
-                        height: 22
+                        width: 54
+                        height: 24
                         anchors.verticalCenter: parent.verticalCenter
                         checked: settingsBackend.showExpertFeatures
                         onToggled: (isChecked) => {

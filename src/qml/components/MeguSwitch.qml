@@ -18,24 +18,21 @@ Item {
     opacity: enabled ? 1.0 : 0.4
     Behavior on opacity { NumberAnimation { duration: Theme.animFast } }
     
-    // Glowing neon halo behind the track (glowing aura)
-    DropShadow {
-        anchors.fill: track
-        horizontalOffset: 0
-        verticalOffset: 0
-        radius: 8
-        samples: 17
-        color: (control.checked && !control.steamStyle) 
-            ? (mouseArea.containsMouse ? Qt.rgba(0, 166, 255, 0.35) : Qt.rgba(0, 166, 255, 0.22)) 
-            : "transparent"
-        source: track
-        cached: true
-        visible: !control.steamStyle
+    // Soft outer neon glow behind the track (zero-overhead native vector glow)
+    Rectangle {
+        anchors.centerIn: track
+        width: track.width + 6
+        height: track.height + 6
+        radius: track.radius + 3
+        color: "#00A6FF"
+        opacity: (control.checked && !control.steamStyle) ? (mouseArea.containsMouse ? 0.24 : 0.14) : 0.0
+        visible: opacity > 0.0
         
-        Behavior on color {
-            ColorAnimation {
-                duration: 250
-            }
+        Behavior on opacity { 
+            NumberAnimation { 
+                duration: 250 
+                easing.type: Easing.OutQuad 
+            } 
         }
     }
 
@@ -111,55 +108,28 @@ Item {
             visible: !control.steamStyle
         }
 
-        // --- High-Performance 3D Volumetric Soft Shadow (RadialGradient instead of live DropShadow) ---
-        RadialGradient {
-            id: thumbShadow
-            width: thumb.width + 16 // Extra width for soft fade
-            height: thumb.height + 16 // Extra height for soft fade
-            anchors.centerIn: thumb
-            horizontalOffset: 0
-            verticalOffset: 2.2
-            visible: !control.steamStyle
-            
-            gradient: Gradient {
-                GradientStop { 
-                    position: 0.0 
-                    color: control.checked ? Qt.rgba(0, 166, 255, 0.38) : Qt.rgba(0, 0, 0, 0.30)
-                    Behavior on color { ColorAnimation { duration: 250 } }
-                }
-                GradientStop { 
-                    position: 0.35 
-                    color: control.checked ? Qt.rgba(0, 166, 255, 0.12) : Qt.rgba(0, 0, 0, 0.10)
-                    Behavior on color { ColorAnimation { duration: 250 } }
-                }
-                GradientStop { 
-                    position: 1.0 
-                    color: "transparent" 
-                }
-            }
-        }
-
         // Thumb circle
         Rectangle {
             id: thumb
-            width: mouseArea.pressed ? 26 : 18 // High-fidelity squish (reaches 26px when pressed)
             height: 18
             radius: control.steamStyle ? 4 : 9 // Perfect circle if not steam style
             
-            // Base background gradient: adapts to steam style or outputs solid white
+            // Base background gradient of the thumb (smooth 3D plastic ball for unchecked state)
             gradient: Gradient {
                 GradientStop {
                     position: 0.0
                     color: {
                         if (control.steamStyle) return control.checked ? "#FFFFFF" : "#5d6d7e";
-                        return "#FFFFFF";
+                        var isLightTheme = (Theme.currentTheme === "Белоснежная" || Theme.currentTheme === "Розовая");
+                        return isLightTheme ? "#FFFFFF" : "#FFFFFF"; // Keep unchecked white
                     }
                 }
                 GradientStop {
                     position: 1.0
                     color: {
                         if (control.steamStyle) return control.checked ? "#E2E8F0" : "#4b5a6c";
-                        return "#FFFFFF";
+                        var isLightTheme = (Theme.currentTheme === "Белоснежная" || Theme.currentTheme === "Розовая");
+                        return isLightTheme ? "#E2E8F0" : "#CBD5E1"; // Subtle shade at bottom of white marble
                     }
                 }
             }
@@ -181,41 +151,11 @@ Item {
                 visible: control.steamStyle
             }
 
-            // --- Glassmorphic Glowing Checked Sphere (using OpacityMask to clip the RadialGradient to a circle) ---
-            
-            // 1. Mask Source (defines the shape of the clip - tracks the thumb's width/height/radius)
+            // --- Glassmorphic Glowing Checked Sphere (using a RadialGradient that fades to transparent to prevent square RHI bugs) ---
             Rectangle {
-                id: thumbMask
+                id: checkedSphere
                 anchors.fill: parent
                 radius: parent.radius
-                color: "black"
-                visible: false
-            }
-
-            // 2. Gradient Source (defines the colors)
-            RadialGradient {
-                id: checkedRadialSource
-                anchors.fill: parent
-                visible: false
-                
-                // Shift center slightly top-left to simulate light source
-                horizontalOffset: -2
-                verticalOffset: -2
-                
-                gradient: Gradient {
-                    GradientStop { position: 0.0; color: "#FFFFFF" }        // Glowing white core
-                    GradientStop { position: 0.25; color: "#DCEFFE" }       // Light blue reflection
-                    GradientStop { position: 0.55; color: "#00A6FF" }       // Vibrant cyan body
-                    GradientStop { position: 0.85; color: "#553CFF" }       // Blue-violet shade
-                    GradientStop { position: 1.0; color: "#8B2CFF" }        // Deep purple outer edge
-                }
-            }
-
-            // 3. Combined Masked Output
-            OpacityMask {
-                anchors.fill: parent
-                source: checkedRadialSource
-                maskSource: thumbMask
                 opacity: (control.checked && !control.steamStyle) ? 1.0 : 0.0
                 
                 Behavior on opacity {
@@ -224,24 +164,66 @@ Item {
                         easing.type: Easing.InOutQuad
                     }
                 }
-            }
-            
-            // Slide positioning (horizontal limits: 3px padding from left/right)
-            x: control.indeterminate 
-                ? ((track.width - width) / 2) 
-                : (control.checked ? (track.width - width - 3) : 3)
-            
-            Behavior on x {
-                NumberAnimation {
-                    duration: 320 // Ultra-smooth deceleration
-                    easing.type: Easing.OutQuint
+                
+                // 1. Base Gradient (rich cyan-to-purple body)
+                gradient: Gradient {
+                    GradientStop { position: 0.0; color: "#00E5FF" } // Glowing bright cyan
+                    GradientStop { position: 0.5; color: "#0055FF" } // Vibrant blue
+                    GradientStop { position: 1.0; color: "#8000FF" } // Deep purple edge
+                }
+                
+                // 2. Diffused Specification Highlight (fades to transparent at 1.0 to prevent square RHI bugs)
+                RadialGradient {
+                    anchors.fill: parent
+                    anchors.margins: -1
+                    horizontalOffset: -2.2
+                    verticalOffset: -2.2
+                    
+                    gradient: Gradient {
+                        GradientStop { position: 0.0; color: Qt.rgba(255, 255, 255, 0.95) }  // White core
+                        GradientStop { position: 0.30; color: Qt.rgba(255, 255, 255, 0.75) } // Glowing envelope
+                        GradientStop { position: 0.65; color: Qt.rgba(255, 255, 255, 0.15) } // Soft blur edge
+                        GradientStop { position: 1.0; color: "transparent" }                // Completely transparent!
+                    }
                 }
             }
-            Behavior on width {
-                NumberAnimation {
-                    duration: 280 // Organic squash & stretch timing
-                    easing.type: Easing.OutQuint
-                }
+            
+            // --- Shadow Layer 1 (inside thumb, moves and scales automatically, z: -1) ---
+            Rectangle {
+                anchors.fill: parent
+                radius: parent.radius
+                color: control.checked ? "#00A6FF" : "#000000"
+                opacity: control.checked ? 0.35 : 0.24
+                z: -1
+                
+                // Shift down for offset shadow
+                anchors.topMargin: 1.8
+                anchors.bottomMargin: -1.8
+                
+                visible: !control.steamStyle
+                Behavior on color { ColorAnimation { duration: 250 } }
+                Behavior on opacity { NumberAnimation { duration: 250 } }
+            }
+
+            // --- Shadow Layer 2 (inside thumb, moves and scales automatically, z: -2) ---
+            Rectangle {
+                anchors.left: parent.left
+                anchors.right: parent.right
+                anchors.top: parent.top
+                anchors.bottom: parent.bottom
+                anchors.margins: -1
+                radius: parent.radius + 1
+                color: control.checked ? "#00A6FF" : "#000000"
+                opacity: control.checked ? 0.12 : 0.10
+                z: -2
+                
+                // Shift down for offset shadow
+                anchors.topMargin: 1.4
+                anchors.bottomMargin: -3.4
+                
+                visible: !control.steamStyle
+                Behavior on color { ColorAnimation { duration: 250 } }
+                Behavior on opacity { NumberAnimation { duration: 250 } }
             }
         }
     }
@@ -276,4 +258,81 @@ Item {
             }
         }
     }
+
+    // --- State and Transition System for Coordinated Smooth Squish and Motion ---
+    state: control.indeterminate ? "indeterminate" : (control.checked ? "checked" : "unchecked")
+
+    states: [
+        State {
+            name: "unchecked"
+            PropertyChanges { target: thumb; x: 3; width: 18 }
+        },
+        State {
+            name: "checked"
+            PropertyChanges { target: thumb; x: track.width - 18 - 3; width: 18 }
+        },
+        State {
+            name: "indeterminate"
+            PropertyChanges { target: thumb; x: (track.width - 18) / 2; width: 18 }
+        }
+    ]
+
+    transitions: [
+        Transition {
+            from: "unchecked"; to: "checked"
+            ParallelAnimation {
+                NumberAnimation {
+                    target: thumb
+                    property: "x"
+                    duration: 320
+                    easing.type: Easing.OutQuint // Luxurious decelerating slide
+                }
+                SequentialAnimation {
+                    // Quick stretch to 26px during the first part of the slide
+                    NumberAnimation {
+                        target: thumb
+                        property: "width"
+                        to: 26
+                        duration: 120
+                        easing.type: Easing.OutQuad
+                    }
+                    // Slow recovery to 18px as it lands
+                    NumberAnimation {
+                        target: thumb
+                        property: "width"
+                        to: 18
+                        duration: 200
+                        easing.type: Easing.OutQuad
+                    }
+                }
+            }
+        },
+        Transition {
+            from: "checked"; to: "unchecked"
+            ParallelAnimation {
+                NumberAnimation {
+                    target: thumb
+                    property: "x"
+                    duration: 320
+                    easing.type: Easing.OutQuint
+                }
+                SequentialAnimation {
+                    NumberAnimation {
+                        target: thumb
+                        property: "width"
+                        to: 26
+                        duration: 120
+                        easing.type: Easing.OutQuad
+                    }
+                    NumberAnimation {
+                        target: thumb
+                        property: "width"
+                        to: 18
+                        duration: 200
+                        easing.type: Easing.OutQuad
+                    }
+                }
+            }
+        }
+    ]
 }
