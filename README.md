@@ -15,8 +15,9 @@ The following rules must be strictly adhered to by all developers (human or AI) 
 3. **No External Referencing**:
    Do not include links to the git repository inside this README.md. Additionally, do not make any references or comparisons to other software, tools, or projects of similar origin or functionality.
 
-4. **Mandatory Ukrainian Language Translation**:
-   All user interface labels, button text, notifications, description lines, and log steps MUST always be translated to the Ukrainian language. Any time new text elements are introduced or modified in QML or C++, you must immediately run `lupdate` to update the TS file, write the appropriate translations in `translations/megu_pack_optimizer_uk.ts`, and compile it using `lrelease` before publishing your changes.
+4. **Mandatory Multi-Language Translation**:
+   All user interface labels, button text, notifications, description lines, and log steps MUST always be translated to all available languages in the program (currently English and Ukrainian). Any time new text elements are introduced or modified in QML or C++, you must immediately run `lupdate` to update the TS files, write the appropriate translations for all supported languages (e.g. `translations/megu_pack_optimizer_uk.ts` for Ukrainian), and compile them using `lrelease` before publishing your changes. Never leave new strings untranslated.
+
 
 5. **Unified Compact Card System**:
    Do not build new card-like UI surfaces with ad-hoc `Rectangle + Theme.panelBg + Theme.border` blocks. All cards, settings rows, action rows, metric cards, and wide option panels must use `AcrylicPanel`, `MeguActionCard`, `SpecCard`, `MeguMenuRow`, or a specialized component based on those primitives. Wide cards must always be internally composed into an icon zone, text/content zone, and status/action zone so they never render as empty full-width dark slabs.
