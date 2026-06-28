@@ -208,6 +208,8 @@ Item {
                         model: ["en", "uk", "ru", "de", "es", "fr", "it", "pl", "sv", "cs"]
                         currentIndex: model.indexOf(settingsBackend.language) !== -1 ? model.indexOf(settingsBackend.language) : 0
                         
+                        displayText: (settingsBackend.language, textFormatter(model[currentIndex]))
+                        
                         textFormatter: function(item) {
                             if (item === "en") return qsTr("English");
                             if (item === "uk") return qsTr("Ukrainian");
@@ -225,8 +227,9 @@ Item {
                         onActivated: (index) => {
                             var code = model[index];
                             console.log("[QML] Language dropdown selected code:", code);
-                            settingsBackend.language = code;
-                            console.log("[QML] After setting, backend language is:", settingsBackend.language);
+                            Qt.callLater(() => {
+                                settingsBackend.language = code;
+                            });
                         }
 
                         // Update current index if backend language changes externally
